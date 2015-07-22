@@ -22,3 +22,12 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+# vim
+*.swp
+
+# osx
+.DS_Store
+
+# 临时编译文件
+apidoc
