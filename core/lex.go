@@ -49,20 +49,25 @@ func (l *lexer) next() rune {
 	return r
 }
 
-// 读取从当前位置到换行符|n之间的内容。首尾空格将被舍弃。
+// 读取从当前位置到换行符\n之间的内容。首尾空格将被舍弃。
 // 可通过lexer.backup来撤消最后一次调用。
 func (l *lexer) nextLine() string {
-	rs := []rune{}
+	rs := []rune{} // 缓存本次操作的字符串
+	width := 0     // 缓存本次操作的字符宽度，NOTE:记得在返回之前赋值给lexer.width
+
 	for {
 		if l.pos >= len(l.data) { // 提前结束
+			l.width = width
 			return strings.TrimSpace(string(rs))
 		}
 
 		r, w := utf8.DecodeRune(l.data[l.pos:])
 		l.pos += w
-		l.width += w
+		width += w
 		rs = append(rs, r)
+
 		if r == '\n' {
+			l.width = width
 			return strings.TrimSpace(string(rs))
 		}
 	}
