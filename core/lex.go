@@ -49,7 +49,7 @@ func (l *lexer) next() rune {
 	return r
 }
 
-// 读取从当前位置到换行符\n之间的内容。首尾空格将被舍弃。
+// 读取从当前位置到换行符\n之间的内容，不包含换行符\n。
 // 可通过lexer.backup来撤消最后一次调用。
 func (l *lexer) nextLine() string {
 	rs := []rune{} // 缓存本次操作的字符串
@@ -58,66 +58,96 @@ func (l *lexer) nextLine() string {
 	for {
 		if l.pos >= len(l.data) { // 提前结束
 			l.width = width
-			return strings.TrimSpace(string(rs))
+			return string(rs)
 		}
 
 		r, w := utf8.DecodeRune(l.data[l.pos:])
 		l.pos += w
 		width += w
-		rs = append(rs, r)
 
 		if r == '\n' {
 			l.width = width
-			return strings.TrimSpace(string(rs))
+			return string(rs)
 		}
-	}
+
+		rs = append(rs, r)
+	} // end for
 }
 
-// 读取当前行内，到下一个空格之间的单词。首尾空格将被舍弃。
+// 读取当前行内，当前位置到下一个空格之间的单词，
+// 若当前字符为空格，则返回一个空值，且不会移动指针。
 // 可通过lexer.backup来撤消最后一次调用。
 func (l *lexer) nextWord() (str string, eol bool) {
 	rs := []rune{}
+	width := 0 // 缓存本次操作的字符宽度，NOTE:记得在返回之前赋值给lexer.width
+
 	for {
-		if l.pos >= len(l.data) { // 提前结束
-			return strings.TrimSpace(string(rs)), true
+		if l.pos >= len(l.data) {
+			l.width = width
+			return string(rs), true
 		}
 
 		r, w := utf8.DecodeRune(l.data[l.pos:])
 		l.pos += w
-		l.width += w
-		rs = append(rs, r)
+		width += w
+
 		if unicode.IsSpace(r) {
-			return strings.TrimSpace(string(rs)), r == '\n'
+			l.pos -= w
+			width -= w
+			l.width = width
+			return string(rs), r == '\n'
 		}
+
+		rs = append(rs, r)
 	}
 }
 
-// 撤消next/nextN/nextLine函数的最后次调用。指针指向执行这些函数之前的位置。
+// 判断接下去的几个字符连接起来是否正好为word，若不匹配，则不移动指针。
+// 可通过lexer.backup来撤消最后一次调用。
+func (l *lexer) match(word string) bool {
+	// 剩余字符没有word长，直接返回false
+	if l.pos+len(word) >= len(l.data) {
+		return false
+	}
+
+	width := 0
+	for _, r := range word {
+		rr, w := utf8.DecodeRune(l.data[l.pos:])
+		if rr != r {
+			l.pos -= width
+			return false
+		}
+
+		l.pos += w
+		width += w
+	}
+
+	l.width = width
+	return true
+}
+
+// 撤消next/nextN/nextLine/nextKeyword/match函数的最后次调用。指针指向执行这些函数之前的位置。
 func (l *lexer) backup() {
 	l.pos -= l.width
 	l.width = 0
 }
 
-// 判断接下去的几个字符连接起来是否正好为word，若不匹配，则不移动指针。
-func (l *lexer) match(word string) bool {
-	if l.pos+len(word) >= len(l.data) {
-		return false
-	}
-
-	for _, r := range word {
-		rr, w := utf8.DecodeRune(l.data[l.pos:])
-		if rr != r {
-			l.pos -= l.width
-			l.width = 0
-			return false
+// 跳过之后除换行符之外的所有空格。
+func (l *lexer) skipSpace() {
+	for {
+		r := l.next()
+		if r == eof {
+			return
 		}
 
-		l.pos += w
-		l.width += w
-	}
-	return true
+		if !unicode.IsSpace(r) || r == '\n' {
+			l.backup()
+			return
+		}
+	} // end for
 }
 
+// 扫描文档，生成一个doc实例。
 func (l *lexer) scan() (*doc, error) {
 	d := &doc{}
 	var err error
@@ -168,7 +198,7 @@ func (l *lexer) scanApiURL(d *doc) error {
 func (l *lexer) scanApiMethods(d *doc) error {
 	str := l.nextLine()
 	if len(str) == 0 {
-		return errors.New("apiMethod缺少参数")
+		return errors.New("apiMethods缺少参数")
 	}
 
 	d.Methods = str
@@ -178,7 +208,7 @@ func (l *lexer) scanApiMethods(d *doc) error {
 func (l *lexer) scanApiVersion(d *doc) error {
 	str := l.nextLine()
 	if len(str) == 0 {
-		return errors.New("apiMethod缺少参数")
+		return errors.New("apiVersion缺少参数")
 	}
 
 	d.Version = str
@@ -188,7 +218,7 @@ func (l *lexer) scanApiVersion(d *doc) error {
 func (l *lexer) scanApiGroup(d *doc) error {
 	str := l.nextLine()
 	if len(str) == 0 {
-		return errors.New("apiMethod缺少参数")
+		return errors.New("apiGroup缺少参数")
 	}
 
 	d.Group = str
@@ -302,24 +332,30 @@ LOOP:
 	return nil
 }
 
+// 将@apiExample之后的内容转换成example实例。
 func (l *lexer) scanApiExample() (*example, error) {
 	e := &example{}
-	var eol bool
+	rs := []rune{}
 
-	e.Type, eol = l.nextWord()
-	if eol {
-		return nil, errors.New("@apiExample缺少参数")
-	}
+	l.skipSpace()
+	e.Type, _ = l.nextWord()
 
-	e.Code = l.nextLine()
+	l.skipSpace()
 	for {
-		line := l.nextLine()
-		if strings.Index(line, "@api") >= 0 {
+		r := l.next()
+		if r == eof {
+			break
+		}
+
+		rs = append(rs, r)
+
+		if l.match("@api") {
 			l.backup()
 			break
 		}
-		e.Code += line
 	}
+
+	e.Code = strings.TrimRightFunc(string(rs), unicode.IsSpace)
 	return e, nil
 }
 
