@@ -176,7 +176,7 @@ func TestLexer_scanApiURL(t *testing.T) {
 
 	// 正常情况
 	l := newLexer([]byte("  api/login"), 100, "file.go")
-	l.scanApiURL(d)
+	a.NotError(l.scanApiURL(d))
 	a.Equal(d.URL, "api/login")
 
 	// 缺少参数
@@ -185,7 +185,7 @@ func TestLexer_scanApiURL(t *testing.T) {
 
 	// 多个参数
 	l = newLexer([]byte("  api/login abctest/adf"), 100, "file.go")
-	l.scanApiURL(d)
+	a.NotError(l.scanApiURL(d))
 	a.Equal(d.URL, "api/login")
 }
 
@@ -195,7 +195,7 @@ func TestLexer_scanApiMethods(t *testing.T) {
 
 	// 正常情况
 	l := newLexer([]byte("  get"), 100, "file.go")
-	l.scanApiMethods(d)
+	a.NotError(l.scanApiMethods(d))
 	a.Equal(d.Methods, "get")
 
 	// 缺少参数
@@ -204,7 +204,7 @@ func TestLexer_scanApiMethods(t *testing.T) {
 
 	// 多个参数
 	l = newLexer([]byte("  get post"), 100, "file.go")
-	l.scanApiMethods(d)
+	a.NotError(l.scanApiMethods(d))
 	a.Equal(d.Methods, "get post")
 }
 
@@ -214,7 +214,7 @@ func TestLexer_scanApiVersion(t *testing.T) {
 
 	// 正常情况
 	l := newLexer([]byte("  0.1.1"), 100, "file.go")
-	l.scanApiVersion(d)
+	a.NotError(l.scanApiVersion(d))
 	a.Equal(d.Version, "0.1.1")
 
 	// 缺少参数
@@ -223,7 +223,7 @@ func TestLexer_scanApiVersion(t *testing.T) {
 
 	// 多个参数
 	l = newLexer([]byte("  0.1.1  abcd"), 100, "file.go")
-	l.scanApiVersion(d)
+	a.NotError(l.scanApiVersion(d))
 	a.Equal(d.Version, "0.1.1")
 }
 
@@ -233,7 +233,7 @@ func TestLexer_scanApiGroup(t *testing.T) {
 
 	// 正常情况
 	l := newLexer([]byte("  g1"), 100, "file.go")
-	l.scanApiGroup(d)
+	a.NotError(l.scanApiGroup(d))
 	a.Equal(d.Group, "g1")
 
 	// 缺少参数
@@ -242,8 +242,31 @@ func TestLexer_scanApiGroup(t *testing.T) {
 
 	// 多个参数
 	l = newLexer([]byte("  g1  abcd"), 100, "file.go")
-	l.scanApiGroup(d)
+	a.NotError(l.scanApiGroup(d))
 	a.Equal(d.Group, "g1")
+}
+
+func TestLexer_scanApiQuery(t *testing.T) {
+	a := assert.New(t)
+	d := &doc{Queries: []*param{}}
+
+	// 正常情况
+	l := newLexer([]byte("id int user id"), 100, "file.go")
+	a.NotError(l.scanApiQuery(d))
+	q0 := d.Queries[0]
+	a.Equal(q0.Name, "id").
+		Equal(q0.Type, "int").
+		False(q0.Optional).
+		Equal(q0.Description, "user id")
+
+	// 再添加一个参数
+	l = newLexer([]byte("name string user name"), 100, "file.go")
+	a.NotError(l.scanApiQuery(d))
+	q1 := d.Queries[1]
+	a.Equal(q1.Name, "name").
+		Equal(q1.Type, "string").
+		False(q1.Optional).
+		Equal(q1.Description, "user name")
 }
 
 func TestLexer_scanApiExample(t *testing.T) {
@@ -328,19 +351,19 @@ func TestLexer_scanApi(t *testing.T) {
 
 	// 正常情况
 	l := newLexer([]byte("  summary summary\n api description"), 100, "file.go")
-	l.scanApi(d)
+	a.NotError(l.scanApi(d))
 	a.Equal(d.Summary, "summary summary").
 		Equal(d.Description, " api description")
 
 	// 多行description
 	l = newLexer([]byte("  summary summary\n api \ndescription\n@api summary"), 100, "file.go")
-	l.scanApi(d)
+	a.NotError(l.scanApi(d))
 	a.Equal(d.Summary, "summary summary").
 		Equal(d.Description, " api \ndescription\n")
 
 	// 缺少description参数
 	l = newLexer([]byte("summary summary"), 100, "file.go")
-	l.scanApi(d)
+	a.NotError(l.scanApi(d))
 	a.Equal(d.Summary, "summary summary").
 		Equal(d.Description, "")
 
