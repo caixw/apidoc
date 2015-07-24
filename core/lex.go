@@ -186,7 +186,8 @@ LOOP:
 }
 
 func (l *lexer) scanApiURL(d *doc) error {
-	str := l.nextLine()
+	l.skipSpace()
+	str, _ := l.nextWord()
 	if len(str) == 0 {
 		return errors.New("apiURL参数不能为空")
 	}
@@ -196,6 +197,7 @@ func (l *lexer) scanApiURL(d *doc) error {
 }
 
 func (l *lexer) scanApiMethods(d *doc) error {
+	l.skipSpace()
 	str := l.nextLine()
 	if len(str) == 0 {
 		return errors.New("apiMethods缺少参数")
@@ -206,7 +208,8 @@ func (l *lexer) scanApiMethods(d *doc) error {
 }
 
 func (l *lexer) scanApiVersion(d *doc) error {
-	str := l.nextLine()
+	l.skipSpace()
+	str, _ := l.nextWord()
 	if len(str) == 0 {
 		return errors.New("apiVersion缺少参数")
 	}
@@ -216,7 +219,8 @@ func (l *lexer) scanApiVersion(d *doc) error {
 }
 
 func (l *lexer) scanApiGroup(d *doc) error {
-	str := l.nextLine()
+	l.skipSpace()
+	str, _ := l.nextWord()
 	if len(str) == 0 {
 		return errors.New("apiGroup缺少参数")
 	}
@@ -332,7 +336,6 @@ LOOP:
 	return nil
 }
 
-// 将@apiExample之后的内容转换成example实例。
 func (l *lexer) scanApiExample() (*example, error) {
 	e := &example{}
 	rs := []rune{}
@@ -362,39 +365,63 @@ func (l *lexer) scanApiExample() (*example, error) {
 func (l *lexer) scanApiParam() (*param, error) {
 	p := &param{}
 	var eol bool
+
+LOOP:
 	for {
+		l.skipSpace()
 		switch {
 		case len(p.Name) == 0:
 			p.Name, eol = l.nextWord()
 		case len(p.Type) == 0:
-			p.Name, eol = l.nextWord()
-		case !p.Optional && l.match("optional"):
-			p.Optional = true
+			p.Type, eol = l.nextWord()
+		case !p.Optional:
+			var opt string
+			opt, eol = l.nextWord()
+			if strings.ToLower(opt) == "optional" {
+				p.Optional = true
+				continue LOOP
+			}
+			l.backup()
+			fallthrough
 		default:
 			p.Description = l.nextLine()
 			eol = true
 		}
 
 		if eol {
-			return p, nil
+			break
 		}
+	} // end for
+
+	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Description) == 0 {
+		return nil, errors.New("@apiParam参数不足")
 	}
+
+	return p, nil
 }
 
 func (l *lexer) scanApi(d *doc) error {
+	l.skipSpace()
 	str := l.nextLine()
 	if len(str) == 0 {
 		return errors.New("api第一个参数不能为空")
 	}
 	d.Summary = str
 
-	str = l.nextLine()
+	rs := []rune{}
+	for {
+		r := l.next()
+		if r == eof {
+			break
+		}
 
-	// 有@api字符串，应该是另一个语句，回退最后次nextLine操作。
-	if strings.Index(str, "@api") >= 0 {
-		l.backup()
-		return nil
+		rs = append(rs, r)
+
+		if l.match("@api") {
+			l.backup()
+			break
+		}
 	}
-	d.Description = str
+	d.Description = string(rs)
 	return nil
 }

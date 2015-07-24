@@ -10,7 +10,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestLex_lineNumber(t *testing.T) {
+func TestLexer_lineNumber(t *testing.T) {
 	a := assert.New(t)
 	l := newLexer([]byte("\n\n"), 100, "file.go")
 	a.NotNil(l)
@@ -27,7 +27,7 @@ func TestLex_lineNumber(t *testing.T) {
 	a.Equal(101, l.lineNumber())
 }
 
-func TestLex_next(t *testing.T) {
+func TestLexer_next(t *testing.T) {
 	a := assert.New(t)
 	l := newLexer([]byte("ab\ncd\n"), 100, "file.go")
 	a.NotNil(l)
@@ -53,7 +53,7 @@ func TestLex_next(t *testing.T) {
 	a.Equal(eof, l.next())
 }
 
-func TestLex_nextLine(t *testing.T) {
+func TestLexer_nextLine(t *testing.T) {
 	a := assert.New(t)
 	l := newLexer([]byte("line1\n line2 \n"), 100, "file.go")
 	a.NotNil(l)
@@ -71,7 +71,7 @@ func TestLex_nextLine(t *testing.T) {
 	a.Equal("", l.nextLine()) // 没有更多内容了
 }
 
-func TestLex_nextWord(t *testing.T) {
+func TestLexer_nextWord(t *testing.T) {
 	a := assert.New(t)
 	l := newLexer([]byte("word1 word2\nword3"), 100, "file.go")
 	a.NotNil(l)
@@ -115,7 +115,7 @@ func TestLex_nextWord(t *testing.T) {
 	a.True(eol).Equal(w, "")
 }
 
-func TestLex_match(t *testing.T) {
+func TestLexer_match(t *testing.T) {
 	a := assert.New(t)
 	l := newLexer([]byte("line1\n line2 \n"), 100, "file.go")
 	a.NotNil(l)
@@ -137,12 +137,14 @@ func TestLex_match(t *testing.T) {
 	a.False(l.match("ne2\n\n"))
 }
 
-func TestLex_skipSpace(t *testing.T) {
+func TestLexer_skipSpace(t *testing.T) {
 	a := assert.New(t)
 	l := newLexer([]byte("  ln  1  \n 2 \n"), 100, "file.go")
 	a.NotNil(l)
 
-	l.skipSpace()
+	l.skipSpace() // 跳转起始的2个空格
+	l.skipSpace() // 不会跳过ln字符
+	l.skipSpace() // 不会跳过ln字符
 	a.Equal('l', l.next())
 	l.next() // n
 
@@ -168,7 +170,83 @@ func TestLex_skipSpace(t *testing.T) {
 	a.Equal(eof, l.next())
 }
 
-func TestLex_scanApiExample(t *testing.T) {
+func TestLexer_scanApiURL(t *testing.T) {
+	a := assert.New(t)
+	d := &doc{}
+
+	// 正常情况
+	l := newLexer([]byte("  api/login"), 100, "file.go")
+	l.scanApiURL(d)
+	a.Equal(d.URL, "api/login")
+
+	// 缺少参数
+	l = newLexer([]byte(" "), 100, "file.go")
+	a.Error(l.scanApiURL(d))
+
+	// 多个参数
+	l = newLexer([]byte("  api/login abctest/adf"), 100, "file.go")
+	l.scanApiURL(d)
+	a.Equal(d.URL, "api/login")
+}
+
+func TestLexer_scanApiMethods(t *testing.T) {
+	a := assert.New(t)
+	d := &doc{}
+
+	// 正常情况
+	l := newLexer([]byte("  get"), 100, "file.go")
+	l.scanApiMethods(d)
+	a.Equal(d.Methods, "get")
+
+	// 缺少参数
+	l = newLexer([]byte(" "), 100, "file.go")
+	a.Error(l.scanApiMethods(d))
+
+	// 多个参数
+	l = newLexer([]byte("  get post"), 100, "file.go")
+	l.scanApiMethods(d)
+	a.Equal(d.Methods, "get post")
+}
+
+func TestLexer_scanApiVersion(t *testing.T) {
+	a := assert.New(t)
+	d := &doc{}
+
+	// 正常情况
+	l := newLexer([]byte("  0.1.1"), 100, "file.go")
+	l.scanApiVersion(d)
+	a.Equal(d.Version, "0.1.1")
+
+	// 缺少参数
+	l = newLexer([]byte(" "), 100, "file.go")
+	a.Error(l.scanApiVersion(d))
+
+	// 多个参数
+	l = newLexer([]byte("  0.1.1  abcd"), 100, "file.go")
+	l.scanApiVersion(d)
+	a.Equal(d.Version, "0.1.1")
+}
+
+func TestLexer_scanApiGroup(t *testing.T) {
+	a := assert.New(t)
+	d := &doc{}
+
+	// 正常情况
+	l := newLexer([]byte("  g1"), 100, "file.go")
+	l.scanApiGroup(d)
+	a.Equal(d.Group, "g1")
+
+	// 缺少参数
+	l = newLexer([]byte(" "), 100, "file.go")
+	a.Error(l.scanApiGroup(d))
+
+	// 多个参数
+	l = newLexer([]byte("  g1  abcd"), 100, "file.go")
+	l.scanApiGroup(d)
+	a.Equal(d.Group, "g1")
+}
+
+func TestLexer_scanApiExample(t *testing.T) {
 	a := assert.New(t)
 
 	// 正常测试
@@ -201,4 +279,72 @@ func TestLex_scanApiExample(t *testing.T) {
 		Equal(e.Type, "xml").
 		Equal(len(e.Code), len(matchCode)).
 		Equal(e.Code, matchCode)
+}
+
+func TestLexer_scanApiParam(t *testing.T) {
+	a := assert.New(t)
+
+	// 正常语法测试
+	l := newLexer([]byte("id int optional 用户 id号\n"), 100, "file.go")
+	p, err := l.scanApiParam()
+	a.NotError(err).NotNil(p)
+	a.Equal(p.Name, "id").
+		Equal(p.Type, "int").
+		True(p.Optional).
+		Equal(p.Description, "用户 id号")
+
+	// 大小写混合的optional
+	l = newLexer([]byte("id int OptionAl 用户 id号\n"), 100, "file.go")
+	p, err = l.scanApiParam()
+	a.NotError(err).NotNil(p)
+	a.Equal(p.Name, "id").
+		Equal(p.Type, "int").
+		True(p.Optional).
+		Equal(p.Description, "用户 id号")
+
+	// 缺少optional参数
+	l = newLexer([]byte("id int optional1 用户 id号\n"), 100, "file.go")
+	p, err = l.scanApiParam()
+	a.NotError(err).NotNil(p)
+	a.Equal(p.Name, "id").
+		Equal(p.Type, "int").
+		False(p.Optional).
+		Equal(p.Description, "optional1 用户 id号")
+
+	// 缺少参数
+	l = newLexer([]byte("id int \n"), 100, "file.go")
+	p, err = l.scanApiParam()
+	a.Error(err).Nil(p)
+
+	// 缺少参数
+	l = newLexer([]byte("id  \n"), 100, "file.go")
+	p, err = l.scanApiParam()
+	a.Error(err).Nil(p)
+}
+
+func TestLexer_scanApi(t *testing.T) {
+	a := assert.New(t)
+	d := &doc{}
+
+	// 正常情况
+	l := newLexer([]byte("  summary summary\n api description"), 100, "file.go")
+	l.scanApi(d)
+	a.Equal(d.Summary, "summary summary").
+		Equal(d.Description, " api description")
+
+	// 多行description
+	l = newLexer([]byte("  summary summary\n api \ndescription\n@api summary"), 100, "file.go")
+	l.scanApi(d)
+	a.Equal(d.Summary, "summary summary").
+		Equal(d.Description, " api \ndescription\n")
+
+	// 缺少description参数
+	l = newLexer([]byte("summary summary"), 100, "file.go")
+	l.scanApi(d)
+	a.Equal(d.Summary, "summary summary").
+		Equal(d.Description, "")
+
+	// 没有任何参数
+	l = newLexer([]byte("  "), 100, "file.go")
+	a.Error(l.scanApi(d))
 }
