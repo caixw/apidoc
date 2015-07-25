@@ -298,24 +298,32 @@ func (l *lexer) scanApiStatus(d *doc) error {
 	}
 
 	var eol bool
+	l.skipSpace()
 	status.Code, eol = l.nextWord()
-	if eol {
+	if len(status.Code) == 0 || eol {
 		return errors.New("apiStatus缺少必要的参数")
 	}
+
+	l.skipSpace()
 	status.Type, eol = l.nextWord()
-	if eol {
+	if len(status.Type) == 0 { // 碰到行尾是正常的
 		return errors.New("apiStatus缺少必要的参数")
 	}
+
+	l.skipSpace()
 	status.Summary = l.nextLine()
 
 LOOP:
 	for {
 		switch {
 		case l.match("@apiHeader"):
+			l.skipSpace()
 			key, eol := l.nextWord()
 			if eol {
 				return errors.New("apiHeader缺少value")
 			}
+
+			l.skipSpace()
 			val := l.nextLine()
 			if len(val) == 0 {
 				return errors.New("apiHeader缺少value")
@@ -333,7 +341,11 @@ LOOP:
 				return err
 			}
 			status.Examples = append(status.Examples, e)
+		case l.match("@api"): // 其它api*，退出。
+			l.backup()
+			break LOOP
 		default:
+			l.skipSpace()
 			if eof == l.next() { // 去掉无用的字符。
 				break LOOP
 			}
