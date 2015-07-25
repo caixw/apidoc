@@ -371,3 +371,60 @@ func TestLexer_scanApi(t *testing.T) {
 	l = newLexer([]byte("  "), 100, "file.go")
 	a.Error(l.scanApi(d))
 }
+
+func TestLexer_scanApiRequest(t *testing.T) {
+	a := assert.New(t)
+	d := &doc{}
+
+	code := ` xml
+@apiHeader h1 v1
+@apiHeader h2 v2
+@apiParam p1 int optional p1 summary
+@apiParam p2 int p2 summary
+@apiExample json
+{
+    p1:v1,
+    p2:v2
+}
+@apiExample xml
+<root>
+    <p1>v1</p1>
+    <p2>v2</p2>
+</root>
+`
+	l := newLexer([]byte(code), 100, "file.go")
+	a.NotError(l.scanApiRequest(d))
+	a.NotNil(d.Request)
+	r := d.Request
+	a.Equal(2, len(r.Headers)).
+		Equal(r.Headers["h1"], "v1").
+		Equal(r.Headers["h2"], "v2").
+		Equal(r.Params[0].Name, "p1").
+		Equal(r.Params[1].Description, "p2 summary").
+		Equal(r.Examples[0].Type, "json").
+		Equal(r.Examples[1].Type, "xml")
+
+	code = ` xml
+@apiHeader h1 v1
+@apiParam p1 int p1 summary
+
+@apiExample xml
+<root>
+    <p1>v1</p1>
+</root>
+@apiStatus
+`
+	matchCode := `
+<root>
+    <p1>v1</p1>
+</root>`
+	l = newLexer([]byte(code), 100, "file.go")
+	a.NotError(l.scanApiRequest(d))
+	a.NotNil(d.Request)
+	r = d.Request
+	a.Equal(1, len(r.Headers)).
+		Equal(r.Headers["h1"], "v1").
+		Equal(r.Params[0].Name, "p1").
+		Equal(r.Examples[0].Type, "xml").
+		Equal(r.Examples[0].Code, matchCode)
+}

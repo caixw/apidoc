@@ -251,10 +251,13 @@ LOOP:
 	for {
 		switch {
 		case l.match("@apiHeader"):
+			l.skipSpace()
 			key, eol := l.nextWord()
 			if eol {
-				return errors.New("apiHeader缺少value")
+				return errors.New("apiHeader缺少key")
 			}
+
+			l.skipSpace()
 			val := l.nextLine()
 			if len(val) == 0 {
 				return errors.New("apiHeader缺少value")
@@ -272,12 +275,16 @@ LOOP:
 				return err
 			}
 			r.Examples = append(r.Examples, e)
+		case l.match("@api"): // 其它api*，退出。
+			l.backup()
+			break LOOP
 		default:
+			l.skipSpace()
 			if eof == l.next() { // 去掉无用的字符。
 				break LOOP
 			}
-		}
-	}
+		} // end switch
+	} // end for
 
 	d.Request = r
 	return nil
@@ -333,6 +340,7 @@ LOOP:
 		}
 	}
 
+	d.Status = append(d.Status, status)
 	return nil
 }
 
