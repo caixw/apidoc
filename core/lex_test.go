@@ -495,3 +495,64 @@ func TestLexer_scanApiStatus(t *testing.T) {
 	l = newLexer([]byte(code), 100, "file.go")
 	a.Error(l.scanApiStatus(d))
 }
+
+func TestLexer_scan(t *testing.T) {
+	a := assert.New(t)
+
+	code := `
+@api api summary
+api description 1
+api description 2
+@apiURL /baseurl/api/login
+@apiMethods get/post
+@apiVersion 1.0
+@apiGroup users
+@apiQuery q1 int q1 summary
+@apiQuery q2 int q2 summary
+@apiParam p1 int p1 summary
+@apiParam p2 int p2 summary
+@apiStatus 200 json
+@apiHeader h1 v1
+@apiHeader h2 v2
+@apiParam p1 int optional p1 summary
+@apiParam p2 int p2 summary
+@apiExample json
+{
+    p1:v1,
+    p2:v2
+}
+@apiExample xml
+<root>
+    <p1>v1</p1>
+    <p2>v2</p2>
+</root>
+`
+	l := newLexer([]byte(code), 100, "file.go")
+	d, err := l.scan()
+	a.NotError(err).NotNil(d)
+
+	a.Equal(d.Version, "1.0").
+		Equal(d.URL, "/baseurl/api/login").
+		Equal(d.Group, "users").
+		Equal(d.Summary, "api summary").
+		Equal(d.Description, "api description 1\napi description 2\n")
+
+	a.Equal(2, len(d.Queries)).Equal(2, len(d.Params)).Equal(1, len(d.Status))
+
+	q := d.Queries
+	a.Equal(q[0].Name, "q1").Equal(q[0].Description, "q1 summary")
+
+	p := d.Params
+	a.Equal(p[0].Name, "p1").Equal(p[0].Description, "p1 summary")
+
+	s := d.Status[0]
+	a.Equal(s.Code, "200").
+		Equal(s.Type, "json").
+		Equal(s.Summary, "").
+		Equal(s.Headers["h1"], "v1").
+		Equal(s.Headers["h2"], "v2").
+		Equal(s.Params[0].Name, "p1").
+		Equal(s.Params[1].Description, "p2 summary").
+		Equal(s.Examples[0].Type, "json").
+		Equal(s.Examples[1].Type, "xml")
+}

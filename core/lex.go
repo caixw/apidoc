@@ -149,7 +149,11 @@ func (l *lexer) skipSpace() {
 
 // 扫描文档，生成一个doc实例。
 func (l *lexer) scan() (*doc, error) {
-	d := &doc{}
+	d := &doc{
+		Queries: []*param{},
+		Params:  []*param{},
+		Status:  []*status{},
+	}
 	var err error
 
 LOOP:
@@ -165,6 +169,12 @@ LOOP:
 			err = l.scanApiGroup(d)
 		case l.match("@apiQuery"):
 			err = l.scanApiQuery(d)
+		case l.match("@apiParam"):
+			p, err := l.scanApiParam()
+			if err != nil {
+				return nil, err
+			}
+			d.Params = append(d.Params, p)
 		case l.match("@apiRequest"):
 			err = l.scanApiRequest(d)
 		case l.match("@apiStatus"):
