@@ -4,8 +4,13 @@
 
 package core
 
+import (
+	"time"
+)
+
 type Tree struct {
-	docs map[string][]*doc // 按apiGroup分组的文档结构。
+	Docs map[string][]*doc `json:"docs"` // 按apiGroup分组的文档结构。
+	Date time.Time         `json:"date"` // 编译时间。
 }
 
 // 表示一个api文档。
@@ -55,6 +60,7 @@ type example struct {
 
 func NewTree() *Tree {
 	return &Tree{
-		docs: map[string][]*doc{},
+		Docs: map[string][]*doc{},
+		Date: time.Now(),
 	}
 }

@@ -1,0 +1,32 @@
+{{define "main"}}<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="generator" content="https://github.com/caixw/apidoc">
+        <title>apidoc</title>
+        <link rel="stylesheet" href="./style.css" />
+    </head>
+    <body>
+        <header>APIDOC</header>
+
+        <div class="main">
+            {{range $key, $docs:=.Docs}}
+            <div>
+                <h2>{{$key}}</h2>
+                {{range $doc:=$docs}}
+                <section>
+                    {{template "doc" .}}
+                </section>
+                {{end}}
+            </div>
+            {{end}}
+        </div>
+
+        <footer>
+            <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>于<time id="date">{{.Date}}</time>编译完成。</p>
+        </footer>
+    </body>
+</html>
+{{end}}

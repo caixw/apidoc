@@ -375,17 +375,17 @@ func (l *lexer) scanApiExample() (*example, error) {
 
 	l.skipSpace()
 	for {
+		if l.match("@api") {
+			l.backup()
+			break
+		}
+
 		r := l.next()
 		if r == eof {
 			break
 		}
 
 		rs = append(rs, r)
-
-		if l.match("@api") {
-			l.backup()
-			break
-		}
 	}
 
 	e.Code = strings.TrimRightFunc(string(rs), unicode.IsSpace)
@@ -430,6 +430,7 @@ LOOP:
 	return p, nil
 }
 
+// 若存在description参数，会原样输出，不会像其它一样去掉前导空格。
 func (l *lexer) scanApi(d *doc) error {
 	l.skipSpace()
 	str := l.nextLine()
@@ -440,18 +441,35 @@ func (l *lexer) scanApi(d *doc) error {
 
 	rs := []rune{}
 	for {
+		if l.match("@api") {
+			l.backup()
+			break
+		}
+
 		r := l.next()
 		if r == eof {
 			break
 		}
 
 		rs = append(rs, r)
-
-		if l.match("@api") {
-			l.backup()
-			break
-		}
 	}
 	d.Description = string(rs)
+	return nil
+}
+
+// 扫描data，将其内容分解成doc实例，并写入到tree中
+func (tree *Tree) scan(data []byte, line int, file string) error {
+	l := newLexer(data, line, file)
+	d, err := l.scan()
+	if err != nil {
+		return err
+	}
+
+	g, found := tree.Docs[d.Group]
+	if !found {
+		g = make([]*doc, 0, 1)
+	}
+
+	tree.Docs[d.Group] = append(g, d)
 	return nil
 }

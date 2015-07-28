@@ -31,3 +31,7 @@ _testmain.go
 
 # 临时编译文件
 apidoc
+
+# project
+core/static/data.js
+core/testdir

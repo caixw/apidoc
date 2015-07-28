@@ -206,6 +206,11 @@ func TestLexer_scanApiMethods(t *testing.T) {
 	l = newLexer([]byte("  get post"), 100, "file.go")
 	a.NotError(l.scanApiMethods(d))
 	a.Equal(d.Methods, "get post")
+
+	// 多个参数
+	l = newLexer([]byte("  get post\n@api"), 100, "file.go")
+	a.NotError(l.scanApiMethods(d))
+	a.Equal(d.Methods, "get post")
 }
 
 func TestLexer_scanApiVersion(t *testing.T) {
@@ -363,6 +368,12 @@ func TestLexer_scanApi(t *testing.T) {
 
 	// 缺少description参数
 	l = newLexer([]byte("summary summary"), 100, "file.go")
+	a.NotError(l.scanApi(d))
+	a.Equal(d.Summary, "summary summary").
+		Equal(d.Description, "")
+
+	// 缺少description参数
+	l = newLexer([]byte("summary summary\n@apiURL"), 100, "file.go")
 	a.NotError(l.scanApi(d))
 	a.Equal(d.Summary, "summary summary").
 		Equal(d.Description, "")
