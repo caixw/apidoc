@@ -10,7 +10,7 @@ import (
 
 type Tree struct {
 	Docs map[string][]*doc // 按apiGroup分组的文档结构。
-	Date time.Time         // 编译时间。
+	Date string            // 编译时间。
 }
 
 // 表示一个api文档。
@@ -61,6 +61,6 @@ type example struct {
 func NewTree() *Tree {
 	return &Tree{
 		Docs: map[string][]*doc{},
-		Date: time.Now(),
+		Date: time.Now().Format(time.RFC3339),
 	}
 }
