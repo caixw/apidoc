@@ -148,6 +148,7 @@ func (l *lexer) skipSpace() {
 }
 
 // 扫描文档，生成一个doc实例。
+// 若代码块没有api文档定义，则会返回空值。
 func (l *lexer) scan() (*doc, error) {
 	d := &doc{
 		Queries: []*param{},
@@ -190,6 +191,11 @@ LOOP:
 		if err != nil {
 			return nil, err
 		}
+	} // end for
+
+	// doc的必要数据没有被初始化，说明这段代码不是api文档格式。
+	if len(d.URL) == 0 || len(d.Methods) == 0 {
+		return nil, nil
 	}
 
 	return d, nil
@@ -461,7 +467,7 @@ func (l *lexer) scanApi(d *doc) error {
 func (tree *Tree) Scan(data []byte, line int, file string) error {
 	l := newLexer(data, line, file)
 	d, err := l.scan()
-	if err != nil {
+	if err != nil || d == nil {
 		return err
 	}
 

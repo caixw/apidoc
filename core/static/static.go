@@ -100,10 +100,12 @@ var Templates=map[string]string{
             {{range $key, $docs:=.Docs}}
             <div>
                 <h2>{{$key}}</h2>
-                {{range $doc:=$docs}}
-                <section>
-                    {{template "doc" .}}
-                </section>
+                {{range $docs}}
+                    {{if .}}
+                    <section>
+                        {{template "doc" .}}
+                    </section>
+                    {{end}}
                 {{end}}
             </div>
             {{end}}
