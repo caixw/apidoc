@@ -45,6 +45,21 @@ func TestScanner_match(t *testing.T) {
 	a.False(s.match("ab"))
 }
 
+func TestScanner_skipSpace(t *testing.T) {
+	a := assert.New(t)
+
+	s := &scanner{
+		data: []byte("  ab\n  cd"),
+	}
+
+	s.skipSpace()
+	a.Equal(s.next(), 'a')
+
+	s.next()
+	s.skipSpace()
+	a.Equal(s.next(), 'c')
+}
+
 func TestScanner_lineNumber(t *testing.T) {
 	a := assert.New(t)
 
@@ -87,9 +102,6 @@ func TestScan(t *testing.T) {
 	php2, found := tree.Docs["php2"]
 	a.True(found).NotNil(php2)
 
-	for _, v := range php2 {
-		println(v.URL)
-	}
 	a.Equal(php2[0].Methods, "get").
 		Equal(php2[0].URL, "/api/php2/get")
 }
