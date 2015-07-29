@@ -29,8 +29,7 @@ int x = 5;
 // line3
 `
 
-var comment2 = []byte(`
- line1
+var comment2 = []byte(` line1
  line2
  line3
 `)

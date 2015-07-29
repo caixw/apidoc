@@ -15,20 +15,22 @@ LOOP:
 				if s.match("*/") {
 					// TODO 两层转换，是否可以去掉
 					return []byte(string(block)), nil
-					continue LOOP
 				}
 				block = append(block, s.next())
 			} // end for
 		case s.match("//"):
+		LOOP2:
 			for {
 				r := s.next()
 				block = append(block, r)
-				if r == '\n' && s.match("//") {
-					continue
+				if r == '\n' {
+					if s.match("//") {
+						continue
+					}
+					break LOOP2
 				}
-
-				return []byte(string(block)), nil
 			} // end for
+			return []byte(string(block)), nil
 		default:
 			if s.next() == eof {
 				break LOOP
