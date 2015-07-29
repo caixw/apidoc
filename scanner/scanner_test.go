@@ -58,6 +58,42 @@ func TestScanner_lineNumber(t *testing.T) {
 	a.Equal(1, s.lineNumber())
 }
 
+func TestScanner_scan(t *testing.T) {
+	a := assert.New(t)
+	s, err := newScanner(cstyle)
+	a.NotError(err).NotNil(s)
+
+	a.NotError(s.scan("./testcode/php1.php"))
+
+	php1, found := s.tree.Docs["php1"]
+	a.True(found).NotNil(php1)
+
+	a.Equal(php1[0].Methods, "get").
+		Equal(php1[0].URL, "/api/php1/get")
+}
+
+func TestScan(t *testing.T) {
+	a := assert.New(t)
+
+	tree, err := Scan("./testcode", true, "", nil)
+	a.NotError(err).NotNil(tree)
+
+	php1, found := tree.Docs["php1"]
+	a.True(found).NotNil(php1)
+
+	a.Equal(php1[0].Methods, "get").
+		Equal(php1[0].URL, "/api/php1/get")
+
+	php2, found := tree.Docs["php2"]
+	a.True(found).NotNil(php2)
+
+	for _, v := range php2 {
+		println(v.URL)
+	}
+	a.Equal(php2[0].Methods, "get").
+		Equal(php2[0].URL, "/api/php2/get")
+}
+
 func TestDetectLangType(t *testing.T) {
 	a := assert.New(t)
 

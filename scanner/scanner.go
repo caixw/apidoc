@@ -103,7 +103,7 @@ func (s *scanner) scan(path string) error {
 		if err != nil {
 			return err
 		}
-	}
+	} // end for
 
 	return nil
 }
