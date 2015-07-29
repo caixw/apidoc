@@ -458,7 +458,7 @@ func (l *lexer) scanApi(d *doc) error {
 }
 
 // 扫描data，将其内容分解成doc实例，并写入到tree中
-func (tree *Tree) scan(data []byte, line int, file string) error {
+func (tree *Tree) Scan(data []byte, line int, file string) error {
 	l := newLexer(data, line, file)
 	d, err := l.scan()
 	if err != nil {
