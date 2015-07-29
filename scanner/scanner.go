@@ -6,7 +6,7 @@ package scanner
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -113,22 +113,29 @@ func (s *scanner) scan(path string) error {
 // langName 语言名称，不区分大小写，所有代码都将按该语言的语法进行分析；
 // exts 可分析的文件扩展名，扩展名必须以点号开头，若不指定，则使用默认的扩展名。
 func Scan(dir string, recursive bool, langName string, exts []string) (*core.Tree, error) {
-	var err error
 	if len(langName) == 0 {
+		var err error
 		if len(exts) == 0 {
 			langName, err = detectDirLangType(dir)
 		} else {
-			langName = detectLangType(exts)
+			langName, err = detectLangType(exts)
+		}
+
+		if err != nil {
+			return nil, err
 		}
 	}
 
 	l, found := langs[strings.ToLower(langName)]
 	if !found {
-		return nil, errors.New("不支持的语言")
+		return nil, fmt.Errorf("不支持的语言:%v", langName)
 	}
 	if len(exts) == 0 {
 		exts = l.exts
 	}
+
+	fmt.Println("scanner:", langName)
+	fmt.Println("exts:", exts)
 
 	s, err := newScanner(l.scan)
 	if err != nil {
@@ -151,13 +158,13 @@ func Scan(dir string, recursive bool, langName string, exts []string) (*core.Tre
 
 // 从扩展名检测其所属的语言名称。
 // 以第一个匹配extsIndex的文件扩展名为准。
-func detectLangType(exts []string) string {
+func detectLangType(exts []string) (string, error) {
 	for _, ext := range exts {
 		if lang, found := extsIndex[ext]; found {
-			return lang
+			return lang, nil
 		}
 	}
-	return ""
+	return "", fmt.Errorf("无法找到与这些扩展名[%v]相匹配的代码扫描函数", exts)
 }
 
 // 检测目录下的文件类型。
@@ -181,6 +188,10 @@ func detectDirLangType(dir string) (string, error) {
 
 	if err := filepath.Walk(dir, walk); err != nil {
 		return "", err
+	}
+
+	if len(lang) == 0 {
+		return lang, fmt.Errorf("无法检测到[%v]目录下的文件类型", dir)
 	}
 
 	return lang, nil

@@ -83,7 +83,10 @@ func main() {
 		return
 	}
 
-	exts := strings.Split(ext, ",")
+	var exts []string
+	if len(ext) > 0 {
+		exts = strings.Split(strings.TrimSpace(ext), ",")
+	}
 
 	tree, err := scanner.Scan(flag.Arg(0), r, t, exts)
 	if err != nil {

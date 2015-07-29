@@ -61,11 +61,11 @@ func TestScanner_lineNumber(t *testing.T) {
 func TestDetectLangType(t *testing.T) {
 	a := assert.New(t)
 
-	exts := []string{".abc1", ".abc1", ".abc1"}
-	a.Equal(0, len(detectLangType(exts)))
+	l, err := detectLangType([]string{".abc1", ".abc1", ".abc1"})
+	a.Error(err).Equal(0, len(l))
 
-	exts = []string{".js", ".php", ".abc1"}
-	a.Equal("js", detectLangType(exts))
+	l, err = detectLangType([]string{".js", ".php", ".abc1"})
+	a.NotError(err).Equal("js", l)
 }
 
 func TestDetectDirLangType(t *testing.T) {
@@ -73,6 +73,9 @@ func TestDetectDirLangType(t *testing.T) {
 
 	l, err := detectDirLangType("./")
 	a.NotError(err).Equal(l, "go")
+
+	l, err = detectDirLangType("./testdir")
+	a.Error(err).Equal(0, len(l))
 }
 
 func TestRecursivePath(t *testing.T) {
