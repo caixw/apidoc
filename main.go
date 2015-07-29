@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// apidoc从代码注释中提取并生成api的文档。
 package main
 
 import (
@@ -14,9 +15,9 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.1.0.150728"
+const version = "0.1.0.150729"
 
-var usage = `apidoc用于产生api的文档。
+var usage = `apidoc从代码注释中提取并生成api的文档。
 
 命令行语法:
  apidoc [options] src doc
@@ -26,13 +27,13 @@ options:
  -v     显示apidoc和go程序的版本信息；
  -langs 显示所有支持的语言类型。
  -r     是否搜索子目录，默认为true；
- -t     源文件类型，可以是go,cpp,c,js,php；
- -ext   需要分析的扩展名，若不指定，则只搜索与t参数指定的类型。
+ -t     目标文件类型，支持的类型可以通过-langs来查看；
+ -ext   需要分析的扩展名，若不指定，则会根据-t参数自动生成相应的扩展名。
 
 src:
  源文件所在的目录。
 doc:
- 产生的文档所在的目录。
+ 产生的文档保存的目录。
 
 
 源代码采用MIT开源许可证，并发布于github:https://github.com/caixw/apidoc
