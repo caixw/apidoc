@@ -300,7 +300,6 @@ LOOP:
 			l.backup()
 			break LOOP
 		default:
-			l.skipSpace()
 			if eof == l.next() { // 去掉无用的字符。
 				break LOOP
 			}
@@ -366,7 +365,6 @@ LOOP:
 			l.backup()
 			break LOOP
 		default:
-			l.skipSpace()
 			if eof == l.next() { // 去掉无用的字符。
 				break LOOP
 			}

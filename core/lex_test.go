@@ -388,8 +388,8 @@ func TestLexer_scanApiRequest(t *testing.T) {
 	d := &doc{}
 
 	code := ` xml
-@apiHeader h1 v1
-@apiHeader h2 v2
+ @apiHeader h1 v1
+ @apiHeader h2 v2
 @apiParam p1 int optional p1 summary
 @apiParam p2 int p2 summary
 @apiExample json
@@ -475,8 +475,8 @@ func TestLexer_scanApiStatus(t *testing.T) {
 		Equal(s.Examples[1].Type, "xml")
 
 	code = ` 200 xml  status summary
-@apiHeader h1 v1
-@apiParam p1 int p1 summary
+ @apiHeader h1 v1
+ @apiParam p1 int p1 summary
 
 @apiExample xml
 <root>
