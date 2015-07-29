@@ -22,13 +22,31 @@ var comment1 = []byte(` line1
 line2
 line3`)
 
+var code2 = `
+int x = 5;
+// line1
+// line2
+// line3
+`
+
+var comment2 = []byte(`
+ line1
+ line2
+ line3
+`)
+
 func TestCStyle(t *testing.T) {
 	a := assert.New(t)
 
-	s := &scanner{
-		data: []byte(code1),
+	fn := func(code string, comment []byte) {
+		s := &scanner{
+			data: []byte(code),
+		}
+		block, err := cstyle(s)
+		a.NotError(err).NotNil(block)
+		a.Equal(block, comment)
 	}
-	block, err := cstyle(s)
-	a.NotError(err).NotNil(block)
-	a.Equal(block, comment1)
+
+	fn(code1, comment1)
+	fn(code2, comment2)
 }
