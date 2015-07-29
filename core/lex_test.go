@@ -537,6 +537,9 @@ api description 2
     <p1>v1</p1>
     <p2>v2</p2>
 </root>
+@apiStatus 201 json
+@apiHeader h1 v1
+@apiHeader h2 v2
 `
 	l := newLexer([]byte(code), 100, "file.go")
 	d, err := l.scan()
@@ -548,7 +551,7 @@ api description 2
 		Equal(d.Summary, "api summary").
 		Equal(d.Description, "api description 1\napi description 2\n")
 
-	a.Equal(2, len(d.Queries)).Equal(2, len(d.Params)).Equal(1, len(d.Status))
+	a.Equal(2, len(d.Queries)).Equal(2, len(d.Params)).Equal(2, len(d.Status))
 
 	q := d.Queries
 	a.Equal(q[0].Name, "q1").Equal(q[0].Description, "q1 summary")
@@ -566,6 +569,8 @@ api description 2
 		Equal(s.Params[1].Description, "p2 summary").
 		Equal(s.Examples[0].Type, "json").
 		Equal(s.Examples[1].Type, "xml")
+	s = d.Status[1]
+	a.Equal(s.Code, "201")
 
 	// 不包含api定义的代码块，将返回一个nil,nil
 	code = `

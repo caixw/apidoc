@@ -150,11 +150,7 @@ func (l *lexer) skipSpace() {
 // 扫描文档，生成一个doc实例。
 // 若代码块没有api文档定义，则会返回空值。
 func (l *lexer) scan() (*doc, error) {
-	d := &doc{
-		Queries: []*param{},
-		Params:  []*param{},
-		Status:  []*status{},
-	}
+	d := &doc{}
 	var err error
 
 LOOP:
@@ -169,8 +165,14 @@ LOOP:
 		case l.match("@apiGroup"):
 			err = l.scanApiGroup(d)
 		case l.match("@apiQuery"):
+			if d.Queries == nil {
+				d.Queries = make([]*param, 0, 1)
+			}
 			err = l.scanApiQuery(d)
 		case l.match("@apiParam"):
+			if d.Params == nil {
+				d.Params = make([]*param, 0, 1)
+			}
 			p, err := l.scanApiParam()
 			if err != nil {
 				return nil, err
@@ -179,6 +181,9 @@ LOOP:
 		case l.match("@apiRequest"):
 			err = l.scanApiRequest(d)
 		case l.match("@apiStatus"):
+			if d.Status == nil {
+				d.Status = make([]*status, 0, 1)
+			}
 			err = l.scanApiStatus(d)
 		case l.match("@api"): // 放最后
 			err = l.scanApi(d)
