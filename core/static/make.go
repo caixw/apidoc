@@ -24,6 +24,7 @@ const warning = "// 该文件由make.go自动生成，请勿手动修改！\n\n"
 // 指定所有需要序列化的文件名。
 var files = []string{
 	"./style.css",
+	"./jquery-2.1.4.min.js",
 }
 
 var templates = []string{
