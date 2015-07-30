@@ -22,17 +22,65 @@ a{
 
 header{
     color:#777;
-    background-color:white;
-    border-bottom:1px solid #eee;
-    padding:3em 1em 0.3em 1em;
-    margin:0em 2em;
+    background-color:#fafafa;
+    border:1px solid #eee;
+    padding:3em 2.3em 0.5em 2.3em;
+    left:0;
+    right:0;
+    top:0;
+    position:fixed;
+
 }
 
+header .title{
+    font-size:2em;
+}
+
+header .filter{
+    margin-top:0.8em;
+}
+
+header label{
+    margin-left:1em;
+}
 
 /*=============== main ================*/
 
 .main{
-    padding:1em 3em;
+    padding:0em 2em;
+    margin-top:8em;
+}
+
+.main section{
+    padding:1em;
+    margin:1em 0em;
+    border:1px solid #eee;
+}
+
+.main .get:hover{
+    border:1px solid rgba(0,255,0,0.5);
+}
+
+.main .delete:hover{
+    border:1px solid rgba(255,0,0,0.5);
+}
+
+.main .put:hover,.main .patch:hover{
+    border:1px solid rgba(193,174,49,0.5);
+}
+
+.main .post:hover{
+    border:1px solid rgba(240,114,11,0.5);
+}
+
+.main h3{
+    margin-top:0em;
+}
+
+.main h4{
+    margin-bottom:0em;
+    border-bottom:1px solid #eee;
+    padding-bottom:0.2em;
 }
 
 .main .version{

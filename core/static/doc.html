@@ -10,52 +10,50 @@
     {{end}}
 
     {{if .Queries}}
-        <h5>Query</h5>
+        <h4>Query</h4>
         {{template "param" .Queries}}
     {{end}}
 
     {{if .Params}}
-        <h5>Param</h5>
+        <h4>Param</h4>
         {{template "param" .Params}}
     {{end}}
 
     {{if .Request}}
+    <div>
+        <h4>Request   {{.Request.Type}}</h4>
         <div>
-            <h5>Request</h5>
-            <div>
-                <p>数据类型:{{.Request.Type}}</p>
-                {{range $k,$v:=.Request.Headers}}
-                <p>{{$k}}:{{$v}}</p>
-                {{end}}
-                {{range .Request.Params}}
-                <p>{{.Name}}:{{.Type}},{{.Description}}</p>
-                {{end}}
-                {{range .Request.Examples}}
-                <div class="code" data-type="{{.Type}}">{{.Code}}</div>
-                {{end}}
-            </div>
+            {{range $k,$v:=.Request.Headers}}
+            <p>{{$k}}:{{$v}}</p>
+            {{end}}
+            {{range .Request.Params}}
+            <p>{{.Name}}:{{.Type}},{{.Description}}</p>
+            {{end}}
+            {{range .Request.Examples}}
+            <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
+            {{end}}
         </div>
+    </div>
     {{end}}
 
     {{if .Status}}
+    <div>
+        <h4>Response</h4>
+        {{range .Status}}
         <div>
-            <h5>Response</h5>
-            {{range .Status}}
-                <div>
-                <p>status:{{.Code}},{{.Summary}}</p>
-                <p>数据类型:{{.Type}}</p>
-                {{range $k,$v:=.Headers}}
-                <p>{{$k}}:{{$v}}</p>
-                {{end}}
-                {{range .Params}}
-                <p>{{.Name}}:{{.Type}},{{.Description}}</p>
-                {{end}}
-                {{range .Examples}}
-                <div class="code" data-type="{{.Type}}">{{.Code}}</div>
-                {{end}}
-            </div>
+            <p>status:{{.Code}},  {{.Summary}},  {{.Type}}</p>
+            {{range $k,$v:=.Headers}}
+            <p>{{$k}}:{{$v}}</p>
+            {{end}}
+            {{range .Params}}
+            <p>{{.Name}}:{{.Type}},{{.Description}}</p>
+            {{end}}
+            {{range .Examples}}
+            <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
             {{end}}
         </div>
+        {{end}}
+    </div>
     {{end}}
 
 {{end}}

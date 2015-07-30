@@ -7,9 +7,19 @@
         <meta name="generator" content="https://github.com/caixw/apidoc">
         <title>apidoc</title>
         <link rel="stylesheet" href="./style.css" />
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
     </head>
     <body>
-        <header>APIDOC</header>
+        <header>
+            <span class="title">APIDOC</span> {{.Version}}
+            <div class="fr filter">
+                <label><input type="checkbox" checked="checked" value="get">GET</label>
+                <label><input type="checkbox" checked="checked" value="post">POST</label>
+                <label><input type="checkbox" checked="checked" value="put">PUT</label>
+                <label><input type="checkbox" checked="checked" value="patch">PATCH</label>
+                <label><input type="checkbox" checked="checked" value="delete">DELETE</label>
+            </div>
+        </header>
 
         <div class="main">
             {{range $key, $docs:=.Docs}}
@@ -17,7 +27,7 @@
                 <h2>{{$key}}</h2>
                 {{range $docs}}
                     {{if .}}
-                    <section>
+                    <section class="{{.Methods}}">
                         {{template "doc" .}}
                     </section>
                     {{end}}
@@ -29,6 +39,16 @@
         <footer>
             <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>于<time id="date">{{.Date}}</time>编译完成。</p>
         </footer>
+        <script>
+            $(document).ready(function(){
+                $('header .filter input').on('change', function(){
+                    var val = $(this).attr('value');
+                    $('.main section.'+val).each(function(index, elem){
+                        $(elem).slideToggle();
+                    });
+                })
+            });
+        </script>
     </body>
 </html>
 {{end}}

@@ -27,17 +27,65 @@ a{
 
 header{
     color:#777;
-    background-color:white;
-    border-bottom:1px solid #eee;
-    padding:3em 1em 0.3em 1em;
-    margin:0em 2em;
+    background-color:#fafafa;
+    border:1px solid #eee;
+    padding:3em 2.3em 0.5em 2.3em;
+    left:0;
+    right:0;
+    top:0;
+    position:fixed;
+
 }
 
+header .title{
+    font-size:2em;
+}
+
+header .filter{
+    margin-top:0.8em;
+}
+
+header label{
+    margin-left:1em;
+}
 
 /*=============== main ================*/
 
 .main{
-    padding:1em 3em;
+    padding:0em 2em;
+    margin-top:8em;
+}
+
+.main section{
+    padding:1em;
+    margin:1em 0em;
+    border:1px solid #eee;
+}
+
+.main .get:hover{
+    border:1px solid rgba(0,255,0,0.5);
+}
+
+.main .delete:hover{
+    border:1px solid rgba(255,0,0,0.5);
+}
+
+.main .put:hover,.main .patch:hover{
+    border:1px solid rgba(193,174,49,0.5);
+}
+
+.main .post:hover{
+    border:1px solid rgba(240,114,11,0.5);
+}
+
+.main h3{
+    margin-top:0em;
+}
+
+.main h4{
+    margin-bottom:0em;
+    border-bottom:1px solid #eee;
+    padding-bottom:0.2em;
 }
 
 .main .version{
@@ -92,9 +140,19 @@ var Templates=map[string]string{
         <meta name="generator" content="https://github.com/caixw/apidoc">
         <title>apidoc</title>
         <link rel="stylesheet" href="./style.css" />
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
     </head>
     <body>
-        <header>APIDOC</header>
+        <header>
+            <span class="title">APIDOC</span> {{.Version}}
+            <div class="fr filter">
+                <label><input type="checkbox" checked="checked" value="get">GET</label>
+                <label><input type="checkbox" checked="checked" value="post">POST</label>
+                <label><input type="checkbox" checked="checked" value="put">PUT</label>
+                <label><input type="checkbox" checked="checked" value="patch">PATCH</label>
+                <label><input type="checkbox" checked="checked" value="delete">DELETE</label>
+            </div>
+        </header>
 
         <div class="main">
             {{range $key, $docs:=.Docs}}
@@ -102,7 +160,7 @@ var Templates=map[string]string{
                 <h2>{{$key}}</h2>
                 {{range $docs}}
                     {{if .}}
-                    <section>
+                    <section class="{{.Methods}}">
                         {{template "doc" .}}
                     </section>
                     {{end}}
@@ -114,6 +172,16 @@ var Templates=map[string]string{
         <footer>
             <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>于<time id="date">{{.Date}}</time>编译完成。</p>
         </footer>
+        <script>
+            $(document).ready(function(){
+                $('header .filter input').on('change', function(){
+                    var val = $(this).attr('value');
+                    $('.main section.'+val).each(function(index, elem){
+                        $(elem).slideToggle();
+                    });
+                })
+            });
+        </script>
     </body>
 </html>
 {{end}}
@@ -129,52 +197,50 @@ var Templates=map[string]string{
     {{end}}
 
     {{if .Queries}}
-        <h5>Query</h5>
+        <h4>Query</h4>
         {{template "param" .Queries}}
     {{end}}
 
     {{if .Params}}
-        <h5>Param</h5>
+        <h4>Param</h4>
         {{template "param" .Params}}
     {{end}}
 
     {{if .Request}}
+    <div>
+        <h4>Request   {{.Request.Type}}</h4>
         <div>
-            <h5>Request</h5>
-            <div>
-                <p>数据类型:{{.Request.Type}}</p>
-                {{range $k,$v:=.Request.Headers}}
-                <p>{{$k}}:{{$v}}</p>
-                {{end}}
-                {{range .Request.Params}}
-                <p>{{.Name}}:{{.Type}},{{.Description}}</p>
-                {{end}}
-                {{range .Request.Examples}}
-                <div class="code" data-type="{{.Type}}">{{.Code}}</div>
-                {{end}}
-            </div>
+            {{range $k,$v:=.Request.Headers}}
+            <p>{{$k}}:{{$v}}</p>
+            {{end}}
+            {{range .Request.Params}}
+            <p>{{.Name}}:{{.Type}},{{.Description}}</p>
+            {{end}}
+            {{range .Request.Examples}}
+            <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
+            {{end}}
         </div>
+    </div>
     {{end}}
 
     {{if .Status}}
+    <div>
+        <h4>Response</h4>
+        {{range .Status}}
         <div>
-            <h5>Response</h5>
-            {{range .Status}}
-                <div>
-                <p>status:{{.Code}},{{.Summary}}</p>
-                <p>数据类型:{{.Type}}</p>
-                {{range $k,$v:=.Headers}}
-                <p>{{$k}}:{{$v}}</p>
-                {{end}}
-                {{range .Params}}
-                <p>{{.Name}}:{{.Type}},{{.Description}}</p>
-                {{end}}
-                {{range .Examples}}
-                <div class="code" data-type="{{.Type}}">{{.Code}}</div>
-                {{end}}
-            </div>
+            <p>status:{{.Code}},  {{.Summary}},  {{.Type}}</p>
+            {{range $k,$v:=.Headers}}
+            <p>{{$k}}:{{$v}}</p>
+            {{end}}
+            {{range .Params}}
+            <p>{{.Name}}:{{.Type}},{{.Description}}</p>
+            {{end}}
+            {{range .Examples}}
+            <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
             {{end}}
         </div>
+        {{end}}
+    </div>
     {{end}}
 
 {{end}}

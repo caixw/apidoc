@@ -15,7 +15,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.1.0.150729"
+const version = "0.1.0.150730"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 
@@ -93,6 +93,7 @@ func main() {
 		panic(err)
 	}
 
+	tree.Version = version
 	if err = tree.OutputHtml(flag.Arg(1)); err != nil {
 		panic(err)
 	}
