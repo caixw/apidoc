@@ -234,7 +234,7 @@ var Templates=map[string]string{
         <h4>Response</h4>
         {{range .Status}}
         <div>
-            <p>status:{{.Code}},  {{.Summary}},  {{.Type}}</p>
+            <p>status:{{.Code}},  {{.Summary}}</p>
             {{range $k,$v:=.Headers}}
             <p>{{$k}}:{{$v}}</p>
             {{end}}

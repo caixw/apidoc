@@ -38,7 +38,6 @@ type request struct {
 // 表示一次请求或是返回的数据。
 type status struct {
 	Code     string            // 状态码
-	Type     string            // 提交或是返回的数据类型,xml或是json
 	Summary  string            // 该状态下的简要描述
 	Headers  map[string]string // 必须提交的头信息或是返回的头信息。
 	Params   []*param          // 提交或是返回数据的各个字段描述

@@ -465,8 +465,7 @@ func TestLexer_scanApiStatus(t *testing.T) {
 	a.Equal(1, len(d.Status))
 	s := d.Status[0]
 	a.Equal(s.Code, "200").
-		Equal(s.Type, "json").
-		Equal(s.Summary, "").
+		Equal(s.Summary, "json").
 		Equal(s.Headers["h1"], "v1").
 		Equal(s.Headers["h2"], "v2").
 		Equal(s.Params[0].Name, "p1").
@@ -493,14 +492,13 @@ func TestLexer_scanApiStatus(t *testing.T) {
 	a.Equal(2, len(d.Status))
 	s = d.Status[1]
 	a.Equal(s.Code, "200").
-		Equal(s.Type, "xml").
-		Equal(s.Summary, "status summary").
+		Equal(s.Summary, "xml  status summary").
 		Equal(s.Headers["h1"], "v1").
 		Equal(s.Params[0].Name, "p1").
 		Equal(s.Examples[0].Code, matchCode)
 
 	// 缺少必要的参数
-	code = ` 200
+	code = ` 
 @apiStatus
 `
 	l = newLexer([]rune(code), 100, "file.go")
@@ -561,8 +559,7 @@ api description 2
 
 	s := d.Status[0]
 	a.Equal(s.Code, "200").
-		Equal(s.Type, "json").
-		Equal(s.Summary, "").
+		Equal(s.Summary, "json").
 		Equal(s.Headers["h1"], "v1").
 		Equal(s.Headers["h2"], "v2").
 		Equal(s.Params[0].Name, "p1").

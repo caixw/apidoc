@@ -324,18 +324,14 @@ func (l *lexer) scanApiStatus(d *doc) error {
 	var eol bool
 	l.skipSpace()
 	status.Code, eol = l.nextWord()
-	if len(status.Code) == 0 || eol {
+	if len(status.Code) == 0 {
 		return errors.New("apiStatus缺少必要的参数")
 	}
 
-	l.skipSpace()
-	status.Type, eol = l.nextWord()
-	if len(status.Type) == 0 { // 碰到行尾是正常的
-		return errors.New("apiStatus缺少必要的参数")
+	if !eol {
+		l.skipSpace()
+		status.Summary = l.nextLine()
 	}
-
-	l.skipSpace()
-	status.Summary = l.nextLine()
 
 LOOP:
 	for {
