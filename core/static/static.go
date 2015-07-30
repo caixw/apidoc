@@ -15,6 +15,19 @@ a{
     color:#3b8bba;
 }
 
+p{
+    margin:0.5em 0em;
+}
+
+ul{
+    margin:0.5em 0em;
+    padding:0em 1.5em;
+}
+
+ul li{
+    margin:0.2em;
+}
+
 .fl{
     float:left;
 }
@@ -89,8 +102,8 @@ header label{
     padding-bottom:0.2em;
 }
 
-.main .version{
-    margin-right:1em;
+.main h5{
+    margin:1em 0em;
 }
 
 .main .methods{
@@ -98,25 +111,25 @@ header label{
     text-transform:uppercase;
 }
 
-.main .request-type{
-    margin-left:2em;
+.main .param-name{
+    min-width:7em;
+    display:inline-block;
 }
 
-.main table caption{
-    text-align:left;
-}
-.main table thead th{
-    background-color:#fafafa;
-    border:1px solid #eee;
-    text-align:left;
-    padding:0.2em;
+.main .param-type{
+    min-width:5em;
+    display:inline-block;
 }
 
-.main table td{
-    border:1px solid #eee;
-    padding:0.2em;
+.main .header-key{
+    min-width:15em;
+    display:inline-block;
 }
 
+.main .status-code{
+    min-width:6em;
+    display:inline-block;
+}
 
 /*=============== footer ================*/
 footer{
@@ -195,35 +208,47 @@ var Templates=map[string]string{
     <h3>
         <span class="methods">{{.Methods}}</span>
         <span class="url">{{.URL}}</span>
-        <span class="fr">{{.Summary}}</span>
     </h3>
-
+    <p>{{.Summary}}</p>
     {{if .Description}}
     <p class="description">{{.Description}}</p>
     {{end}}
 
     {{if .Queries}}
-        <h4>Query</h4>
+        <h4>查询参数</h4>
         {{template "param" .Queries}}
     {{end}}
 
     {{if .Params}}
-        <h4>Param</h4>
+        <h4>参数</h4>
         {{template "param" .Params}}
     {{end}}
 
     {{if .Request}}
     <div>
-        <h4>Request   {{.Request.Type}}</h4>
+        <h4>请求</h4>
         <div>
-            {{range $k,$v:=.Request.Headers}}
-            <p>{{$k}}:{{$v}}</p>
+            <p>数据类型: {{.Request.Type}}</p>
+
+            {{if .Request.Headers}}
+            <h5>header:</h5>
+            <ul>
+                {{range $k,$v:=.Request.Headers}}
+                <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
+                {{end}}
+            </ul>
             {{end}}
-            {{range .Request.Params}}
-            <p>{{.Name}}:{{.Type}},{{.Description}}</p>
+
+            {{if .Request.Params}}
+            <h5>参数:</h5>
+                {{template "param" .Request.Params}}
             {{end}}
-            {{range .Request.Examples}}
-            <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
+
+            {{if .Request.Examples}}
+            <h5>example:</h5>
+                {{range .Request.Examples}}
+                <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
+                {{end}}
             {{end}}
         </div>
     </div>
@@ -231,18 +256,30 @@ var Templates=map[string]string{
 
     {{if .Status}}
     <div>
-        <h4>Response</h4>
+        <h4>响应</h4>
         {{range .Status}}
         <div>
-            <p>status:{{.Code}},  {{.Summary}}</p>
-            {{range $k,$v:=.Headers}}
-            <p>{{$k}}:{{$v}}</p>
+            <p><span class="status-code">status:{{.Code}}</span>{{.Summary}}</p>
+
+            {{if .Headers}}
+            <h5>header</h5>
+            <ul>
+                {{range $k,$v:=.Headers}}
+                <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
+                {{end}}
+            </ul>
             {{end}}
-            {{range .Params}}
-            <p>{{.Name}}:{{.Type}},{{.Description}}</p>
+
+            {{if .Params}}
+            <h5>参数:</h5>
+                {{template "param" .Params}}
             {{end}}
-            {{range .Examples}}
-            <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
+
+            {{if .Examples}}
+            <h5>example:</h5>
+                {{range .Examples}}
+                <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
+                {{end}}
             {{end}}
         </div>
         {{end}}
@@ -252,26 +289,14 @@ var Templates=map[string]string{
 {{end}}
 
 {{define "param"}}
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Optional</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{range .}}
-            <tr>
-                <td>{{.Name}}</td>
-                <td>{{.Type}}</td>
-                <td>{{.Optional}}</td>
-                <td>{{.Description}}</td>
-            </tr>
-        {{end}}
-        </tbody>
-    </table>
+    <ul>
+    {{range .}}
+    <li>
+        <span class="param-name">{{.Name}}</span>
+        <span class="param-type">{{.Type}}</span>
+        <span class="param-desc">{{.Description}}</span></li>
+    {{end}}
+    </ul>
 {{end}}
 
 `,}
