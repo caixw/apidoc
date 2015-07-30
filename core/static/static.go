@@ -47,6 +47,7 @@ header .filter{
 
 header label{
     margin-left:1em;
+    vertical-align: bottom;
 }
 
 /*=============== main ================*/
@@ -94,6 +95,7 @@ header label{
 
 .main .methods{
     margin-right:2em;
+    text-transform:uppercase;
 }
 
 .main .request-type{
