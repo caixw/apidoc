@@ -113,6 +113,16 @@ func (s *scanner) scan(path string) error {
 			return err
 		}
 
+		flag := false
+		for _, r := range block {
+			if r == '@' {
+				flag = true
+			}
+		}
+		if !flag {
+			continue
+		}
+
 		err = s.tree.Scan(block, s.lineNumber(), path)
 		if err != nil {
 			return err
