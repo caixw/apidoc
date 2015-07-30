@@ -5,7 +5,6 @@
 package core
 
 import (
-	"errors"
 	"strings"
 	"unicode"
 )
@@ -38,6 +37,11 @@ func (l *lexer) lineNumber() (count int) {
 		}
 	}
 	return
+}
+
+// 返回一个语法错误的error接口。
+func (l *lexer) syntaxError() error {
+	return SyntaxError(l.lineNumber())
 }
 
 // 获取下一个字符。
@@ -214,7 +218,7 @@ func (l *lexer) scanApiURL(d *doc) error {
 	l.skipSpace()
 	str, _ := l.nextWord()
 	if len(str) == 0 {
-		return errors.New("apiURL参数不能为空")
+		return l.syntaxError()
 	}
 
 	d.URL = str
@@ -225,7 +229,7 @@ func (l *lexer) scanApiMethods(d *doc) error {
 	l.skipSpace()
 	str := l.nextLine()
 	if len(str) == 0 {
-		return errors.New("apiMethods缺少参数")
+		return l.syntaxError()
 	}
 
 	d.Methods = str
@@ -236,7 +240,7 @@ func (l *lexer) scanApiVersion(d *doc) error {
 	l.skipSpace()
 	str, _ := l.nextWord()
 	if len(str) == 0 {
-		return errors.New("apiVersion缺少参数")
+		return l.syntaxError()
 	}
 
 	d.Version = str
@@ -247,7 +251,7 @@ func (l *lexer) scanApiGroup(d *doc) error {
 	l.skipSpace()
 	str, _ := l.nextWord()
 	if len(str) == 0 {
-		return errors.New("apiGroup缺少参数")
+		return l.syntaxError()
 	}
 
 	d.Group = str
@@ -279,13 +283,13 @@ LOOP:
 			l.skipSpace()
 			key, eol := l.nextWord()
 			if eol {
-				return errors.New("apiHeader缺少key")
+				return l.syntaxError()
 			}
 
 			l.skipSpace()
 			val := l.nextLine()
 			if len(val) == 0 {
-				return errors.New("apiHeader缺少value")
+				return l.syntaxError()
 			}
 			r.Headers[key] = val
 		case l.match("@apiParam"):
@@ -325,7 +329,7 @@ func (l *lexer) scanApiStatus(d *doc) error {
 	l.skipSpace()
 	status.Code, eol = l.nextWord()
 	if len(status.Code) == 0 {
-		return errors.New("apiStatus缺少必要的参数")
+		return l.syntaxError()
 	}
 
 	if !eol {
@@ -340,13 +344,13 @@ LOOP:
 			l.skipSpace()
 			key, eol := l.nextWord()
 			if eol {
-				return errors.New("apiHeader缺少value")
+				return l.syntaxError()
 			}
 
 			l.skipSpace()
 			val := l.nextLine()
 			if len(val) == 0 {
-				return errors.New("apiHeader缺少value")
+				return l.syntaxError()
 			}
 			status.Headers[key] = val
 		case l.match("@apiParam"):
@@ -423,7 +427,7 @@ func (l *lexer) scanApiParam() (*param, error) {
 	} // end for
 
 	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Description) == 0 {
-		return nil, errors.New("@apiParam参数不足")
+		return nil, l.syntaxError()
 	}
 
 	return p, nil
@@ -434,7 +438,7 @@ func (l *lexer) scanApi(d *doc) error {
 	l.skipSpace()
 	str := l.nextLine()
 	if len(str) == 0 {
-		return errors.New("api第一个参数不能为空")
+		return l.syntaxError()
 	}
 	d.Summary = str
 

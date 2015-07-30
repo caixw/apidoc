@@ -5,6 +5,7 @@
 package core
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -55,6 +56,13 @@ type param struct {
 type example struct {
 	Type string // 示例代码的类型，小写，xml或是json
 	Code string // 示例代码
+}
+
+// 语法法错误，语法比较简单，仅包含了在第几行发生错误。
+type SyntaxError int
+
+func (err SyntaxError) Error() string {
+	return fmt.Sprint("在%v行发生语法错误", err)
 }
 
 func NewTree() *Tree {
