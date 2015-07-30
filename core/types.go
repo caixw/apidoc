@@ -48,7 +48,6 @@ type status struct {
 type param struct {
 	Name        string // 参数名称
 	Type        string // 类型
-	Optional    bool   // 可选的参数
 	Description string // 参数介绍
 }
 

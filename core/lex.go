@@ -405,7 +405,6 @@ func (l *lexer) scanApiParam() (*param, error) {
 	p := &param{}
 	var eol bool
 
-LOOP:
 	for {
 		l.skipSpace()
 		switch {
@@ -413,15 +412,6 @@ LOOP:
 			p.Name, eol = l.nextWord()
 		case len(p.Type) == 0:
 			p.Type, eol = l.nextWord()
-		case !p.Optional:
-			var opt string
-			opt, eol = l.nextWord()
-			if strings.ToLower(opt) == "optional" {
-				p.Optional = true
-				continue LOOP
-			}
-			l.backup()
-			fallthrough
 		default:
 			p.Description = l.nextLine()
 			eol = true

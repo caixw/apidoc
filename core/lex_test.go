@@ -261,7 +261,6 @@ func TestLexer_scanApiQuery(t *testing.T) {
 	q0 := d.Queries[0]
 	a.Equal(q0.Name, "id").
 		Equal(q0.Type, "int").
-		False(q0.Optional).
 		Equal(q0.Description, "user id")
 
 	// 再添加一个参数
@@ -270,7 +269,6 @@ func TestLexer_scanApiQuery(t *testing.T) {
 	q1 := d.Queries[1]
 	a.Equal(q1.Name, "name").
 		Equal(q1.Type, "string").
-		False(q1.Optional).
 		Equal(q1.Description, "user name")
 }
 
@@ -318,26 +316,7 @@ func TestLexer_scanApiParam(t *testing.T) {
 	a.NotError(err).NotNil(p)
 	a.Equal(p.Name, "id").
 		Equal(p.Type, "int").
-		True(p.Optional).
-		Equal(p.Description, "用户 id号")
-
-	// 大小写混合的optional
-	l = newLexer([]rune("id int OptionAl 用户 id号\n"), 100, "file.go")
-	p, err = l.scanApiParam()
-	a.NotError(err).NotNil(p)
-	a.Equal(p.Name, "id").
-		Equal(p.Type, "int").
-		True(p.Optional).
-		Equal(p.Description, "用户 id号")
-
-	// 缺少optional参数
-	l = newLexer([]rune("id int optional1 用户 id号\n"), 100, "file.go")
-	p, err = l.scanApiParam()
-	a.NotError(err).NotNil(p)
-	a.Equal(p.Name, "id").
-		Equal(p.Type, "int").
-		False(p.Optional).
-		Equal(p.Description, "optional1 用户 id号")
+		Equal(p.Description, "optional 用户 id号")
 
 	// 缺少参数
 	l = newLexer([]rune("id int \n"), 100, "file.go")
