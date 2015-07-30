@@ -189,7 +189,7 @@ var Templates=map[string]string{
         </div>
 
         <footer>
-            <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>于<time id="date">{{.Date}}</time>编译完成。</p>
+            <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>编译于<time id="date">{{.Date}}</time></p>
         </footer>
         <script>
             $(document).ready(function(){
