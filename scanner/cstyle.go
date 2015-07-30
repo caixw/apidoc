@@ -4,7 +4,7 @@
 
 package scanner
 
-func cstyle(s *scanner) ([]byte, error) {
+func cstyle(s *scanner) ([]rune, error) {
 	block := []rune{}
 
 LOOP:
@@ -13,8 +13,7 @@ LOOP:
 		case s.match("/*"):
 			for {
 				if s.match("*/") {
-					// TODO 两层转换，是否可以去掉
-					return []byte(string(block)), nil
+					return block, nil
 				}
 				block = append(block, s.next())
 			} // end for
@@ -31,7 +30,7 @@ LOOP:
 					break LOOP2
 				}
 			} // end for
-			return []byte(string(block)), nil
+			return block, nil
 		default:
 			if s.next() == eof {
 				break LOOP

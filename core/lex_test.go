@@ -12,7 +12,7 @@ import (
 
 func TestLexer_lineNumber(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]byte("\n\n"), 100, "file.go")
+	l := newLexer([]rune("\n\n"), 100, "file.go")
 	a.NotNil(l)
 
 	a.Equal(100, l.lineNumber())
@@ -29,7 +29,7 @@ func TestLexer_lineNumber(t *testing.T) {
 
 func TestLexer_next(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]byte("ab\ncd\n"), 100, "file.go")
+	l := newLexer([]rune("ab\ncd\n"), 100, "file.go")
 	a.NotNil(l)
 
 	a.Equal('a', l.next())
@@ -55,7 +55,7 @@ func TestLexer_next(t *testing.T) {
 
 func TestLexer_nextLine(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]byte("line1\n line2 \n"), 100, "file.go")
+	l := newLexer([]rune("line1\n line2 \n"), 100, "file.go")
 	a.NotNil(l)
 
 	a.Equal("line1", l.nextLine())
@@ -73,7 +73,7 @@ func TestLexer_nextLine(t *testing.T) {
 
 func TestLexer_nextWord(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]byte("word1 word2\nword3"), 100, "file.go")
+	l := newLexer([]rune("word1 word2\nword3"), 100, "file.go")
 	a.NotNil(l)
 
 	l.next()               // w
@@ -117,7 +117,7 @@ func TestLexer_nextWord(t *testing.T) {
 
 func TestLexer_match(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]byte("line1\n line2 \n"), 100, "file.go")
+	l := newLexer([]rune("line1\n line2 \n"), 100, "file.go")
 	a.NotNil(l)
 
 	a.True(l.match("line"))
@@ -139,7 +139,7 @@ func TestLexer_match(t *testing.T) {
 
 func TestLexer_skipSpace(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]byte("  ln  1  \n 2 \n"), 100, "file.go")
+	l := newLexer([]rune("  ln  1  \n 2 \n"), 100, "file.go")
 	a.NotNil(l)
 
 	l.skipSpace() // 跳转起始的2个空格
@@ -175,16 +175,16 @@ func TestLexer_scanApiURL(t *testing.T) {
 	d := &doc{}
 
 	// 正常情况
-	l := newLexer([]byte("  api/login"), 100, "file.go")
+	l := newLexer([]rune("  api/login"), 100, "file.go")
 	a.NotError(l.scanApiURL(d))
 	a.Equal(d.URL, "api/login")
 
 	// 缺少参数
-	l = newLexer([]byte(" "), 100, "file.go")
+	l = newLexer([]rune(" "), 100, "file.go")
 	a.Error(l.scanApiURL(d))
 
 	// 多个参数
-	l = newLexer([]byte("  api/login abctest/adf"), 100, "file.go")
+	l = newLexer([]rune("  api/login abctest/adf"), 100, "file.go")
 	a.NotError(l.scanApiURL(d))
 	a.Equal(d.URL, "api/login")
 }
@@ -194,21 +194,21 @@ func TestLexer_scanApiMethods(t *testing.T) {
 	d := &doc{}
 
 	// 正常情况
-	l := newLexer([]byte("  get"), 100, "file.go")
+	l := newLexer([]rune("  get"), 100, "file.go")
 	a.NotError(l.scanApiMethods(d))
 	a.Equal(d.Methods, "get")
 
 	// 缺少参数
-	l = newLexer([]byte(" "), 100, "file.go")
+	l = newLexer([]rune(" "), 100, "file.go")
 	a.Error(l.scanApiMethods(d))
 
 	// 多个参数
-	l = newLexer([]byte("  get post"), 100, "file.go")
+	l = newLexer([]rune("  get post"), 100, "file.go")
 	a.NotError(l.scanApiMethods(d))
 	a.Equal(d.Methods, "get post")
 
 	// 多个参数
-	l = newLexer([]byte("  get post\n@api"), 100, "file.go")
+	l = newLexer([]rune("  get post\n@api"), 100, "file.go")
 	a.NotError(l.scanApiMethods(d))
 	a.Equal(d.Methods, "get post")
 }
@@ -218,16 +218,16 @@ func TestLexer_scanApiVersion(t *testing.T) {
 	d := &doc{}
 
 	// 正常情况
-	l := newLexer([]byte("  0.1.1"), 100, "file.go")
+	l := newLexer([]rune("  0.1.1"), 100, "file.go")
 	a.NotError(l.scanApiVersion(d))
 	a.Equal(d.Version, "0.1.1")
 
 	// 缺少参数
-	l = newLexer([]byte(" "), 100, "file.go")
+	l = newLexer([]rune(" "), 100, "file.go")
 	a.Error(l.scanApiVersion(d))
 
 	// 多个参数
-	l = newLexer([]byte("  0.1.1  abcd"), 100, "file.go")
+	l = newLexer([]rune("  0.1.1  abcd"), 100, "file.go")
 	a.NotError(l.scanApiVersion(d))
 	a.Equal(d.Version, "0.1.1")
 }
@@ -237,16 +237,16 @@ func TestLexer_scanApiGroup(t *testing.T) {
 	d := &doc{}
 
 	// 正常情况
-	l := newLexer([]byte("  g1"), 100, "file.go")
+	l := newLexer([]rune("  g1"), 100, "file.go")
 	a.NotError(l.scanApiGroup(d))
 	a.Equal(d.Group, "g1")
 
 	// 缺少参数
-	l = newLexer([]byte(" "), 100, "file.go")
+	l = newLexer([]rune(" "), 100, "file.go")
 	a.Error(l.scanApiGroup(d))
 
 	// 多个参数
-	l = newLexer([]byte("  g1  abcd"), 100, "file.go")
+	l = newLexer([]rune("  g1  abcd"), 100, "file.go")
 	a.NotError(l.scanApiGroup(d))
 	a.Equal(d.Group, "g1")
 }
@@ -256,7 +256,7 @@ func TestLexer_scanApiQuery(t *testing.T) {
 	d := &doc{Queries: []*param{}}
 
 	// 正常情况
-	l := newLexer([]byte("id int user id"), 100, "file.go")
+	l := newLexer([]rune("id int user id"), 100, "file.go")
 	a.NotError(l.scanApiQuery(d))
 	q0 := d.Queries[0]
 	a.Equal(q0.Name, "id").
@@ -265,7 +265,7 @@ func TestLexer_scanApiQuery(t *testing.T) {
 		Equal(q0.Description, "user id")
 
 	// 再添加一个参数
-	l = newLexer([]byte("name string user name"), 100, "file.go")
+	l = newLexer([]rune("name string user name"), 100, "file.go")
 	a.NotError(l.scanApiQuery(d))
 	q1 := d.Queries[1]
 	a.Equal(q1.Name, "name").
@@ -286,7 +286,7 @@ func TestLexer_scanApiExample(t *testing.T) {
 <root>
     <data>123</data>
 </root>`
-	l := newLexer([]byte(code), 100, "file.go")
+	l := newLexer([]rune(code), 100, "file.go")
 	a.NotNil(l)
 	e, err := l.scanApiExample()
 	a.NotError(err).
@@ -300,7 +300,7 @@ func TestLexer_scanApiExample(t *testing.T) {
 	matchCode = `<root>
     <data>123</data>
 </root>`
-	l = newLexer([]byte(code), 100, "file.go")
+	l = newLexer([]rune(code), 100, "file.go")
 	a.NotNil(l)
 	e, err = l.scanApiExample()
 	a.NotError(err).
@@ -313,7 +313,7 @@ func TestLexer_scanApiParam(t *testing.T) {
 	a := assert.New(t)
 
 	// 正常语法测试
-	l := newLexer([]byte("id int optional 用户 id号\n"), 100, "file.go")
+	l := newLexer([]rune("id int optional 用户 id号\n"), 100, "file.go")
 	p, err := l.scanApiParam()
 	a.NotError(err).NotNil(p)
 	a.Equal(p.Name, "id").
@@ -322,7 +322,7 @@ func TestLexer_scanApiParam(t *testing.T) {
 		Equal(p.Description, "用户 id号")
 
 	// 大小写混合的optional
-	l = newLexer([]byte("id int OptionAl 用户 id号\n"), 100, "file.go")
+	l = newLexer([]rune("id int OptionAl 用户 id号\n"), 100, "file.go")
 	p, err = l.scanApiParam()
 	a.NotError(err).NotNil(p)
 	a.Equal(p.Name, "id").
@@ -331,7 +331,7 @@ func TestLexer_scanApiParam(t *testing.T) {
 		Equal(p.Description, "用户 id号")
 
 	// 缺少optional参数
-	l = newLexer([]byte("id int optional1 用户 id号\n"), 100, "file.go")
+	l = newLexer([]rune("id int optional1 用户 id号\n"), 100, "file.go")
 	p, err = l.scanApiParam()
 	a.NotError(err).NotNil(p)
 	a.Equal(p.Name, "id").
@@ -340,12 +340,12 @@ func TestLexer_scanApiParam(t *testing.T) {
 		Equal(p.Description, "optional1 用户 id号")
 
 	// 缺少参数
-	l = newLexer([]byte("id int \n"), 100, "file.go")
+	l = newLexer([]rune("id int \n"), 100, "file.go")
 	p, err = l.scanApiParam()
 	a.Error(err).Nil(p)
 
 	// 缺少参数
-	l = newLexer([]byte("id  \n"), 100, "file.go")
+	l = newLexer([]rune("id  \n"), 100, "file.go")
 	p, err = l.scanApiParam()
 	a.Error(err).Nil(p)
 }
@@ -355,31 +355,31 @@ func TestLexer_scanApi(t *testing.T) {
 	d := &doc{}
 
 	// 正常情况
-	l := newLexer([]byte("  summary summary\n api description"), 100, "file.go")
+	l := newLexer([]rune("  summary summary\n api description"), 100, "file.go")
 	a.NotError(l.scanApi(d))
 	a.Equal(d.Summary, "summary summary").
 		Equal(d.Description, " api description")
 
 	// 多行description
-	l = newLexer([]byte("  summary summary\n api \ndescription\n@api summary"), 100, "file.go")
+	l = newLexer([]rune("  summary summary\n api \ndescription\n@api summary"), 100, "file.go")
 	a.NotError(l.scanApi(d))
 	a.Equal(d.Summary, "summary summary").
 		Equal(d.Description, " api \ndescription\n")
 
 	// 缺少description参数
-	l = newLexer([]byte("summary summary"), 100, "file.go")
+	l = newLexer([]rune("summary summary"), 100, "file.go")
 	a.NotError(l.scanApi(d))
 	a.Equal(d.Summary, "summary summary").
 		Equal(d.Description, "")
 
 	// 缺少description参数
-	l = newLexer([]byte("summary summary\n@apiURL"), 100, "file.go")
+	l = newLexer([]rune("summary summary\n@apiURL"), 100, "file.go")
 	a.NotError(l.scanApi(d))
 	a.Equal(d.Summary, "summary summary").
 		Equal(d.Description, "")
 
 	// 没有任何参数
-	l = newLexer([]byte("  "), 100, "file.go")
+	l = newLexer([]rune("  "), 100, "file.go")
 	a.Error(l.scanApi(d))
 }
 
@@ -403,7 +403,7 @@ func TestLexer_scanApiRequest(t *testing.T) {
     <p2>v2</p2>
 </root>
 `
-	l := newLexer([]byte(code), 100, "file.go")
+	l := newLexer([]rune(code), 100, "file.go")
 	a.NotError(l.scanApiRequest(d))
 	a.NotNil(d.Request)
 	r := d.Request
@@ -429,7 +429,7 @@ func TestLexer_scanApiRequest(t *testing.T) {
 <root>
     <p1>v1</p1>
 </root>`
-	l = newLexer([]byte(code), 100, "file.go")
+	l = newLexer([]rune(code), 100, "file.go")
 	a.NotError(l.scanApiRequest(d))
 	a.NotNil(d.Request)
 	r = d.Request
@@ -460,7 +460,7 @@ func TestLexer_scanApiStatus(t *testing.T) {
     <p2>v2</p2>
 </root>
 `
-	l := newLexer([]byte(code), 100, "file.go")
+	l := newLexer([]rune(code), 100, "file.go")
 	a.NotError(l.scanApiStatus(d))
 	a.Equal(1, len(d.Status))
 	s := d.Status[0]
@@ -488,7 +488,7 @@ func TestLexer_scanApiStatus(t *testing.T) {
 <root>
     <p1>v1</p1>
 </root>`
-	l = newLexer([]byte(code), 100, "file.go")
+	l = newLexer([]rune(code), 100, "file.go")
 	a.NotError(l.scanApiStatus(d))
 	a.Equal(2, len(d.Status))
 	s = d.Status[1]
@@ -503,7 +503,7 @@ func TestLexer_scanApiStatus(t *testing.T) {
 	code = ` 200
 @apiStatus
 `
-	l = newLexer([]byte(code), 100, "file.go")
+	l = newLexer([]rune(code), 100, "file.go")
 	a.Error(l.scanApiStatus(d))
 }
 
@@ -541,7 +541,7 @@ api description 2
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
-	l := newLexer([]byte(code), 100, "file.go")
+	l := newLexer([]rune(code), 100, "file.go")
 	d, err := l.scan()
 	a.NotError(err).NotNil(d)
 
@@ -578,7 +578,7 @@ Copyright 2015 by caixw, All rights reserved.
 Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.
 `
-	l = newLexer([]byte(code), 100, "file.go")
+	l = newLexer([]rune(code), 100, "file.go")
 	d, err = l.scan()
 	a.NotError(err).Nil(d)
 }

@@ -69,9 +69,9 @@ func TestLexer_OutputHtml(t *testing.T) {
 	tree := NewTree()
 	a.NotNil(tree)
 
-	a.NotError(tree.Scan([]byte(block1), 1, "test1.go"))
-	a.NotError(tree.Scan([]byte(block2), 100, "test1.go"))
-	a.NotError(tree.Scan([]byte(block3), 1, "test2.go"))
+	a.NotError(tree.Scan([]rune(block1), 1, "test1.go"))
+	a.NotError(tree.Scan([]rune(block2), 100, "test1.go"))
+	a.NotError(tree.Scan([]rune(block3), 1, "test2.go"))
 
 	a.NotError(tree.OutputHtml(testdir))
 }

@@ -19,7 +19,7 @@ import (
 
 const eof = -1
 
-type scanFunc func(*scanner) ([]byte, error)
+type scanFunc func(*scanner) ([]rune, error)
 
 type scanner struct {
 	f     scanFunc

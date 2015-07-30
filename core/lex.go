@@ -5,17 +5,15 @@
 package core
 
 import (
-	"bytes"
 	"errors"
 	"strings"
 	"unicode"
-	"unicode/utf8"
 )
 
 const eof = -1
 
 type lexer struct {
-	data  []byte
+	data  []rune
 	line  int    // data所在的起始行数
 	file  string // 源文件名称
 	pos   int    // 当前位置
@@ -23,7 +21,7 @@ type lexer struct {
 }
 
 // line data在源文件中的起始行号
-func newLexer(data []byte, line int, file string) *lexer {
+func newLexer(data []rune, line int, file string) *lexer {
 	return &lexer{
 		data: data,
 		line: line,
@@ -32,8 +30,14 @@ func newLexer(data []byte, line int, file string) *lexer {
 }
 
 // 当前位置在源代码中的行号
-func (l *lexer) lineNumber() int {
-	return l.line + bytes.Count(l.data[:l.pos], []byte("\n"))
+func (l *lexer) lineNumber() (count int) {
+	count = l.line
+	for i := 0; i < l.pos; i++ {
+		if l.data[i] == '\n' {
+			count++
+		}
+	}
+	return
 }
 
 // 获取下一个字符。
@@ -43,9 +47,9 @@ func (l *lexer) next() rune {
 		return eof
 	}
 
-	r, w := utf8.DecodeRune(l.data[l.pos:])
-	l.pos += w
-	l.width = w
+	r := l.data[l.pos]
+	l.pos++
+	l.width = 1
 	return r
 }
 
@@ -61,9 +65,9 @@ func (l *lexer) nextLine() string {
 			return string(rs)
 		}
 
-		r, w := utf8.DecodeRune(l.data[l.pos:])
-		l.pos += w
-		width += w
+		r := l.data[l.pos]
+		l.pos++
+		width++
 
 		if r == '\n' {
 			l.width = width
@@ -87,13 +91,13 @@ func (l *lexer) nextWord() (str string, eol bool) {
 			return string(rs), true
 		}
 
-		r, w := utf8.DecodeRune(l.data[l.pos:])
-		l.pos += w
-		width += w
+		r := l.data[l.pos]
+		l.pos++
+		width++
 
 		if unicode.IsSpace(r) {
-			l.pos -= w
-			width -= w
+			l.pos--
+			width--
 			l.width = width
 			return string(rs), r == '\n'
 		}
@@ -112,14 +116,14 @@ func (l *lexer) match(word string) bool {
 
 	width := 0
 	for _, r := range word {
-		rr, w := utf8.DecodeRune(l.data[l.pos:])
+		rr := l.data[l.pos]
 		if rr != r {
 			l.pos -= width
 			return false
 		}
 
-		l.pos += w
-		width += w
+		l.pos++
+		width++
 	}
 
 	l.width = width
@@ -467,7 +471,7 @@ func (l *lexer) scanApi(d *doc) error {
 }
 
 // 扫描data，将其内容分解成doc实例，并写入到tree中
-func (tree *Tree) Scan(data []byte, line int, file string) error {
+func (tree *Tree) Scan(data []rune, line int, file string) error {
 	l := newLexer(data, line, file)
 	d, err := l.scan()
 	if err != nil || d == nil {
