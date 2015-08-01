@@ -1,0 +1,24 @@
+{{define "header"}}<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="generator" content="https://github.com/caixw/apidoc">
+        <title>{{.title}}|apidoc</title>
+        <link rel="stylesheet" href="./style.css" />
+        <script src="./jquery-2.1.4.min.js"></script>
+    </head>
+    <body>
+        <header>
+            <span class="title">APIDOC</span> {{.version}}
+            <div class="fr filter">
+                <label><input type="checkbox" checked="checked" value="get">GET</label>
+                <label><input type="checkbox" checked="checked" value="post">POST</label>
+                <label><input type="checkbox" checked="checked" value="put">PUT</label>
+                <label><input type="checkbox" checked="checked" value="patch">PATCH</label>
+                <label><input type="checkbox" checked="checked" value="delete">DELETE</label>
+            </div>
+        </header>
+        <div class="main">
+{{end}}

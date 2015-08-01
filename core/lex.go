@@ -117,8 +117,7 @@ func (l *lexer) nextWord() (str string, eol bool) {
 // 判断接下去的几个字符连接起来是否正好为word，若不匹配，则不移动指针。
 // 可通过lexer.backup来撤消最后一次调用。
 func (l *lexer) match(word string) bool {
-	// 剩余字符没有word长，直接返回false
-	if l.pos+len(word) >= len(l.data) {
+	if l.pos+len(word) >= len(l.data) { // 剩余字符没有word长，直接返回false
 		return false
 	}
 

@@ -28,8 +28,10 @@ var files = []string{
 }
 
 var templates = []string{
-	"./main.html",
-	"./doc.html",
+	"./index.html",
+	"./group.html",
+	"./header.html",
+	"./footer.html",
 }
 
 func main() {

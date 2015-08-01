@@ -1,0 +1,18 @@
+{{define "footer"}}
+    </div><!-- end .main -->
+        <footer>
+            <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>编译于<time id="date">{{.}}</time></p>
+        </footer>
+        <script>
+            $(document).ready(function(){
+                $('header .filter input').on('change', function(){
+                    var val = $(this).attr('value');
+                    $('.main section.'+val).each(function(index, elem){
+                        $(elem).slideToggle();
+                    });
+                })
+            });
+        </script>
+    </body>
+</html>
+{{end}}

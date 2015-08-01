@@ -1,4 +1,5 @@
-{{define "doc"}}
+{{define "group"}}
+<section class="{{.Methods}}">
     <h3>
         <span class="methods">{{.Methods}}</span>
         <span class="url">{{.URL}}</span>
@@ -79,7 +80,7 @@
         {{end}}
     </div>
     {{end}}
-
+</section>
 {{end}}
 
 {{define "param"}}
@@ -88,8 +89,8 @@
     <li>
         <span class="param-name">{{.Name}}</span>
         <span class="param-type">{{.Type}}</span>
-        <span class="param-desc">{{.Description}}</span></li>
+        <span class="param-desc">{{.Description}}</span>
+    </li>
     {{end}}
     </ul>
 {{end}}
-

@@ -87,6 +87,15 @@ header label{
     border:1px solid rgba(240,114,11,0.5);
 }
 
+.main h1{
+    border-bottom:1px solid #eee;
+    margin-left:40%;
+}
+
+.main h2{
+    margin-left:40%;
+}
+
 .main h3{
     margin-top:0em;
 }
