@@ -15,7 +15,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.1.6.150730"
+const version = "0.1.7.150801"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 
@@ -41,44 +41,37 @@ doc:
 `
 
 func main() {
-	var h bool
-	var v bool
-	var l bool
-	var r bool
-	var t string
-	var ext string
+	var (
+		h     bool
+		v     bool
+		langs bool
+		r     bool
+		t     string
+		ext   string
+	)
 
 	flag.Usage = func() {
 		fmt.Println(usage)
 	}
 	flag.BoolVar(&h, "h", false, "显示帮助信息")
 	flag.BoolVar(&v, "v", false, "显示帮助信息")
-	flag.BoolVar(&l, "langs", false, "显示所有支持的语言")
+	flag.BoolVar(&langs, "langs", false, "显示所有支持的语言")
 	flag.BoolVar(&r, "r", true, "搜索子目录，默认为true")
 	flag.StringVar(&t, "t", "", "指定源文件的类型，若不指定，系统会自行判断")
 	flag.StringVar(&ext, "ext", "", "匹配的扩展名，若不指定，会根据-t的指定，自行判断")
 	flag.Parse()
 
-	if h {
+	switch {
+	case h:
 		flag.Usage()
 		return
-	}
-
-	if v {
-		colors.Print(colors.Stdout, colors.Green, colors.Default, "apidoc: ")
-		colors.Println(colors.Stdout, colors.Default, colors.Default, version)
-		colors.Print(colors.Stdout, colors.Green, colors.Default, "Go: ")
-		goVersion := runtime.Version() + " " + runtime.GOOS + "/" + runtime.GOARCH
-		colors.Println(colors.Stdout, colors.Default, colors.Default, goVersion)
+	case v:
+		printVersion()
 		return
-	}
-
-	if l {
-		fmt.Println(scanner.Langs())
+	case langs:
+		printLangs()
 		return
-	}
-
-	if flag.NArg() != 2 {
+	case flag.NArg() != 2:
 		colors.Println(colors.Stderr, colors.Red, colors.Default, "请同时指定src和dest参数")
 		return
 	}
@@ -97,4 +90,20 @@ func main() {
 	if err = tree.OutputHtml(flag.Arg(1)); err != nil {
 		panic(err)
 	}
+}
+
+func printLangs() {
+	fmt.Println("目前支持以下类型的代码解析")
+	langs := scanner.Langs()
+	for _, l := range langs {
+		fmt.Println(l)
+	}
+}
+
+func printVersion() {
+	colors.Print(colors.Stdout, colors.Green, colors.Default, "apidoc: ")
+	colors.Println(colors.Stdout, colors.Default, colors.Default, version)
+	colors.Print(colors.Stdout, colors.Green, colors.Default, "Go: ")
+	goVersion := runtime.Version() + " " + runtime.GOOS + "/" + runtime.GOARCH
+	colors.Println(colors.Stdout, colors.Default, colors.Default, goVersion)
 }
