@@ -10,6 +10,8 @@ import (
 	"github.com/issue9/assert"
 )
 
+var synerr = &SyntaxError{}
+
 func TestLexer_lineNumber(t *testing.T) {
 	a := assert.New(t)
 	l := newLexer([]rune("\n\n"), 100, "file.go")
@@ -181,7 +183,7 @@ func TestLexer_scanApiURL(t *testing.T) {
 
 	// 缺少参数
 	l = newLexer([]rune(" "), 100, "file.go")
-	a.ErrorType(l.scanApiURL(d), SyntaxError(5))
+	a.ErrorType(l.scanApiURL(d), synerr)
 
 	// 多个参数
 	l = newLexer([]rune("  api/login abctest/adf"), 100, "file.go")
@@ -200,7 +202,7 @@ func TestLexer_scanApiMethods(t *testing.T) {
 
 	// 缺少参数
 	l = newLexer([]rune(" "), 100, "file.go")
-	a.ErrorType(l.scanApiMethods(d), SyntaxError(7))
+	a.ErrorType(l.scanApiMethods(d), synerr)
 
 	// 多个参数
 	l = newLexer([]rune("  get post"), 100, "file.go")
@@ -224,7 +226,7 @@ func TestLexer_scanApiVersion(t *testing.T) {
 
 	// 缺少参数
 	l = newLexer([]rune(" "), 100, "file.go")
-	a.ErrorType(l.scanApiVersion(d), SyntaxError(1))
+	a.ErrorType(l.scanApiVersion(d), synerr)
 
 	// 多个参数
 	l = newLexer([]rune("  0.1.1  abcd"), 100, "file.go")
@@ -243,7 +245,7 @@ func TestLexer_scanApiGroup(t *testing.T) {
 
 	// 缺少参数
 	l = newLexer([]rune(" "), 100, "file.go")
-	a.ErrorType(l.scanApiGroup(d), SyntaxError(0))
+	a.ErrorType(l.scanApiGroup(d), synerr)
 
 	// 多个参数
 	l = newLexer([]rune("  g1  abcd"), 100, "file.go")
@@ -321,12 +323,12 @@ func TestLexer_scanApiParam(t *testing.T) {
 	// 缺少参数
 	l = newLexer([]rune("id int \n"), 100, "file.go")
 	p, err = l.scanApiParam()
-	a.ErrorType(err, SyntaxError(0)).Nil(p)
+	a.ErrorType(err, synerr).Nil(p)
 
 	// 缺少参数
 	l = newLexer([]rune("id  \n"), 100, "file.go")
 	p, err = l.scanApiParam()
-	a.ErrorType(err, SyntaxError(0)).Nil(p)
+	a.ErrorType(err, synerr).Nil(p)
 }
 
 func TestLexer_scanApi(t *testing.T) {
@@ -359,7 +361,7 @@ func TestLexer_scanApi(t *testing.T) {
 
 	// 没有任何参数
 	l = newLexer([]rune("  "), 100, "file.go")
-	a.ErrorType(l.scanApi(d), SyntaxError(0))
+	a.ErrorType(l.scanApi(d), synerr)
 }
 
 func TestLexer_scanApiRequest(t *testing.T) {
@@ -481,7 +483,7 @@ func TestLexer_scanApiStatus(t *testing.T) {
 @apiStatus
 `
 	l = newLexer([]rune(code), 100, "file.go")
-	a.ErrorType(l.scanApiStatus(d), SyntaxError(0))
+	a.ErrorType(l.scanApiStatus(d), synerr)
 }
 
 func TestLexer_scan(t *testing.T) {

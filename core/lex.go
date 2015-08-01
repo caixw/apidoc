@@ -20,6 +20,7 @@ type lexer struct {
 }
 
 // line data在源文件中的起始行号
+// file data所在的源文件名称
 func newLexer(data []rune, line int, file string) *lexer {
 	return &lexer{
 		data: data,
@@ -41,7 +42,10 @@ func (l *lexer) lineNumber() (count int) {
 
 // 返回一个语法错误的error接口。
 func (l *lexer) syntaxError() error {
-	return SyntaxError(l.lineNumber())
+	return &SyntaxError{
+		line: l.lineNumber(),
+		file: l.file,
+	}
 }
 
 // 获取下一个字符。

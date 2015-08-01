@@ -59,10 +59,13 @@ type example struct {
 }
 
 // 语法法错误，语法比较简单，仅包含了在第几行发生错误。
-type SyntaxError int
+type SyntaxError struct {
+	line int
+	file string
+}
 
-func (err SyntaxError) Error() string {
-	return fmt.Sprint("在%v行发生语法错误", err)
+func (err *SyntaxError) Error() string {
+	return fmt.Sprint("在%v文件的第%v行发生语法错误", err.file, err.line)
 }
 
 func NewTree() *Tree {
