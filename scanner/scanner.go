@@ -19,7 +19,8 @@ import (
 
 const eof = -1
 
-type scanFunc func(*scanner) ([]rune, error)
+// 扫描scanner中的代码，提取最近的下一个代码块和其开始的行号。
+type scanFunc func(*scanner) ([]rune, int, error)
 
 type scanner struct {
 	f     scanFunc
@@ -98,7 +99,8 @@ func (s *scanner) skipSpace() {
 
 // 当前所在的行号
 func (s *scanner) lineNumber() int {
-	return bytes.Count(s.data[:s.pos], []byte("\n"))
+	// 当前行应该是\n数量加1
+	return bytes.Count(s.data[:s.pos], []byte("\n")) + 1
 }
 
 // 扫描指定的文件到docs
@@ -113,7 +115,7 @@ func (s *scanner) scan(path string) error {
 	s.pos = 0
 
 	for !s.atEOF() {
-		block, err := s.f(s)
+		block, lineNum, err := s.f(s)
 		if err != nil {
 			return err
 		}
@@ -128,7 +130,7 @@ func (s *scanner) scan(path string) error {
 			continue
 		}
 
-		err = s.docs.Scan(block, s.lineNumber(), path)
+		err = s.docs.Scan(block, lineNum, path)
 		if err != nil {
 			return err
 		}

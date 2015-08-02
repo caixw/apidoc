@@ -52,9 +52,9 @@ func TestCStyle(t *testing.T) {
 		s := &scanner{
 			data: []byte(code),
 		}
-		block, err := cstyle(s)
+		block, ln, err := cstyle(s)
 		a.NotError(err).NotNil(block)
-		a.Equal(block, comment)
+		a.Equal(block, comment).Equal(ln, 2)
 	}
 
 	fn(code1, comment1)

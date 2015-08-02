@@ -62,7 +62,7 @@ type SyntaxError struct {
 }
 
 func (err *SyntaxError) Error() string {
-	return fmt.Sprint("在%v文件的第%v行发生语法错误", err.File, err.Line)
+	return fmt.Sprintf("在[%v:%v]发生语法错误", err.File, err.Line)
 }
 
 func NewDocs() Docs {

@@ -30,14 +30,14 @@ func newLexer(data []rune, line int, file string) *lexer {
 }
 
 // 当前位置在源代码中的行号
-func (l *lexer) lineNumber() (count int) {
-	count = l.line
+func (l *lexer) lineNumber() int {
+	count := l.line
 	for i := 0; i < l.pos; i++ {
 		if l.data[i] == '\n' {
 			count++
 		}
 	}
-	return
+	return count
 }
 
 // 返回一个语法错误的error接口。
