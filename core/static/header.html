@@ -5,13 +5,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="generator" content="https://github.com/caixw/apidoc">
-        <title>{{.title}}|apidoc</title>
+        <title>
+        {{if .CurrGroup}}
+            {{.CurrGroup}} &#8250; apidoc
+        {{else}}
+            apidoc
+        {{end}}
+        </title>
         <link rel="stylesheet" href="./style.css" />
         <script src="./jquery-2.1.4.min.js"></script>
     </head>
     <body>
         <header>
-            <span class="title">APIDOC</span> {{.version}}
+            <span class="title"><a href="./index.html">APIDOC</a></span><span>{{.Version}}</span>
+            <select id="groups">
+                {{$currGroup := .CurrGroup}}
+                {{range $key, $val := .Groups}}
+                <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$val}}">{{$key}}</option>
+                {{end}}
+            </select>
             <div class="fr filter">
                 <label><input type="checkbox" checked="checked" value="get">GET</label>
                 <label><input type="checkbox" checked="checked" value="post">POST</label>

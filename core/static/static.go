@@ -58,6 +58,10 @@ header .filter{
     margin-top:0.8em;
 }
 
+header #groups{
+    margin-left:20%;
+}
+
 header label{
     margin-left:1em;
     vertical-align: bottom;
@@ -162,8 +166,8 @@ var Templates=map[string]string{
 "./index.html":`{{define "index"}}
     <div class="main">
         <h1>模块列表</h1>
-        {{range $key, $doc:=.Docs}}
-            <h2><a href="./group_{{$key}}.html">{{$key}}</a></h2>
+        {{range $key, $val := .Groups}}
+            <h2><a href="{{$val}}">{{$key}}</a></h2>
         {{end}}
     </div>
 {{end}}
@@ -270,13 +274,25 @@ var Templates=map[string]string{
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="generator" content="https://github.com/caixw/apidoc">
-        <title>apidoc</title>
+        <title>
+        {{if .CurrGroup}}
+            {{.CurrGroup}} &#8250; apidoc
+        {{else}}
+            apidoc
+        {{end}}
+        </title>
         <link rel="stylesheet" href="./style.css" />
         <script src="./jquery-2.1.4.min.js"></script>
     </head>
     <body>
         <header>
-            <span class="title">APIDOC</span> {{.Version}}
+            <span class="title"><a href="./index.html">APIDOC</a></span><span>{{.Version}}</span>
+            <select id="groups">
+                {{$currGroup := .CurrGroup}}
+                {{range $key, $val := .Groups}}
+                <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$val}}">{{$key}}</option>
+                {{end}}
+            </select>
             <div class="fr filter">
                 <label><input type="checkbox" checked="checked" value="get">GET</label>
                 <label><input type="checkbox" checked="checked" value="post">POST</label>
@@ -290,17 +306,21 @@ var Templates=map[string]string{
 `,"./footer.html":`{{define "footer"}}
     </div><!-- end .main -->
         <footer>
-            <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>编译于<time id="date">{{.}}</time></p>
+            <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>编译于<time id="date">{{.Date}}</time></p>
         </footer>
         <script>
-            $(document).ready(function(){
-                $('header .filter input').on('change', function(){
-                    var val = $(this).attr('value');
-                    $('.main section.'+val).each(function(index, elem){
-                        $(elem).slideToggle();
-                    });
-                })
+        $(document).ready(function(){
+            $('header .filter input').on('change', function(){
+                var val = $(this).attr('value');
+                $('.main section.'+val).each(function(index, elem){
+                    $(elem).slideToggle();
+                });
+            })
+
+            $('#groups').on('change', function(){
+                window.location.href = $(this).find('option:selected').val();
             });
+        });
         </script>
     </body>
 </html>

@@ -6,12 +6,10 @@ package core
 
 import (
 	"fmt"
-	"time"
 )
 
 type Tree struct {
 	Docs    map[string][]*doc // 按apiGroup分组的文档结构。
-	Date    string            // 编译时间。
 	Version string            // 程序的版本号
 }
 
@@ -71,6 +69,5 @@ func (err *SyntaxError) Error() string {
 func NewTree() *Tree {
 	return &Tree{
 		Docs: map[string][]*doc{},
-		Date: time.Now().Format(time.RFC3339),
 	}
 }

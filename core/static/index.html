@@ -1,8 +1,8 @@
 {{define "index"}}
     <div class="main">
         <h1>模块列表</h1>
-        {{range $key, $doc:=.Docs}}
-            <h2><a href="./group_{{$key}}.html">{{$key}}</a></h2>
+        {{range $key, $val := .Groups}}
+            <h2><a href="{{$val}}">{{$key}}</a></h2>
         {{end}}
     </div>
 {{end}}

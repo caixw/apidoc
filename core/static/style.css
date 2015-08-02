@@ -53,6 +53,10 @@ header .filter{
     margin-top:0.8em;
 }
 
+header #groups{
+    margin-left:20%;
+}
+
 header label{
     margin-left:1em;
     vertical-align: bottom;
