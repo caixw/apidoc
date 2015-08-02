@@ -8,10 +8,7 @@ import (
 	"fmt"
 )
 
-type Tree struct {
-	Docs    map[string][]*doc // 按apiGroup分组的文档结构。
-	Version string            // 程序的版本号
-}
+type Docs map[string][]*doc
 
 // 表示一个api文档。
 type doc struct {
@@ -66,8 +63,6 @@ func (err *SyntaxError) Error() string {
 	return fmt.Sprint("在%v文件的第%v行发生语法错误", err.file, err.line)
 }
 
-func NewTree() *Tree {
-	return &Tree{
-		Docs: map[string][]*doc{},
-	}
+func NewDocs() Docs {
+	return map[string][]*doc{}
 }

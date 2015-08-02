@@ -23,7 +23,7 @@ type scanFunc func(*scanner) ([]rune, error)
 
 type scanner struct {
 	f     scanFunc
-	tree  *core.Tree
+	docs  core.Docs
 	data  []byte
 	pos   int
 	width int
@@ -32,7 +32,7 @@ type scanner struct {
 func newScanner(f scanFunc) (*scanner, error) {
 	return &scanner{
 		f:    f,
-		tree: core.NewTree(),
+		docs: core.NewDocs(),
 	}, nil
 }
 
@@ -96,7 +96,7 @@ func (s *scanner) lineNumber() int {
 	return bytes.Count(s.data[:s.pos], []byte("\n"))
 }
 
-// 扫描指定的文件到tree
+// 扫描指定的文件到docs
 func (s *scanner) scan(path string) error {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -123,7 +123,7 @@ func (s *scanner) scan(path string) error {
 			continue
 		}
 
-		err = s.tree.Scan(block, s.lineNumber(), path)
+		err = s.docs.Scan(block, s.lineNumber(), path)
 		if err != nil {
 			return err
 		}
@@ -136,7 +136,7 @@ func (s *scanner) scan(path string) error {
 // recursive 是否递归查询dir子目录下的内容；
 // langName 语言名称，不区分大小写，所有代码都将按该语言的语法进行分析；
 // exts 可分析的文件扩展名，扩展名必须以点号开头，若不指定，则使用默认的扩展名。
-func Scan(dir string, recursive bool, langName string, exts []string) (*core.Tree, error) {
+func Scan(dir string, recursive bool, langName string, exts []string) (core.Docs, error) {
 	if len(langName) == 0 {
 		var err error
 		if len(exts) == 0 {
@@ -177,7 +177,7 @@ func Scan(dir string, recursive bool, langName string, exts []string) (*core.Tre
 		}
 	}
 
-	return s.tree, nil
+	return s.docs, nil
 }
 
 // 从扩展名检测其所属的语言名称。

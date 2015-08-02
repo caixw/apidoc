@@ -15,7 +15,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.1.10.150802"
+const version = "0.1.11.150802"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 
@@ -81,19 +81,18 @@ func main() {
 		exts = strings.Split(strings.TrimSpace(ext), ",")
 	}
 
-	tree, err := scanner.Scan(flag.Arg(0), r, t, exts)
+	docs, err := scanner.Scan(flag.Arg(0), r, t, exts)
 	if err != nil {
 		panic(err)
 	}
 
-	tree.Version = version
-	if err = tree.OutputHtml(flag.Arg(1)); err != nil {
+	if err = docs.OutputHtml(flag.Arg(1), version); err != nil {
 		panic(err)
 	}
 }
 
 func printLangs() {
-	fmt.Println("目前支持以下类型的代码解析")
+	fmt.Println("目前支持以下类型的代码解析:")
 	langs := scanner.Langs()
 	for _, l := range langs {
 		fmt.Println(l)

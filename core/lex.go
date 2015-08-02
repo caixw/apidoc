@@ -463,19 +463,19 @@ func (l *lexer) scanApi(d *doc) error {
 	return nil
 }
 
-// 扫描data，将其内容分解成doc实例，并写入到tree中
-func (tree *Tree) Scan(data []rune, line int, file string) error {
+// 扫描data，将其内容分解成doc实例，并写入到docs中
+func (docs Docs) Scan(data []rune, line int, file string) error {
 	l := newLexer(data, line, file)
 	d, err := l.scan()
 	if err != nil || d == nil {
 		return err
 	}
 
-	g, found := tree.Docs[d.Group]
+	g, found := docs[d.Group]
 	if !found {
 		g = make([]*doc, 0, 1)
 	}
 
-	tree.Docs[d.Group] = append(g, d)
+	docs[d.Group] = append(g, d)
 	return nil
 }

@@ -20,8 +20,9 @@ type info struct {
 	Version   string            // 程序版本
 }
 
-// 将内容以html格式输出到destDir目录下。
-func (tree *Tree) OutputHtml(destDir string) error {
+// 将docs的内容以html格式输出到destDir目录下。
+// version为当前程序的版本号，有可能会输出到文档页面。
+func (docs Docs) OutputHtml(destDir, version string) error {
 	destDir += string(os.PathSeparator)
 
 	t := template.New("core")
@@ -30,19 +31,19 @@ func (tree *Tree) OutputHtml(destDir string) error {
 	}
 
 	i := &info{
-		Version: tree.Version,
+		Version: version,
 		Date:    time.Now().Format(time.RFC3339),
-		Groups:  make(map[string]string, len(tree.Docs)),
+		Groups:  make(map[string]string, len(docs)),
 	}
-	for k, _ := range tree.Docs {
+	for k, _ := range docs {
 		i.Groups[k] = "./group_" + k + ".html"
 	}
 
-	if err := tree.outputIndex(t, i, destDir); err != nil {
+	if err := outputIndex(t, i, destDir); err != nil {
 		return err
 	}
 
-	if err := tree.outputGroup(t, i, destDir); err != nil {
+	if err := outputGroup(docs, t, i, destDir); err != nil {
 		return err
 	}
 
@@ -51,7 +52,7 @@ func (tree *Tree) OutputHtml(destDir string) error {
 }
 
 // 输出索引页
-func (tree *Tree) outputIndex(t *template.Template, i *info, destDir string) error {
+func outputIndex(t *template.Template, i *info, destDir string) error {
 	index, err := os.Create(destDir + "index.html")
 	if err != nil {
 		return err
@@ -71,8 +72,8 @@ func (tree *Tree) outputIndex(t *template.Template, i *info, destDir string) err
 }
 
 // 按分组输出内容页
-func (tree *Tree) outputGroup(t *template.Template, i *info, destDir string) error {
-	for k, v := range tree.Docs {
+func outputGroup(docs Docs, t *template.Template, i *info, destDir string) error {
+	for k, v := range docs {
 		group, err := os.Create(destDir + "group_" + k + ".html")
 		if err != nil {
 			return err

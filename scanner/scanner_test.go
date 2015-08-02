@@ -80,7 +80,7 @@ func TestScanner_scan(t *testing.T) {
 
 	a.NotError(s.scan("./testcode/php1.php"))
 
-	php1, found := s.tree.Docs["php1"]
+	php1, found := s.docs["php1"]
 	a.True(found).NotNil(php1)
 
 	a.Equal(php1[0].Methods, "get").
@@ -90,16 +90,16 @@ func TestScanner_scan(t *testing.T) {
 func TestScan(t *testing.T) {
 	a := assert.New(t)
 
-	tree, err := Scan("./testcode", true, "", nil)
-	a.NotError(err).NotNil(tree)
+	docs, err := Scan("./testcode", true, "", nil)
+	a.NotError(err).NotNil(docs)
 
-	php1, found := tree.Docs["php1"]
+	php1, found := docs["php1"]
 	a.True(found).NotNil(php1)
 
 	a.Equal(php1[0].Methods, "get").
 		Equal(php1[0].URL, "/api/php1/get")
 
-	php2, found := tree.Docs["php2"]
+	php2, found := docs["php2"]
 	a.True(found).NotNil(php2)
 
 	a.Equal(php2[0].Methods, "get").
