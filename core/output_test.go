@@ -66,12 +66,12 @@ func TestLexer_OutputHtml(t *testing.T) {
 	// 创建测试目录
 	a.NotError(os.MkdirAll(testdir, os.ModePerm), "无法创建测试目录")
 
-	tree := NewTree()
-	a.NotNil(tree)
+	docs := NewDocs()
+	a.NotNil(docs)
 
-	a.NotError(tree.Scan([]rune(block1), 1, "test1.go"))
-	a.NotError(tree.Scan([]rune(block2), 100, "test1.go"))
-	a.NotError(tree.Scan([]rune(block3), 1, "test2.go"))
+	a.NotError(docs.Scan([]rune(block1), 1, "test1.go"))
+	a.NotError(docs.Scan([]rune(block2), 100, "test1.go"))
+	a.NotError(docs.Scan([]rune(block3), 1, "test2.go"))
 
-	a.NotError(tree.OutputHtml(testdir))
+	a.NotError(docs.OutputHtml(testdir, "v0.1"))
 }
