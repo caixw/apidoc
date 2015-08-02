@@ -43,8 +43,8 @@ func (l *lexer) lineNumber() (count int) {
 // 返回一个语法错误的error接口。
 func (l *lexer) syntaxError() error {
 	return &SyntaxError{
-		line: l.lineNumber(),
-		file: l.file,
+		Line: l.lineNumber(),
+		File: l.file,
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 	"fmt"
 )
 
+// 按doc.Group进行分类的api集合。
 type Docs map[string][]*doc
 
 // 表示一个api文档。
@@ -24,6 +25,7 @@ type doc struct {
 	Status      []*status // 各种状态码下返回的数据描述
 }
 
+// 表示api请求数据
 type request struct {
 	Type     string            // 请求的类型，xml或是json
 	Headers  map[string]string // 请求必须携带的头
@@ -33,7 +35,7 @@ type request struct {
 
 // 表示一次请求或是返回的数据。
 type status struct {
-	Code     string            // 状态码
+	Code     string            // http状态码
 	Summary  string            // 该状态下的简要描述
 	Headers  map[string]string // 必须提交的头信息或是返回的头信息。
 	Params   []*param          // 提交或是返回数据的各个字段描述
@@ -53,14 +55,14 @@ type example struct {
 	Code string // 示例代码
 }
 
-// 语法法错误，语法比较简单，仅包含了在第几行发生错误。
+// 语法错误。
 type SyntaxError struct {
-	line int
-	file string
+	Line int
+	File string
 }
 
 func (err *SyntaxError) Error() string {
-	return fmt.Sprint("在%v文件的第%v行发生语法错误", err.file, err.line)
+	return fmt.Sprint("在%v文件的第%v行发生语法错误", err.File, err.Line)
 }
 
 func NewDocs() Docs {

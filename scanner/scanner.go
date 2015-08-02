@@ -36,10 +36,12 @@ func newScanner(f scanFunc) (*scanner, error) {
 	}, nil
 }
 
+// 是否已经在文件末尾。
 func (s *scanner) atEOF() bool {
 	return s.pos >= len(s.data)
 }
 
+// 获取当前的字符，并将指针指向下一个字符。
 func (s *scanner) next() rune {
 	if s.atEOF() {
 		return eof
@@ -51,6 +53,7 @@ func (s *scanner) next() rune {
 	return r
 }
 
+// 是否匹配指定的字符串，若匹配，则将指定移向该字符串这后，否则不作任何操作。
 func (s *scanner) match(str string) bool {
 	rs := []rune(str)
 	if s.atEOF() {
@@ -73,11 +76,13 @@ func (s *scanner) match(str string) bool {
 	return true
 }
 
+// 撤消s.next()/s.match()的最后一次操作。
 func (s *scanner) backup() {
 	s.pos -= s.width
 	s.width = 0
 }
 
+// 跳过之后的所有空白字符。
 func (s *scanner) skipSpace() {
 	if s.atEOF() {
 		return
@@ -132,7 +137,7 @@ func (s *scanner) scan(path string) error {
 	return nil
 }
 
-// 分析dir目录下的文件。并将其转换为*core.Tree类型返回。
+// 分析dir目录下的文件。并将其转换为core.Docs类型返回。
 // recursive 是否递归查询dir子目录下的内容；
 // langName 语言名称，不区分大小写，所有代码都将按该语言的语法进行分析；
 // exts 可分析的文件扩展名，扩展名必须以点号开头，若不指定，则使用默认的扩展名。
