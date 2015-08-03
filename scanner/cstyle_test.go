@@ -54,7 +54,7 @@ func TestCStyle(t *testing.T) {
 		}
 		block, ln, err := cstyle(s)
 		a.NotError(err).NotNil(block)
-		a.Equal(block, comment).Equal(ln, 2)
+		a.Equal(block, comment).Equal(ln, 3)
 	}
 
 	fn(code1, comment1)

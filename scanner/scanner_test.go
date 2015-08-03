@@ -67,10 +67,10 @@ func TestScanner_lineNumber(t *testing.T) {
 		data: []byte("adf\n\nadf"),
 		pos:  3,
 	}
-	a.Equal(0, s.lineNumber())
+	a.Equal(1, s.lineNumber())
 
 	s.pos = 4
-	a.Equal(1, s.lineNumber())
+	a.Equal(2, s.lineNumber())
 }
 
 func TestScanner_scan(t *testing.T) {
