@@ -83,7 +83,7 @@ func TestScanner_scan(t *testing.T) {
 	php1, found := s.docs["php1"]
 	a.True(found).NotNil(php1)
 
-	a.Equal(php1[0].Methods, "get").
+	a.Equal(php1[0].Method, "get").
 		Equal(php1[0].URL, "/api/php1/get")
 }
 
@@ -96,13 +96,13 @@ func TestScan(t *testing.T) {
 	php1, found := docs["php1"]
 	a.True(found).NotNil(php1)
 
-	a.Equal(php1[0].Methods, "get").
+	a.Equal(php1[0].Method, "get").
 		Equal(php1[0].URL, "/api/php1/get")
 
 	php2, found := docs["php2"]
 	a.True(found).NotNil(php2)
 
-	a.Equal(php2[0].Methods, "get").
+	a.Equal(php2[0].Method, "get").
 		Equal(php2[0].URL, "/api/php2/get")
 }
 

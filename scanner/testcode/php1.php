@@ -5,18 +5,14 @@
 
 class php1 {
     /**
-     @apiURL /api/php1/get
-     @apiMethods get
-     @api get summary
+     @api get /api/php1/get summary
      @apiGroup php1
      */
     final function get() {
     }
 
     /*
-     @apiURL /api/php1/post
-     @apiMethods post
-     @api post summary
+     @api post /api/php1/post summary
      @apiGroup php1
      */
     final function post() {

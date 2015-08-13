@@ -4,16 +4,12 @@
 // license that can be found in the LICENSE file.
 
 class php2 {
-    // @apiURL /api/php2/get
-    // @apiMethods get
-    // @api get summary
+    // @api get /api/php2/get summary
     // @apiGroup php2
     final function get() {
     }
 
-    // @apiURL /api/php2/post
-    // @apiMethods post
-    // @api post summary
+    // @api post /api/php2/post summary
     // @apiGroup php2
     final function post() {
     }
