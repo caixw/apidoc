@@ -172,49 +172,6 @@ func TestLexer_skipSpace(t *testing.T) {
 	a.Equal(eof, l.next())
 }
 
-/*func TestLexer_scanApiURL(t *testing.T) {
-	a := assert.New(t)
-	d := &doc{}
-
-	// 正常情况
-	l := newLexer([]rune("  api/login"), 100, "file.go")
-	a.NotError(l.scanApiURL(d))
-	a.Equal(d.URL, "api/login")
-
-	// 缺少参数
-	l = newLexer([]rune(" "), 100, "file.go")
-	a.ErrorType(l.scanApiURL(d), synerr)
-
-	// 多个参数
-	l = newLexer([]rune("  api/login abctest/adf"), 100, "file.go")
-	a.NotError(l.scanApiURL(d))
-	a.Equal(d.URL, "api/login")
-}
-
-func TestLexer_scanApiMethod(t *testing.T) {
-	a := assert.New(t)
-	d := &doc{}
-
-	// 正常情况
-	l := newLexer([]rune("  get"), 100, "file.go")
-	a.NotError(l.scanApiMethod(d))
-	a.Equal(d.Method, "get")
-
-	// 缺少参数
-	l = newLexer([]rune(" "), 100, "file.go")
-	a.ErrorType(l.scanApiMethod(d), synerr)
-
-	// 多个参数
-	l = newLexer([]rune("  get post"), 100, "file.go")
-	a.NotError(l.scanApiMethod(d))
-	a.Equal(d.Method, "get post")
-
-	// 多个参数
-	l = newLexer([]rune("  get post\n@api"), 100, "file.go")
-	a.NotError(l.scanApiMethod(d))
-	a.Equal(d.Method, "get post")
-}*/
-
 func TestLexer_scanApiVersion(t *testing.T) {
 	a := assert.New(t)
 	d := &doc{}

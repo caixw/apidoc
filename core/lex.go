@@ -213,28 +213,6 @@ LOOP:
 	return d, nil
 }
 
-/*func (l *lexer) scanApiURL(d *doc) error {
-	l.skipSpace()
-	str, _ := l.nextWord()
-	if len(str) == 0 {
-		return l.syntaxError()
-	}
-
-	d.URL = str
-	return nil
-}
-
-func (l *lexer) scanApiMethod(d *doc) error {
-	l.skipSpace()
-	str := l.nextLine()
-	if len(str) == 0 {
-		return l.syntaxError()
-	}
-
-	d.Method = str
-	return nil
-}*/
-
 func (l *lexer) scanApiVersion(d *doc) error {
 	l.skipSpace()
 	str, _ := l.nextWord()
@@ -471,30 +449,6 @@ func (l *lexer) scanApi(d *doc) error {
 	d.Description = string(rs)
 
 	return nil
-	/*l.skipSpace()
-	str := l.nextLine()
-	if len(str) == 0 {
-		return l.syntaxError()
-	}
-	d.Summary = str
-
-	rs := []rune{}
-	for {
-		if l.match("@api") {
-			l.backup()
-			break
-		}
-
-		r := l.next()
-		if r == eof {
-			break
-		}
-
-		rs = append(rs, r)
-	}
-	d.Description = string(rs)
-	return nil
-	*/
 }
 
 // 扫描data，将其内容分解成doc实例，并写入到docs中
