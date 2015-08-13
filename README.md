@@ -5,7 +5,7 @@ apidoc [![Build Status](https://travis-ci.org/caixw/apidoc.svg?branch=master)](h
 
 - @api
 - @apiURL
-- @apiMethods
+- @apiMethod
 - @apiParam
 - @apiQuery
 - @apiVersion
