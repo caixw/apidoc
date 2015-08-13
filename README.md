@@ -4,8 +4,6 @@ apidoc [![Build Status](https://travis-ci.org/caixw/apidoc.svg?branch=master)](h
 提取特定格式的注释，生成api文档。目前支持以下标签：
 
 - @api
-- @apiURL
-- @apiMethod
 - @apiParam
 - @apiQuery
 - @apiVersion

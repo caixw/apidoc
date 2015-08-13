@@ -167,10 +167,6 @@ func (l *lexer) scan() (*doc, error) {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiURL"):
-			err = l.scanApiURL(d)
-		case l.match("@apiMethod"):
-			err = l.scanApiMethod(d)
 		case l.match("@apiVersion"):
 			err = l.scanApiVersion(d)
 		case l.match("@apiGroup"):
@@ -217,7 +213,7 @@ LOOP:
 	return d, nil
 }
 
-func (l *lexer) scanApiURL(d *doc) error {
+/*func (l *lexer) scanApiURL(d *doc) error {
 	l.skipSpace()
 	str, _ := l.nextWord()
 	if len(str) == 0 {
@@ -237,7 +233,7 @@ func (l *lexer) scanApiMethod(d *doc) error {
 
 	d.Method = str
 	return nil
-}
+}*/
 
 func (l *lexer) scanApiVersion(d *doc) error {
 	l.skipSpace()
@@ -437,8 +433,45 @@ func (l *lexer) scanApiParam() (*param, error) {
 }
 
 // 若存在description参数，会原样输出，不会像其它一样去掉前导空格。
+// 扫描以下格式内容：
+//  @api get /test.com/api/user.json api summary
+//  api description
+//  api description
 func (l *lexer) scanApi(d *doc) error {
 	l.skipSpace()
+	eol := false
+	d.Method, eol = l.nextWord()
+	if eol {
+		return l.syntaxError()
+	}
+
+	l.skipSpace()
+	d.URL, eol = l.nextWord()
+	if eol {
+		return l.syntaxError()
+	}
+
+	l.skipSpace()
+	d.Summary = l.nextLine()
+
+	rs := []rune{}
+	for {
+		if l.match("@api") {
+			l.backup()
+			break
+		}
+
+		r := l.next()
+		if r == eof {
+			break
+		}
+
+		rs = append(rs, r)
+	}
+	d.Description = string(rs)
+
+	return nil
+	/*l.skipSpace()
 	str := l.nextLine()
 	if len(str) == 0 {
 		return l.syntaxError()
@@ -461,6 +494,7 @@ func (l *lexer) scanApi(d *doc) error {
 	}
 	d.Description = string(rs)
 	return nil
+	*/
 }
 
 // 扫描data，将其内容分解成doc实例，并写入到docs中

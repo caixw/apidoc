@@ -13,11 +13,9 @@ import (
 
 var (
 	block1 = `
-@api 获取所有用户信息
+@api get /api/users  获取所有用户信息
 获取所有用户的详细信息，包括用户所属的权限组，昵称等。
 若没有权限，则返回空对象。
-@apiURL /api/users
-@apiMethod get
 @apiGroup users
 @apiQuery status string optional 只获取指定状态的数据，可用值为normal, locked
 @apiStatus 200 json 成功获取用户信息
@@ -31,9 +29,7 @@ var (
 @apiStatus 401 none 权限不足
 `
 	block2 = `
-@api 获取指定用户的详细信息
-@apiURL /api/users/{id}
-@apiMethod get
+@api get /api/users/{id} 获取指定用户的详细信息
 @apiParam id int 用户的ID值
 @apiGroup users
 @apiStatus 200 json 成功获取信息
@@ -44,9 +40,7 @@ var (
 {"id":1, "name": "n1", "group": 1}
 `
 	block3 = `
-@api 请求登录用户
-@apiURL /api/auth/login
-@apiMethod post
+@api post /api/auth/login 请求登录用户
 @apiGroup auth
 @apiRequest json
 @apiParam username string 登录用户名

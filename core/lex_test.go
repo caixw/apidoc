@@ -172,7 +172,7 @@ func TestLexer_skipSpace(t *testing.T) {
 	a.Equal(eof, l.next())
 }
 
-func TestLexer_scanApiURL(t *testing.T) {
+/*func TestLexer_scanApiURL(t *testing.T) {
 	a := assert.New(t)
 	d := &doc{}
 
@@ -213,7 +213,7 @@ func TestLexer_scanApiMethod(t *testing.T) {
 	l = newLexer([]rune("  get post\n@api"), 100, "file.go")
 	a.NotError(l.scanApiMethod(d))
 	a.Equal(d.Method, "get post")
-}
+}*/
 
 func TestLexer_scanApiVersion(t *testing.T) {
 	a := assert.New(t)
@@ -336,27 +336,35 @@ func TestLexer_scanApi(t *testing.T) {
 	d := &doc{}
 
 	// 正常情况
-	l := newLexer([]rune("  summary summary\n api description"), 100, "file.go")
+	l := newLexer([]rune(" get test.com/api.json?k=1 summary summary\n api description"), 100, "file.go")
 	a.NotError(l.scanApi(d))
-	a.Equal(d.Summary, "summary summary").
+	a.Equal(d.Method, "get").
+		Equal(d.URL, "test.com/api.json?k=1").
+		Equal(d.Summary, "summary summary").
 		Equal(d.Description, " api description")
 
 	// 多行description
-	l = newLexer([]rune("  summary summary\n api \ndescription\n@api summary"), 100, "file.go")
+	l = newLexer([]rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@api summary"), 100, "file.go")
 	a.NotError(l.scanApi(d))
-	a.Equal(d.Summary, "summary summary").
+	a.Equal(d.URL, "test.com/api.json?K=1").
+		Equal(d.Method, "post").
+		Equal(d.Summary, "summary summary").
 		Equal(d.Description, " api \ndescription\n")
 
 	// 缺少description参数
-	l = newLexer([]rune("summary summary"), 100, "file.go")
+	l = newLexer([]rune("get test.com/api.json summary summary"), 100, "file.go")
 	a.NotError(l.scanApi(d))
-	a.Equal(d.Summary, "summary summary").
+	a.Equal(d.Method, "get").
+		Equal(d.URL, "test.com/api.json").
+		Equal(d.Summary, "summary summary").
 		Equal(d.Description, "")
 
 	// 缺少description参数
-	l = newLexer([]rune("summary summary\n@apiURL"), 100, "file.go")
+	l = newLexer([]rune("get test.com/api.json summary summary\n@apiURL"), 100, "file.go")
 	a.NotError(l.scanApi(d))
-	a.Equal(d.Summary, "summary summary").
+	a.Equal(d.Method, "get").
+		Equal(d.URL, "test.com/api.json").
+		Equal(d.Summary, "summary summary").
 		Equal(d.Description, "")
 
 	// 没有任何参数
@@ -490,11 +498,9 @@ func TestLexer_scan(t *testing.T) {
 	a := assert.New(t)
 
 	code := `
-@api api summary
+@api get /baseurl/api/login api summary
 api description 1
 api description 2
-@apiURL /baseurl/api/login
-@apiMethod get/post
 @apiVersion 1.0
 @apiGroup users
 @apiQuery q1 int q1 summary
