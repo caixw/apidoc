@@ -12,14 +12,13 @@ import (
 	"os"
 )
 
-// 指定产生的文件名。
-const fileName = "static.go"
+const (
+	fileName    = "static.go" // 指定产生的文件名。
+	packageName = "static"    // 指定包名。
 
-// 指定包名。
-const packageName = "static"
-
-// 文件头部的警告内容
-const warning = "// 该文件由make.go自动生成，请勿手动修改！\n\n"
+	// 文件头部的警告内容
+	warning = "// 该文件由make.go自动生成，请勿手动修改！\n\n"
+)
 
 // 指定所有需要序列化的文件名。
 var files = []string{
@@ -27,6 +26,7 @@ var files = []string{
 	"./jquery-2.1.4.min.js",
 }
 
+// 需要序列化的模板文件。
 var templates = []string{
 	"./index.html",
 	"./group.html",
@@ -49,7 +49,16 @@ func main() {
 	w.WriteString(packageName)
 	w.WriteString("\n\n")
 
-	// 输出files变量的整体。
+	makeStatic(w)
+	makeTemplates(w)
+
+	if err = w.Flush(); err != nil {
+		panic(err)
+	}
+}
+
+// 输出files变量的整体。
+func makeStatic(w *bufio.Writer) {
 	w.WriteString("var files=map[string][]byte{\n")
 	for _, file := range files {
 		data, err := ioutil.ReadFile(file)
@@ -65,8 +74,10 @@ func main() {
 		w.WriteString("`),")
 	}
 	w.WriteString("}\n")
+}
 
-	// 输出template变量的整体。
+// 输出template变量的整体。
+func makeTemplates(w *bufio.Writer) {
 	w.WriteString("var Templates=map[string]string{\n")
 	for _, file := range templates {
 		data, err := ioutil.ReadFile(file)
@@ -82,8 +93,4 @@ func main() {
 		w.WriteString("`,")
 	}
 	w.WriteString("}\n")
-
-	if err = w.Flush(); err != nil {
-		panic(err)
-	}
 }
