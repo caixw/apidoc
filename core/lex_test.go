@@ -191,28 +191,28 @@ func TestLexer_scanApiURL(t *testing.T) {
 	a.Equal(d.URL, "api/login")
 }
 
-func TestLexer_scanApiMethods(t *testing.T) {
+func TestLexer_scanApiMethod(t *testing.T) {
 	a := assert.New(t)
 	d := &doc{}
 
 	// 正常情况
 	l := newLexer([]rune("  get"), 100, "file.go")
-	a.NotError(l.scanApiMethods(d))
-	a.Equal(d.Methods, "get")
+	a.NotError(l.scanApiMethod(d))
+	a.Equal(d.Method, "get")
 
 	// 缺少参数
 	l = newLexer([]rune(" "), 100, "file.go")
-	a.ErrorType(l.scanApiMethods(d), synerr)
+	a.ErrorType(l.scanApiMethod(d), synerr)
 
 	// 多个参数
 	l = newLexer([]rune("  get post"), 100, "file.go")
-	a.NotError(l.scanApiMethods(d))
-	a.Equal(d.Methods, "get post")
+	a.NotError(l.scanApiMethod(d))
+	a.Equal(d.Method, "get post")
 
 	// 多个参数
 	l = newLexer([]rune("  get post\n@api"), 100, "file.go")
-	a.NotError(l.scanApiMethods(d))
-	a.Equal(d.Methods, "get post")
+	a.NotError(l.scanApiMethod(d))
+	a.Equal(d.Method, "get post")
 }
 
 func TestLexer_scanApiVersion(t *testing.T) {
@@ -494,7 +494,7 @@ func TestLexer_scan(t *testing.T) {
 api description 1
 api description 2
 @apiURL /baseurl/api/login
-@apiMethods get/post
+@apiMethod get/post
 @apiVersion 1.0
 @apiGroup users
 @apiQuery q1 int q1 summary

@@ -119,7 +119,7 @@ header label{
     margin:1em 0em;
 }
 
-.main .methods{
+.main .method{
     margin-right:2em;
     text-transform:uppercase;
 }
@@ -172,9 +172,9 @@ var Templates=map[string]string{
     </div>
 {{end}}
 `,"./group.html":`{{define "group"}}
-<section class="{{.Methods}}">
+<section class="{{.Method}}">
     <h3>
-        <span class="methods">{{.Methods}}</span>
+        <span class="method">{{.Method}}</span>
         <span class="url">{{.URL}}</span>
     </h3>
     <p>{{.Summary}}</p>

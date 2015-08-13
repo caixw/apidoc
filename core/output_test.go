@@ -17,7 +17,7 @@ var (
 获取所有用户的详细信息，包括用户所属的权限组，昵称等。
 若没有权限，则返回空对象。
 @apiURL /api/users
-@apiMethods get
+@apiMethod get
 @apiGroup users
 @apiQuery status string optional 只获取指定状态的数据，可用值为normal, locked
 @apiStatus 200 json 成功获取用户信息
@@ -33,7 +33,7 @@ var (
 	block2 = `
 @api 获取指定用户的详细信息
 @apiURL /api/users/{id}
-@apiMethods get
+@apiMethod get
 @apiParam id int 用户的ID值
 @apiGroup users
 @apiStatus 200 json 成功获取信息
@@ -46,7 +46,7 @@ var (
 	block3 = `
 @api 请求登录用户
 @apiURL /api/auth/login
-@apiMethods post
+@apiMethod post
 @apiGroup auth
 @apiRequest json
 @apiParam username string 登录用户名

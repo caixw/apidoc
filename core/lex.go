@@ -169,8 +169,8 @@ LOOP:
 		switch {
 		case l.match("@apiURL"):
 			err = l.scanApiURL(d)
-		case l.match("@apiMethods"):
-			err = l.scanApiMethods(d)
+		case l.match("@apiMethod"):
+			err = l.scanApiMethod(d)
 		case l.match("@apiVersion"):
 			err = l.scanApiVersion(d)
 		case l.match("@apiGroup"):
@@ -210,7 +210,7 @@ LOOP:
 	} // end for
 
 	// doc的必要数据没有被初始化，说明这段代码不是api文档格式。
-	if len(d.URL) == 0 || len(d.Methods) == 0 {
+	if len(d.URL) == 0 || len(d.Method) == 0 {
 		return nil, nil
 	}
 
@@ -228,14 +228,14 @@ func (l *lexer) scanApiURL(d *doc) error {
 	return nil
 }
 
-func (l *lexer) scanApiMethods(d *doc) error {
+func (l *lexer) scanApiMethod(d *doc) error {
 	l.skipSpace()
 	str := l.nextLine()
 	if len(str) == 0 {
 		return l.syntaxError()
 	}
 
-	d.Methods = str
+	d.Method = str
 	return nil
 }
 

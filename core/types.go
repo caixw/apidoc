@@ -15,7 +15,7 @@ type Docs map[string][]*doc
 type doc struct {
 	Group       string    // 所属分组
 	Version     string    // 版本号
-	Methods     string    // 请求的方法，GET，POST等
+	Method      string    // 请求的方法，GET，POST等
 	URL         string    // 请求地址
 	Summary     string    // 简要描述
 	Description string    // 详细描述
