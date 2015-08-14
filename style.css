@@ -1,0 +1,46 @@
+header{
+    padding:0.5em;
+    background:white;
+    border-bottom:1px solid #eee;
+    position:fixed;
+    z-index:10;
+    top:0;
+    left:0;
+    right:0;
+}
+
+header .menu{
+    font-size:1.2em !important;
+}
+
+
+footer{
+    padding:1em;
+    margin-top:2em;
+    border-top:1px solid #eee;
+    background:white;
+}
+
+footer p{
+    margin:0em 0em 0.5em 0em;
+    padding:0em;
+}
+
+code, pre{
+    border:1px solid #eee;
+    border-radius:3px;
+    padding:0.1em 0.5em;
+}
+
+#main{
+    margin-top:6.5em;
+}
+
+#main article{
+    margin-top:2em;
+}
+
+#main article h3{
+    padding:0em;
+    margin:1.2em 0em 0.5em 0em;
+}
