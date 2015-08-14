@@ -1,30 +1,8 @@
 apidoc [![Build Status](https://travis-ci.org/caixw/apidoc.svg?branch=master)](https://travis-ci.org/caixw/apidoc)
 ======
 
-提取特定格式的注释，生成api文档。目前支持以下标签：
-
-- @api
-- @apiParam
-- @apiQuery
-- @apiVersion
-- @apiGroup
-- @apiRequest
-- @apiHeader
-- @apiStatus
-- @apiExample
-
-
-#### 命令行语法:
-```shell
-apidoc [options] src doc
-
-src:
- 源文件所在的目录。
-doc:
- 产生的文档所在的目录。
-```
-详细内容可参参考程序-h参数。
-
+apidoc是一个简单的RESTful api文档生成工具，它从代码注释中提取特定格式的内容，生成文档。
+具体文档可参考:https://caixw.github.io/apidoc/
 
 ### 安装
 
