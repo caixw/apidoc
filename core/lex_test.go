@@ -172,25 +172,6 @@ func TestLexer_skipSpace(t *testing.T) {
 	a.Equal(eof, l.next())
 }
 
-func TestLexer_scanApiVersion(t *testing.T) {
-	a := assert.New(t)
-	d := &doc{}
-
-	// 正常情况
-	l := newLexer([]rune("  0.1.1"), 100, "file.go")
-	a.NotError(l.scanApiVersion(d))
-	a.Equal(d.Version, "0.1.1")
-
-	// 缺少参数
-	l = newLexer([]rune(" "), 100, "file.go")
-	a.ErrorType(l.scanApiVersion(d), synerr)
-
-	// 多个参数
-	l = newLexer([]rune("  0.1.1  abcd"), 100, "file.go")
-	a.NotError(l.scanApiVersion(d))
-	a.Equal(d.Version, "0.1.1")
-}
-
 func TestLexer_scanApiGroup(t *testing.T) {
 	a := assert.New(t)
 	d := &doc{}
@@ -458,7 +439,6 @@ func TestLexer_scan(t *testing.T) {
 @api get /baseurl/api/login api summary
 api description 1
 api description 2
-@apiVersion 1.0
 @apiGroup users
 @apiQuery q1 int q1 summary
 @apiQuery q2 int q2 summary
@@ -487,8 +467,7 @@ api description 2
 	d, err := l.scan()
 	a.NotError(err).NotNil(d)
 
-	a.Equal(d.Version, "1.0").
-		Equal(d.URL, "/baseurl/api/login").
+	a.Equal(d.URL, "/baseurl/api/login").
 		Equal(d.Group, "users").
 		Equal(d.Summary, "api summary").
 		Equal(d.Description, "api description 1\napi description 2\n")

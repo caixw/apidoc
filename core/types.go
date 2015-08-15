@@ -14,7 +14,6 @@ type Docs map[string][]*doc
 // 表示一个api文档。
 type doc struct {
 	Group       string    // 所属分组
-	Version     string    // 版本号
 	Method      string    // 请求的方法，GET，POST等
 	URL         string    // 请求地址
 	Summary     string    // 简要描述

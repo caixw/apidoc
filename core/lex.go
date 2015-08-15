@@ -167,8 +167,6 @@ func (l *lexer) scan() (*doc, error) {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiVersion"):
-			err = l.scanApiVersion(d)
 		case l.match("@apiGroup"):
 			err = l.scanApiGroup(d)
 		case l.match("@apiQuery"):
@@ -211,17 +209,6 @@ LOOP:
 	}
 
 	return d, nil
-}
-
-func (l *lexer) scanApiVersion(d *doc) error {
-	l.skipSpace()
-	str, _ := l.nextWord()
-	if len(str) == 0 {
-		return l.syntaxError()
-	}
-
-	d.Version = str
-	return nil
 }
 
 func (l *lexer) scanApiGroup(d *doc) error {
