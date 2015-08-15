@@ -13,10 +13,10 @@ const eof = -1
 
 type lexer struct {
 	data  []rune
-	line  int    // data所在的起始行数
+	line  int    // data在file文件中行号
 	file  string // 源文件名称
-	pos   int    // 当前位置
-	width int    // 最后移动位置的大小
+	pos   int    // 当前指针位置
+	width int    // 最后移的字符数量
 }
 
 // line data在源文件中的起始行号
@@ -48,71 +48,64 @@ func (l *lexer) syntaxError() error {
 	}
 }
 
-// 获取下一个字符。
-// 可通过lexer.backup来撤消最后一次调用。
-func (l *lexer) next() rune {
-	if l.pos >= len(l.data) {
-		return eof
-	}
-
-	r := l.data[l.pos]
-	l.pos++
-	l.width = 1
-	return r
-}
-
-// 读取从当前位置到换行符\n之间的内容，不包含换行符\n。
-// l.pos跳过\n字符。
-// 可通过lexer.backup来撤消最后一次调用。
-func (l *lexer) nextLine() string {
-	rs := []rune{}         // 缓存本次操作的字符串
-	width := l.skipSpace() // width 缓存本次操作的字符宽度，NOTE:记得在返回之前赋值给lexer.width
+// 读取从当前位置到delimiter之间的所有字符,会去掉尾部空格
+func (l *lexer) read(delimiter string) string {
+	rs := []rune{}
 
 	for {
-		if l.pos >= len(l.data) { // 提前结束
-			l.width = width
-			return string(rs)
+		if l.pos >= len(l.data) || l.match(delimiter) { // EOF或是到了下个标签处
+			if delimiter != "\n" {
+				l.backup() // 若是eof，backup不会发生任何操作
+			}
+			break
+		}
+		rs = append(rs, l.data[l.pos])
+		l.pos++
+	} // end for
+
+	return strings.TrimSpace(string(rs))
+}
+
+// 读取从当前位置到delimiter之间的所有内容，并按空格分成n个数组。
+func (l *lexer) readN(n int, delimiter string) ([]string, error) {
+	ret := make([]string, 0, n)
+	size := 0
+	rs := []rune{}
+
+	for {
+		if l.pos >= len(l.data) || l.match(delimiter) { // EOF或是到了下个标签处
+			if delimiter != "\n" {
+				l.backup() // 若是eof，backup不会发生任何操作
+			}
+
+			if len(rs) > 0 {
+				// 最后一条数据，去掉尾部空格
+				ret = append(ret, strings.TrimRightFunc(string(rs), unicode.IsSpace))
+			}
+			break
 		}
 
 		r := l.data[l.pos]
 		l.pos++
-		width++
-
-		if r == '\n' {
-			l.width = width
-			return string(rs)
+		if unicode.IsSpace(r) {
+			if len(rs) == 0 { // 多个连续空格
+				continue
+			}
+			if size < n-1 {
+				ret = append(ret, string(rs))
+				rs = rs[:0]
+				size++
+				continue
+			}
 		}
 
 		rs = append(rs, r)
 	} // end for
-}
 
-// 读取当前行内，当前位置到下一个空格之间的单词，
-// 若当前字符为空格，则返回一个空值，且不会移动指针。
-// 可通过lexer.backup来撤消最后一次调用。
-func (l *lexer) nextWord() (str string, eol bool) {
-	rs := []rune{}
-	width := l.skipSpace() // 缓存本次操作的字符宽度，NOTE:记得在返回之前赋值给lexer.width
-
-	for {
-		if l.pos >= len(l.data) {
-			l.width = width
-			return string(rs), true
-		}
-
-		r := l.data[l.pos]
-		l.pos++
-		width++
-
-		if unicode.IsSpace(r) {
-			l.pos--
-			width--
-			l.width = width
-			return string(rs), r == '\n'
-		}
-
-		rs = append(rs, r)
+	if len(ret) < n {
+		return nil, l.syntaxError()
 	}
+	return ret, nil
 }
 
 // 判断接下去的几个字符连接起来是否正好为word，若不匹配，则不移动指针。
@@ -138,29 +131,10 @@ func (l *lexer) match(word string) bool {
 	return true
 }
 
-// 撤消next/nextN/nextLine/nextKeyword/match函数的最后次调用。指针指向执行这些函数之前的位置。
+// 撤消match函数的最后次调用。指针指向执行这些函数之前的位置。
 func (l *lexer) backup() {
 	l.pos -= l.width
 	l.width = 0
-}
-
-// 跳过之后除换行符之外的所有空格。
-// 返回跳过的空格数量
-func (l *lexer) skipSpace() (count int) {
-	for {
-		r := l.next()
-		count++
-		if r == eof {
-			count--
-			return
-		}
-
-		if !unicode.IsSpace(r) || r == '\n' {
-			l.backup()
-			count--
-			return
-		}
-	} // end for
 }
 
 // 扫描文档，生成一个doc实例。
@@ -198,9 +172,10 @@ LOOP:
 		case l.match("@api"): // 放最后
 			err = l.scanApi(d)
 		default:
-			if eof == l.next() { // 去掉无用的字符。
+			if l.pos >= len(l.data) {
 				break LOOP
 			}
+			l.pos++ // 去掉无用的字符。
 		}
 
 		if err != nil {
@@ -216,13 +191,13 @@ LOOP:
 	return d, nil
 }
 
+// @apiGroup version
 func (l *lexer) scanApiGroup(d *doc) error {
-	str, _ := l.nextWord()
-	if len(str) == 0 {
-		return l.syntaxError()
+	words, err := l.readN(1, "\n")
+	if err != nil {
+		return err
 	}
-
-	d.Group = str
+	d.Group = words[0]
 	return nil
 }
 
@@ -238,7 +213,7 @@ func (l *lexer) scanApiQuery(d *doc) error {
 
 func (l *lexer) scanApiRequest(d *doc) error {
 	r := &request{
-		Type:     l.nextLine(),
+		Type:     l.read("\n"),
 		Headers:  map[string]string{},
 		Params:   []*param{},
 		Examples: []*example{},
@@ -248,16 +223,11 @@ LOOP:
 	for {
 		switch {
 		case l.match("@apiHeader"):
-			key, eol := l.nextWord()
-			if eol {
-				return l.syntaxError()
+			words, err := l.readN(2, "\n")
+			if err != nil {
+				return err
 			}
-
-			val := l.nextLine()
-			if len(val) == 0 {
-				return l.syntaxError()
-			}
-			r.Headers[key] = val
+			r.Headers[words[0]] = words[1]
 		case l.match("@apiParam"):
 			p, err := l.scanApiParam()
 			if err != nil {
@@ -274,9 +244,11 @@ LOOP:
 			l.backup()
 			break LOOP
 		default:
-			if eof == l.next() { // 去掉无用的字符。
+			if l.pos >= len(l.data) {
 				break LOOP
 			}
+			l.pos++ // 去掉无用的字符。
+
 		} // end switch
 	} // end for
 
@@ -291,30 +263,22 @@ func (l *lexer) scanApiStatus(d *doc) error {
 		Examples: []*example{},
 	}
 
-	var eol bool
-	status.Code, eol = l.nextWord()
-	if len(status.Code) == 0 {
-		return l.syntaxError()
+	words, err := l.readN(2, "\n")
+	if err != nil {
+		return err
 	}
-
-	if !eol {
-		status.Summary = l.nextLine()
-	}
+	status.Code = words[0]
+	status.Summary = words[1]
 
 LOOP:
 	for {
 		switch {
 		case l.match("@apiHeader"):
-			key, eol := l.nextWord()
-			if eol {
-				return l.syntaxError()
+			words, err := l.readN(2, "\n")
+			if err != nil {
+				return err
 			}
-
-			val := l.nextLine()
-			if len(val) == 0 {
-				return l.syntaxError()
-			}
-			status.Headers[key] = val
+			status.Headers[words[0]] = words[1]
 		case l.match("@apiParam"):
 			p, err := l.scanApiParam()
 			if err != nil {
@@ -331,9 +295,10 @@ LOOP:
 			l.backup()
 			break LOOP
 		default:
-			if eof == l.next() { // 去掉无用的字符。
+			if l.pos >= len(l.data) {
 				break LOOP
 			}
+			l.pos++ // 去掉无用的字符。
 		}
 	}
 
@@ -342,55 +307,28 @@ LOOP:
 }
 
 func (l *lexer) scanApiExample() (*example, error) {
-	e := &example{}
-	rs := []rune{}
-
-	e.Type, _ = l.nextWord()
-
-	l.skipSpace()
-	for {
-		if l.match("@api") {
-			l.backup()
-			break
-		}
-
-		r := l.next()
-		if r == eof {
-			break
-		}
-
-		rs = append(rs, r)
+	words, err := l.readN(2, "@api")
+	if err != nil {
+		return nil, err
 	}
 
-	e.Code = strings.TrimRightFunc(string(rs), unicode.IsSpace)
-	return e, nil
+	return &example{
+		Type: words[0],
+		Code: words[1],
+	}, nil
 }
 
 func (l *lexer) scanApiParam() (*param, error) {
-	p := &param{}
-	var eol bool
-
-	for {
-		switch {
-		case len(p.Name) == 0:
-			p.Name, eol = l.nextWord()
-		case len(p.Type) == 0:
-			p.Type, eol = l.nextWord()
-		default:
-			p.Description = l.nextLine()
-			eol = true
-		}
-
-		if eol {
-			break
-		}
-	} // end for
-
-	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Description) == 0 {
-		return nil, l.syntaxError()
+	words, err := l.readN(3, "\n")
+	if err != nil {
+		return nil, err
 	}
 
-	return p, nil
+	return &param{
+		Name:        words[0],
+		Type:        words[1],
+		Description: words[2],
+	}, nil
 }
 
 // 若存在description参数，会原样输出，不会像其它一样去掉前导空格。
@@ -399,34 +337,14 @@ func (l *lexer) scanApiParam() (*param, error) {
 //  api description
 //  api description
 func (l *lexer) scanApi(d *doc) error {
-	eol := false
-	d.Method, eol = l.nextWord()
-	if eol {
-		return l.syntaxError()
+	words, err := l.readN(3, "\n")
+	if err != nil {
+		return err
 	}
-
-	d.URL, eol = l.nextWord()
-	if eol {
-		return l.syntaxError()
-	}
-
-	d.Summary = l.nextLine()
-
-	rs := []rune{}
-	for {
-		if l.match("@api") {
-			l.backup()
-			break
-		}
-
-		r := l.next()
-		if r == eof {
-			break
-		}
-
-		rs = append(rs, r)
-	}
-	d.Description = string(rs)
+	d.Method = words[0]
+	d.URL = words[1]
+	d.Summary = words[2]
+	d.Description = l.read("@api")
 
 	return nil
 }

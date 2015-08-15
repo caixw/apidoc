@@ -19,95 +19,52 @@ func TestLexer_lineNumber(t *testing.T) {
 
 	a.Equal(100, l.lineNumber())
 
-	l.next()
+	l.pos++
 	a.Equal(101, l.lineNumber())
 
-	l.next()
+	l.pos++
 	a.Equal(102, l.lineNumber())
-
-	l.backup()
-	a.Equal(101, l.lineNumber())
 }
 
-func TestLexer_next(t *testing.T) {
+func TestLexer_read(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]rune("ab\ncd\n"), 100, "file.go")
+
+	l := newLexer([]rune("line1\n @api line2 \n"), 100, "file.go")
 	a.NotNil(l)
 
-	a.Equal('a', l.next())
-	a.Equal('b', l.next())
-	a.Equal('\n', l.next())
-	a.Equal('c', l.next())
+	word := l.read("@api")
+	a.Equal(word, "line1")
 
-	// 退回一个字符
-	l.backup()
-	a.Equal('c', l.next())
-
-	// 退回多个字符
-	l.backup()
-	l.backup()
-	l.backup()
-	a.Equal('c', l.next())
-
-	a.Equal('d', l.next())
-	a.Equal('\n', l.next())
-	a.Equal(eof, l.next()) // 文件结束
-	a.Equal(eof, l.next())
+	l.match("@api")
+	word = l.read("@api")
+	a.Equal(word, "line2")
 }
 
-func TestLexer_nextLine(t *testing.T) {
+func TestLexer_readN(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]rune("line1\n line2 \n"), 100, "file.go")
+
+	l := newLexer([]rune("line1\n @api line2 \n"), 100, "file.go")
 	a.NotNil(l)
 
-	a.Equal("line1", l.nextLine())
-	l.backup()
-	l.backup()
-	a.Equal('l', l.next())
+	words, err := l.readN(1, "@api")
+	a.NotError(err).Equal(words, []string{"line1"})
 
-	a.Equal("ine1", l.nextLine())
-	a.Equal("line2 ", l.nextLine()) // 空格会被过滤
-	l.backup()
-	a.Equal("line2 ", l.nextLine())
+	l.match("@api")
+	words, err = l.readN(1, "@api") // 行尾并没有@api,匹配eof
+	a.NotError(err).Equal(words, []string{"line2"})
 
-	a.Equal("", l.nextLine()) // 没有更多内容了
-}
+	// 多词匹配
+	l = newLexer([]rune("word1 word2 word3 word4\n @api word5 word6 \n"), 100, "file.go")
+	words, err = l.readN(2, "\n")
+	a.NotError(err).Equal(words, []string{"word1", "word2 word3 word4"})
 
-func TestLexer_nextWord(t *testing.T) {
-	a := assert.New(t)
-	l := newLexer([]rune("word1 word2\nword3"), 100, "file.go")
-	a.NotNil(l)
+	l.match("@api")
+	words, err = l.readN(5, "\n")
+	a.Error(err)
 
-	l.next()               // w
-	l.next()               // o
-	w, eol := l.nextWord() // rd1
-	a.False(eol).Equal(w, "rd1")
-	l.backup() // 多次调用backup，只启作用一次。
-	l.backup()
-	a.Equal(l.next(), 'r')
-
-	w, eol = l.nextWord()
-	a.False(eol).Equal(w, "d1")
-
-	// 第2个单词
-	w, eol = l.nextWord() // word2
-	a.True(eol).Equal(w, "word2")
-
-	// eol，不会查找下一行的内容
-	w, eol = l.nextWord()
-	a.True(eol).Equal(w, "")
-	// eol，不会查找下一行的内容
-	w, eol = l.nextWord()
-	a.True(eol).Equal(w, "")
-
-	// 跳到下一行,eol
-	l.next()
-	w, eol = l.nextWord()
-	a.True(eol).Equal(w, "word3")
-
-	// eol,没有再多的内容了
-	w, eol = l.nextWord()
-	a.True(eol).Equal(w, "")
+	l = newLexer([]rune("word1 word2 word3 word4\n"), 100, "file.go")
+	words, err = l.readN(1, "\n")
+	a.NotError(err).Equal(words, []string{"word1 word2 word3 word4"})
 }
 
 func TestLexer_match(t *testing.T) {
@@ -116,53 +73,22 @@ func TestLexer_match(t *testing.T) {
 	a.NotNil(l)
 
 	a.True(l.match("line"))
-	a.Equal('1', l.next())
+	a.Equal('1', l.data[l.pos])
+	l.pos++
 
-	l.next() // \n
-	l.next() // 空格
-	l.next() // l
+	l.pos++ // \n
+	l.pos++ // 空格
+	l.pos++ // l
 
 	a.False(l.match("2222")) // 不匹配，不会移动位置
 	a.True(l.match("ine2"))  // 正确匹配
 	l.backup()
 	l.backup()
-	a.Equal('i', l.next())
+	a.Equal('i', l.data[l.pos])
+	l.pos++
 
 	// 超过剩余字符的长度。
 	a.False(l.match("ne2\n\n"))
-}
-
-func TestLexer_skipSpace(t *testing.T) {
-	a := assert.New(t)
-	l := newLexer([]rune("  ln  1  \n 2 \n"), 100, "file.go")
-	a.NotNil(l)
-
-	a.Equal(l.skipSpace(), 2) // 跳转起始的2个空格
-	a.Equal(l.skipSpace(), 0) // 不会跳过ln字符
-	a.Equal(l.skipSpace(), 0) // 不会跳过ln字符
-	a.Equal('l', l.next())
-	l.next() // n
-
-	a.Equal(l.skipSpace(), 2)
-	l.backup() // lexer.backup对lexer.skipSpace()不启作用
-	a.Equal('1', l.next())
-
-	a.Equal(l.skipSpace(), 2) // 不能跳过\n
-	a.Equal(l.skipSpace(), 0) // 不能跳过\n
-	a.Equal('\n', l.next())
-
-	l.skipSpace()
-	a.Equal('2', l.next())
-
-	l.skipSpace()
-	a.Equal('\n', l.next())
-	l.next()
-	l.next()
-	a.Equal(eof, l.next())
-
-	// 文件结尾
-	a.Equal(l.skipSpace(), 0)
-	a.Equal(eof, l.next())
 }
 
 func TestLexer_scanApiGroup(t *testing.T) {
@@ -178,10 +104,10 @@ func TestLexer_scanApiGroup(t *testing.T) {
 	l = newLexer([]rune(" "), 100, "file.go")
 	a.ErrorType(l.scanApiGroup(d), synerr)
 
-	// 多个参数
+	// 带空格
 	l = newLexer([]rune("  g1  abcd"), 100, "file.go")
 	a.NotError(l.scanApiGroup(d))
-	a.Equal(d.Group, "g1")
+	a.Equal(d.Group, "g1  abcd")
 }
 
 func TestLexer_scanApiQuery(t *testing.T) {
@@ -213,8 +139,7 @@ func TestLexer_scanApiExample(t *testing.T) {
 <root>
     <data>123</data>
 </root>`
-	matchCode := `
-<root>
+	matchCode := `<root>
     <data>123</data>
 </root>`
 	l := newLexer([]rune(code), 100, "file.go")
@@ -272,7 +197,7 @@ func TestLexer_scanApi(t *testing.T) {
 	a.Equal(d.Method, "get").
 		Equal(d.URL, "test.com/api.json?k=1").
 		Equal(d.Summary, "summary summary").
-		Equal(d.Description, " api description")
+		Equal(d.Description, "api description")
 
 	// 多行description
 	l = newLexer([]rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@api summary"), 100, "file.go")
@@ -280,7 +205,7 @@ func TestLexer_scanApi(t *testing.T) {
 	a.Equal(d.URL, "test.com/api.json?K=1").
 		Equal(d.Method, "post").
 		Equal(d.Summary, "summary summary").
-		Equal(d.Description, " api \ndescription\n")
+		Equal(d.Description, "api \ndescription")
 
 	// 缺少description参数
 	l = newLexer([]rune("get test.com/api.json summary summary"), 100, "file.go")
@@ -345,8 +270,7 @@ func TestLexer_scanApiRequest(t *testing.T) {
 </root>
 @apiStatus
 `
-	matchCode := `
-<root>
+	matchCode := `<root>
     <p1>v1</p1>
 </root>`
 	l = newLexer([]rune(code), 100, "file.go")
@@ -403,8 +327,7 @@ func TestLexer_scanApiStatus(t *testing.T) {
 </root>
 @apiStatus
 `
-	matchCode := `
-<root>
+	matchCode := `<root>
     <p1>v1</p1>
 </root>`
 	l = newLexer([]rune(code), 100, "file.go")
@@ -463,7 +386,7 @@ api description 2
 	a.Equal(d.URL, "/baseurl/api/login").
 		Equal(d.Group, "users").
 		Equal(d.Summary, "api summary").
-		Equal(d.Description, "api description 1\napi description 2\n")
+		Equal(d.Description, "api description 1\napi description 2")
 
 	a.Equal(2, len(d.Queries)).Equal(2, len(d.Params)).Equal(2, len(d.Status))
 
