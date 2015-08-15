@@ -62,10 +62,11 @@ func (l *lexer) next() rune {
 }
 
 // 读取从当前位置到换行符\n之间的内容，不包含换行符\n。
+// l.pos跳过\n字符。
 // 可通过lexer.backup来撤消最后一次调用。
 func (l *lexer) nextLine() string {
-	rs := []rune{} // 缓存本次操作的字符串
-	width := 0     // 缓存本次操作的字符宽度，NOTE:记得在返回之前赋值给lexer.width
+	rs := []rune{}         // 缓存本次操作的字符串
+	width := l.skipSpace() // width 缓存本次操作的字符宽度，NOTE:记得在返回之前赋值给lexer.width
 
 	for {
 		if l.pos >= len(l.data) { // 提前结束
@@ -91,7 +92,7 @@ func (l *lexer) nextLine() string {
 // 可通过lexer.backup来撤消最后一次调用。
 func (l *lexer) nextWord() (str string, eol bool) {
 	rs := []rune{}
-	width := 0 // 缓存本次操作的字符宽度，NOTE:记得在返回之前赋值给lexer.width
+	width := l.skipSpace() // 缓存本次操作的字符宽度，NOTE:记得在返回之前赋值给lexer.width
 
 	for {
 		if l.pos >= len(l.data) {
@@ -144,15 +145,19 @@ func (l *lexer) backup() {
 }
 
 // 跳过之后除换行符之外的所有空格。
-func (l *lexer) skipSpace() {
+// 返回跳过的空格数量
+func (l *lexer) skipSpace() (count int) {
 	for {
 		r := l.next()
+		count++
 		if r == eof {
+			count--
 			return
 		}
 
 		if !unicode.IsSpace(r) || r == '\n' {
 			l.backup()
+			count--
 			return
 		}
 	} // end for
@@ -212,7 +217,6 @@ LOOP:
 }
 
 func (l *lexer) scanApiGroup(d *doc) error {
-	l.skipSpace()
 	str, _ := l.nextWord()
 	if len(str) == 0 {
 		return l.syntaxError()
@@ -244,13 +248,11 @@ LOOP:
 	for {
 		switch {
 		case l.match("@apiHeader"):
-			l.skipSpace()
 			key, eol := l.nextWord()
 			if eol {
 				return l.syntaxError()
 			}
 
-			l.skipSpace()
 			val := l.nextLine()
 			if len(val) == 0 {
 				return l.syntaxError()
@@ -290,14 +292,12 @@ func (l *lexer) scanApiStatus(d *doc) error {
 	}
 
 	var eol bool
-	l.skipSpace()
 	status.Code, eol = l.nextWord()
 	if len(status.Code) == 0 {
 		return l.syntaxError()
 	}
 
 	if !eol {
-		l.skipSpace()
 		status.Summary = l.nextLine()
 	}
 
@@ -305,13 +305,11 @@ LOOP:
 	for {
 		switch {
 		case l.match("@apiHeader"):
-			l.skipSpace()
 			key, eol := l.nextWord()
 			if eol {
 				return l.syntaxError()
 			}
 
-			l.skipSpace()
 			val := l.nextLine()
 			if len(val) == 0 {
 				return l.syntaxError()
@@ -347,7 +345,6 @@ func (l *lexer) scanApiExample() (*example, error) {
 	e := &example{}
 	rs := []rune{}
 
-	l.skipSpace()
 	e.Type, _ = l.nextWord()
 
 	l.skipSpace()
@@ -374,7 +371,6 @@ func (l *lexer) scanApiParam() (*param, error) {
 	var eol bool
 
 	for {
-		l.skipSpace()
 		switch {
 		case len(p.Name) == 0:
 			p.Name, eol = l.nextWord()
@@ -403,20 +399,17 @@ func (l *lexer) scanApiParam() (*param, error) {
 //  api description
 //  api description
 func (l *lexer) scanApi(d *doc) error {
-	l.skipSpace()
 	eol := false
 	d.Method, eol = l.nextWord()
 	if eol {
 		return l.syntaxError()
 	}
 
-	l.skipSpace()
 	d.URL, eol = l.nextWord()
 	if eol {
 		return l.syntaxError()
 	}
 
-	l.skipSpace()
 	d.Summary = l.nextLine()
 
 	rs := []rune{}

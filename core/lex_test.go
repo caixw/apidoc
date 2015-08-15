@@ -66,9 +66,9 @@ func TestLexer_nextLine(t *testing.T) {
 	a.Equal('l', l.next())
 
 	a.Equal("ine1", l.nextLine())
-	a.Equal(" line2 ", l.nextLine()) // 空格会被过滤
+	a.Equal("line2 ", l.nextLine()) // 空格会被过滤
 	l.backup()
-	a.Equal(" line2 ", l.nextLine())
+	a.Equal("line2 ", l.nextLine())
 
 	a.Equal("", l.nextLine()) // 没有更多内容了
 }
@@ -89,14 +89,7 @@ func TestLexer_nextWord(t *testing.T) {
 	w, eol = l.nextWord()
 	a.False(eol).Equal(w, "d1")
 
-	// 对空格的操作，不返回任何值。
-	w, eol = l.nextWord()
-	w, eol = l.nextWord()
-	w, eol = l.nextWord()
-	a.False(eol).Equal(w, "")
-
 	// 第2个单词
-	l.skipSpace()
 	w, eol = l.nextWord() // word2
 	a.True(eol).Equal(w, "word2")
 
@@ -144,18 +137,18 @@ func TestLexer_skipSpace(t *testing.T) {
 	l := newLexer([]rune("  ln  1  \n 2 \n"), 100, "file.go")
 	a.NotNil(l)
 
-	l.skipSpace() // 跳转起始的2个空格
-	l.skipSpace() // 不会跳过ln字符
-	l.skipSpace() // 不会跳过ln字符
+	a.Equal(l.skipSpace(), 2) // 跳转起始的2个空格
+	a.Equal(l.skipSpace(), 0) // 不会跳过ln字符
+	a.Equal(l.skipSpace(), 0) // 不会跳过ln字符
 	a.Equal('l', l.next())
 	l.next() // n
 
-	l.skipSpace()
+	a.Equal(l.skipSpace(), 2)
 	l.backup() // lexer.backup对lexer.skipSpace()不启作用
 	a.Equal('1', l.next())
 
-	l.skipSpace() // 不能跳过\n
-	l.skipSpace() // 不能跳过\n
+	a.Equal(l.skipSpace(), 2) // 不能跳过\n
+	a.Equal(l.skipSpace(), 0) // 不能跳过\n
 	a.Equal('\n', l.next())
 
 	l.skipSpace()
@@ -168,7 +161,7 @@ func TestLexer_skipSpace(t *testing.T) {
 	a.Equal(eof, l.next())
 
 	// 文件结尾
-	l.skipSpace()
+	a.Equal(l.skipSpace(), 0)
 	a.Equal(eof, l.next())
 }
 
