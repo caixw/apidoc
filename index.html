@@ -16,7 +16,7 @@
         <header>
             <div class="ui container">
                 <span class="ui text menu left floated">
-                    <a class="item" href="#">apidoc</a>
+                    <a class="item" href="#">APIDOC<sub>beta</sub></a>
                 </span>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
@@ -86,7 +86,8 @@
             <article class="ui piled segment" id="docs">
                 <h2 class="ui header">文档</h2>
 
-                <section>
+                <!-- @api -->
+                <section id="api">
                     <h3>@api</h3>
                     <p>语法:<code class="go">@api method url summary [\n detail]</code></p>
                     <table class="ui very compact table">
@@ -110,7 +111,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <p>example:</p>
+                    <p>示例：</p>
                     <pre>
                     /**
                      @api get /users/{id} 获取指定用户的相关信息
@@ -118,22 +119,12 @@
                     </pre>
                 </section>
 
-                <section>
+                <!-- @apiGroup -->
+                <section id="apigroup">
                     <h3>@apiGroup</h3>
-                    <p>@apiGroup提供了对api的分组信息</p>
+                    <p>@apiGroup提供了对api的分组信息，不同的分组，最终可能会被呈现在不同的页面。</p>
                     <p>语法：<code>@apiGroup groupName</code></p>
-                    <table class="ui very compact table">
-                        <thead>
-                            <tr><th>参数</th><th>描述</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>groupName</td>
-                                <td>分组名称，相同名称的api将会被分配到一个文件中。</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>example:</p>
+                    <p>示例：</p>
                     <pre>
                     /**
                      @apiGroup users
@@ -141,28 +132,130 @@
                     </pre>
                 </section>
 
-                <section>
+                <!-- @apiVersion -->
+                <section id="apiversion">
                     <h3>@apiVersion</h3>
                     <p>@apiVersion用于描述一个api的版本信息。</p>
                     <p>语法：<code>@apiVersion version</code></p>
-                    <table class="ui very compact table">
-                        <thead>
-                            <tr><th>参数</th><th>描述</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>version</td>
-                                <td>版本号</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>example:</p>
+                    <p>示例：</p>
                     <pre>
                     /**
                      @apiVersion 1.0.1
                      */
                     </pre>
                 </section>
+
+                <!-- apiQuery -->
+                <section id="apiparam">
+                    <h3>@apiQuery/@apiParam</h3>
+                    <p>@apiQuery和@apiParam拥有相同的参数，其行为也类似，用于描述一个值的具体信息。</p>
+                    <p>@apiQuery描述api的查询参数；而@apiParam则用于描述路径中占位符代码的参数，或是在@apiRequest中表示提交数据的参数，在@apiStatus中表示返回数据的参数。</p>
+                    <p>语法：<code>@apiQuery/apiParam name type summary</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>可选</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td><td>false</td><td>参数名称</td>
+                            </tr>
+                            <tr>
+                                <td>type</td><td>false</td><td>参数的类型，类型名称根据需要自己指定。没有统一格式。</td>
+                            </tr>
+                            <tr>
+                                <td>summary</td><td>false</td><td>一行简短的语名用于描述该参数作用。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre>
+                    /**
+                     @api get /users 获取所有的用户信息。
+                     @apiQuery page int 获取第几页的内容。
+                     @apiQuery size int 每页显示的数量。
+                     */
+                    </pre>
+                </section>
+
+                <section id="apiheader">
+                    <h3>@apiHeader</h3>
+                    <p>@apiHeader用于在@apiRequest和@apiStatus中描述请求头和响应的内容。</p>
+                    <p>语法：<code>@apiHeader key value</code></p>
+                    <p>示例：</p>
+                    <pre>
+                    /**
+                     @apiHeader Authorization Basic xx-af
+                     */
+                    </pre>
+                </section>
+
+                <section id="apiexample">
+                    <h3>@apiExample</h3>
+                    <p>描述@apiRequest和@apiStatus中请求和响应内容的示例。</p>
+                    <p>语法：<code>@apiExample type</code>type表示请求体的格式，可是以json，xml。</p>
+                    <p>示例：</p>
+                    <pre>
+                    /**
+                     @apiExample json
+                     { "id":1, "name":"admin" }
+                     */
+                    </pre>
+                </section>
+
+                <section id="apirequest">
+                    <h3>@apiRequest</h3>
+                    <p>@apiRequest描述了所有的请求该包含的内容，其本身可包含@apiHeader，@apiExample和@apiParam三个子标签。</p>
+                    <p>语法：<code>@apiRequest type</code>，type表示请求体的格式，可是以json，xml。</p>
+                    <p>示例：</p>
+                    <pre>
+                    /**
+                     @apiRequest json
+                     @apiHeader Authorization Basic xxxx
+                     @apiParam username string 登录账号
+                     @apiParam password string 登录密码
+                     @apiExample json
+                     {"username":"admin", "password":"123"}
+                     */
+                    </pre>
+                </section>
+
+                <section id="apistatus">
+                    <h3>@apiStatus</h3>
+                    <p>@apiStatus描述了响应包含的内容，其本身可包含@apiHeader，@apiExample和@apiParam三个子标签。</p>
+                    <p>语法：<code>@apiStatus status type summary</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>status</td>
+                                <td>返回的状态码</td>
+                            </tr>
+                            <tr>
+                                <td>type</td>
+                                <td>返回内容的格式，可是josn,xml等。</td>
+                            </tr>
+                            <tr>
+                                <td>summary</td>
+                                <td>一个简短的描述信息。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre>
+                    /**
+                     @apiStatus 200 json ok
+                     @apiHeader Authorization Basic xxxx
+                     @apiParam username string 登录账号
+                     @apiParam name string 用户名称
+                     @apiParam sex string 用户性别
+                     @apiExample json
+                     {"username":"admin", "name":"admin", "sex":"male"}
+                     */
+                    </pre>
+                </section>
+
             </article>
         </div>
 
