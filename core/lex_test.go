@@ -388,7 +388,9 @@ api description 2
 		Equal(d.Summary, "api summary").
 		Equal(d.Description, "api description 1\napi description 2")
 
-	a.Equal(2, len(d.Queries)).Equal(2, len(d.Params)).Equal(2, len(d.Status))
+	a.Equal(2, len(d.Queries)).
+		Equal(2, len(d.Params)).
+		Equal(2, len(d.Status))
 
 	q := d.Queries
 	a.Equal(q[0].Name, "q1").Equal(q[0].Description, "q1 summary")

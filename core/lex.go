@@ -145,14 +145,14 @@ func (l *lexer) scan() (*doc, error) {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiGroup"):
+		case l.match("@apiGroup "):
 			err = l.scanApiGroup(d)
-		case l.match("@apiQuery"):
+		case l.match("@apiQuery "):
 			if d.Queries == nil {
 				d.Queries = make([]*param, 0, 1)
 			}
 			err = l.scanApiQuery(d)
-		case l.match("@apiParam"):
+		case l.match("@apiParam "):
 			if d.Params == nil {
 				d.Params = make([]*param, 0, 1)
 			}
@@ -161,14 +161,14 @@ LOOP:
 				return nil, err
 			}
 			d.Params = append(d.Params, p)
-		case l.match("@apiRequest"):
+		case l.match("@apiRequest "):
 			err = l.scanApiRequest(d)
-		case l.match("@apiStatus"):
+		case l.match("@apiStatus "):
 			if d.Status == nil {
 				d.Status = make([]*status, 0, 1)
 			}
 			err = l.scanApiStatus(d)
-		case l.match("@api"): // 放最后
+		case l.match("@api "): // 放最后
 			err = l.scanApi(d)
 		default:
 			if l.pos >= len(l.data) {
@@ -220,19 +220,19 @@ func (l *lexer) scanApiRequest(d *doc) error {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiHeader"):
+		case l.match("@apiHeader "):
 			words, err := l.readN(2, "\n")
 			if err != nil {
 				return err
 			}
 			r.Headers[words[0]] = words[1]
-		case l.match("@apiParam"):
+		case l.match("@apiParam "):
 			p, err := l.scanApiParam()
 			if err != nil {
 				return err
 			}
 			r.Params = append(r.Params, p)
-		case l.match("@apiExample"):
+		case l.match("@apiExample "):
 			e, err := l.scanApiExample()
 			if err != nil {
 				return err
@@ -271,19 +271,19 @@ func (l *lexer) scanApiStatus(d *doc) error {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiHeader"):
+		case l.match("@apiHeader "):
 			words, err := l.readN(2, "\n")
 			if err != nil {
 				return err
 			}
 			status.Headers[words[0]] = words[1]
-		case l.match("@apiParam"):
+		case l.match("@apiParam "):
 			p, err := l.scanApiParam()
 			if err != nil {
 				return err
 			}
 			status.Params = append(status.Params, p)
-		case l.match("@apiExample"):
+		case l.match("@apiExample "):
 			e, err := l.scanApiExample()
 			if err != nil {
 				return err
