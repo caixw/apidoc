@@ -138,7 +138,7 @@
                 <section id="apiparam">
                     <h3>@apiQuery/@apiParam</h3>
                     <p>@apiQuery和@apiParam拥有相同的参数，其行为也类似，用于描述一个值的具体信息。</p>
-                    <p>@apiQuery描述api的查询参数；而@apiParam则用于描述路径中占位符代码的参数，或是在@apiRequest中表示提交数据的参数，在@apiStatus中表示返回数据的参数。</p>
+                    <p>@apiQuery描述api的查询参数；而@apiParam则用于描述路径中占位符代码的参数，或是在@apiRequest中表示提交数据的参数，在@apiSuccess各@apiError中表示返回数据的参数。</p>
                     <p>语法：<code>@apiQuery/apiParam name type summary</code></p>
                     <table class="ui very compact table">
                         <thead>
@@ -168,7 +168,7 @@
 
                 <section id="apiheader">
                     <h3>@apiHeader</h3>
-                    <p>@apiHeader用于在@apiRequest和@apiStatus中描述请求头和响应的内容。</p>
+                    <p>@apiHeader用于在@apiRequest，@apiSuccess和@apiError中描述请求头和响应的内容。</p>
                     <p>语法：<code>@apiHeader key value</code></p>
                     <p>示例：</p>
                     <pre>
@@ -180,7 +180,7 @@
 
                 <section id="apiexample">
                     <h3>@apiExample</h3>
-                    <p>描述@apiRequest和@apiStatus中请求和响应内容的示例。</p>
+                    <p>描述@apiRequest，@apiSuccess和@apiError中请求和响应内容的示例。</p>
                     <p>语法：<code>@apiExample type</code>type表示请求体的格式，可是以json，xml。</p>
                     <p>示例：</p>
                     <pre>
@@ -208,10 +208,10 @@
                     </pre>
                 </section>
 
-                <section id="apistatus">
-                    <h3>@apiStatus</h3>
-                    <p>@apiStatus描述了响应包含的内容，其本身可包含@apiHeader，@apiExample和@apiParam三个子标签。</p>
-                    <p>语法：<code>@apiStatus status type summary</code></p>
+                <section id="apisuccess">
+                    <h3>@apiSuccess/@apiError</h3>
+                    <p>@apiSuccess/@apiError描述了响应包含的内容，其本身可包含@apiHeader，@apiExample和@apiParam三个子标签。</p>
+                    <p>语法：<code>@apiSuccess/Error status type summary</code></p>
                     <table class="ui very compact table">
                         <thead>
                             <tr><th>参数</th><th>描述</th></tr>
@@ -222,10 +222,6 @@
                                 <td>返回的状态码</td>
                             </tr>
                             <tr>
-                                <td>type</td>
-                                <td>返回内容的格式，可是josn,xml等。</td>
-                            </tr>
-                            <tr>
                                 <td>summary</td>
                                 <td>一个简短的描述信息。</td>
                             </tr>
@@ -234,7 +230,7 @@
                     <p>示例：</p>
                     <pre>
                     /**
-                     @apiStatus 200 json ok
+                     @apiSuccess 200 OK
                      @apiHeader Authorization Basic xxxx
                      @apiParam username string 登录账号
                      @apiParam name string 用户名称
@@ -250,9 +246,17 @@
 
         <footer>
             <div class="ui container">
-                <p>apidoc是基于<a rel="license" href="http://opensource.org/licenses/MIT">MIT</a>发布的开源软件。</p>
-                <p>本页面内容采用<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>进行许可。</p>
+                <div class="left">
+                    <p>apidoc是基于<a rel="license" href="http://opensource.org/licenses/MIT">MIT</a>发布的开源软件。</p>
+                    <p>本页面内容采用<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>进行许可。</p>
+                </div>
+
+                <div class="right">
+                    <p>内容插管于<a href="https://github.com/caixw/apidoc">Github</a></p>
+                    <p>内容更新于<time>2015-08-16T20:48:00+0800</time></p>
+                </div>
             </div>
+            <div class="clearfix"></div>
         </footer>
     </body>
 </html>

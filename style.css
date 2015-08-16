@@ -26,6 +26,20 @@ footer p{
     padding:0em;
 }
 
+footer .left{
+    text-align:left;
+    float:left;
+}
+
+footer .right{
+    text-align:right;
+    float:right;
+}
+
+footer .clearfix{
+    clear:both;
+}
+
 code, pre{
     border:1px solid #eee;
     border-radius:3px;
