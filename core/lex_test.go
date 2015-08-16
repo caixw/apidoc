@@ -408,7 +408,7 @@ api description 2
 	s = d.Status[1]
 	a.Equal(s.Code, "201")
 
-	// 不包含api定义的代码块，将返回一个nil,nil
+	// 不包含api定义的代码块，将返回一个error,nil
 	code = `
 Copyright 2015 by caixw, All rights reserved.
 Use of this source code is governed by a MIT
@@ -416,5 +416,5 @@ license that can be found in the LICENSE file.
 `
 	l = newLexer([]rune(code), 100, "file.go")
 	d, err = l.scan()
-	a.NotError(err).Nil(d)
+	a.Error(err).Nil(d)
 }

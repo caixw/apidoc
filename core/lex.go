@@ -5,11 +5,10 @@
 package core
 
 import (
+	"fmt"
 	"strings"
 	"unicode"
 )
-
-const eof = -1
 
 type lexer struct {
 	data  []rune
@@ -185,7 +184,7 @@ LOOP:
 
 	// doc的必要数据没有被初始化，说明这段代码不是api文档格式。
 	if len(d.URL) == 0 || len(d.Method) == 0 {
-		return nil, nil
+		return nil, fmt.Errorf("在%v:%v附近的代码并未指定@api参数")
 	}
 
 	return d, nil
@@ -193,11 +192,10 @@ LOOP:
 
 // @apiGroup version
 func (l *lexer) scanApiGroup(d *doc) error {
-	words, err := l.readN(1, "\n")
-	if err != nil {
-		return err
+	d.Group = l.read("\n")
+	if len(d.Group) == 0 {
+		return l.syntaxError()
 	}
-	d.Group = words[0]
 	return nil
 }
 
