@@ -191,7 +191,7 @@ LOOP:
 
 	// doc的必要数据没有被初始化，说明这段代码不是api文档格式。
 	if len(d.URL) == 0 || len(d.Method) == 0 {
-		return nil, fmt.Errorf("在%v:%v附近的代码并未指定@api参数")
+		return nil, fmt.Errorf("在%v:%v附近的代码并未指定@api参数", l.file, l.lineNumber())
 	}
 
 	return d, nil
