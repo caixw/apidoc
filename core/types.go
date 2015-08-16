@@ -21,7 +21,8 @@ type doc struct {
 	Queries     []*param  // 查询参数
 	Params      []*param  // URL参数
 	Request     *request  // 若是GET，则使用此描述请求的具体数据
-	Status      []*status // 各种状态码下返回的数据描述
+	Success     *response // 成功时的响应内容
+	Error       *response // 出错时的响应内容
 }
 
 // 表示api请求数据
@@ -33,7 +34,7 @@ type request struct {
 }
 
 // 表示一次请求或是返回的数据。
-type status struct {
+type response struct {
 	Code     string            // http状态码
 	Summary  string            // 该状态下的简要描述
 	Headers  map[string]string // 必须提交的头信息或是返回的头信息。

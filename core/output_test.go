@@ -18,7 +18,7 @@ var (
 若没有权限，则返回空对象。
 @apiGroup users
 @apiQuery status string optional 只获取指定状态的数据，可用值为normal, locked
-@apiStatus 200 json 成功获取用户信息
+@apiSuccess 200 json 成功获取用户信息
 @apiParam users object 表示所有的用户列表
 @apiExample json
 {"users":[
@@ -26,13 +26,12 @@ var (
 	{"id":2, "name": "n2", "group": 1},
 	{"id":3, "name": "n3", "group": 1},
 ]}
-@apiStatus 401 none 权限不足
 `
 	block2 = `
 @api get /api/users/{id} 获取指定用户的详细信息
 @apiParam id int 用户的ID值
 @apiGroup users
-@apiStatus 200 json 成功获取信息
+@apiSuccess 200 json 成功获取信息
 @apiParam id int 用户的ID
 @apiParam name string 用户名称
 @apiParam group int 用户所在的权限组ID
@@ -47,9 +46,12 @@ var (
 @apiParam password string 登录密码
 @apiExample json
 {"username": "admin", "password": "admin"}
-@apiStatus 200 成功登录
+@apiSuccess 200 成功登录
 @apiHeader token xxx
-@apiStatus 401 none 权限不足
+@apiError 200 账号或是密码错误
+@apiParam message string 描述错误信息
+@apiExample json
+{"message":"账号或是密码错误"}
 `
 )
 

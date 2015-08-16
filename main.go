@@ -15,7 +15,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.4.20.150816"
+const version = "0.5.21.150816"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 

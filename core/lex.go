@@ -163,11 +163,18 @@ LOOP:
 			d.Params = append(d.Params, p)
 		case l.match("@apiRequest "):
 			err = l.scanApiRequest(d)
-		case l.match("@apiStatus "):
-			if d.Status == nil {
-				d.Status = make([]*status, 0, 1)
+		case l.match("@apiError "):
+			resp, err := l.scanResponse()
+			if err != nil {
+				break
 			}
-			err = l.scanApiStatus(d)
+			d.Error = resp
+		case l.match("@apiSuccess "):
+			resp, err := l.scanResponse()
+			if err != nil {
+				break
+			}
+			d.Success = resp
 		case l.match("@api "): // 放最后
 			err = l.scanApi(d)
 		default:
@@ -254,8 +261,8 @@ LOOP:
 	return nil
 }
 
-func (l *lexer) scanApiStatus(d *doc) error {
-	status := &status{
+func (l *lexer) scanResponse() (*response, error) {
+	resp := &response{
 		Headers:  map[string]string{},
 		Params:   []*param{},
 		Examples: []*example{},
@@ -263,10 +270,10 @@ func (l *lexer) scanApiStatus(d *doc) error {
 
 	words, err := l.readN(2, "\n")
 	if err != nil {
-		return err
+		return nil, err
 	}
-	status.Code = words[0]
-	status.Summary = words[1]
+	resp.Code = words[0]
+	resp.Summary = words[1]
 
 LOOP:
 	for {
@@ -274,21 +281,21 @@ LOOP:
 		case l.match("@apiHeader "):
 			words, err := l.readN(2, "\n")
 			if err != nil {
-				return err
+				return nil, err
 			}
-			status.Headers[words[0]] = words[1]
+			resp.Headers[words[0]] = words[1]
 		case l.match("@apiParam "):
 			p, err := l.scanApiParam()
 			if err != nil {
-				return err
+				return nil, err
 			}
-			status.Params = append(status.Params, p)
+			resp.Params = append(resp.Params, p)
 		case l.match("@apiExample "):
 			e, err := l.scanApiExample()
 			if err != nil {
-				return err
+				return nil, err
 			}
-			status.Examples = append(status.Examples, e)
+			resp.Examples = append(resp.Examples, e)
 		case l.match("@api"): // 其它api*，退出。
 			l.backup()
 			break LOOP
@@ -300,8 +307,7 @@ LOOP:
 		}
 	}
 
-	d.Status = append(d.Status, status)
-	return nil
+	return resp, nil
 }
 
 func (l *lexer) scanApiExample() (*example, error) {

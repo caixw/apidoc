@@ -268,7 +268,7 @@ func TestLexer_scanApiRequest(t *testing.T) {
 <root>
     <p1>v1</p1>
 </root>
-@apiStatus
+@apiGroup abc
 `
 	matchCode := `<root>
     <p1>v1</p1>
@@ -284,9 +284,8 @@ func TestLexer_scanApiRequest(t *testing.T) {
 		Equal(r.Examples[0].Code, matchCode)
 }
 
-func TestLexer_scanApiStatus(t *testing.T) {
+func TestLexer_scanResponse(t *testing.T) {
 	a := assert.New(t)
-	d := &doc{}
 
 	code := ` 200 json
 @apiHeader h1 v1
@@ -305,17 +304,16 @@ func TestLexer_scanApiStatus(t *testing.T) {
 </root>
 `
 	l := newLexer([]rune(code), 100, "file.go")
-	a.NotError(l.scanApiStatus(d))
-	a.Equal(1, len(d.Status))
-	s := d.Status[0]
-	a.Equal(s.Code, "200").
-		Equal(s.Summary, "json").
-		Equal(s.Headers["h1"], "v1").
-		Equal(s.Headers["h2"], "v2").
-		Equal(s.Params[0].Name, "p1").
-		Equal(s.Params[1].Description, "p2 summary").
-		Equal(s.Examples[0].Type, "json").
-		Equal(s.Examples[1].Type, "xml")
+	resp, err := l.scanResponse()
+	a.NotError(err).NotNil(resp)
+	a.Equal(resp.Code, "200").
+		Equal(resp.Summary, "json").
+		Equal(resp.Headers["h1"], "v1").
+		Equal(resp.Headers["h2"], "v2").
+		Equal(resp.Params[0].Name, "p1").
+		Equal(resp.Params[1].Description, "p2 summary").
+		Equal(resp.Examples[0].Type, "json").
+		Equal(resp.Examples[1].Type, "xml")
 
 	code = ` 200 xml  status summary
  @apiHeader h1 v1
@@ -325,27 +323,27 @@ func TestLexer_scanApiStatus(t *testing.T) {
 <root>
     <p1>v1</p1>
 </root>
-@apiStatus
+@apiError
 `
 	matchCode := `<root>
     <p1>v1</p1>
 </root>`
 	l = newLexer([]rune(code), 100, "file.go")
-	a.NotError(l.scanApiStatus(d))
-	a.Equal(2, len(d.Status))
-	s = d.Status[1]
-	a.Equal(s.Code, "200").
-		Equal(s.Summary, "xml  status summary").
-		Equal(s.Headers["h1"], "v1").
-		Equal(s.Params[0].Name, "p1").
-		Equal(s.Examples[0].Code, matchCode)
+	resp, err = l.scanResponse()
+	a.NotError(err).NotNil(resp)
+	a.Equal(resp.Code, "200").
+		Equal(resp.Summary, "xml  status summary").
+		Equal(resp.Headers["h1"], "v1").
+		Equal(resp.Params[0].Name, "p1").
+		Equal(resp.Examples[0].Code, matchCode)
 
 	// 缺少必要的参数
 	code = ` 
-@apiStatus
+@apiGroup g
 `
 	l = newLexer([]rune(code), 100, "file.go")
-	a.ErrorType(l.scanApiStatus(d), synerr)
+	resp, err = l.scanResponse()
+	a.Error(err).Nil(resp)
 }
 
 func TestLexer_scan(t *testing.T) {
@@ -360,7 +358,7 @@ api description 2
 @apiQuery q2 int q2 summary
 @apiParam p1 int p1 summary
 @apiParam p2 int p2 summary
-@apiStatus 200 json
+@apiSuccess 200 json
 @apiHeader h1 v1
 @apiHeader h2 v2
 @apiParam p1 int optional p1 summary
@@ -375,7 +373,7 @@ api description 2
     <p1>v1</p1>
     <p2>v2</p2>
 </root>
-@apiStatus 201 json
+@apiError 200 json
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
@@ -389,8 +387,7 @@ api description 2
 		Equal(d.Description, "api description 1\napi description 2")
 
 	a.Equal(2, len(d.Queries)).
-		Equal(2, len(d.Params)).
-		Equal(2, len(d.Status))
+		Equal(2, len(d.Params))
 
 	q := d.Queries
 	a.Equal(q[0].Name, "q1").Equal(q[0].Description, "q1 summary")
@@ -398,7 +395,7 @@ api description 2
 	p := d.Params
 	a.Equal(p[0].Name, "p1").Equal(p[0].Description, "p1 summary")
 
-	s := d.Status[0]
+	s := d.Success
 	a.Equal(s.Code, "200").
 		Equal(s.Summary, "json").
 		Equal(s.Headers["h1"], "v1").
@@ -407,8 +404,9 @@ api description 2
 		Equal(s.Params[1].Description, "p2 summary").
 		Equal(s.Examples[0].Type, "json").
 		Equal(s.Examples[1].Type, "xml")
-	s = d.Status[1]
-	a.Equal(s.Code, "201")
+
+	s = d.Error
+	a.Equal(s.Code, "200")
 
 	// 不包含api定义的代码块，将返回一个error,nil
 	code = `

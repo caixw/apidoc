@@ -49,35 +49,17 @@
     </div>
     {{end}}
 
-    {{if .Status}}
+    {{if .Success}}
     <div>
-        <h4>响应</h4>
-        {{range .Status}}
-        <div>
-            <p><span class="status-code">status:{{.Code}}</span>{{.Summary}}</p>
+        <h4>响应-SUCCESS</h4>
+        {{template "response" .Success}}
+    </div>
+    {{end}}
 
-            {{if .Headers}}
-            <h5>header</h5>
-            <ul>
-                {{range $k,$v:=.Headers}}
-                <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
-                {{end}}
-            </ul>
-            {{end}}
-
-            {{if .Params}}
-            <h5>参数:</h5>
-                {{template "param" .Params}}
-            {{end}}
-
-            {{if .Examples}}
-            <h5>example:</h5>
-                {{range .Examples}}
-                <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
-                {{end}}
-            {{end}}
-        </div>
-        {{end}}
+    {{if .Error}}
+    <div>
+        <h4>响应-ERROR</h4>
+        {{template "response" .Error}}
     </div>
     {{end}}
 </section>
@@ -93,4 +75,29 @@
     </li>
     {{end}}
     </ul>
+{{end}}
+
+{{define "response"}}
+        <p><span class="status-code">status:{{.Code}}</span>{{.Summary}}</p>
+
+        {{if .Headers}}
+        <h5>header</h5>
+        <ul>
+            {{range $k,$v:=.Headers}}
+            <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
+            {{end}}
+        </ul>
+        {{end}}
+
+        {{if .Params}}
+        <h5>参数:</h5>
+            {{template "param" .Params}}
+        {{end}}
+
+        {{if .Examples}}
+        <h5>example:</h5>
+            {{range .Examples}}
+            <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
+            {{end}}
+        {{end}}
 {{end}}
