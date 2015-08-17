@@ -33,5 +33,4 @@ _testmain.go
 apidoc
 
 # project
-core/static/data.js
-core/testdir
+output/testdir

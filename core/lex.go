@@ -5,7 +5,6 @@
 package core
 
 import (
-	"fmt"
 	"strings"
 	"unicode"
 )
@@ -40,10 +39,11 @@ func (l *lexer) lineNumber() int {
 }
 
 // 返回一个语法错误的error接口。
-func (l *lexer) syntaxError() error {
+func (l *lexer) syntaxError(msg string) error {
 	return &SyntaxError{
-		Line: l.lineNumber(),
-		File: l.file,
+		Line:    l.lineNumber(),
+		File:    l.file,
+		Message: msg,
 	}
 }
 
@@ -102,7 +102,7 @@ func (l *lexer) readN(n int, delimiter string) ([]string, error) {
 	} // end for
 
 	if len(ret) < n {
-		return nil, l.syntaxError()
+		return nil, l.syntaxError("未指定足够的参数")
 	}
 	return ret, nil
 }
@@ -136,10 +136,10 @@ func (l *lexer) backup() {
 	l.width = 0
 }
 
-// 扫描文档，生成一个doc实例。
+// 扫描文档，生成一个Doc实例。
 // 若代码块没有api文档定义，则会返回空值。
-func (l *lexer) scan() (*doc, error) {
-	d := &doc{}
+func (l *lexer) scan() (*Doc, error) {
+	d := &Doc{}
 	var err error
 
 LOOP:
@@ -149,12 +149,12 @@ LOOP:
 			err = l.scanApiGroup(d)
 		case l.match("@apiQuery "):
 			if d.Queries == nil {
-				d.Queries = make([]*param, 0, 1)
+				d.Queries = make([]*Param, 0, 1)
 			}
 			err = l.scanApiQuery(d)
 		case l.match("@apiParam "):
 			if d.Params == nil {
-				d.Params = make([]*param, 0, 1)
+				d.Params = make([]*Param, 0, 1)
 			}
 			p, err := l.scanApiParam()
 			if err != nil {
@@ -189,24 +189,28 @@ LOOP:
 		}
 	} // end for
 
-	// doc的必要数据没有被初始化，说明这段代码不是api文档格式。
+	// Doc的必要数据没有被初始化，说明这段代码不是api文档格式。
 	if len(d.URL) == 0 || len(d.Method) == 0 {
-		return nil, fmt.Errorf("在%v:%v附近的代码并未指定@api参数", l.file, l.lineNumber())
+		return nil, &SyntaxError{
+			Line:    l.line,
+			File:    l.file,
+			Message: "该代码块未指定@api标签",
+		}
 	}
 
 	return d, nil
 }
 
 // @apiGroup version
-func (l *lexer) scanApiGroup(d *doc) error {
+func (l *lexer) scanApiGroup(d *Doc) error {
 	d.Group = l.read("\n")
 	if len(d.Group) == 0 {
-		return l.syntaxError()
+		return l.syntaxError("未指定足够的参数")
 	}
 	return nil
 }
 
-func (l *lexer) scanApiQuery(d *doc) error {
+func (l *lexer) scanApiQuery(d *Doc) error {
 	p, err := l.scanApiParam()
 	if err != nil {
 		return err
@@ -216,12 +220,12 @@ func (l *lexer) scanApiQuery(d *doc) error {
 	return nil
 }
 
-func (l *lexer) scanApiRequest(d *doc) error {
-	r := &request{
+func (l *lexer) scanApiRequest(d *Doc) error {
+	r := &Request{
 		Type:     l.read("\n"),
 		Headers:  map[string]string{},
-		Params:   []*param{},
-		Examples: []*example{},
+		Params:   []*Param{},
+		Examples: []*Example{},
 	}
 
 LOOP:
@@ -261,11 +265,11 @@ LOOP:
 	return nil
 }
 
-func (l *lexer) scanResponse() (*response, error) {
-	resp := &response{
+func (l *lexer) scanResponse() (*Response, error) {
+	resp := &Response{
 		Headers:  map[string]string{},
-		Params:   []*param{},
-		Examples: []*example{},
+		Params:   []*Param{},
+		Examples: []*Example{},
 	}
 
 	words, err := l.readN(2, "\n")
@@ -310,25 +314,25 @@ LOOP:
 	return resp, nil
 }
 
-func (l *lexer) scanApiExample() (*example, error) {
+func (l *lexer) scanApiExample() (*Example, error) {
 	words, err := l.readN(2, "@api")
 	if err != nil {
 		return nil, err
 	}
 
-	return &example{
+	return &Example{
 		Type: words[0],
 		Code: words[1],
 	}, nil
 }
 
-func (l *lexer) scanApiParam() (*param, error) {
+func (l *lexer) scanApiParam() (*Param, error) {
 	words, err := l.readN(3, "\n")
 	if err != nil {
 		return nil, err
 	}
 
-	return &param{
+	return &Param{
 		Name:        words[0],
 		Type:        words[1],
 		Description: words[2],
@@ -340,7 +344,7 @@ func (l *lexer) scanApiParam() (*param, error) {
 //  @api get /test.com/api/user.json api summary
 //  api description
 //  api description
-func (l *lexer) scanApi(d *doc) error {
+func (l *lexer) scanApi(d *Doc) error {
 	words, err := l.readN(3, "\n")
 	if err != nil {
 		return err
@@ -353,19 +357,7 @@ func (l *lexer) scanApi(d *doc) error {
 	return nil
 }
 
-// 扫描data，将其内容分解成doc实例，并写入到docs中
-func (docs Docs) Scan(data []rune, line int, file string) error {
+func Scan(data []rune, line int, file string) (*Doc, error) {
 	l := newLexer(data, line, file)
-	d, err := l.scan()
-	if err != nil || d == nil {
-		return err
-	}
-
-	g, found := docs[d.Group]
-	if !found {
-		g = make([]*doc, 0, 1)
-	}
-
-	docs[d.Group] = append(g, d)
-	return nil
+	return l.scan()
 }

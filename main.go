@@ -11,11 +11,12 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/scanner"
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.5.22.150816"
+const version = "0.6.23.150817"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 
@@ -86,7 +87,7 @@ func main() {
 		panic(err)
 	}
 
-	if err = docs.OutputHtml(flag.Arg(1), version); err != nil {
+	if err = output.Html(docs, flag.Arg(1), version); err != nil {
 		panic(err)
 	}
 }

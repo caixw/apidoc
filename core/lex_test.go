@@ -93,7 +93,7 @@ func TestLexer_match(t *testing.T) {
 
 func TestLexer_scanApiGroup(t *testing.T) {
 	a := assert.New(t)
-	d := &doc{}
+	d := &Doc{}
 
 	// 正常情况
 	l := newLexer([]rune("  g1"), 100, "file.go")
@@ -112,7 +112,7 @@ func TestLexer_scanApiGroup(t *testing.T) {
 
 func TestLexer_scanApiQuery(t *testing.T) {
 	a := assert.New(t)
-	d := &doc{Queries: []*param{}}
+	d := &Doc{Queries: []*Param{}}
 
 	// 正常情况
 	l := newLexer([]rune("id int user id"), 100, "file.go")
@@ -189,7 +189,7 @@ func TestLexer_scanApiParam(t *testing.T) {
 
 func TestLexer_scanApi(t *testing.T) {
 	a := assert.New(t)
-	d := &doc{}
+	d := &Doc{}
 
 	// 正常情况
 	l := newLexer([]rune(" get test.com/api.json?k=1 summary summary\n api description"), 100, "file.go")
@@ -230,7 +230,7 @@ func TestLexer_scanApi(t *testing.T) {
 
 func TestLexer_scanApiRequest(t *testing.T) {
 	a := assert.New(t)
-	d := &doc{}
+	d := &Doc{}
 
 	code := ` xml
  @apiHeader h1 v1

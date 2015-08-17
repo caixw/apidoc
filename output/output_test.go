@@ -2,12 +2,13 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package core
+package output
 
 import (
 	"os"
 	"testing"
 
+	"github.com/caixw/apidoc/core"
 	"github.com/issue9/assert"
 )
 
@@ -55,19 +56,26 @@ var (
 `
 )
 
-func TestLexer_OutputHtml(t *testing.T) {
+func TestLexer_Html(t *testing.T) {
 	testdir := "./testdir"
 	a := assert.New(t)
 
 	// 创建测试目录
 	a.NotError(os.MkdirAll(testdir, os.ModePerm), "无法创建测试目录")
 
-	docs := NewDocs()
-	a.NotNil(docs)
+	docs := []*core.Doc{}
 
-	a.NotError(docs.Scan([]rune(block1), 1, "test1.go"))
-	a.NotError(docs.Scan([]rune(block2), 100, "test1.go"))
-	a.NotError(docs.Scan([]rune(block3), 1, "test2.go"))
+	doc, err := core.Scan([]rune(block1), 1, "test1.go")
+	a.NotError(err).NotNil(doc)
+	docs = append(docs, doc)
 
-	a.NotError(docs.OutputHtml(testdir, "v0.1"))
+	doc, err = core.Scan([]rune(block2), 100, "test1.go")
+	a.NotError(err).NotNil(doc)
+	docs = append(docs, doc)
+
+	doc, err = core.Scan([]rune(block3), 1, "test2.go")
+	a.NotError(err).NotNil(doc)
+	docs = append(docs, doc)
+
+	a.NotError(Html(docs, testdir, "v0.1"))
 }
