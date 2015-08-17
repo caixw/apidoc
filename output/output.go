@@ -2,14 +2,15 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package core
+package output
 
 import (
 	"html/template"
 	"os"
 	"time"
 
-	"github.com/caixw/apidoc/core/static"
+	"github.com/caixw/apidoc/core"
+	"github.com/caixw/apidoc/output/static"
 )
 
 // 用于页首和页脚的附加信息
@@ -22,7 +23,7 @@ type info struct {
 
 // 将docs的内容以html格式输出到destDir目录下。
 // version为当前程序的版本号，有可能会输出到文档页面。
-func (docs Docs) OutputHtml(destDir, version string) error {
+func Html(docs []*core.Doc, destDir, version string) error {
 	destDir += string(os.PathSeparator)
 
 	t := template.New("core")
@@ -35,15 +36,20 @@ func (docs Docs) OutputHtml(destDir, version string) error {
 		Date:    time.Now().Format(time.RFC3339),
 		Groups:  make(map[string]string, len(docs)),
 	}
-	for k, _ := range docs {
-		i.Groups[k] = "./group_" + k + ".html"
+	groups := map[string][]*core.Doc{}
+	for _, v := range docs {
+		i.Groups[v.Group] = "./group_" + v.Group + ".html"
+		if groups[v.Group] == nil {
+			groups[v.Group] = []*core.Doc{}
+		}
+		groups[v.Group] = append(groups[v.Group], v)
 	}
 
 	if err := outputIndex(t, i, destDir); err != nil {
 		return err
 	}
 
-	if err := outputGroup(docs, t, i, destDir); err != nil {
+	if err := outputGroup(groups, t, i, destDir); err != nil {
 		return err
 	}
 
@@ -72,7 +78,7 @@ func outputIndex(t *template.Template, i *info, destDir string) error {
 }
 
 // 按分组输出内容页
-func outputGroup(docs Docs, t *template.Template, i *info, destDir string) error {
+func outputGroup(docs map[string][]*core.Doc, t *template.Template, i *info, destDir string) error {
 	for k, v := range docs {
 		group, err := os.Create(destDir + "group_" + k + ".html")
 		if err != nil {

@@ -8,33 +8,30 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"os"
-	"path/filepath"
 	"strings"
+	"sync"
 	"unicode"
 	"unicode/utf8"
 
 	"github.com/caixw/apidoc/core"
+	"github.com/caixw/apidoc/log"
 )
 
 const eof = -1
 
+var (
+	docs   = []*core.Doc{}
+	docsMu sync.Mutex
+)
+
 // 扫描scanner中的代码，提取最近的下一个代码块和其开始的行号。
+// scanFunc必须是一个无状态的
 type scanFunc func(*scanner) ([]rune, int, error)
 
 type scanner struct {
-	f     scanFunc
-	docs  core.Docs
 	data  []byte
 	pos   int
 	width int
-}
-
-func newScanner(f scanFunc) (*scanner, error) {
-	return &scanner{
-		f:    f,
-		docs: core.NewDocs(),
-	}, nil
 }
 
 // 是否已经在文件末尾。
@@ -104,46 +101,49 @@ func (s *scanner) lineNumber() int {
 }
 
 // 扫描指定的文件到docs
-func (s *scanner) scan(path string) error {
+func scanFile(f scanFunc, path string) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return err
+		log.Error(err)
+		return
 	}
 
-	s.data = data
-	s.width = 0
-	s.pos = 0
+	s := &scanner{
+		data: data,
+	}
 
+	fileWaiter := sync.WaitGroup{}
 	for !s.atEOF() {
-		block, lineNum, err := s.f(s)
+		block, lineNum, err := f(s)
 		if err != nil {
-			return err
+			log.Error(err)
+			return
 		}
 
-		flag := false
-		for _, r := range block {
-			if r == '@' {
-				flag = true
+		fileWaiter.Add(1)
+		go func(block []rune, lineNum int, path string) {
+			defer fileWaiter.Done()
+			doc, err := core.Scan(block, lineNum, path)
+			if err != nil {
+				log.Error(err)
+				return
 			}
-		}
-		if !flag {
-			continue
-		}
-
-		err = s.docs.Scan(block, lineNum, path)
-		if err != nil {
-			return err
-		}
+			if doc == nil {
+				return
+			}
+			docsMu.Lock()
+			docs = append(docs, doc)
+			docsMu.Unlock()
+		}(block, lineNum, path)
 	} // end for
-
-	return nil
+	fileWaiter.Wait()
 }
 
 // 分析dir目录下的文件。并将其转换为core.Docs类型返回。
 // recursive 是否递归查询dir子目录下的内容；
 // langName 语言名称，不区分大小写，所有代码都将按该语言的语法进行分析；
 // exts 可分析的文件扩展名，扩展名必须以点号开头，若不指定，则使用默认的扩展名。
-func Scan(dir string, recursive bool, langName string, exts []string) (core.Docs, error) {
+func Scan(dir string, recursive bool, langName string, exts []string) ([]*core.Doc, error) {
 	if len(langName) == 0 {
 		var err error
 		if len(exts) == 0 {
@@ -168,95 +168,20 @@ func Scan(dir string, recursive bool, langName string, exts []string) (core.Docs
 	fmt.Println("scanner:", langName)
 	fmt.Println("exts:", exts)
 
-	s, err := newScanner(l.scan)
-	if err != nil {
-		return nil, err
-	}
-
 	paths, err := recursivePath(dir, recursive, exts...)
 	if err != nil {
 		return nil, err
 	}
+
+	waiter := sync.WaitGroup{}
 	for _, path := range paths {
-		err = s.scan(path)
-		if err != nil {
-			return nil, err
-		}
+		waiter.Add(1)
+		go func(path string) {
+			scanFile(l.scan, path)
+			waiter.Done()
+		}(path)
 	}
+	waiter.Wait()
 
-	return s.docs, nil
-}
-
-// 从扩展名检测其所属的语言名称。
-// 以第一个匹配extsIndex的文件扩展名为准。
-func detectLangType(exts []string) (string, error) {
-	for _, ext := range exts {
-		if lang, found := extsIndex[ext]; found {
-			return lang, nil
-		}
-	}
-	return "", fmt.Errorf("无法找到与这些扩展名[%v]相匹配的代码扫描函数", exts)
-}
-
-// 检测目录下的文件类型。
-// 以第一个匹配extsIndex的文件扩展名为准。
-func detectDirLangType(dir string) (string, error) {
-	var lang string
-
-	walk := func(path string, fi os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if fi.IsDir() || len(lang) > 0 {
-			return nil
-		}
-
-		ext := strings.ToLower(filepath.Ext(path))
-		lang, _ = extsIndex[ext]
-		return nil
-	}
-
-	if err := filepath.Walk(dir, walk); err != nil {
-		return "", err
-	}
-
-	if len(lang) == 0 {
-		return lang, fmt.Errorf("无法检测到[%v]目录下的文件类型", dir)
-	}
-
-	return lang, nil
-}
-
-// 根据recursive值确定是否递归查找paths每个目录下的子目录。
-func recursivePath(dir string, recursive bool, exts ...string) ([]string, error) {
-	paths := []string{}
-	dir += string(os.PathSeparator)
-
-	extIsEnabled := func(ext string) bool {
-		for _, v := range exts {
-			if ext == v {
-				return true
-			}
-		}
-		return false
-	}
-
-	walk := func(path string, fi os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if fi.IsDir() && !recursive && path != dir {
-			return filepath.SkipDir
-		} else if extIsEnabled(filepath.Ext(path)) {
-			paths = append(paths, path)
-		}
-		return nil
-	}
-
-	if err := filepath.Walk(dir, walk); err != nil {
-		return nil, err
-	}
-
-	return paths, nil
+	return docs, nil
 }

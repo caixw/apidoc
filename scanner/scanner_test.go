@@ -7,6 +7,7 @@ package scanner
 import (
 	"testing"
 
+	"github.com/caixw/apidoc/core"
 	"github.com/issue9/assert"
 )
 
@@ -73,91 +74,35 @@ func TestScanner_lineNumber(t *testing.T) {
 	a.Equal(2, s.lineNumber())
 }
 
-func TestScanner_scan(t *testing.T) {
+func TestScanner_scanFile(t *testing.T) {
 	a := assert.New(t)
-	s, err := newScanner(cstyle)
-	a.NotError(err).NotNil(s)
 
-	a.NotError(s.scan("./testcode/php1.php"))
+	scanFile(cstyle, "./testcode/php1.php")
 
-	php1, found := s.docs["php1"]
-	a.True(found).NotNil(php1)
-
-	a.Equal(php1[0].Method, "get").
-		Equal(php1[0].URL, "/api/php1/get")
+	a.Equal(len(docs), 2)
+	a.Equal(docs[0].Group, "php1").
+		Equal(docs[0].Method, "get").
+		Equal(docs[0].URL, "/api/php1/get")
 }
 
 func TestScan(t *testing.T) {
 	a := assert.New(t)
 
+	docsMu.Lock()
+	docs = []*core.Doc{}
+	docsMu.Unlock()
+
 	docs, err := Scan("./testcode", true, "", nil)
 	a.NotError(err).NotNil(docs)
+	a.Equal(4, len(docs))
 
-	php1, found := docs["php1"]
-	a.True(found).NotNil(php1)
-
-	a.Equal(php1[0].Method, "get").
-		Equal(php1[0].URL, "/api/php1/get")
-
-	php2, found := docs["php2"]
-	a.True(found).NotNil(php2)
-
-	a.Equal(php2[0].Method, "get").
-		Equal(php2[0].URL, "/api/php2/get")
-}
-
-func TestDetectLangType(t *testing.T) {
-	a := assert.New(t)
-
-	l, err := detectLangType([]string{".abc1", ".abc1", ".abc1"})
-	a.Error(err).Equal(0, len(l))
-
-	l, err = detectLangType([]string{".js", ".php", ".abc1"})
-	a.NotError(err).Equal("js", l)
-}
-
-func TestDetectDirLangType(t *testing.T) {
-	a := assert.New(t)
-
-	l, err := detectDirLangType("./")
-	a.NotError(err).Equal(l, "go")
-
-	l, err = detectDirLangType("./testdir")
-	a.Error(err).Equal(0, len(l))
-}
-
-func TestRecursivePath(t *testing.T) {
-	a := assert.New(t)
-
-	paths, err := recursivePath("./testdir", false, ".1", ".2")
-	a.NotError(err)
-	a.Equal(paths, []string{
-		"testdir/testfile.1",
-		"testdir/testfile.2",
-	})
-
-	paths, err = recursivePath("./testdir", true, ".1", ".2")
-	a.NotError(err)
-	a.Contains(paths, []string{
-		"testdir/testdir1/testfile.1",
-		"testdir/testdir1/testfile.2",
-		"testdir/testdir2/testfile.1",
-		"testdir/testfile.1",
-		"testdir/testfile.2",
-	})
-
-	paths, err = recursivePath("./testdir/testdir1", true, ".1", ".2")
-	a.NotError(err)
-	a.Equal(paths, []string{
-		"testdir/testdir1/testfile.1",
-		"testdir/testdir1/testfile.2",
-	})
-
-	paths, err = recursivePath("./testdir", true, ".1")
-	a.NotError(err)
-	a.Equal(paths, []string{
-		"testdir/testdir1/testfile.1",
-		"testdir/testdir2/testfile.1",
-		"testdir/testfile.1",
-	})
+	for _, v := range docs {
+		switch {
+		case v.URL == "/api/php1/get":
+			a.Equal(v.Method, "get")
+		case v.URL == "/api/php2/post":
+			a.Equal(v.Method, "post")
+			a.Equal(v.Group, "php2")
+		}
+	}
 }
