@@ -7,6 +7,7 @@ package output
 import (
 	"html/template"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/caixw/apidoc/core"
@@ -27,6 +28,7 @@ func Html(docs []*core.Doc, opt *Options) error {
 		Title:      opt.Title,
 		Version:    opt.Version,
 		AppVersion: opt.AppVersion,
+		Elapsed:    strconv.FormatFloat(float64(opt.Elapsed)/1000000, 'f', 2, 32),
 		Date:       time.Now().Format(time.RFC3339),
 		Groups:     make(map[string]string, len(docs)),
 	}

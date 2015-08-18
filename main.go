@@ -10,13 +10,14 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/scanner"
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.6.24.150818"
+const version = "0.6.25.150818"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 
@@ -88,6 +89,7 @@ func main() {
 		exts = strings.Split(strings.TrimSpace(ext), ",")
 	}
 
+	elapsed := time.Now()
 	docs, err := scanner.Scan(flag.Arg(0), r, t, exts)
 	if err != nil {
 		panic(err)
@@ -98,6 +100,7 @@ func main() {
 		Version:    docVer,
 		DocDir:     flag.Arg(1),
 		AppVersion: version,
+		Elapsed:    time.Now().UnixNano() - elapsed.UnixNano(),
 	}
 	if err = output.Html(docs, opt); err != nil {
 		panic(err)

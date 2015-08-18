@@ -314,7 +314,10 @@ var Templates=map[string]string{
 `,"./footer.html":`{{define "footer"}}
     </div><!-- end .main -->
         <footer>
-            <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>编译于<time>{{.Date}}</time></p>
+            <p>
+                内容由<a href="https://caixw.github.io/apidoc">apidoc</a>编译于<time>{{.Date}}</time>，
+                用时{{.Elapsed}}毫秒。
+            </p>
         </footer>
         <script>
         $(document).ready(function(){

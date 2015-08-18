@@ -82,6 +82,7 @@ func TestLexer_Html(t *testing.T) {
 		Version:    "doc v0.1",
 		AppVersion: "appver 0.1",
 		Title:      "TestDoc",
+		Elapsed:    1,
 	}
 	a.NotError(Html(docs, opt))
 }
