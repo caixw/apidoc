@@ -283,9 +283,9 @@ var Templates=map[string]string{
         <meta name="generator" content="https://github.com/caixw/apidoc">
         <title>
         {{if .CurrGroup}}
-            {{.CurrGroup}} &#8250; apidoc
+            {{.Title}} &#8250; {{.CurrGroup}}
         {{else}}
-            apidoc
+            {{.Title}}
         {{end}}
         </title>
         <link rel="stylesheet" href="./style.css" />
@@ -293,7 +293,8 @@ var Templates=map[string]string{
     </head>
     <body>
         <header>
-            <span class="title"><a href="./index.html">APIDOC</a></span><span>{{.Version}}</span>
+            <span class="title"><a href="./index.html">{{.Title}}</a></span>
+            {{if .Version}}<span>{{.Version}}</span>{{end}}
             <select id="groups">
                 {{$currGroup := .CurrGroup}}
                 {{range $key, $val := .Groups}}
@@ -313,7 +314,7 @@ var Templates=map[string]string{
 `,"./footer.html":`{{define "footer"}}
     </div><!-- end .main -->
         <footer>
-            <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>编译于<time id="date">{{.Date}}</time></p>
+            <p>内容由<a href="https://github.com/caixw/apidoc">apidoc</a>编译于<time>{{.Date}}</time></p>
         </footer>
         <script>
         $(document).ready(function(){
