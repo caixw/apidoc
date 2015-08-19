@@ -92,7 +92,7 @@ func TestScan(t *testing.T) {
 	docs = []*core.Doc{}
 	docsMu.Unlock()
 
-	docs, err := Scan("./testcode", true, "", nil)
+	docs, err := Scan(&Options{SrcDir: "./testcode", Recursive: true, Type: "", Exts: nil})
 	a.NotError(err).NotNil(docs)
 	a.Equal(4, len(docs))
 

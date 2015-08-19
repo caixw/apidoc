@@ -6,9 +6,7 @@ package scanner
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
-	"strings"
 	"sync"
 	"unicode"
 	"unicode/utf8"
@@ -139,36 +137,8 @@ func scanFile(f scanFunc, path string) {
 	fileWaiter.Wait()
 }
 
-// 分析dir目录下的文件。并将其转换为core.Docs类型返回。
-// recursive 是否递归查询dir子目录下的内容；
-// langName 语言名称，不区分大小写，所有代码都将按该语言的语法进行分析；
-// exts 可分析的文件扩展名，扩展名必须以点号开头，若不指定，则使用默认的扩展名。
-func Scan(dir string, recursive bool, langName string, exts []string) ([]*core.Doc, error) {
-	if len(langName) == 0 {
-		var err error
-		if len(exts) == 0 {
-			langName, err = detectDirLangType(dir)
-		} else {
-			langName, err = detectLangType(exts)
-		}
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	l, found := langs[strings.ToLower(langName)]
-	if !found {
-		return nil, fmt.Errorf("不支持的语言:%v", langName)
-	}
-	if len(exts) == 0 {
-		exts = l.exts
-	}
-
-	fmt.Println("scanner:", langName)
-	fmt.Println("exts:", exts)
-
-	paths, err := recursivePath(dir, recursive, exts...)
+func Scan(opt *Options) ([]*core.Doc, error) {
+	f, paths, err := getArgs(opt)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +147,7 @@ func Scan(dir string, recursive bool, langName string, exts []string) ([]*core.D
 	for _, path := range paths {
 		waiter.Add(1)
 		go func(path string) {
-			scanFile(l.scan, path)
+			scanFile(f, path)
 			waiter.Done()
 		}(path)
 	}

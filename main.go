@@ -17,7 +17,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.6.25.150818"
+const version = "0.6.26.150819"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 
@@ -90,7 +90,14 @@ func main() {
 	}
 
 	elapsed := time.Now()
-	docs, err := scanner.Scan(flag.Arg(0), r, t, exts)
+
+	inputOpt := &scanner.Options{
+		SrcDir:    flag.Arg(0),
+		Recursive: r,
+		Type:      t,
+		Exts:      exts,
+	}
+	docs, err := scanner.Scan(inputOpt)
 	if err != nil {
 		panic(err)
 	}
