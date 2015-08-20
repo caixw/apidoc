@@ -7,7 +7,6 @@ package scanner
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/core"
 	"github.com/issue9/assert"
 )
 
@@ -72,37 +71,4 @@ func TestScanner_lineNumber(t *testing.T) {
 
 	s.pos = 4
 	a.Equal(2, s.lineNumber())
-}
-
-func TestScanner_scanFile(t *testing.T) {
-	a := assert.New(t)
-
-	scanFile(cstyle, "./testcode/php1.php")
-
-	a.Equal(len(docs), 2)
-	a.Equal(docs[0].Group, "php1").
-		Equal(docs[0].Method, "get").
-		Equal(docs[0].URL, "/api/php1/get")
-}
-
-func TestScan(t *testing.T) {
-	a := assert.New(t)
-
-	docsMu.Lock()
-	docs = []*core.Doc{}
-	docsMu.Unlock()
-
-	docs, err := Scan(&Options{SrcDir: "./testcode", Recursive: true, Type: "", Exts: nil})
-	a.NotError(err).NotNil(docs)
-	a.Equal(4, len(docs))
-
-	for _, v := range docs {
-		switch {
-		case v.URL == "/api/php1/get":
-			a.Equal(v.Method, "get")
-		case v.URL == "/api/php2/post":
-			a.Equal(v.Method, "post")
-			a.Equal(v.Group, "php2")
-		}
-	}
 }

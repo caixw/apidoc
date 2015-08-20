@@ -6,7 +6,16 @@ package core
 
 import (
 	"fmt"
+	"sync"
 )
+
+// 返回的int类型表示当前指针的位置
+type ScanFunc func([]byte) ([]rune, int)
+
+type docs struct {
+	items []*Doc
+	mux   sync.Mutex
+}
 
 // 表示一个api文档。
 type Doc struct {

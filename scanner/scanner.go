@@ -6,13 +6,11 @@ package scanner
 
 import (
 	"bytes"
-	"io/ioutil"
 	"sync"
 	"unicode"
 	"unicode/utf8"
 
 	"github.com/caixw/apidoc/core"
-	"github.com/caixw/apidoc/log"
 )
 
 const eof = -1
@@ -96,62 +94,4 @@ func (s *scanner) skipSpace() {
 func (s *scanner) lineNumber() int {
 	// 当前行应该是\n数量加1
 	return bytes.Count(s.data[:s.pos], []byte("\n")) + 1
-}
-
-// 扫描指定的文件到docs
-func scanFile(f scanFunc, path string) {
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-
-	s := &scanner{
-		data: data,
-	}
-
-	fileWaiter := sync.WaitGroup{}
-	for !s.atEOF() {
-		block, lineNum, err := f(s)
-		if err != nil {
-			log.Error(err)
-			return
-		}
-
-		fileWaiter.Add(1)
-		go func(block []rune, lineNum int, path string) {
-			defer fileWaiter.Done()
-			doc, err := core.Scan(block, lineNum, path)
-			if err != nil {
-				log.Error(err)
-				return
-			}
-			if doc == nil {
-				return
-			}
-			docsMu.Lock()
-			docs = append(docs, doc)
-			docsMu.Unlock()
-		}(block, lineNum, path)
-	} // end for
-	fileWaiter.Wait()
-}
-
-func Scan(opt *Options) ([]*core.Doc, error) {
-	f, paths, err := getArgs(opt)
-	if err != nil {
-		return nil, err
-	}
-
-	waiter := sync.WaitGroup{}
-	for _, path := range paths {
-		waiter.Add(1)
-		go func(path string) {
-			scanFile(f, path)
-			waiter.Done()
-		}(path)
-	}
-	waiter.Wait()
-
-	return docs, nil
 }

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package scanner
+package main
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/caixw/apidoc/core"
 )
 
 // 所有需要传递给scanner包的参数集合。
@@ -22,7 +24,7 @@ type Options struct {
 
 // 通过参数作一些初始化工作。
 // 从Options实例中获取真正需要的参数。
-func getArgs(opt *Options) (scanFunc, []string, error) {
+func getArgs(opt *Options) (core.ScanFunc, []string, error) {
 	dir := opt.SrcDir + string(os.PathSeparator)
 
 	exts := make([]string, 0, len(opt.Exts))

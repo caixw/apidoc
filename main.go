@@ -12,12 +12,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/caixw/apidoc/core"
 	"github.com/caixw/apidoc/output"
-	"github.com/caixw/apidoc/scanner"
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.6.26.150819"
+const version = "0.6.27.150819"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 
@@ -91,13 +91,18 @@ func main() {
 
 	elapsed := time.Now()
 
-	inputOpt := &scanner.Options{
+	inputOpt := &Options{
 		SrcDir:    flag.Arg(0),
 		Recursive: r,
 		Type:      t,
 		Exts:      exts,
 	}
-	docs, err := scanner.Scan(inputOpt)
+	f, paths, err := getArgs(inputOpt)
+	if err != nil {
+		panic(err)
+	}
+
+	docs, err := core.ScanFiles(paths, f)
 	if err != nil {
 		panic(err)
 	}
@@ -116,15 +121,15 @@ func main() {
 
 func printLangs() {
 	fmt.Println("目前支持以下类型的代码解析:")
-	langs := scanner.Langs()
-	for _, l := range langs {
-		fmt.Println(l)
+	for k, _ := range langs {
+		fmt.Println(k)
 	}
 }
 
 func printVersion() {
 	colors.Print(colors.Stdout, colors.Green, colors.Default, "apidoc: ")
 	colors.Println(colors.Stdout, colors.Default, colors.Default, version)
+
 	colors.Print(colors.Stdout, colors.Green, colors.Default, "Go: ")
 	goVersion := runtime.Version() + " " + runtime.GOOS + "/" + runtime.GOARCH
 	colors.Println(colors.Stdout, colors.Default, colors.Default, goVersion)

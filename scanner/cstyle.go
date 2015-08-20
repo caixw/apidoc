@@ -4,22 +4,26 @@
 
 package scanner
 
-func cstyle(s *scanner) ([]rune, int, error) {
+func CStyle(data []byte) ([]rune, int) {
+	s := &scanner{
+		data:  data,
+		pos:   0,
+		width: 0,
+	}
+
 	block := []rune{}
 
 LOOP:
 	for {
 		switch {
 		case s.match("/*"):
-			lineNum := s.lineNumber()
 			for {
 				if s.match("*/") {
-					return block, lineNum, nil
+					return block, s.pos
 				}
 				block = append(block, s.next())
 			} // end for
 		case s.match("//"):
-			lineNum := s.lineNumber()
 		LOOP2:
 			for {
 				r := s.next()
@@ -32,7 +36,7 @@ LOOP:
 					break LOOP2
 				}
 			} // end for
-			return block, lineNum, nil
+			return block, s.pos
 		default:
 			if s.next() == eof {
 				break LOOP
@@ -40,5 +44,5 @@ LOOP:
 		}
 	} // end for
 
-	return nil, 0, nil
+	return nil, -1
 }

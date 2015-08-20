@@ -7,10 +7,11 @@ package scanner
 import (
 	"testing"
 
+	"github.com/caixw/apidoc/core"
 	"github.com/issue9/assert"
 )
 
-var _ scanFunc = cstyle
+var _ core.ScanFunc = CStyle
 
 var code1 = `
 int x = 5;
@@ -49,11 +50,8 @@ func TestCStyle(t *testing.T) {
 	a := assert.New(t)
 
 	fn := func(code string, comment []byte) {
-		s := &scanner{
-			data: []byte(code),
-		}
-		block, ln, err := cstyle(s)
-		a.NotError(err).NotNil(block)
+		block, ln := CStyle([]byte(code))
+		a.NotNil(block)
 		a.Equal(block, comment).Equal(ln, 3)
 	}
 
