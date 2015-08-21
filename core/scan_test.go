@@ -28,12 +28,17 @@ func TestScanFile(t *testing.T) {
 	scanFile(ds, cstyle, "./testcode/php1.php")
 
 	a.Equal(len(ds.items), 2)
-	a.Equal(ds.items[0].Group, "php1").
-		Equal(ds.items[0].Method, "post").
-		Equal(ds.items[0].URL, "/api/php1/post")
-	a.Equal(ds.items[1].Group, "php1").
-		Equal(ds.items[1].Method, "get").
-		Equal(ds.items[1].URL, "/api/php1/get")
+	a.Equal(ds.items[0].Group, "php1")
+	a.Equal(ds.items[1].Group, "php1")
+	if ds.items[0].Method == "post" {
+		a.Equal(ds.items[0].URL, "/api/php1/post")
+		a.Equal(ds.items[1].Method, "get")
+		a.Equal(ds.items[1].URL, "/api/php1/get")
+	} else {
+		a.Equal(ds.items[0].URL, "/api/php1/get")
+		a.Equal(ds.items[1].Method, "post")
+		a.Equal(ds.items[1].URL, "/api/php1/post")
+	}
 }
 
 func TestScanFiles(t *testing.T) {
