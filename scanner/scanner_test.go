@@ -45,21 +45,6 @@ func TestScanner_match(t *testing.T) {
 	a.False(s.match("ab"))
 }
 
-func TestScanner_skipSpace(t *testing.T) {
-	a := assert.New(t)
-
-	s := &scanner{
-		data: []byte("  ab\n  cd"),
-	}
-
-	s.skipSpace()
-	a.Equal(s.next(), 'a')
-
-	s.next()
-	s.skipSpace()
-	a.Equal(s.next(), 'c')
-}
-
 func TestScanner_lineNumber(t *testing.T) {
 	a := assert.New(t)
 

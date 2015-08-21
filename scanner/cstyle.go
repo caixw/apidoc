@@ -29,7 +29,6 @@ LOOP:
 				r := s.next()
 				block = append(block, r)
 				if r == '\n' {
-					s.skipSpace()
 					if s.match("//") {
 						continue
 					}

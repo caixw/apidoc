@@ -7,7 +7,6 @@ package scanner
 import (
 	"bytes"
 	"sync"
-	"unicode"
 	"unicode/utf8"
 
 	"github.com/caixw/apidoc/core"
@@ -74,20 +73,6 @@ func (s *scanner) match(str string) bool {
 func (s *scanner) backup() {
 	s.pos -= s.width
 	s.width = 0
-}
-
-// 跳过之后的所有空白字符。
-func (s *scanner) skipSpace() {
-	if s.atEOF() {
-		return
-	}
-
-	for {
-		if !unicode.IsSpace(s.next()) {
-			s.backup()
-			return
-		}
-	}
 }
 
 // 当前所在的行号

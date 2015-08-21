@@ -13,6 +13,8 @@ import (
 
 var _ core.ScanFunc = CStyle
 
+//////////////////////////////////// 测试单个注释块
+
 var (
 	code1 = `
 int x = 5;
@@ -37,7 +39,7 @@ int x = 5;
 `)
 )
 
-func TestCStyle(t *testing.T) {
+func TestCStyle__SingleBlock(t *testing.T) {
 	a := assert.New(t)
 
 	fn := func(code string, comment []byte) {
@@ -47,4 +49,68 @@ func TestCStyle(t *testing.T) {
 
 	fn(code1, comment1)
 	fn(code2, comment2)
+}
+
+//////////////////////////////////// 测试多个注释块
+
+var (
+	mb1 = `
+int x = 5
+/*
+ comment1
+ comment1
+ */
+
+ /*comment2
+ comment2
+ */
+`
+
+	comments1 = [][]byte{
+		[]byte(`
+ comment1
+ comment1
+ `),
+		[]byte(`comment2
+ comment2
+ `),
+	}
+
+	mb2 = `
+int x=5
+// comment1
+// comment1
+// 
+
+// comment2
+// comment2
+`
+
+	comments2 = [][]byte{
+		[]byte(` comment1
+ comment1
+ 
+`),
+		[]byte(` comment2
+ comment2
+`),
+	}
+)
+
+func TestCStyle__MultBlock(t *testing.T) {
+	a := assert.New(t)
+
+	fn := func(code string, comments [][]byte) {
+		codebs := []byte(code)
+		for _, c := range comments {
+			block, pos := CStyle(codebs)
+			a.Equal(block, c)
+			codebs = codebs[pos:]
+		}
+		//block, pos := CStyle([]byte(code))
+		//a.Equal(block, comment).Equal(pos, len(code))
+	}
+
+	fn(mb1, comments1)
+	fn(mb2, comments2)
 }
