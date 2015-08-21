@@ -13,38 +13,29 @@ import (
 
 var _ core.ScanFunc = CStyle
 
-var code1 = `
+var (
+	code1 = `
 int x = 5;
 /* line1
 line2
 line3*/`
 
-var comment1 = []byte(` line1
+	comment1 = []byte(` line1
 line2
 line3`)
 
-var code2 = `
+	code2 = `
 int x = 5;
 // line1
 // line2
 // line3
 `
 
-var comment2 = []byte(` line1
+	comment2 = []byte(` line1
  line2
  line3
 `)
-
-var code3 = `
-  int x=5
-  // line1
-  // line2
-  // line3
-`
-var comment3 = []byte(` line1
- line2
- line3
-`)
+)
 
 func TestCStyle(t *testing.T) {
 	a := assert.New(t)
@@ -56,5 +47,4 @@ func TestCStyle(t *testing.T) {
 
 	fn(code1, comment1)
 	fn(code2, comment2)
-	fn(code3, comment3)
 }
