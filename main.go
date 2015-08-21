@@ -17,7 +17,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.6.27.150819"
+const version = "0.6.28.150821"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 
@@ -114,7 +114,7 @@ func main() {
 		AppVersion: version,
 		Elapsed:    time.Now().UnixNano() - elapsed.UnixNano(),
 	}
-	if err = output.Html(docs, opt); err != nil {
+	if err = output.Html(docs.Items(), opt); err != nil {
 		panic(err)
 	}
 }

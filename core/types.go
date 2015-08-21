@@ -12,8 +12,9 @@ import (
 // 返回的int类型表示当前指针的位置
 type ScanFunc func([]byte) ([]rune, int)
 
-type docs struct {
+type Docs struct {
 	items []*Doc
+	errs  []error
 	mux   sync.Mutex
 }
 
@@ -65,6 +66,18 @@ type SyntaxError struct {
 	Line    int
 	File    string
 	Message string
+}
+
+func (d *Docs) HasError() bool {
+	return len(d.errs) > 0
+}
+
+func (d *Docs) Items() []*Doc {
+	return d.items
+}
+
+func (d *Docs) Errors() []error {
+	return d.errs
 }
 
 func (err *SyntaxError) Error() string {

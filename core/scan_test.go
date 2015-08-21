@@ -23,7 +23,7 @@ func cstyle(data []byte) ([]rune, int) {
 
 func TestScanFile(t *testing.T) {
 	a := assert.New(t)
-	ds := &docs{items: []*Doc{}}
+	ds := &Docs{items: []*Doc{}}
 
 	scanFile(ds, cstyle, "./testcode/php1.php")
 
@@ -43,10 +43,10 @@ func TestScanFiles(t *testing.T) {
 		"./testcode/php1.php",
 		"./testcode/php2.php",
 	}
-	items, err := ScanFiles(paths, cstyle)
-	a.NotError(err).NotNil(items)
-	a.Equal(4, len(items))
-	for _, v := range items {
+	docs, err := ScanFiles(paths, cstyle)
+	a.NotError(err).NotNil(docs.items)
+	a.Equal(4, len(docs.items))
+	for _, v := range docs.items {
 		switch {
 		case v.URL == "/api/php1/get":
 			a.Equal(v.Method, "get")

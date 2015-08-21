@@ -8,11 +8,10 @@ import (
 	"bytes"
 	"io/ioutil"
 	"sync"
-
-	"github.com/caixw/apidoc/log"
 )
 
-func scanFile(docs *docs, f ScanFunc, path string) error {
+// 扫描单个文件的内容到docs实例中。
+func scanFile(docs *Docs, f ScanFunc, path string) error {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
@@ -30,18 +29,15 @@ func scanFile(docs *docs, f ScanFunc, path string) error {
 		ln += bytes.Count(data[:pos], []byte("\n"))
 		wg.Add(1)
 		go func(block []rune, lineNum int, path string) {
-			defer wg.Done()
 			doc, err := scan(block, lineNum, path)
-			if err != nil {
-				log.Error(err)
-				return
-			}
-			if doc == nil {
-				return
-			}
 			docs.mux.Lock()
-			docs.items = append(docs.items, doc)
+			if err != nil {
+				docs.errs = append(docs.errs, err)
+			} else {
+				docs.items = append(docs.items, doc)
+			}
 			docs.mux.Unlock()
+			wg.Done()
 		}(block, ln, path)
 
 		data = data[pos:]
@@ -52,8 +48,8 @@ func scanFile(docs *docs, f ScanFunc, path string) error {
 }
 
 // 扫描所有的paths文件内容。
-func ScanFiles(paths []string, f ScanFunc) ([]*Doc, error) {
-	docs := &docs{items: make([]*Doc, 0, 100)}
+func ScanFiles(paths []string, f ScanFunc) (*Docs, error) {
+	docs := &Docs{items: make([]*Doc, 0, 100), errs: []error{}}
 	wg := sync.WaitGroup{}
 	for _, path := range paths {
 		wg.Add(1)
@@ -64,5 +60,5 @@ func ScanFiles(paths []string, f ScanFunc) ([]*Doc, error) {
 	}
 	wg.Wait()
 
-	return docs.items, nil
+	return docs, nil
 }
