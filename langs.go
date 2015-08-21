@@ -2,48 +2,44 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package scanner
+package main
+
+import (
+	"github.com/caixw/apidoc/core"
+	"github.com/caixw/apidoc/scanner"
+)
 
 // 各编程语言相关的参数
 type lang struct {
 	exts []string // 扩展名列表
-	scan scanFunc // 代码扫描函数，用于从代码中分离注释文本。
+	scan core.ScanFunc
 }
 
 var langs = map[string]*lang{
 	"go": &lang{
 		exts: []string{".go"},
-		scan: cstyle,
+		scan: scanner.CStyle,
 	},
 
 	"cpp": &lang{
 		exts: []string{".h", ".cpp", ".cxx", ".c"},
-		scan: cstyle,
+		scan: scanner.CStyle,
 	},
 
 	"c": &lang{
 		exts: []string{".h", ".c"},
-		scan: cstyle,
+		scan: scanner.CStyle,
 	},
 
 	"php": &lang{
 		exts: []string{".php"},
-		scan: cstyle,
+		scan: scanner.CStyle,
 	},
 
 	"js": &lang{
 		exts: []string{".js"},
-		scan: cstyle,
+		scan: scanner.CStyle,
 	},
-}
-
-// 支持的语言列表。
-func Langs() (list []string) {
-	for l, _ := range langs {
-		list = append(list, l)
-	}
-
-	return
 }
 
 // 各扩展名对应的语言。

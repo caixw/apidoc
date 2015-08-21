@@ -357,7 +357,7 @@ func (l *lexer) scanApi(d *Doc) error {
 	return nil
 }
 
-func Scan(data []rune, line int, file string) (*Doc, error) {
+func scan(data []rune, line int, file string) (*Doc, error) {
 	l := newLexer(data, line, file)
 	return l.scan()
 }

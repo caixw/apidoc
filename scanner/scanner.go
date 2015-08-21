@@ -6,15 +6,11 @@ package scanner
 
 import (
 	"bytes"
-	"fmt"
-	"io/ioutil"
-	"strings"
 	"sync"
 	"unicode"
 	"unicode/utf8"
 
 	"github.com/caixw/apidoc/core"
-	"github.com/caixw/apidoc/log"
 )
 
 const eof = -1
@@ -98,90 +94,4 @@ func (s *scanner) skipSpace() {
 func (s *scanner) lineNumber() int {
 	// 当前行应该是\n数量加1
 	return bytes.Count(s.data[:s.pos], []byte("\n")) + 1
-}
-
-// 扫描指定的文件到docs
-func scanFile(f scanFunc, path string) {
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-
-	s := &scanner{
-		data: data,
-	}
-
-	fileWaiter := sync.WaitGroup{}
-	for !s.atEOF() {
-		block, lineNum, err := f(s)
-		if err != nil {
-			log.Error(err)
-			return
-		}
-
-		fileWaiter.Add(1)
-		go func(block []rune, lineNum int, path string) {
-			defer fileWaiter.Done()
-			doc, err := core.Scan(block, lineNum, path)
-			if err != nil {
-				log.Error(err)
-				return
-			}
-			if doc == nil {
-				return
-			}
-			docsMu.Lock()
-			docs = append(docs, doc)
-			docsMu.Unlock()
-		}(block, lineNum, path)
-	} // end for
-	fileWaiter.Wait()
-}
-
-// 分析dir目录下的文件。并将其转换为core.Docs类型返回。
-// recursive 是否递归查询dir子目录下的内容；
-// langName 语言名称，不区分大小写，所有代码都将按该语言的语法进行分析；
-// exts 可分析的文件扩展名，扩展名必须以点号开头，若不指定，则使用默认的扩展名。
-func Scan(dir string, recursive bool, langName string, exts []string) ([]*core.Doc, error) {
-	if len(langName) == 0 {
-		var err error
-		if len(exts) == 0 {
-			langName, err = detectDirLangType(dir)
-		} else {
-			langName, err = detectLangType(exts)
-		}
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	l, found := langs[strings.ToLower(langName)]
-	if !found {
-		return nil, fmt.Errorf("不支持的语言:%v", langName)
-	}
-	if len(exts) == 0 {
-		exts = l.exts
-	}
-
-	fmt.Println("scanner:", langName)
-	fmt.Println("exts:", exts)
-
-	paths, err := recursivePath(dir, recursive, exts...)
-	if err != nil {
-		return nil, err
-	}
-
-	waiter := sync.WaitGroup{}
-	for _, path := range paths {
-		waiter.Add(1)
-		go func(path string) {
-			scanFile(l.scan, path)
-			waiter.Done()
-		}(path)
-	}
-	waiter.Wait()
-
-	return docs, nil
 }

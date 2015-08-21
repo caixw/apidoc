@@ -77,5 +77,12 @@ func TestLexer_Html(t *testing.T) {
 	a.NotError(err).NotNil(doc)
 	docs = append(docs, doc)
 
-	a.NotError(Html(docs, testdir, "v0.1"))
+	opt := &Options{
+		DocDir:     testdir,
+		Version:    "doc v0.1",
+		AppVersion: "appver 0.1",
+		Title:      "TestDoc",
+		Elapsed:    1,
+	}
+	a.NotError(Html(docs, opt))
 }

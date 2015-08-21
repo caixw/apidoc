@@ -2,14 +2,74 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package scanner
+package main
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/caixw/apidoc/core"
 )
+
+// 所有需要传递给scanner包的参数集合。
+type Options struct {
+	SrcDir    string
+	Recursive bool
+	Type      string
+	Exts      []string
+	Groups    []string
+}
+
+// 通过参数作一些初始化工作。
+// 从Options实例中获取真正需要的参数。
+func getArgs(opt *Options) (core.ScanFunc, []string, error) {
+	dir := opt.SrcDir + string(os.PathSeparator)
+
+	exts := make([]string, 0, len(opt.Exts))
+	for _, ext := range opt.Exts {
+		if len(ext) == 0 {
+			continue
+		}
+
+		if ext[0] != '.' {
+			ext = "." + ext
+		}
+		exts = append(exts, ext)
+	}
+
+	typ := opt.Type
+	// 若没有指定Type，则根据exts和当前目录下的文件检测来确定其值
+	if len(opt.Type) == 0 {
+		var err error
+		if len(exts) == 0 {
+			typ, err = detectDirLangType(dir)
+		} else {
+			typ, err = detectLangType(exts)
+		}
+
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	typ = strings.ToLower(typ)
+	lang, found := langs[typ]
+	if !found {
+		return nil, nil, fmt.Errorf("暂不支持该类型[%v]的语言", typ)
+	}
+	if len(exts) == 0 {
+		exts = lang.exts
+	}
+
+	paths, err := recursivePath(dir, opt.Recursive, exts...)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return lang.scan, paths, nil
+}
 
 // 从扩展名检测其所属的语言名称。
 // 以第一个匹配extsIndex的文件扩展名为准。

@@ -7,24 +7,17 @@ package output
 import (
 	"html/template"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/caixw/apidoc/core"
 	"github.com/caixw/apidoc/output/static"
 )
 
-// 用于页首和页脚的附加信息
-type info struct {
-	Groups    map[string]string // 分组名称与文件的对照表
-	CurrGroup string            // 当前所在的分组页，若为空，表示在列表页
-	Date      string            // 编译日期
-	Version   string            // 程序版本
-}
-
 // 将docs的内容以html格式输出到destDir目录下。
 // version为当前程序的版本号，有可能会输出到文档页面。
-func Html(docs []*core.Doc, destDir, version string) error {
-	destDir += string(os.PathSeparator)
+func Html(docs []*core.Doc, opt *Options) error {
+	destDir := opt.DocDir + string(os.PathSeparator)
 
 	t := template.New("core")
 	for _, content := range static.Templates {
@@ -32,10 +25,17 @@ func Html(docs []*core.Doc, destDir, version string) error {
 	}
 
 	i := &info{
-		Version: version,
-		Date:    time.Now().Format(time.RFC3339),
-		Groups:  make(map[string]string, len(docs)),
+		Title:      opt.Title,
+		Version:    opt.Version,
+		AppVersion: opt.AppVersion,
+		Elapsed:    strconv.FormatFloat(float64(opt.Elapsed)/1000000, 'f', 2, 32),
+		Date:       time.Now().Format(time.RFC3339),
+		Groups:     make(map[string]string, len(docs)),
 	}
+	if len(i.Title) == 0 {
+		i.Title = "APIDOC"
+	}
+
 	groups := map[string][]*core.Doc{}
 	for _, v := range docs {
 		i.Groups[v.Group] = "./group_" + v.Group + ".html"
