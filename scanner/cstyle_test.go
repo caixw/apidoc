@@ -50,9 +50,8 @@ func TestCStyle(t *testing.T) {
 	a := assert.New(t)
 
 	fn := func(code string, comment []byte) {
-		block, ln := CStyle([]byte(code))
-		a.NotNil(block)
-		a.Equal(block, comment).Equal(ln, 3)
+		block, pos := CStyle([]byte(code))
+		a.Equal(block, comment).Equal(pos, len(comment))
 	}
 
 	fn(code1, comment1)
