@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+// 配置文件名称。
 const configFilename = ".apidoc.json"
 
 type config struct {
@@ -191,4 +192,31 @@ func recursivePath(dir string, recursive bool, exts ...string) ([]string, error)
 	}
 
 	return paths, nil
+}
+
+func genConfigFile() {
+	wd, err := os.Getwd()
+	if err != nil {
+		printError(err)
+		return
+	}
+
+	path := wd + string(os.PathSeparator) + configFilename
+	fi, err := os.Create(path)
+	if err != nil {
+		printError(err)
+		return
+	}
+	defer fi.Close()
+
+	cfg := &config{
+		Input:  &input{Dir: "./", Recursive: true},
+		Output: &output{},
+		Doc:    &doc{},
+	}
+	data, err := json.MarshalIndent(cfg, "", "    ")
+	_, err = fi.Write(data)
+	if err != nil {
+		printError(err)
+	}
 }

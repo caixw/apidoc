@@ -15,7 +15,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.7.34.150822"
+const version = "0.7.35.150823"
 
 const (
 	out          = colors.Stdout
@@ -33,8 +33,9 @@ const usage = `apidoc是一个RESTful api文档生成工具。
 options:
  -h       显示当前帮助信息；
  -v       显示apidoc和go程序的版本信息；
- -l       显示所有支持的语言类型。
+ -l       显示所有支持的语言类型；
  -r       是否搜索子目录，默认为true；
+ -g       在当前目录下创建一个默认的配置文件；
 
 有关apidoc的详细信息，可访问官网：https://caixw.github.io/apidoc`
 
@@ -80,12 +81,13 @@ func main() {
 
 // 处理命令行参数，若被处理，返回true，否则返回false。
 func flags() (ok bool) {
-	var h, v, l bool
+	var h, v, l, g bool
 
 	flag.Usage = printUsage
 	flag.BoolVar(&h, "h", false, "显示帮助信息")
 	flag.BoolVar(&v, "v", false, "显示帮助信息")
 	flag.BoolVar(&l, "l", false, "显示所有支持的语言")
+	flag.BoolVar(&g, "g", false, "在当前目录下创建一个默认的配置文件")
 	flag.Parse()
 
 	switch {
@@ -97,6 +99,9 @@ func flags() (ok bool) {
 		return true
 	case l:
 		printLangs()
+		return true
+	case g:
+		genConfigFile()
 		return true
 	}
 	return false
