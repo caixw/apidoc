@@ -8,16 +8,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"runtime"
 	"strings"
 	"time"
 
 	"github.com/caixw/apidoc/core"
 	"github.com/caixw/apidoc/output"
-	"github.com/issue9/term/colors"
 )
 
-const version = "0.6.30.150821"
+const version = "0.6.31.150822"
 
 var usage = `apidoc从代码注释中提取并生成api的文档。
 
@@ -80,7 +78,7 @@ func main() {
 		printLangs()
 		return
 	case flag.NArg() != 2:
-		colors.Println(colors.Stderr, colors.Red, colors.Default, "请同时指定src和dest参数")
+		printError("请同时指定src和dest参数")
 		return
 	}
 
@@ -99,12 +97,17 @@ func main() {
 	}
 	f, paths, err := getArgs(inputOpt)
 	if err != nil {
-		panic(err)
+		printError(err)
+		return
 	}
 
 	docs, err := core.ScanFiles(paths, f)
 	if err != nil {
-		panic(err)
+		printError(err)
+		return
+	}
+	if docs.HasError() { // 语法错误，并不中断程序
+		printSyntaxErrors(docs.Errors())
 	}
 
 	opt := &output.Options{
@@ -115,22 +118,7 @@ func main() {
 		Elapsed:    time.Now().UnixNano() - elapsed.UnixNano(),
 	}
 	if err = output.Html(docs.Items(), opt); err != nil {
-		panic(err)
+		printError(err)
+		return
 	}
-}
-
-func printLangs() {
-	fmt.Println("目前支持以下类型的代码解析:")
-	for k, _ := range langs {
-		fmt.Println(k)
-	}
-}
-
-func printVersion() {
-	colors.Print(colors.Stdout, colors.Green, colors.Default, "apidoc: ")
-	colors.Println(colors.Stdout, colors.Default, colors.Default, version)
-
-	colors.Print(colors.Stdout, colors.Green, colors.Default, "Go: ")
-	goVersion := runtime.Version() + " " + runtime.GOOS + "/" + runtime.GOARCH
-	colors.Println(colors.Stdout, colors.Default, colors.Default, goVersion)
 }
