@@ -75,19 +75,19 @@ header label{
     border:1px solid #eee;
 }
 
-.main .get:hover{
+.main .method-get{
     border:1px solid rgba(0,255,0,0.5);
 }
 
-.main .delete:hover{
+.main .method-delete{
     border:1px solid rgba(255,0,0,0.5);
 }
 
-.main .put:hover,.main .patch:hover{
+.main .method-put,.main .method-patch{
     border:1px solid rgba(193,174,49,0.5);
 }
 
-.main .post:hover{
+.main .method-post{
     border:1px solid rgba(240,114,11,0.5);
 }
 
@@ -101,7 +101,7 @@ header label{
 }
 
 .main h3{
-    margin-top:0em;
+    margin:0em;
 }
 
 .main h4{
@@ -122,6 +122,11 @@ header label{
 .main .param-name{
     min-width:7em;
     display:inline-block;
+}
+
+.main .api-content{
+    margin-top:1em;
+    display:none;
 }
 
 .main .param-type{

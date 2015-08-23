@@ -80,19 +80,19 @@ header label{
     border:1px solid #eee;
 }
 
-.main .get:hover{
+.main .method-get{
     border:1px solid rgba(0,255,0,0.5);
 }
 
-.main .delete:hover{
+.main .method-delete{
     border:1px solid rgba(255,0,0,0.5);
 }
 
-.main .put:hover,.main .patch:hover{
+.main .method-put,.main .method-patch{
     border:1px solid rgba(193,174,49,0.5);
 }
 
-.main .post:hover{
+.main .method-post{
     border:1px solid rgba(240,114,11,0.5);
 }
 
@@ -106,7 +106,7 @@ header label{
 }
 
 .main h3{
-    margin-top:0em;
+    margin:0em;
 }
 
 .main h4{
@@ -127,6 +127,11 @@ header label{
 .main .param-name{
     min-width:7em;
     display:inline-block;
+}
+
+.main .api-content{
+    margin-top:1em;
+    display:none;
 }
 
 .main .param-type{
@@ -172,71 +177,76 @@ var Templates=map[string]string{
     </div>
 {{end}}
 `,"./group.html":`{{define "group"}}
-<section class="{{.Method}}">
+<section class="api method-{{.Method}}">
     <h3>
         <span class="method">{{.Method}}</span>
         <span class="url">{{.URL}}</span>
     </h3>
-    <p>{{.Summary}}</p>
-    {{if .Description}}
-    <p class="description">{{.Description}}</p>
-    {{end}}
+    <div class="api-content">
+        <p>{{.Summary}}</p>
+        {{if .Description}}
+        <p class="description">{{.Description}}</p>
+        {{end}}
 
-    {{if .Queries}}
-        <h4>查询参数</h4>
-        {{template "param" .Queries}}
-    {{end}}
+        {{if .Queries}}
+            <h4>查询参数</h4>
+            {{template "param" .Queries}}
+        {{end}}
 
-    {{if .Params}}
-        <h4>参数</h4>
-        {{template "param" .Params}}
-    {{end}}
+        {{if .Params}}
+            <h4>参数</h4>
+            {{template "param" .Params}}
+        {{end}}
 
-    {{if .Request}}
-    <div>
-        <h4>请求</h4>
+        {{if .Request}}
         <div>
-            <p>数据类型: {{.Request.Type}}</p>
+            <h4>请求</h4>
+            <div>
+                <p>数据类型: {{.Request.Type}}</p>
 
-            {{if .Request.Headers}}
-            <h5>header:</h5>
-            <ul>
-                {{range $k,$v:=.Request.Headers}}
-                <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
+                {{if .Request.Headers}}
+                <h5>请求头:</h5>
+                <ul>
+                    {{range $k,$v:=.Request.Headers}}
+                    <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
+                    {{end}}
+                </ul>
                 {{end}}
-            </ul>
-            {{end}}
 
-            {{if .Request.Params}}
-            <h5>参数:</h5>
-                {{template "param" .Request.Params}}
-            {{end}}
-
-            {{if .Request.Examples}}
-            <h5>example:</h5>
-                {{range .Request.Examples}}
-                <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
+                {{if .Request.Params}}
+                <h5>参数:</h5>
+                    {{template "param" .Request.Params}}
                 {{end}}
-            {{end}}
+
+                {{if .Request.Examples}}
+                <h5>示例:</h5>
+                    {{range .Request.Examples}}
+                    <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
+                    {{end}}
+                {{end}}
+            </div>
         </div>
-    </div>
-    {{end}}
+        {{end}}
 
-    {{if .Success}}
-    <div>
-        <h4>响应-SUCCESS</h4>
-        {{template "response" .Success}}
-    </div>
-    {{end}}
+        {{if .Success}}
+        <div>
+            <h4>响应-SUCCESS</h4>
+            {{template "response" .Success}}
+        </div>
+        {{end}}
 
-    {{if .Error}}
-    <div>
-        <h4>响应-ERROR</h4>
-        {{template "response" .Error}}
+        {{if .Error}}
+        <div>
+            <h4>响应-ERROR</h4>
+            {{template "response" .Error}}
+        </div>
+        {{end}}
     </div>
-    {{end}}
 </section>
 {{end}}
+
+
+
 
 {{define "param"}}
     <ul>
@@ -244,17 +254,20 @@ var Templates=map[string]string{
     <li>
         <span class="param-name">{{.Name}}</span>
         <span class="param-type">{{.Type}}</span>
-        <span class="param-desc">{{.Description}}</span>
+        <span>{{.Summary}}</span>
     </li>
     {{end}}
     </ul>
 {{end}}
 
+
+
+
 {{define "response"}}
         <p><span class="status-code">status:{{.Code}}</span>{{.Summary}}</p>
 
         {{if .Headers}}
-        <h5>header</h5>
+        <h5>请求头</h5>
         <ul>
             {{range $k,$v:=.Headers}}
             <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
@@ -268,7 +281,7 @@ var Templates=map[string]string{
         {{end}}
 
         {{if .Examples}}
-        <h5>example:</h5>
+        <h5>示例:</h5>
             {{range .Examples}}
             <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
             {{end}}
@@ -321,6 +334,7 @@ var Templates=map[string]string{
         </footer>
         <script>
         $(document).ready(function(){
+            // 按请求方法过滤
             $('header .filter input').on('change', function(){
                 var val = $(this).attr('value');
                 $('.main section.'+val).each(function(index, elem){
@@ -328,8 +342,13 @@ var Templates=map[string]string{
                 });
             })
 
+            // 按分组跳转页面
             $('#groups').on('change', function(){
                 window.location.href = $(this).find('option:selected').val();
+            });
+
+            $('.api h3').on('click', function(){
+                $(this).siblings('.api-content').slideToggle();
             });
         });
         </script>

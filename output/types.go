@@ -9,7 +9,7 @@ type Options struct {
 	Version    string // 文档的版本号
 	DocDir     string // 文档的保存目录
 	Title      string // 文档的标题
-	Elapsed    int64  // 编译用时，单位纳秒
+	Elapsed    int64  // 编译用时，单位毫秒
 	// Language string // 产生的ui界面语言
 }
 

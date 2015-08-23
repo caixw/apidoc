@@ -49,7 +49,7 @@ func (docs *Docs) scanFile(f ScanFunc, path string) error {
 	return nil
 }
 
-// 扫描所有的paths文件内容。
+// 使用f函数将paths中的所有文件扫描到Docs中。
 func ScanFiles(paths []string, f ScanFunc) (*Docs, error) {
 	docs := &Docs{items: make([]*Doc, 0, 100), errs: []error{}}
 	wg := sync.WaitGroup{}

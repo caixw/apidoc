@@ -329,9 +329,9 @@ func (l *lexer) scanApiParam() (*Param, error) {
 	}
 
 	return &Param{
-		Name:        words[0],
-		Type:        words[1],
-		Description: words[2],
+		Name:    words[0],
+		Type:    words[1],
+		Summary: words[2],
 	}, nil
 }
 

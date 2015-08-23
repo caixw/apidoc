@@ -120,7 +120,7 @@ func TestLexer_scanApiQuery(t *testing.T) {
 	q0 := d.Queries[0]
 	a.Equal(q0.Name, "id").
 		Equal(q0.Type, "int").
-		Equal(q0.Description, "user id")
+		Equal(q0.Summary, "user id")
 
 	// 再添加一个参数
 	l = newLexer([]rune("name string user name"), 100, "file.go")
@@ -128,7 +128,7 @@ func TestLexer_scanApiQuery(t *testing.T) {
 	q1 := d.Queries[1]
 	a.Equal(q1.Name, "name").
 		Equal(q1.Type, "string").
-		Equal(q1.Description, "user name")
+		Equal(q1.Summary, "user name")
 }
 
 func TestLexer_scanApiExample(t *testing.T) {
@@ -174,7 +174,7 @@ func TestLexer_scanApiParam(t *testing.T) {
 	a.NotError(err).NotNil(p)
 	a.Equal(p.Name, "id").
 		Equal(p.Type, "int").
-		Equal(p.Description, "optional 用户 id号")
+		Equal(p.Summary, "optional 用户 id号")
 
 	// 缺少参数
 	l = newLexer([]rune("id int \n"), 100, "file.go")
@@ -256,7 +256,7 @@ func TestLexer_scanApiRequest(t *testing.T) {
 		Equal(r.Headers["h1"], "v1").
 		Equal(r.Headers["h2"], "v2").
 		Equal(r.Params[0].Name, "p1").
-		Equal(r.Params[1].Description, "p2 summary").
+		Equal(r.Params[1].Summary, "p2 summary").
 		Equal(r.Examples[0].Type, "json").
 		Equal(r.Examples[1].Type, "xml")
 
@@ -311,7 +311,7 @@ func TestLexer_scanResponse(t *testing.T) {
 		Equal(resp.Headers["h1"], "v1").
 		Equal(resp.Headers["h2"], "v2").
 		Equal(resp.Params[0].Name, "p1").
-		Equal(resp.Params[1].Description, "p2 summary").
+		Equal(resp.Params[1].Summary, "p2 summary").
 		Equal(resp.Examples[0].Type, "json").
 		Equal(resp.Examples[1].Type, "xml")
 
@@ -390,10 +390,10 @@ api description 2
 		Equal(2, len(d.Params))
 
 	q := d.Queries
-	a.Equal(q[0].Name, "q1").Equal(q[0].Description, "q1 summary")
+	a.Equal(q[0].Name, "q1").Equal(q[0].Summary, "q1 summary")
 
 	p := d.Params
-	a.Equal(p[0].Name, "p1").Equal(p[0].Description, "p1 summary")
+	a.Equal(p[0].Name, "p1").Equal(p[0].Summary, "p1 summary")
 
 	s := d.Success
 	a.Equal(s.Code, "200").
@@ -401,7 +401,7 @@ api description 2
 		Equal(s.Headers["h1"], "v1").
 		Equal(s.Headers["h2"], "v2").
 		Equal(s.Params[0].Name, "p1").
-		Equal(s.Params[1].Description, "p2 summary").
+		Equal(s.Params[1].Summary, "p2 summary").
 		Equal(s.Examples[0].Type, "json").
 		Equal(s.Examples[1].Type, "xml")
 

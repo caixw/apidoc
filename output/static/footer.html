@@ -8,6 +8,7 @@
         </footer>
         <script>
         $(document).ready(function(){
+            // 按请求方法过滤
             $('header .filter input').on('change', function(){
                 var val = $(this).attr('value');
                 $('.main section.'+val).each(function(index, elem){
@@ -15,8 +16,13 @@
                 });
             })
 
+            // 按分组跳转页面
             $('#groups').on('change', function(){
                 window.location.href = $(this).find('option:selected').val();
+            });
+
+            $('.api h3').on('click', function(){
+                $(this).siblings('.api-content').slideToggle();
             });
         });
         </script>

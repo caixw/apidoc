@@ -9,9 +9,10 @@ import (
 	"sync"
 )
 
-// 返回给定参数的第一个注释块，及及位置。
-type ScanFunc func([]byte) ([]rune, int)
+// 返回data的第一个注释块，及之后字符的位置。
+type ScanFunc func(data []byte) ([]rune, int)
 
+// Docs表示一个项目的完整文档列表。
 type Docs struct {
 	items []*Doc
 	errs  []error
@@ -51,9 +52,9 @@ type Response struct {
 
 // 用于描述提交和返回的参数信息。
 type Param struct {
-	Name        string // 参数名称
-	Type        string // 类型
-	Description string // 参数介绍
+	Name    string // 参数名称
+	Type    string // 类型
+	Summary string // 参数介绍
 }
 
 // 示例代码
