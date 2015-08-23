@@ -20,7 +20,7 @@ func TestLexer_Html(t *testing.T) {
 	// 创建测试目录
 	a.NotError(os.MkdirAll(testdir, os.ModePerm), "无法创建测试目录")
 
-	docs, err := core.ScanFiles([]string{"./test.php"}, scanner.CStyle)
+	docs, err := core.ScanFiles([]string{"./test.php"}, scanner.C)
 	a.NotError(err).
 		NotNil(docs).
 		False(docs.HasError()).
