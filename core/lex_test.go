@@ -416,5 +416,44 @@ license that can be found in the LICENSE file.
 `
 	l = newLexer([]rune(code), 100, "file.go")
 	d, err = l.scan()
-	a.Error(err).Nil(d)
+	a.NotError(err).Nil(d)
+}
+
+// osx: BenchmarkLexer_scan-4	   50000	     25155 ns/op
+func BenchmarkLexer_scan(b *testing.B) {
+	code := `
+@api get /baseurl/api/login api summary
+api description 1
+api description 2
+@apiGroup users
+@apiQuery q1 int q1 summary
+@apiQuery q2 int q2 summary
+@apiParam p1 int p1 summary
+@apiParam p2 int p2 summary
+@apiSuccess 200 json
+@apiHeader h1 v1
+@apiHeader h2 v2
+@apiParam p1 int optional p1 summary
+@apiParam p2 int p2 summary
+@apiExample json
+{
+    p1:v1,
+    p2:v2
+}
+@apiExample xml
+<root>
+    <p1>v1</p1>
+    <p2>v2</p2>
+</root>
+@apiError 200 json
+@apiHeader h1 v1
+@apiHeader h2 v2
+`
+	for i := 0; i < b.N; i++ {
+		l := newLexer([]rune(code), 100, "file.go")
+		d, err := l.scan()
+		if err != nil || d == nil {
+			b.Error("BenchmarkLexer_scan:error")
+		}
+	}
 }

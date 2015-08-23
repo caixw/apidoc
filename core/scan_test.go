@@ -61,3 +61,14 @@ func TestScanFiles(t *testing.T) {
 		}
 	}
 }
+
+// osx: BenchmarkScanFile-4  	  100000	     21160 ns/op
+func BenchmarkScanFile(b *testing.B) {
+	ds := &Docs{items: []*Doc{}}
+
+	for i := 0; i < b.N; i++ {
+		if ds.scanFile(cstyle, "./testcode/php1.php") != nil {
+			b.Error("BenchmarkScanFile:error")
+		}
+	}
+}
