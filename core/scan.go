@@ -11,7 +11,7 @@ import (
 )
 
 // 扫描单个文件的内容到docs实例中。
-func scanFile(docs *Docs, f ScanFunc, path string) error {
+func (docs *Docs) scanFile(f ScanFunc, path string) error {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
@@ -33,7 +33,7 @@ func scanFile(docs *Docs, f ScanFunc, path string) error {
 			docs.mux.Lock()
 			if err != nil {
 				docs.errs = append(docs.errs, err)
-			} else {
+			} else if doc != nil {
 				docs.items = append(docs.items, doc)
 			}
 			docs.mux.Unlock()
@@ -54,7 +54,7 @@ func ScanFiles(paths []string, f ScanFunc) (*Docs, error) {
 	for _, path := range paths {
 		wg.Add(1)
 		go func(p string) {
-			scanFile(docs, f, p)
+			docs.scanFile(f, p)
 			wg.Done()
 		}(path)
 	}

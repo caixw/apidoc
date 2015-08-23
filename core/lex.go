@@ -175,7 +175,7 @@ LOOP:
 				break
 			}
 			d.Success = resp
-		case l.match("@api "): // 放最后
+		case l.match("@api "):
 			err = l.scanApi(d)
 		default:
 			if l.pos >= len(l.data) {
@@ -191,11 +191,7 @@ LOOP:
 
 	// Doc的必要数据没有被初始化，说明这段代码不是api文档格式。
 	if len(d.URL) == 0 || len(d.Method) == 0 {
-		return nil, &SyntaxError{
-			Line:    l.line,
-			File:    l.file,
-			Message: "该代码块未指定@api标签",
-		}
+		return nil, nil
 	}
 
 	return d, nil

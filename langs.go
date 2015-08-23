@@ -9,12 +9,7 @@ import (
 	"github.com/caixw/apidoc/scanner"
 )
 
-// 各编程语言相关的参数
-type lang struct {
-	exts []string // 扩展名列表
-	scan core.ScanFunc
-}
-
+// 每种语言对应的扩展名及用分析函数。
 var langs = map[string]*lang{
 	"go": &lang{
 		exts: []string{".go"},
@@ -43,8 +38,13 @@ var langs = map[string]*lang{
 }
 
 // 各扩展名对应的语言。
-// 数据由init函数从上面的langs数据中分析获得。
+// 数据从上面的langs数据中分析获得。
 var extsIndex = map[string]string{}
+
+type lang struct {
+	exts []string // 扩展名列表
+	scan core.ScanFunc
+}
 
 func init() {
 	for k, lang := range langs {

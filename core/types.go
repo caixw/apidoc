@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-// 返回的int类型表示当前指针的位置
+// 返回给定参数的第一个注释块，及及位置。
 type ScanFunc func([]byte) ([]rune, int)
 
 type Docs struct {
@@ -68,14 +68,17 @@ type SyntaxError struct {
 	Message string
 }
 
+// 判断是否存在语法错误。
 func (d *Docs) HasError() bool {
 	return len(d.errs) > 0
 }
 
+// 返回所有的Doc实例。
 func (d *Docs) Items() []*Doc {
 	return d.items
 }
 
+// 获取语法错误列表。
 func (d *Docs) Errors() []error {
 	return d.errs
 }

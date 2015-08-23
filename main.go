@@ -15,7 +15,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.7.36.150823"
+const version = "0.7.37.150823"
 
 const (
 	out          = colors.Stdout

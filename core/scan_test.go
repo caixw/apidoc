@@ -25,7 +25,7 @@ func TestScanFile(t *testing.T) {
 	a := assert.New(t)
 	ds := &Docs{items: []*Doc{}}
 
-	scanFile(ds, cstyle, "./testcode/php1.php")
+	ds.scanFile(cstyle, "./testcode/php1.php")
 
 	a.Equal(len(ds.items), 2)
 	a.Equal(ds.items[0].Group, "php1")
