@@ -23,7 +23,7 @@ func TestLexer_Html(t *testing.T) {
 	docs, err := core.ScanFiles([]string{"./test.php"}, scanner.CStyle)
 	a.NotError(err).
 		NotNil(docs).
-		True(docs.HasError()). // 第一个注释块会返回一个语法错误
+		False(docs.HasError()).
 		True(len(docs.Items()) > 0)
 
 	opt := &Options{
