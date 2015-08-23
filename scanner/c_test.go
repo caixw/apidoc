@@ -1,5 +1,5 @@
 // Copyright 2015 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
+// Use of this source cCode is governed by a MIT
 // license that can be found in the LICENSE file.
 
 package scanner
@@ -16,24 +16,24 @@ var _ core.ScanFunc = C
 //////////////////////////////////// 测试单个注释块
 
 var (
-	code1 = `
+	cCode1 = `
 int x = 5;
 /* line1
 line2
 line3*/`
 
-	comment1 = []byte(` line1
+	cComment1 = []byte(` line1
 line2
 line3`)
 
-	code2 = `
+	cCode2 = `
 int x = 5;
 // line1
 // line2
 // line3
 `
 
-	comment2 = []byte(` line1
+	cComment2 = []byte(` line1
  line2
  line3
 `)
@@ -42,19 +42,19 @@ int x = 5;
 func TestC__SingleBlock(t *testing.T) {
 	a := assert.New(t)
 
-	fn := func(code string, comment []byte) {
-		block, pos := C([]byte(code))
-		a.Equal(block, comment).Equal(pos, len(code))
+	fn := func(cCode string, cComment []byte) {
+		block, pos := C([]byte(cCode))
+		a.Equal(block, cComment).Equal(pos, len(cCode))
 	}
 
-	fn(code1, comment1)
-	fn(code2, comment2)
+	fn(cCode1, cComment1)
+	fn(cCode2, cComment2)
 }
 
 //////////////////////////////////// 测试多个注释块
 
 var (
-	mb1 = `
+	cMultBlock1 = `
 int x = 5
 /*
  comment1
@@ -66,7 +66,7 @@ int x = 5
  */
 `
 
-	comments1 = [][]byte{
+	cComments1 = [][]byte{
 		[]byte(`
  comment1
  comment1
@@ -76,7 +76,7 @@ int x = 5
  `),
 	}
 
-	mb2 = `
+	cMultBlock2 = `
 int x=5
 // comment1
 // comment1
@@ -86,7 +86,7 @@ int x=5
 // comment2
 `
 
-	comments2 = [][]byte{
+	cComments2 = [][]byte{
 		[]byte(` comment1
  comment1
  
@@ -100,17 +100,15 @@ int x=5
 func TestC__MultBlock(t *testing.T) {
 	a := assert.New(t)
 
-	fn := func(code string, comments [][]byte) {
-		codebs := []byte(code)
-		for _, c := range comments {
-			block, pos := C(codebs)
+	fn := func(cCode string, cComments [][]byte) {
+		cCodebs := []byte(cCode)
+		for _, c := range cComments {
+			block, pos := C(cCodebs)
 			a.Equal(block, c)
-			codebs = codebs[pos:]
+			cCodebs = cCodebs[pos:]
 		}
-		//block, pos := C([]byte(code))
-		//a.Equal(block, comment).Equal(pos, len(code))
 	}
 
-	fn(mb1, comments1)
-	fn(mb2, comments2)
+	fn(cMultBlock1, cComments1)
+	fn(cMultBlock2, cComments2)
 }

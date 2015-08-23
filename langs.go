@@ -35,6 +35,10 @@ var langs = map[string]*lang{
 		exts: []string{".js"},
 		scan: scanner.C,
 	},
+	"ruby": &lang{
+		exts: []string{".rb"},
+		scan: scanner.Ruby,
+	},
 }
 
 // 各扩展名对应的语言。
