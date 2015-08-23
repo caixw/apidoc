@@ -29,7 +29,9 @@ func (docs *Docs) scanFile(f ScanFunc, path string) error {
 		ln += bytes.Count(data[:pos], []byte("\n"))
 		wg.Add(1)
 		go func(block []rune, lineNum int, path string) {
-			doc, err := scan(block, lineNum, path)
+			l := newLexer(block, lineNum, path)
+			doc, err := l.scan()
+
 			docs.mux.Lock()
 			if err != nil {
 				docs.errs = append(docs.errs, err)
