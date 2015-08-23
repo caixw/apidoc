@@ -15,7 +15,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.7.39.150823"
+const version = "0.7.40.150823"
 
 const (
 	out          = colors.Stdout
@@ -27,10 +27,7 @@ const (
 
 const usage = `apidoc是一个RESTful api文档生成工具。
 
-命令行语法:
- apidoc [options]
-
-options:
+参数:
  -h       显示当前帮助信息；
  -v       显示apidoc和go程序的版本信息；
  -l       显示所有支持的语言类型；
