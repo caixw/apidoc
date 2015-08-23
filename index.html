@@ -33,7 +33,7 @@
         <div class="ui container" id="main">
 
             <!-- about -->
-            <article class="ui piled segment" id="about">
+            <article class="ui stacked segment" id="about">
                 <h2 class="ui header">关于</h2>
                 <p>apidc是一个简单的RESTful api文档生成工具，它从代码注释中提取特定格式的内容，生成文档。</p>
                 <p>目前已支持所有c语言注释风格的代码：PHP, Go, Java, Javascript, C/CPP等。</p>
@@ -50,7 +50,7 @@
             </article>
 
             <!-- usage -->
-            <article class="ui piled segment" id="usage">
+            <article class="ui stacked segment" id="usage">
                 <h2 class="ui header">使用</h2>
 
                 <section>
@@ -60,24 +60,74 @@
                 </section>
 
                 <section>
-                    <h3>命令行语法</h3>
-                    <p><code>apidoc [options] src doc</code></p>
-                    <p>src为源代码所在的目录。</p>
-                    <p>doc为产生后的文档存放目录，若该目录不存在，会尝试自动创建。</p>
-                    <p>options为一些可选的设置项：</p>
+                    <h3>命令行参数</h3>
                     <table class="ui very compact table">
                         <thead>
-                            <tr><th>参数</th><th>默认值</th><th>描述</th></tr>
+                            <tr><th>参数</th><th>描述</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>-r</td><td>true</td><td>是否检测子目录</td></tr>
+                            <tr><td>-h</td><td>显示帮助信息</td></tr>
+                            <tr><td>-v</td><td>显示版本信息</td></tr>
+                            <tr><td>-l</td><td>列出当前支持的语言</td></tr>
+                            <tr><td>-g</td><td>在当前目录下创建配置文件模板</td></tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section>
+                    <h3>配置文件</h3>
+                    <p>apidoc通过配置文件来控制其行为。配置文件名为<code>.apidoc.json</code>。</p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>名称</th><th>类型</th><th>默认值</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="warning"><td colspan="4">input:控制输入行为</td></tr>
                             <tr>
-                                <td>-t</td><td>""</td><td>语言类型，可以是任何支持的语言名称，如go,php等</td>
+                                <td>dir</td>
+                                <td>string</td>
+                                <td>"./"</td>
+                                <td>需要解析的源文件所在目录</td>
                             </tr>
                             <tr>
-                                <td>-ext</td>
+                                <td>recursive</td>
+                                <td>bool</td>
+                                <td>true</td>
+                                <td>是否解析子目录下的源文件</td>
+                            </tr>
+                            <tr>
+                                <td>type</td>
+                                <td>string</td>
                                 <td>""</td>
-                                <td>只扫描这些扩展名的文件，不指定的情况下，根据语言类型自动匹配相应的扩展名</td>
+                                <td>源文件类型，若为空，则会通过检测dir目录下的文件类型来指定。</td>
+                            </tr>
+
+                            <tr class="warning"><td colspan="4">output:控制输出行为</td></tr>
+                            <tr>
+                                <td>dir</td>
+                                <td>string</td>
+                                <td>""</td>
+                                <td>指定文档的保存目录</td>
+                            </tr>
+
+                            <tr class="warning"><td colspan="4">doc:控制文档的行为</td></tr>
+                            <tr>
+                                <td>title</td>
+                                <td>string</td>
+                                <td>apidoc</td>
+                                <td>文档的标题</td>
+                            </tr>
+                            <tr>
+                                <td>version</td>
+                                <td>string</td>
+                                <td>""</td>
+                                <td>文档的版本号</td>
+                            </tr>
+                            <tr>
+                                <td>baseURL</td>
+                                <td>string</td>
+                                <td>""</td>
+                                <td>文档中api地址的前缀</td>
                             </tr>
                         </tbody>
                     </table>
@@ -85,7 +135,7 @@
             </article>
 
             <!-- docs -->
-            <article class="ui piled segment" id="docs">
+            <article class="ui stacked segment" id="docs">
                 <h2 class="ui header">文档</h2>
 
                 <!-- @api -->
@@ -252,8 +302,8 @@
                 </div>
 
                 <div class="right">
-                    <p>内容托管于<a href="https://github.com/caixw/apidoc">Github</a></p>
-                    <p>内容更新于<time>2015-08-16T20:48:00+0800</time></p>
+                    <p>本页面内容托管于<a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
+                    <p>更新于<time>2015-08-23T19:16:00+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
