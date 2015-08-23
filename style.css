@@ -46,6 +46,10 @@ code, pre{
     padding:0.1em 0.5em;
 }
 
+pre .keyword{
+    color:green;
+}
+
 #main{
     margin-top:6.5em;
 }
