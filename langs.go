@@ -13,27 +13,27 @@ import (
 var langs = map[string]*lang{
 	"go": &lang{
 		exts: []string{".go"},
-		scan: scanner.CStyle,
+		scan: scanner.C,
 	},
 
 	"cpp": &lang{
 		exts: []string{".h", ".cpp", ".cxx", ".c"},
-		scan: scanner.CStyle,
+		scan: scanner.C,
 	},
 
 	"c": &lang{
 		exts: []string{".h", ".c"},
-		scan: scanner.CStyle,
+		scan: scanner.C,
 	},
 
 	"php": &lang{
 		exts: []string{".php"},
-		scan: scanner.CStyle,
+		scan: scanner.C,
 	},
 
 	"js": &lang{
 		exts: []string{".js"},
-		scan: scanner.CStyle,
+		scan: scanner.C,
 	},
 }
 

@@ -4,7 +4,7 @@
 
 package scanner
 
-func CStyle(data []byte) ([]rune, int) {
+func C(data []byte) ([]rune, int) {
 	s := &scanner{
 		data:  data,
 		pos:   0,

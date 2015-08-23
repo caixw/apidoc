@@ -11,7 +11,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-var _ core.ScanFunc = CStyle
+var _ core.ScanFunc = C
 
 //////////////////////////////////// 测试单个注释块
 
@@ -39,11 +39,11 @@ int x = 5;
 `)
 )
 
-func TestCStyle__SingleBlock(t *testing.T) {
+func TestC__SingleBlock(t *testing.T) {
 	a := assert.New(t)
 
 	fn := func(code string, comment []byte) {
-		block, pos := CStyle([]byte(code))
+		block, pos := C([]byte(code))
 		a.Equal(block, comment).Equal(pos, len(code))
 	}
 
@@ -97,17 +97,17 @@ int x=5
 	}
 )
 
-func TestCStyle__MultBlock(t *testing.T) {
+func TestC__MultBlock(t *testing.T) {
 	a := assert.New(t)
 
 	fn := func(code string, comments [][]byte) {
 		codebs := []byte(code)
 		for _, c := range comments {
-			block, pos := CStyle(codebs)
+			block, pos := C(codebs)
 			a.Equal(block, c)
 			codebs = codebs[pos:]
 		}
-		//block, pos := CStyle([]byte(code))
+		//block, pos := C([]byte(code))
 		//a.Equal(block, comment).Equal(pos, len(code))
 	}
 
