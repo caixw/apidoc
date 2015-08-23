@@ -15,7 +15,7 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const version = "0.7.35.150823"
+const version = "0.7.36.150823"
 
 const (
 	out          = colors.Stdout
@@ -51,7 +51,7 @@ func main() {
 		printError(err)
 		return
 	}
-	paths, err := recursivePath(cfg.Input.Dir, cfg.Input.Recursive, cfg.Input.Exts...)
+	paths, err := recursivePath(cfg)
 	if err != nil {
 		printError(err)
 		return
@@ -101,7 +101,10 @@ func flags() (ok bool) {
 		printLangs()
 		return true
 	case g:
-		genConfigFile()
+		err := genConfigFile()
+		if err != nil {
+			printError(err)
+		}
 		return true
 	}
 	return false

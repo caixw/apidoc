@@ -34,3 +34,4 @@ apidoc
 
 # project
 output/testdir
+.apidoc.json

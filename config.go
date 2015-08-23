@@ -61,18 +61,36 @@ func loadConfig() (*config, error) {
 		return nil, err
 	}
 
-	if err = initConfig(wd, cfg); err != nil {
+	if err = initInput(wd, cfg); err != nil {
+		return nil, err
+	}
+	if err = initDoc(cfg); err != nil {
 		return nil, err
 	}
 
+	if err = initOutput(cfg); err != nil {
+		return nil, err
+	}
 	return cfg, nil
 }
 
-func initConfig(wd string, cfg *config) error {
+// 对config.Output中的变量做初始化
+func initOutput(cfg *config) error {
+	cfg.Output.Dir += string(os.PathSeparator)
+	return nil
+}
+
+// 对config.Doc中的变量做初始化
+func initDoc(cfg *config) error {
 	if len(cfg.Doc.Title) == 0 {
 		cfg.Doc.Title = "apidoc"
 	}
 
+	return nil
+}
+
+// 对config.Input中的变量做初始化
+func initInput(wd string, cfg *config) error {
 	if len(cfg.Input.Dir) == 0 {
 		cfg.Input.Dir = wd
 	}
@@ -162,12 +180,11 @@ func detectDirLangType(dir string) (string, error) {
 }
 
 // 根据recursive值确定是否递归查找paths每个目录下的子目录。
-func recursivePath(dir string, recursive bool, exts ...string) ([]string, error) {
+func recursivePath(cfg *config) ([]string, error) {
 	paths := []string{}
-	dir += string(os.PathSeparator)
 
 	extIsEnabled := func(ext string) bool {
-		for _, v := range exts {
+		for _, v := range cfg.Input.Exts {
 			if ext == v {
 				return true
 			}
@@ -179,7 +196,7 @@ func recursivePath(dir string, recursive bool, exts ...string) ([]string, error)
 		if err != nil {
 			return err
 		}
-		if fi.IsDir() && !recursive && path != dir {
+		if fi.IsDir() && !cfg.Input.Recursive && path != cfg.Input.Dir {
 			return filepath.SkipDir
 		} else if extIsEnabled(filepath.Ext(path)) {
 			paths = append(paths, path)
@@ -187,25 +204,24 @@ func recursivePath(dir string, recursive bool, exts ...string) ([]string, error)
 		return nil
 	}
 
-	if err := filepath.Walk(dir, walk); err != nil {
+	if err := filepath.Walk(cfg.Input.Dir, walk); err != nil {
 		return nil, err
 	}
 
 	return paths, nil
 }
 
-func genConfigFile() {
+// 在当前目录下产生个默认的配置文件。
+func genConfigFile() error {
 	wd, err := os.Getwd()
 	if err != nil {
-		printError(err)
-		return
+		return err
 	}
 
 	path := wd + string(os.PathSeparator) + configFilename
 	fi, err := os.Create(path)
 	if err != nil {
-		printError(err)
-		return
+		return err
 	}
 	defer fi.Close()
 
@@ -216,7 +232,5 @@ func genConfigFile() {
 	}
 	data, err := json.MarshalIndent(cfg, "", "    ")
 	_, err = fi.Write(data)
-	if err != nil {
-		printError(err)
-	}
+	return err
 }
