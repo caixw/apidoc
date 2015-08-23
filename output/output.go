@@ -14,11 +14,8 @@ import (
 	"github.com/caixw/apidoc/output/static"
 )
 
-// 将docs的内容以html格式输出到destDir目录下。
-// version为当前程序的版本号，有可能会输出到文档页面。
+// 将docs的内容以html格式输出。
 func Html(docs []*core.Doc, opt *Options) error {
-	destDir := opt.DocDir + string(os.PathSeparator)
-
 	t := template.New("core")
 	for _, content := range static.Templates {
 		template.Must(t.Parse(content))
@@ -32,9 +29,6 @@ func Html(docs []*core.Doc, opt *Options) error {
 		Date:       time.Now().Format(time.RFC3339),
 		Groups:     make(map[string]string, len(docs)),
 	}
-	if len(i.Title) == 0 {
-		i.Title = "APIDOC"
-	}
 
 	groups := map[string][]*core.Doc{}
 	for _, v := range docs {
@@ -45,16 +39,16 @@ func Html(docs []*core.Doc, opt *Options) error {
 		groups[v.Group] = append(groups[v.Group], v)
 	}
 
-	if err := outputIndex(t, i, destDir); err != nil {
+	if err := outputIndex(t, i, opt.DocDir); err != nil {
 		return err
 	}
 
-	if err := outputGroup(groups, t, i, destDir); err != nil {
+	if err := outputGroup(groups, t, i, opt.DocDir); err != nil {
 		return err
 	}
 
 	// 输出static
-	return static.Output(destDir)
+	return static.Output(opt.DocDir)
 }
 
 // 输出索引页

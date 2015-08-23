@@ -83,7 +83,7 @@ func initOutput(cfg *config) error {
 // 对config.Doc中的变量做初始化
 func initDoc(cfg *config) error {
 	if len(cfg.Doc.Title) == 0 {
-		cfg.Doc.Title = "apidoc"
+		cfg.Doc.Title = "APIDOC"
 	}
 
 	return nil

@@ -14,7 +14,7 @@ import (
 )
 
 func TestLexer_Html(t *testing.T) {
-	testdir := "./testdir"
+	testdir := "./testdir/"
 	a := assert.New(t)
 
 	// 创建测试目录
