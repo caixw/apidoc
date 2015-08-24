@@ -34,7 +34,7 @@ const usage = `apidoc是一个RESTful api文档生成工具。
  -r       是否搜索子目录，默认为true；
  -g       在当前目录下创建一个默认的配置文件；
 
-有关apidoc的详细信息，可访问官网：https://caixw.github.io/apidoc`
+有关apidoc的详细信息，可访问官网：https://apidoc.site`
 
 func main() {
 	if flags() {
