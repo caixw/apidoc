@@ -3,7 +3,7 @@ apidoc [![Build Status](https://travis-ci.org/caixw/apidoc.svg?branch=master)](h
 
 apidoc是一个简单的RESTful api文档生成工具，它从代码注释中提取特定格式的内容，生成文档。
 目前支持c系列注释风格的语言和ruby。
-具体文档可参考:https://apidoc.site/
+具体文档可参考:http://apidoc.site/
 
 ```c
 /*
