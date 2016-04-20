@@ -337,7 +337,7 @@ var Templates=map[string]string{
             // 按请求方法过滤
             $('header .filter input').on('change', function(){
                 var val = $(this).attr('value');
-                $('.main section.'+val).each(function(index, elem){
+                $('.main section.method-'+val).each(function(index, elem){
                     $(elem).slideToggle();
                 });
             })
