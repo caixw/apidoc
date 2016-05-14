@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// apidoc是一个RESTful api文档生成工具。
+// apidoc 是一个 RESTful api 文档生成工具。
 package main
 
 import (
@@ -25,7 +25,7 @@ const (
 	warnColor    = colors.Cyan
 )
 
-const usage = `apidoc是一个RESTful api文档生成工具。
+const usage = `apidoc 是一个 RESTful api 文档生成工具。
 
 参数:
  -h       显示当前帮助信息；
@@ -34,7 +34,7 @@ const usage = `apidoc是一个RESTful api文档生成工具。
  -r       是否搜索子目录，默认为true；
  -g       在当前目录下创建一个默认的配置文件；
 
-有关apidoc的详细信息，可访问官网：http://apidoc.site`
+有关 apidoc 的详细信息，可访问官网：http://apidoc.site`
 
 func main() {
 	if flags() {

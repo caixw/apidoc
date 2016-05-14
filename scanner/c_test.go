@@ -95,6 +95,46 @@ int x=5
  comment2
 `),
 	}
+
+	// 代码中包含注释开头字符
+	cMultBlock3 = `
+mux.Get("/api/*", h)
+// comment1
+// comment1
+
+// comment2
+// comment2
+`
+
+	cComments3 = [][]byte{
+		[]byte(` comment1
+ comment1
+ 
+`),
+		[]byte(` comment2
+ comment2
+`),
+	}
+
+	// 代码中包含单行注释开头字符
+	cMultBlock4 = `
+	fmt.Println("//abcdefg")
+// comment1
+// comment1
+
+// comment2
+// comment2
+`
+
+	cComments4 = [][]byte{
+		[]byte(` comment1
+ comment1
+ 
+`),
+		[]byte(` comment2
+ comment2
+`),
+	}
 )
 
 func TestC__MultBlock(t *testing.T) {
@@ -111,4 +151,6 @@ func TestC__MultBlock(t *testing.T) {
 
 	fn(cMultBlock1, cComments1)
 	fn(cMultBlock2, cComments2)
+	fn(cMultBlock3, cComments3)
+	fn(cMultBlock4, cComments4)
 }

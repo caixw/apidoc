@@ -16,8 +16,14 @@ func Ruby(data []byte) ([]rune, int) {
 LOOP:
 	for {
 		switch {
+		case s.atEOF():
+			return nil, s.pos
 		case s.match("=begin"):
 			for {
+				if s.atEOF() {
+					return nil, s.pos
+				}
+
 				if s.match("=end") {
 					return block, s.pos
 				}

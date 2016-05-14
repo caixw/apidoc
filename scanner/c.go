@@ -16,8 +16,13 @@ func C(data []byte) ([]rune, int) {
 LOOP:
 	for {
 		switch {
+		case s.atEOF():
+			return nil, s.pos
 		case s.match("/*"):
 			for {
+				if s.atEOF() {
+					return nil, s.pos
+				}
 				if s.match("*/") {
 					return block, s.pos
 				}
