@@ -7,15 +7,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"runtime"
 	"time"
 
+	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/core"
 	o "github.com/caixw/apidoc/output"
 	"github.com/issue9/term/colors"
 )
-
-const version = "0.7.42.160420"
 
 const (
 	out          = colors.Stdout
@@ -130,10 +130,5 @@ func printLangs() {
 }
 
 func printVersion() {
-	colors.Print(out, titleColor, colors.Default, "apidoc: ")
-	colors.Println(out, contentColor, colors.Default, version)
-
-	colors.Print(out, titleColor, colors.Default, "Go: ")
-	goVersion := runtime.Version() + " " + runtime.GOOS + "/" + runtime.GOARCH
-	colors.Println(out, contentColor, colors.Default, goVersion)
+	fmt.Println("apidoc", app.Version, "build with", runtime.Version())
 }
