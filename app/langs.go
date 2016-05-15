@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package main
+package app
 
 import (
 	"github.com/caixw/apidoc/core"
@@ -12,31 +12,31 @@ import (
 // 每种语言对应的扩展名及用分析函数。
 var langs = map[string]*lang{
 	"go": &lang{
-		exts: []string{".go"},
+		Exts: []string{".go"},
 		scan: scanner.C,
 	},
 
 	"cpp": &lang{
-		exts: []string{".h", ".cpp", ".cxx", ".c"},
+		Exts: []string{".h", ".cpp", ".cxx", ".c"},
 		scan: scanner.C,
 	},
 
 	"c": &lang{
-		exts: []string{".h", ".c"},
+		Exts: []string{".h", ".c"},
 		scan: scanner.C,
 	},
 
 	"php": &lang{
-		exts: []string{".php"},
+		Exts: []string{".php"},
 		scan: scanner.C,
 	},
 
 	"js": &lang{
-		exts: []string{".js"},
+		Exts: []string{".js"},
 		scan: scanner.C,
 	},
 	"ruby": &lang{
-		exts: []string{".rb"},
+		Exts: []string{".rb"},
 		scan: scanner.Ruby,
 	},
 }
@@ -46,14 +46,18 @@ var langs = map[string]*lang{
 var extsIndex = map[string]string{}
 
 type lang struct {
-	exts []string // 扩展名列表
+	Exts []string // 扩展名列表
 	scan core.ScanFunc
 }
 
 func init() {
 	for k, lang := range langs {
-		for _, ext := range lang.exts {
+		for _, ext := range lang.Exts {
 			extsIndex[ext] = k
 		}
 	}
+}
+
+func Langs() map[string]*lang {
+	return langs
 }

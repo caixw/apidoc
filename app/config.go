@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package main
+package app
 
 import (
 	"encoding/json"
@@ -12,9 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 )
-
-// 配置文件名称。
-const configFilename = ".apidoc.json"
 
 type config struct {
 	Input  *input  `json:"input"`
@@ -132,7 +129,7 @@ func initInput(wd string, cfg *config) error {
 	cfg.lang = l
 
 	if len(cfg.Input.Exts) == 0 {
-		cfg.Input.Exts = l.exts
+		cfg.Input.Exts = l.Exts
 	}
 
 	return nil
@@ -212,7 +209,7 @@ func recursivePath(cfg *config) ([]string, error) {
 }
 
 // 在当前目录下产生个默认的配置文件。
-func genConfigFile() error {
+func GenConfigFile() error {
 	wd, err := os.Getwd()
 	if err != nil {
 		return err

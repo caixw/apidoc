@@ -9,11 +9,8 @@ import (
 	"flag"
 	"fmt"
 	"runtime"
-	"time"
 
 	"github.com/caixw/apidoc/app"
-	"github.com/caixw/apidoc/core"
-	o "github.com/caixw/apidoc/output"
 	"github.com/issue9/term/colors"
 )
 
@@ -41,38 +38,9 @@ func main() {
 		return
 	}
 
-	elapsed := time.Now()
-
-	cfg, err := loadConfig()
+	err := app.Run("./")
 	if err != nil {
-		printError(err)
-		return
-	}
-	paths, err := recursivePath(cfg)
-	if err != nil {
-		printError(err)
-		return
-	}
-
-	docs, err := core.ScanFiles(paths, cfg.lang.scan)
-	if err != nil {
-		printError(err)
-		return
-	}
-	if docs.HasError() { // 语法错误，并不中断程序
-		printSyntaxErrors(docs.Errors())
-	}
-
-	opt := &o.Options{
-		Title:      cfg.Doc.Title,
-		Version:    cfg.Doc.Version,
-		DocDir:     cfg.Output.Dir,
-		AppVersion: version,
-		Elapsed:    time.Now().UnixNano() - elapsed.UnixNano(),
-	}
-	if err = o.Html(docs.Items(), opt); err != nil {
-		printError(err)
-		return
+		fmt.Println(err)
 	}
 }
 
@@ -98,7 +66,7 @@ func flags() (ok bool) {
 		printLangs()
 		return true
 	case g:
-		err := genConfigFile()
+		err := app.GenConfigFile()
 		if err != nil {
 			printError(err)
 		}
@@ -115,17 +83,11 @@ func printError(msg ...interface{}) {
 	colors.Println(out, errorColor, colors.Default, msg...)
 }
 
-func printSyntaxErrors(errs []error) {
-	for _, v := range errs {
-		colors.Println(out, warnColor, colors.Default, v)
-	}
-}
-
 func printLangs() {
 	colors.Println(out, titleColor, colors.Default, "目前支持以下类型的代码解析:")
-	for k, v := range langs {
+	for k, v := range app.Langs() {
 		colors.Print(out, titleColor, colors.Default, k, ":")
-		colors.Println(out, contentColor, colors.Default, v.exts)
+		colors.Println(out, contentColor, colors.Default, v.Exts)
 	}
 }
 
