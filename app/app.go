@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// 加载程序的一些基本配置内容。
 package app
 
 import (
@@ -12,10 +13,13 @@ import (
 	"github.com/issue9/term/colors"
 )
 
-const Version = "1.0.42.160514"
+const (
+	// 版本号
+	Version = "1.0.42.160514"
 
-// 配置文件名称。
-const configFilename = ".apidoc.json"
+	// 配置文件名称。
+	configFilename = ".apidoc.json"
+)
 
 // 输出模块的常量定义
 // TODO 去掉
