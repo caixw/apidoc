@@ -80,7 +80,7 @@ func TestRecursivePath(t *testing.T) {
 
 func TestGenConfigFile(t *testing.T) {
 	a := assert.New(t)
-	a.NotError(genConfigFile())
+	a.NotError(GenConfigFile())
 
 	data, err := ioutil.ReadFile("./" + configFilename)
 	a.NotError(err).NotNil(data)
