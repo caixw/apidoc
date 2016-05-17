@@ -76,3 +76,10 @@ func BenchmarkLexer_Read(b *testing.B) {
 		l.pos = 0
 	}
 }
+
+// go1.6 BenchmarkNew-4       	300000000	         5.66 ns/op
+func BenchmarkNew(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = New([]rune("line"))
+	}
+}

@@ -13,7 +13,7 @@ type Lexer struct {
 
 // 声明一个新的 Lexer 实例。
 func New(data []rune) *Lexer {
-	// TODO(caixw) Lexer 会大量产生，将其封闭到 sync.Pool 是否对性能有一定提升。
+	// TODO(caixw) Lexer 会大量产生，将其封装到 sync.Pool 是否对性能有一定提升。
 	return &Lexer{
 		data: data,
 	}
