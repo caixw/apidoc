@@ -90,6 +90,35 @@ func (l *Lexer) Read(delimiter string) []rune {
 	return l.data[start:l.pos]
 }
 
+// 读取到下一个空字符为止的所有字符，不包含该空字符。会过滤开头的空字符。
+func (l *Lexer) ReadWord() []rune {
+	start := l.pos
+
+	// 去掉前导空格
+	for {
+		if l.pos >= len(l.data) { // 到 EOF，直接返回，后续操作可省略。
+			return l.data[start:]
+		}
+
+		if !unicode.IsSpace(l.data[l.pos]) { // 记住第一个非空字符位置
+			start = l.pos
+			break
+		}
+
+		l.pos++
+	} // end for
+
+	for {
+		if l.pos >= len(l.data) || unicode.IsSpace(l.data[l.pos]) {
+			break
+		}
+
+		l.pos++
+	} // end for
+
+	return l.data[start:l.pos]
+}
+
 func (l *Lexer) ReadLine() []rune {
 	return l.Read("\n")
 }
