@@ -64,3 +64,15 @@ func TestLexer_Read(t *testing.T) {
 	word = l.Read("end")
 	a.Equal(string(word), "")
 }
+
+// go1.6 BenchmarkLexer_Read-4	 5000000	       340 ns/op
+func BenchmarkLexer_Read(b *testing.B) {
+	a := assert.New(b)
+	l := New([]rune("line1\n @delimiter line2 \n"))
+	a.NotNil(l)
+
+	for i := 0; i < b.N; i++ {
+		_ = l.Read("@delimiter")
+		l.pos = 0
+	}
+}
