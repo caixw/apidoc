@@ -65,7 +65,7 @@ func TestLexer_Read(t *testing.T) {
 	a.Equal(string(word), "")
 }
 
-// go1.6 BenchmarkLexer_Read-4	 5000000	       340 ns/op
+// go1.6 BenchmarkLexer_Read-4	10000000	       130 ns/op
 func BenchmarkLexer_Read(b *testing.B) {
 	a := assert.New(b)
 	l := New([]rune("line1\n @delimiter line2 \n"))

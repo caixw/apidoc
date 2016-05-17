@@ -74,7 +74,7 @@ func (l *Lexer) Backup() {
 //
 // NOTE: 不包含 delimiter 字符串本身，该字符串会返回未读内容中。
 func (l *Lexer) Read(delimiter string) []rune {
-	rs := []rune{} // TODO 精简掉此内存分配
+	start := l.pos
 
 	for {
 		if l.pos >= len(l.data) || l.Match(delimiter) {
@@ -82,11 +82,10 @@ func (l *Lexer) Read(delimiter string) []rune {
 			break
 		}
 
-		rs = append(rs, l.data[l.pos])
 		l.pos++
 	} // end for
 
-	return rs
+	return l.data[start:l.pos]
 }
 
 func (l *Lexer) ReadLine() []rune {
