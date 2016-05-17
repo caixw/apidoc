@@ -65,6 +65,21 @@ func TestLexer_Read(t *testing.T) {
 	a.Equal(string(word), "")
 }
 
+func TestLexer_SkipSpace(t *testing.T) {
+	a := assert.New(t)
+
+	l := New([]rune(" line1\n line2 \n"))
+	a.NotNil(l)
+
+	l.SkipSpace()
+	a.Equal(l.data[l.pos:], "line1\n line2 \n")
+
+	a.True(l.Match("line1"))
+	a.Equal(l.data[l.pos:], "\n line2 \n")
+	l.SkipSpace()
+	a.Equal(l.data[l.pos:], "line2 \n")
+}
+
 // go1.6 BenchmarkLexer_Read-4	10000000	       130 ns/op
 func BenchmarkLexer_Read(b *testing.B) {
 	a := assert.New(b)

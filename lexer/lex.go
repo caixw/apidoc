@@ -5,6 +5,8 @@
 // lexer 提供基本的代码解析功能。
 package lexer
 
+import "unicode"
+
 type Lexer struct {
 	data  []rune
 	pos   int // 当前指针位置
@@ -90,4 +92,14 @@ func (l *Lexer) Read(delimiter string) []rune {
 
 func (l *Lexer) ReadLine() []rune {
 	return l.Read("\n")
+}
+
+func (l *Lexer) SkipSpace() {
+	for {
+		if l.pos >= len(l.data) || !unicode.IsSpace(l.data[l.pos]) {
+			return
+		}
+
+		l.pos++
+	}
 }
