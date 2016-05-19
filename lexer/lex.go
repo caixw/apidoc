@@ -53,7 +53,7 @@ func (l *Lexer) Match(word string) bool {
 	width := 0
 	for _, r := range word {
 		rr := l.data[l.pos]
-		if rr != r {
+		if unicode.ToLower(rr) != unicode.ToLower(r) {
 			l.pos -= width
 			return false
 		}

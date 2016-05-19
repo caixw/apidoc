@@ -29,7 +29,7 @@ func TestLexer_Match(t *testing.T) {
 	l := New([]rune("line1\n line2 \n"))
 	a.NotNil(l)
 
-	a.True(l.Match("line"))
+	a.True(l.Match("Line"))
 	a.Equal('1', l.data[l.pos])
 	l.pos++
 

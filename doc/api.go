@@ -87,6 +87,7 @@ LOOP:
 	return nil
 }
 
+// @apiQuery size int xxxxx
 func scanApiQuery(l *lexer.Lexer, api *API) *lexer.SyntaxError {
 	p, err := scanApiParam(l)
 	if err != nil {
@@ -204,16 +205,15 @@ func scanApiExample(l *lexer.Lexer) (*Example, error) {
 }
 
 func scanApiParam(l *lexer.Lexer) (*Param, error) {
-	words, err := l.readN(3, "\n")
-	if err != nil {
-		return nil, err
-	}
+	p := &Param{}
 
-	return &Param{
-		Name:    words[0],
-		Type:    words[1],
-		Summary: words[2],
-	}, nil
+	p.Name = l.ReadWord()
+	p.Type = l.ReadWord()
+	p.Summary = l.ReadLine()
+	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Summary) == 0 {
+		return nil, l.SyntaxError("缺少必要的参数")
+	}
+	return p, nil
 }
 
 // 若存在description参数，会原样输出，不会像其它一样去掉前导空格。
@@ -236,7 +236,9 @@ func scanApi(l *lexer.Lexer, api *API) error {
 
 // 将一组字符按空格进得分组，最多分 n 组
 func splitN(data []rune, n int) ([]string, *lexer.SyntaxError) {
-	// TODO
+	ret := make([]string, 0, n)
+	var start, end int
+
 }
 
 // 读取从当前位置到 delimiter 之间的所有内容，并按空格分成 n 个数组。
