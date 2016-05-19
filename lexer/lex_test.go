@@ -51,7 +51,7 @@ func TestLexer_Match(t *testing.T) {
 func TestLexer_Read(t *testing.T) {
 	a := assert.New(t)
 
-	l := New([]rune("line1\n @delimiter line2 \n"))
+	l := New([]rune(" line1\n @delimiter line2 \n"))
 	a.NotNil(l)
 
 	a.Equal(l.Read("@delimiter"), []rune("line1\n "))
@@ -70,6 +70,16 @@ func TestLexer_ReadWord(t *testing.T) {
 
 	a.Equal(l.ReadWord(), []rune("line1"))
 	a.Equal(l.ReadWord(), []rune("line2"))
+}
+
+func TestLexer_ReadLine(t *testing.T) {
+	a := assert.New(t)
+
+	l := New([]rune(" line1\n line2 \n"))
+	a.NotNil(l)
+
+	a.Equal(l.ReadLine(), []rune("line1"))
+	a.Equal(l.ReadLine(), []rune("line2 "))
 }
 
 func TestLexer_SkipSpace(t *testing.T) {
@@ -107,6 +117,18 @@ func BenchmarkLexer_ReadWord(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		_ = l.ReadWord()
+		l.pos = 0
+	}
+}
+
+// go1.6 BenchmarkLexer_ReadLine-4	100000000	        20.9 ns/op
+func BenchmarkLexer_ReadLine(b *testing.B) {
+	a := assert.New(b)
+	l := New([]rune("line1\n @delimiter line2 \n"))
+	a.NotNil(l)
+
+	for i := 0; i < b.N; i++ {
+		_ = l.ReadLine()
 		l.pos = 0
 	}
 }

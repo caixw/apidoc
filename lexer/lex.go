@@ -44,7 +44,7 @@ func (l *Lexer) SyntaxError(msg string) *SyntaxError {
 // 判断接下去的几个字符连接起来是否正好为 word。
 // 若是，则移动指针到 word 之后，且返回 true；否则不移动指针，返回 false。
 //
-// NOTE: 可通过 Backup 来撤消最后一次调用。
+// NOTE: 可通过 Backup 来撤消最后一次 Match 调用。
 func (l *Lexer) Match(word string) bool {
 	if l.pos+len(word) >= len(l.data) { // 剩余字符没有word长，直接返回false
 		return false
@@ -72,57 +72,51 @@ func (l *Lexer) Backup() {
 	l.width = 0
 }
 
-// 读取从当前位置到 delimiter 之间的所有字符。
-//
-// NOTE: 不包含 delimiter 字符串本身，该字符串会返回未读内容中。
+// 读取从当前位置到 delimiter 之间的所有字符，不包含前导空格，不包含 delimiter。
+// delimiter 字符串返回未读字符串中。
 func (l *Lexer) Read(delimiter string) []rune {
-	start := l.pos
+	l.SkipSpace()
 
+	start := l.pos
 	for {
 		if l.pos >= len(l.data) || l.Match(delimiter) {
 			l.Backup() // 只有 Match() 会触发 Backup()，EOF 不会发生任何事情
 			break
 		}
-
 		l.pos++
-	} // end for
-
+	}
 	return l.data[start:l.pos]
 }
 
-// 读取到下一个空字符为止的所有字符，不包含该空字符。会过滤开头的空字符。
+// 往后读取，真到碰到第一个空字符或是结尾。返回字符串去掉首尾空字符。
 func (l *Lexer) ReadWord() []rune {
+	l.SkipSpace()
+
 	start := l.pos
-
-	// 去掉前导空格
-	for {
-		if l.pos >= len(l.data) { // 到 EOF，直接返回，后续操作可省略。
-			return l.data[start:]
-		}
-
-		if !unicode.IsSpace(l.data[l.pos]) { // 记住第一个非空字符位置
-			start = l.pos
-			break
-		}
-
-		l.pos++
-	} // end for
-
 	for {
 		if l.pos >= len(l.data) || unicode.IsSpace(l.data[l.pos]) {
 			break
 		}
-
 		l.pos++
-	} // end for
-
+	}
 	return l.data[start:l.pos]
 }
 
+// 往后读取一行内容，不包含首尾空格。
 func (l *Lexer) ReadLine() []rune {
-	return l.Read("\n")
+	l.SkipSpace()
+
+	start := l.pos
+	for {
+		if l.pos >= len(l.data) || l.data[l.pos] == '\n' {
+			break
+		}
+		l.pos++
+	}
+	return l.data[start:l.pos]
 }
 
+// 跳过之后的空白字符。
 func (l *Lexer) SkipSpace() {
 	for {
 		if l.pos >= len(l.data) || !unicode.IsSpace(l.data[l.pos]) {
