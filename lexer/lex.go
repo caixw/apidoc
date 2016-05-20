@@ -129,10 +129,12 @@ func (l *Lexer) SkipSpace() {
 
 // 指针移向下一个字符
 func (l *Lexer) Next() {
-	l.pos++
+	if !l.AtEOF() {
+		l.pos++
+	}
 }
 
 // 是否已经到结尾
 func (l *Lexer) AtEOF() bool {
-	return l.pos > len(l.data)
+	return l.pos >= len(l.data)
 }
