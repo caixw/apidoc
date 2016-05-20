@@ -4,12 +4,7 @@
 
 package doc
 
-import (
-	"strings"
-	"unicode"
-
-	"github.com/caixw/apidoc/lexer"
-)
+import "github.com/caixw/apidoc/lexer"
 
 // 扫描一个代码块。
 //
@@ -42,6 +37,7 @@ LOOP:
 			if api.Params == nil {
 				api.Params = make([]*Param, 0, 1)
 			}
+
 			p, err := scanApiParam(l)
 			if err != nil {
 				return err
@@ -64,20 +60,20 @@ LOOP:
 		case l.Match("@api "):
 			err = scanApi(l, api)
 		default:
-			if l.pos >= len(l.data) {
+			if l.AtEOF() {
 				break LOOP
 			}
-			l.pos++ // 去掉无用的字符。
+			l.Next() // 去掉无用的字符。
 		}
 
 		if err != nil {
-			return nil, err
+			return err
 		}
 	} // end for
 
 	// Doc的必要数据没有被初始化，说明这段代码不是api文档格式。
 	if len(api.URL) == 0 || len(api.Method) == 0 {
-		return nil, nil
+		return l.SyntaxError("@api标签缺少必要的参数")
 	}
 
 	doc.mux.Lock()
@@ -98,9 +94,9 @@ func scanApiQuery(l *lexer.Lexer, api *API) *lexer.SyntaxError {
 	return nil
 }
 
-func (l *lexer) scanApiRequest(d *API) error {
+func scanApiRequest(l *lexer.Lexer, api *API) *lexer.SyntaxError {
 	r := &Request{
-		Type:     l.read("\n"),
+		Type:     string(l.ReadLine()),
 		Headers:  map[string]string{},
 		Params:   []*Param{},
 		Examples: []*Example{},
@@ -109,37 +105,38 @@ func (l *lexer) scanApiRequest(d *API) error {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiHeader "):
-			words, err := l.readN(2, "\n")
-			if err != nil {
-				return err
+		case l.Match("@apiHeader "):
+			key := l.ReadWord()
+			val := l.ReadLine()
+			if len(key) == 0 || len(val) == 0 {
+				return l.SyntaxError("@apiHeader 缺少必要的参数")
 			}
-			r.Headers[words[0]] = words[1]
-		case l.match("@apiParam "):
+			r.Headers[string(key)] = string(val)
+		case l.Match("@apiParam "):
 			p, err := scanApiParam(l)
 			if err != nil {
 				return err
 			}
 			r.Params = append(r.Params, p)
-		case l.match("@apiExample "):
+		case l.Match("@apiExample "):
 			e, err := scanApiExample(l)
 			if err != nil {
 				return err
 			}
 			r.Examples = append(r.Examples, e)
-		case l.match("@api"): // 其它api*，退出。
-			l.backup()
+		case l.Match("@api"): // 其它api*，退出。
+			l.Backup()
 			break LOOP
 		default:
-			if l.pos >= len(l.data) {
+			if l.AtEOF() {
 				break LOOP
 			}
-			l.pos++ // 去掉无用的字符。
+			l.Next() // 去掉无用的字符。
 
 		} // end switch
 	} // end for
 
-	d.Request = r
+	api.Request = r
 	return nil
 }
 
@@ -150,66 +147,68 @@ func scanResponse(l *lexer.Lexer) (*Response, error) {
 		Examples: []*Example{},
 	}
 
-	words, err := l.readN(2, "\n")
-	if err != nil {
-		return nil, err
+	resp.Code = string(l.ReadWord())
+	resp.Summary = string(l.ReadLine())
+	if len(resp.Code) == 0 || len(resp.Summary) == 0 {
+		return nil, l.SyntaxError("缺少必要的元素")
 	}
-	resp.Code = words[0]
-	resp.Summary = words[1]
 
 LOOP:
 	for {
 		switch {
-		case l.match("@apiHeader "):
-			words, err := l.readN(2, "\n")
-			if err != nil {
-				return nil, err
+		case l.Match("@apiHeader "):
+			key := string(l.ReadWord())
+			val := string(l.ReadLine())
+			if len(key) == 0 || len(val) == 0 {
+				return nil, l.SyntaxError("缺少必要的参数")
 			}
-			resp.Headers[words[0]] = words[1]
-		case l.match("@apiParam "):
+			resp.Headers[key] = val
+		case l.Match("@apiParam "):
 			p, err := scanApiParam(l)
 			if err != nil {
 				return nil, err
 			}
 			resp.Params = append(resp.Params, p)
-		case l.match("@apiExample "):
+		case l.Match("@apiExample "):
 			e, err := scanApiExample(l)
 			if err != nil {
 				return nil, err
 			}
 			resp.Examples = append(resp.Examples, e)
-		case l.match("@api"): // 其它api*，退出。
-			l.backup()
+		case l.Match("@api"): // 其它api*，退出。
+			l.Backup()
 			break LOOP
 		default:
-			if l.pos >= len(l.data) {
+			if l.AtEOF() {
 				break LOOP
 			}
-			l.pos++ // 去掉无用的字符。
+			l.Next() // 去掉无用的字符。
 		}
 	}
 
 	return resp, nil
 }
 
-func scanApiExample(l *lexer.Lexer) (*Example, error) {
-	words, err := l.readN(2, "@api")
-	if err != nil {
-		return nil, err
+func scanApiExample(l *lexer.Lexer) (*Example, *lexer.SyntaxError) {
+	example := &Example{
+		Type: string(l.ReadWord()),
+		// TODO 多行内容
+		Code: string(l.Read("@api")),
 	}
 
-	return &Example{
-		Type: words[0],
-		Code: words[1],
-	}, nil
+	if len(example.Type) == 0 || len(example.Code) == 0 {
+		return nil, l.SyntaxError("@apiExample 缺少必要的参数")
+	}
+
+	return example, nil
 }
 
-func scanApiParam(l *lexer.Lexer) (*Param, error) {
+func scanApiParam(l *lexer.Lexer) (*Param, *lexer.SyntaxError) {
 	p := &Param{}
 
-	p.Name = l.ReadWord()
-	p.Type = l.ReadWord()
-	p.Summary = l.ReadLine()
+	p.Name = string(l.ReadWord())
+	p.Type = string(l.ReadWord())
+	p.Summary = string(l.ReadLine())
 	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Summary) == 0 {
 		return nil, l.SyntaxError("缺少必要的参数")
 	}
@@ -221,64 +220,17 @@ func scanApiParam(l *lexer.Lexer) (*Param, error) {
 //  @api get /test.com/api/user.json api summary
 //  api description
 //  api description
-func scanApi(l *lexer.Lexer, api *API) error {
-	words, err := l.readN(3, "\n")
-	if err != nil {
-		return err
+func scanApi(l *lexer.Lexer, api *API) *lexer.SyntaxError {
+	api.Method = string(l.ReadWord())
+	api.URL = string(l.ReadWord())
+	api.Summary = string(l.ReadLine())
+
+	if len(api.Method) == 0 || len(api.URL) == 0 || len(api.Summary) == 0 {
+		return l.SyntaxError("缺少必要的参数")
 	}
-	api.Method = words[0]
-	api.URL = words[1]
-	api.Summary = words[2]
-	api.Description = l.read("@api")
+
+	// TODO 描述内容可能为空，如何界定该内容的起止符号
+	api.Description = string(l.Read("@api"))
 
 	return nil
-}
-
-// 将一组字符按空格进得分组，最多分 n 组
-func splitN(data []rune, n int) ([]string, *lexer.SyntaxError) {
-	ret := make([]string, 0, n)
-	var start, end int
-
-}
-
-// 读取从当前位置到 delimiter 之间的所有内容，并按空格分成 n 个数组。
-func (l *Lexer) ReadN(n int, delimiter string) ([]string, error) {
-	ret := make([]string, 0, n)
-	size := 0
-	rs := []rune{}
-
-	for {
-		if l.pos >= len(l.data) || l.Match(delimiter) { // EOF或是到了下个标签处
-			if delimiter != "\n" {
-				l.Backup() // 若是eof，backup不会发生任何操作
-			}
-
-			if len(rs) > 0 {
-				// 最后一条数据，去掉尾部空格
-				ret = append(ret, strings.TrimRightFunc(string(rs), unicode.IsSpace))
-			}
-			break
-		}
-
-		r := l.data[l.pos]
-		l.pos++
-		if unicode.IsSpace(r) {
-			if len(rs) == 0 { // 多个连续空格
-				continue
-			}
-			if size < n-1 {
-				ret = append(ret, string(rs))
-				rs = rs[:0]
-				size++
-				continue
-			}
-		}
-
-		rs = append(rs, r)
-	} // end for
-
-	if len(ret) < n {
-		return nil, l.SyntaxError("未指定足够的参数")
-	}
-	return ret, nil
 }
