@@ -32,19 +32,19 @@ LOOP:
 			if api.Queries == nil {
 				api.Queries = make([]*Param, 0, 1)
 			}
-			err = scanApiQuery(l, api)
+			err = scanAPIQuery(l, api)
 		case l.Match("@apiParam "):
 			if api.Params == nil {
 				api.Params = make([]*Param, 0, 1)
 			}
 
-			p, err := scanApiParam(l)
+			p, err := scanAPIParam(l)
 			if err != nil {
 				return err
 			}
 			api.Params = append(api.Params, p)
 		case l.Match("@apiRequest "):
-			err = scanApiRequest(l, api)
+			err = scanAPIRequest(l, api)
 		case l.Match("@apiError "):
 			resp, err := scanResponse(l)
 			if err != nil {
@@ -58,7 +58,7 @@ LOOP:
 			}
 			api.Success = resp
 		case l.Match("@api "):
-			err = scanApi(l, api)
+			err = scanAPI(l, api)
 		default:
 			if l.AtEOF() {
 				break LOOP
@@ -84,8 +84,8 @@ LOOP:
 }
 
 // @apiQuery size int xxxxx
-func scanApiQuery(l *lexer.Lexer, api *API) *lexer.SyntaxError {
-	p, err := scanApiParam(l)
+func scanAPIQuery(l *lexer.Lexer, api *API) *lexer.SyntaxError {
+	p, err := scanAPIParam(l)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func scanApiQuery(l *lexer.Lexer, api *API) *lexer.SyntaxError {
 	return nil
 }
 
-func scanApiRequest(l *lexer.Lexer, api *API) *lexer.SyntaxError {
+func scanAPIRequest(l *lexer.Lexer, api *API) *lexer.SyntaxError {
 	r := &Request{
 		Type:     string(l.ReadLine()),
 		Headers:  map[string]string{},
@@ -113,13 +113,13 @@ LOOP:
 			}
 			r.Headers[string(key)] = string(val)
 		case l.Match("@apiParam "):
-			p, err := scanApiParam(l)
+			p, err := scanAPIParam(l)
 			if err != nil {
 				return err
 			}
 			r.Params = append(r.Params, p)
 		case l.Match("@apiExample "):
-			e, err := scanApiExample(l)
+			e, err := scanAPIExample(l)
 			if err != nil {
 				return err
 			}
@@ -164,13 +164,13 @@ LOOP:
 			}
 			resp.Headers[key] = val
 		case l.Match("@apiParam "):
-			p, err := scanApiParam(l)
+			p, err := scanAPIParam(l)
 			if err != nil {
 				return nil, err
 			}
 			resp.Params = append(resp.Params, p)
 		case l.Match("@apiExample "):
-			e, err := scanApiExample(l)
+			e, err := scanAPIExample(l)
 			if err != nil {
 				return nil, err
 			}
@@ -189,7 +189,7 @@ LOOP:
 	return resp, nil
 }
 
-func scanApiExample(l *lexer.Lexer) (*Example, *lexer.SyntaxError) {
+func scanAPIExample(l *lexer.Lexer) (*Example, *lexer.SyntaxError) {
 	example := &Example{
 		Type: string(l.ReadWord()),
 		// TODO 多行内容
@@ -203,7 +203,7 @@ func scanApiExample(l *lexer.Lexer) (*Example, *lexer.SyntaxError) {
 	return example, nil
 }
 
-func scanApiParam(l *lexer.Lexer) (*Param, *lexer.SyntaxError) {
+func scanAPIParam(l *lexer.Lexer) (*Param, *lexer.SyntaxError) {
 	p := &Param{}
 
 	p.Name = string(l.ReadWord())
@@ -220,7 +220,7 @@ func scanApiParam(l *lexer.Lexer) (*Param, *lexer.SyntaxError) {
 //  @api get /test.com/api/user.json api summary
 //  api description
 //  api description
-func scanApi(l *lexer.Lexer, api *API) *lexer.SyntaxError {
+func scanAPI(l *lexer.Lexer, api *API) *lexer.SyntaxError {
 	api.Method = string(l.ReadWord())
 	api.URL = string(l.ReadWord())
 	api.Summary = string(l.ReadLine())

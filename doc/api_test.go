@@ -7,16 +7,17 @@ package doc
 import (
 	"testing"
 
+	"github.com/caixw/apidoc/lexer"
 	"github.com/issue9/assert"
 )
 
 func TestLexer_scanApiGroup(t *testing.T) {
 	a := assert.New(t)
-	d := &Doc{}
+	api := &API{}
 
 	// 正常情况
-	l := newLexer([]rune("  g1"), 100, "file.go")
-	a.NotError(l.scanApiGroup(d))
+	l := lexer.New([]rune("  g1"))
+	a.NotError(scanApiGroup(l, d))
 	a.Equal(d.Group, "g1")
 
 	// 缺少参数
