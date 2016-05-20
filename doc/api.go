@@ -6,18 +6,14 @@ package doc
 
 import "github.com/caixw/apidoc/lexer"
 
-// 扫描一个代码块。
+// 扫描文档，生成一个Doc实例。
 //
+// 若代码块没有api文档定义，则会返回空值。
 // block 该代码块的内容；
 func (doc *Doc) Scan(block string) *lexer.SyntaxError {
-	l := lexer.New([]rune(block))
-	return doc.scan(l)
-}
-
-// 扫描文档，生成一个Doc实例。
-// 若代码块没有api文档定义，则会返回空值。
-func (doc *Doc) scan(l *lexer.Lexer) *lexer.SyntaxError {
 	var err *lexer.SyntaxError
+
+	l := lexer.New([]rune(block))
 	api := &API{}
 
 LOOP:
