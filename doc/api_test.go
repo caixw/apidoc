@@ -133,7 +133,7 @@ func TestScanAPI(t *testing.T) {
 
 func TestScanAPIRequest(t *testing.T) {
 	a := assert.New(t)
-	api := &DOC{}
+	api := &API{}
 
 	code := ` xml
  @apiHeader h1 v1
@@ -249,7 +249,7 @@ func TestScanResponse(t *testing.T) {
 	a.Error(err).Nil(resp)
 }
 
-func TestScan(t *testing.T) {
+func TestDoc_Scan(t *testing.T) {
 	a := assert.New(t)
 	doc := New()
 
@@ -281,9 +281,9 @@ api description 2
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
-	l := lexer.New([]rune(code))
-	d, err := doc.scan(l)
-	a.NotError(err).NotNil(d)
+	err := doc.Scan(code)
+	a.NotError(err)
+	d := doc.Apis[0]
 
 	a.Equal(d.URL, "/baseurl/api/login").
 		Equal(d.Group, "users").
@@ -318,13 +318,12 @@ Copyright 2015 by caixw, All rights reserved.
 Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.
 `
-	l = newLexer([]rune(code), 100, "file.go")
-	d, err = l.scan()
-	a.NotError(err).Nil(d)
+	err = doc.Scan(code)
+	a.NotError(err)
 }
 
 // osx: BenchmarkLexer_scan-4	   50000	     25155 ns/op
-func BenchmarkLexer_scan(b *testing.B) {
+func BenchmarkDoc_Scan(b *testing.B) {
 	code := `
 @api get /baseurl/api/login api summary
 api description 1
@@ -353,10 +352,11 @@ api description 2
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
+
+	doc := New()
 	for i := 0; i < b.N; i++ {
-		l := lexer.New([]rune(code))
-		d, err := l.scan()
-		if err != nil || d == nil {
+		err := doc.Scan(code)
+		if err != nil {
 			b.Error("BenchmarkLexer_scan:error")
 		}
 	}
