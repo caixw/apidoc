@@ -4,62 +4,60 @@
 
 package doc
 
-import "github.com/caixw/apidoc/lexer"
-
 // 扫描文档，生成一个Doc实例。
 //
 // 若代码块没有api文档定义，则会返回空值。
 // block 该代码块的内容；
-func (doc *Doc) Scan(block string) *lexer.SyntaxError {
-	var err *lexer.SyntaxError
+func (doc *Doc) Scan(block string) *SyntaxError {
+	var err *SyntaxError
 
-	l := lexer.New([]rune(block))
+	l := newLexer([]rune(block))
 	api := &API{}
 
 LOOP:
 	for {
 		switch {
-		case l.Match("@apiGroup "):
-			api.Group = string(l.ReadLine())
+		case l.match("@apiGroup "):
+			api.Group = l.readLine()
 			if len(api.Group) == 0 {
-				return l.SyntaxError("@apiGroup未指定名称")
+				return l.syntaxError("@apiGroup 未指定名称")
 			}
-		case l.Match("@apiQuery "):
+		case l.match("@apiQuery "):
 			if api.Queries == nil {
 				api.Queries = make([]*Param, 0, 1)
 			}
-			err = scanAPIQuery(l, api)
-		case l.Match("@apiParam "):
+			err = l.scanAPIQuery(api)
+		case l.match("@apiParam "):
 			if api.Params == nil {
 				api.Params = make([]*Param, 0, 1)
 			}
 
-			p, err := scanAPIParam(l)
+			p, err := l.scanAPIParam()
 			if err != nil {
 				return err
 			}
 			api.Params = append(api.Params, p)
-		case l.Match("@apiRequest "):
-			err = scanAPIRequest(l, api)
-		case l.Match("@apiError "):
-			resp, err := scanResponse(l)
+		case l.match("@apiRequest "):
+			err = l.scanAPIRequest(api)
+		case l.match("@apiError "):
+			resp, err := l.scanResponse()
 			if err != nil {
 				break
 			}
 			api.Error = resp
-		case l.Match("@apiSuccess "):
-			resp, err := scanResponse(l)
+		case l.match("@apiSuccess "):
+			resp, err := l.scanResponse()
 			if err != nil {
 				break
 			}
 			api.Success = resp
-		case l.Match("@api "):
-			err = scanAPI(l, api)
+		case l.match("@api "):
+			err = l.scanAPI(api)
 		default:
-			if l.AtEOF() {
+			if l.atEOF() {
 				break LOOP
 			}
-			l.Next() // 去掉无用的字符。
+			l.next() // 去掉无用的字符。
 		}
 
 		if err != nil {
@@ -67,9 +65,9 @@ LOOP:
 		}
 	} // end for
 
-	// Doc的必要数据没有被初始化，说明这段代码不是api文档格式。
+	// Doc 的必要数据没有被初始化，说明这段代码不是 api 文档格式。
 	if len(api.URL) == 0 || len(api.Method) == 0 {
-		return l.SyntaxError("@api标签缺少必要的参数")
+		return l.syntaxError("@api标签缺少必要的参数")
 	}
 
 	doc.mux.Lock()
@@ -80,8 +78,8 @@ LOOP:
 }
 
 // @apiQuery size int xxxxx
-func scanAPIQuery(l *lexer.Lexer, api *API) *lexer.SyntaxError {
-	p, err := scanAPIParam(l)
+func (l *lexer) scanAPIQuery(api *API) *SyntaxError {
+	p, err := l.scanAPIParam()
 	if err != nil {
 		return err
 	}
@@ -90,9 +88,9 @@ func scanAPIQuery(l *lexer.Lexer, api *API) *lexer.SyntaxError {
 	return nil
 }
 
-func scanAPIRequest(l *lexer.Lexer, api *API) *lexer.SyntaxError {
+func (l *lexer) scanAPIRequest(api *API) *SyntaxError {
 	r := &Request{
-		Type:     string(l.ReadLine()),
+		Type:     l.readLine(),
 		Headers:  map[string]string{},
 		Params:   []*Param{},
 		Examples: []*Example{},
@@ -101,33 +99,33 @@ func scanAPIRequest(l *lexer.Lexer, api *API) *lexer.SyntaxError {
 LOOP:
 	for {
 		switch {
-		case l.Match("@apiHeader "):
-			key := l.ReadWord()
-			val := l.ReadLine()
+		case l.match("@apiHeader "):
+			key := l.readWord()
+			val := l.readLine()
 			if len(key) == 0 || len(val) == 0 {
-				return l.SyntaxError("@apiHeader 缺少必要的参数")
+				return l.syntaxError("@apiHeader 缺少必要的参数")
 			}
 			r.Headers[string(key)] = string(val)
-		case l.Match("@apiParam "):
-			p, err := scanAPIParam(l)
+		case l.match("@apiParam "):
+			p, err := l.scanAPIParam()
 			if err != nil {
 				return err
 			}
 			r.Params = append(r.Params, p)
-		case l.Match("@apiExample "):
-			e, err := scanAPIExample(l)
+		case l.match("@apiExample "):
+			e, err := l.scanAPIExample()
 			if err != nil {
 				return err
 			}
 			r.Examples = append(r.Examples, e)
-		case l.Match("@api"): // 其它api*，退出。
-			l.Backup()
+		case l.match("@api"): // 其它api*，退出。
+			l.backup()
 			break LOOP
 		default:
-			if l.AtEOF() {
+			if l.atEOF() {
 				break LOOP
 			}
-			l.Next() // 去掉无用的字符。
+			l.next() // 去掉无用的字符。
 
 		} // end switch
 	} // end for
@@ -136,77 +134,77 @@ LOOP:
 	return nil
 }
 
-func scanResponse(l *lexer.Lexer) (*Response, error) {
+func (l *lexer) scanResponse() (*Response, error) {
 	resp := &Response{
 		Headers:  map[string]string{},
 		Params:   []*Param{},
 		Examples: []*Example{},
 	}
 
-	resp.Code = string(l.ReadWord())
-	resp.Summary = string(l.ReadLine())
+	resp.Code = l.readWord()
+	resp.Summary = l.readLine()
 	if len(resp.Code) == 0 || len(resp.Summary) == 0 {
-		return nil, l.SyntaxError("缺少必要的元素")
+		return nil, l.syntaxError("缺少必要的元素")
 	}
 
 LOOP:
 	for {
 		switch {
-		case l.Match("@apiHeader "):
-			key := string(l.ReadWord())
-			val := string(l.ReadLine())
+		case l.match("@apiHeader "):
+			key := l.readWord()
+			val := l.readLine()
 			if len(key) == 0 || len(val) == 0 {
-				return nil, l.SyntaxError("缺少必要的参数")
+				return nil, l.syntaxError("缺少必要的参数")
 			}
 			resp.Headers[key] = val
-		case l.Match("@apiParam "):
-			p, err := scanAPIParam(l)
+		case l.match("@apiParam "):
+			p, err := l.scanAPIParam()
 			if err != nil {
 				return nil, err
 			}
 			resp.Params = append(resp.Params, p)
-		case l.Match("@apiExample "):
-			e, err := scanAPIExample(l)
+		case l.match("@apiExample "):
+			e, err := l.scanAPIExample()
 			if err != nil {
 				return nil, err
 			}
 			resp.Examples = append(resp.Examples, e)
-		case l.Match("@api"): // 其它api*，退出。
-			l.Backup()
+		case l.match("@api"): // 其它api*，退出。
+			l.backup()
 			break LOOP
 		default:
-			if l.AtEOF() {
+			if l.atEOF() {
 				break LOOP
 			}
-			l.Next() // 去掉无用的字符。
+			l.next() // 去掉无用的字符。
 		}
 	}
 
 	return resp, nil
 }
 
-func scanAPIExample(l *lexer.Lexer) (*Example, *lexer.SyntaxError) {
+func (l *lexer) scanAPIExample() (*Example, *SyntaxError) {
 	example := &Example{
-		Type: string(l.ReadWord()),
+		Type: l.readWord(),
 		// TODO 多行内容
-		Code: string(l.Read("@api")),
+		Code: l.read("@api"),
 	}
 
 	if len(example.Type) == 0 || len(example.Code) == 0 {
-		return nil, l.SyntaxError("@apiExample 缺少必要的参数")
+		return nil, l.syntaxError("@apiExample 缺少必要的参数")
 	}
 
 	return example, nil
 }
 
-func scanAPIParam(l *lexer.Lexer) (*Param, *lexer.SyntaxError) {
+func (l *lexer) scanAPIParam() (*Param, *SyntaxError) {
 	p := &Param{}
 
-	p.Name = string(l.ReadWord())
-	p.Type = string(l.ReadWord())
-	p.Summary = string(l.ReadLine())
+	p.Name = l.readWord()
+	p.Type = l.readWord()
+	p.Summary = l.readLine()
 	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Summary) == 0 {
-		return nil, l.SyntaxError("缺少必要的参数")
+		return nil, l.syntaxError("缺少必要的参数")
 	}
 	return p, nil
 }
@@ -216,17 +214,18 @@ func scanAPIParam(l *lexer.Lexer) (*Param, *lexer.SyntaxError) {
 //  @api get /test.com/api/user.json api summary
 //  api description
 //  api description
-func scanAPI(l *lexer.Lexer, api *API) *lexer.SyntaxError {
-	api.Method = string(l.ReadWord())
-	api.URL = string(l.ReadWord())
-	api.Summary = string(l.ReadLine())
+func (l *lexer) scanAPI(api *API) *SyntaxError {
+	t := &tag{data: l.readRunes("@api")}
+	api.Method = t.readWord()
+	api.URL = t.readWord()
+	api.Summary = t.readLine()
 
 	if len(api.Method) == 0 || len(api.URL) == 0 || len(api.Summary) == 0 {
-		return l.SyntaxError("缺少必要的参数")
+		return l.syntaxError("缺少必要的参数")
 	}
 
 	// TODO 描述内容可能为空，如何界定该内容的起止符号
-	api.Description = string(l.Read("@api"))
+	api.Description = t.readEnd()
 
 	return nil
 }

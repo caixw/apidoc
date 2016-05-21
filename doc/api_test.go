@@ -7,27 +7,26 @@ package doc
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/lexer"
 	"github.com/issue9/assert"
 )
 
-var synerr = &lexer.SyntaxError{}
+var synerr = &SyntaxError{}
 
 func TestScanAPIQuery(t *testing.T) {
 	a := assert.New(t)
 	api := &API{Queries: []*Param{}}
 
 	// 正常情况
-	l := lexer.New([]rune("id int user id"))
-	a.NotError(scanAPIQuery(l, api))
+	l := newLexer([]rune("id int user id"))
+	a.NotError(l.scanAPIQuery(api))
 	q0 := api.Queries[0]
 	a.Equal(q0.Name, "id").
 		Equal(q0.Type, "int").
 		Equal(q0.Summary, "user id")
 
 	// 再添加一个参数
-	l = lexer.New([]rune("name string user name"))
-	a.NotError(scanAPIQuery(l, api))
+	l = newLexer([]rune("name string user name"))
+	a.NotError(l.scanAPIQuery(api))
 	q1 := api.Queries[1]
 	a.Equal(q1.Name, "name").
 		Equal(q1.Type, "string").
@@ -45,9 +44,9 @@ func TestscanAPIExample(t *testing.T) {
 	matchCode := `<root>
     <data>123</data>
 </root>`
-	l := lexer.New([]rune(code))
+	l := newLexer([]rune(code))
 	a.NotNil(l)
-	e, err := scanAPIExample(l)
+	e, err := l.scanAPIExample()
 	a.NotError(err).
 		Equal(e.Type, "xml").
 		Equal(e.Code, matchCode)
@@ -59,9 +58,9 @@ func TestscanAPIExample(t *testing.T) {
 	matchCode = `<root>
     <data>123</data>
 </root>`
-	l = lexer.New([]rune(code))
+	l = newLexer([]rune(code))
 	a.NotNil(l)
-	e, err = scanAPIExample(l)
+	e, err = l.scanAPIExample()
 	a.NotError(err).
 		Equal(e.Type, "xml").
 		Equal(len(e.Code), len(matchCode)).
@@ -72,21 +71,21 @@ func TestScanAPIParam(t *testing.T) {
 	a := assert.New(t)
 
 	// 正常语法测试
-	l := lexer.New([]rune("id int optional 用户 id号\n"))
-	p, err := scanAPIParam(l)
+	l := newLexer([]rune("id int optional 用户 id号\n"))
+	p, err := l.scanAPIParam()
 	a.NotError(err).NotNil(p)
 	a.Equal(p.Name, "id").
 		Equal(p.Type, "int").
 		Equal(p.Summary, "optional 用户 id号")
 
 	// 缺少参数
-	l = lexer.New([]rune("id int \n"))
-	p, err = scanAPIParam(l)
+	l = newLexer([]rune("id int \n"))
+	p, err = l.scanAPIParam()
 	a.ErrorType(err, synerr).Nil(p)
 
 	// 缺少参数
-	l = lexer.New([]rune("id  \n"))
-	p, err = scanAPIParam(l)
+	l = newLexer([]rune("id  \n"))
+	p, err = l.scanAPIParam()
 	a.ErrorType(err, synerr).Nil(p)
 }
 
@@ -95,40 +94,40 @@ func TestScanAPI(t *testing.T) {
 	api := &API{}
 
 	// 正常情况
-	l := lexer.New([]rune(" get test.com/api.json?k=1 summary summary\n api description"))
-	a.NotError(scanAPI(l, api))
+	l := newLexer([]rune(" get test.com/api.json?k=1 summary summary\n api description"))
+	a.NotError(l.scanAPI(api))
 	a.Equal(api.Method, "get").
 		Equal(api.URL, "test.com/api.json?k=1").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "api description")
 
 	// 多行description
-	l = lexer.New([]rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@api summary"))
-	a.NotError(scanAPI(l, api))
+	l = newLexer([]rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@api summary"))
+	a.NotError(l.scanAPI(api))
 	a.Equal(api.URL, "test.com/api.json?K=1").
 		Equal(api.Method, "post").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "api \ndescription")
 
 	// 缺少description参数
-	l = lexer.New([]rune("get test.com/api.json summary summary"))
-	a.NotError(scanAPI(l, api))
+	l = newLexer([]rune("get test.com/api.json summary summary"))
+	a.NotError(l.scanAPI(api))
 	a.Equal(api.Method, "get").
 		Equal(api.URL, "test.com/api.json").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "")
 
 	// 缺少description参数
-	l = lexer.New([]rune("get test.com/api.json summary summary\n@apiURL"))
-	a.NotError(scanAPI(l, api))
+	l = newLexer([]rune("get test.com/api.json summary summary\n@apiURL"))
+	a.NotError(l.scanAPI(api))
 	a.Equal(api.Method, "get").
 		Equal(api.URL, "test.com/api.json").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "")
 
 	// 没有任何参数
-	l = lexer.New([]rune("  "))
-	a.ErrorType(scanAPI(l, api), synerr)
+	l = newLexer([]rune("  "))
+	a.ErrorType(l.scanAPI(api), synerr)
 }
 
 func TestScanAPIRequest(t *testing.T) {
@@ -151,8 +150,8 @@ func TestScanAPIRequest(t *testing.T) {
     <p2>v2</p2>
 </root>
 `
-	l := lexer.New([]rune(code))
-	a.NotError(scanAPIRequest(l, api))
+	l := newLexer([]rune(code))
+	a.NotError(l.scanAPIRequest(api))
 	a.NotNil(api.Request)
 	r := api.Request
 	a.Equal(2, len(r.Headers)).
@@ -176,8 +175,8 @@ func TestScanAPIRequest(t *testing.T) {
 	matchCode := `<root>
     <p1>v1</p1>
 </root>`
-	l = lexer.New([]rune(code))
-	a.NotError(scanAPIRequest(l, api))
+	l = newLexer([]rune(code))
+	a.NotError(l.scanAPIRequest(api))
 	a.NotNil(api.Request)
 	r = api.Request
 	a.Equal(1, len(r.Headers)).
@@ -206,8 +205,8 @@ func TestScanResponse(t *testing.T) {
     <p2>v2</p2>
 </root>
 `
-	l := lexer.New([]rune(code))
-	resp, err := scanResponse(l)
+	l := newLexer([]rune(code))
+	resp, err := l.scanResponse()
 	a.NotError(err).NotNil(resp)
 	a.Equal(resp.Code, "200").
 		Equal(resp.Summary, "json").
@@ -231,8 +230,8 @@ func TestScanResponse(t *testing.T) {
 	matchCode := `<root>
     <p1>v1</p1>
 </root>`
-	l = lexer.New([]rune(code))
-	resp, err = scanResponse(l)
+	l = newLexer([]rune(code))
+	resp, err = l.scanResponse()
 	a.NotError(err).NotNil(resp)
 	a.Equal(resp.Code, "200").
 		Equal(resp.Summary, "xml  status summary").
@@ -244,8 +243,8 @@ func TestScanResponse(t *testing.T) {
 	code = ` 
 @apiSuccess g
 `
-	l = lexer.New([]rune(code))
-	resp, err = scanResponse(l)
+	l = newLexer([]rune(code))
+	resp, err = l.scanResponse()
 	a.Error(err).Nil(resp)
 }
 
