@@ -12,27 +12,6 @@ import (
 
 var synerr = &SyntaxError{}
 
-func TestScanAPIQuery(t *testing.T) {
-	a := assert.New(t)
-	api := &API{Queries: []*Param{}}
-
-	// 正常情况
-	l := newLexer([]rune("id int user id"))
-	a.NotError(l.scanAPIQuery(api))
-	q0 := api.Queries[0]
-	a.Equal(q0.Name, "id").
-		Equal(q0.Type, "int").
-		Equal(q0.Summary, "user id")
-
-	// 再添加一个参数
-	l = newLexer([]rune("name string user name"))
-	a.NotError(l.scanAPIQuery(api))
-	q1 := api.Queries[1]
-	a.Equal(q1.Name, "name").
-		Equal(q1.Type, "string").
-		Equal(q1.Summary, "user name")
-}
-
 func TestscanAPIExample(t *testing.T) {
 	a := assert.New(t)
 
@@ -250,7 +229,7 @@ func TestScanResponse(t *testing.T) {
 
 func TestDoc_Scan(t *testing.T) {
 	a := assert.New(t)
-	doc := New()
+	doc1 := New()
 
 	code := `
 @api get /baseurl/api/login api summary
@@ -280,14 +259,14 @@ api description 2
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
-	err := doc.Scan(code)
+	err := doc1.Scan(code)
 	a.NotError(err)
-	d := doc.Apis[0]
+	d := doc1.Apis[0]
 
 	a.Equal(d.URL, "/baseurl/api/login").
 		Equal(d.Group, "users").
 		Equal(d.Summary, "api summary").
-		Equal(d.Description, "api description 1\napi description 2\n")
+		Equal(d.Description, "api description 1\napi description 2")
 
 	a.Equal(2, len(d.Queries)).
 		Equal(2, len(d.Params))
@@ -317,7 +296,7 @@ Copyright 2015 by caixw, All rights reserved.
 Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.
 `
-	err = doc.Scan(code)
+	err = doc1.Scan(code)
 	a.NotError(err)
 }
 

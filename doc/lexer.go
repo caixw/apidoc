@@ -79,42 +79,13 @@ func (l *lexer) backup() {
 	l.width = 0
 }
 
-func (l *lexer) tag() *tag {
-	//var data []rune
-
-	data := l.readRunes("@api")
-	return &tag{
-		data: data,
-	}
-}
-
-// 读取从当前位置到 delimiter 之间的所有字符，不包含前导空格，不包含 delimiter。
-// delimiter 字符串返回未读字符串中。
-func (l *lexer) readRunes(delimiter string) []rune {
-	l.skipSpace()
-
-	start := l.pos
-	for {
-		if l.pos >= len(l.data) || l.match(delimiter) {
-			l.backup() // 只有 match() 会触发 Backup()，EOF 不会发生任何事情
-			break
-		}
-		l.pos++
-	}
-	return trimRight(l.data[start:l.pos])
-}
-
-func (l *lexer) read(delimiter string) string {
-	return string(l.readRunes(delimiter))
-}
-
 // 往后读取，真到碰到第一个空字符或是结尾。返回字符串去掉首尾空字符。
 func (l *lexer) readWord() string {
 	l.skipSpace()
 
 	start := l.pos
 	for {
-		if l.pos >= len(l.data) || unicode.IsSpace(l.data[l.pos]) {
+		if l.atEOF() || unicode.IsSpace(l.data[l.pos]) {
 			break
 		}
 		l.pos++
@@ -128,7 +99,7 @@ func (l *lexer) readLine() string {
 
 	start := l.pos
 	for {
-		if l.pos >= len(l.data) || l.data[l.pos] == '\n' {
+		if l.atEOF() || l.data[l.pos] == '\n' {
 			break
 		}
 		l.pos++
@@ -136,10 +107,26 @@ func (l *lexer) readLine() string {
 	return string(trimRight(l.data[start:l.pos]))
 }
 
+// 读到下一个标签处。
+func (l *lexer) readTag() *tag {
+	l.skipSpace()
+
+	start := l.pos
+	l.width = 0 // 防止外层已经调用 match
+	for {
+		if l.atEOF() || l.match("@api") {
+			l.backup()
+			break
+		}
+		l.pos++
+	}
+	return &tag{data: trimRight(l.data[start:l.pos])}
+}
+
 // 跳过之后的空白字符。
 func (l *lexer) skipSpace() {
 	for {
-		if l.pos >= len(l.data) || !unicode.IsSpace(l.data[l.pos]) {
+		if l.atEOF() || !unicode.IsSpace(l.data[l.pos]) {
 			return
 		}
 
@@ -165,7 +152,7 @@ func (t *tag) readWord() string {
 
 	start := t.pos
 	for {
-		if t.pos >= len(t.data) || unicode.IsSpace(t.data[t.pos]) {
+		if t.atEOF() || unicode.IsSpace(t.data[t.pos]) {
 			break
 		}
 		t.pos++
@@ -179,7 +166,7 @@ func (t *tag) readLine() string {
 
 	start := t.pos
 	for {
-		if t.pos >= len(t.data) || t.data[t.pos] == '\n' {
+		if t.atEOF() || t.data[t.pos] == '\n' {
 			break
 		}
 		t.pos++
@@ -187,16 +174,25 @@ func (t *tag) readLine() string {
 	return string(trimRight(t.data[start:t.pos]))
 }
 
+// 读取从当前位置到结尾的所有内容，去掉首尾空格
 func (t *tag) readEnd() string {
-	t.skipSpace()
+	if t.atEOF() {
+		return ""
+	}
 
+	t.skipSpace()
 	return string(trimRight(t.data[t.pos:]))
+}
+
+// 是否在结尾处
+func (t *tag) atEOF() bool {
+	return t.pos >= len(t.data)
 }
 
 // 跳过之后的空白字符。
 func (t *tag) skipSpace() {
 	for {
-		if t.pos >= len(t.data) || !unicode.IsSpace(t.data[t.pos]) {
+		if t.atEOF() || !unicode.IsSpace(t.data[t.pos]) {
 			return
 		}
 

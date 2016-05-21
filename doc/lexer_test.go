@@ -48,20 +48,6 @@ func TestLexer_match(t *testing.T) {
 	a.False(l.match("ne2\n\n"))
 }
 
-func TestLexer_read(t *testing.T) {
-	a := assert.New(t)
-
-	l := newLexer([]rune(" line1\n @delimiter line2 \n"))
-	a.NotNil(l)
-
-	a.Equal(l.read("@delimiter"), []rune("line1"))
-
-	// 查找一个不存在的字符
-	a.Equal(l.read("not exists"), []rune("@delimiter line2"))
-
-	a.Equal(l.read("end"), []rune(""))
-}
-
 func TestLexer_readWord(t *testing.T) {
 	a := assert.New(t)
 
@@ -124,18 +110,6 @@ func TestTrimRight(t *testing.T) {
 	a.Equal(trimRight([]rune("123 \n  ")), []rune("123"))
 }
 
-// go1.6 BenchmarkLexer_read-4    	 5000000	       241 ns/op
-func BenchmarkLexer_read(b *testing.B) {
-	a := assert.New(b)
-	l := newLexer([]rune("line1\n @delimiter line2 \n"))
-	a.NotNil(l)
-
-	for i := 0; i < b.N; i++ {
-		_ = l.read("@delimiter")
-		l.pos = 0
-	}
-}
-
 // go1.6 BenchmarkLexer_readWord-4	50000000	        34.5 ns/op
 func BenchmarkLexer_readWord(b *testing.B) {
 	a := assert.New(b)
@@ -160,8 +134,8 @@ func BenchmarkLexer_readLine(b *testing.B) {
 	}
 }
 
-// go1.6 BenchmarknewLexer-4       	300000000	         5.66 ns/op
-func BenchmarknewLexer(b *testing.B) {
+// go1.6 BenchmarkNewLexer-4       	300000000	         5.66 ns/op
+func BenchmarkNewLexer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = newLexer([]rune("line"))
 	}

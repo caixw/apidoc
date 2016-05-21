@@ -18,15 +18,24 @@ LOOP:
 	for {
 		switch {
 		case l.match("@apiGroup "):
-			api.Group = l.readLine()
+			t := l.readTag()
+			api.Group = t.readWord()
 			if len(api.Group) == 0 {
 				return l.syntaxError("@apiGroup 未指定名称")
+			}
+			if !t.atEOF() {
+				l.syntaxError("@apiGroup 参数过多")
 			}
 		case l.match("@apiQuery "):
 			if api.Queries == nil {
 				api.Queries = make([]*Param, 0, 1)
 			}
-			err = l.scanAPIQuery(api)
+
+			p, err := l.scanAPIParam()
+			if err != nil {
+				return err
+			}
+			api.Queries = append(api.Queries, p)
 		case l.match("@apiParam "):
 			if api.Params == nil {
 				api.Params = make([]*Param, 0, 1)
@@ -67,7 +76,7 @@ LOOP:
 
 	// Doc 的必要数据没有被初始化，说明这段代码不是 api 文档格式。
 	if len(api.URL) == 0 || len(api.Method) == 0 {
-		return l.syntaxError("@api标签缺少必要的参数")
+		return nil
 	}
 
 	doc.mux.Lock()
@@ -77,33 +86,31 @@ LOOP:
 	return nil
 }
 
-// @apiQuery size int xxxxx
-func (l *lexer) scanAPIQuery(api *API) *SyntaxError {
-	p, err := l.scanAPIParam()
-	if err != nil {
-		return err
-	}
-
-	api.Queries = append(api.Queries, p)
-	return nil
-}
-
+// @apiRequest json,xml
 func (l *lexer) scanAPIRequest(api *API) *SyntaxError {
+	t := l.readTag()
 	r := &Request{
-		Type:     l.readLine(),
+		Type:     t.readLine(),
 		Headers:  map[string]string{},
 		Params:   []*Param{},
 		Examples: []*Example{},
+	}
+	if !t.atEOF() {
+		return l.syntaxError("@apiRequest 过多的参数:" + t.readEnd())
 	}
 
 LOOP:
 	for {
 		switch {
 		case l.match("@apiHeader "):
-			key := l.readWord()
-			val := l.readLine()
+			t := l.readTag()
+			key := t.readWord()
+			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
 				return l.syntaxError("@apiHeader 缺少必要的参数")
+			}
+			if !t.atEOF() {
+				return l.syntaxError("@apiHeader 参数过多")
 			}
 			r.Headers[string(key)] = string(val)
 		case l.match("@apiParam "):
@@ -135,26 +142,34 @@ LOOP:
 }
 
 func (l *lexer) scanResponse() (*Response, error) {
+	tag := l.readTag()
 	resp := &Response{
+		Code:     tag.readWord(),
+		Summary:  tag.readLine(),
 		Headers:  map[string]string{},
 		Params:   []*Param{},
 		Examples: []*Example{},
 	}
 
-	resp.Code = l.readWord()
-	resp.Summary = l.readLine()
 	if len(resp.Code) == 0 || len(resp.Summary) == 0 {
 		return nil, l.syntaxError("缺少必要的元素")
+	}
+	if !tag.atEOF() {
+		return nil, l.syntaxError("参数过多")
 	}
 
 LOOP:
 	for {
 		switch {
 		case l.match("@apiHeader "):
-			key := l.readWord()
-			val := l.readLine()
+			t := l.readTag()
+			key := t.readWord()
+			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
 				return nil, l.syntaxError("缺少必要的参数")
+			}
+			if !t.atEOF() {
+				return nil, l.syntaxError("参数过多") // BUG(caixw) tag 的定位在 lexer 之前，可能造成定位不准确
 			}
 			resp.Headers[key] = val
 		case l.match("@apiParam "):
@@ -184,10 +199,10 @@ LOOP:
 }
 
 func (l *lexer) scanAPIExample() (*Example, *SyntaxError) {
+	tag := l.readTag()
 	example := &Example{
-		Type: l.readWord(),
-		// TODO 多行内容
-		Code: l.read("@api"),
+		Type: tag.readWord(),
+		Code: tag.readEnd(),
 	}
 
 	if len(example.Type) == 0 || len(example.Code) == 0 {
@@ -200,9 +215,10 @@ func (l *lexer) scanAPIExample() (*Example, *SyntaxError) {
 func (l *lexer) scanAPIParam() (*Param, *SyntaxError) {
 	p := &Param{}
 
-	p.Name = l.readWord()
-	p.Type = l.readWord()
-	p.Summary = l.readLine()
+	tag := l.readTag()
+	p.Name = tag.readWord()
+	p.Type = tag.readWord()
+	p.Summary = tag.readEnd()
 	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Summary) == 0 {
 		return nil, l.syntaxError("缺少必要的参数")
 	}
@@ -215,7 +231,7 @@ func (l *lexer) scanAPIParam() (*Param, *SyntaxError) {
 //  api description
 //  api description
 func (l *lexer) scanAPI(api *API) *SyntaxError {
-	t := &tag{data: l.readRunes("@api")}
+	t := l.readTag()
 	api.Method = t.readWord()
 	api.URL = t.readWord()
 	api.Summary = t.readLine()
@@ -224,7 +240,6 @@ func (l *lexer) scanAPI(api *API) *SyntaxError {
 		return l.syntaxError("缺少必要的参数")
 	}
 
-	// TODO 描述内容可能为空，如何界定该内容的起止符号
 	api.Description = t.readEnd()
 
 	return nil
