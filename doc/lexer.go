@@ -6,12 +6,14 @@ package doc
 
 import "unicode"
 
+// 简单的词法分析
 type lexer struct {
 	data  []rune
 	pos   int // 当前指针位置
 	width int // 最后移的字符数量
 }
 
+// 表示一个标签的内容
 type tag struct {
 	data []rune
 	pos  int
