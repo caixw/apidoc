@@ -242,7 +242,7 @@ func TestScanResponse(t *testing.T) {
 
 	// 缺少必要的参数
 	code = ` 
-@apiGroup g
+@apiSuccess g
 `
 	l = lexer.New([]rune(code))
 	resp, err = scanResponse(l)
@@ -288,7 +288,7 @@ api description 2
 	a.Equal(d.URL, "/baseurl/api/login").
 		Equal(d.Group, "users").
 		Equal(d.Summary, "api summary").
-		Equal(d.Description, "api description 1\napi description 2")
+		Equal(d.Description, "api description 1\napi description 2\n")
 
 	a.Equal(2, len(d.Queries)).
 		Equal(2, len(d.Params))

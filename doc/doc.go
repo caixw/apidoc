@@ -14,11 +14,11 @@ type Doc struct {
 
 // API 表示一个 API 文档。
 type API struct {
-	Group       string    // 所属分组
 	Method      string    // 请求的方法，GET，POST 等
 	URL         string    // 请求地址
 	Summary     string    // 简要描述
 	Description string    // 详细描述
+	Group       string    // 所属分组
 	Queries     []*Param  // 查询参数
 	Params      []*Param  // URL 参数
 	Request     *Request  // 若是 GET，则使用此描述请求的具体数据
@@ -28,10 +28,10 @@ type API struct {
 
 // Request 表示 api 请求数据
 type Request struct {
-	Type     string            // 请求的类型，xml 或是 json
+	Type     string            // 请求的数据类型，多个用逗号分隔
 	Headers  map[string]string // 请求必须携带的头
 	Params   []*Param          //提交的各个字段的描述
-	Examples []*Example
+	Examples []*Example        // 请求数据的示例
 }
 
 // Response 表示一次请求或是返回的数据。
@@ -40,7 +40,7 @@ type Response struct {
 	Summary  string            // 该状态下的简要描述
 	Headers  map[string]string // 返回的头信息。
 	Params   []*Param          // 返回数据的各个字段描述
-	Examples []*Example        // 返回数据的示例，键名为数据类型，键值为示例代码
+	Examples []*Example        // 返回数据的示例
 }
 
 // Param 用于描述提交和返回的参数信息。
@@ -54,16 +54,6 @@ type Param struct {
 type Example struct {
 	Type string // 示例代码的类型，xml 或是 json
 	Code string // 示例代码
-}
-
-// SyntaxError 语法错误
-//
-// 缺少必要标签(?，信息)，标签内容格式不正确(行号，标签名，信息)
-type SyntaxError struct {
-	Tag     string
-	Line    int
-	File    string
-	Message string
 }
 
 func New() *Doc {
