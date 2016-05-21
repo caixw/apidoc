@@ -85,7 +85,7 @@ func (l *Lexer) Read(delimiter string) []rune {
 		}
 		l.pos++
 	}
-	return l.data[start:l.pos]
+	return trimRight(l.data[start:l.pos])
 }
 
 // 往后读取，真到碰到第一个空字符或是结尾。返回字符串去掉首尾空字符。
@@ -113,7 +113,7 @@ func (l *Lexer) ReadLine() []rune {
 		}
 		l.pos++
 	}
-	return l.data[start:l.pos]
+	return trimRight(l.data[start:l.pos])
 }
 
 // 跳过之后的空白字符。
@@ -137,4 +137,16 @@ func (l *Lexer) Next() {
 // 是否已经到结尾
 func (l *Lexer) AtEOF() bool {
 	return l.pos >= len(l.data)
+}
+
+// 去掉首尾的空格
+func trimRight(data []rune) []rune {
+	end := len(data) - 1
+	for ; end >= 0; end-- {
+		if !unicode.IsSpace(data[end]) {
+			break
+		}
+	}
+
+	return data[:end+1]
 }

@@ -54,10 +54,10 @@ func TestLexer_Read(t *testing.T) {
 	l := New([]rune(" line1\n @delimiter line2 \n"))
 	a.NotNil(l)
 
-	a.Equal(l.Read("@delimiter"), []rune("line1\n "))
+	a.Equal(l.Read("@delimiter"), []rune("line1"))
 
 	// 查找一个不存在的字符
-	a.Equal(l.Read("not exists"), []rune("@delimiter line2 \n"))
+	a.Equal(l.Read("not exists"), []rune("@delimiter line2"))
 
 	a.Equal(l.Read("end"), []rune(""))
 }
@@ -79,7 +79,7 @@ func TestLexer_ReadLine(t *testing.T) {
 	a.NotNil(l)
 
 	a.Equal(l.ReadLine(), []rune("line1"))
-	a.Equal(l.ReadLine(), []rune("line2 "))
+	a.Equal(l.ReadLine(), []rune("line2"))
 }
 
 func TestLexer_SkipSpace(t *testing.T) {
@@ -115,7 +115,16 @@ func TestLexer_Next(t *testing.T) {
 	a.Equal(2, l.pos)
 }
 
-// go1.6 BenchmarkLexer_Read-4	10000000	       130 ns/op
+func TestTrimRight(t *testing.T) {
+	a := assert.New(t)
+
+	a.Equal(trimRight([]rune("123  ")), []rune("123"))
+	a.Equal(trimRight([]rune("\n123  ")), []rune("\n123"))
+	a.Equal(trimRight([]rune("123\n  ")), []rune("123"))
+	a.Equal(trimRight([]rune("123 \n  ")), []rune("123"))
+}
+
+// go1.6 BenchmarkLexer_Read-4    	 5000000	       241 ns/op
 func BenchmarkLexer_Read(b *testing.B) {
 	a := assert.New(b)
 	l := New([]rune("line1\n @delimiter line2 \n"))
@@ -139,7 +148,7 @@ func BenchmarkLexer_ReadWord(b *testing.B) {
 	}
 }
 
-// go1.6 BenchmarkLexer_ReadLine-4	100000000	        20.9 ns/op
+// go1.6 BenchmarkLexer_ReadLine-4	50000000	        27.8 ns/op
 func BenchmarkLexer_ReadLine(b *testing.B) {
 	a := assert.New(b)
 	l := New([]rune("line1\n @delimiter line2 \n"))
