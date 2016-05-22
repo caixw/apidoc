@@ -79,34 +79,6 @@ func (l *lexer) backup() {
 	l.width = 0
 }
 
-// 往后读取，真到碰到第一个空字符或是结尾。返回字符串去掉首尾空字符。
-func (l *lexer) readWord() string {
-	l.skipSpace()
-
-	start := l.pos
-	for {
-		if l.atEOF() || unicode.IsSpace(l.data[l.pos]) {
-			break
-		}
-		l.pos++
-	}
-	return string(trimRight(l.data[start:l.pos]))
-}
-
-// 往后读取一行内容，不包含首尾空格。
-func (l *lexer) readLine() string {
-	l.skipSpace()
-
-	start := l.pos
-	for {
-		if l.atEOF() || l.data[l.pos] == '\n' {
-			break
-		}
-		l.pos++
-	}
-	return string(trimRight(l.data[start:l.pos]))
-}
-
 // 读到下一个标签处。
 func (l *lexer) readTag() *tag {
 	l.skipSpace()
@@ -181,7 +153,9 @@ func (t *tag) readEnd() string {
 	}
 
 	t.skipSpace()
-	return string(trimRight(t.data[t.pos:]))
+	start := t.pos
+	t.pos = len(t.data)
+	return string(t.data[start:]) // 不用 trimRight，已经在初始化时去掉尾部的空格
 }
 
 // 是否在结尾处

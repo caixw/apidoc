@@ -48,26 +48,6 @@ func TestLexer_match(t *testing.T) {
 	a.False(l.match("ne2\n\n"))
 }
 
-func TestLexer_readWord(t *testing.T) {
-	a := assert.New(t)
-
-	l := newLexer([]rune(" line1\n line2 \n"))
-	a.NotNil(l)
-
-	a.Equal(l.readWord(), []rune("line1"))
-	a.Equal(l.readWord(), []rune("line2"))
-}
-
-func TestLexer_readLine(t *testing.T) {
-	a := assert.New(t)
-
-	l := newLexer([]rune(" line1\n line2 \n"))
-	a.NotNil(l)
-
-	a.Equal(l.readLine(), []rune("line1"))
-	a.Equal(l.readLine(), []rune("line2"))
-}
-
 func TestLexer_skipSpace(t *testing.T) {
 	a := assert.New(t)
 
@@ -101,6 +81,36 @@ func TestLexer_next(t *testing.T) {
 	a.Equal(2, l.pos)
 }
 
+func TestTag_readWord(t *testing.T) {
+	a := assert.New(t)
+
+	l := &tag{data: []rune(" line1\n line2 \n")}
+	a.NotNil(l)
+
+	a.Equal(l.readWord(), []rune("line1"))
+	a.Equal(l.readWord(), []rune("line2"))
+}
+
+func TestTag_readLine(t *testing.T) {
+	a := assert.New(t)
+
+	l := &tag{data: []rune(" line1\n line2 \n")}
+	a.NotNil(l)
+
+	a.Equal(l.readLine(), []rune("line1"))
+	a.Equal(l.readLine(), []rune("line2"))
+}
+
+func TestTag_readEnd(t *testing.T) {
+	a := assert.New(t)
+
+	l := &tag{data: []rune(" line1\n line2 \n")}
+	a.NotNil(l)
+
+	a.Equal(l.readEnd(), "line1\n line2 \n")
+	a.Equal(l.readEnd(), "")
+}
+
 func TestTrimRight(t *testing.T) {
 	a := assert.New(t)
 
@@ -110,31 +120,43 @@ func TestTrimRight(t *testing.T) {
 	a.Equal(trimRight([]rune("123 \n  ")), []rune("123"))
 }
 
-// go1.6 BenchmarkLexer_readWord-4	50000000	        34.5 ns/op
-func BenchmarkLexer_readWord(b *testing.B) {
+// go1.6 BenchmarkTag_readWord-4	10000000	       131 ns/op
+func BenchmarkTag_readWord(b *testing.B) {
 	a := assert.New(b)
-	l := newLexer([]rune("line1\n @delimiter line2 \n"))
-	a.NotNil(l)
+	t := &tag{data: []rune("line1\n @delimiter line2 \n")}
+	a.NotNil(t)
 
 	for i := 0; i < b.N; i++ {
-		_ = l.readWord()
-		l.pos = 0
+		_ = t.readWord()
+		t.pos = 0
 	}
 }
 
-// go1.6 BenchmarkLexer_readLine-4	50000000	        27.8 ns/op
-func BenchmarkLexer_readLine(b *testing.B) {
+// go1.6 BenchmarkTag_readLine-4	10000000	       109 ns/op
+func BenchmarkTag_readLine(b *testing.B) {
 	a := assert.New(b)
-	l := newLexer([]rune("line1\n @delimiter line2 \n"))
-	a.NotNil(l)
+	t := &tag{data: []rune("line1\n @delimiter line2 \n")}
+	a.NotNil(t)
 
 	for i := 0; i < b.N; i++ {
-		_ = l.readLine()
-		l.pos = 0
+		_ = t.readLine()
+		t.pos = 0
 	}
 }
 
-// go1.6 BenchmarkNewLexer-4       	300000000	         5.66 ns/op
+// go1.6 BenchmarkTag_readEnd-4 	10000000	       181 ns/op
+func BenchmarkTag_readEnd(b *testing.B) {
+	a := assert.New(b)
+	t := &tag{data: []rune("line1\n line2 \n")}
+	a.NotNil(t)
+
+	for i := 0; i < b.N; i++ {
+		_ = t.readEnd()
+		t.pos = 0
+	}
+}
+
+// go1.6 BenchmarkNewLexer-4    	300000000	         5.63 ns/op
 func BenchmarkNewLexer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = newLexer([]rune("line"))
