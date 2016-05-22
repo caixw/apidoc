@@ -49,17 +49,9 @@ LOOP:
 		case l.match("@apiRequest "):
 			err = l.scanAPIRequest(api)
 		case l.match("@apiError "):
-			resp, err := l.scanResponse()
-			if err != nil {
-				break
-			}
-			api.Error = resp
+			api.Error, err = l.scanResponse()
 		case l.match("@apiSuccess "):
-			resp, err := l.scanResponse()
-			if err != nil {
-				break
-			}
-			api.Success = resp
+			api.Success, err = l.scanResponse()
 		case l.match("@api "):
 			err = l.scanAPI(api)
 		default:
@@ -141,7 +133,7 @@ LOOP:
 	return nil
 }
 
-func (l *lexer) scanResponse() (*Response, error) {
+func (l *lexer) scanResponse() (*Response, *SyntaxError) {
 	tag := l.readTag()
 	resp := &Response{
 		Code:     tag.readWord(),
