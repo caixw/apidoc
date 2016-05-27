@@ -46,6 +46,11 @@ func TestLexer_match(t *testing.T) {
 
 	// 超过剩余字符的长度。
 	a.False(l.match("ne2\n\n"))
+
+	// 能正确匹配结尾字符
+	l = newLexer([]rune("line1\n"))
+	a.NotNil(l)
+	a.True(l.match("line1\n"))
 }
 
 func TestLexer_skipSpace(t *testing.T) {

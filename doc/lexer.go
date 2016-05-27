@@ -53,7 +53,7 @@ func (l *lexer) syntaxError(msg string) *SyntaxError {
 // NOTE: 可通过 Backup 来撤消最后一次 Match 调用。
 // TODO 目前 match 只有匹配 @api 标签的作用，是否直接改成只能匹配行首的标签
 func (l *lexer) match(word string) bool {
-	if l.atEOF() || (l.pos+len(word) >= len(l.data)) { // 剩余字符没有word长，直接返回false
+	if l.atEOF() || (l.pos+len(word) > len(l.data)) { // 剩余字符没有word长，直接返回false
 		return false
 	}
 
