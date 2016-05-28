@@ -19,13 +19,6 @@ type config struct {
 	Doc     *doc       `json:"doc"`
 }
 
-type input struct {
-	Type      string   `json:"type"`      // 输入的目标语言
-	Dir       string   `json:"dir"`       // 源代码目录
-	Exts      []string `json:"exts"`      // 需要扫描的文件扩展名
-	Recursive bool     `json:"recursive"` // 是否查找Dir的子目录
-}
-
 type output struct {
 	Dir string `json:"dir"`
 	//Type string   `json:"type"` // 输出的语言格式
