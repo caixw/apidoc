@@ -24,9 +24,17 @@ var langs = map[string][]*block{
 	// php
 	"php": []*block{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-		&block{Type: blockTypeString, Begin: "'", End: "'"},
+		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `//`},
 		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+	},
+
+	// ruby
+	"ruby": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `#`},
+		&block{Type: blockTypeMComment, Begin: "\n=begin", End: "\n=end"},
 	},
 }
 

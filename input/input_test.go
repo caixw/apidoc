@@ -17,6 +17,7 @@ func TestParseFile(t *testing.T) {
 	testParseFile(a, "go", "./testdata/go/test1.go")
 	testParseFile(a, "php", "./testdata/php/test1.php")
 	testParseFile(a, "c", "./testdata/c/test1.c")
+	testParseFile(a, "ruby", "./testdata/ruby/test1.rb")
 }
 
 func testParseFile(a *assert.Assertion, lang string, path string) {
