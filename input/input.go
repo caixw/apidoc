@@ -13,11 +13,11 @@ package input
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"sync"
 
 	"github.com/caixw/apidoc/doc"
+	"github.com/issue9/term/colors"
 )
 
 func Parse(paths []string, langID string) (*doc.Doc, error) {
@@ -91,6 +91,6 @@ LOOP:
 }
 
 func printSyntaxError(err *doc.SyntaxError) {
-	// TODO 优化输出显示
-	fmt.Println("SyntaxError:", err.Error())
+	colors.Print(colors.Stderr, colors.Red, colors.Default, "SyntaxError:")
+	colors.Println(colors.Stderr, colors.Default, colors.Default, err)
 }

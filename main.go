@@ -13,8 +13,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"runtime"
+	"strings"
 	"time"
 
 	i "github.com/caixw/apidoc/input"
@@ -23,16 +23,8 @@ import (
 )
 
 const (
-	out          = colors.Stdout
-	titleColor   = colors.Green
-	contentColor = colors.Default
-	errorColor   = colors.Red
-	warnColor    = colors.Cyan
-)
-
-const (
 	// 版本号
-	version = "2.0.45.160528"
+	version = "2.0.46.160528"
 
 	// 配置文件名称。
 	configFilename = ".apidoc.json"
@@ -44,7 +36,6 @@ const usage = `apidoc 是一个 RESTful api 文档生成工具。
  -h       显示当前帮助信息；
  -v       显示apidoc和go程序的版本信息；
  -l       显示所有支持的语言类型；
- -r       是否搜索子目录，默认为true；
  -g       在当前目录下创建一个默认的配置文件；
 
 有关 apidoc 的详细信息，可访问官网：http://apidoc.site`
@@ -56,7 +47,7 @@ func main() {
 
 	err := run("./")
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 }
 
@@ -82,9 +73,8 @@ func flags() (ok bool) {
 		printLangs()
 		return true
 	case g:
-		err := genConfigFile()
-		if err != nil {
-			printError(err)
+		if err := genConfigFile(); err != nil {
+			panic(err)
 		}
 		return true
 	}
@@ -92,20 +82,19 @@ func flags() (ok bool) {
 }
 
 func printUsage() {
-	colors.Println(out, contentColor, colors.Default, usage)
-}
-
-func printError(msg ...interface{}) {
-	colors.Println(out, errorColor, colors.Default, msg...)
+	colors.Print(colors.Stdout, colors.Default, colors.Default, usage)
 }
 
 func printLangs() {
-	colors.Println(out, titleColor, colors.Default, "目前支持以下类型的代码解析:")
-	colors.Println(out, titleColor, colors.Default, i.Langs())
+	langs := "[" + strings.Join(i.Langs(), ", ") + "]"
+
+	colors.Print(colors.Stdout, colors.Green, colors.Default, "目前支持以下语言：")
+	colors.Println(colors.Stdout, colors.Default, colors.Default, langs)
 }
 
 func printVersion() {
-	fmt.Println("apidoc", version, "build with", runtime.Version())
+	colors.Print(colors.Stdout, colors.Green, colors.Default, "apidoc ")
+	colors.Println(colors.Stdout, colors.Default, colors.Default, version, "build with", runtime.Version())
 }
 
 func run(srcDir string) error {
@@ -137,10 +126,4 @@ func run(srcDir string) error {
 	}
 
 	return nil
-}
-
-func printSyntaxErrors(errs []error) {
-	for _, v := range errs {
-		colors.Println(out, warnColor, colors.Default, v)
-	}
 }
