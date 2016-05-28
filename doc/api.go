@@ -8,10 +8,10 @@ package doc
 //
 // 若代码块没有api文档定义，则会返回空值。
 // block 该代码块的内容；
-func (doc *Doc) Scan(block string) *SyntaxError {
+func (doc *Doc) Scan(data []rune) *SyntaxError {
 	var err *SyntaxError
 
-	l := newLexer([]rune(block))
+	l := newLexer(data)
 	api := &API{}
 
 LOOP:

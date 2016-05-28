@@ -43,7 +43,7 @@ api description 2
 
 	doc := New()
 	for i := 0; i < b.N; i++ {
-		err := doc.Scan(code)
+		err := doc.Scan([]rune(code))
 		if err != nil {
 			b.Error("BenchmarkLexer_scan:error")
 		}

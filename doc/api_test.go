@@ -259,7 +259,7 @@ api description 2
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
-	err := doc1.Scan(code)
+	err := doc1.Scan([]rune(code))
 	a.NotError(err)
 	d := doc1.Apis[0]
 
@@ -296,6 +296,6 @@ Copyright 2015 by caixw, All rights reserved.
 Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.
 `
-	err = doc1.Scan(code)
+	err = doc1.Scan([]rune(code))
 	a.NotError(err)
 }
