@@ -38,6 +38,13 @@ var langs = map[string][]*block{
 	},
 }
 
+var exts = map[string][]string{
+	"go":   []string{".go"},
+	"c":    []string{".h", ".c", ".cpp", ".cxx"},
+	"php":  []string{".php"},
+	"ruby": []string{".rb"},
+}
+
 // 返回所有支持的语言
 func Langs() []string {
 	ret := make([]string, 0, len(langs))

@@ -24,7 +24,7 @@ import (
 
 const (
 	// 版本号
-	version = "2.0.48.160529"
+	version = "2.0.49.160529"
 
 	// 配置文件名称。
 	configFilename = ".apidoc.json"

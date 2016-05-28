@@ -26,7 +26,7 @@ import (
 type Options struct {
 	Lang      string   `json:"lang"`           // 输入的目标语言
 	Dir       string   `json:"dir"`            // 源代码目录
-	Exts      []string `json:"exts,omitempty"` // 需要扫描的文件扩展名
+	Exts      []string `json:"exts,omitempty"` // 需要扫描的文件扩展名，若未指定，则使用默认值
 	Recursive bool     `json:"recursive"`      // 是否查找Dir的子目录
 }
 
@@ -148,6 +148,14 @@ func checkOptions(opt *Options) error {
 		return errors.New("未指定源码目录")
 	}
 
+	if len(opt.Lang) == 0 {
+		return errors.New("必须指定参数 type")
+	}
+
+	if langIsSupported(opt.Lang) {
+		return fmt.Errorf("暂不支持该类型[%v]的语言", opt.Lang)
+	}
+
 	opt.Dir += string(os.PathSeparator)
 
 	if len(opt.Exts) > 0 {
@@ -163,14 +171,8 @@ func checkOptions(opt *Options) error {
 			exts = append(exts, ext)
 		}
 		opt.Exts = exts
-	}
-
-	if len(opt.Lang) == 0 {
-		return errors.New("必须指定参数 type")
-	}
-
-	if langIsSupported(opt.Lang) {
-		return fmt.Errorf("暂不支持该类型[%v]的语言", opt.Lang)
+	} else {
+		opt.Exts = exts[opt.Lang]
 	}
 
 	return nil
