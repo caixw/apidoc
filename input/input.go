@@ -14,20 +14,34 @@ package input
 import (
 	"errors"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/caixw/apidoc/doc"
 	"github.com/issue9/term/colors"
 )
 
-func Parse(paths []string, langID string) (*doc.Doc, error) {
-	docs := doc.New()
+type Options struct {
+	Lang      string   `json:"lang"`      // 输入的目标语言
+	Dir       string   `json:"dir"`       // 源代码目录
+	Exts      []string `json:"exts"`      // 需要扫描的文件扩展名
+	Recursive bool     `json:"recursive"` // 是否查找Dir的子目录
+}
 
-	b, found := langs[langID]
+// 分析源代码，获取相应的文档内容。
+func Parse(o *Options) (*doc.Doc, error) {
+	b, found := langs[o.Lang]
 	if !found {
 		return nil, errors.New("不支持该语言")
 	}
 
+	paths, err := recursivePath(o)
+	if err != nil {
+		return nil, err
+	}
+
+	docs := doc.New()
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
 	for _, path := range paths {
@@ -93,4 +107,36 @@ LOOP:
 func printSyntaxError(err *doc.SyntaxError) {
 	colors.Print(colors.Stderr, colors.Red, colors.Default, "SyntaxError:")
 	colors.Println(colors.Stderr, colors.Default, colors.Default, err)
+}
+
+// 根据recursive值确定是否递归查找paths每个目录下的子目录。
+func recursivePath(o *Options) ([]string, error) {
+	paths := []string{}
+
+	extIsEnabled := func(ext string) bool {
+		for _, v := range o.Exts {
+			if ext == v {
+				return true
+			}
+		}
+		return false
+	}
+
+	walk := func(path string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if fi.IsDir() && !o.Recursive && path != o.Dir {
+			return filepath.SkipDir
+		} else if extIsEnabled(filepath.Ext(path)) {
+			paths = append(paths, path)
+		}
+		return nil
+	}
+
+	if err := filepath.Walk(o.Dir, walk); err != nil {
+		return nil, err
+	}
+
+	return paths, nil
 }

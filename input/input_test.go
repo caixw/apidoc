@@ -49,3 +49,49 @@ func testParseFile(a *assert.Assertion, lang string, path string) {
 			Equal(1, len(api0.Request.Headers))
 	}
 }
+
+func TestRecursivePath(t *testing.T) {
+	a := assert.New(t)
+
+	opt := &Options{Dir: "./testdir", Recursive: false, Exts: []string{".1", ".2"}}
+	paths, err := recursivePath(opt)
+	a.NotError(err)
+	a.Equal(paths, []string{
+		"testdir/testfile.1",
+		"testdir/testfile.2",
+	})
+
+	opt.Dir = "./testdir"
+	opt.Recursive = true
+	opt.Exts = []string{".1", ".2"}
+	paths, err = recursivePath(opt)
+	a.NotError(err)
+	a.Contains(paths, []string{
+		"testdir/testdir1/testfile.1",
+		"testdir/testdir1/testfile.2",
+		"testdir/testdir2/testfile.1",
+		"testdir/testfile.1",
+		"testdir/testfile.2",
+	})
+
+	opt.Dir = "./testdir/testdir1"
+	opt.Recursive = true
+	opt.Exts = []string{".1", ".2"}
+	paths, err = recursivePath(opt)
+	a.NotError(err)
+	a.Equal(paths, []string{
+		"testdir/testdir1/testfile.1",
+		"testdir/testdir1/testfile.2",
+	})
+
+	opt.Dir = "./testdir"
+	opt.Recursive = true
+	opt.Exts = []string{".1"}
+	paths, err = recursivePath(opt)
+	a.NotError(err)
+	a.Equal(paths, []string{
+		"testdir/testdir1/testfile.1",
+		"testdir/testdir2/testfile.1",
+		"testdir/testfile.1",
+	})
+}

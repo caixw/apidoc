@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strings"
 
 	i "github.com/caixw/apidoc/input"
@@ -120,38 +119,6 @@ func initInput(wd string, cfg *config) error {
 	}
 
 	return nil
-}
-
-// 根据recursive值确定是否递归查找paths每个目录下的子目录。
-func recursivePath(cfg *config) ([]string, error) {
-	paths := []string{}
-
-	extIsEnabled := func(ext string) bool {
-		for _, v := range cfg.Input.Exts {
-			if ext == v {
-				return true
-			}
-		}
-		return false
-	}
-
-	walk := func(path string, fi os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if fi.IsDir() && !cfg.Input.Recursive && path != cfg.Input.Dir {
-			return filepath.SkipDir
-		} else if extIsEnabled(filepath.Ext(path)) {
-			paths = append(paths, path)
-		}
-		return nil
-	}
-
-	if err := filepath.Walk(cfg.Input.Dir, walk); err != nil {
-		return nil, err
-	}
-
-	return paths, nil
 }
 
 // 在当前目录下产生个默认的配置文件。
