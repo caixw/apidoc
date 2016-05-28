@@ -10,12 +10,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/apidoc/core"
+	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/output/static"
 )
 
 // 将docs的内容以html格式输出。
-func Html(docs []*core.Doc, opt *Options) error {
+func Html(docs *doc.Doc, opt *Options) error {
 	t := template.New("core")
 	for _, content := range static.Templates {
 		template.Must(t.Parse(content))
@@ -27,14 +27,14 @@ func Html(docs []*core.Doc, opt *Options) error {
 		AppVersion: opt.AppVersion,
 		Elapsed:    strconv.FormatFloat(float64(opt.Elapsed)/1000000, 'f', 2, 32),
 		Date:       time.Now().Format(time.RFC3339),
-		Groups:     make(map[string]string, len(docs)),
+		Groups:     make(map[string]string, len(docs.Apis)),
 	}
 
-	groups := map[string][]*core.Doc{}
-	for _, v := range docs {
+	groups := map[string][]*doc.API{}
+	for _, v := range docs.Apis {
 		i.Groups[v.Group] = "./group_" + v.Group + ".html"
 		if groups[v.Group] == nil {
-			groups[v.Group] = []*core.Doc{}
+			groups[v.Group] = []*doc.API{}
 		}
 		groups[v.Group] = append(groups[v.Group], v)
 	}
@@ -72,8 +72,8 @@ func outputIndex(t *template.Template, i *info, destDir string) error {
 }
 
 // 按分组输出内容页
-func outputGroup(docs map[string][]*core.Doc, t *template.Template, i *info, destDir string) error {
-	for k, v := range docs {
+func outputGroup(apis map[string][]*doc.API, t *template.Template, i *info, destDir string) error {
+	for k, v := range apis {
 		group, err := os.Create(destDir + "group_" + k + ".html")
 		if err != nil {
 			return err

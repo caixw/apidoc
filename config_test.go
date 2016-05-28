@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package app
+package main
 
 import (
 	"encoding/json"
@@ -11,26 +11,6 @@ import (
 
 	"github.com/issue9/assert"
 )
-
-func TestDetectLangType(t *testing.T) {
-	a := assert.New(t)
-
-	l, err := detectLangType([]string{".abc1", ".abc1", ".abc1"})
-	a.Error(err).Equal(0, len(l))
-
-	l, err = detectLangType([]string{".js", ".php", ".abc1"})
-	a.NotError(err).Equal("js", l)
-}
-
-func TestDetectDirLangType(t *testing.T) {
-	a := assert.New(t)
-
-	l, err := detectDirLangType("./")
-	a.NotError(err).Equal(l, "go")
-
-	l, err = detectDirLangType("./testdir")
-	a.Error(err).Equal(0, len(l))
-}
 
 func TestRecursivePath(t *testing.T) {
 	a := assert.New(t)
@@ -80,7 +60,7 @@ func TestRecursivePath(t *testing.T) {
 
 func TestGenConfigFile(t *testing.T) {
 	a := assert.New(t)
-	a.NotError(GenConfigFile())
+	a.NotError(genConfigFile())
 
 	data, err := ioutil.ReadFile("./" + configFilename)
 	a.NotError(err).NotNil(data)

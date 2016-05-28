@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package app
+package main
 
 import (
 	"encoding/json"
@@ -11,14 +11,15 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	i "github.com/caixw/apidoc/input"
 )
 
 type config struct {
-	Input  *input  `json:"input"`
-	Output *output `json:"output"`
-	Doc    *doc    `json:"doc"`
-
-	lang *lang
+	Version string  `json:"version"` // 兼容的 apidoc 版本
+	Input   *input  `json:"input"`
+	Output  *output `json:"output"`
+	Doc     *doc    `json:"doc"`
 }
 
 type input struct {
@@ -105,75 +106,20 @@ func initInput(wd string, cfg *config) error {
 			}
 			exts = append(exts, ext)
 		}
+		cfg.Input.Exts = exts
 	}
 
 	// 若没有指定Type，则根据exts和当前目录下的文件检测来确定其值
 	if len(cfg.Input.Type) == 0 {
-		var err error
-		if len(cfg.Input.Exts) == 0 {
-			cfg.Input.Type, err = detectDirLangType(cfg.Input.Dir)
-		} else {
-			cfg.Input.Type, err = detectLangType(cfg.Input.Exts)
-		}
-
-		if err != nil {
-			return err
-		}
+		return fmt.Errorf("必须指定参数 type")
 	}
 	cfg.Input.Type = strings.ToLower(cfg.Input.Type)
 
-	l, found := langs[cfg.Input.Type]
-	if !found {
+	if i.LangIsSupported(cfg.Input.Type) {
 		return fmt.Errorf("暂不支持该类型[%v]的语言", cfg.Input.Type)
-	}
-	cfg.lang = l
-
-	if len(cfg.Input.Exts) == 0 {
-		cfg.Input.Exts = l.Exts
 	}
 
 	return nil
-}
-
-// 从扩展名检测其所属的语言名称。
-// 以第一个匹配extsIndex的文件扩展名为准。
-func detectLangType(exts []string) (string, error) {
-	for _, ext := range exts {
-		if lang, found := extsIndex[ext]; found {
-			return lang, nil
-		}
-	}
-	return "", fmt.Errorf("无法找到与这些扩展名[%v]相匹配的代码扫描函数", exts)
-}
-
-// 检测目录下的文件类型。
-// 以第一个匹配extsIndex的文件扩展名为准。
-func detectDirLangType(dir string) (string, error) {
-	var lang string
-
-	walk := func(path string, fi os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if fi.IsDir() || len(lang) > 0 {
-			return nil
-		}
-
-		ext := strings.ToLower(filepath.Ext(path))
-		lang, _ = extsIndex[ext]
-		return nil
-	}
-
-	if err := filepath.Walk(dir, walk); err != nil {
-		return "", err
-	}
-
-	if len(lang) == 0 {
-		return lang, fmt.Errorf("无法检测到[%v]目录下的文件类型", dir)
-	}
-
-	return lang, nil
 }
 
 // 根据recursive值确定是否递归查找paths每个目录下的子目录。
@@ -209,7 +155,7 @@ func recursivePath(cfg *config) ([]string, error) {
 }
 
 // 在当前目录下产生个默认的配置文件。
-func GenConfigFile() error {
+func genConfigFile() error {
 	wd, err := os.Getwd()
 	if err != nil {
 		return err

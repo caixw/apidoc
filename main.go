@@ -3,14 +3,22 @@
 // license that can be found in the LICENSE file.
 
 // apidoc 是一个 RESTful api 文档生成工具。
+//
+// 多行注释和单行注释在处理上会有一定区别：
+//
+// 单行注释，风格相同且相邻的注释会被合并成一个注释块。
+// 单行注释，风格不相同且相邻的注释会被按注释风格多个注释块。
+// 而多行注释，即使两个注释释块相邻也会被分成两个注释块来处理。
 package main
 
 import (
 	"flag"
 	"fmt"
 	"runtime"
+	"time"
 
-	"github.com/caixw/apidoc/app"
+	i "github.com/caixw/apidoc/input"
+	o "github.com/caixw/apidoc/output"
 	"github.com/issue9/term/colors"
 )
 
@@ -20,6 +28,14 @@ const (
 	contentColor = colors.Default
 	errorColor   = colors.Red
 	warnColor    = colors.Cyan
+)
+
+const (
+	// 版本号
+	version = "2.0.45.160528"
+
+	// 配置文件名称。
+	configFilename = ".apidoc.json"
 )
 
 const usage = `apidoc 是一个 RESTful api 文档生成工具。
@@ -38,7 +54,7 @@ func main() {
 		return
 	}
 
-	err := app.Run("./")
+	err := run("./")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -66,7 +82,7 @@ func flags() (ok bool) {
 		printLangs()
 		return true
 	case g:
-		err := app.GenConfigFile()
+		err := genConfigFile()
 		if err != nil {
 			printError(err)
 		}
@@ -85,12 +101,46 @@ func printError(msg ...interface{}) {
 
 func printLangs() {
 	colors.Println(out, titleColor, colors.Default, "目前支持以下类型的代码解析:")
-	for k, v := range app.Langs() {
-		colors.Print(out, titleColor, colors.Default, k, ":")
-		colors.Println(out, contentColor, colors.Default, v.Exts)
-	}
+	colors.Println(out, titleColor, colors.Default, i.Langs())
 }
 
 func printVersion() {
-	fmt.Println("apidoc", app.Version, "build with", runtime.Version())
+	fmt.Println("apidoc", version, "build with", runtime.Version())
+}
+
+func run(srcDir string) error {
+	elapsed := time.Now()
+
+	cfg, err := loadConfig()
+	if err != nil {
+		return err
+	}
+	paths, err := recursivePath(cfg)
+	if err != nil {
+		return err
+	}
+
+	docs, err := i.Parse(paths, cfg.Input.Type)
+	if err != nil {
+		return err
+	}
+
+	opt := &o.Options{
+		Title:      cfg.Doc.Title,
+		Version:    cfg.Doc.Version,
+		DocDir:     cfg.Output.Dir,
+		AppVersion: version,
+		Elapsed:    time.Now().UnixNano() - elapsed.UnixNano(),
+	}
+	if err = o.Html(docs, opt); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func printSyntaxErrors(errs []error) {
+	for _, v := range errs {
+		colors.Println(out, warnColor, colors.Default, v)
+	}
 }
