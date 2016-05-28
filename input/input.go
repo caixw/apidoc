@@ -13,6 +13,7 @@ package input
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -23,10 +24,10 @@ import (
 )
 
 type Options struct {
-	Lang      string   `json:"lang"`      // 输入的目标语言
-	Dir       string   `json:"dir"`       // 源代码目录
-	Exts      []string `json:"exts"`      // 需要扫描的文件扩展名
-	Recursive bool     `json:"recursive"` // 是否查找Dir的子目录
+	Lang      string   `json:"lang"`           // 输入的目标语言
+	Dir       string   `json:"dir"`            // 源代码目录
+	Exts      []string `json:"exts,omitempty"` // 需要扫描的文件扩展名
+	Recursive bool     `json:"recursive"`      // 是否查找Dir的子目录
 }
 
 // 分析源代码，获取相应的文档内容。
@@ -139,4 +140,38 @@ func recursivePath(o *Options) ([]string, error) {
 	}
 
 	return paths, nil
+}
+
+// 检测 Options 变量是否符合要求
+func checkOptions(opt *Options) error {
+	if len(opt.Dir) == 0 {
+		return errors.New("未指定源码目录")
+	}
+
+	opt.Dir += string(os.PathSeparator)
+
+	if len(opt.Exts) > 0 {
+		exts := make([]string, 0, len(opt.Exts))
+		for _, ext := range opt.Exts {
+			if len(ext) == 0 {
+				continue
+			}
+
+			if ext[0] != '.' {
+				ext = "." + ext
+			}
+			exts = append(exts, ext)
+		}
+		opt.Exts = exts
+	}
+
+	if len(opt.Lang) == 0 {
+		return errors.New("必须指定参数 type")
+	}
+
+	if langIsSupported(opt.Lang) {
+		return fmt.Errorf("暂不支持该类型[%v]的语言", opt.Lang)
+	}
+
+	return nil
 }

@@ -6,19 +6,17 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 
 	i "github.com/caixw/apidoc/input"
 )
 
 type config struct {
-	Version string  `json:"version"` // 兼容的 apidoc 版本
-	Input   *input  `json:"input"`
-	Output  *output `json:"output"`
-	Doc     *doc    `json:"doc"`
+	Version string     `json:"version"` // 兼容的 apidoc 版本
+	Input   *i.Options `json:"input"`
+	Output  *output    `json:"output"`
+	Doc     *doc       `json:"doc"`
 }
 
 type input struct {
@@ -58,9 +56,6 @@ func loadConfig() (*config, error) {
 		return nil, err
 	}
 
-	if err = initInput(wd, cfg); err != nil {
-		return nil, err
-	}
 	if err = initDoc(cfg); err != nil {
 		return nil, err
 	}
@@ -86,41 +81,6 @@ func initDoc(cfg *config) error {
 	return nil
 }
 
-// 对config.Input中的变量做初始化
-func initInput(wd string, cfg *config) error {
-	if len(cfg.Input.Dir) == 0 {
-		cfg.Input.Dir = wd
-	}
-	cfg.Input.Dir += string(os.PathSeparator)
-
-	if len(cfg.Input.Exts) > 0 {
-		exts := make([]string, 0, len(cfg.Input.Exts))
-		for _, ext := range cfg.Input.Exts {
-			if len(ext) == 0 {
-				continue
-			}
-
-			if ext[0] != '.' {
-				ext = "." + ext
-			}
-			exts = append(exts, ext)
-		}
-		cfg.Input.Exts = exts
-	}
-
-	// 若没有指定Type，则根据exts和当前目录下的文件检测来确定其值
-	if len(cfg.Input.Type) == 0 {
-		return fmt.Errorf("必须指定参数 type")
-	}
-	cfg.Input.Type = strings.ToLower(cfg.Input.Type)
-
-	if i.LangIsSupported(cfg.Input.Type) {
-		return fmt.Errorf("暂不支持该类型[%v]的语言", cfg.Input.Type)
-	}
-
-	return nil
-}
-
 // 在当前目录下产生个默认的配置文件。
 func genConfigFile() error {
 	wd, err := os.Getwd()
@@ -136,7 +96,7 @@ func genConfigFile() error {
 	defer fi.Close()
 
 	cfg := &config{
-		Input:  &input{Dir: "./", Recursive: true},
+		Input:  &i.Options{Dir: "./", Recursive: true},
 		Output: &output{},
 		Doc:    &doc{},
 	}

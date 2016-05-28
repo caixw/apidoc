@@ -49,7 +49,7 @@ func Langs() []string {
 }
 
 // 是否支持该语言
-func LangIsSupported(lang string) bool {
+func langIsSupported(lang string) bool {
 	_, found := langs[lang]
 	return found
 }

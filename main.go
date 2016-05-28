@@ -24,7 +24,7 @@ import (
 
 const (
 	// 版本号
-	version = "2.0.47.160528"
+	version = "2.0.48.160529"
 
 	// 配置文件名称。
 	configFilename = ".apidoc.json"
@@ -105,13 +105,7 @@ func run(srcDir string) error {
 		return err
 	}
 
-	inputOpt := &i.Options{
-		Dir:       cfg.Input.Dir,
-		Lang:      cfg.Input.Type,
-		Exts:      cfg.Input.Exts,
-		Recursive: cfg.Input.Recursive,
-	}
-	docs, err := i.Parse(inputOpt)
+	docs, err := i.Parse(cfg.Input)
 	if err != nil {
 		return err
 	}
