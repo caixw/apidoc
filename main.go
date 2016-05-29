@@ -3,12 +3,6 @@
 // license that can be found in the LICENSE file.
 
 // apidoc 是一个 RESTful api 文档生成工具。
-//
-// 多行注释和单行注释在处理上会有一定区别：
-//
-// 单行注释，风格相同且相邻的注释会被合并成一个注释块。
-// 单行注释，风格不相同且相邻的注释会被按注释风格多个注释块。
-// 而多行注释，即使两个注释释块相邻也会被分成两个注释块来处理。
 package main
 
 import (
@@ -36,10 +30,10 @@ const (
 const usage = `apidoc 是一个 RESTful api 文档生成工具。
 
 参数:
- -h       显示当前帮助信息；
- -v       显示apidoc和go程序的版本信息；
+ -h       显示帮助信息；
+ -v       显示版本信息；
  -l       显示所有支持的语言类型；
- -g       在当前目录下创建一个默认的配置文件；
+ -g       在当前目录下创建一个默认的配置文件。
 
 有关 apidoc 的详细信息，可访问官网：http://apidoc.site`
 
@@ -48,7 +42,7 @@ func main() {
 		return
 	}
 
-	elapsed := time.Now()
+	start := time.Now() // 记录处理开始时间
 
 	cfg, err := loadConfig()
 	if err != nil {
@@ -61,17 +55,17 @@ func main() {
 	}
 
 	cfg.Output.AppVersion = version
-	cfg.Output.Elapsed = time.Now().UnixNano() - elapsed.UnixNano()
+	cfg.Output.Elapsed = time.Now().UnixNano() - start.UnixNano()
 	if err = output.Render(docs, cfg.Output); err != nil {
 		panic(err)
 	}
 }
 
-// 处理命令行参数，若被处理，返回true，否则返回false。
+// 处理命令行参数，若被处理，返回 true，否则返回 false。
 func flags() bool {
 	flag.Usage = func() { logs.Println(usage) }
 	h := flag.Bool("h", false, "显示帮助信息")
-	v := flag.Bool("v", false, "显示帮助信息")
+	v := flag.Bool("v", false, "显示版本信息")
 	l := flag.Bool("l", false, "显示所有支持的语言")
 	g := flag.Bool("g", false, "在当前目录下创建一个默认的配置文件")
 	flag.Parse()

@@ -62,8 +62,9 @@ func genConfigFile() error {
 	defer fi.Close()
 
 	cfg := &config{
-		Input:  &input.Options{Dir: "./", Recursive: true},
-		Output: &output.Options{},
+		Version: version,
+		Input:   &input.Options{Dir: "./", Recursive: true},
+		Output:  &output.Options{Type: "html"},
 	}
 	data, err := json.MarshalIndent(cfg, "", "    ")
 	_, err = fi.Write(data)
