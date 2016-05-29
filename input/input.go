@@ -142,7 +142,7 @@ func recursivePath(o *Options) ([]string, error) {
 }
 
 // 检测 Options 变量是否符合要求
-func checkOptions(opt *Options) error {
+func (opt *Options) Init() error {
 	if len(opt.Dir) == 0 {
 		return errors.New("未指定源码目录")
 	}
@@ -171,7 +171,7 @@ func checkOptions(opt *Options) error {
 		}
 		opt.Exts = exts
 	} else {
-		opt.Exts = exts[opt.Lang]
+		opt.Exts = langExts[opt.Lang]
 	}
 
 	return nil

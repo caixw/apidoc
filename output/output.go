@@ -16,10 +16,6 @@ import (
 
 // 将docs的内容以html格式输出。
 func Html(docs *doc.Doc, opt *Options) error {
-	if err := checkOptions(opt); err != nil {
-		return err
-	}
-
 	t := template.New("core")
 	for _, content := range static.Templates {
 		template.Must(t.Parse(content))

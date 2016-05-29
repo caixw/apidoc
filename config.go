@@ -36,6 +36,14 @@ func loadConfig() (*config, error) {
 		return nil, err
 	}
 
+	if err := cfg.Input.Init(); err != nil {
+		return nil, err
+	}
+
+	if err := cfg.Output.Init(); err != nil {
+		return nil, err
+	}
+
 	return cfg, nil
 }
 

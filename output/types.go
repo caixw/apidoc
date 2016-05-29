@@ -33,7 +33,7 @@ type info struct {
 	Elapsed    string
 }
 
-func checkOptions(o *Options) error {
+func (o *Options) Init() error {
 	if len(o.Dir) == 0 {
 		return errors.New("未指定 Dir")
 	}
