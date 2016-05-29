@@ -45,7 +45,7 @@ func (opt *Options) Init() error {
 		return errors.New("必须指定参数 type")
 	}
 
-	if langIsSupported(opt.Lang) {
+	if !langIsSupported(opt.Lang) {
 		return fmt.Errorf("暂不支持该类型[%v]的语言", opt.Lang)
 	}
 

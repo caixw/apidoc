@@ -27,7 +27,6 @@ type Options struct {
 	Type       string `json:"type"`    // 渲染方式，默认为 html
 
 	// Language string // 产生的ui界面语言
-	//Type string   `json:"type"` // 输出的语言格式
 	//Groups     []string `json:"groups"`     // 需要打印的分组内容。
 	//Timezone   string   `json:"timezone"`   // 时区
 }
