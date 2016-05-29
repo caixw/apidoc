@@ -20,7 +20,7 @@ import (
 	"sync"
 
 	"github.com/caixw/apidoc/doc"
-	"github.com/issue9/logs"
+	"github.com/caixw/apidoc/logs"
 )
 
 type Options struct {

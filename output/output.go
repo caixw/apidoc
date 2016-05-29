@@ -16,6 +16,10 @@ import (
 
 // 将docs的内容以html格式输出。
 func Html(docs *doc.Doc, opt *Options) error {
+	if err := checkOptions(opt); err != nil {
+		return err
+	}
+
 	t := template.New("core")
 	for _, content := range static.Templates {
 		template.Must(t.Parse(content))
@@ -39,16 +43,16 @@ func Html(docs *doc.Doc, opt *Options) error {
 		groups[v.Group] = append(groups[v.Group], v)
 	}
 
-	if err := outputIndex(t, i, opt.DocDir); err != nil {
+	if err := outputIndex(t, i, opt.Dir); err != nil {
 		return err
 	}
 
-	if err := outputGroup(groups, t, i, opt.DocDir); err != nil {
+	if err := outputGroup(groups, t, i, opt.Dir); err != nil {
 		return err
 	}
 
 	// 输出static
-	return static.Output(opt.DocDir)
+	return static.Output(opt.Dir)
 }
 
 // 输出索引页

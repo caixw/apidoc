@@ -17,9 +17,9 @@ import (
 	"strings"
 	"time"
 
-	i "github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/logs"
-	o "github.com/caixw/apidoc/output"
+	"github.com/caixw/apidoc/output"
 )
 
 const (
@@ -55,19 +55,14 @@ func main() {
 		panic(err)
 	}
 
-	docs, err := i.Parse(cfg.Input)
+	docs, err := input.Parse(cfg.Input)
 	if err != nil {
 		panic(err)
 	}
 
-	opt := &o.Options{
-		Title:      cfg.Doc.Title,
-		Version:    cfg.Doc.Version,
-		DocDir:     cfg.Output.Dir,
-		AppVersion: version,
-		Elapsed:    time.Now().UnixNano() - elapsed.UnixNano(),
-	}
-	if err = o.Html(docs, opt); err != nil {
+	cfg.Output.AppVersion = version
+	cfg.Output.Elapsed = time.Now().UnixNano() - elapsed.UnixNano()
+	if err = output.Html(docs, cfg.Output); err != nil {
 		panic(err)
 	}
 }
@@ -89,7 +84,7 @@ func flags() bool {
 		logs.Info("apidoc ", version, "build with", runtime.Version())
 		return true
 	case *l:
-		langs := "[" + strings.Join(i.Langs(), ", ") + "]"
+		langs := "[" + strings.Join(input.Langs(), ", ") + "]"
 		logs.Info("目前支持以下语言：", langs)
 		return true
 	case *g:
