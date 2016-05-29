@@ -15,6 +15,7 @@ type lexer struct {
 
 // 表示一个标签的内容
 type tag struct {
+	ln   int // 当前 tag 在 lexer 中的起始行号
 	data []rune
 	pos  int
 }
@@ -84,15 +85,19 @@ func (l *lexer) readTag() *tag {
 	l.skipSpace()
 
 	start := l.pos
-	l.width = 0 // 防止外层已经调用 match
+	ln := l.lineNumber() // 记录行号
+	l.width = 0          // 防止外层已经调用 match
 	for {
-		if l.atEOF() || l.match("@api") {
-			l.backup()
+		if l.atEOF() || l.match("@api") { // 直到碰到下个标签或是结束
+			l.backup() // 退回标签本身的字符串
 			break
 		}
 		l.pos++
 	}
-	return &tag{data: trimRight(l.data[start:l.pos])}
+	return &tag{
+		data: trimRight(l.data[start:l.pos]),
+		ln:   ln,
+	}
 }
 
 // 跳过之后的空白字符。
@@ -130,6 +135,26 @@ func (t *tag) readWord() string {
 		t.pos++
 	}
 	return string(trimRight(t.data[start:t.pos]))
+}
+
+// 当前位置在源代码中的行号，起始行为 0
+func (t *tag) lineNumber() int {
+	count := 0
+	for i := 0; i < t.pos; i++ {
+		if t.data[i] == '\n' {
+			count++
+		}
+	}
+
+	return count + t.ln
+}
+
+// 提示语法错误
+func (t *tag) syntaxError(msg string) *SyntaxError {
+	return &SyntaxError{
+		Line:    t.lineNumber(),
+		Message: msg,
+	}
 }
 
 // 往后读取一行内容，不包含首尾空格。

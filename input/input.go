@@ -24,6 +24,9 @@ import (
 	"github.com/issue9/utils"
 )
 
+// printSyntaxError 的锁，保证其在多协程环境下不串内容。
+var syntaxErrorMux = sync.Mutex{}
+
 type Options struct {
 	Lang      string   `json:"lang"`           // 输入的目标语言
 	Dir       string   `json:"dir"`            // 源代码目录
@@ -146,7 +149,12 @@ LOOP:
 	} // end for
 }
 
+// 向终端输出错误信息。
+// 由于在多协程环境上被调用，需要保证其内容是一次输出。
 func printSyntaxError(err *doc.SyntaxError) {
+	syntaxErrorMux.Lock()
+	defer syntaxErrorMux.Unlock()
+
 	logs.Error("[语法错误] ", err)
 }
 

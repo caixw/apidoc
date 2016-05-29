@@ -4,9 +4,9 @@
 
 package doc
 
-// 扫描文档，生成一个Doc实例。
+// 扫描文档，生成一个 Doc 实例。
 //
-// 若代码块没有api文档定义，则会返回空值。
+// 若代码块没有 api 文档定义，则会返回空值。
 // block 该代码块的内容；
 func (doc *Doc) Scan(data []rune) *SyntaxError {
 	var err *SyntaxError
@@ -144,10 +144,10 @@ func (l *lexer) scanResponse() (*Response, *SyntaxError) {
 	}
 
 	if len(resp.Code) == 0 || len(resp.Summary) == 0 {
-		return nil, l.syntaxError("@apiSuccess 或是 @apiError 缺少必要的元素")
+		return nil, tag.syntaxError("@apiSuccess 或是 @apiError 缺少必要的元素")
 	}
 	if !tag.atEOF() {
-		return nil, l.syntaxError("@apiSuccess 或是 @apiError 参数过多")
+		return nil, tag.syntaxError("@apiSuccess 或是 @apiError 参数过多")
 	}
 
 LOOP:
@@ -158,10 +158,10 @@ LOOP:
 			key := t.readWord()
 			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
-				return nil, l.syntaxError("@apiHeader 缺少必要的参数")
+				return nil, t.syntaxError("@apiHeader 缺少必要的参数")
 			}
 			if !t.atEOF() {
-				return nil, l.syntaxError("@apiHeader 参数过多") // BUG(caixw) tag 的定位在 lexer 之前，可能造成定位不准确
+				return nil, t.syntaxError("@apiHeader 参数过多")
 			}
 			resp.Headers[key] = val
 		case l.match("@apiParam "):
@@ -217,7 +217,7 @@ func (l *lexer) scanAPIParam() (*Param, *SyntaxError) {
 	return p, nil
 }
 
-// 若存在description参数，会原样输出，不会像其它一样去掉前导空格。
+// 若存在 description 参数，会原样输出，不会像其它一样去掉前导空格。
 // 扫描以下格式内容：
 //  @api get /test.com/api/user.json api summary
 //  api description
