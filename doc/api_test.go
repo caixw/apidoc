@@ -290,12 +290,14 @@ api description 2
 	s = d.Error
 	a.Equal(s.Code, "200")
 
-	// 不包含api定义的代码块，将返回一个error,nil
+	// 不包含api定义的代码块，将返回 nil 且不会有内容添加到 doc1.Apis
 	code = `
 Copyright 2015 by caixw, All rights reserved.
 Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.
 `
+	l := len(doc1.Apis)
 	err = doc1.Scan([]rune(code))
 	a.NotError(err)
+	a.Equal(l, len(doc1.Apis))
 }

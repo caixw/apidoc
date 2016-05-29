@@ -144,10 +144,10 @@ func (l *lexer) scanResponse() (*Response, *SyntaxError) {
 	}
 
 	if len(resp.Code) == 0 || len(resp.Summary) == 0 {
-		return nil, l.syntaxError("缺少必要的元素")
+		return nil, l.syntaxError("@apiSuccess 或是 @apiError 缺少必要的元素")
 	}
 	if !tag.atEOF() {
-		return nil, l.syntaxError("参数过多")
+		return nil, l.syntaxError("@apiSuccess 或是 @apiError 参数过多")
 	}
 
 LOOP:
@@ -158,10 +158,10 @@ LOOP:
 			key := t.readWord()
 			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
-				return nil, l.syntaxError("缺少必要的参数")
+				return nil, l.syntaxError("@apiHeader 缺少必要的参数")
 			}
 			if !t.atEOF() {
-				return nil, l.syntaxError("参数过多") // BUG(caixw) tag 的定位在 lexer 之前，可能造成定位不准确
+				return nil, l.syntaxError("@apiHeader 参数过多") // BUG(caixw) tag 的定位在 lexer 之前，可能造成定位不准确
 			}
 			resp.Headers[key] = val
 		case l.match("@apiParam "):
@@ -212,7 +212,7 @@ func (l *lexer) scanAPIParam() (*Param, *SyntaxError) {
 	p.Type = tag.readWord()
 	p.Summary = tag.readEnd()
 	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Summary) == 0 {
-		return nil, l.syntaxError("缺少必要的参数")
+		return nil, l.syntaxError("@apiParam 或是 @apiQuery 缺少必要的参数")
 	}
 	return p, nil
 }
@@ -229,7 +229,7 @@ func (l *lexer) scanAPI(api *API) *SyntaxError {
 	api.Summary = t.readLine()
 
 	if len(api.Method) == 0 || len(api.URL) == 0 || len(api.Summary) == 0 {
-		return l.syntaxError("缺少必要的参数")
+		return l.syntaxError("@api 缺少必要的参数")
 	}
 
 	api.Description = t.readEnd()
