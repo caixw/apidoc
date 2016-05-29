@@ -11,6 +11,21 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestLexer_lineNumber(t *testing.T) {
+	a := assert.New(t)
+
+	l := &lexer{data: []byte("l1\nl2\nl3\nl4\n")}
+	l.pos = 3
+	a.Equal(l.lineNumber(), 1)
+
+	l.line()
+	a.Equal(l.lineNumber(), 2)
+
+	l.line()
+	l.line()
+	a.Equal(l.lineNumber(), 4)
+}
+
 func TestLexer_next(t *testing.T) {
 	a := assert.New(t)
 
