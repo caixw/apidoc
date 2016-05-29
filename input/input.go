@@ -117,6 +117,7 @@ func parseFile(docs *doc.Doc, path string, blocks []*block) {
 
 LOOP:
 	for {
+		ln := l.lineNumber() + 1 // 记录当前的行号，顺便调整为行号起始行号为 1
 		switch {
 		case l.atEOF():
 			return
@@ -137,14 +138,14 @@ LOOP:
 			block = nil
 
 			wg.Add(1)
-			go func() {
+			go func(ln int) {
 				if err = docs.Scan(rs); err != nil {
-					err.Line += l.lineNumber()
+					err.Line += ln
 					err.File = path
 					printSyntaxError(err)
 				}
 				wg.Done()
-			}()
+			}(ln)
 		} // end switch
 	} // end for
 }

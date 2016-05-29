@@ -14,7 +14,7 @@ import (
 func TestLexer_lineNumber(t *testing.T) {
 	a := assert.New(t)
 
-	l := &lexer{data: []byte("l1\nl2\nl3\nl4\n")}
+	l := &lexer{data: []byte("l0\nl1\nl2\nl3\n")}
 	l.pos = 3
 	a.Equal(l.lineNumber(), 1)
 
