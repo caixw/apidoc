@@ -95,3 +95,10 @@ func TestRecursivePath(t *testing.T) {
 		"testdir/testfile.1",
 	})
 }
+
+func TestOptions_Init(t *testing.T) {
+	a := assert.New(t)
+
+	o := &Options{}
+
+}

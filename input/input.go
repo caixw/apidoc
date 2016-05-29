@@ -30,11 +30,47 @@ type Options struct {
 	Recursive bool     `json:"recursive"`      // 是否查找Dir的子目录
 }
 
+// 检测 Options 变量是否符合要求
+func (opt *Options) Init() error {
+	if len(opt.Dir) == 0 {
+		return errors.New("未指定源码目录")
+	}
+
+	if len(opt.Lang) == 0 {
+		return errors.New("必须指定参数 type")
+	}
+
+	if langIsSupported(opt.Lang) {
+		return fmt.Errorf("暂不支持该类型[%v]的语言", opt.Lang)
+	}
+
+	opt.Dir += string(os.PathSeparator)
+
+	if len(opt.Exts) > 0 {
+		exts := make([]string, 0, len(opt.Exts))
+		for _, ext := range opt.Exts {
+			if len(ext) == 0 {
+				continue
+			}
+
+			if ext[0] != '.' {
+				ext = "." + ext
+			}
+			exts = append(exts, ext)
+		}
+		opt.Exts = exts
+	} else {
+		opt.Exts = langExts[opt.Lang]
+	}
+
+	return nil
+}
+
 // 分析源代码，获取相应的文档内容。
 func Parse(o *Options) (*doc.Doc, error) {
 	b, found := langs[o.Lang]
 	if !found {
-		return nil, errors.New("不支持该语言")
+		return nil, fmt.Errorf("不支持该语言:[%v]", o.Lang)
 	}
 
 	paths, err := recursivePath(o)
@@ -139,40 +175,4 @@ func recursivePath(o *Options) ([]string, error) {
 	}
 
 	return paths, nil
-}
-
-// 检测 Options 变量是否符合要求
-func (opt *Options) Init() error {
-	if len(opt.Dir) == 0 {
-		return errors.New("未指定源码目录")
-	}
-
-	if len(opt.Lang) == 0 {
-		return errors.New("必须指定参数 type")
-	}
-
-	if langIsSupported(opt.Lang) {
-		return fmt.Errorf("暂不支持该类型[%v]的语言", opt.Lang)
-	}
-
-	opt.Dir += string(os.PathSeparator)
-
-	if len(opt.Exts) > 0 {
-		exts := make([]string, 0, len(opt.Exts))
-		for _, ext := range opt.Exts {
-			if len(ext) == 0 {
-				continue
-			}
-
-			if ext[0] != '.' {
-				ext = "." + ext
-			}
-			exts = append(exts, ext)
-		}
-		opt.Exts = exts
-	} else {
-		opt.Exts = langExts[opt.Lang]
-	}
-
-	return nil
 }
