@@ -20,7 +20,7 @@ import (
 	"sync"
 
 	"github.com/caixw/apidoc/doc"
-	"github.com/issue9/term/colors"
+	"github.com/issue9/logs"
 )
 
 type Options struct {
@@ -106,8 +106,7 @@ LOOP:
 }
 
 func printSyntaxError(err *doc.SyntaxError) {
-	colors.Print(colors.Stderr, colors.Red, colors.Default, "SyntaxError:")
-	colors.Println(colors.Stderr, colors.Default, colors.Default, err)
+	logs.Error("[语法错误] ", err)
 }
 
 // 根据recursive值确定是否递归查找paths每个目录下的子目录。

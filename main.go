@@ -18,8 +18,8 @@ import (
 	"time"
 
 	i "github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/logs"
 	o "github.com/caixw/apidoc/output"
-	"github.com/issue9/term/colors"
 )
 
 const (
@@ -27,7 +27,7 @@ const (
 	//
 	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则，分成以下四个部分：
 	// 主版本号.次版本号.修订号.修订日期
-	version = "2.0.49.160529"
+	version = "2.0.50.160529"
 
 	// 配置文件名称。
 	configFilename = ".apidoc.json"
@@ -48,69 +48,16 @@ func main() {
 		return
 	}
 
-	err := run("./")
-	if err != nil {
-		panic(err)
-	}
-}
-
-// 处理命令行参数，若被处理，返回true，否则返回false。
-func flags() (ok bool) {
-	var h, v, l, g bool
-
-	flag.Usage = printUsage
-	flag.BoolVar(&h, "h", false, "显示帮助信息")
-	flag.BoolVar(&v, "v", false, "显示帮助信息")
-	flag.BoolVar(&l, "l", false, "显示所有支持的语言")
-	flag.BoolVar(&g, "g", false, "在当前目录下创建一个默认的配置文件")
-	flag.Parse()
-
-	switch {
-	case h:
-		flag.Usage()
-		return true
-	case v:
-		printVersion()
-		return true
-	case l:
-		printLangs()
-		return true
-	case g:
-		if err := genConfigFile(); err != nil {
-			panic(err)
-		}
-		return true
-	}
-	return false
-}
-
-func printUsage() {
-	colors.Print(colors.Stdout, colors.Default, colors.Default, usage)
-}
-
-func printLangs() {
-	langs := "[" + strings.Join(i.Langs(), ", ") + "]"
-
-	colors.Print(colors.Stdout, colors.Green, colors.Default, "目前支持以下语言：")
-	colors.Println(colors.Stdout, colors.Default, colors.Default, langs)
-}
-
-func printVersion() {
-	colors.Print(colors.Stdout, colors.Green, colors.Default, "apidoc ")
-	colors.Println(colors.Stdout, colors.Default, colors.Default, version, "build with", runtime.Version())
-}
-
-func run(srcDir string) error {
 	elapsed := time.Now()
 
 	cfg, err := loadConfig()
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	docs, err := i.Parse(cfg.Input)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	opt := &o.Options{
@@ -121,8 +68,35 @@ func run(srcDir string) error {
 		Elapsed:    time.Now().UnixNano() - elapsed.UnixNano(),
 	}
 	if err = o.Html(docs, opt); err != nil {
-		return err
+		panic(err)
 	}
+}
 
-	return nil
+// 处理命令行参数，若被处理，返回true，否则返回false。
+func flags() bool {
+	flag.Usage = func() { logs.Println(usage) }
+	h := flag.Bool("h", false, "显示帮助信息")
+	v := flag.Bool("v", false, "显示帮助信息")
+	l := flag.Bool("l", false, "显示所有支持的语言")
+	g := flag.Bool("g", false, "在当前目录下创建一个默认的配置文件")
+	flag.Parse()
+
+	switch {
+	case *h:
+		flag.Usage()
+		return true
+	case *v:
+		logs.Info("apidoc ", version, "build with", runtime.Version())
+		return true
+	case *l:
+		langs := "[" + strings.Join(i.Langs(), ", ") + "]"
+		logs.Info("目前支持以下语言：", langs)
+		return true
+	case *g:
+		if err := genConfigFile(); err != nil {
+			panic(err)
+		}
+		return true
+	}
+	return false
 }
