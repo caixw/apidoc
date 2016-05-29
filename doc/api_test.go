@@ -300,4 +300,15 @@ license that can be found in the LICENSE file.
 	err = doc1.Scan([]rune(code))
 	a.NotError(err)
 	a.Equal(l, len(doc1.Apis))
+
+	// @apiIgnore
+	code = `
+@api delete /admin/users/{id} delete users
+@apiIgnore
+@apiParam id int user id
+`
+	l = len(doc1.Apis)
+	err = doc1.Scan([]rune(code))
+	a.NotError(err)
+	a.Equal(l, len(doc1.Apis))
 }

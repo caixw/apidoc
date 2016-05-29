@@ -17,6 +17,9 @@ func (doc *Doc) Scan(data []rune) *SyntaxError {
 LOOP:
 	for {
 		switch {
+		case l.match("@apiIgnore"):
+			api = nil
+			break LOOP
 		case l.match("@apiGroup "):
 			t := l.readTag()
 			api.Group = t.readWord()
@@ -66,8 +69,8 @@ LOOP:
 		}
 	} // end for
 
-	// Doc 的必要数据没有被初始化，说明这段代码不是 api 文档格式。
-	if len(api.URL) == 0 || len(api.Method) == 0 {
+	// API 的必要数据没有被初始化，说明这段代码不是 api 文档格式。
+	if api == nil || len(api.URL) == 0 || len(api.Method) == 0 {
 		return nil
 	}
 
