@@ -21,7 +21,7 @@ const (
 	//
 	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则，分成以下四个部分：
 	// 主版本号.次版本号.修订号.修订日期
-	version = "2.0.52.160529"
+	version = "2.0.53.160529"
 
 	// 配置文件名称。
 	configFilename = ".apidoc.json"

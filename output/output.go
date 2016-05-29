@@ -13,7 +13,7 @@ import (
 )
 
 // 支持的渲染方式
-var outputTypes = []string{
+var renderTypes = []string{
 	"html",
 }
 
@@ -60,7 +60,7 @@ func Render(docs *doc.Doc, o *Options) error {
 }
 
 func isSuppertedType(typ string) bool {
-	for _, k := range outputTypes {
+	for _, k := range renderTypes {
 		if k == typ {
 			return true
 		}

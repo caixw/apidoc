@@ -42,7 +42,7 @@ func (opt *Options) Init() error {
 	}
 
 	if len(opt.Lang) == 0 {
-		return errors.New("必须指定参数 type")
+		return errors.New("未指定Lang")
 	}
 
 	if !langIsSupported(opt.Lang) {
@@ -73,7 +73,7 @@ func (opt *Options) Init() error {
 
 // 分析源代码，获取相应的文档内容。
 func Parse(o *Options) (*doc.Doc, error) {
-	b, found := langs[o.Lang]
+	blocks, found := langs[o.Lang]
 	if !found {
 		return nil, fmt.Errorf("不支持该语言:[%v]", o.Lang)
 	}
@@ -88,10 +88,10 @@ func Parse(o *Options) (*doc.Doc, error) {
 	defer wg.Wait()
 	for _, path := range paths {
 		wg.Add(1)
-		go func() {
-			parseFile(docs, path, b)
+		go func(path string) {
+			parseFile(docs, path, blocks)
 			wg.Done()
-		}()
+		}(path)
 	}
 
 	return docs, nil
