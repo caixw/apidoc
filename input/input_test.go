@@ -99,6 +99,21 @@ func TestRecursivePath(t *testing.T) {
 func TestOptions_Init(t *testing.T) {
 	a := assert.New(t)
 
-	o := &Options{}
+	o := &Options{Dir: "not exists"}
+	a.Error(o.Init())
 
+	o.Dir = "./"
+	o.Lang = "not exists"
+	a.Error(o.Init())
+
+	// 未指定扩展名，则使用系统默认的
+	o.Lang = "c"
+	a.NotError(o.Init())
+	a.Equal(o.Exts, langExts["c"])
+
+	// 指定了 Exts，自动调整扩展名样式。
+	o.Lang = "c"
+	o.Exts = []string{"c1", ".c2"}
+	a.NotError(o.Init())
+	a.Equal(o.Exts, []string{".c1", ".c2"})
 }

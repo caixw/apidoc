@@ -59,6 +59,7 @@ func Langs() []string {
 
 // 是否支持该语言
 func langIsSupported(lang string) bool {
+	// 由测试函数保证 langs 和 langExts 拥有相同的键名。
 	_, found := langs[lang]
 	return found
 }

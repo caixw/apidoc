@@ -21,6 +21,7 @@ import (
 
 	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/logs"
+	"github.com/issue9/utils"
 )
 
 type Options struct {
@@ -34,6 +35,10 @@ type Options struct {
 func (opt *Options) Init() error {
 	if len(opt.Dir) == 0 {
 		return errors.New("未指定源码目录")
+	}
+
+	if !utils.FileExists(opt.Dir) {
+		return fmt.Errorf("指定的源码目录[%v]不存在", opt.Dir)
 	}
 
 	if len(opt.Lang) == 0 {
