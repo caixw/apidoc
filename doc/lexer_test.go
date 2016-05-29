@@ -86,11 +86,36 @@ func TestLexer_next(t *testing.T) {
 	a.Equal(2, l.pos)
 }
 
+func TestTag_lineNumber(t *testing.T) {
+	a := assert.New(t)
+	l := &lexer{data: []rune("line0\nline1\nline2\n @api line3\n")}
+
+	t1 := l.readTag()
+	a.NotNil(t1)
+	a.Equal(t1.lineNumber(), 0)
+
+	a.Equal(t1.readLine(), "line0")
+	a.Equal(t1.lineNumber(), 0)
+
+	a.Equal(t1.readLine(), "line1")
+	a.Equal(t1.lineNumber(), 1)
+
+	// l.pos 不是从 0 开始
+	l.pos = 6
+	t1 = l.readTag()
+	a.NotNil(t1)
+	a.Equal(t1.lineNumber(), 1)
+
+	a.Equal(t1.readLine(), "line1")
+	a.Equal(t1.lineNumber(), 1)
+
+	a.Equal(t1.readLine(), "line2")
+	a.Equal(t1.lineNumber(), 2)
+}
+
 func TestTag_readWord(t *testing.T) {
 	a := assert.New(t)
-
 	l := &tag{data: []rune(" line1\n line2 \n")}
-	a.NotNil(l)
 
 	a.Equal(l.readWord(), []rune("line1"))
 	a.Equal(l.readWord(), []rune("line2"))
@@ -98,9 +123,7 @@ func TestTag_readWord(t *testing.T) {
 
 func TestTag_readLine(t *testing.T) {
 	a := assert.New(t)
-
 	l := &tag{data: []rune(" line1\n line2 \n")}
-	a.NotNil(l)
 
 	a.Equal(l.readLine(), []rune("line1"))
 	a.Equal(l.readLine(), []rune("line2"))
@@ -108,9 +131,7 @@ func TestTag_readLine(t *testing.T) {
 
 func TestTag_readEnd(t *testing.T) {
 	a := assert.New(t)
-
 	l := &tag{data: []rune(" line1\n line2 \n")}
-	a.NotNil(l)
 
 	a.Equal(l.readEnd(), "line1\n line2 \n")
 	a.Equal(l.readEnd(), "")

@@ -139,14 +139,14 @@ func (t *tag) readWord() string {
 
 // 当前位置在源代码中的行号，起始行为 0
 func (t *tag) lineNumber() int {
-	count := 0
+	count := t.ln
 	for i := 0; i < t.pos; i++ {
 		if t.data[i] == '\n' {
 			count++
 		}
 	}
 
-	return count + t.ln
+	return count
 }
 
 // 提示语法错误
