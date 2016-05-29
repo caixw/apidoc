@@ -18,16 +18,16 @@ import (
 type info struct {
 	Groups     map[string]string // 分组名称与文件的对照表
 	CurrGroup  string            // 当前所在的分组页，若为空，表示在列表页
-	Date       string
-	Version    string
-	AppVersion string
-	Title      string
-	Elapsed    string
+	Date       string            // 生成日期
+	Version    string            // 文档版本
+	AppVersion string            // apidoc 的版本号
+	Title      string            // 标题
+	Elapsed    string            // 生成文档所用的时间
 }
 
-// 将docs的内容以html格式输出。
+// 将 docs 的内容以 html 格式输出。
 func html(docs *doc.Doc, opt *Options) error {
-	t := template.New("core")
+	t := template.New("html")
 	for _, content := range static.Templates {
 		template.Must(t.Parse(content))
 	}
