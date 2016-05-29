@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
     <head>
-        <meta charset='utf-8'>
+        <meta charset='utf-8' />
         <title>apidoc - RESTful api文档生成工具</title>
         <meta name="keywords" content="apidoc,api,RESTful api,go,cpp,doc,文档生成" />
         <meta name="description" content="apidoc : RESTful api文档生成工具" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.8/semantic.min.css">
-        <link rel="stylesheet" href="./style.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.8/semantic.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.css" />
+        <link rel="stylesheet" href="./style.css" />
+        <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+        <script src="https://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.js"></script>
         <script src="./main.js"></script>
     </head>
 
@@ -35,8 +35,8 @@
             <!-- about -->
             <article class="ui stacked segment" id="about">
                 <h2 class="ui header">关于</h2>
-                <p>apidoc是一个简单的RESTful api文档生成工具，它从代码注释中提取特定格式的内容，生成文档。</p>
-                <p>目前已支持所有C语言注释风格的代码(PHP, Go, Java, Javascript, C/CPP等)和ruby代码。</p>
+                <p>apidoc 是一个简单的 RESTful api 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。</p>
+                <p>目前已支持所有 C 语言注释风格的代码(PHP, Go, Java, Javascript, C/CPP等)和ruby代码。</p>
                 <pre data-indent="4">
                 /**
                  @api get /users/:id 获取指定用户的相关信息
@@ -55,8 +55,8 @@
 
                 <section>
                     <h3>安装</h3>
-                    <p>1. 安装<a href="https://golang.org">Go</a>环境；</p>
-                    <p>2. 安装apidoc：<code>go get github.com/caixw/apidoc</code>；</p>
+                    <p>1. 安装 <a href="https://golang.org">Go</a> 环境；</p>
+                    <p>2. 安装 apidoc：<code>go get github.com/caixw/apidoc</code>；</p>
                 </section>
 
                 <section>
@@ -76,7 +76,7 @@
 
                 <section>
                     <h3>配置文件</h3>
-                    <p>apidoc通过配置文件来控制其行为。配置文件名为<code>.apidoc.json</code>。</p>
+                    <p>apidoc 通过配置文件来控制其行为。配置文件名为 <code>.apidoc.json</code>。</p>
                     <pre data-indent="5">
                     {
                         "input":{
@@ -191,7 +191,7 @@
                 <!-- @apiGroup -->
                 <section id="apigroup">
                     <h3>@apiGroup</h3>
-                    <p>@apiGroup提供了对api的分组信息，不同的分组，最终可能会被呈现在不同的页面。</p>
+                    <p>@apiGroup 提供了对 api 的分组信息，不同的分组，最终可能会被呈现在不同的页面。</p>
                     <p>语法：<code>@apiGroup groupName</code></p>
                     <p>示例：</p>
                     <pre data-indent="5">
@@ -204,8 +204,8 @@
                 <!-- apiQuery -->
                 <section id="apiparam">
                     <h3>@apiQuery/@apiParam</h3>
-                    <p>@apiQuery和@apiParam拥有相同的参数，其行为也类似，用于描述一个值的具体信息。</p>
-                    <p>@apiQuery描述api的查询参数；而@apiParam则用于描述路径中占位符代码的参数，或是在@apiRequest中表示提交数据的参数，在@apiSuccess各@apiError中表示返回数据的参数。</p>
+                    <p>@apiQuery 和 @apiParam 拥有相同的参数，其行为也类似，用于描述一个值的具体信息。</p>
+                    <p>@apiQuery 描述 api 的查询参数；而 @apiParam 则用于描述路径中占位符代码的参数，或是在 @apiRequest 中表示提交数据的参数，在 @apiSuccess 各 @apiError 中表示返回数据的参数。</p>
                     <p>语法：<code>@apiQuery/apiParam name type summary</code></p>
                     <table class="ui very compact table">
                         <thead>
@@ -235,7 +235,7 @@
 
                 <section id="apiheader">
                     <h3>@apiHeader</h3>
-                    <p>@apiHeader用于在@apiRequest，@apiSuccess和@apiError中描述请求头和响应的内容。</p>
+                    <p>@apiHeader 用于在 @apiRequest，@apiSuccess 和 @apiError 中描述请求头和响应的内容。</p>
                     <p>语法：<code>@apiHeader key value</code></p>
                     <p>示例：</p>
                     <pre data-indent="5">
@@ -247,8 +247,8 @@
 
                 <section id="apiexample">
                     <h3>@apiExample</h3>
-                    <p>描述@apiRequest，@apiSuccess和@apiError中请求和响应内容的示例。</p>
-                    <p>语法：<code>@apiExample type</code>type表示请求体的格式，可是以json，xml。</p>
+                    <p>描述 @apiRequest，@apiSuccess 和 @apiError 中请求和响应内容的示例。</p>
+                    <p>语法：<code>@apiExample type</code>type 表示请求体的格式，可是以 json，xml。</p>
                     <p>示例：</p>
                     <pre data-indent="5">
                     /**
@@ -260,8 +260,8 @@
 
                 <section id="apirequest">
                     <h3>@apiRequest</h3>
-                    <p>@apiRequest描述了所有的请求该包含的内容，其本身可包含@apiHeader，@apiExample和@apiParam三个子标签。</p>
-                    <p>语法：<code>@apiRequest type</code>，type表示请求体的格式，可是以json，xml。</p>
+                    <p>@apiRequest 描述了所有的请求该包含的内容，其本身可包含 @apiHeader，@apiExample 和 @apiParam 三个子标签。</p>
+                    <p>语法：<code>@apiRequest type</code>，type 表示请求体的格式，可是以 json，xml。</p>
                     <p>示例：</p>
                     <pre data-indent="5">
                     /**
@@ -277,7 +277,7 @@
 
                 <section id="apisuccess">
                     <h3>@apiSuccess/@apiError</h3>
-                    <p>@apiSuccess/@apiError描述了响应包含的内容，其本身可包含@apiHeader，@apiExample和@apiParam三个子标签。</p>
+                    <p>@apiSuccess/@apiError 描述了响应包含的内容，其本身可包含 @apiHeader，@apiExample 和 @apiParam 三个子标签。</p>
                     <p>语法：<code>@apiSuccess/Error status summary</code></p>
                     <table class="ui very compact table">
                         <thead>
@@ -314,13 +314,13 @@
         <footer>
             <div class="ui container">
                 <div class="left">
-                    <p>apidoc是基于<a rel="license" href="http://opensource.org/licenses/MIT">MIT</a>发布的开源软件。</p>
+                    <p>apidoc 是基于 <a rel="license" href="http://opensource.org/licenses/MIT">MIT</a> 发布的开源软件。</p>
                     <p>本页面内容采用<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>进行许可。</p>
                 </div>
 
                 <div class="right">
-                    <p>本页面内容托管于<a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
-                    <p>更新于<time>2015-08-23T22:32:16+0800</time></p>
+                    <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
+                    <p>更新于 <time>2016-05-29T14:36:47+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
