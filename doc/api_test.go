@@ -301,6 +301,24 @@ license that can be found in the LICENSE file.
 	a.NotError(err)
 	a.Equal(l, len(doc1.Apis))
 
+	// @apiGroup
+	code = `
+@api delete /admin/users/{id} delete users
+@apiGroup 
+@apiParam id int user id
+`
+	l = len(doc1.Apis)
+	a.ErrorType(doc1.Scan([]rune(code)), synerr) // @apiGroup 少参数
+
+	// 缺少必要的元素 @apiGroup，无法过 checkAPI 这一关
+	code = `
+@api delete /admin/users/{id} delete users
+@apiParam id int user id
+@apiSuccess 200 OK
+`
+	l = len(doc1.Apis)
+	a.ErrorType(doc1.Scan([]rune(code)), synerr)
+
 	// @apiIgnore
 	code = `
 @api delete /admin/users/{id} delete users

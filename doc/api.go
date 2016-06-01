@@ -69,9 +69,13 @@ LOOP:
 		}
 	} // end for
 
-	// API 的必要数据没有被初始化，说明这段代码不是 api 文档格式。
-	if api == nil || len(api.URL) == 0 || len(api.Method) == 0 {
+	// 所有字段都为空，说明这段注释中没有任何标签可解析，将其判断为
+	// 普通的注释代码，可以忽略。
+	if apiIsEmpty(api) {
 		return nil
+	}
+	if err := checkAPI(api); err != nil {
+		return err
 	}
 
 	doc.mux.Lock()
@@ -79,6 +83,37 @@ LOOP:
 	doc.mux.Unlock()
 
 	return nil
+}
+
+// 检测变量 api 是否为空值。
+func apiIsEmpty(api *API) bool {
+	return api == nil || (len(api.Method) == 0 &&
+		len(api.URL) == 0 &&
+		len(api.Summary) == 0 &&
+		len(api.Description) == 0 &&
+		len(api.Group) == 0 &&
+		len(api.Queries) == 0 &&
+		len(api.Params) == 0 &&
+		api.Request == nil &&
+		api.Success == nil &&
+		api.Error == nil)
+}
+
+// 检测 api 的所有基本要素是否齐全。
+//
+// NOTE: scan* 系列函数负责解析标签，及该标签是否合法，
+// 但若整个标签缺失则无能为力，此即 checkAPI 的存在的作用。
+func checkAPI(api *API) *SyntaxError {
+	switch {
+	case len(api.Group) == 0:
+		return &SyntaxError{Message: "缺少必要的元素 @apiGroup"}
+	case len(api.URL) == 0 || len(api.Method) == 0:
+		return &SyntaxError{Message: "缺少必要的元素 @api"}
+	case api.Success == nil && api.Error == nil:
+		return &SyntaxError{Message: "@apiSuccess @apiError 必须得有一个"}
+	default:
+		return nil
+	}
 }
 
 // @apiRequest json,xml
