@@ -111,13 +111,6 @@ func (l *lexer) skipSpace() {
 	}
 }
 
-// 指针移向下一个字符
-func (l *lexer) next() {
-	if !l.atEOF() {
-		l.pos++
-	}
-}
-
 // 是否已经到结尾
 func (l *lexer) atEOF() bool {
 	return l.pos >= len(l.data)

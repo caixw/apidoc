@@ -68,24 +68,6 @@ func TestLexer_skipSpace(t *testing.T) {
 	a.Equal(l.data[l.pos:], "line2 \n")
 }
 
-func TestLexer_next(t *testing.T) {
-	a := assert.New(t)
-
-	l := newLexer([]rune(" \n"))
-	a.NotNil(l)
-
-	l.next()
-	a.Equal(1, l.pos)
-
-	l.next()
-	a.Equal(2, l.pos)
-
-	l.next()
-	l.next()
-	l.next()
-	a.Equal(2, l.pos)
-}
-
 func TestTag_lineNumber(t *testing.T) {
 	a := assert.New(t)
 	l := &lexer{data: []rune("line0\nline1\nline2\n @api line3\n")}

@@ -61,7 +61,7 @@ LOOP:
 			if l.atEOF() {
 				break LOOP
 			}
-			l.next() // 去掉无用的字符。
+			l.pos++ // 去掉无用的字符。
 		}
 
 		if err != nil {
@@ -162,7 +162,7 @@ LOOP:
 			if l.atEOF() {
 				break LOOP
 			}
-			l.next() // 去掉无用的字符。
+			l.pos++ // 去掉无用的字符。
 
 		} // end switch
 	} // end for
@@ -221,7 +221,7 @@ LOOP:
 			if l.atEOF() {
 				break LOOP
 			}
-			l.next() // 去掉无用的字符。
+			l.pos++ // 去掉无用的字符。
 		}
 	}
 
