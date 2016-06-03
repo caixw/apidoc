@@ -56,7 +56,7 @@ func main() {
 	}
 
 	cfg.Output.AppVersion = version
-	cfg.Output.Elapsed = time.Now().UnixNano() - start.UnixNano()
+	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err = output.Render(docs, cfg.Output); err != nil {
 		panic(err)
 	}

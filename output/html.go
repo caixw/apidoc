@@ -7,7 +7,6 @@ package output
 import (
 	"html/template"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/caixw/apidoc/doc"
@@ -22,7 +21,7 @@ type info struct {
 	Version    string            // 文档版本
 	AppVersion string            // apidoc 的版本号
 	Title      string            // 标题
-	Elapsed    string            // 生成文档所用的时间
+	Elapsed    time.Duration     // 生成文档所用的时间
 }
 
 // 将 docs 的内容以 html 格式输出。
@@ -36,7 +35,7 @@ func html(docs *doc.Doc, opt *Options) error {
 		Title:      opt.Title,
 		Version:    opt.Version,
 		AppVersion: opt.AppVersion,
-		Elapsed:    strconv.FormatFloat(float64(opt.Elapsed)/1000000, 'f', 2, 32),
+		Elapsed:    opt.Elapsed,
 		Date:       time.Now().Format(time.RFC3339),
 		Groups:     make(map[string]string, len(docs.Apis)),
 	}
