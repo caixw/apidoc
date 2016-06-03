@@ -8,31 +8,32 @@ package main
 import (
 	"flag"
 	"runtime"
+	"strings"
 	"time"
 
-	"github.com/caixw/apidoc/core"
-	o "github.com/caixw/apidoc/output"
-	"github.com/issue9/term/colors"
+	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/logs"
+	"github.com/caixw/apidoc/output"
 )
 
-const version = "1.0.42.160603"
-
 const (
-	out          = colors.Stdout
-	titleColor   = colors.Green
-	contentColor = colors.Default
-	errorColor   = colors.Red
-	warnColor    = colors.Cyan
+	// 版本号
+	//
+	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则，分成以下四个部分：
+	// 主版本号.次版本号.修订号.修订日期
+	version = "2.2.56.160601"
+
+	// 配置文件名称。
+	configFilename = ".apidoc.json"
 )
 
 const usage = `apidoc 是一个 RESTful api 文档生成工具。
 
 参数:
- -h       显示当前帮助信息；
- -v       显示apidoc和go程序的版本信息；
+ -h       显示帮助信息；
+ -v       显示版本信息；
  -l       显示所有支持的语言类型；
- -r       是否搜索子目录，默认为true；
- -g       在当前目录下创建一个默认的配置文件；
+ -g       在当前目录下创建一个默认的配置文件。
 
 有关 apidoc 的详细信息，可访问官网：http://apidoc.site`
 
@@ -41,99 +42,50 @@ func main() {
 		return
 	}
 
-	elapsed := time.Now()
+	start := time.Now() // 记录处理开始时间
 
 	cfg, err := loadConfig()
 	if err != nil {
-		printError(err)
-		return
-	}
-	paths, err := recursivePath(cfg)
-	if err != nil {
-		printError(err)
-		return
+		panic(err)
 	}
 
-	docs, err := core.ScanFiles(paths, cfg.lang.scan)
+	docs, err := input.Parse(cfg.Input)
 	if err != nil {
-		printError(err)
-		return
-	}
-	if docs.HasError() { // 语法错误，并不中断程序
-		printSyntaxErrors(docs.Errors())
+		panic(err)
 	}
 
-	opt := &o.Options{
-		Title:      cfg.Doc.Title,
-		Version:    cfg.Doc.Version,
-		DocDir:     cfg.Output.Dir,
-		AppVersion: version,
-		Elapsed:    time.Now().UnixNano() - elapsed.UnixNano(),
-	}
-	if err = o.Html(docs.Items(), opt); err != nil {
-		printError(err)
-		return
+	cfg.Output.AppVersion = version
+	cfg.Output.Elapsed = time.Now().UnixNano() - start.UnixNano()
+	if err = output.Render(docs, cfg.Output); err != nil {
+		panic(err)
 	}
 }
 
-// 处理命令行参数，若被处理，返回true，否则返回false。
-func flags() (ok bool) {
-	var h, v, l, g bool
-
-	flag.Usage = printUsage
-	flag.BoolVar(&h, "h", false, "显示帮助信息")
-	flag.BoolVar(&v, "v", false, "显示帮助信息")
-	flag.BoolVar(&l, "l", false, "显示所有支持的语言")
-	flag.BoolVar(&g, "g", false, "在当前目录下创建一个默认的配置文件")
+// 处理命令行参数，若被处理，返回 true，否则返回 false。
+func flags() bool {
+	flag.Usage = func() { logs.Println(usage) }
+	h := flag.Bool("h", false, "显示帮助信息")
+	v := flag.Bool("v", false, "显示版本信息")
+	l := flag.Bool("l", false, "显示所有支持的语言")
+	g := flag.Bool("g", false, "在当前目录下创建一个默认的配置文件")
 	flag.Parse()
 
 	switch {
-	case h:
+	case *h:
 		flag.Usage()
 		return true
-	case v:
-		printVersion()
+	case *v:
+		logs.Info("apidoc ", version, "build with", runtime.Version())
 		return true
-	case l:
-		printLangs()
+	case *l:
+		langs := "[" + strings.Join(input.Langs(), ", ") + "]"
+		logs.Info("目前支持以下语言：", langs)
 		return true
-	case g:
-		err := genConfigFile()
-		if err != nil {
-			printError(err)
+	case *g:
+		if err := genConfigFile(); err != nil {
+			panic(err)
 		}
 		return true
 	}
 	return false
-}
-
-func printUsage() {
-	colors.Println(out, contentColor, colors.Default, usage)
-}
-
-func printError(msg ...interface{}) {
-	colors.Println(out, errorColor, colors.Default, msg...)
-}
-
-func printSyntaxErrors(errs []error) {
-	for _, v := range errs {
-		colors.Println(out, warnColor, colors.Default, v)
-	}
-}
-
-func printLangs() {
-	colors.Println(out, titleColor, colors.Default, "目前支持以下类型的代码解析:")
-	for k, v := range langs {
-		colors.Print(out, titleColor, colors.Default, k, ":")
-		colors.Println(out, contentColor, colors.Default, v.exts)
-	}
-}
-
-func printVersion() {
-	colors.Print(out, titleColor, colors.Default, "apidoc: ")
-	colors.Println(out, contentColor, colors.Default, version)
-
-	colors.Print(out, titleColor, colors.Default, "Go: ")
-	goVersion := runtime.Version() + " " + runtime.GOOS + "/" + runtime.GOARCH
-	colors.Println(out, contentColor, colors.Default, goVersion)
 }

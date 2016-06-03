@@ -5,96 +5,66 @@
 package output
 
 import (
-	"html/template"
+	"errors"
+	"fmt"
 	"os"
-	"strconv"
-	"time"
 
-	"github.com/caixw/apidoc/core"
-	"github.com/caixw/apidoc/output/static"
+	"github.com/caixw/apidoc/doc"
 )
 
-// 将docs的内容以html格式输出。
-func Html(docs []*core.Doc, opt *Options) error {
-	t := template.New("core")
-	for _, content := range static.Templates {
-		template.Must(t.Parse(content))
-	}
-
-	i := &info{
-		Title:      opt.Title,
-		Version:    opt.Version,
-		AppVersion: opt.AppVersion,
-		Elapsed:    strconv.FormatFloat(float64(opt.Elapsed)/1000000, 'f', 2, 32),
-		Date:       time.Now().Format(time.RFC3339),
-		Groups:     make(map[string]string, len(docs)),
-	}
-
-	groups := map[string][]*core.Doc{}
-	for _, v := range docs {
-		i.Groups[v.Group] = "./group_" + v.Group + ".html"
-		if groups[v.Group] == nil {
-			groups[v.Group] = []*core.Doc{}
-		}
-		groups[v.Group] = append(groups[v.Group], v)
-	}
-
-	if err := outputIndex(t, i, opt.DocDir); err != nil {
-		return err
-	}
-
-	if err := outputGroup(groups, t, i, opt.DocDir); err != nil {
-		return err
-	}
-
-	// 输出static
-	return static.Output(opt.DocDir)
+// 支持的渲染方式
+var renderTypes = []string{
+	"html",
 }
 
-// 输出索引页
-func outputIndex(t *template.Template, i *info, destDir string) error {
-	index, err := os.Create(destDir + "index.html")
-	if err != nil {
-		return err
-	}
-	defer index.Close()
+type Options struct {
+	AppVersion string `json:"-"`       // apidoc 程序的版本号
+	Elapsed    int64  `json:"-"`       // 编译用时，单位毫秒
+	Version    string `json:"version"` // 文档的版本号
+	Dir        string `json:"dir"`     // 文档的保存目录
+	Title      string `json:"title"`   // 文档的标题
+	BaseURL    string `json:"baseURL"` // api 文档中 url 的前缀
+	Type       string `json:"type"`    // 渲染方式，默认为 html
 
-	err = t.ExecuteTemplate(index, "header", i)
-	if err != nil {
-		return err
-	}
-
-	err = t.ExecuteTemplate(index, "index", i)
-	if err != nil {
-		return err
-	}
-	return t.ExecuteTemplate(index, "footer", i)
+	// Language string // 产生的ui界面语言
+	//Groups     []string `json:"groups"`     // 需要打印的分组内容。
+	//Timezone   string   `json:"timezone"`   // 时区
 }
 
-// 按分组输出内容页
-func outputGroup(docs map[string][]*core.Doc, t *template.Template, i *info, destDir string) error {
-	for k, v := range docs {
-		group, err := os.Create(destDir + "group_" + k + ".html")
-		if err != nil {
-			return err
-		}
-		defer group.Close()
-
-		i.CurrGroup = k
-		err = t.ExecuteTemplate(group, "header", i)
-		if err != nil {
-			return err
-		}
-		for _, d := range v {
-			err = t.ExecuteTemplate(group, "group", d)
-			if err != nil {
-				return err
-			}
-		}
-		err = t.ExecuteTemplate(group, "footer", i)
-		if err != nil {
-			return err
-		}
+// 对 Options 作一些初始化操作。
+func (o *Options) Init() error {
+	if len(o.Dir) == 0 {
+		return errors.New("未指定 Dir")
 	}
+	o.Dir += string(os.PathSeparator)
+
+	if len(o.Title) == 0 {
+		o.Title = "APIDOC"
+	}
+
+	if !isSuppertedType(o.Type) {
+		return fmt.Errorf("不支持的渲染类型：[%v]", o.Type)
+	}
+
 	return nil
+}
+
+// 渲染 docs 的内容，具体的渲染参数由 o 指定。
+func Render(docs *doc.Doc, o *Options) error {
+	switch o.Type {
+	case "html":
+		return html(docs, o)
+	default:
+		return fmt.Errorf("不支持的渲染方式:[%v]", o.Type)
+	}
+}
+
+func isSuppertedType(typ string) bool {
+	for _, k := range renderTypes {
+		if k == typ {
+			return true
+		}
+	}
+
+	return false
 }

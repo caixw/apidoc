@@ -17,7 +17,7 @@ const (
 	packageName = "static"    // 指定包名。
 
 	// 文件头部的警告内容
-	warning = "// 该文件由make.go自动生成，请勿手动修改！\n\n"
+	warning = "// 该文件由 make.go 自动生成，请勿手动修改！\n\n"
 )
 
 // 指定所有需要序列化的文件名。
