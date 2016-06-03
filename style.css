@@ -1,5 +1,5 @@
 header{
-    padding:0.5em;
+    padding:0.5rem;
     background:white;
     border-bottom:1px solid #eee;
     position:fixed;
@@ -10,20 +10,24 @@ header{
 }
 
 header .menu{
-    font-size:1.2em !important;
+    font-size:1.2rem !important;
+}
+
+header .version{
+    margin-left:0.2rem;
 }
 
 
 footer{
-    padding:1em;
-    margin-top:2em;
+    padding:1rem;
+    margin-top:2rem;
     border-top:1px solid #eee;
     background:white;
 }
 
 footer p{
-    margin:0em 0em 0.5em 0em;
-    padding:0em;
+    margin:0rem 0rem 0.5rem 0rem;
+    padding:0rem;
 }
 
 footer .left{
@@ -43,7 +47,7 @@ footer .clearfix{
 code, pre{
     border:1px solid #eee;
     border-radius:3px;
-    padding:0.1em 0.5em;
+    padding:0.1rem 0.5rem;
 }
 
 pre .keyword{
@@ -51,14 +55,14 @@ pre .keyword{
 }
 
 #main{
-    margin-top:6.5em;
+    margin-top:6.5rem;
 }
 
 #main article{
-    margin-top:2em;
+    margin-top:2rem;
 }
 
 #main article h3{
-    padding:0em;
-    margin:1.2em 0em 0.5em 0em;
+    padding:0rem;
+    margin:1.2rem 0rem 0.5rem 0rem;
 }
