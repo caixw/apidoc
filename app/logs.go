@@ -11,6 +11,11 @@ func Println(content ...interface{}) {
 	colors.Println(colors.Stdout, colors.Default, colors.Default, content...)
 }
 
+// 打印一行普通的信息到 Stdout
+func Printf(format string, content ...interface{}) {
+	colors.Printf(colors.Stdout, colors.Default, colors.Default, format, content...)
+}
+
 // 打印一行普通的信息到 Stdout，其中 title 参数会被加绿。
 func Info(title string, content ...interface{}) {
 	colors.Print(colors.Stdout, colors.Green, colors.Default, title)
