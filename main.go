@@ -21,7 +21,7 @@ const (
 	//
 	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则，分成以下四个部分：
 	// 主版本号.次版本号.修订号.修订日期
-	version = "2.2.56.160601"
+	version = "2.2.57.160604"
 
 	// 配置文件名称。
 	configFilename = ".apidoc.json"
@@ -35,7 +35,8 @@ const usage = `apidoc 是一个 RESTful api 文档生成工具。
  -l       显示所有支持的语言类型；
  -g       在当前目录下创建一个默认的配置文件。
 
-有关 apidoc 的详细信息，可访问官网：http://apidoc.site`
+apidoc 源代码采用 MIT 开源许可证，发布于 https://github.com/caixw/apidoc
+有关 apidoc 的详细信息，可访问：http://apidoc.site`
 
 func main() {
 	if flags() {
