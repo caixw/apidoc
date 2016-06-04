@@ -13,6 +13,15 @@ type SyntaxError struct {
 	Message string // 具体错误信息
 }
 
+type OptionsError struct {
+	Field   string
+	Message string
+}
+
 func (err *SyntaxError) Error() string {
 	return fmt.Sprintf("在[%v:%v]出现语法错误[%v]", err.File, err.Line, err.Message)
+}
+
+func (err *OptionsError) Error() string {
+	return fmt.Sprintf("字段[%v]错误:[%v]", err.Field, err.Message)
 }

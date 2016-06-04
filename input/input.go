@@ -12,7 +12,6 @@
 package input
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -36,21 +35,21 @@ type Options struct {
 }
 
 // 检测 Options 变量是否符合要求
-func (opt *Options) Init() error {
+func (opt *Options) Init() *app.OptionsError {
 	if len(opt.Dir) == 0 {
-		return errors.New("未指定源码目录")
+		return &app.OptionsError{Field: "Dir", Message: "不能为空"}
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return fmt.Errorf("指定的源码目录[%v]不存在", opt.Dir)
+		return &app.OptionsError{Field: "Dir", Message: "该目录不存在"}
 	}
 
 	if len(opt.Lang) == 0 {
-		return errors.New("未指定Lang")
+		return &app.OptionsError{Field: "Lang", Message: "不能为空"}
 	}
 
 	if !langIsSupported(opt.Lang) {
-		return fmt.Errorf("暂不支持该类型[%v]的语言", opt.Lang)
+		return &app.OptionsError{Field: "Lang", Message: "不支持该语言"}
 	}
 
 	opt.Dir += string(os.PathSeparator)

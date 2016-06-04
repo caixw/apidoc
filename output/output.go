@@ -5,11 +5,11 @@
 package output
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
 )
 
@@ -32,18 +32,18 @@ type Options struct {
 }
 
 // 对 Options 作一些初始化操作。
-func (o *Options) Init() error {
+func (o *Options) Init() *app.OptionsError {
 	if len(o.Dir) == 0 {
-		return errors.New("未指定 Dir")
+		return &app.OptionsError{Field: "Dir", Message: "不能为空"}
 	}
 	o.Dir += string(os.PathSeparator)
 
 	if len(o.Title) == 0 {
-		return errors.New("未指定 Title")
+		return &app.OptionsError{Field: "Title", Message: "不能为空"}
 	}
 
 	if !isSuppertedType(o.Type) {
-		return fmt.Errorf("不支持的渲染类型：[%v]", o.Type)
+		return &app.OptionsError{Field: "Type", Message: "不支持该类型"}
 	}
 
 	return nil
