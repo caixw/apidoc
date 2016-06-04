@@ -156,8 +156,7 @@ func printSyntaxError(err *app.SyntaxError) {
 	syntaxErrorMux.Lock()
 	defer syntaxErrorMux.Unlock()
 
-	colors.Print(colors.Stderr, colors.Red, colors.Default, "[语法错误]：")
-	colors.Println(colors.Stderr, colors.Default, colors.Default, err.Error())
+	app.Message(colors.Red, "[ERROR]", err)
 }
 
 // 根据recursive值确定是否递归查找paths每个目录下的子目录。

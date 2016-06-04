@@ -13,6 +13,7 @@ import (
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
+	"github.com/issue9/term/colors"
 )
 
 type config struct {
@@ -63,8 +64,8 @@ func genConfigFile() error {
 	defer fi.Close()
 
 	lang, err := input.DetectDirLang(wd)
-	if err != nil {
-		return err
+	if err != nil { // 不中断，仅作提示用。
+		app.Message(colors.Cyan, "[WARN]", err)
 	}
 
 	cfg := &config{

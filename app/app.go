@@ -5,6 +5,8 @@
 // app 提供了一些公共的函数、结构体及设置项。
 package app
 
+import "github.com/issue9/term/colors"
+
 // 一些代码级别的配置项。
 const (
 	// 版本号
@@ -25,3 +27,12 @@ const (
 	// 配置文件名称。
 	ConfigFilename = ".apidoc.json"
 )
+
+// 向终端输出信息
+//
+// color 是输出的字体颜色，仅对 prefix
+// 参数起作用，其它字符串依然使用系统默认的颜色。
+func Message(color colors.Color, prefix string, v ...interface{}) {
+	colors.Print(colors.Stdout, color, colors.Default, prefix+" ")
+	colors.Println(colors.Stdout, colors.Default, colors.Default, v...)
+}
