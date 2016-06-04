@@ -50,6 +50,8 @@ func main() {
 	if err = output.Render(docs, cfg.Output); err != nil {
 		panic(err)
 	}
+
+	app.Info("编译完毕，总用时：", time.Now().Sub(start))
 }
 
 // 处理命令行参数，若被处理，返回 true，否则返回 false。
