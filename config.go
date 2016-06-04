@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
@@ -22,12 +23,12 @@ type config struct {
 
 // 从配置文件中加载配置项。
 func loadConfig() (*config, error) {
-	wd, err := os.Getwd()
+	path, err := configPath()
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := ioutil.ReadFile(wd + "/" + app.ConfigFilename)
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -50,12 +51,11 @@ func loadConfig() (*config, error) {
 
 // 在当前目录下产生个默认的配置文件。
 func genConfigFile() error {
-	wd, err := os.Getwd()
+	path, err := configPath()
 	if err != nil {
 		return err
 	}
 
-	path := wd + string(os.PathSeparator) + app.ConfigFilename
 	fi, err := os.Create(path)
 	if err != nil {
 		return err
@@ -70,4 +70,13 @@ func genConfigFile() error {
 	data, err := json.MarshalIndent(cfg, "", "    ")
 	_, err = fi.Write(data)
 	return err
+}
+
+func configPath() (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(wd, app.ConfigFilename), nil
 }
