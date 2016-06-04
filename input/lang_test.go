@@ -33,3 +33,25 @@ func TestCompareLangsAndLangExts(t *testing.T) {
 		a.True(found).True(len(blocks) > 0)
 	}
 }
+
+func TestDetectDirLang(t *testing.T) {
+	a := assert.New(t)
+
+	lang, err := DetectDirLang("./testdir")
+	a.NotError(err).Equal(lang, "c")
+
+	lang, err = DetectDirLang("./testdir/testdir1")
+	a.Error(err).Empty(lang)
+}
+
+func TestGetLangByExt(t *testing.T) {
+	a := assert.New(t)
+
+	a.Equal(getLangByExt(".C"), "c")
+	a.Equal(getLangByExt(".h"), "c")
+	a.Equal(getLangByExt(".c"), "c")
+	a.Equal(getLangByExt(".php"), "php")
+
+	a.Equal(getLangByExt("php"), "")         // 扩展名不带.符号，查不到
+	a.Equal(getLangByExt(".not exists"), "") // 真的不存在此扩展名
+}

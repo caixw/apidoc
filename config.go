@@ -23,12 +23,12 @@ type config struct {
 
 // 从配置文件中加载配置项。
 func loadConfig() (*config, error) {
-	path, err := configPath()
+	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := ioutil.ReadFile(path)
+	data, err := ioutil.ReadFile(filepath.Join(wd, app.ConfigFilename))
 	if err != nil {
 		return nil, err
 	}
@@ -51,32 +51,36 @@ func loadConfig() (*config, error) {
 
 // 在当前目录下产生个默认的配置文件。
 func genConfigFile() error {
-	path, err := configPath()
+	wd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
-	fi, err := os.Create(path)
+	fi, err := os.Create(filepath.Join(wd, app.ConfigFilename))
 	if err != nil {
 		return err
 	}
 	defer fi.Close()
 
+	lang, err := input.DetectDirLang(wd)
+	if err != nil {
+		return err
+	}
+
 	cfg := &config{
 		Version: app.Version,
-		Input:   &input.Options{Dir: "./", Recursive: true},
-		Output:  &output.Options{Type: "html"},
+		Input: &input.Options{
+			Dir:       "./",
+			Recursive: true,
+			Lang:      lang,
+		},
+		Output: &output.Options{
+			Type:  "html",
+			Title: "APIDOC",
+			Dir:   "./apidoc",
+		},
 	}
 	data, err := json.MarshalIndent(cfg, "", "    ")
 	_, err = fi.Write(data)
 	return err
-}
-
-func configPath() (string, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(wd, app.ConfigFilename), nil
 }

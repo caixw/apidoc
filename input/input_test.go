@@ -53,12 +53,12 @@ func testParseFile(a *assert.Assertion, lang string, path string) {
 func TestRecursivePath(t *testing.T) {
 	a := assert.New(t)
 
-	opt := &Options{Dir: "./testdir", Recursive: false, Exts: []string{".1", ".2"}}
+	opt := &Options{Dir: "./testdir", Recursive: false, Exts: []string{".c", ".h"}}
 	paths, err := recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
-		"testdir/testfile.1",
-		"testdir/testfile.2",
+		"testdir/testfile.c",
+		"testdir/testfile.h",
 	})
 
 	opt.Dir = "./testdir"
@@ -71,7 +71,6 @@ func TestRecursivePath(t *testing.T) {
 		"testdir/testdir1/testfile.2",
 		"testdir/testdir2/testfile.1",
 		"testdir/testfile.1",
-		"testdir/testfile.2",
 	})
 
 	opt.Dir = "./testdir/testdir1"
