@@ -20,7 +20,6 @@ import (
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
-	"github.com/issue9/term/colors"
 	"github.com/issue9/utils"
 )
 
@@ -156,7 +155,7 @@ func printSyntaxError(err *app.SyntaxError) {
 	syntaxErrorMux.Lock()
 	defer syntaxErrorMux.Unlock()
 
-	app.Message(colors.Red, "[ERROR]", err)
+	app.Error(err)
 }
 
 // 根据recursive值确定是否递归查找paths每个目录下的子目录。

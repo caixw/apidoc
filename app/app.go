@@ -33,6 +33,18 @@ const (
 // color 是输出的字体颜色，仅对 prefix
 // 参数起作用，其它字符串依然使用系统默认的颜色。
 func Message(color colors.Color, prefix string, v ...interface{}) {
-	colors.Print(colors.Stdout, color, colors.Default, prefix+" ")
+	colors.Print(colors.Stdout, color, colors.Default, prefix)
 	colors.Println(colors.Stdout, colors.Default, colors.Default, v...)
+}
+
+func Warn(v ...interface{}) {
+	Message(colors.Cyan, "[WARN] ", v...)
+}
+
+func Error(v ...interface{}) {
+	Message(colors.Red, "[ERROR] ", v...)
+}
+
+func Info(v ...interface{}) {
+	Message(colors.Green, "[INFO] ", v...)
 }
