@@ -9,19 +9,23 @@ import (
 	"os"
 	"time"
 
+	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/output/static"
 )
 
 // 用于页首和页脚的附加信息
 type info struct {
-	Groups     map[string]string // 分组名称与文件的对照表
-	CurrGroup  string            // 当前所在的分组页，若为空，表示在列表页
-	Date       string            // 生成日期
-	Version    string            // 文档版本
-	AppVersion string            // apidoc 的版本号
-	Title      string            // 标题
-	Elapsed    time.Duration     // 生成文档所用的时间
+	Groups         map[string]string // 分组名称与文件的对照表
+	CurrGroup      string            // 当前所在的分组页，若为空，表示在列表页
+	Date           string            // 生成日期
+	Version        string            // 文档版本
+	AppVersion     string            // apidoc 的版本号
+	AppName        string            // 程序名称
+	AppRepoURL     string            // 仓库地址
+	AppOfficialURL string            // 官网地址
+	Title          string            // 标题
+	Elapsed        time.Duration     // 生成文档所用的时间
 }
 
 // 将 docs 的内容以 html 格式输出。
@@ -32,12 +36,15 @@ func html(docs *doc.Doc, opt *Options) error {
 	}
 
 	i := &info{
-		Title:      opt.Title,
-		Version:    opt.Version,
-		AppVersion: opt.AppVersion,
-		Elapsed:    opt.Elapsed,
-		Date:       time.Now().Format(time.RFC3339),
-		Groups:     make(map[string]string, len(docs.Apis)),
+		Title:          opt.Title,
+		Version:        opt.Version,
+		AppVersion:     app.Version,
+		AppName:        app.Name,
+		AppRepoURL:     app.RepoURL,
+		AppOfficialURL: app.OfficialURL,
+		Elapsed:        opt.Elapsed,
+		Date:           time.Now().Format(time.RFC3339),
+		Groups:         make(map[string]string, len(docs.Apis)),
 	}
 
 	groups := map[string][]*doc.API{}

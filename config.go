@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
 )
@@ -26,7 +27,7 @@ func loadConfig() (*config, error) {
 		return nil, err
 	}
 
-	data, err := ioutil.ReadFile(wd + "/" + configFilename)
+	data, err := ioutil.ReadFile(wd + "/" + app.ConfigFilename)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func genConfigFile() error {
 		return err
 	}
 
-	path := wd + string(os.PathSeparator) + configFilename
+	path := wd + string(os.PathSeparator) + app.ConfigFilename
 	fi, err := os.Create(path)
 	if err != nil {
 		return err
@@ -62,7 +63,7 @@ func genConfigFile() error {
 	defer fi.Close()
 
 	cfg := &config{
-		Version: version,
+		Version: app.Version,
 		Input:   &input.Options{Dir: "./", Recursive: true},
 		Output:  &output.Options{Type: "html"},
 	}

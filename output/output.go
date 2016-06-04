@@ -19,13 +19,12 @@ var renderTypes = []string{
 }
 
 type Options struct {
-	AppVersion string        `json:"-"`       // apidoc 程序的版本号
-	Elapsed    time.Duration `json:"-"`       // 编译用时
-	Version    string        `json:"version"` // 文档的版本号
-	Dir        string        `json:"dir"`     // 文档的保存目录
-	Title      string        `json:"title"`   // 文档的标题
-	BaseURL    string        `json:"baseURL"` // api 文档中 url 的前缀
-	Type       string        `json:"type"`    // 渲染方式，默认为 html
+	Elapsed time.Duration `json:"-"`       // 编译用时
+	Version string        `json:"version"` // 文档的版本号
+	Dir     string        `json:"dir"`     // 文档的保存目录
+	Title   string        `json:"title"`   // 文档的标题
+	BaseURL string        `json:"baseURL"` // api 文档中 url 的前缀
+	Type    string        `json:"type"`    // 渲染方式，默认为 html
 
 	// Language string // 产生的ui界面语言
 	//Groups     []string `json:"groups"`     // 需要打印的分组内容。
