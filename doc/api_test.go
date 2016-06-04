@@ -7,10 +7,11 @@ package doc
 import (
 	"testing"
 
+	"github.com/caixw/apidoc/app"
 	"github.com/issue9/assert"
 )
 
-var synerr = &SyntaxError{}
+var synerr = &app.SyntaxError{}
 
 func TestscanAPIExample(t *testing.T) {
 	a := assert.New(t)
