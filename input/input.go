@@ -19,6 +19,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
 	"github.com/issue9/term/colors"
 	"github.com/issue9/utils"
@@ -104,7 +105,7 @@ func Parse(o *Options) (*doc.Doc, error) {
 func parseFile(docs *doc.Doc, path string, blocks []*block) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		synerr := &doc.SyntaxError{Message: err.Error()}
+		synerr := &app.SyntaxError{Message: err.Error()}
 		printSyntaxError(synerr)
 		return
 	}
@@ -152,7 +153,7 @@ LOOP:
 
 // 向终端输出错误信息。
 // 由于在多协程环境上被调用，需要保证其内容是一次输出。
-func printSyntaxError(err *doc.SyntaxError) {
+func printSyntaxError(err *app.SyntaxError) {
 	syntaxErrorMux.Lock()
 	defer syntaxErrorMux.Unlock()
 

@@ -4,7 +4,11 @@
 
 package doc
 
-import "unicode"
+import (
+	"unicode"
+
+	"github.com/caixw/apidoc/app"
+)
 
 // 简单的词法分析
 type lexer struct {
@@ -41,8 +45,8 @@ func (l *lexer) lineNumber() int {
 }
 
 // 构建一个语法错误的信息。
-func (l *lexer) syntaxError(msg string) *SyntaxError {
-	return &SyntaxError{
+func (l *lexer) syntaxError(msg string) *app.SyntaxError {
+	return &app.SyntaxError{
 		Line:    l.lineNumber(),
 		Message: msg,
 	}
@@ -143,8 +147,8 @@ func (t *tag) lineNumber() int {
 }
 
 // 提示语法错误
-func (t *tag) syntaxError(msg string) *SyntaxError {
-	return &SyntaxError{
+func (t *tag) syntaxError(msg string) *app.SyntaxError {
+	return &app.SyntaxError{
 		Line:    t.lineNumber(),
 		Message: msg,
 	}
