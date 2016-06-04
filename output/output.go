@@ -39,7 +39,7 @@ func (o *Options) Init() error {
 	o.Dir += string(os.PathSeparator)
 
 	if len(o.Title) == 0 {
-		o.Title = "APIDOC"
+		return errors.New("未指定 Title")
 	}
 
 	if !isSuppertedType(o.Type) {
