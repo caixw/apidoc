@@ -15,7 +15,7 @@ import (
 )
 
 // 用于页首和页脚的附加信息
-type info struct {
+type page struct {
 	Groups         map[string]string // 分组名称与文件的对照表
 	CurrGroup      string            // 当前所在的分组页，若为空，表示在列表页
 	Date           string            // 生成日期
@@ -35,7 +35,7 @@ func html(docs *doc.Doc, opt *Options) error {
 		template.Must(t.Parse(content))
 	}
 
-	i := &info{
+	p := &page{
 		Title:          opt.Title,
 		Version:        opt.Version,
 		AppVersion:     app.Version,
@@ -49,18 +49,18 @@ func html(docs *doc.Doc, opt *Options) error {
 
 	groups := map[string][]*doc.API{}
 	for _, v := range docs.Apis {
-		i.Groups[v.Group] = "./group_" + v.Group + ".html"
+		p.Groups[v.Group] = "./group_" + v.Group + ".html"
 		if groups[v.Group] == nil {
 			groups[v.Group] = []*doc.API{}
 		}
 		groups[v.Group] = append(groups[v.Group], v)
 	}
 
-	if err := outputIndex(t, i, opt.Dir); err != nil {
+	if err := outputIndex(t, p, opt.Dir); err != nil {
 		return err
 	}
 
-	if err := outputGroup(groups, t, i, opt.Dir); err != nil {
+	if err := outputGroup(groups, t, p, opt.Dir); err != nil {
 		return err
 	}
 
@@ -69,27 +69,27 @@ func html(docs *doc.Doc, opt *Options) error {
 }
 
 // 输出索引页
-func outputIndex(t *template.Template, i *info, destDir string) error {
+func outputIndex(t *template.Template, p *page, destDir string) error {
 	index, err := os.Create(destDir + "index.html")
 	if err != nil {
 		return err
 	}
 	defer index.Close()
 
-	err = t.ExecuteTemplate(index, "header", i)
+	err = t.ExecuteTemplate(index, "header", p)
 	if err != nil {
 		return err
 	}
 
-	err = t.ExecuteTemplate(index, "index", i)
+	err = t.ExecuteTemplate(index, "index", p)
 	if err != nil {
 		return err
 	}
-	return t.ExecuteTemplate(index, "footer", i)
+	return t.ExecuteTemplate(index, "footer", p)
 }
 
 // 按分组输出内容页
-func outputGroup(apis map[string][]*doc.API, t *template.Template, i *info, destDir string) error {
+func outputGroup(apis map[string][]*doc.API, t *template.Template, p *page, destDir string) error {
 	for k, v := range apis {
 		group, err := os.Create(destDir + "group_" + k + ".html")
 		if err != nil {
@@ -97,8 +97,8 @@ func outputGroup(apis map[string][]*doc.API, t *template.Template, i *info, dest
 		}
 		defer group.Close()
 
-		i.CurrGroup = k
-		err = t.ExecuteTemplate(group, "header", i)
+		p.CurrGroup = k
+		err = t.ExecuteTemplate(group, "header", p)
 		if err != nil {
 			return err
 		}
@@ -108,7 +108,7 @@ func outputGroup(apis map[string][]*doc.API, t *template.Template, i *info, dest
 				return err
 			}
 		}
-		err = t.ExecuteTemplate(group, "footer", i)
+		err = t.ExecuteTemplate(group, "footer", p)
 		if err != nil {
 			return err
 		}
