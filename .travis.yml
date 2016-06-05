@@ -7,3 +7,4 @@ go:
 install:
     - go get github.com/issue9/assert
     - go get github.com/issue9/term/colors
+    - go get github.com/issue9/utils

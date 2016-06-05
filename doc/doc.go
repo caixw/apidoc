@@ -4,10 +4,7 @@
 
 package doc
 
-import (
-	"fmt"
-	"sync"
-)
+import "sync"
 
 // Doc 表示一个项目的完整文档列表。
 type Doc struct {
@@ -57,17 +54,6 @@ type Param struct {
 type Example struct {
 	Type string // 示例代码的类型，xml 或是 json
 	Code string // 示例代码
-}
-
-// SyntaxError 语法错误
-type SyntaxError struct {
-	Line    int
-	File    string
-	Message string
-}
-
-func (err *SyntaxError) Error() string {
-	return fmt.Sprintf("在[%v:%v]出现语法错误[%v]", err.File, err.Line, err.Message)
 }
 
 func New() *Doc {

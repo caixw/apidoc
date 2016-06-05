@@ -5,10 +5,11 @@
 package output
 
 import (
-	"errors"
 	"fmt"
 	"os"
+	"time"
 
+	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
 )
 
@@ -18,13 +19,12 @@ var renderTypes = []string{
 }
 
 type Options struct {
-	AppVersion string `json:"-"`       // apidoc 程序的版本号
-	Elapsed    int64  `json:"-"`       // 编译用时，单位毫秒
-	Version    string `json:"version"` // 文档的版本号
-	Dir        string `json:"dir"`     // 文档的保存目录
-	Title      string `json:"title"`   // 文档的标题
-	BaseURL    string `json:"baseURL"` // api 文档中 url 的前缀
-	Type       string `json:"type"`    // 渲染方式，默认为 html
+	Elapsed time.Duration `json:"-"`                 // 编译用时
+	Version string        `json:"version,omitempty"` // 文档的版本号
+	Dir     string        `json:"dir"`               // 文档的保存目录
+	Title   string        `json:"title"`             // 文档的标题
+	BaseURL string        `json:"baseURL,omitempty"` // api 文档中 url 的前缀
+	Type    string        `json:"type"`              // 渲染方式，默认为 html
 
 	// Language string // 产生的ui界面语言
 	//Groups     []string `json:"groups"`     // 需要打印的分组内容。
@@ -32,18 +32,18 @@ type Options struct {
 }
 
 // 对 Options 作一些初始化操作。
-func (o *Options) Init() error {
+func (o *Options) Init() *app.OptionsError {
 	if len(o.Dir) == 0 {
-		return errors.New("未指定 Dir")
+		return &app.OptionsError{Field: "Dir", Message: "不能为空"}
 	}
 	o.Dir += string(os.PathSeparator)
 
 	if len(o.Title) == 0 {
-		o.Title = "APIDOC"
+		return &app.OptionsError{Field: "Title", Message: "不能为空"}
 	}
 
 	if !isSuppertedType(o.Type) {
-		return fmt.Errorf("不支持的渲染类型：[%v]", o.Type)
+		return &app.OptionsError{Field: "Type", Message: "不支持该类型"}
 	}
 
 	return nil

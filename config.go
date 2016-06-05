@@ -8,7 +8,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
+	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
 )
@@ -26,7 +28,7 @@ func loadConfig() (*config, error) {
 		return nil, err
 	}
 
-	data, err := ioutil.ReadFile(wd + "/" + configFilename)
+	data, err := ioutil.ReadFile(filepath.Join(wd, app.ConfigFilename))
 	if err != nil {
 		return nil, err
 	}
@@ -54,17 +56,29 @@ func genConfigFile() error {
 		return err
 	}
 
-	path := wd + string(os.PathSeparator) + configFilename
-	fi, err := os.Create(path)
+	fi, err := os.Create(filepath.Join(wd, app.ConfigFilename))
 	if err != nil {
 		return err
 	}
 	defer fi.Close()
 
+	lang, err := input.DetectDirLang(wd)
+	if err != nil { // 不中断，仅作提示用。
+		app.Warn(err)
+	}
+
 	cfg := &config{
-		Version: version,
-		Input:   &input.Options{Dir: "./", Recursive: true},
-		Output:  &output.Options{Type: "html"},
+		Version: app.Version,
+		Input: &input.Options{
+			Dir:       "./",
+			Recursive: true,
+			Lang:      lang,
+		},
+		Output: &output.Options{
+			Type:  "html",
+			Title: "APIDOC",
+			Dir:   "./apidoc",
+		},
 	}
 	data, err := json.MarshalIndent(cfg, "", "    ")
 	_, err = fi.Write(data)

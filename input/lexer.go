@@ -9,7 +9,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/app"
 )
 
 // 用于描述 block.Type 的值。
@@ -95,8 +95,8 @@ func (l *lexer) lineNumber() int {
 }
 
 // 构建一个语法错误的信息。
-func (l *lexer) syntaxError(msg string) *doc.SyntaxError {
-	return &doc.SyntaxError{
+func (l *lexer) syntaxError(msg string) *app.SyntaxError {
+	return &app.SyntaxError{
 		Line:    l.lineNumber(),
 		Message: msg,
 	}
@@ -120,9 +120,9 @@ func (l *lexer) block(blocks []*block) *block {
 }
 
 // 返回从当前位置到定义结束的所有字符
-func (b *block) end(l *lexer) ([]rune, *doc.SyntaxError) {
+func (b *block) end(l *lexer) ([]rune, *app.SyntaxError) {
 	var rs []rune
-	var err *doc.SyntaxError
+	var err *app.SyntaxError
 
 	switch b.Type {
 	case blockTypeString:
@@ -138,7 +138,7 @@ func (b *block) end(l *lexer) ([]rune, *doc.SyntaxError) {
 // 从 l 的当前位置开始往后查找，直到找到 b 中定义的 end 字符串，
 // 将将 l 中的指针移到该位置。
 // 正常找到结束符的返回 true，否则返回 false。
-func (b *block) endString(l *lexer) *doc.SyntaxError {
+func (b *block) endString(l *lexer) *app.SyntaxError {
 LOOP:
 	for {
 		switch {
@@ -156,7 +156,7 @@ LOOP:
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-func (b *block) endSComments(l *lexer) ([]rune, *doc.SyntaxError) {
+func (b *block) endSComments(l *lexer) ([]rune, *app.SyntaxError) {
 	ret := l.line()
 
 	// 跳过除换行符以外的所有空白字符。
@@ -182,7 +182,7 @@ func (b *block) endSComments(l *lexer) ([]rune, *doc.SyntaxError) {
 	return ret, nil
 }
 
-func (b *block) endMComments(l *lexer) ([]rune, *doc.SyntaxError) {
+func (b *block) endMComments(l *lexer) ([]rune, *app.SyntaxError) {
 	ret := make([]rune, 0, 100)
 
 	for {

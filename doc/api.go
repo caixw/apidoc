@@ -4,12 +4,14 @@
 
 package doc
 
+import "github.com/caixw/apidoc/app"
+
 // 扫描文档，生成一个 Doc 实例。
 //
 // 若代码块没有 api 文档定义，则会返回空值。
 // block 该代码块的内容；
-func (doc *Doc) Scan(data []rune) *SyntaxError {
-	var err *SyntaxError
+func (doc *Doc) Scan(data []rune) *app.SyntaxError {
+	var err *app.SyntaxError
 
 	l := newLexer(data)
 	api := &API{}
@@ -103,21 +105,21 @@ func apiIsEmpty(api *API) bool {
 //
 // NOTE: scan* 系列函数负责解析标签，及该标签是否合法，
 // 但若整个标签缺失则无能为力，此即 checkAPI 的存在的作用。
-func checkAPI(api *API) *SyntaxError {
+func checkAPI(api *API) *app.SyntaxError {
 	switch {
 	case len(api.Group) == 0:
-		return &SyntaxError{Message: "缺少必要的元素 @apiGroup"}
+		return &app.SyntaxError{Message: "缺少必要的元素 @apiGroup"}
 	case len(api.URL) == 0 || len(api.Method) == 0:
-		return &SyntaxError{Message: "缺少必要的元素 @api"}
+		return &app.SyntaxError{Message: "缺少必要的元素 @api"}
 	case api.Success == nil && api.Error == nil:
-		return &SyntaxError{Message: "@apiSuccess @apiError 必须得有一个"}
+		return &app.SyntaxError{Message: "@apiSuccess @apiError 必须得有一个"}
 	default:
 		return nil
 	}
 }
 
 // @apiRequest json,xml
-func (l *lexer) scanAPIRequest(api *API) *SyntaxError {
+func (l *lexer) scanAPIRequest(api *API) *app.SyntaxError {
 	t := l.readTag()
 	r := &Request{
 		Type:     t.readLine(),
@@ -171,7 +173,7 @@ LOOP:
 	return nil
 }
 
-func (l *lexer) scanResponse() (*Response, *SyntaxError) {
+func (l *lexer) scanResponse() (*Response, *app.SyntaxError) {
 	tag := l.readTag()
 	resp := &Response{
 		Code:     tag.readWord(),
@@ -228,7 +230,7 @@ LOOP:
 	return resp, nil
 }
 
-func (l *lexer) scanAPIExample() (*Example, *SyntaxError) {
+func (l *lexer) scanAPIExample() (*Example, *app.SyntaxError) {
 	tag := l.readTag()
 	example := &Example{
 		Type: tag.readWord(),
@@ -242,7 +244,7 @@ func (l *lexer) scanAPIExample() (*Example, *SyntaxError) {
 	return example, nil
 }
 
-func (l *lexer) scanAPIParam() (*Param, *SyntaxError) {
+func (l *lexer) scanAPIParam() (*Param, *app.SyntaxError) {
 	p := &Param{}
 
 	tag := l.readTag()
@@ -260,7 +262,7 @@ func (l *lexer) scanAPIParam() (*Param, *SyntaxError) {
 //  @api get /test.com/api/user.json api summary
 //  api description
 //  api description
-func (l *lexer) scanAPI(api *API) *SyntaxError {
+func (l *lexer) scanAPI(api *API) *app.SyntaxError {
 	t := l.readTag()
 	api.Method = t.readWord()
 	api.URL = t.readWord()
