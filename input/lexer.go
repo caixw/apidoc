@@ -15,7 +15,7 @@ import (
 // 用于描述 block.Type 的值。
 const (
 	blockTypeNone     int8 = iota
-	blockTypeString        // 字符串。
+	blockTypeString        // 字符串，将被忽略。
 	blockTypeSComment      // 单行注释
 	blockTypeMComment      // 多行注释
 )
@@ -51,17 +51,16 @@ func (l *lexer) next() rune {
 	return r
 }
 
-// 读取之后一行的内容
+// 读取之后一行的内容，包括换行符本身。
 func (l *lexer) line() []rune {
 	ret := make([]rune, 0, 100)
 
-LOOP:
 	for {
 		r := l.next()
 		ret = append(ret, r)
 
 		if l.atEOF() || r == '\n' {
-			break LOOP
+			break
 		}
 	}
 

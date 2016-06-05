@@ -46,16 +46,42 @@ var langs = map[string][]*block{
 		// BUG(caixw): 一个单行注释后紧跟前多行注释时，多行注释会被忽略。
 		&block{Type: blockTypeMComment, Begin: "\n=begin", End: "\n=end"},
 	},
+
+	// java
+	"java": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `//`},
+		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+	},
+
+	// javascript
+	"javascript": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `//`},
+		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+		// NOTE: js 中若出现 /*abc/.test() 应该是先优先注释的。放最后，优先匹配 // 和 /*
+		&block{Type: blockTypeString, Begin: "/", End: "/", Escape: `\`}, // 正则表达式
+	},
+
+	// python
+	"python": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `#`},
+	},
 }
 
 // 各语言默认支持的文件扩展名。
 //
 // NOTE: 应该保持键名、键值均为小写
 var langExts = map[string][]string{
-	"go":   []string{".go"},
-	"c":    []string{".h", ".c", ".cpp", ".cxx"},
-	"php":  []string{".php"},
-	"ruby": []string{".rb"},
+	"go":         []string{".go"},
+	"c":          []string{".h", ".c", ".cpp", ".cxx"},
+	"php":        []string{".php"},
+	"ruby":       []string{".rb"},
+	"java":       []string{".java"},
+	"javascript": []string{".js"},
+	"python":     []string{".py"},
 }
 
 // 返回所有支持的语言
