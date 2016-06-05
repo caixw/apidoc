@@ -1,4 +1,4 @@
-// 该文件由make.go自动生成，请勿手动修改！
+// 该文件由 make.go 自动生成，请勿手动修改！
 
 package static
 
@@ -291,9 +291,9 @@ var Templates=map[string]string{
 <html>
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="generator" content="https://github.com/caixw/apidoc">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="generator" content="{{.AppOfficialURL}}" />
         <title>
         {{if .CurrGroup}}
             {{.Title}} &#8250; {{.CurrGroup}}
@@ -328,8 +328,8 @@ var Templates=map[string]string{
     </div><!-- end .main -->
         <footer>
             <p>
-                内容由<a href="https://caixw.github.io/apidoc">apidoc</a>编译于<time>{{.Date}}</time>，
-                用时{{.Elapsed}}毫秒。
+                内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date}}</time>，
+                用时{{.Elapsed}}。
             </p>
         </footer>
         <script>

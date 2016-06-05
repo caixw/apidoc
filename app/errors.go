@@ -13,6 +13,7 @@ type SyntaxError struct {
 	Message string // 具体错误信息
 }
 
+// OptionsError 提供对配置项错误的描述
 type OptionsError struct {
 	Field   string
 	Message string

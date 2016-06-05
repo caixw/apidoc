@@ -37,14 +37,17 @@ func Message(color colors.Color, prefix string, v ...interface{}) {
 	colors.Println(colors.Stdout, colors.Default, colors.Default, v...)
 }
 
+// 输出警告性的信息
 func Warn(v ...interface{}) {
 	Message(colors.Cyan, "[WARN] ", v...)
 }
 
+// 输出错误的信息
 func Error(v ...interface{}) {
 	Message(colors.Red, "[ERROR] ", v...)
 }
 
+// 输出提示信息
 func Info(v ...interface{}) {
 	Message(colors.Green, "[INFO] ", v...)
 }
