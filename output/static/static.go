@@ -7,7 +7,7 @@ var files=map[string][]byte{
 
 /*============== reset =================*/
 body{
-    margin:0em;
+    margin:0rem;
 }
 
 a{
@@ -16,16 +16,16 @@ a{
 }
 
 p{
-    margin:0.5em 0em;
+    margin:0.5rem 0rem;
 }
 
 ul{
-    margin:0.5em 0em;
-    padding:0em 1.5em;
+    margin:0.5rem 0rem;
+    padding:0rem 1.5rem;
 }
 
 ul li{
-    margin:0.2em;
+    margin:0.2rem;
 }
 
 .fl{
@@ -42,7 +42,7 @@ header{
     color:#777;
     background-color:#fafafa;
     border:1px solid #eee;
-    padding:3em 2.3em 0.5em 2.3em;
+    padding:3rem 2.3rem 0.5rem 2.3rem;
     left:0;
     right:0;
     top:0;
@@ -51,11 +51,11 @@ header{
 }
 
 header .title{
-    font-size:2em;
+    font-size:2rem;
 }
 
 header .filter{
-    margin-top:0.8em;
+    margin-top:0.8rem;
 }
 
 header #groups{
@@ -63,20 +63,20 @@ header #groups{
 }
 
 header label{
-    margin-left:1em;
+    margin-left:1rem;
     vertical-align: bottom;
 }
 
 /*=============== main ================*/
 
 .main{
-    padding:0em 2em;
-    margin-top:8em;
+    padding:0rem 2rem;
+    margin-top:8rem;
 }
 
 .main section{
-    padding:1em;
-    margin:1em 0em;
+    padding:1rem;
+    margin:1rem 0rem;
     border:1px solid #eee;
 }
 
@@ -106,46 +106,47 @@ header label{
 }
 
 .main h3{
-    margin:0em;
+    margin:0rem;
 }
 
 .main h4{
-    margin-bottom:0em;
+    margin-bottom:0rem;
     border-bottom:1px solid #eee;
-    padding-bottom:0.2em;
+    padding-bottom:0.2rem;
 }
 
 .main h5{
-    margin:1em 0em;
+    margin:1rem 0rem;
 }
 
 .main .method{
-    margin-right:2em;
+    width:5rem;
+    display:inline-block,
     text-transform:uppercase;
 }
 
 .main .param-name{
-    min-width:7em;
+    min-width:7rem;
     display:inline-block;
 }
 
 .main .api-content{
-    margin-top:1em;
+    margin-top:1rem;
     display:none;
 }
 
 .main .param-type{
-    min-width:5em;
+    min-width:5rem;
     display:inline-block;
 }
 
 .main .header-key{
-    min-width:15em;
+    min-width:15rem;
     display:inline-block;
 }
 
 .main .status-code{
-    min-width:6em;
+    min-width:6rem;
     display:inline-block;
 }
 
@@ -154,12 +155,12 @@ footer{
     border-top:1px solid #eee;
     background-color:#fafafa;
     color:#777;
-    padding:1em;
-    margin-top:2em;
+    padding:1rem;
+    margin-top:2rem;
 }
 
 footer p{
-    margin:0.5em;
+    margin:0.5rem;
     padding:0px;
 }
 `),"./jquery-2.1.4.min.js":[]byte(`/*! jQuery v2.1.4 | (c) 2005, 2015 jQuery Foundation, Inc. | jquery.org/license */

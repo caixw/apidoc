@@ -7,6 +7,7 @@ package output
 import (
 	"html/template"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -43,7 +44,7 @@ func html(docs *doc.Doc, opt *Options) error {
 		AppRepoURL:     app.RepoURL,
 		AppOfficialURL: app.OfficialURL,
 		Elapsed:        opt.Elapsed,
-		Date:           time.Now().Format(time.RFC3339),
+		Date:           time.Now().Format(time.RFC3339), // TODO 可以自定义时间格式？
 		Groups:         make(map[string]string, len(docs.Apis)),
 	}
 
@@ -70,7 +71,7 @@ func html(docs *doc.Doc, opt *Options) error {
 
 // 输出索引页
 func outputIndex(t *template.Template, p *page, destDir string) error {
-	index, err := os.Create(destDir + "index.html")
+	index, err := os.Create(filepath.Join(destDir, "index.html"))
 	if err != nil {
 		return err
 	}
@@ -91,7 +92,7 @@ func outputIndex(t *template.Template, p *page, destDir string) error {
 // 按分组输出内容页
 func outputGroup(apis map[string][]*doc.API, t *template.Template, p *page, destDir string) error {
 	for k, v := range apis {
-		group, err := os.Create(destDir + "group_" + k + ".html")
+		group, err := os.Create(filepath.Join(destDir, "group_"+k+".html"))
 		if err != nil {
 			return err
 		}

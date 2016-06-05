@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// output 对解后的数据进行渲染输出。
 package output
 
 import (
@@ -18,6 +19,7 @@ var renderTypes = []string{
 	"html",
 }
 
+// 渲染输出的相关设置项。
 type Options struct {
 	Elapsed time.Duration `json:"-"`                 // 编译用时
 	Version string        `json:"version,omitempty"` // 文档的版本号
