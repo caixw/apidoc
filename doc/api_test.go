@@ -330,4 +330,17 @@ license that can be found in the LICENSE file.
 	err = doc1.Scan([]rune(code))
 	a.NotError(err)
 	a.Equal(l, len(doc1.Apis))
+
+	// @apiIgnore11 非正常标签，会被忽略
+	code = `
+@api delete /admin/users/{id} delete users
+@apiIgnore11
+@apiGroup 33
+@apiParam id int user id
+@apiSuccess 200 OK
+`
+	l = len(doc1.Apis)
+	err = doc1.Scan([]rune(code))
+	a.NotError(err)
+	a.Equal(l+1, len(doc1.Apis))
 }

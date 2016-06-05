@@ -4,7 +4,11 @@
 
 package doc
 
-import "github.com/caixw/apidoc/app"
+import (
+	"unicode"
+
+	"github.com/caixw/apidoc/app"
+)
 
 // 扫描文档，生成一个 Doc 实例。
 //
@@ -19,7 +23,7 @@ func (doc *Doc) Scan(data []rune) *app.SyntaxError {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiIgnore"):
+		case l.match("@apiIgnore") && unicode.IsSpace(l.data[l.pos]):
 			api = nil
 			break LOOP
 		case l.match("@apiGroup "):
