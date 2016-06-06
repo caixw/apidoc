@@ -53,6 +53,16 @@ func TestLexer_match(t *testing.T) {
 	a.True(l.match("line1\n"))
 }
 
+func TestLexer_matchTag(t *testing.T) {
+	a := assert.New(t)
+
+	l := newLexer([]rune("@line1\n@line2\tabc \n"))
+	a.NotNil(l)
+	a.True(l.matchTag("@line1"))
+	l.pos++
+	a.True(l.matchTag("@line2"))
+}
+
 func TestLexer_skipSpace(t *testing.T) {
 	a := assert.New(t)
 

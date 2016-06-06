@@ -78,6 +78,11 @@ func (l *lexer) match(word string) bool {
 	return true
 }
 
+// 接下的单词是否和一个标签匹配。
+func (l *lexer) matchTag(tagName string) bool {
+	return l.match(tagName) && unicode.IsSpace(l.data[l.pos])
+}
+
 // 撤消 match 函数的最后次调用。指针指向执行这些函数之前的位置。
 func (l *lexer) backup() {
 	l.pos -= l.width

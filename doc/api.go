@@ -4,11 +4,7 @@
 
 package doc
 
-import (
-	"unicode"
-
-	"github.com/caixw/apidoc/app"
-)
+import "github.com/caixw/apidoc/app"
 
 // 扫描文档，生成一个 Doc 实例。
 //
@@ -23,10 +19,10 @@ func (doc *Doc) Scan(data []rune) *app.SyntaxError {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiIgnore") && unicode.IsSpace(l.data[l.pos]):
+		case l.matchTag("@apiIgnore"):
 			api = nil
 			break LOOP
-		case l.match("@apiGroup "):
+		case l.matchTag("@apiGroup"):
 			t := l.readTag()
 			api.Group = t.readWord()
 			if len(api.Group) == 0 {
@@ -35,7 +31,7 @@ LOOP:
 			if !t.atEOF() {
 				l.syntaxError("@apiGroup 参数过多")
 			}
-		case l.match("@apiQuery "):
+		case l.matchTag("@apiQuery"):
 			if api.Queries == nil {
 				api.Queries = make([]*Param, 0, 1)
 			}
@@ -45,7 +41,7 @@ LOOP:
 				return err
 			}
 			api.Queries = append(api.Queries, p)
-		case l.match("@apiParam "):
+		case l.matchTag("@apiParam"):
 			if api.Params == nil {
 				api.Params = make([]*Param, 0, 1)
 			}
@@ -55,13 +51,13 @@ LOOP:
 				return err
 			}
 			api.Params = append(api.Params, p)
-		case l.match("@apiRequest "):
+		case l.matchTag("@apiRequest"):
 			err = l.scanAPIRequest(api)
-		case l.match("@apiError "):
+		case l.matchTag("@apiError"):
 			api.Error, err = l.scanResponse()
-		case l.match("@apiSuccess "):
+		case l.matchTag("@apiSuccess"):
 			api.Success, err = l.scanResponse()
-		case l.match("@api "):
+		case l.matchTag("@api"):
 			err = l.scanAPI(api)
 		default:
 			if l.atEOF() {
@@ -138,7 +134,7 @@ func (l *lexer) scanAPIRequest(api *API) *app.SyntaxError {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiHeader "):
+		case l.matchTag("@apiHeader"):
 			t := l.readTag()
 			key := t.readWord()
 			val := t.readLine()
@@ -149,13 +145,13 @@ LOOP:
 				return l.syntaxError("@apiHeader 参数过多")
 			}
 			r.Headers[string(key)] = string(val)
-		case l.match("@apiParam "):
+		case l.matchTag("@apiParam"):
 			p, err := l.scanAPIParam()
 			if err != nil {
 				return err
 			}
 			r.Params = append(r.Params, p)
-		case l.match("@apiExample "):
+		case l.matchTag("@apiExample"):
 			e, err := l.scanAPIExample()
 			if err != nil {
 				return err
@@ -197,7 +193,7 @@ func (l *lexer) scanResponse() (*Response, *app.SyntaxError) {
 LOOP:
 	for {
 		switch {
-		case l.match("@apiHeader "):
+		case l.matchTag("@apiHeader"):
 			t := l.readTag()
 			key := t.readWord()
 			val := t.readLine()
@@ -208,13 +204,13 @@ LOOP:
 				return nil, t.syntaxError("@apiHeader 参数过多")
 			}
 			resp.Headers[key] = val
-		case l.match("@apiParam "):
+		case l.matchTag("@apiParam"):
 			p, err := l.scanAPIParam()
 			if err != nil {
 				return nil, err
 			}
 			resp.Params = append(resp.Params, p)
-		case l.match("@apiExample "):
+		case l.matchTag("@apiExample"):
 			e, err := l.scanAPIExample()
 			if err != nil {
 				return nil, err
