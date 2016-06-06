@@ -241,6 +241,7 @@ api description 2
 @apiQuery q2 int q2 summary
 @apiParam p1 int p1 summary
 @apiParam p2 int p2 summary
+
 @apiSuccess 200 json
 @apiHeader h1 v1
 @apiHeader h2 v2
@@ -256,6 +257,7 @@ api description 2
     <p1>v1</p1>
     <p2>v2</p2>
 </root>
+
 @apiError 200 json
 @apiHeader h1 v1
 @apiHeader h2 v2
@@ -344,16 +346,15 @@ ab @apiIgnore
 	a.NotError(err)
 	a.Equal(l+1, len(doc1.Apis))
 
-	// @apiIgnore11 非正常标签，会被忽略
+	// @apiIgno 不认识的标签，会提示错误信息
 	code = `
 @api delete /admin/users/{id} delete users
-@apiIgnore11
-@apiGroup 33
+@apiIgno
+@apiGroup group
 @apiParam id int user id
 @apiSuccess 200 OK
 `
 	l = len(doc1.Apis)
 	err = doc1.Scan([]rune(code))
-	a.NotError(err)
-	a.Equal(l+1, len(doc1.Apis))
+	a.ErrorType(err, synerr)
 }

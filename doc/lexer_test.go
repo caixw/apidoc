@@ -63,6 +63,7 @@ func TestLexer_matchTag(t *testing.T) {
 	a.NotNil(l)
 	a.True(l.matchTag("@line1"))
 	l.pos++
+	a.False(l.matchTag("@line")) // 不匹配部分内容
 	a.True(l.matchTag("@line2"))
 }
 
