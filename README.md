@@ -7,9 +7,11 @@ apidoc 是一个简单的 RESTful api 文档生成工具，它从代码注释中
  go
  java
  javascript
+ perl
  php
  python
  ruby
+ rust
 
 具体文档可参考:http://apidoc.site/
 
