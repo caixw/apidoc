@@ -331,6 +331,19 @@ license that can be found in the LICENSE file.
 	a.NotError(err)
 	a.Equal(l, len(doc1.Apis))
 
+	// @apiIgnore 非正常标签，标签只能出现在行首
+	code = `
+@api delete /admin/users/{id} delete users
+@apiGroup group
+ab @apiIgnore
+@apiParam id int user id
+@apiSuccess 200 OK
+`
+	l = len(doc1.Apis)
+	err = doc1.Scan([]rune(code))
+	a.NotError(err)
+	a.Equal(l+1, len(doc1.Apis))
+
 	// @apiIgnore11 非正常标签，会被忽略
 	code = `
 @api delete /admin/users/{id} delete users
