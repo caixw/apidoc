@@ -24,7 +24,7 @@ var langs = map[string][]*block{
 	},
 
 	// c/c++
-	"c": []*block{
+	"cpp": []*block{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `//`},
 		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
@@ -76,7 +76,7 @@ var langs = map[string][]*block{
 // NOTE: 应该保持键名、键值均为小写
 var langExts = map[string][]string{
 	"go":         []string{".go"},
-	"c":          []string{".h", ".c", ".cpp", ".cxx"},
+	"cpp":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
 	"php":        []string{".php"},
 	"ruby":       []string{".rb"},
 	"java":       []string{".java"},

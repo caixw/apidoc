@@ -16,7 +16,7 @@ func TestParseFile(t *testing.T) {
 
 	testParseFile(a, "go", "./testdata/go/test1.go")
 	testParseFile(a, "php", "./testdata/php/test1.php")
-	testParseFile(a, "c", "./testdata/c/test1.c")
+	testParseFile(a, "cpp", "./testdata/cpp/test1.c")
 	testParseFile(a, "ruby", "./testdata/ruby/test1.rb")
 	testParseFile(a, "java", "./testdata/java/test1.java")
 	testParseFile(a, "javascript", "./testdata/javascript/test1.js")
@@ -109,12 +109,12 @@ func TestOptions_Init(t *testing.T) {
 	a.Error(o.Init())
 
 	// 未指定扩展名，则使用系统默认的
-	o.Lang = "c"
+	o.Lang = "cpp"
 	a.NotError(o.Init())
-	a.Equal(o.Exts, langExts["c"])
+	a.Equal(o.Exts, langExts["cpp"])
 
 	// 指定了 Exts，自动调整扩展名样式。
-	o.Lang = "c"
+	o.Lang = "cpp"
 	o.Exts = []string{"c1", ".c2"}
 	a.NotError(o.Init())
 	a.Equal(o.Exts, []string{".c1", ".c2"})
