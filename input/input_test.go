@@ -14,13 +14,15 @@ import (
 func TestParseFile(t *testing.T) {
 	a := assert.New(t)
 
-	testParseFile(a, "go", "./testdata/go/test1.go")
-	testParseFile(a, "php", "./testdata/php/test1.php")
 	testParseFile(a, "cpp", "./testdata/cpp/test1.c")
-	testParseFile(a, "ruby", "./testdata/ruby/test1.rb")
+	testParseFile(a, "go", "./testdata/go/test1.go")
 	testParseFile(a, "java", "./testdata/java/test1.java")
 	testParseFile(a, "javascript", "./testdata/javascript/test1.js")
+	testParseFile(a, "perl", "./testdata/perl/test1.pl")
+	testParseFile(a, "php", "./testdata/php/test1.php")
 	testParseFile(a, "python", "./testdata/python/test1.py")
+	testParseFile(a, "ruby", "./testdata/ruby/test1.rb")
+	testParseFile(a, "rust", "./testdata/rust/test1.rs")
 }
 
 func testParseFile(a *assert.Assertion, lang string, path string) {

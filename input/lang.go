@@ -13,16 +13,8 @@ import (
 
 // 所有支持的语言模型定义
 //
-// NOTE: 应该保持键名为小写
+// NOTE: 应该保持键名为小写，按字母顺序排列，方便查找。
 var langs = map[string][]*block{
-	// golang
-	"go": []*block{
-		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-		&block{Type: blockTypeString, Begin: "`", End: "`"},
-		&block{Type: blockTypeSComment, Begin: `//`},
-		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
-	},
-
 	// c/c++
 	"cpp": []*block{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
@@ -30,21 +22,12 @@ var langs = map[string][]*block{
 		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 	},
 
-	// php
-	"php": []*block{
+	// golang
+	"go": []*block{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+		&block{Type: blockTypeString, Begin: "`", End: "`"},
 		&block{Type: blockTypeSComment, Begin: `//`},
 		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
-	},
-
-	// ruby
-	"ruby": []*block{
-		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
-		&block{Type: blockTypeSComment, Begin: `#`},
-		// BUG(caixw): 一个单行注释后紧跟前多行注释时，多行注释会被忽略。
-		&block{Type: blockTypeMComment, Begin: "\n=begin", End: "\n=end"},
 	},
 
 	// java
@@ -64,10 +47,45 @@ var langs = map[string][]*block{
 		&block{Type: blockTypeString, Begin: "/", End: "/", Escape: `\`}, // 正则表达式
 	},
 
+	// perl
+	"perl": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `#`},
+		// BUG(caixw): 一个单行注释后紧跟前多行注释时，多行注释会被忽略。
+		&block{Type: blockTypeMComment, Begin: "\n=pod", End: "\n=cut"},
+	},
+
 	// python
 	"python": []*block{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
+	},
+
+	// php
+	"php": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `//`},
+		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+	},
+
+	// ruby
+	"ruby": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `#`},
+		// BUG(caixw): 一个单行注释后紧跟前多行注释时，多行注释会被忽略。
+		&block{Type: blockTypeMComment, Begin: "\n=begin", End: "\n=end"},
+	},
+
+	// rust
+	"rust": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		// &block{Type: blockTypeSComment, Begin: `//!`},
+		&block{Type: blockTypeSComment, Begin: `///`},
+		&block{Type: blockTypeSComment, Begin: `//`},
+		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 	},
 }
 
@@ -75,13 +93,15 @@ var langs = map[string][]*block{
 //
 // NOTE: 应该保持键名、键值均为小写
 var langExts = map[string][]string{
-	"go":         []string{".go"},
 	"cpp":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
-	"php":        []string{".php"},
-	"ruby":       []string{".rb"},
+	"go":         []string{".go"},
 	"java":       []string{".java"},
 	"javascript": []string{".js"},
+	"perl":       []string{".perl", ".prl", ".pl"},
+	"php":        []string{".php"},
 	"python":     []string{".py"},
+	"ruby":       []string{".rb"},
+	"rust":       []string{".rs"},
 }
 
 // 返回所有支持的语言
