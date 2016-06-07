@@ -121,7 +121,7 @@ header label{
 
 .main .method{
     width:5rem;
-    display:inline-block,
+    display:inline-block;
     text-transform:uppercase;
 }
 

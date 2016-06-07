@@ -14,13 +14,15 @@ import (
 func TestParseFile(t *testing.T) {
 	a := assert.New(t)
 
+	testParseFile(a, "cpp", "./testdata/cpp/test1.c")
 	testParseFile(a, "go", "./testdata/go/test1.go")
-	testParseFile(a, "php", "./testdata/php/test1.php")
-	testParseFile(a, "c", "./testdata/c/test1.c")
-	testParseFile(a, "ruby", "./testdata/ruby/test1.rb")
 	testParseFile(a, "java", "./testdata/java/test1.java")
 	testParseFile(a, "javascript", "./testdata/javascript/test1.js")
+	testParseFile(a, "perl", "./testdata/perl/test1.pl")
+	testParseFile(a, "php", "./testdata/php/test1.php")
 	testParseFile(a, "python", "./testdata/python/test1.py")
+	testParseFile(a, "ruby", "./testdata/ruby/test1.rb")
+	testParseFile(a, "rust", "./testdata/rust/test1.rs")
 }
 
 func testParseFile(a *assert.Assertion, lang string, path string) {
@@ -109,12 +111,12 @@ func TestOptions_Init(t *testing.T) {
 	a.Error(o.Init())
 
 	// 未指定扩展名，则使用系统默认的
-	o.Lang = "c"
+	o.Lang = "cpp"
 	a.NotError(o.Init())
-	a.Equal(o.Exts, langExts["c"])
+	a.Equal(o.Exts, langExts["cpp"])
 
 	// 指定了 Exts，自动调整扩展名样式。
-	o.Lang = "c"
+	o.Lang = "cpp"
 	o.Exts = []string{"c1", ".c2"}
 	a.NotError(o.Init())
 	a.Equal(o.Exts, []string{".c1", ".c2"})

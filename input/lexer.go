@@ -20,12 +20,12 @@ const (
 	blockTypeMComment      // 多行注释
 )
 
-// block 定义了与语言相关的一些代码块。
+// block 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
 type block struct {
 	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释
 	Begin  string // 块的起始字符串
-	End    string // 块的结束字符串
-	Escape string // 转义字符
+	End    string // 块的结束字符串，单行注释不用定义此值
+	Escape string // 转义字符，非字符串，不用定义此值
 }
 
 type lexer struct {

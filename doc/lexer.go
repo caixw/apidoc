@@ -52,13 +52,31 @@ func (l *lexer) syntaxError(msg string) *app.SyntaxError {
 	}
 }
 
-// 判断接下去的几个字符连接起来是否正好为 word。
+// 判断接下去的几个字符连接起来是否正好为 word，且处在行首位置(word 之前不能有非空白字符)。
 // 若是，则移动指针到 word 之后，且返回 true；否则不移动指针，返回 false。
 //
-// NOTE: 可通过 Backup 来撤消最后一次 Match 调用。
-// TODO 目前 match 只有匹配 @api 标签的作用，是否直接改成只能匹配行首的标签
+// NOTE: 可通过 backup 来撤消最后一次 match 调用。
 func (l *lexer) match(word string) bool {
 	if l.atEOF() || (l.pos+len(word) > len(l.data)) { // 剩余字符没有word长，直接返回false
+		return false
+	}
+
+	pos := l.pos
+	isSpace := true
+	if pos > 0 {
+		for {
+			pos--
+			r := l.data[pos]
+			if r == '\n' || pos == 0 {
+				break
+			}
+			if !unicode.IsSpace(r) {
+				isSpace = false
+				break
+			}
+		}
+	}
+	if !isSpace {
 		return false
 	}
 
@@ -78,7 +96,21 @@ func (l *lexer) match(word string) bool {
 	return true
 }
 
-// 撤消 Match 函数的最后次调用。指针指向执行这些函数之前的位置。
+// 接下的单词是否和一个标签匹配。
+func (l *lexer) matchTag(tagName string) bool {
+	if !l.match(tagName) {
+		return false
+	}
+
+	if !unicode.IsSpace(l.data[l.pos]) {
+		l.backup()
+		return false
+	}
+
+	return true
+}
+
+// 撤消 match 函数的最后次调用。指针指向执行这些函数之前的位置。
 func (l *lexer) backup() {
 	l.pos -= l.width
 	l.width = 0

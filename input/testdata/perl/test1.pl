@@ -2,8 +2,6 @@
 # Use of this source code is governed by a MIT
 # license that can be found in the LICENSE file.
 
-module Testdata
-
 
 # @api POST /users/login 登录
 # @apiGroup users
@@ -22,12 +20,13 @@ module Testdata
 # }
 #
 # @apiError 401 账号或密码错误
-def login(w, r)
-	puts "=begin login";
+sub login()
+{
+	print("/**********", "login")
 	# TODO
-end
+}
 
-=begin
+=pod
 @api DELETE /users/login 注销登录
 @apiGroup users
 
@@ -42,10 +41,9 @@ end
     "expires": 11111111,
     "token": "adl;kfqwer;q;afd"
 }
-=end
-def logout(w , r )
-    puts 'logout  =end';
-    # TODO
-end
-
-end
+=cut
+sub logout()
+{
+	print("logout", "**********/")
+	# TODO
+}

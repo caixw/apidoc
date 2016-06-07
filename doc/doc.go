@@ -27,7 +27,7 @@ type API struct {
 	Error       *Response // 出错时的响应内容
 }
 
-// Request 表示 api 请求数据
+// Request 表示用户请求所表示的数据。
 type Request struct {
 	Type     string            // 请求的数据类型，多个用逗号分隔
 	Headers  map[string]string // 请求必须携带的头
@@ -36,6 +36,7 @@ type Request struct {
 }
 
 // Response 表示一次请求或是返回的数据。
+// 一般为 @apiSuccess 或是 @apiError 所表示的数据。
 type Response struct {
 	Code     string            // HTTP 状态码
 	Summary  string            // 该状态下的简要描述

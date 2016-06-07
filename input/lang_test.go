@@ -24,13 +24,15 @@ func TestCompareLangsAndLangExts(t *testing.T) {
 	// 查询 langs 中的键名是否存在于 langExts
 	for lang := range langs {
 		exts, found := langExts[lang]
-		a.True(found).True(len(exts) > 0)
+		a.True(found, "未找到与[%v]相对应的扩展名定义", lang).
+			True(len(exts) > 0)
 	}
 
 	// 查询 langExts 中的键名是否存在于 langs
 	for lang := range langExts {
 		blocks, found := langs[lang]
-		a.True(found).True(len(blocks) > 0)
+		a.True(found, "未找到与[%v]相对应的代码块定义", lang).
+			True(len(blocks) > 0)
 	}
 }
 
@@ -38,7 +40,7 @@ func TestDetectDirLang(t *testing.T) {
 	a := assert.New(t)
 
 	lang, err := DetectDirLang("./testdir")
-	a.NotError(err).Equal(lang, "c")
+	a.NotError(err).Equal(lang, "cpp")
 
 	lang, err = DetectDirLang("./testdir/testdir1")
 	a.Error(err).Empty(lang)
@@ -47,9 +49,9 @@ func TestDetectDirLang(t *testing.T) {
 func TestGetLangByExt(t *testing.T) {
 	a := assert.New(t)
 
-	a.Equal(getLangByExt(".C"), "c")
-	a.Equal(getLangByExt(".h"), "c")
-	a.Equal(getLangByExt(".c"), "c")
+	a.Equal(getLangByExt(".C"), "cpp")
+	a.Equal(getLangByExt(".h"), "cpp")
+	a.Equal(getLangByExt(".c"), "cpp")
 	a.Equal(getLangByExt(".php"), "php")
 
 	a.Equal(getLangByExt("php"), "")         // 扩展名不带.符号，查不到

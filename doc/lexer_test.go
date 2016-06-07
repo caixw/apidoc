@@ -26,7 +26,7 @@ func TestLexer_lineNumber(t *testing.T) {
 
 func TestLexer_match(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]rune("line1\n line2 \n"))
+	l := newLexer([]rune("line1\n line2 \n\t\tline3\n"))
 	a.NotNil(l)
 
 	a.True(l.match("Line"))
@@ -37,20 +37,34 @@ func TestLexer_match(t *testing.T) {
 	l.pos++ // 空格
 	l.pos++ // l
 
-	a.False(l.match("2222")) // 不匹配，不会移动位置
-	a.True(l.match("ine2"))  // 正确匹配
-	l.backup()
-	l.backup()
-	a.Equal('i', l.data[l.pos])
-	l.pos++
+	a.False(l.match("2222")) // 不匹配
+	a.False(l.match("ine2")) // 前面有非空白字符，不匹配
+	l.pos += 8               // ine2 \n\t\t
 
-	// 超过剩余字符的长度。
-	a.False(l.match("ne2\n\n"))
+	a.True(l.match("line3"))
+	l.backup()
+	l.backup()
+	a.True(l.match("line3")) // 多次调用 backup 应该和调用一次的作用是一样的。
+
+	l.backup()
+	a.False(l.match("line3\n\n")) // 不匹配，超长了。
+	a.True(l.match("line3\n"))
 
 	// 能正确匹配结尾字符
 	l = newLexer([]rune("line1\n"))
 	a.NotNil(l)
 	a.True(l.match("line1\n"))
+}
+
+func TestLexer_matchTag(t *testing.T) {
+	a := assert.New(t)
+
+	l := newLexer([]rune("@line1\n@line2\tabc \n"))
+	a.NotNil(l)
+	a.True(l.matchTag("@line1"))
+	l.pos++
+	a.False(l.matchTag("@line")) // 不匹配部分内容
+	a.True(l.matchTag("@line2"))
 }
 
 func TestLexer_skipSpace(t *testing.T) {
