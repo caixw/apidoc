@@ -1,8 +1,9 @@
 "use strict";
 
 $(document).ready(function(){
+    /* 高亮和格式化代码块 */
     $('pre').each(function(index, elem){
-        // 去多余的前导空格，由data-indent属性指定缩进多少个tab
+        // 去多余的前导空格，由 data-indent 属性指定缩进多少个 tab
         var indent = $(this).attr('data-indent');
         var pattern = '';
         for(var i=0; i<indent; i++){

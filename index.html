@@ -3,9 +3,9 @@
     <head>
         <meta charset='utf-8' />
         <title>apidoc - RESTful api文档生成工具</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="keywords" content="apidoc,api,RESTful api,go,cpp,doc,文档生成" />
         <meta name="description" content="apidoc : RESTful api文档生成工具" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="https://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.css" />
         <link rel="stylesheet" href="./style.css" />
         <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
@@ -17,7 +17,7 @@
         <header>
             <div class="ui container">
                 <span class="ui text menu left floated">
-                    <a class="item" href="#">APIDOC<sub class="version">2.0</sub></a>
+                    <h1 class="item"><a href="#">APIDOC<sub class="version">2.0</sub></a></h1>
                 </span>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
@@ -32,21 +32,19 @@
         </header>
 
         <div class="ui container" id="main">
-
             <!-- about -->
             <article class="ui stacked segment" id="about">
                 <h2 class="ui header">关于</h2>
-                <p>apidoc 是一个简单的 RESTful api 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。</p>
-                <p>目前已支持以下语言：c/cpp, go, java, javascript, php, perl, python, rust, ruby</p>
+                <p>apidoc 是一个简单的 RESTful api 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。目前已支持以下语言：C/C++、Go、Java、Javascript、PHP、Perl、Python、Rust、Ruby。</p>
+                <p>以下是一段简短的 Go 代码下的示例：</p>
                 <pre data-indent="4">
-                /**
-                 @api get /users/:id 获取指定用户的相关信息
-                 @apiGroup users
-                 @apiParam id int 表示用户id的唯一值
-                 @apiStatus 200 json ok
-                 @apiExample
-                 {"id":1, "name": "n1"}
-                */
+                // @api get /users/:id 获取指定用户的相关信息
+                // @apiGroup users
+                // @apiParam id int 表示用户id的唯一值
+                //
+                // @apiSuccess 200 json ok
+                // @apiExample
+                // {"id":1, "name": "n1"}
                 </pre>
             </article>
 
@@ -56,8 +54,9 @@
 
                 <section>
                     <h3>安装</h3>
-                    <p>1. 安装 <a href="https://golang.org">Go</a> 环境；</p>
-                    <p>2. 安装 apidoc：<code>go get github.com/caixw/apidoc</code>；</p>
+                    <p>若是你已经有 Go 开发环境，则可以直接通过 <code>go get</code>来获取安装：<code>go get github.com/caixw/apidoc</code></p>
+
+                    <p>若是嫌麻烦，也可以通过 <a href="https://gobuild.io/caixw/apidoc/master">gobuild.io</a> 选择已经编译好的程序，直接使用。</p>
                 </section>
 
                 <section>
@@ -77,7 +76,7 @@
 
                 <section>
                     <h3>配置文件</h3>
-                    <p>apidoc 通过配置文件来控制其行为。配置文件名为 <code>.apidoc.json</code>。</p>
+                    <p>apidoc 通过工作目录下的配置文件来控制其行为。文件名称固定为 .apidoc.json。以下为 .apidoc.json 的一个示例。</p>
                     <pre data-indent="5">
                     {
                         "version": "2.0.52.160529",
@@ -89,7 +88,7 @@
                         "output": {
                             "version": "2.0",
                             "dir": "./output/doc",
-                            "title": "yuesaopai-api",
+                            "title": "apidoc-demo",
                             "baseURL": "",
                             "type": "html"
                         }
@@ -103,61 +102,71 @@
                             <tr>
                                 <td>version</td>
                                 <td>string</td>
-                                <td>""</td>
-                                <td>产生此配置文件的 apidoc 版本</td>
+                                <td>由程序产生</td>
+                                <td>产生此配置文件的 apidoc 版本号</td>
                             </tr>
 
                             <!-- input -->
-                            <tr class="warning"><td colspan="4">input:控制输入行为</td></tr>
+                            <tr class="warning">
+                                <td>input</td>
+                                <td>{}</td>
+                                <td></td>
+                                <td>控制输入行为</td>
+                            </tr>
                             <tr>
-                                <td>dir</td>
+                                <td>&#160;&#160;&#160;&#160;dir</td>
                                 <td>string</td>
-                                <td>"./"</td>
+                                <td>./</td>
                                 <td>需要解析的源文件所在目录</td>
                             </tr>
                             <tr>
-                                <td>recursive</td>
+                                <td>&#160;&#160;&#160;&#160;recursive</td>
                                 <td>bool</td>
                                 <td>true</td>
                                 <td>是否解析子目录下的源文件</td>
                             </tr>
                             <tr>
-                                <td>lang</td>
+                                <td>&#160;&#160;&#160;&#160;lang</td>
                                 <td>string</td>
-                                <td>""</td>
+                                <td>由程序生成文件时所得</td>
                                 <td>源文件类型。具体支持的类型可通过 -l 参数进行查找</td>
                             </tr>
 
                             <!-- output -->
-                            <tr class="warning"><td colspan="4">output:控制输出行为</td></tr>
+                            <tr class="warning">
+                                <td>output</td>
+                                <td>{}</td>
+                                <td></td>
+                                <td>控制输出行为</td>
+                            </tr>
                             <tr>
-                                <td>dir</td>
+                                <td>&#160;&#160;&#160;&#160;dir</td>
                                 <td>string</td>
-                                <td>""</td>
+                                <td>./apidoc</td>
                                 <td>指定文档的保存目录</td>
                             </tr>
                             <tr>
-                                <td>title</td>
+                                <td>&#160;&#160;&#160;&#160;title</td>
                                 <td>string</td>
-                                <td>apidoc</td>
+                                <td>APIDOC</td>
                                 <td>文档的标题</td>
                             </tr>
                             <tr>
-                                <td>version</td>
+                                <td>&#160;&#160;&#160;&#160;version</td>
                                 <td>string</td>
-                                <td>""</td>
+                                <td></td>
                                 <td>文档的版本号</td>
                             </tr>
                             <tr>
-                                <td>baseURL</td>
+                                <td>&#160;&#160;&#160;&#160;baseURL</td>
                                 <td>string</td>
-                                <td>""</td>
+                                <td></td>
                                 <td>文档中 api 地址的前缀</td>
                             </tr>
                             <tr>
-                                <td>type</td>
+                                <td>&#160;&#160;&#160;&#160;type</td>
                                 <td>string</td>
-                                <td>""</td>
+                                <td>html</td>
                                 <td>渲染类型，目前只支持 html</td>
                             </tr>
                         </tbody>
@@ -341,7 +350,7 @@
 
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
-                    <p>更新于 <time>2016-06-04T00:20:35+0800</time></p>
+                    <p>更新于 <time>2016-06-08T00:54:35+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>

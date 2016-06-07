@@ -13,6 +13,10 @@ header .menu{
     font-size:1.2rem !important;
 }
 
+header h1{
+    font-size:1.2rem !important;
+}
+
 header .version{
     margin-left:0.2rem;
 }
