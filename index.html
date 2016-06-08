@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="./style.css" />
         <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
         <script src="https://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.js"></script>
-        <script src="./main.js"></script>
+        <script src="./app.js"></script>
     </head>
 
     <body>
@@ -77,7 +77,7 @@
                 <section>
                     <h3>配置文件</h3>
                     <p>apidoc 通过工作目录下的配置文件来控制其行为。文件名称固定为 .apidoc.json。以下为 .apidoc.json 的一个示例。</p>
-                    <pre data-indent="5">
+                    <pre data-indent="5" class="language-json">
                     {
                         "version": "2.0.52.160529",
                         "input": {
@@ -181,25 +181,25 @@
                 <!-- @api -->
                 <section id="api">
                     <h3>@api</h3>
-                    <p>语法:<code class="go">@api method url summary [\n detail]</code></p>
+                    <p>语法:<code>@api method url summary [\n detail]</code></p>
                     <table class="ui very compact table">
                         <thead>
-                            <tr><th>参数</th><th>可选</th><th>参数说明</th></tr>
+                            <tr><th>参数</th><th>必填</th><th>参数说明</th></tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>method</td><td>false</td><td>该api对应的请求方法</td>
+                                <td>method</td><td>true</td><td>该 api 对应的请求方法</td>
                             </tr>
                             <tr>
-                                <td>url</td><td>false</td><td>该api的请求地址</td>
+                                <td>url</td><td>true</td><td>该 api 的请求地址</td>
                             </tr>
                             <tr>
-                                <td>summary</td><td>false</td><td>该api的简要描述信息，到行尾结束</td>
+                                <td>summary</td><td>true</td><td>该 api 的简要描述信息，到行尾结束</td>
                             </tr>
                             <tr>
                                 <td>detail</td>
-                                <td>true</td>
-                                <td>api的详细信息，可以多行，直到碰到下一行的@api开头的字符串</td>
+                                <td>false</td>
+                                <td>api 的详细信息，可以多行，直到碰到以 <code>@api</code> 开头的行</td>
                             </tr>
                         </tbody>
                     </table>
@@ -214,15 +214,27 @@
                 <!-- @apiIgnore -->
                 <section id="apiignore">
                     <h3>@apiIgnore</h3>
-                    <p>语法：<code>@apiIgnore</code></p>
                     <p>凡是带此标签的代码块，表示该文档暂时被忽略。</p>
+                    <p>语法：<code>@apiIgnore</code></p>
                 </section>
 
                 <!-- @apiGroup -->
                 <section id="apigroup">
                     <h3>@apiGroup</h3>
                     <p>@apiGroup 提供了对 api 的分组信息，不同的分组，最终可能会被呈现在不同的页面。</p>
-                    <p>语法：<code>@apiGroup groupName</code></p>
+                    <p>语法：<code>@apiGroup name</code></p>
+                    <table class="ui vry compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td>
+                                <td>true</td>
+                                <td>分组名称，区分大小写。</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <p>示例：</p>
                     <pre data-indent="5">
                     /**
@@ -232,24 +244,23 @@
                 </section>
 
                 <!-- apiQuery -->
-                <section id="apiparam">
-                    <h3>@apiQuery/@apiParam</h3>
-                    <p>@apiQuery 和 @apiParam 拥有相同的参数，其行为也类似，用于描述一个值的具体信息。</p>
-                    <p>@apiQuery 描述 api 的查询参数；而 @apiParam 则用于描述路径中占位符代码的参数，或是在 @apiRequest 中表示提交数据的参数，在 @apiSuccess 各 @apiError 中表示返回数据的参数。</p>
-                    <p>语法：<code>@apiQuery/apiParam name type summary</code></p>
+                <section id="apiquery">
+                    <h3>@apiQuery</h3>
+                    <p>@apiQuery 描述 api 的查询参数。父标签：<a href="#api">@api</a></p>
+                    <p>语法：<code>@apiQuery name type summary</code></p>
                     <table class="ui very compact table">
                         <thead>
-                            <tr><th>参数</th><th>可选</th><th>描述</th></tr>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>name</td><td>false</td><td>参数名称</td>
+                                <td>name</td><td>true</td><td>参数名称</td>
                             </tr>
                             <tr>
-                                <td>type</td><td>false</td><td>参数的类型，类型名称根据需要自己指定。没有统一格式。</td>
+                                <td>type</td><td>true</td><td>参数的类型</td>
                             </tr>
                             <tr>
-                                <td>summary</td><td>false</td><td>一行简短的语名用于描述该参数作用。</td>
+                                <td>summary</td><td>true</td><td>一行简短的语名用于描述该参数作用。</td>
                             </tr>
                         </tbody>
                     </table>
@@ -258,26 +269,110 @@
                     /**
                      @api get /users 获取所有的用户信息。
                      @apiQuery page int 获取第几页的内容。
-                     @apiQuery size int 每页显示的数量。
+                     @apiQuery size int 每页显示的数量，必须大于 0。
                      */
                     </pre>
                 </section>
 
                 <section id="apiheader">
                     <h3>@apiHeader</h3>
-                    <p>@apiHeader 用于在 @apiRequest，@apiSuccess 和 @apiError 中描述请求头和响应的内容。</p>
-                    <p>语法：<code>@apiHeader key value</code></p>
+                    <p>@apiHeader 用于指定报头内容。父标签：
+                        <a href="#apirequest">@apiRequest</a>、
+                        <a href="#apisuccess">@apiSuccess</a> 和
+                        <a href="#apierror">@apiError</a>
+                    </p>
+                    <p>语法：<code>@apiHeader key summary</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th>
+                                <th>必填</th>
+                                <th>描述</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>key</td>
+                                <td>true</td>
+                                <td>报头名称</td>
+                            </tr>
+                            <tr>
+                                <td>summary</td>
+                                <td>true</td>
+                                <td>到行尾，对此报头的描述。</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <p>示例：</p>
                     <pre data-indent="5">
                     /**
+                     @api delete /users/login 注销用户
                      @apiHeader Authorization Basic xx-af
+                     */
+                    </pre>
+                </section>
+
+                <!-- apiParam -->
+                <section id="apiparam">
+                    <h3>@apiParam</h3>
+                    <p>@apiParam 用于描述参数信息。父标签：
+                        <a href="#api">@api</a>、
+                        <a href="#apirequest">@apiRequest</a>、
+                        <a href="#apisuccess">@apiSuccess</a> 和
+                        <a href="#apierror">@apiError</a>
+                    </p>
+                    <p>语法：<code>@apiParam name type summary</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td><td>true</td><td>参数名称</td>
+                            </tr>
+                            <tr>
+                                <td>type</td><td>true</td><td>参数的类型</td>
+                            </tr>
+                            <tr>
+                                <td>summary</td><td>true</td><td>一行简短的语名用于描述该参数作用。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例-1：</p>
+                    <pre data-indent="5">
+                    /**
+                     @api get /users/{id} 获取所有的用户信息。
+                     @apiParam id int 用户id
+
+                     @apiSuccess 200 OK
+                     @apiParam id    int    用户id
+                     @apiParam name  string 用户名称
+                     @apiParam group id     用户所属组id
+                     */
+                    </pre>
+                    <p>示例-2：</p>
+                    <pre data-indent="5">
+                    /**
+                     @api post /users/ 新增用户
+                     @apiGroup users
+
+                     @apiRequest json
+                     @apiParam name     string 用户名称
+                     @apiParam password string 密码
+
+                     @apiSuccess 200 OK
+                     @apiHeader location xxxx
                      */
                     </pre>
                 </section>
 
                 <section id="apiexample">
                     <h3>@apiExample</h3>
-                    <p>描述 @apiRequest，@apiSuccess 和 @apiError 中请求和响应内容的示例。</p>
+                    <p>指定示例代码。父标签：
+                        <a href="#apirequest">@apiRequest</a>、
+                        <a href="#apisuccess">@apiSuccess</a> 和
+                        <a href="##apierror">@apiError</a>
+                    </p>
                     <p>语法：<code>@apiExample type</code>type 表示请求体的格式，可是以 json，xml。</p>
                     <p>示例：</p>
                     <pre data-indent="5">
@@ -290,7 +385,10 @@
 
                 <section id="apirequest">
                     <h3>@apiRequest</h3>
-                    <p>@apiRequest 描述了所有的请求该包含的内容，其本身可包含 @apiHeader，@apiExample 和 @apiParam 三个子标签。</p>
+                    <p>@apiRequest 描述了所有的请求该包含的内容，其本身可包含
+                        <a href="#apiheader">@apiHeader</a>、
+                        <a href="#aipexample">@apiExample</a> 和
+                        <a href="#apiparam">@apiParam</a>三个子标签。</p>
                     <p>语法：<code>@apiRequest type</code>，type 表示请求体的格式，可是以 json，xml。</p>
                     <p>示例：</p>
                     <pre data-indent="5">
@@ -306,20 +404,25 @@
                 </section>
 
                 <section id="apisuccess">
-                    <h3>@apiSuccess/@apiError</h3>
-                    <p>@apiSuccess/@apiError 描述了响应包含的内容，其本身可包含 @apiHeader，@apiExample 和 @apiParam 三个子标签。</p>
-                    <p>语法：<code>@apiSuccess/Error status summary</code></p>
+                    <h3>@apiSuccess</h3>
+                    <p>@apiSuccess 描述了成功响应时包含的内容，其本身可包含
+                        <a href="#apiheader">@apiHeader</a>、
+                        <a href="#apiexample">@apiExample</a> 和
+                        <a href="#apiparam">@apiParam</a>三个子标签。</p>
+                    <p>语法：<code>@apiSuccess status summary</code></p>
                     <table class="ui very compact table">
                         <thead>
-                            <tr><th>参数</th><th>描述</th></tr>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>status</td>
+                                <td>true</td>
                                 <td>返回的状态码</td>
                             </tr>
                             <tr>
                                 <td>summary</td>
+                                <td>true</td>
                                 <td>一个简短的描述信息。</td>
                             </tr>
                         </tbody>
@@ -338,6 +441,11 @@
                     </pre>
                 </section>
 
+                <section id="apierror">
+                    <h3>@apiError</h3>
+                    <p>@apiError 结构与 @apiSuccess 完全相同，只是一个用于描述错误时的返回，一个用于描述成功时的返回信息。</p>
+                </section>
+
             </article>
         </div>
 
@@ -350,7 +458,7 @@
 
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
-                    <p>更新于 <time>2016-06-08T00:54:35+0800</time></p>
+                    <p>更新于 <time>2016-06-08T20:21:36+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
