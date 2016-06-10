@@ -21,12 +21,9 @@ var renderTypes = []string{
 
 // 渲染输出的相关设置项。
 type Options struct {
-	Elapsed time.Duration `json:"-"`                 // 编译用时
-	Version string        `json:"version,omitempty"` // 文档的版本号
-	Dir     string        `json:"dir"`               // 文档的保存目录
-	Title   string        `json:"title"`             // 文档的标题
-	BaseURL string        `json:"baseURL,omitempty"` // api 文档中 url 的前缀
-	Type    string        `json:"type"`              // 渲染方式，默认为 html
+	Dir     string        `json:"dir"`  // 文档的保存目录
+	Type    string        `json:"type"` // 渲染方式，默认为 html
+	Elapsed time.Duration `json:"-"`    // 编译用时
 
 	// Language string // 产生的ui界面语言
 	//Groups     []string `json:"groups"`     // 需要打印的分组内容。
@@ -39,10 +36,6 @@ func (o *Options) Init() *app.OptionsError {
 		return &app.OptionsError{Field: "Dir", Message: "不能为空"}
 	}
 	o.Dir += string(os.PathSeparator)
-
-	if len(o.Title) == 0 {
-		return &app.OptionsError{Field: "Title", Message: "不能为空"}
-	}
 
 	if !isSuppertedType(o.Type) {
 		return &app.OptionsError{Field: "Type", Message: "不支持该类型"}

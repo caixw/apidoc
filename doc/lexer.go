@@ -147,6 +147,34 @@ func (l *lexer) skipSpace() {
 	}
 }
 
+// 往后读取一行内容，不包含首尾空格。
+func (l *lexer) readLine() string {
+	l.skipSpace()
+
+	start := l.pos
+	for {
+		if l.atEOF() || l.data[l.pos] == '\n' {
+			break
+		}
+		l.pos++
+	}
+	return string(trimRight(l.data[start:l.pos]))
+}
+
+// 往后读取，真到碰到第一个空字符或是结尾。返回字符串去掉首尾空字符。
+func (l *lexer) readWord() string {
+	l.skipSpace()
+
+	start := l.pos
+	for {
+		if l.atEOF() || unicode.IsSpace(l.data[l.pos]) {
+			break
+		}
+		l.pos++
+	}
+	return string(trimRight(l.data[start:l.pos]))
+}
+
 // 是否已经到结尾
 func (l *lexer) atEOF() bool {
 	return l.pos >= len(l.data)
