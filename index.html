@@ -16,9 +16,9 @@
     <body>
         <header>
             <div class="ui container">
-                <span class="ui text menu left floated">
-                    <h1 class="item"><a href="#">APIDOC<sub class="version">2.0</sub></a></h1>
-                </span>
+                <h1 class="ui text menu left floated">
+                    <a class="item" href="#">APIDOC<sub class="version">2.7</sub></a>
+                </h1>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
                     <a class="item" href="#usage">使用</a>
@@ -177,6 +177,47 @@
             <!-- docs -->
             <article class="ui stacked segment" id="docs">
                 <h2 class="ui header">文档</h2>
+
+                <section id="apidoc">
+                    <h3>@apidoc</h3>
+                    <p>@apidoc 用于指定文档的的摘要信息，比如标题，版本号，以及摘要内容，整个文档只能出现一次，多次出现将报错。</p>
+                    <p>语法:<code>@apidoc version title [\n content]</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th>
+                                <th>必填</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>version</td>
+                                <td>true</td>
+                                <td>文档的版本号</td>
+                            </tr>
+                            <tr>
+                                <td>title</td>
+                                <td>true</td>
+                                <td>文档的标题，到行尾</td>
+                            </tr>
+                            <tr>
+                                <td>摘要内容</td>
+                                <td>false</td>
+                                <td>整个文档的一个摘要说明</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre data-indent="5">
+                    /**
+                     @apidoc 2.0.1 api 文档
+
+                     这是 xx 项目的 api 文档说明...
+                     ...
+                    */
+                    </pre>
+                </section>
 
                 <!-- @api -->
                 <section id="api">
@@ -458,7 +499,7 @@
 
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
-                    <p>更新于 <time>2016-06-08T20:21:36+0800</time></p>
+                    <p>更新于 <time>2016-06-11T00:01:36+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
