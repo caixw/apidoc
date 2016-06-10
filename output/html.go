@@ -37,8 +37,8 @@ func html(docs *doc.Doc, opt *Options) error {
 	}
 
 	p := &page{
-		Title:          opt.Title,
-		Version:        opt.Version,
+		Title:          docs.Title,
+		Version:        docs.Version,
 		AppVersion:     app.Version,
 		AppName:        app.Name,
 		AppRepoURL:     app.RepoURL,
