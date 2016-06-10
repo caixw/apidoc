@@ -1,19 +1,19 @@
 apidoc [![Build Status](https://travis-ci.org/caixw/apidoc.svg?branch=master)](https://travis-ci.org/caixw/apidoc)
 ======
 
-apidoc 是一个简单的 RESTful api 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。
+apidoc 是一个简单的 RESTful API 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。
 目前支持支持以下语言：
- c/cpp
- go
- java
- javascript
- perl
- php
- python
- ruby
- rust
+ C/CPP
+ Go
+ Java
+ Javascript
+ Perl
+ PHP
+ Python
+ Ruby
+ Rust
 
-具体文档可参考:http://apidoc.site/
+具体文档可参考: http://apidoc.site/
 
 ```c
 /*
