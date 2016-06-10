@@ -23,7 +23,7 @@ const (
 // 指定所有需要序列化的文件名。
 var files = []string{
 	"./style.css",
-	"./jquery-2.1.4.min.js",
+	"./jquery-3.0.0.min.js",
 }
 
 // 需要序列化的模板文件。
