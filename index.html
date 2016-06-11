@@ -17,7 +17,7 @@
         <header>
             <div class="ui container">
                 <h1 class="ui text menu left floated">
-                    <a class="item" href="#">APIDOC<sub class="version">2.7</sub></a>
+                    <a class="item" href="#">APIDOC<sub class="version">2.8</sub></a>
                 </h1>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
@@ -87,7 +87,8 @@
                         },
                         "output": {
                             "dir": "./output/doc",
-                            "type": "html"
+                            "type": "html",
+                            "template":""
                         }
                     }
                     </pre>
@@ -148,8 +149,20 @@
                                 <td>html</td>
                                 <td>渲染类型，目前只支持 html</td>
                             </tr>
+                            <tr>
+                                <td>&#160;&#160;&#160;&#160;template</td>
+                                <td>string</td>
+                                <td></td>
+                                <td>当渲染类型为 html 时，可以通过此值指定一个自定义的模板</td>
+                            </tr>
                         </tbody>
                     </table>
+                </section>
+
+                <section>
+                    <h3>自定义模板</h3>
+                    <p>在输出类型为 html 时，可以通过在配置文件 .apidoc.json 中的 template 参数指定自定义模板。</p>
+                    <p>模板格式采用的是 Go 标准库的 <a href="https://godoc.org/html/template">html/template</a>，系统会调用 <code>group</code> 和 <code>index</code> 两个子模板，具体的可用数据可参考源码目录下的 output/static 下的模板。</p>
                 </section>
             </article>
 
@@ -478,7 +491,7 @@
 
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
-                    <p>更新于 <time>2016-06-11T00:01:36+0800</time></p>
+                    <p>更新于 <time>2016-06-11T22:05:16+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
