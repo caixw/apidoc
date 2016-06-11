@@ -21,9 +21,10 @@ var renderTypes = []string{
 
 // 渲染输出的相关设置项。
 type Options struct {
-	Dir     string        `json:"dir"`  // 文档的保存目录
-	Type    string        `json:"type"` // 渲染方式，默认为 html
-	Elapsed time.Duration `json:"-"`    // 编译用时
+	Dir      string        `json:"dir"`      // 文档的保存目录
+	Type     string        `json:"type"`     // 渲染方式，默认为 html
+	Template string        `json:"template"` // 指定一个输出模板
+	Elapsed  time.Duration `json:"-"`        // 编译用时
 
 	// Language string // 产生的ui界面语言
 	//Groups     []string `json:"groups"`     // 需要打印的分组内容。

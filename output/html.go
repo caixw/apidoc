@@ -16,8 +16,11 @@ import (
 	"github.com/caixw/apidoc/output/static"
 )
 
+// 输出页面的一些自定义项
 const (
-	suffix = ".html"
+	groupPrefix = "group_"
+	indexName   = "index"
+	suffix      = ".html"
 )
 
 // 用于页首和页脚的附加信息
@@ -36,27 +39,8 @@ type page struct {
 	Elapsed        time.Duration         // 生成文档所用的时间
 }
 
-// 根据分组名称获取相应的 url 地址。
-func groupURL(groupName string) string {
-	return path.Join(".", "group_"+groupName+suffix)
-}
-
-// 根据分组名称获取相应的文件地址。
-func groupPath(parent, groupName string) string {
-	return filepath.Join(parent, "group_"+groupName+suffix)
-}
-
 // 将 docs 的内容以 html 格式输出。
 func html(docs *doc.Doc, opt *Options) error {
-	t := template.New("html").
-		Funcs(template.FuncMap{
-			"groupURL": groupURL,
-		})
-
-	for _, content := range static.Templates {
-		template.Must(t.Parse(content))
-	}
-
 	p := &page{
 		Content:        docs.Content,
 		Title:          docs.Title,
@@ -78,21 +62,46 @@ func html(docs *doc.Doc, opt *Options) error {
 		p.Groups[api.Group] = append(p.Groups[api.Group], api)
 	}
 
-	if err := outputIndex(t, p, opt.Dir); err != nil {
+	// 编译模板
+	t := template.New("html").
+		Funcs(template.FuncMap{
+			"groupURL": p.groupURL,
+		})
+
+	for _, content := range static.Templates {
+		template.Must(t.Parse(content))
+	}
+
+	return p.render(t, opt.Dir)
+}
+
+// 根据分组名称获取相应的 url 地址。
+func (p *page) groupURL(groupName string) string {
+	return path.Join(".", groupPrefix+groupName+suffix)
+}
+
+// 根据分组名称获取相应的文件地址。
+func (p *page) groupPath(parent, groupName string) string {
+	return filepath.Join(parent, groupPrefix+groupName+suffix)
+}
+
+// 根据模板 t 将页面输出到 destDir 目录
+func (p *page) render(t *template.Template, destDir string) error {
+	if err := p.renderIndex(t, destDir); err != nil {
 		return err
 	}
 
-	if err := outputGroup(t, p, opt.Dir); err != nil {
+	if err := p.renderGroup(t, destDir); err != nil {
 		return err
 	}
 
 	// 输出static
-	return static.Output(opt.Dir)
+	return static.Output(destDir)
 }
 
 // 输出索引页
-func outputIndex(t *template.Template, p *page, destDir string) error {
-	index, err := os.Create(filepath.Join(destDir, "index.html"))
+func (p *page) renderIndex(t *template.Template, destDir string) error {
+	index, err := os.Create(filepath.Join(destDir, indexName+suffix))
 	if err != nil {
 		return err
 	}
@@ -102,9 +111,9 @@ func outputIndex(t *template.Template, p *page, destDir string) error {
 }
 
 // 按分组输出内容页
-func outputGroup(t *template.Template, p *page, destDir string) error {
+func (p *page) renderGroup(t *template.Template, destDir string) error {
 	for name, group := range p.Groups {
-		file, err := os.Create(groupPath(destDir, name))
+		file, err := os.Create(p.groupPath(destDir, name))
 		if err != nil {
 			return err
 		}
