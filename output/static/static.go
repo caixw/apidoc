@@ -311,7 +311,7 @@ var Templates=map[string]string{
             {{end}}
         {{end}}
 {{end}}
-`,"./header.html":`{{define "header"}}<!doctype html>
+`,"./header.html":`{{define "header" -}}<!doctype html>
 <html>
     <head>
         <meta charset="utf-8" />
@@ -347,7 +347,7 @@ var Templates=map[string]string{
             </div>
         </header>
         <div class="main">
-{{end}}
+{{- end}}
 `,"./footer.html":`{{define "footer"}}
     </div><!-- end .main -->
         <footer>

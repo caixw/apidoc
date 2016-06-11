@@ -68,8 +68,14 @@ func html(docs *doc.Doc, opt *Options) error {
 			"groupURL": p.groupURL,
 		})
 
-	for _, content := range static.Templates {
-		template.Must(t.Parse(content))
+	if len(opt.Template) > 0 { // 自定义模板
+		if _, err := t.ParseGlob(path.Join(opt.Template, "*.html")); err != nil {
+			return err
+		}
+	} else { // 系统模板
+		for _, content := range static.Templates {
+			template.Must(t.Parse(content))
+		}
 	}
 
 	return p.render(t, opt.Dir)
