@@ -10,7 +10,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-// go1.6 BenchmarkDoc_Scan-4    	   50000	     26932 ns/op
+// go1.6 BenchmarkDoc_Scan-4    	   50000	     33875 ns/op
 func BenchmarkDoc_Scan(b *testing.B) {
 	code := `
 @api get /baseurl/api/login api summary

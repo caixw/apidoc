@@ -75,9 +75,8 @@ func genConfigFile() error {
 			Lang:      lang,
 		},
 		Output: &output.Options{
-			Type:  "html",
-			Title: "APIDOC",
-			Dir:   "./apidoc",
+			Type: "html",
+			Dir:  "./apidoc",
 		},
 	}
 	data, err := json.MarshalIndent(cfg, "", "    ")

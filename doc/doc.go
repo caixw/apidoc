@@ -9,8 +9,11 @@ import "sync"
 
 // Doc 表示一个项目的完整文档列表。
 type Doc struct {
-	Apis []*API
-	mux  sync.Mutex
+	Title   string // 文档标题
+	Version string // 文档的版本号
+	Content string // 首页的简要介绍内容
+	Apis    []*API
+	mux     sync.Mutex // 控制 Apis 字段的多协程写入
 }
 
 // API 表示一个 API 文档。

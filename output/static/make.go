@@ -23,7 +23,7 @@ const (
 // 指定所有需要序列化的文件名。
 var files = []string{
 	"./style.css",
-	"./jquery-2.1.4.min.js",
+	"./jquery-3.0.0.min.js",
 }
 
 // 需要序列化的模板文件。
@@ -57,7 +57,7 @@ func main() {
 	}
 }
 
-// 输出files变量的整体。
+// 输出 files 变量的整体。
 func makeStatic(w *bufio.Writer) {
 	w.WriteString("var files=map[string][]byte{\n")
 	for _, file := range files {
@@ -76,7 +76,7 @@ func makeStatic(w *bufio.Writer) {
 	w.WriteString("}\n")
 }
 
-// 输出template变量的整体。
+// 输出 template 变量的整体。
 func makeTemplates(w *bufio.Writer) {
 	w.WriteString("var Templates=map[string]string{\n")
 	for _, file := range templates {

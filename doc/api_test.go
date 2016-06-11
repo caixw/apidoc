@@ -110,6 +110,32 @@ func TestScanAPI(t *testing.T) {
 	a.ErrorType(l.scanAPI(api), synerr)
 }
 
+func TestScanAPIDoc(t *testing.T) {
+	a := assert.New(t)
+
+	code := `2.0.1 title of apidoc
+
+line1
+line2`
+
+	l := newLexer([]rune(code))
+	a.NotNil(l)
+	doc := &Doc{}
+
+	a.NotError(l.scanAPIDoc(doc))
+	a.Equal(doc.Version, "2.0.1").
+		Equal(doc.Title, "title of apidoc").
+		Equal(doc.Content, "\n\nline1\nline2")
+
+		// 重复内容，报错
+	code = `2.0.2 title of apidoc2
+		@apiBaseURL http://api.caixw.io
+line1
+line2`
+	l = newLexer([]rune(code))
+	a.Error(l.scanAPIDoc(doc))
+}
+
 func TestScanAPIRequest(t *testing.T) {
 	a := assert.New(t)
 	api := &API{}

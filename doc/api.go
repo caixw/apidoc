@@ -16,6 +16,10 @@ func (doc *Doc) Scan(data []rune) *app.SyntaxError {
 	l := newLexer(data)
 	api := &API{}
 
+	if l.matchTag("@apidoc") {
+		return l.scanAPIDoc(doc)
+	}
+
 LOOP:
 	for {
 		switch {
@@ -118,6 +122,23 @@ func checkAPI(api *API) *app.SyntaxError {
 	default:
 		return nil
 	}
+}
+
+// @apidoc version title
+//
+// content1
+// content2
+func (l *lexer) scanAPIDoc(d *Doc) *app.SyntaxError {
+	if len(d.Title) > 0 || len(d.Version) > 0 {
+		return l.syntaxError("重复的 @apidoc 标签")
+	}
+
+	// @apidoc 标签之后，不再关注是否还有其它标签，直到文本最后，所以不用 readTag 函数。
+	d.Version = l.readWord()
+	d.Title = l.readLine()
+	d.Content = string(l.data[l.pos:])
+
+	return nil
 }
 
 // @apiRequest json,xml

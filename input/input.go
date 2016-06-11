@@ -95,6 +95,10 @@ func Parse(o *Options) (*doc.Doc, error) {
 		}(path)
 	}
 
+	if len(docs.Title) == 0 {
+		docs.Title = app.DefaultTitle
+	}
+
 	return docs, nil
 }
 

@@ -10,6 +10,14 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestLexer_readLine(t *testing.T) {
+	a := assert.New(t)
+	l := &lexer{data: []rune(" line1\n line2 \n")}
+
+	a.Equal(l.readLine(), []rune("line1"))
+	a.Equal(l.readLine(), []rune("line2"))
+}
+
 func TestLexer_lineNumber(t *testing.T) {
 	a := assert.New(t)
 	l := newLexer([]rune("\n\n"))
