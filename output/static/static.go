@@ -170,6 +170,9 @@ return j.call(r(a),c)})),b))for(;i>h;h++)b(a[h],c,g?d:d.call(a[h],h,b(a[h],c)));
 `),}
 var Templates=map[string]string{
 "./index.html":`{{define "index"}}
+
+    {{template "header" .}}
+
     <div class="main">
         <h1>{{.Title}}</h1>
         <article>
@@ -178,11 +181,26 @@ var Templates=map[string]string{
 
         <h2>模块列表</h2>
         {{range $key, $val := .Groups}}
-            <h2><a href="{{$val}}">{{$key}}</a></h2>
+            <h2><a href="{{$key|groupURL}}">{{$key}}</a></h2>
         {{end}}
     </div>
+
+    {{template "footer" .}}
+
 {{end}}
 `,"./group.html":`{{define "group"}}
+
+    {{template "header" .}}
+
+    {{range .Group}}
+        {{template "api" .}}
+    {{end}}
+
+    {{template "footer" .}}
+
+{{end}}
+
+{{define "api"}}
 <section class="api method-{{.Method}}">
     <h3>
         <span class="method">{{.Method}}</span>
@@ -301,8 +319,8 @@ var Templates=map[string]string{
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="generator" content="{{.AppOfficialURL}}" />
         <title>
-        {{if .CurrGroup}}
-            {{.Title}} &#8250; {{.CurrGroup}}
+        {{if .GroupName}}
+            {{.GroupName}} &#8250; {{.Title}}
         {{else}}
             {{.Title}}
         {{end}}
@@ -315,9 +333,9 @@ var Templates=map[string]string{
             <span class="title"><a href="./index.html">{{.Title}}</a></span>
             {{if .Version}}<span>{{.Version}}</span>{{end}}
             <select id="groups">
-                {{$currGroup := .CurrGroup}}
+                {{$currGroup := .GroupName}}
                 {{range $key, $val := .Groups}}
-                <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$val}}">{{$key}}</option>
+                <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
                 {{end}}
             </select>
             <div class="fr filter">

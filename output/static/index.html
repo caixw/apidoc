@@ -1,4 +1,7 @@
 {{define "index"}}
+
+    {{template "header" .}}
+
     <div class="main">
         <h1>{{.Title}}</h1>
         <article>
@@ -7,7 +10,10 @@
 
         <h2>模块列表</h2>
         {{range $key, $val := .Groups}}
-            <h2><a href="{{$val}}">{{$key}}</a></h2>
+            <h2><a href="{{$key|groupURL}}">{{$key}}</a></h2>
         {{end}}
     </div>
+
+    {{template "footer" .}}
+
 {{end}}

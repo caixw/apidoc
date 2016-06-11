@@ -6,8 +6,8 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="generator" content="{{.AppOfficialURL}}" />
         <title>
-        {{if .CurrGroup}}
-            {{.Title}} &#8250; {{.CurrGroup}}
+        {{if .GroupName}}
+            {{.GroupName}} &#8250; {{.Title}}
         {{else}}
             {{.Title}}
         {{end}}
@@ -20,9 +20,9 @@
             <span class="title"><a href="./index.html">{{.Title}}</a></span>
             {{if .Version}}<span>{{.Version}}</span>{{end}}
             <select id="groups">
-                {{$currGroup := .CurrGroup}}
+                {{$currGroup := .GroupName}}
                 {{range $key, $val := .Groups}}
-                <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$val}}">{{$key}}</option>
+                <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
                 {{end}}
             </select>
             <div class="fr filter">

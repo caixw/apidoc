@@ -57,7 +57,7 @@ func main() {
 	}
 }
 
-// 输出files变量的整体。
+// 输出 files 变量的整体。
 func makeStatic(w *bufio.Writer) {
 	w.WriteString("var files=map[string][]byte{\n")
 	for _, file := range files {
@@ -76,7 +76,7 @@ func makeStatic(w *bufio.Writer) {
 	w.WriteString("}\n")
 }
 
-// 输出template变量的整体。
+// 输出 template 变量的整体。
 func makeTemplates(w *bufio.Writer) {
 	w.WriteString("var Templates=map[string]string{\n")
 	for _, file := range templates {

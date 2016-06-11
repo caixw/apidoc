@@ -7,6 +7,7 @@ package output
 import (
 	"html/template"
 	"os"
+	"path"
 	"path/filepath"
 	"time"
 
@@ -15,24 +16,43 @@ import (
 	"github.com/caixw/apidoc/output/static"
 )
 
+const (
+	suffix = ".html"
+)
+
 // 用于页首和页脚的附加信息
 type page struct {
-	Content        string            // 首页的内容
-	Groups         map[string]string // 分组名称与文件的对照表
-	CurrGroup      string            // 当前所在的分组页，若为空，表示在列表页
-	Date           string            // 生成日期
-	Version        string            // 文档版本
-	AppVersion     string            // apidoc 的版本号
-	AppName        string            // 程序名称
-	AppRepoURL     string            // 仓库地址
-	AppOfficialURL string            // 官网地址
-	Title          string            // 标题
-	Elapsed        time.Duration     // 生成文档所用的时间
+	Content        string                // 首页的内容
+	Groups         map[string][]*doc.API // 按组名形式组织的文档集合
+	GroupName      string                // 当前分组名称
+	Group          []*doc.API            // 当前组的文档集合
+	Date           string                // 生成日期
+	Version        string                // 文档版本
+	AppVersion     string                // apidoc 的版本号
+	AppName        string                // 程序名称
+	AppRepoURL     string                // 仓库地址
+	AppOfficialURL string                // 官网地址
+	Title          string                // 标题
+	Elapsed        time.Duration         // 生成文档所用的时间
+}
+
+// 根据分组名称获取相应的 url 地址。
+func groupURL(groupName string) string {
+	return path.Join(".", "group_"+groupName+suffix)
+}
+
+// 根据分组名称获取相应的文件地址。
+func groupPath(parent, groupName string) string {
+	return filepath.Join(parent, "group_"+groupName+suffix)
 }
 
 // 将 docs 的内容以 html 格式输出。
 func html(docs *doc.Doc, opt *Options) error {
-	t := template.New("html")
+	t := template.New("html").
+		Funcs(template.FuncMap{
+			"groupURL": groupURL,
+		})
+
 	for _, content := range static.Templates {
 		template.Must(t.Parse(content))
 	}
@@ -47,23 +67,22 @@ func html(docs *doc.Doc, opt *Options) error {
 		AppOfficialURL: app.OfficialURL,
 		Elapsed:        opt.Elapsed,
 		Date:           time.Now().Format(time.RFC3339), // TODO 可以自定义时间格式？
-		Groups:         make(map[string]string, len(docs.Apis)),
+		Groups:         make(map[string][]*doc.API, 100),
 	}
 
-	groups := map[string][]*doc.API{}
-	for _, v := range docs.Apis {
-		p.Groups[v.Group] = "./group_" + v.Group + ".html"
-		if groups[v.Group] == nil {
-			groups[v.Group] = []*doc.API{}
+	// 按分组名称进行分类
+	for _, api := range docs.Apis {
+		if p.Groups[api.Group] == nil {
+			p.Groups[api.Group] = []*doc.API{}
 		}
-		groups[v.Group] = append(groups[v.Group], v)
+		p.Groups[api.Group] = append(p.Groups[api.Group], api)
 	}
 
 	if err := outputIndex(t, p, opt.Dir); err != nil {
 		return err
 	}
 
-	if err := outputGroup(groups, t, p, opt.Dir); err != nil {
+	if err := outputGroup(t, p, opt.Dir); err != nil {
 		return err
 	}
 
@@ -79,40 +98,21 @@ func outputIndex(t *template.Template, p *page, destDir string) error {
 	}
 	defer index.Close()
 
-	err = t.ExecuteTemplate(index, "header", p)
-	if err != nil {
-		return err
-	}
-
-	err = t.ExecuteTemplate(index, "index", p)
-	if err != nil {
-		return err
-	}
-	return t.ExecuteTemplate(index, "footer", p)
+	return t.ExecuteTemplate(index, "index", p)
 }
 
 // 按分组输出内容页
-func outputGroup(apis map[string][]*doc.API, t *template.Template, p *page, destDir string) error {
-	for k, v := range apis {
-		group, err := os.Create(filepath.Join(destDir, "group_"+k+".html"))
+func outputGroup(t *template.Template, p *page, destDir string) error {
+	for name, group := range p.Groups {
+		file, err := os.Create(groupPath(destDir, name))
 		if err != nil {
 			return err
 		}
-		defer group.Close()
+		defer file.Close()
 
-		p.CurrGroup = k
-		err = t.ExecuteTemplate(group, "header", p)
-		if err != nil {
-			return err
-		}
-		for _, d := range v {
-			err = t.ExecuteTemplate(group, "group", d)
-			if err != nil {
-				return err
-			}
-		}
-		err = t.ExecuteTemplate(group, "footer", p)
-		if err != nil {
+		p.GroupName = name
+		p.Group = group
+		if err = t.ExecuteTemplate(file, "group", p); err != nil {
 			return err
 		}
 	}

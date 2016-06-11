@@ -1,4 +1,16 @@
 {{define "group"}}
+
+    {{template "header" .}}
+
+    {{range .Group}}
+        {{template "api" .}}
+    {{end}}
+
+    {{template "footer" .}}
+
+{{end}}
+
+{{define "api"}}
 <section class="api method-{{.Method}}">
     <h3>
         <span class="method">{{.Method}}</span>
