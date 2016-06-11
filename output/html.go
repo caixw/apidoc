@@ -17,6 +17,7 @@ import (
 
 // 用于页首和页脚的附加信息
 type page struct {
+	Content        string            // 首页的内容
 	Groups         map[string]string // 分组名称与文件的对照表
 	CurrGroup      string            // 当前所在的分组页，若为空，表示在列表页
 	Date           string            // 生成日期
@@ -37,6 +38,7 @@ func html(docs *doc.Doc, opt *Options) error {
 	}
 
 	p := &page{
+		Content:        docs.Content,
 		Title:          docs.Title,
 		Version:        docs.Version,
 		AppVersion:     app.Version,

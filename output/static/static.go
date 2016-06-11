@@ -171,7 +171,12 @@ return j.call(r(a),c)})),b))for(;i>h;h++)b(a[h],c,g?d:d.call(a[h],h,b(a[h],c)));
 var Templates=map[string]string{
 "./index.html":`{{define "index"}}
     <div class="main">
-        <h1>模块列表</h1>
+        <h1>{{.Title}}</h1>
+        <article>
+            {{.Content}}
+        </article>
+
+        <h2>模块列表</h2>
         {{range $key, $val := .Groups}}
             <h2><a href="{{$val}}">{{$key}}</a></h2>
         {{end}}
