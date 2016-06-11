@@ -14,6 +14,10 @@
         {{end}}
     </div>
 
+    {{range .IndexGroup}}
+        {{template "api" .}}
+    {{end}}
+
     {{template "footer" .}}
 
 {{end}}

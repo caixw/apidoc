@@ -113,8 +113,6 @@ func apiIsEmpty(api *API) bool {
 // 但若整个标签缺失则无能为力，此即 checkAPI 的存在的作用。
 func checkAPI(api *API) *app.SyntaxError {
 	switch {
-	case len(api.Group) == 0:
-		return &app.SyntaxError{Message: "缺少必要的元素 @apiGroup"}
 	case len(api.URL) == 0 || len(api.Method) == 0:
 		return &app.SyntaxError{Message: "缺少必要的元素 @api"}
 	case api.Success == nil && api.Error == nil:

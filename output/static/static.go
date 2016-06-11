@@ -185,6 +185,10 @@ var Templates=map[string]string{
         {{end}}
     </div>
 
+    {{range .IndexGroup}}
+        {{template "api" .}}
+    {{end}}
+
     {{template "footer" .}}
 
 {{end}}
