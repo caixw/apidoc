@@ -32,7 +32,7 @@ type Options struct {
 	Recursive bool     `json:"recursive"`      // 是否查找Dir的子目录
 }
 
-// 检测 Options 变量是否符合要求
+// Init 检测 Options 变量是否符合要求
 func (opt *Options) Init() *app.OptionsError {
 	if len(opt.Dir) == 0 {
 		return &app.OptionsError{Field: "Dir", Message: "不能为空"}
@@ -72,7 +72,7 @@ func (opt *Options) Init() *app.OptionsError {
 	return nil
 }
 
-// 分析源代码，获取相应的文档内容。
+// Parse 分析源代码，获取相应的文档内容。
 func Parse(o *Options) (*doc.Doc, error) {
 	blocks, found := langs[o.Lang]
 	if !found {
@@ -86,17 +86,20 @@ func Parse(o *Options) (*doc.Doc, error) {
 
 	docs := doc.New()
 	wg := sync.WaitGroup{}
-	defer wg.Wait()
+	defer func() {
+		wg.Wait()
+
+		// 要等所有内容解析完了，才能判断默认标题是否为空
+		if len(docs.Title) == 0 {
+			docs.Title = app.DefaultTitle
+		}
+	}()
 	for _, path := range paths {
 		wg.Add(1)
 		go func(path string) {
 			parseFile(docs, path, blocks)
 			wg.Done()
 		}(path)
-	}
-
-	if len(docs.Title) == 0 {
-		docs.Title = app.DefaultTitle
 	}
 
 	return docs, nil

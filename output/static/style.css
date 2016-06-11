@@ -79,6 +79,10 @@ header label{
     border:1px solid rgba(0,255,0,0.5);
 }
 
+.main .method-options{
+    border:1px solid rgba(240,114,11,0.5);
+}
+
 .main .method-delete{
     border:1px solid rgba(255,0,0,0.5);
 }

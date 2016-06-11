@@ -374,4 +374,23 @@ ab @apiIgnore
 	l = len(doc1.Apis)
 	err = doc1.Scan([]rune(code))
 	a.ErrorType(err, synerr)
+
+	// @apidoc
+	code = `@apidoc 1.1 title of api
+
+line1
+line2`
+	l = len(doc1.Apis)
+	a.NotError(doc1.Scan([]rune(code)))
+	a.Equal(doc1.Version, "1.1").
+		Equal(doc1.Title, "title of api").
+		Equal(doc1.Content, "\n\nline1\nline2")
+
+		// @apidoc 上面已经有一个了，重复会报错。
+	code = `@apidoc 1.1 title of api
+
+line1
+line2`
+	l = len(doc1.Apis)
+	a.ErrorType(doc1.Scan([]rune(code)), synerr)
 }

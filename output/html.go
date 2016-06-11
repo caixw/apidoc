@@ -18,14 +18,14 @@ import (
 
 // 输出页面的一些自定义项
 const (
-	groupPrefix = "group_"
-	indexName   = "index"
-	suffix      = ".html"
+	groupPrefix = "group_" // 分组文件的前缀
+	indexName   = "index"  // 索引文件名
+	suffix      = ".html"  // 文件后缀名
 )
 
 // 用于页首和页脚的附加信息
 type page struct {
-	Content        string                // 首页的内容
+	Content        string                // 索引文件的其它内容
 	Groups         map[string][]*doc.API // 按组名形式组织的文档集合
 	GroupName      string                // 当前分组名称
 	Group          []*doc.API            // 当前组的文档集合

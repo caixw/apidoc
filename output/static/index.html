@@ -4,9 +4,12 @@
 
     <div class="main">
         <h1>{{.Title}}</h1>
+
+        {{if .Content}}
         <article>
             {{.Content}}
         </article>
+        {{end}}
 
         <h2>模块列表</h2>
         {{range $key, $val := .Groups}}
