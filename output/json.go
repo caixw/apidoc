@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/caixw/apidoc/doc"
@@ -26,10 +27,11 @@ type jsonPage struct {
 func renderJSON(docs *doc.Doc, opt *Options) error {
 	groups := make(map[string][]*doc.API, 100)
 	for _, api := range docs.Apis {
-		if groups[api.Group] == nil {
-			groups[api.Group] = []*doc.API{}
+		name := strings.ToLower(api.Group)
+		if groups[name] == nil {
+			groups[name] = []*doc.API{}
 		}
-		groups[api.Group] = append(groups[api.Group], api)
+		groups[name] = append(groups[name], api)
 	}
 
 	page := &jsonPage{

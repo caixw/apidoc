@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -56,10 +57,11 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 	}
 
 	for _, api := range docs.Apis { // 按分组名称进行分类
-		if p.Groups[api.Group] == nil {
-			p.Groups[api.Group] = []*doc.API{}
+		name := strings.ToLower(api.Group)
+		if p.Groups[name] == nil {
+			p.Groups[name] = []*doc.API{}
 		}
-		p.Groups[api.Group] = append(p.Groups[api.Group], api)
+		p.Groups[name] = append(p.Groups[name], api)
 	}
 
 	return renderHTMLGroups(p, t, opt.Dir)
