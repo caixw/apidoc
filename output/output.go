@@ -40,7 +40,7 @@ func (o *Options) Init() *app.OptionsError {
 		return &app.OptionsError{Field: "Type", Message: "不支持该类型"}
 	}
 
-	if o.Type == "html" {
+	if o.Type == "html" { // 只有 html 才需要判断模板文件是否存在
 		if len(o.Template) > 0 && !utils.FileExists(o.Template) {
 			return &app.OptionsError{Field: "Template", Message: "模板目录不存在"}
 		}
@@ -53,9 +53,9 @@ func (o *Options) Init() *app.OptionsError {
 func Render(docs *doc.Doc, o *Options) error {
 	switch o.Type {
 	case "html":
-		return html(docs, o)
+		return renderHTML(docs, o)
 	case "json":
-		return json(docs, o)
+		return renderJSON(docs, o)
 	default:
 		return fmt.Errorf("不支持的渲染方式:[%v]", o.Type)
 	}

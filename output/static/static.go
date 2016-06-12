@@ -192,7 +192,7 @@ var Templates=map[string]string{
         {{end}}
     </div>
 
-    {{range .IndexGroup}}
+    {{range .Group}}
         {{template "api" .}}
     {{end}}
 

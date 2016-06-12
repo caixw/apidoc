@@ -5,7 +5,7 @@
 package output
 
 import (
-	j "encoding/json"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"time"
@@ -13,71 +13,53 @@ import (
 	"github.com/caixw/apidoc/doc"
 )
 
-type jsonData struct {
+type jsonPage struct {
 	Title     string        `json:"title"`
-	Version   string        `json:"version"`
+	Version   string        `json:"version,omitempty"`
+	Content   string        `json:"content,omitempty"`
 	Date      time.Time     `json:"date"`
 	Elapsed   time.Duration `json:"elapsed"`
-	Content   string        `json:"content"`
-	GroupName string        `json:"groupName"`
-	Apis      []*doc.API    `json:"apis"`
+	GroupName string        `json:"groupName"` // 当前分组的名称
+	Apis      []*doc.API    `json:"apis"`      // 当前分组的 api 文档
 }
 
-func json(docs *doc.Doc, opt *Options) error {
-	indexGroup := make([]*doc.API, 0, 100)
+func renderJSON(docs *doc.Doc, opt *Options) error {
 	groups := make(map[string][]*doc.API, 100)
-
 	for _, api := range docs.Apis {
-		if len(api.Group) == 0 { // 未指定分组名称，则归类到索引页的文档
-			indexGroup = append(indexGroup, api)
-			continue
-		}
-
 		if groups[api.Group] == nil {
 			groups[api.Group] = []*doc.API{}
 		}
 		groups[api.Group] = append(groups[api.Group], api)
 	}
 
-	page := &jsonData{
+	page := &jsonPage{
 		Title:   docs.Title,
 		Version: docs.Version,
 		Date:    time.Now(),
 		Elapsed: opt.Elapsed,
 		Content: docs.Content,
 	}
-	if len(indexGroup) > 0 {
-		file, err := os.Create(filepath.Join(opt.Dir, indexName+".json"))
+
+	return renderJSONGroups(page, groups, opt.Dir)
+}
+
+func renderJSONGroups(p *jsonPage, groups map[string][]*doc.API, destDir string) error {
+	for p.GroupName, p.Apis = range groups {
+		path := filepath.Join(destDir, p.GroupName+".json")
+		file, err := os.Create(path)
 		if err != nil {
 			return err
 		}
-		page.Apis = indexGroup
-		page.GroupName = ""
-		data, err := j.MarshalIndent(page, "", "    ")
+		defer file.Close()
+
+		data, err := json.MarshalIndent(p, "", "    ")
 		if err != nil {
 			return err
 		}
-		if _, err := file.Write(data); err != nil {
+
+		if _, err = file.Write(data); err != nil {
 			return err
 		}
 	}
-
-	for name, apis := range groups {
-		file, err := os.Create(filepath.Join(opt.Dir, groupPrefix+name+".json"))
-		if err != nil {
-			return err
-		}
-
-		page.Apis = apis
-		page.GroupName = name
-		data, err := j.MarshalIndent(page, "", "    ")
-		if err != nil {
-			return err
-		}
-		if _, err := file.Write(data); err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
