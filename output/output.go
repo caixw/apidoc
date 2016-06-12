@@ -18,6 +18,7 @@ import (
 // 支持的渲染方式
 var renderTypes = []string{
 	"html",
+	"json",
 }
 
 // 渲染输出的相关设置项。
@@ -48,11 +49,13 @@ func (o *Options) Init() *app.OptionsError {
 	return nil
 }
 
-// 渲染 docs 的内容，具体的渲染参数由 o 指定。
+// Render 渲染 docs 的内容，具体的渲染参数由 o 指定。
 func Render(docs *doc.Doc, o *Options) error {
 	switch o.Type {
 	case "html":
 		return html(docs, o)
+	case "json":
+		return json(docs, o)
 	default:
 		return fmt.Errorf("不支持的渲染方式:[%v]", o.Type)
 	}
