@@ -33,5 +33,4 @@ _testmain.go
 apidoc
 
 # project
-output/testdir
 .apidoc.json
