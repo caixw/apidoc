@@ -85,7 +85,7 @@ header label{
 }
 
 .main .method-options{
-    border:1px solid rgba(240,114,11,0.5);
+    border:1px solid rgba(0,255,0,0.5);
 }
 
 .main .method-delete{
@@ -98,15 +98,6 @@ header label{
 
 .main .method-post{
     border:1px solid rgba(240,114,11,0.5);
-}
-
-.main h1{
-    border-bottom:1px solid #eee;
-    margin-left:40%;
-}
-
-.main h2{
-    margin-left:40%;
 }
 
 .main h3{
@@ -177,20 +168,11 @@ var Templates=map[string]string{
 
     {{template "header" .}}
 
-    <div class="main">
-        <h1>{{.Title}}</h1>
-
-        {{if .Content}}
-        <article>
-            {{.Content}}
-        </article>
-        {{end}}
-
-        <h2>模块列表</h2>
-        {{range $key, $val := .Groups}}
-            <h2><a href="{{$key|groupURL}}">{{$key}}</a></h2>
-        {{end}}
-    </div>
+    {{if .Content}}
+    <article>
+        {{.Content}}
+    </article>
+    {{end}}
 
     {{range .Group}}
         {{template "api" .}}
@@ -200,7 +182,6 @@ var Templates=map[string]string{
 
 {{end}}
 `,"./group.html":`{{define "group"}}
-
     {{template "header" .}}
 
     {{range .Group}}
@@ -208,7 +189,6 @@ var Templates=map[string]string{
     {{end}}
 
     {{template "footer" .}}
-
 {{end}}
 
 {{define "api"}}
@@ -322,7 +302,7 @@ var Templates=map[string]string{
             {{end}}
         {{end}}
 {{end}}
-`,"./header.html":`{{define "header" -}}<!doctype html>
+`,"./header.html":`{{define "header" -}}<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8" />

@@ -80,7 +80,7 @@ header label{
 }
 
 .main .method-options{
-    border:1px solid rgba(240,114,11,0.5);
+    border:1px solid rgba(0,255,0,0.5);
 }
 
 .main .method-delete{
@@ -93,15 +93,6 @@ header label{
 
 .main .method-post{
     border:1px solid rgba(240,114,11,0.5);
-}
-
-.main h1{
-    border-bottom:1px solid #eee;
-    margin-left:40%;
-}
-
-.main h2{
-    margin-left:40%;
 }
 
 .main h3{
