@@ -21,37 +21,13 @@ LOOP:
 		case l.matchTag("@apidoc"):
 			return l.scanAPIDoc(d)
 		case l.matchTag("@apiIgnore"):
-			api = nil
-			break LOOP
+			return nil
 		case l.matchTag("@apiGroup"):
-			t := l.readTag()
-			api.Group = t.readWord()
-			if len(api.Group) == 0 {
-				return l.syntaxError("@apiGroup 未指定名称")
-			}
-			if !t.atEOF() {
-				l.syntaxError("@apiGroup 参数过多")
-			}
+			err = l.scanGroup(api)
 		case l.matchTag("@apiQuery"):
-			if api.Queries == nil {
-				api.Queries = make([]*Param, 0, 1)
-			}
-
-			p, err := l.scanAPIParam()
-			if err != nil {
-				return err
-			}
-			api.Queries = append(api.Queries, p)
+			err = l.scanAPIQueries(api)
 		case l.matchTag("@apiParam"):
-			if api.Params == nil {
-				api.Params = make([]*Param, 0, 1)
-			}
-
-			p, err := l.scanAPIParam()
-			if err != nil {
-				return err
-			}
-			api.Params = append(api.Params, p)
+			err = l.scanAPIParams(api)
 		case l.matchTag("@apiRequest"):
 			err = l.scanAPIRequest(api)
 		case l.matchTag("@apiError"):
@@ -136,6 +112,47 @@ func (l *lexer) scanAPIDoc(d *Doc) *app.SyntaxError {
 	d.Title = l.readLine()
 	d.Content = string(l.data[l.pos:])
 
+	return nil
+}
+
+func (l *lexer) scanGroup(api *API) *app.SyntaxError {
+	t := l.readTag()
+
+	api.Group = t.readWord()
+	if len(api.Group) == 0 {
+		return l.syntaxError("@apiGroup 未指定名称")
+	}
+
+	if !t.atEOF() {
+		l.syntaxError("@apiGroup 参数过多")
+	}
+
+	return nil
+}
+
+func (l *lexer) scanAPIQueries(api *API) *app.SyntaxError {
+	if api.Queries == nil {
+		api.Queries = make([]*Param, 0, 1)
+	}
+
+	p, err := l.scanAPIParam()
+	if err != nil {
+		return err
+	}
+	api.Queries = append(api.Queries, p)
+	return nil
+}
+
+func (l *lexer) scanAPIParams(api *API) *app.SyntaxError {
+	if api.Params == nil {
+		api.Params = make([]*Param, 0, 1)
+	}
+
+	p, err := l.scanAPIParam()
+	if err != nil {
+		return err
+	}
+	api.Params = append(api.Params, p)
 	return nil
 }
 

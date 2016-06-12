@@ -68,7 +68,7 @@ func flags() bool {
 		flag.Usage()
 		return true
 	case *v:
-		fmt.Println("apidoc", app.Version, "build with", runtime.Version())
+		fmt.Println(app.Name, app.Version, "build with", runtime.Version())
 		return true
 	case *l:
 		langs := "[" + strings.Join(input.Langs(), ", ") + "]"
