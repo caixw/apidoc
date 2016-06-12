@@ -83,6 +83,10 @@ LOOP:
 		return err
 	}
 
+	if len(api.Group) == 0 {
+		api.Group = app.DefaultGroupName
+	}
+
 	d.mux.Lock()
 	d.Apis = append(d.Apis, api)
 	d.mux.Unlock()

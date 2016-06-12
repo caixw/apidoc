@@ -16,20 +16,15 @@ import (
 	"github.com/caixw/apidoc/output/static"
 )
 
-// 输出页面的一些自定义项
-const (
-	groupPrefix = "group_" // 分组文件的前缀
-	indexName   = "index"  // 索引文件名
-	suffix      = ".html"  // 文件后缀名
-)
+// 输出的 html 文件后缀名
+const htmlSuffix = ".html"
 
 // 用于页首和页脚的附加信息
-type page struct {
+type htmlPage struct {
 	Content        string                // 索引文件的其它内容
 	Groups         map[string][]*doc.API // 按组名形式组织的文档集合
 	GroupName      string                // 当前分组名称
 	Group          []*doc.API            // 当前组的文档集合
-	IndexGroup     []*doc.API            // 索引页的文档列表
 	Date           string                // 生成日期
 	Version        string                // 文档版本
 	AppVersion     string                // apidoc 的版本号
@@ -41,8 +36,13 @@ type page struct {
 }
 
 // 将 docs 的内容以 html 格式输出。
-func html(docs *doc.Doc, opt *Options) error {
-	p := &page{
+func renderHTML(docs *doc.Doc, opt *Options) error {
+	t, err := compileHTMLTemplate(opt)
+	if err != nil {
+		return err
+	}
+
+	p := &htmlPage{
 		Content:        docs.Content,
 		Title:          docs.Title,
 		Version:        docs.Version,
@@ -53,31 +53,30 @@ func html(docs *doc.Doc, opt *Options) error {
 		Elapsed:        opt.Elapsed,
 		Date:           time.Now().Format(time.RFC3339), // TODO 可以自定义时间格式？
 		Groups:         make(map[string][]*doc.API, 100),
-		IndexGroup:     make([]*doc.API, 0, 100),
 	}
 
-	// 按分组名称进行分类
-	for _, api := range docs.Apis {
-		if len(api.Group) == 0 { // 未指定分组名称，则归类到索引页的文档
-			p.IndexGroup = append(p.IndexGroup, api)
-			continue
-		}
-
+	for _, api := range docs.Apis { // 按分组名称进行分类
 		if p.Groups[api.Group] == nil {
 			p.Groups[api.Group] = []*doc.API{}
 		}
 		p.Groups[api.Group] = append(p.Groups[api.Group], api)
 	}
 
-	// 编译模板
+	return renderHTMLGroups(p, t, opt.Dir)
+}
+
+// 编译模板
+func compileHTMLTemplate(opt *Options) (*template.Template, error) {
 	t := template.New("html").
 		Funcs(template.FuncMap{
-			"groupURL": p.groupURL,
+			"groupURL": func(name string) string {
+				return path.Join(".", name+htmlSuffix)
+			},
 		})
 
 	if len(opt.Template) > 0 { // 自定义模板
 		if _, err := t.ParseGlob(path.Join(opt.Template, "*.html")); err != nil {
-			return err
+			return nil, err
 		}
 	} else { // 系统模板
 		for _, content := range static.Templates {
@@ -85,48 +84,14 @@ func html(docs *doc.Doc, opt *Options) error {
 		}
 	}
 
-	return p.render(t, opt.Dir)
-}
-
-// 根据分组名称获取相应的 url 地址。
-func (p *page) groupURL(groupName string) string {
-	return path.Join(".", groupPrefix+groupName+suffix)
-}
-
-// 根据分组名称获取相应的文件地址。
-func (p *page) groupPath(parent, groupName string) string {
-	return filepath.Join(parent, groupPrefix+groupName+suffix)
+	return t, nil
 }
 
 // 根据模板 t 将页面输出到 destDir 目录
-func (p *page) render(t *template.Template, destDir string) error {
-	if err := p.renderIndex(t, destDir); err != nil {
-		return err
-	}
-
-	if err := p.renderGroup(t, destDir); err != nil {
-		return err
-	}
-
-	// 输出static
-	return static.Output(destDir)
-}
-
-// 输出索引页
-func (p *page) renderIndex(t *template.Template, destDir string) error {
-	index, err := os.Create(filepath.Join(destDir, indexName+suffix))
-	if err != nil {
-		return err
-	}
-	defer index.Close()
-
-	return t.ExecuteTemplate(index, "index", p)
-}
-
-// 按分组输出内容页
-func (p *page) renderGroup(t *template.Template, destDir string) error {
+func renderHTMLGroups(p *htmlPage, t *template.Template, destDir string) error {
 	for name, group := range p.Groups {
-		file, err := os.Create(p.groupPath(destDir, name))
+		path := filepath.Join(destDir, name+htmlSuffix)
+		file, err := os.Create(path)
 		if err != nil {
 			return err
 		}
@@ -134,9 +99,16 @@ func (p *page) renderGroup(t *template.Template, destDir string) error {
 
 		p.GroupName = name
 		p.Group = group
-		if err = t.ExecuteTemplate(file, "group", p); err != nil {
+
+		tplName := "group"
+		if name == app.DefaultGroupName {
+			tplName = "index"
+		}
+		if err = t.ExecuteTemplate(file, tplName, p); err != nil {
 			return err
 		}
 	}
-	return nil
+
+	// 输出static
+	return static.Output(destDir)
 }

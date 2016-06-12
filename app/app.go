@@ -13,7 +13,7 @@ const (
 	//
 	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则，分成以下四个部分：
 	// 主版本号.次版本号.修订号.修订日期
-	Version = "2.9.78.160611"
+	Version = "2.11.80.160612"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -29,6 +29,9 @@ const (
 
 	// 默认的文档标题
 	DefaultTitle = "APIDOC"
+
+	// 默认的分组名称，同时也是默认的索引文件名
+	DefaultGroupName = "index"
 )
 
 // 向终端输出信息

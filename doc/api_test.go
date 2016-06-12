@@ -262,7 +262,6 @@ func TestDoc_Scan(t *testing.T) {
 @api get /baseurl/api/login api summary
 api description 1
 api description 2
-@apiGroup users
 @apiQuery q1 int q1 summary
 @apiQuery q2 int q2 summary
 @apiParam p1 int p1 summary
@@ -293,7 +292,7 @@ api description 2
 	d := doc1.Apis[0]
 
 	a.Equal(d.URL, "/baseurl/api/login").
-		Equal(d.Group, "users").
+		Equal(d.Group, app.DefaultGroupName).
 		Equal(d.Summary, "api summary").
 		Equal(d.Description, "api description 1\napi description 2")
 
