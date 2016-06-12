@@ -7,18 +7,20 @@ package output
 import (
 	j "encoding/json"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/caixw/apidoc/doc"
 )
 
 type jsonData struct {
-	Title   string        `json:"title"`
-	Version string        `json:"version"`
-	Date    time.Time     `json:"date"`
-	Elapsed time.Duration `json:"elapsed"`
-	Content string        `json:"content"`
-	Apis    []*doc.API    `json:"apis"`
+	Title     string        `json:"title"`
+	Version   string        `json:"version"`
+	Date      time.Time     `json:"date"`
+	Elapsed   time.Duration `json:"elapsed"`
+	Content   string        `json:"content"`
+	GroupName string        `json:"groupName"`
+	Apis      []*doc.API    `json:"apis"`
 }
 
 func json(docs *doc.Doc, opt *Options) error {
@@ -45,12 +47,13 @@ func json(docs *doc.Doc, opt *Options) error {
 		Content: docs.Content,
 	}
 	if len(indexGroup) > 0 {
-		file, err := os.Create(indexName + ".json")
+		file, err := os.Create(filepath.Join(opt.Dir, indexName+".json"))
 		if err != nil {
 			return err
 		}
 		page.Apis = indexGroup
-		data, err := j.Marshal(page)
+		page.GroupName = ""
+		data, err := j.MarshalIndent(page, "", "    ")
 		if err != nil {
 			return err
 		}
@@ -60,13 +63,14 @@ func json(docs *doc.Doc, opt *Options) error {
 	}
 
 	for name, apis := range groups {
-		file, err := os.Create(groupPrefix + name + ".json")
+		file, err := os.Create(filepath.Join(opt.Dir, groupPrefix+name+".json"))
 		if err != nil {
 			return err
 		}
 
 		page.Apis = apis
-		data, err := j.Marshal(page)
+		page.GroupName = name
+		data, err := j.MarshalIndent(page, "", "    ")
 		if err != nil {
 			return err
 		}

@@ -18,6 +18,7 @@ import (
 // 支持的渲染方式
 var renderTypes = []string{
 	"html",
+	"json",
 }
 
 // 渲染输出的相关设置项。
