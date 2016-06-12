@@ -6,23 +6,20 @@ package doc
 
 import "github.com/caixw/apidoc/app"
 
-// 扫描文档，生成一个 Doc 实例。
+// Scan 扫描文档，生成一个 Doc 实例。
 //
 // 若代码块没有 api 文档定义，则会返回空值。
 // block 该代码块的内容；
-func (doc *Doc) Scan(data []rune) *app.SyntaxError {
-	var err *app.SyntaxError
-
+func (d *Doc) Scan(data []rune) *app.SyntaxError {
 	l := newLexer(data)
 	api := &API{}
 
-	if l.matchTag("@apidoc") {
-		return l.scanAPIDoc(doc)
-	}
-
+	var err *app.SyntaxError
 LOOP:
 	for {
 		switch {
+		case l.matchTag("@apidoc"):
+			return l.scanAPIDoc(d)
 		case l.matchTag("@apiIgnore"):
 			api = nil
 			break LOOP
@@ -86,10 +83,9 @@ LOOP:
 		return err
 	}
 
-	doc.mux.Lock()
-	doc.Apis = append(doc.Apis, api)
-	doc.mux.Unlock()
-
+	d.mux.Lock()
+	d.Apis = append(d.Apis, api)
+	d.mux.Unlock()
 	return nil
 }
 
@@ -113,8 +109,6 @@ func apiIsEmpty(api *API) bool {
 // 但若整个标签缺失则无能为力，此即 checkAPI 的存在的作用。
 func checkAPI(api *API) *app.SyntaxError {
 	switch {
-	case len(api.Group) == 0:
-		return &app.SyntaxError{Message: "缺少必要的元素 @apiGroup"}
 	case len(api.URL) == 0 || len(api.Method) == 0:
 		return &app.SyntaxError{Message: "缺少必要的元素 @api"}
 	case api.Success == nil && api.Error == nil:
@@ -130,7 +124,7 @@ func checkAPI(api *API) *app.SyntaxError {
 // content2
 func (l *lexer) scanAPIDoc(d *Doc) *app.SyntaxError {
 	if len(d.Title) > 0 || len(d.Version) > 0 {
-		return l.syntaxError("重复的 @apidoc 标签")
+		return l.syntaxError("重复的 @apidoc 标签:title=" + d.Title + ",Version=" + d.Version)
 	}
 
 	// @apidoc 标签之后，不再关注是否还有其它标签，直到文本最后，所以不用 readTag 函数。

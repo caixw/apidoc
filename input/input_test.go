@@ -11,6 +11,47 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestParse(t *testing.T) {
+	a := assert.New(t)
+
+	testParse(a, "cpp")
+	testParse(a, "go")
+	testParse(a, "java")
+	testParse(a, "javascript")
+	testParse(a, "perl")
+	testParse(a, "php")
+	testParse(a, "python")
+	testParse(a, "ruby")
+	testParse(a, "rust")
+}
+
+func testParse(a *assert.Assertion, lang string) {
+	o := &Options{
+		Lang:      lang,
+		Dir:       "./testdata/" + lang,
+		Recursive: true,
+	}
+	a.NotError(o.Init()) // 初始化扩展名信息
+
+	docs, err := Parse(o)
+	a.NotError(err).
+		NotNil(docs).
+		Equal(len(docs.Apis), 2)
+
+	// test1.xx
+	api0 := docs.Apis[0]
+	api1 := docs.Apis[1]
+	a.Equal(api0.URL, "/users/login").
+		Equal(api1.URL, "/users/login").
+		Equal(api0.Group, "users").
+		Equal(api1.Group, "users")
+
+		// doc.xx
+	a.Equal(docs.Title, "title of api").
+		Equal(docs.Version, "2.9").
+		Equal(docs.Content, "\n\n line1\n line2\n")
+}
+
 func TestParseFile(t *testing.T) {
 	a := assert.New(t)
 

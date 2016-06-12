@@ -246,7 +246,7 @@ func TestScanResponse(t *testing.T) {
 		Equal(resp.Examples[0].Code, matchCode)
 
 	// 缺少必要的参数
-	code = ` 
+	code = `
 @apiSuccess g
 `
 	l = newLexer([]rune(code))
@@ -333,20 +333,11 @@ license that can be found in the LICENSE file.
 	// @apiGroup
 	code = `
 @api delete /admin/users/{id} delete users
-@apiGroup 
+@apiGroup
 @apiParam id int user id
 `
 	l = len(doc1.Apis)
 	a.ErrorType(doc1.Scan([]rune(code)), synerr) // @apiGroup 少参数
-
-	// 缺少必要的元素 @apiGroup，无法过 checkAPI 这一关
-	code = `
-@api delete /admin/users/{id} delete users
-@apiParam id int user id
-@apiSuccess 200 OK
-`
-	l = len(doc1.Apis)
-	a.ErrorType(doc1.Scan([]rune(code)), synerr)
 
 	// @apiIgnore
 	code = `
@@ -383,4 +374,23 @@ ab @apiIgnore
 	l = len(doc1.Apis)
 	err = doc1.Scan([]rune(code))
 	a.ErrorType(err, synerr)
+
+	// @apidoc
+	code = `@apidoc 1.1 title of api
+
+line1
+line2`
+	l = len(doc1.Apis)
+	a.NotError(doc1.Scan([]rune(code)))
+	a.Equal(doc1.Version, "1.1").
+		Equal(doc1.Title, "title of api").
+		Equal(doc1.Content, "\n\nline1\nline2")
+
+		// @apidoc 上面已经有一个了，重复会报错。
+	code = `@apidoc 1.1 title of api
+
+line1
+line2`
+	l = len(doc1.Apis)
+	a.ErrorType(doc1.Scan([]rune(code)), synerr)
 }

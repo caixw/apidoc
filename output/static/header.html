@@ -17,7 +17,7 @@
     </head>
     <body>
         <header>
-            <span class="title"><a href="./index.html">{{.Title}}</a></span>
+            <a class="title" href="./index.html">{{.Title}}</a>
             {{if .Version}}<span>{{.Version}}</span>{{end}}
             <select id="groups">
                 {{$currGroup := .GroupName}}

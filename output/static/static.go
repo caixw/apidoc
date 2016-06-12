@@ -84,6 +84,10 @@ header label{
     border:1px solid rgba(0,255,0,0.5);
 }
 
+.main .method-options{
+    border:1px solid rgba(240,114,11,0.5);
+}
+
 .main .method-delete{
     border:1px solid rgba(255,0,0,0.5);
 }
@@ -175,15 +179,22 @@ var Templates=map[string]string{
 
     <div class="main">
         <h1>{{.Title}}</h1>
+
+        {{if .Content}}
         <article>
             {{.Content}}
         </article>
+        {{end}}
 
         <h2>模块列表</h2>
         {{range $key, $val := .Groups}}
             <h2><a href="{{$key|groupURL}}">{{$key}}</a></h2>
         {{end}}
     </div>
+
+    {{range .IndexGroup}}
+        {{template "api" .}}
+    {{end}}
 
     {{template "footer" .}}
 
@@ -330,7 +341,7 @@ var Templates=map[string]string{
     </head>
     <body>
         <header>
-            <span class="title"><a href="./index.html">{{.Title}}</a></span>
+            <a class="title" href="./index.html">{{.Title}}</a>
             {{if .Version}}<span>{{.Version}}</span>{{end}}
             <select id="groups">
                 {{$currGroup := .GroupName}}

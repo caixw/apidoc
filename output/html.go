@@ -18,17 +18,18 @@ import (
 
 // 输出页面的一些自定义项
 const (
-	groupPrefix = "group_"
-	indexName   = "index"
-	suffix      = ".html"
+	groupPrefix = "group_" // 分组文件的前缀
+	indexName   = "index"  // 索引文件名
+	suffix      = ".html"  // 文件后缀名
 )
 
 // 用于页首和页脚的附加信息
 type page struct {
-	Content        string                // 首页的内容
+	Content        string                // 索引文件的其它内容
 	Groups         map[string][]*doc.API // 按组名形式组织的文档集合
 	GroupName      string                // 当前分组名称
 	Group          []*doc.API            // 当前组的文档集合
+	IndexGroup     []*doc.API            // 索引页的文档列表
 	Date           string                // 生成日期
 	Version        string                // 文档版本
 	AppVersion     string                // apidoc 的版本号
@@ -52,10 +53,16 @@ func html(docs *doc.Doc, opt *Options) error {
 		Elapsed:        opt.Elapsed,
 		Date:           time.Now().Format(time.RFC3339), // TODO 可以自定义时间格式？
 		Groups:         make(map[string][]*doc.API, 100),
+		IndexGroup:     make([]*doc.API, 0, 100),
 	}
 
 	// 按分组名称进行分类
 	for _, api := range docs.Apis {
+		if len(api.Group) == 0 { // 未指定分组名称，则归类到索引页的文档
+			p.IndexGroup = append(p.IndexGroup, api)
+			continue
+		}
+
 		if p.Groups[api.Group] == nil {
 			p.Groups[api.Group] = []*doc.API{}
 		}
