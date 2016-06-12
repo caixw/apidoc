@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -21,7 +22,7 @@ const htmlSuffix = ".html"
 
 // 用于页首和页脚的附加信息
 type htmlPage struct {
-	Content        string                // 索引文件的其它内容
+	Content        template.HTML         // 索引文件的其它内容
 	Groups         map[string][]*doc.API // 按组名形式组织的文档集合
 	GroupName      string                // 当前分组名称
 	Group          []*doc.API            // 当前组的文档集合
@@ -43,7 +44,7 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 	}
 
 	p := &htmlPage{
-		Content:        docs.Content,
+		Content:        template.HTML(strings.Replace(docs.Content, "\n", "<br />", -1)),
 		Title:          docs.Title,
 		Version:        docs.Version,
 		AppVersion:     app.Version,
@@ -56,10 +57,11 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 	}
 
 	for _, api := range docs.Apis { // 按分组名称进行分类
-		if p.Groups[api.Group] == nil {
-			p.Groups[api.Group] = []*doc.API{}
+		name := strings.ToLower(api.Group)
+		if p.Groups[name] == nil {
+			p.Groups[name] = []*doc.API{}
 		}
-		p.Groups[api.Group] = append(p.Groups[api.Group], api)
+		p.Groups[name] = append(p.Groups[name], api)
 	}
 
 	return renderHTMLGroups(p, t, opt.Dir)
