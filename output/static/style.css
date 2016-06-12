@@ -15,12 +15,13 @@ p{
 }
 
 ul{
-    margin:0.5rem 0rem;
+    margin:.5rem -0.5rem;
     padding:0rem 1.5rem;
+    list-style:none;
 }
 
 ul li{
-    margin:0.2rem;
+    margin:.2rem 0rem;
 }
 
 .fl{
@@ -37,7 +38,7 @@ header{
     color:#777;
     background-color:#fafafa;
     border:1px solid #eee;
-    padding:3rem 2.3rem 0.5rem 2.3rem;
+    padding:1rem 2.3rem;
     left:0;
     right:0;
     top:0;
