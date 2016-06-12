@@ -26,7 +26,7 @@ type htmlPage struct {
 	Groups         map[string][]*doc.API // 按组名形式组织的文档集合
 	GroupName      string                // 当前分组名称
 	Group          []*doc.API            // 当前组的文档集合
-	Date           string                // 生成日期
+	Date           time.Time             // 生成日期
 	Version        string                // 文档版本
 	AppVersion     string                // apidoc 的版本号
 	AppName        string                // 程序名称
@@ -52,7 +52,7 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 		AppRepoURL:     app.RepoURL,
 		AppOfficialURL: app.OfficialURL,
 		Elapsed:        opt.Elapsed,
-		Date:           time.Now().Format(time.RFC3339), // TODO 可以自定义时间格式？
+		Date:           time.Now(),
 		Groups:         make(map[string][]*doc.API, 100),
 	}
 
@@ -73,6 +73,9 @@ func compileHTMLTemplate(opt *Options) (*template.Template, error) {
 		Funcs(template.FuncMap{
 			"groupURL": func(name string) string {
 				return path.Join(".", name+htmlSuffix)
+			},
+			"dateFormat": func(t time.Time) string {
+				return t.Format(app.TimeFormat)
 			},
 		})
 

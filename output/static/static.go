@@ -343,7 +343,7 @@ var Templates=map[string]string{
     </div><!-- end .main -->
         <footer>
             <p>
-                内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date}}</time>，
+                内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date|dateFormat}}</time>，
                 用时{{.Elapsed}}。
             </p>
         </footer>
