@@ -18,47 +18,47 @@ type Doc struct {
 
 // API 表示一个 API 文档。
 type API struct {
-	Method      string    // 请求的方法，GET，POST 等
-	URL         string    // 请求地址
-	Summary     string    // 简要描述
-	Description string    // 详细描述
-	Group       string    // 所属分组
-	Queries     []*Param  // 查询参数
-	Params      []*Param  // URL 参数
-	Request     *Request  // 若是 GET，则使用此描述请求的具体数据
-	Success     *Response // 成功时的响应内容
-	Error       *Response // 出错时的响应内容
+	Method      string    `json:"method"`                // 请求的方法，GET，POST 等
+	URL         string    `json:"url"`                   // 请求地址
+	Summary     string    `json:"summary"`               // 简要描述
+	Description string    `json:"description,omitempty"` // 详细描述
+	Group       string    `json:"group,omitempty"`       // 所属分组
+	Queries     []*Param  `json:"queries,omitempty"`     // 查询参数
+	Params      []*Param  `json:"params,omitempty"`      // URL 参数
+	Request     *Request  `json:"request,omitempty"`     // 若是 GET，则使用此描述请求的具体数据
+	Success     *Response `json:"success,omitempty"`     // 成功时的响应内容
+	Error       *Response `json:"error,omitempty"`       // 出错时的响应内容
 }
 
 // Request 表示用户请求所表示的数据。
 type Request struct {
-	Type     string            // 请求的数据类型，多个用逗号分隔
-	Headers  map[string]string // 请求必须携带的头
-	Params   []*Param          //提交的各个字段的描述
-	Examples []*Example        // 请求数据的示例
+	Type     string            `json:"type"`              // 请求的数据类型，多个用逗号分隔
+	Headers  map[string]string `json:"headers,omitempty"` // 请求必须携带的头
+	Params   []*Param          `json:"params,omitempty"`  // 提交的各个字段的描述
+	Examples []*Example        `json:"example,omitempty"` // 请求数据的示例
 }
 
 // Response 表示一次请求或是返回的数据。
 // 一般为 @apiSuccess 或是 @apiError 所表示的数据。
 type Response struct {
-	Code     string            // HTTP 状态码
-	Summary  string            // 该状态下的简要描述
-	Headers  map[string]string // 返回的头信息。
-	Params   []*Param          // 返回数据的各个字段描述
-	Examples []*Example        // 返回数据的示例
+	Code     string            `json:"code"`               // HTTP 状态码
+	Summary  string            `json:"summary"`            // 该状态下的简要描述
+	Headers  map[string]string `json:"headers,omitempty"`  // 返回的头信息。
+	Params   []*Param          `json:"params,omitempty"`   // 返回数据的各个字段描述
+	Examples []*Example        `json:"examples,omitempty"` // 返回数据的示例
 }
 
 // Param 用于描述提交和返回的参数信息。
 type Param struct {
-	Name    string // 参数名称
-	Type    string // 类型
-	Summary string // 参数介绍
+	Name    string `json:"name"`    // 参数名称
+	Type    string `json:"type"`    // 类型
+	Summary string `json:"summary"` // 参数介绍
 }
 
 // Example 示例代码
 type Example struct {
-	Type string // 示例代码的类型，xml 或是 json
-	Code string // 示例代码
+	Type string `json:"type"` // 示例代码的类型，xml 或是 json
+	Code string `json:"code"` // 示例代码
 }
 
 func New() *Doc {
