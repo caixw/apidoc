@@ -6,6 +6,7 @@
 package app
 
 import "github.com/issue9/term/colors"
+import "time"
 
 // 一些代码级别的配置项。
 const (
@@ -13,7 +14,7 @@ const (
 	//
 	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则，分成以下四个部分：
 	// 主版本号.次版本号.修订号.修订日期
-	Version = "2.11.82.160612"
+	Version = "2.11.83.160612"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -32,6 +33,9 @@ const (
 
 	// 默认的分组名称，同时也是默认的索引文件名
 	DefaultGroupName = "index"
+
+	// 默认的时间格式，仅对 html 中的模板启作用
+	TimeFormat = time.RFC3339
 )
 
 // 向终端输出信息

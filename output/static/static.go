@@ -20,12 +20,13 @@ p{
 }
 
 ul{
-    margin:0.5rem 0rem;
+    margin:.5rem -0.5rem;
     padding:0rem 1.5rem;
+    list-style:none;
 }
 
 ul li{
-    margin:0.2rem;
+    margin:.2rem 0rem;
 }
 
 .fl{
@@ -42,7 +43,7 @@ header{
     color:#777;
     background-color:#fafafa;
     border:1px solid #eee;
-    padding:3rem 2.3rem 0.5rem 2.3rem;
+    padding:1rem 2.3rem;
     left:0;
     right:0;
     top:0;
@@ -85,7 +86,7 @@ header label{
 }
 
 .main .method-options{
-    border:1px solid rgba(240,114,11,0.5);
+    border:1px solid rgba(0,255,0,0.5);
 }
 
 .main .method-delete{
@@ -98,15 +99,6 @@ header label{
 
 .main .method-post{
     border:1px solid rgba(240,114,11,0.5);
-}
-
-.main h1{
-    border-bottom:1px solid #eee;
-    margin-left:40%;
-}
-
-.main h2{
-    margin-left:40%;
 }
 
 .main h3{
@@ -177,20 +169,11 @@ var Templates=map[string]string{
 
     {{template "header" .}}
 
-    <div class="main">
-        <h1>{{.Title}}</h1>
-
-        {{if .Content}}
-        <article>
-            {{.Content}}
-        </article>
-        {{end}}
-
-        <h2>模块列表</h2>
-        {{range $key, $val := .Groups}}
-            <h2><a href="{{$key|groupURL}}">{{$key}}</a></h2>
-        {{end}}
-    </div>
+    {{if .Content}}
+    <article>
+        {{.Content}}
+    </article>
+    {{end}}
 
     {{range .Group}}
         {{template "api" .}}
@@ -200,7 +183,6 @@ var Templates=map[string]string{
 
 {{end}}
 `,"./group.html":`{{define "group"}}
-
     {{template "header" .}}
 
     {{range .Group}}
@@ -208,7 +190,6 @@ var Templates=map[string]string{
     {{end}}
 
     {{template "footer" .}}
-
 {{end}}
 
 {{define "api"}}
@@ -322,7 +303,7 @@ var Templates=map[string]string{
             {{end}}
         {{end}}
 {{end}}
-`,"./header.html":`{{define "header" -}}<!doctype html>
+`,"./header.html":`{{define "header" -}}<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8" />
@@ -363,7 +344,7 @@ var Templates=map[string]string{
     </div><!-- end .main -->
         <footer>
             <p>
-                内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date}}</time>，
+                内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date|dateFormat}}</time>，
                 用时{{.Elapsed}}。
             </p>
         </footer>

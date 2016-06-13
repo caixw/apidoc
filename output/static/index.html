@@ -2,20 +2,11 @@
 
     {{template "header" .}}
 
-    <div class="main">
-        <h1>{{.Title}}</h1>
-
-        {{if .Content}}
-        <article>
-            {{.Content}}
-        </article>
-        {{end}}
-
-        <h2>模块列表</h2>
-        {{range $key, $val := .Groups}}
-            <h2><a href="{{$key|groupURL}}">{{$key}}</a></h2>
-        {{end}}
-    </div>
+    {{if .Content}}
+    <article>
+        {{.Content}}
+    </article>
+    {{end}}
 
     {{range .Group}}
         {{template "api" .}}
