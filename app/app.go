@@ -5,8 +5,11 @@
 // app 提供了一些公共的函数、结构体及设置项。
 package app
 
-import "github.com/issue9/term/colors"
-import "time"
+import (
+	"time"
+
+	"github.com/issue9/term/colors"
+)
 
 // 一些代码级别的配置项。
 const (
@@ -14,7 +17,7 @@ const (
 	//
 	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则，分成以下四个部分：
 	// 主版本号.次版本号.修订号.修订日期
-	Version = "2.11.83.160612"
+	Version = "2.11.83.160613"
 
 	// 程序的正式名称
 	Name = "apidoc"
