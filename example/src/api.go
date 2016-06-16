@@ -27,6 +27,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 
 // @api delete /login 注销用户
+//
+// @apiRequest json
 // @apiHeader Authorization 当前登录用户的 token
 //
 // @apiSuccess 204 注销成功

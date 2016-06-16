@@ -6,7 +6,3 @@
 
 # app
 apidoc
-
-# master分支下测试产生的文件
-output/testdir
-.apidoc.json

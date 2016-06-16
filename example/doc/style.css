@@ -1,0 +1,156 @@
+@charset "utf-8";
+
+/*============== reset =================*/
+body{
+    margin:0rem;
+}
+
+a{
+    text-decoration:none;
+    color:#3b8bba;
+}
+
+p{
+    margin:0.5rem 0rem;
+}
+
+ul{
+    margin:.5rem -0.5rem;
+    padding:0rem 1.5rem;
+    list-style:none;
+}
+
+ul li{
+    margin:.2rem 0rem;
+}
+
+.fl{
+    float:left;
+}
+
+.fr{
+    float:right;
+}
+
+/*=============== header ================*/
+
+header{
+    color:#777;
+    background-color:#fafafa;
+    border:1px solid #eee;
+    padding:1rem 2.3rem;
+    left:0;
+    right:0;
+    top:0;
+    position:fixed;
+
+}
+
+header .title{
+    font-size:2rem;
+}
+
+header .filter{
+    margin-top:0.8rem;
+}
+
+header #groups{
+    margin-left:20%;
+}
+
+header label{
+    margin-left:1rem;
+    vertical-align: bottom;
+}
+
+/*=============== main ================*/
+
+.main{
+    padding:0rem 2rem;
+    margin-top:8rem;
+}
+
+.main section{
+    padding:1rem;
+    margin:1rem 0rem;
+    border:1px solid #eee;
+}
+
+.main .method-get{
+    border:1px solid rgba(0,255,0,0.5);
+}
+
+.main .method-options{
+    border:1px solid rgba(0,255,0,0.5);
+}
+
+.main .method-delete{
+    border:1px solid rgba(255,0,0,0.5);
+}
+
+.main .method-put,.main .method-patch{
+    border:1px solid rgba(193,174,49,0.5);
+}
+
+.main .method-post{
+    border:1px solid rgba(240,114,11,0.5);
+}
+
+.main h3{
+    margin:0rem;
+}
+
+.main h4{
+    margin-bottom:0rem;
+    border-bottom:1px solid #eee;
+    padding-bottom:0.2rem;
+}
+
+.main h5{
+    margin:1rem 0rem;
+}
+
+.main .method{
+    width:5rem;
+    display:inline-block;
+    text-transform:uppercase;
+}
+
+.main .param-name{
+    min-width:7rem;
+    display:inline-block;
+}
+
+.main .api-content{
+    margin-top:1rem;
+    display:none;
+}
+
+.main .param-type{
+    min-width:5rem;
+    display:inline-block;
+}
+
+.main .header-key{
+    min-width:15rem;
+    display:inline-block;
+}
+
+.main .status-code{
+    min-width:6rem;
+    display:inline-block;
+}
+
+/*=============== footer ================*/
+footer{
+    border-top:1px solid #eee;
+    background-color:#fafafa;
+    color:#777;
+    padding:1rem;
+    margin-top:2rem;
+}
+
+footer p{
+    margin:0.5rem;
+    padding:0px;
+}
