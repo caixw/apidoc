@@ -160,6 +160,11 @@
                 </section>
 
                 <section>
+                    <h3>示例</h3>
+                    <p>这里是一段简单的示例代码 <a href="https://github.com/caixw/apidoc/tree/gh-pages/example/doc">https://github.com/caixw/apidoc/tree/gh-pages/example/doc</a></p>
+                </section>
+
+                <section>
                     <h3>自定义模板</h3>
                     <p>在输出类型为 html 时，可以通过在配置文件 .apidoc.json 中的 template 参数指定自定义模板，只会分析模板当前目录下的 <code>*.html</code> 文件，其它文件将被忽略。</p>
                     <p>模板格式采用的是 Go 标准库的 <a href="https://godoc.org/html/template">html/template</a>，系统会调用 <code>group</code> 和 <code>index</code> 两个子模板，具体的可用数据可参考源码目录下的 <a href="https://github.com/caixw/apidoc/tree/master/output/static">output/static</a> 下的模板。</p>
