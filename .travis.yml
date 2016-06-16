@@ -3,7 +3,6 @@ go:
     - tip
     - 1.6
     - 1.5
-    - 1.4
 install:
     - go get github.com/issue9/assert
     - go get github.com/issue9/term/colors
