@@ -4,8 +4,8 @@
         <meta charset='utf-8' />
         <title>apidoc - RESTful api文档生成工具</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="keywords" content="apidoc,api,RESTful api,go,cpp,doc,文档生成" />
-        <meta name="description" content="apidoc : RESTful api文档生成工具" />
+        <meta name="keywords" content="apidoc,API,doc,RESTful API,C/CPP,Go,Java,Javascript,Perl,PHP,Python,Ruby,Rust,文档生成" />
+        <meta name="description" content="apidoc : RESTful API 文档生成工具" />
         <link rel="stylesheet" href="https://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.css" />
         <link rel="stylesheet" href="./style.css" />
         <script src="https://cdn.bootcss.com/jquery/3.0.0/jquery.min.js"></script>
@@ -17,7 +17,7 @@
         <header>
             <div class="ui container">
                 <h1 class="ui text menu left floated">
-                    <a class="item" href="#">APIDOC<sub class="version">2.9</sub></a>
+                    <a class="item" href="#">APIDOC<sub class="version">2.11</sub></a>
                 </h1>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
@@ -35,7 +35,7 @@
             <!-- about -->
             <article class="ui stacked segment" id="about">
                 <h2 class="ui header">关于</h2>
-                <p>apidoc 是一个简单的 RESTful API 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。目前已支持以下语言：C/C++、Go、Java、Javascript、PHP、Perl、Python、Rust、Ruby。</p>
+                <p>apidoc 是一个简单的 RESTful API 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。目前已支持以下语言：C/C++、Go、Java、Javascript、Perl、PHP、Python、Rust、Ruby。</p>
                 <p>以下是一段简短的 Go 代码下的示例：</p>
                 <pre data-indent="4">
                 // @api get /users/:id 获取指定用户的相关信息
@@ -54,9 +54,9 @@
 
                 <section>
                     <h3>安装</h3>
-                    <p>若是你已经有 Go 开发环境，则可以直接通过 <code>go get</code>来获取安装：<code>go get github.com/caixw/apidoc</code></p>
+                    <p>若是你已经有 Go 开发环境，则可以直接通过 <samp>go get</samp>来获取代码并安装：<samp>go get github.com/caixw/apidoc</samp></p>
 
-                    <p>若是嫌麻烦，也可以通过 <a href="https://gobuild.io/caixw/apidoc/master">gobuild.io</a> 选择已经编译好的程序，直接使用。</p>
+                    <p>也可以通过 <a href="https://gobuild.io/caixw/apidoc/master">gobuild.io</a> 选择已经编译好的程序，下载使用。</p>
                 </section>
 
                 <section>
@@ -196,7 +196,7 @@
                             <tr>
                                 <td>摘要内容</td>
                                 <td>false</td>
-                                <td>整个文档的一个摘要说明</td>
+                                <td>整个文档的一个摘要说明，其中的换行符会替换成 <code>&lt;br&gt;</code>，其它内容原样输出。</td>
                             </tr>
                         </tbody>
                     </table>
@@ -492,7 +492,7 @@
 
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
-                    <p>更新于 <time>2016-06-11T22:56:53+0800</time></p>
+                    <p>更新于 <time>2016-06-16T22:41:17+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
