@@ -1,0 +1,12 @@
+{
+    "version": "2.11.86+20160616",
+    "input": {
+        "lang": "go",
+        "dir": "./src",
+        "recursive": true
+    },
+    "output": {
+        "dir": "./doc",
+        "type": "html"
+    }
+}
