@@ -16,7 +16,7 @@ a{
 }
 
 p{
-    margin:0.5rem 0rem;
+    margin:.5rem 0rem;
 }
 
 ul{
@@ -56,7 +56,7 @@ header .title{
 }
 
 header .filter{
-    margin-top:0.8rem;
+    margin-top:.8rem;
 }
 
 header #groups{
@@ -108,7 +108,7 @@ header label{
 .main h4{
     margin-bottom:0rem;
     border-bottom:1px solid #eee;
-    padding-bottom:0.2rem;
+    padding-bottom:.2rem;
 }
 
 .main h5{
@@ -156,7 +156,7 @@ footer{
 }
 
 footer p{
-    margin:0.5rem;
+    margin:.5rem;
     padding:0px;
 }
 `),"./jquery-3.0.0.min.js":[]byte(`/*! jQuery v3.0.0 | (c) jQuery Foundation | jquery.org/license */
