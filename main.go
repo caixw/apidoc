@@ -39,17 +39,20 @@ func main() {
 
 	cfg, err := loadConfig()
 	if err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 
 	// 比较版本号兼容问题
 	appver, err := version.SemVer(app.Version)
 	if err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 	cfgver, err := version.SemVer(cfg.Version)
 	if err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 	if appver.Major != cfgver.Major {
 		app.Error("当前程序与配置文件中指定的版本号不兼容")
@@ -58,12 +61,14 @@ func main() {
 
 	docs, err := input.Parse(cfg.Input)
 	if err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err = output.Render(docs, cfg.Output); err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 
 	app.Info("编译完成，总用时：", time.Now().Sub(start))
@@ -91,7 +96,7 @@ func flags() bool {
 		return true
 	case *g:
 		if err := genConfigFile(); err != nil {
-			panic(err)
+			app.Error(err)
 		}
 		return true
 	}
