@@ -8,8 +8,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -88,11 +88,10 @@ func flags() bool {
 		flag.Usage()
 		return true
 	case *v:
-		fmt.Println(app.Name, app.Version, "build with", runtime.Version())
+		fmt.Fprintln(os.Stdout, app.Name, app.Version, "build with", runtime.Version())
 		return true
 	case *l:
-		langs := "[" + strings.Join(input.Langs(), ", ") + "]"
-		fmt.Println("目前支持以下语言：", langs)
+		fmt.Fprintln(os.Stdout, "目前支持以下语言：", input.Langs())
 		return true
 	case *g:
 		if err := genConfigFile(); err != nil {
