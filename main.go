@@ -15,6 +15,7 @@ import (
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
+	"github.com/issue9/version"
 )
 
 const usage = `%v 是一个 RESTful api 文档生成工具。
@@ -39,6 +40,20 @@ func main() {
 	cfg, err := loadConfig()
 	if err != nil {
 		panic(err)
+	}
+
+	// 比较版本号兼容问题
+	appver, err := version.SemVer(app.Version)
+	if err != nil {
+		panic(err)
+	}
+	cfgver, err := version.SemVer(cfg.Version)
+	if err != nil {
+		panic(err)
+	}
+	if appver.Major != cfgver.Major {
+		app.Error("当前程序与配置文件中指定的版本号不兼容")
+		return
 	}
 
 	docs, err := input.Parse(cfg.Input)

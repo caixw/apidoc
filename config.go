@@ -16,7 +16,7 @@ import (
 )
 
 type config struct {
-	Version string          `json:"version"` // 兼容的 apidoc 版本
+	Version string          `json:"version"` // 产生该配置文件的程序版本号，主版本号不同，表示不兼容
 	Input   *input.Options  `json:"input"`
 	Output  *output.Options `json:"output"`
 }

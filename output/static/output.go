@@ -7,12 +7,13 @@ package static
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
-// 将所有的静态文件输出到该目录下。
+// Output 将所有的静态文件输出到该目录下。
 func Output(dir string) error {
 	for path, content := range files {
-		path = dir + string(os.PathSeparator) + path
+		path = filepath.Join(dir, path)
 		if err := ioutil.WriteFile(path, content, os.ModePerm); err != nil {
 			return err
 		}
