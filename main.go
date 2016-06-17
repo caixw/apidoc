@@ -8,8 +8,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -18,7 +18,7 @@ import (
 	"github.com/issue9/version"
 )
 
-const usage = `%v 是一个 RESTful api 文档生成工具。
+const usage = `%v 是一个 RESTful API 文档生成工具。
 
 参数:
  -h       显示帮助信息；
@@ -39,17 +39,20 @@ func main() {
 
 	cfg, err := loadConfig()
 	if err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 
 	// 比较版本号兼容问题
 	appver, err := version.SemVer(app.Version)
 	if err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 	cfgver, err := version.SemVer(cfg.Version)
 	if err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 	if appver.Major != cfgver.Major {
 		app.Error("当前程序与配置文件中指定的版本号不兼容")
@@ -58,12 +61,14 @@ func main() {
 
 	docs, err := input.Parse(cfg.Input)
 	if err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err = output.Render(docs, cfg.Output); err != nil {
-		panic(err)
+		app.Error(err)
+		return
 	}
 
 	app.Info("编译完成，总用时：", time.Now().Sub(start))
@@ -83,15 +88,14 @@ func flags() bool {
 		flag.Usage()
 		return true
 	case *v:
-		fmt.Println(app.Name, app.Version, "build with", runtime.Version())
+		fmt.Fprintln(os.Stdout, app.Name, app.Version, "build with", runtime.Version())
 		return true
 	case *l:
-		langs := "[" + strings.Join(input.Langs(), ", ") + "]"
-		fmt.Println("目前支持以下语言：", langs)
+		fmt.Fprintln(os.Stdout, "目前支持以下语言：", input.Langs())
 		return true
 	case *g:
 		if err := genConfigFile(); err != nil {
-			panic(err)
+			app.Error(err)
 		}
 		return true
 	}
