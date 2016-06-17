@@ -67,7 +67,6 @@ func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
 		if group, found := p.Groups[groupName]; found {
 			p.GroupName = groupName
 			p.Group = group
-
 			handleGroup(w, r, opt.Template, p)
 			return
 		}

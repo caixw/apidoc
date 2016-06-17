@@ -11,7 +11,6 @@
 package output
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -42,16 +41,17 @@ func (o *Options) Init() *app.OptionsError {
 	}
 
 	if !isSuppertedType(o.Type) {
-		return &app.OptionsError{Field: "Type", Message: "不支持该类型"}
+		return &app.OptionsError{Field: "Type", Message: "不支持的类型"}
 	}
 
 	// 只有 html 和 html+ 才需要判断模板文件是否存在
 	if o.Type == "html" || o.Type == "html+" {
 		if len(o.Template) > 0 && !utils.FileExists(o.Template) {
-			return &app.OptionsError{Field: "Template", Message: "模板目录不存在"}
+			return &app.OptionsError{Field: "Template", Message: "目录不存在"}
 		}
 	}
 
+	// 调试模式，必须得有端口
 	if o.Type == "html+" {
 		if len(o.Port) == 0 {
 			return &app.OptionsError{Field: "Port", Message: "不能为空"}
@@ -75,7 +75,7 @@ func Render(docs *doc.Doc, o *Options) error {
 	case "json":
 		return renderJSON(docs, o)
 	default:
-		return fmt.Errorf("不支持的渲染方式:[%v]", o.Type)
+		return &app.OptionsError{Field: "Type", Message: "不支持该类型"}
 	}
 }
 
