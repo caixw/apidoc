@@ -18,7 +18,7 @@ import (
 	"github.com/issue9/version"
 )
 
-const usage = `%v 是一个 RESTful api 文档生成工具。
+const usage = `%v 是一个 RESTful API 文档生成工具。
 
 参数:
  -h       显示帮助信息；
