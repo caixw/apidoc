@@ -44,17 +44,12 @@ func main() {
 	}
 
 	// 比较版本号兼容问题
-	appver, err := version.SemVer(app.Version)
+	compatible, err := version.SemVerCompatible(app.Version, cfg.Version)
 	if err != nil {
 		app.Error(err)
 		return
 	}
-	cfgver, err := version.SemVer(cfg.Version)
-	if err != nil {
-		app.Error(err)
-		return
-	}
-	if appver.Major != cfgver.Major {
+	if !compatible {
 		app.Error("当前程序与配置文件中指定的版本号不兼容")
 		return
 	}
