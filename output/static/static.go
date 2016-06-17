@@ -2,7 +2,7 @@
 
 package static
 
-var files=map[string][]byte{
+var assets=map[string][]byte{
 "./style.css":[]byte(`@charset "utf-8";
 
 /*============== reset =================*/

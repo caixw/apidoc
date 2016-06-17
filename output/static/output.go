@@ -15,7 +15,7 @@ import (
 
 // Output 将所有的静态文件输出到该目录下。
 func Output(dir string) error {
-	for path, content := range files {
+	for path, content := range assets {
 		path = filepath.Join(dir, path)
 		if err := ioutil.WriteFile(path, content, os.ModePerm); err != nil {
 			return err

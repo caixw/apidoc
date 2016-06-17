@@ -23,7 +23,7 @@ const (
 )
 
 // 指定所有需要序列化的文件名。
-var files = []string{
+var assets = []string{
 	"./style.css",
 	"./jquery-3.0.0.min.js",
 }
@@ -59,10 +59,10 @@ func main() {
 	}
 }
 
-// 输出 files 变量的整体。
+// 输出 assets 变量的整体。
 func makeStatic(w *bufio.Writer) {
-	w.WriteString("var files=map[string][]byte{\n")
-	for _, file := range files {
+	w.WriteString("var assets=map[string][]byte{\n")
+	for _, file := range assets {
 		data, err := ioutil.ReadFile(file)
 		if err != nil {
 			panic(err)

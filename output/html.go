@@ -6,6 +6,7 @@ package output
 
 import (
 	"html/template"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -38,11 +39,51 @@ type htmlPage struct {
 
 // 将 docs 的内容以 html 格式输出。
 func renderHTML(docs *doc.Doc, opt *Options) error {
-	t, err := compileHTMLTemplate(opt)
+	t, err := compileHTMLTemplate(opt.Template)
 	if err != nil {
 		return err
 	}
 
+	p := buildHTMLPage(docs, opt)
+
+	return renderHTMLGroups(p, t, opt.Dir)
+}
+
+// renderHTML 的调试模式
+func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
+	app.Info("当前为模板调试模式：可访问以下端口查看调试内容:", opt.Port)
+	app.Info("当前为模板调试模式：调试的模板为:", opt.Template)
+
+	p := buildHTMLPage(docs, opt)
+
+	http.HandleFunc(app.TemplateRouteIndex, func(w http.ResponseWriter, r *http.Request) {
+		handle(w, r, opt.Template, "index", p)
+	})
+	http.HandleFunc(app.TemplateRouteGroup, func(w http.ResponseWriter, r *http.Request) {
+		handle(w, r, opt.Template, "group", p)
+	})
+	http.Handle(app.TemplateRouteRoot, http.FileServer(http.Dir(opt.Template)))
+
+	return http.ListenAndServe(opt.Port, nil)
+}
+
+func handle(w http.ResponseWriter, r *http.Request, tplDir, tplName string, p *htmlPage) {
+	t, err := compileHTMLTemplate(tplDir)
+	if err != nil {
+		app.Error(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = t.ExecuteTemplate(w, tplName, p)
+	if err != nil {
+		app.Error(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+func buildHTMLPage(docs *doc.Doc, opt *Options) *htmlPage {
 	p := &htmlPage{
 		Content:        template.HTML(strings.Replace(docs.Content, "\n", "<br />", -1)),
 		Title:          docs.Title,
@@ -64,11 +105,14 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 		p.Groups[name] = append(p.Groups[name], api)
 	}
 
-	return renderHTMLGroups(p, t, opt.Dir)
+	return p
 }
 
 // 编译模板
-func compileHTMLTemplate(opt *Options) (*template.Template, error) {
+//
+// tplDir 模板所在的路径，其目录下所有的 .html 文件会被编译，不查找子目录。
+// 若 tplDir 这空，则使用系统默认的模板。
+func compileHTMLTemplate(tplDir string) (*template.Template, error) {
 	t := template.New("html").
 		Funcs(template.FuncMap{
 			"groupURL": func(name string) string {
@@ -79,8 +123,8 @@ func compileHTMLTemplate(opt *Options) (*template.Template, error) {
 			},
 		})
 
-	if len(opt.Template) > 0 { // 自定义模板
-		if _, err := t.ParseGlob(path.Join(opt.Template, "*.html")); err != nil {
+	if len(tplDir) > 0 { // 自定义模板
+		if _, err := t.ParseGlob(path.Join(tplDir, "*.html")); err != nil {
 			return nil, err
 		}
 	} else { // 系统模板

@@ -16,7 +16,7 @@ const (
 	// 版本号
 	//
 	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则
-	Version = "2.11.88+20160616"
+	Version = "2.12.0+20160616"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -37,8 +37,20 @@ const (
 	// 系统会给其加到此分组中，同时也是默认的索引文件名。
 	DefaultGroupName = "index"
 
-	// 默认的时间格式，仅对 html 中的模板启作用
+	// 默认的时间格式，仅对 html 中的模板启作用。自定义模板中可自定义格式。
 	TimeFormat = time.RFC3339
+)
+
+// 模板路由的地址
+const (
+	// index 页面路由
+	TemplateRouteIndex = "/index.html"
+
+	// group 页面路由
+	TemplateRouteGroup = "/group.html"
+
+	// 根路由，包括一些资源文件等
+	TemplateRouteRoot = "/"
 )
 
 // Message 向终端输出不同颜色的信息
