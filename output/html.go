@@ -51,23 +51,36 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 
 // renderHTML 的调试模式
 func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
-	app.Info("当前为模板调试模式：可访问以下端口查看调试内容:", opt.Port)
-	app.Info("当前为模板调试模式：调试的模板为:", opt.Template)
+	app.Info("当前为模板调试模式，调试端口为：", opt.Port)
+	app.Info("当前为模板调试模式，调试模板为：", opt.Template)
 
 	p := buildHTMLPage(docs, opt)
 
-	http.HandleFunc(app.TemplateRouteIndex, func(w http.ResponseWriter, r *http.Request) {
-		handle(w, r, opt.Template, "index", p)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// 获取分组名称
+		groupName := path.Base(r.URL.Path)
+		if path.Ext(groupName) == htmlSuffix {
+			groupName = strings.TrimSuffix(groupName, htmlSuffix)
+		}
+
+		// 存在该分组，则重新编译模板，并输出内容。
+		if group, found := p.Groups[groupName]; found {
+			p.GroupName = groupName
+			p.Group = group
+
+			handleGroup(w, r, opt.Template, p)
+			return
+		}
+
+		// 否则当作普通的文件请求
+		http.FileServer(http.Dir(opt.Template)).ServeHTTP(w, r)
 	})
-	http.HandleFunc(app.TemplateRouteGroup, func(w http.ResponseWriter, r *http.Request) {
-		handle(w, r, opt.Template, "group", p)
-	})
-	http.Handle(app.TemplateRouteRoot, http.FileServer(http.Dir(opt.Template)))
 
 	return http.ListenAndServe(opt.Port, nil)
 }
 
-func handle(w http.ResponseWriter, r *http.Request, tplDir, tplName string, p *htmlPage) {
+// 编译模板，并输出 p 的内容。
+func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlPage) {
 	t, err := compileHTMLTemplate(tplDir)
 	if err != nil {
 		app.Error(err)
@@ -75,8 +88,12 @@ func handle(w http.ResponseWriter, r *http.Request, tplDir, tplName string, p *h
 		return
 	}
 
-	err = t.ExecuteTemplate(w, tplName, p)
-	if err != nil {
+	tplName := "group"
+	if p.GroupName == app.DefaultGroupName {
+		tplName = "index"
+	}
+
+	if err = t.ExecuteTemplate(w, tplName, p); err != nil {
 		app.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
