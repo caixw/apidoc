@@ -8,6 +8,12 @@
 // 将模板内容打包到程序中。
 package main
 
+// 文件引入了两个第三方的库：
+//
+// jquery: https://jquery.com
+//
+// pure:   http://purecss.io
+
 import (
 	"bufio"
 	"io/ioutil"
@@ -32,6 +38,7 @@ var assets = []string{
 var templates = []string{
 	"./index.html",
 	"./group.html",
+	"./api.html",
 	"./header.html",
 	"./footer.html",
 }
