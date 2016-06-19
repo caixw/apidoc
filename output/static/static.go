@@ -2,7 +2,7 @@
 
 package static
 
-var files=map[string][]byte{
+var assets=map[string][]byte{
 "./style.css":[]byte(`@charset "utf-8";
 
 /*============== reset =================*/
@@ -191,8 +191,7 @@ var Templates=map[string]string{
 
     {{template "footer" .}}
 {{end}}
-
-{{define "api"}}
+`,"./api.html":`{{define "api"}}
 <section class="api method-{{.Method}}">
     <h3>
         <span class="method">{{.Method}}</span>

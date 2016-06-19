@@ -16,7 +16,7 @@ const (
 	// 版本号
 	//
 	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则
-	Version = "2.11.88+20160616"
+	Version = "2.12.6+20160619"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -37,7 +37,7 @@ const (
 	// 系统会给其加到此分组中，同时也是默认的索引文件名。
 	DefaultGroupName = "index"
 
-	// 默认的时间格式，仅对 html 中的模板启作用
+	// 默认的时间格式，仅对 html 中的默认模板启作用。自定义模板中可自定义格式。
 	TimeFormat = time.RFC3339
 )
 
