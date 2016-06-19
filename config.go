@@ -15,6 +15,10 @@ import (
 	"github.com/caixw/apidoc/output"
 )
 
+// 项目的配置内容，分别引用到了 input.Options 和 output.Options
+// 所有可能改变输出的表现形式的，应该添加到 config 中；
+// 而如果只是改变输出内容的，则应该直接以标签的形式出现在代码中，
+// 比如文档的版本号、标题等，都是直接使用 `@apidoc`来指定的，而不是出现在配置文件中。
 type config struct {
 	Version string          `json:"version"` // 产生该配置文件的程序版本号，主版本号不同，表示不兼容
 	Input   *input.Options  `json:"input"`
