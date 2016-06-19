@@ -8,6 +8,13 @@
         </footer>
         <script>
         $(document).ready(function(){
+            $('header .filter input').each(function(index, elem){
+                var val = $(elem).val();
+                if ($('.main section.method-'+val).length == 0) {
+                    $(elem).parent().hide();
+                }
+            });
+
             // 按请求方法过滤
             $('header .filter input').on('change', function(){
                 var val = $(this).attr('value');
