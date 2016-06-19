@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// apidoc 是一个 RESTful api 文档生成工具。
+// apidoc 是一个 RESTful API 文档生成工具。
 package main
 
 import (

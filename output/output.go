@@ -3,11 +3,11 @@
 // license that can be found in the LICENSE file.
 
 // output 对解析后的数据进行渲染输出。
-// 目前支持以下三种渲染方式：
 //
-// html: 以 html 格式输出文本，模板可自定义。
-// html+: html 的调试模式，程序不会输出任何，而是在浏览器中展示相关页面。
-// json: 以 JSON 格式输出内容。
+// 目前支持以下三种渲染方式：
+//  - html: 以 html 格式输出文本，模板可自定义；
+//  - html+: html 的调试模式，程序不会输出任何，而是在浏览器中展示相关页面；
+//  - json: 以 JSON 格式输出内容。
 package output
 
 import (

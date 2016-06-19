@@ -5,9 +5,9 @@ apidoc 是一个简单的 RESTful API 文档生成工具，它从代码注释中
 目前支持支持以下语言：
 C/CPP、Go、Java、Javascript、Perl、PHP、Python、Ruby、Rust
 
-具体文档可参考: http://apidoc.site/
+具体文档可参考：http://apidoc.site/
 
-```c
+```go
 /*
  @api get /users 获取所有的用户信息
  @apiGroup users
@@ -31,13 +31,19 @@ C/CPP、Go、Java、Javascript、Perl、PHP、Python、Ruby、Rust
      <user id="2" username="admin2" name="管理员2" />
  </users>
  */
+func login(w http.ResponseWriter, r *http.Request){
+    // TODO
+}
 ```
+
+
 
 ### 安装
 
 ```shell
 go get github.com/caixw/apidoc
 ```
+
 
 
 ### 版权

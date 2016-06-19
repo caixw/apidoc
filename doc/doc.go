@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// doc 包含了对文档各个结构的定义及对代码块的解析
+// doc 包含了对文档各个结构的定义及对注释块的解析。
 package doc
 
 import "sync"
