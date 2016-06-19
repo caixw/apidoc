@@ -2,7 +2,7 @@
 <html lang="zh-Hans">
     <head>
         <meta charset='utf-8' />
-        <title>apidoc - RESTful api文档生成工具</title>
+        <title>apidoc - RESTful API 文档生成工具</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="keywords" content="apidoc,API,doc,RESTful API,C/CPP,Go,Java,Javascript,Perl,PHP,Python,Ruby,Rust,文档生成" />
         <meta name="description" content="apidoc : RESTful API 文档生成工具" />
@@ -17,7 +17,7 @@
         <header>
             <div class="ui container">
                 <h1 class="ui text menu left floated">
-                    <a class="item" href="#">APIDOC<sub class="version">2.11</sub></a>
+                    <a class="item" href="#">APIDOC<sub class="version">2.12</sub></a>
                 </h1>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
@@ -88,19 +88,19 @@
                         "output": {
                             "dir": "./output/doc",
                             "type": "html",
-                            "template":""
+                            "template":"",
+                            "port":":9999"
                         }
                     }
                     </pre>
                     <table class="ui very compact table">
                         <thead>
-                            <tr><th>名称</th><th>类型</th><th>默认值</th><th>描述</th></tr>
+                            <tr><th>名称</th><th>类型</th><th>描述</th></tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>version</td>
                                 <td>string</td>
-                                <td>由程序产生</td>
                                 <td>产生此配置文件的 apidoc 版本号</td>
                             </tr>
 
@@ -108,25 +108,21 @@
                             <tr class="warning">
                                 <td>input</td>
                                 <td>{}</td>
-                                <td></td>
                                 <td>控制输入行为</td>
                             </tr>
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;dir</td>
                                 <td>string</td>
-                                <td>./</td>
                                 <td>需要解析的源文件所在目录</td>
                             </tr>
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;recursive</td>
                                 <td>bool</td>
-                                <td>true</td>
                                 <td>是否解析子目录下的源文件</td>
                             </tr>
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;lang</td>
                                 <td>string</td>
-                                <td>由程序生成文件时所得</td>
                                 <td>源文件类型。具体支持的类型可通过 -l 参数进行查找</td>
                             </tr>
 
@@ -134,26 +130,27 @@
                             <tr class="warning">
                                 <td>output</td>
                                 <td>{}</td>
-                                <td></td>
                                 <td>控制输出行为</td>
                             </tr>
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;dir</td>
                                 <td>string</td>
-                                <td>./apidoc</td>
                                 <td>指定文档的保存目录</td>
                             </tr>
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;type</td>
                                 <td>string</td>
-                                <td>html</td>
-                                <td>渲染类型，目前支持 html、json 两种类型</td>
+                                <td>渲染类型，目前支持 html、html+ 和 json 三种类型</td>
                             </tr>
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;template</td>
                                 <td>string</td>
-                                <td></td>
-                                <td>当渲染类型为 html 时，可以通过此值指定一个自定义的模板</td>
+                                <td>模板所在路径，当渲染类型为 html 或 html+ 时可用。</td>
+                            </tr>
+                            <tr>
+                                <td>&#160;&#160;&#160;&#160;port</td>
+                                <td>string</td>
+                                <td>指定一个访问端口，当渲染类型为 html+ 时，必须指定此值。</td>
                             </tr>
                         </tbody>
                     </table>
@@ -168,6 +165,7 @@
                     <h3>自定义模板</h3>
                     <p>在输出类型为 html 时，可以通过在配置文件 .apidoc.json 中的 template 参数指定自定义模板，只会分析模板当前目录下的 <code>*.html</code> 文件，其它文件将被忽略。</p>
                     <p>模板格式采用的是 Go 标准库的 <a href="https://godoc.org/html/template">html/template</a>，系统会调用 <code>group</code> 和 <code>index</code> 两个子模板，具体的可用数据可参考源码目录下的 <a href="https://github.com/caixw/apidoc/tree/master/output/static">output/static</a> 下的模板。</p>
+                    <p>html+ 为 html 的增强模式，在该模式下不会输出任何文件内容，而是可以直接在浏览器访问相关页面，方便调试模板页面。</p>
                 </section>
             </article>
 
@@ -497,7 +495,7 @@
 
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
-                    <p>更新于 <time>2016-06-16T22:41:17+0800</time></p>
+                    <p>更新于 <time>2016-06-19T22:03:04+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
