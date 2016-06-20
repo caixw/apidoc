@@ -24,7 +24,7 @@
         <div>
             <h4>请求</h4>
             <div>
-                <p>数据类型: {{.Request.Type}}</p>
+                <p>数据类型: {{if .Request.Type}}{{.Request.Type}}{{else}}none{{end}}</p>
 
                 {{if .Request.Headers}}
                 <h5>请求头:</h5>
