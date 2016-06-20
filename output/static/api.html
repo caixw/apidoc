@@ -1,11 +1,11 @@
 {{define "api"}}
-<section class="api method-{{.Method}}">
+<section class="api">
     <h3>
-        <span class="method">{{.Method}}</span>
+        <span class="method {{.Method}}">{{.Method}}</span>
         <span class="url">{{.URL}}</span>
+        <span class="summary">{{.Summary}}</span>
     </h3>
     <div class="api-content">
-        <p>{{.Summary}}</p>
         {{if .Description}}
         <p class="description">{{.Description}}</p>
         {{end}}
@@ -24,7 +24,7 @@
         <div>
             <h4>请求</h4>
             <div>
-                <p>数据类型: {{.Request.Type}}</p>
+                <p>数据类型: {{if .Request.Type}}{{.Request.Type}}{{else}}none{{end}}</p>
 
                 {{if .Request.Headers}}
                 <h5>请求头:</h5>

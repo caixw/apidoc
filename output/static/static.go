@@ -115,10 +115,15 @@ header label{
     margin:1rem 0rem;
 }
 
-.main .method{
+.main h3 .method{
     width:5rem;
     display:inline-block;
     text-transform:uppercase;
+}
+
+.main h3 .url{
+    min-width:10rem;
+    display:inline-block;
 }
 
 .main .param-name{
@@ -127,7 +132,6 @@ header label{
 }
 
 .main .api-content{
-    margin-top:1rem;
     display:none;
 }
 
@@ -196,9 +200,9 @@ var Templates=map[string]string{
     <h3>
         <span class="method">{{.Method}}</span>
         <span class="url">{{.URL}}</span>
+        <span class="summary">{{.Summary}}</span>
     </h3>
     <div class="api-content">
-        <p>{{.Summary}}</p>
         {{if .Description}}
         <p class="description">{{.Description}}</p>
         {{end}}
@@ -335,6 +339,7 @@ var Templates=map[string]string{
                 <label><input type="checkbox" checked="checked" value="put">PUT</label>
                 <label><input type="checkbox" checked="checked" value="patch">PATCH</label>
                 <label><input type="checkbox" checked="checked" value="delete">DELETE</label>
+                <label><input type="checkbox" checked="checked" value="options">OPTIONS</label>
             </div>
         </header>
         <div class="main">
@@ -349,6 +354,14 @@ var Templates=map[string]string{
         </footer>
         <script>
         $(document).ready(function(){
+            // 隐藏不当前页面用不到的过滤器
+            $('header .filter input').each(function(index, elem){
+                var val = $(elem).val();
+                if ($('.main section.method-'+val).length == 0) {
+                    $(elem).parent().hide();
+                }
+            });
+
             // 按请求方法过滤
             $('header .filter input').on('change', function(){
                 var val = $(this).attr('value');

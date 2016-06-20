@@ -4,15 +4,14 @@
 
 // +build ignore
 
-// 可通过手动执行 go run make.go 或是 go generate 来
-// 将模板内容打包到程序中。
-package main
-
-// 文件引入了两个第三方的库：
+// 可通过在当前目录下手动执行 go run make.go
+// 或是 go generate 来将模板内容打包到程序中。
+//
+// 文件引入了以下的第三方的库：
 //
 // jquery: https://jquery.com
-//
-// pure:   http://purecss.io
+
+package main
 
 import (
 	"bufio"

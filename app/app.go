@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// app 提供了一些公共的函数、结构体及设置项。
+// app 提供了一些公共的函数、结构体及代码级别的设置项。
 package app
 
 import (
@@ -16,7 +16,7 @@ const (
 	// 版本号
 	//
 	// 版本号按照 http://semver.org/lang/zh-CN/ 中的规则
-	Version = "2.12.6+20160619"
+	Version = "2.12.9+20160620"
 
 	// 程序的正式名称
 	Name = "apidoc"
