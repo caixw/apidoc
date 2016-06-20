@@ -17,14 +17,18 @@
     </head>
     <body>
         <header>
-            <a class="title" href="./index.html">{{.Title}}</a>
-            {{if .Version}}<span>{{.Version}}</span>{{end}}
+            <h1 class="title">
+                <a href="./index.html">{{.Title}}</a>
+                {{if .Version}}<span class="version">{{.Version}}</span>{{end}}
+            </h1>
+            
             <select id="groups">
                 {{$currGroup := .GroupName}}
                 {{range $key, $val := .Groups}}
                 <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
                 {{end}}
             </select>
+
             <div class="fr filter">
                 <label><input type="checkbox" checked="checked" value="get">GET</label>
                 <label><input type="checkbox" checked="checked" value="post">POST</label>

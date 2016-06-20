@@ -48,17 +48,23 @@ header{
 
 header .title{
     font-size:2rem;
+    display:inline-block;
+    margin:0rem;
 }
 
-header .filter{
-    margin-top:.8rem;
+header .title .version{
+    font-size:1rem;
 }
 
 header #groups{
     margin-left:20%;
 }
 
-header label{
+header .filter{
+    margin-top:.8rem;
+}
+
+header .filter label{
     margin-left:1rem;
     vertical-align: bottom;
 }
@@ -76,27 +82,8 @@ header label{
     border:1px solid #eee;
 }
 
-.main .method-get{
-    border:1px solid rgba(0,255,0,0.5);
-}
-
-.main .method-options{
-    border:1px solid rgba(0,255,0,0.5);
-}
-
-.main .method-delete{
-    border:1px solid rgba(255,0,0,0.5);
-}
-
-.main .method-put,.main .method-patch{
-    border:1px solid rgba(193,174,49,0.5);
-}
-
-.main .method-post{
-    border:1px solid rgba(240,114,11,0.5);
-}
-
 .main h3{
+    cursor:pointer;
     margin:0rem;
 }
 
@@ -110,10 +97,36 @@ header label{
     margin:1rem 0rem;
 }
 
-.main .method{
+.main h3 .method{
     width:5rem;
+    font-weight:bold;
     display:inline-block;
     text-transform:uppercase;
+}
+
+.main h3 .get{
+    color:green;
+}
+
+.main h3 .options{
+    color:green;
+}
+
+.main h3 .delete{
+    color:red;
+}
+
+.main h3 .put,.main h3 .patch{
+    color:rgb(193,174,49);
+}
+
+.main h3 .post{
+    color:rgb(240,114,11);
+}
+
+.main h3 .url{
+    display:inline-block;
+    margin-right:2rem;
 }
 
 .main .param-name{

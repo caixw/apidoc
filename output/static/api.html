@@ -1,11 +1,11 @@
 {{define "api"}}
-<section class="api method-{{.Method}}">
+<section class="api">
     <h3>
-        <span class="method">{{.Method}}</span>
+        <span class="method {{.Method}}">{{.Method}}</span>
         <span class="url">{{.URL}}</span>
+        <span class="summary">{{.Summary}}</span>
     </h3>
     <div class="api-content">
-        <p>{{.Summary}}</p>
         {{if .Description}}
         <p class="description">{{.Description}}</p>
         {{end}}
