@@ -67,7 +67,8 @@ func (l *lexer) line() []rune {
 	return ret
 }
 
-// 是否匹配指定的字符串，若匹配，则将指定移向该字符串这后，否则不作任何操作。
+// 接下来的 n 个字符是否匹配指定的字符串，
+// 若匹配，则将指定移向该字符串这后，否则不作任何操作。
 func (l *lexer) match(word string) bool {
 	if l.atEOF() || (l.pos+len(word) > len(l.data)) { // 剩余字符没有word长，直接返回false
 		return false
@@ -135,7 +136,7 @@ func (b *block) end(l *lexer) ([]rune, *app.SyntaxError) {
 }
 
 // 从 l 的当前位置开始往后查找，直到找到 b 中定义的 end 字符串，
-// 将将 l 中的指针移到该位置。
+// 将 l 中的指针移到该位置。
 // 正常找到结束符的返回 true，否则返回 false。
 func (b *block) endString(l *lexer) *app.SyntaxError {
 LOOP:

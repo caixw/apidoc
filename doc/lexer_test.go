@@ -147,5 +147,5 @@ func TestTrimRight(t *testing.T) {
 	a.Equal(trimRight([]rune("123  ")), []rune("123"))
 	a.Equal(trimRight([]rune("\n123  ")), []rune("\n123"))
 	a.Equal(trimRight([]rune("123\n  ")), []rune("123"))
-	a.Equal(trimRight([]rune("123 \n  ")), []rune("123"))
+	a.Equal(trimRight([]rune(" 123 \n  ")), []rune(" 123"))
 }
