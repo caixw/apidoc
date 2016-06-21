@@ -194,7 +194,7 @@ var Templates=map[string]string{
 
     {{if .Content}}
     <article>
-        {{.Content}}
+        {{.Content|nl2br|html}}
     </article>
     {{end}}
 
