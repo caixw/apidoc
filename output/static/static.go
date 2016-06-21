@@ -53,17 +53,23 @@ header{
 
 header .title{
     font-size:2rem;
+    display:inline-block;
+    margin:0rem;
 }
 
-header .filter{
-    margin-top:.8rem;
+header .title .version{
+    font-size:1rem;
 }
 
 header #groups{
     margin-left:20%;
 }
 
-header label{
+header .filter{
+    margin-top:.8rem;
+}
+
+header .filter label{
     margin-left:1rem;
     vertical-align: bottom;
 }
@@ -81,27 +87,8 @@ header label{
     border:1px solid #eee;
 }
 
-.main .method-get{
-    border:1px solid rgba(0,255,0,0.5);
-}
-
-.main .method-options{
-    border:1px solid rgba(0,255,0,0.5);
-}
-
-.main .method-delete{
-    border:1px solid rgba(255,0,0,0.5);
-}
-
-.main .method-put,.main .method-patch{
-    border:1px solid rgba(193,174,49,0.5);
-}
-
-.main .method-post{
-    border:1px solid rgba(240,114,11,0.5);
-}
-
 .main h3{
+    cursor:pointer;
     margin:0rem;
 }
 
@@ -117,27 +104,38 @@ header label{
 
 .main h3 .method{
     width:5rem;
+    font-weight:bold;
     display:inline-block;
     text-transform:uppercase;
 }
 
+.main h3 .get{
+    color:green;
+}
+
+.main h3 .options{
+    color:green;
+}
+
+.main h3 .delete{
+    color:red;
+}
+
+.main h3 .put,.main h3 .patch{
+    color:rgb(193,174,49);
+}
+
+.main h3 .post{
+    color:rgb(240,114,11);
+}
+
 .main h3 .url{
-    min-width:10rem;
     display:inline-block;
+    margin-right:2rem;
 }
 
-.main .param-name{
-    min-width:7rem;
-    display:inline-block;
-}
-
-.main .api-content{
+.main .content{
     display:none;
-}
-
-.main .param-type{
-    min-width:5rem;
-    display:inline-block;
 }
 
 .main .header-key{
@@ -148,6 +146,19 @@ header label{
 .main .status-code{
     min-width:6rem;
     display:inline-block;
+}
+
+.main table{
+    text-align:left;
+    border-collapse:collapse;
+}
+
+.main table thead tr, .main table tbody tr:nth-child(even){
+    background:#ddd;
+}
+
+.main table th, .main table td{
+    padding:.3rem 1rem;
 }
 
 /*=============== footer ================*/
@@ -196,13 +207,14 @@ var Templates=map[string]string{
     {{template "footer" .}}
 {{end}}
 `,"./api.html":`{{define "api"}}
-<section class="api method-{{.Method}}">
-    <h3>
-        <span class="method">{{.Method}}</span>
+<section class="api">
+    <h3 class="title">
+        <span class="method {{.Method}}">{{.Method}}</span>
         <span class="url">{{.URL}}</span>
         <span class="summary">{{.Summary}}</span>
     </h3>
-    <div class="api-content">
+
+    <div class="content">
         {{if .Description}}
         <p class="description">{{.Description}}</p>
         {{end}}
@@ -219,21 +231,15 @@ var Templates=map[string]string{
 
         {{if .Request}}
         <div>
-            <h4>请求</h4>
+            <h4>请求{{if .Request.Type}}:{{.Request.Type}}{{end}}</h4>
             <div>
-                <p>数据类型: {{.Request.Type}}</p>
-
                 {{if .Request.Headers}}
-                <h5>请求头:</h5>
-                <ul>
-                    {{range $k,$v:=.Request.Headers}}
-                    <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
-                    {{end}}
-                </ul>
+                    <h5>报头:</h5>
+                    {{template "headers" .Request.Headers }}
                 {{end}}
 
                 {{if .Request.Params}}
-                <h5>参数:</h5>
+                    <h5>参数:</h5>
                     {{template "param" .Request.Params}}
                 {{end}}
 
@@ -266,36 +272,55 @@ var Templates=map[string]string{
 
 
 
-
+{{/* @apiParam 和 @apiQuery */}}
 {{define "param"}}
-    <ul>
+<table>
+    <thead>
+        <tr><th>名称</th><th>类型</th><th>描述</th></tr>
+    </thead>
+    <tbody>
     {{range .}}
-    <li>
-        <span class="param-name">{{.Name}}</span>
-        <span class="param-type">{{.Type}}</span>
-        <span>{{.Summary}}</span>
-    </li>
+    <tr>
+        <td>{{.Name}}</td>
+        <td>{{.Type}}</td>
+        <td>{{.Summary}}</td>
+    </tr>
     {{end}}
-    </ul>
+    </tbody>
+</table>
+{{end}}
+
+
+{{/* @apiHeader */}}
+{{define "headers"}}
+<table>
+    <thead>
+        <tr><th>名称</th><th>描述</th></tr>
+    </thead>
+    <tbody>
+    {{range $k, $v := .}}
+    <tr>
+        <td>{{$k}}</td>
+        <td>{{$v}}</td>
+    </tr>
+    {{end}}
+    </tbody>
+</table>
 {{end}}
 
 
 
-
+{{/* @apiSuccess 和 @apiError */}}
 {{define "response"}}
         <p><span class="status-code">status:{{.Code}}</span>{{.Summary}}</p>
 
         {{if .Headers}}
-        <h5>请求头</h5>
-        <ul>
-            {{range $k,$v:=.Headers}}
-            <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
-            {{end}}
-        </ul>
+            <h5>请求头</h5>
+            {{template "headers" .Headers}}
         {{end}}
 
         {{if .Params}}
-        <h5>参数:</h5>
+            <h5>参数:</h5>
             {{template "param" .Params}}
         {{end}}
 
@@ -325,14 +350,18 @@ var Templates=map[string]string{
     </head>
     <body>
         <header>
-            <a class="title" href="./index.html">{{.Title}}</a>
-            {{if .Version}}<span>{{.Version}}</span>{{end}}
+            <h1 class="title">
+                <a href="./index.html">{{.Title}}</a>
+                {{if .Version}}<span class="version">{{.Version}}</span>{{end}}
+            </h1>
+            
             <select id="groups">
                 {{$currGroup := .GroupName}}
                 {{range $key, $val := .Groups}}
                 <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
                 {{end}}
             </select>
+
             <div class="fr filter">
                 <label><input type="checkbox" checked="checked" value="get">GET</label>
                 <label><input type="checkbox" checked="checked" value="post">POST</label>
@@ -357,7 +386,7 @@ var Templates=map[string]string{
             // 隐藏不当前页面用不到的过滤器
             $('header .filter input').each(function(index, elem){
                 var val = $(elem).val();
-                if ($('.main section.method-'+val).length == 0) {
+                if ($('.main .api .method.'+val).length == 0) {
                     $(elem).parent().hide();
                 }
             });
@@ -365,7 +394,7 @@ var Templates=map[string]string{
             // 按请求方法过滤
             $('header .filter input').on('change', function(){
                 var val = $(this).attr('value');
-                $('.main section.method-'+val).each(function(index, elem){
+                $('.main .api .method.'+val).parents('.api').each(function(index, elem){
                     $(elem).slideToggle();
                 });
             })
@@ -376,7 +405,7 @@ var Templates=map[string]string{
             });
 
             $('.api h3').on('click', function(){
-                $(this).siblings('.api-content').slideToggle();
+                $(this).siblings('.content').slideToggle();
             });
         });
         </script>
