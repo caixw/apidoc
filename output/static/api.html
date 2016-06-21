@@ -1,11 +1,12 @@
 {{define "api"}}
 <section class="api">
-    <h3>
+    <h3 class="title">
         <span class="method {{.Method}}">{{.Method}}</span>
         <span class="url">{{.URL}}</span>
         <span class="summary">{{.Summary}}</span>
     </h3>
-    <div class="api-content">
+
+    <div class="content">
         {{if .Description}}
         <p class="description">{{.Description}}</p>
         {{end}}
@@ -22,21 +23,15 @@
 
         {{if .Request}}
         <div>
-            <h4>请求</h4>
+            <h4>请求{{if .Request.Type}}:{{.Request.Type}}{{end}}</h4>
             <div>
-                <p>数据类型: {{if .Request.Type}}{{.Request.Type}}{{else}}none{{end}}</p>
-
                 {{if .Request.Headers}}
-                <h5>请求头:</h5>
-                <ul>
-                    {{range $k,$v:=.Request.Headers}}
-                    <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
-                    {{end}}
-                </ul>
+                    <h5>报头:</h5>
+                    {{template "headers" .Request.Headers }}
                 {{end}}
 
                 {{if .Request.Params}}
-                <h5>参数:</h5>
+                    <h5>参数:</h5>
                     {{template "param" .Request.Params}}
                 {{end}}
 
@@ -69,36 +64,55 @@
 
 
 
-
+{{/* @apiParam 和 @apiQuery */}}
 {{define "param"}}
-    <ul>
+<table>
+    <thead>
+        <tr><th>名称</th><th>类型</th><th>描述</th></tr>
+    </thead>
+    <tbody>
     {{range .}}
-    <li>
-        <span class="param-name">{{.Name}}</span>
-        <span class="param-type">{{.Type}}</span>
-        <span>{{.Summary}}</span>
-    </li>
+    <tr>
+        <td>{{.Name}}</td>
+        <td>{{.Type}}</td>
+        <td>{{.Summary}}</td>
+    </tr>
     {{end}}
-    </ul>
+    </tbody>
+</table>
+{{end}}
+
+
+{{/* @apiHeader */}}
+{{define "headers"}}
+<table>
+    <thead>
+        <tr><th>名称</th><th>描述</th></tr>
+    </thead>
+    <tbody>
+    {{range $k, $v := .}}
+    <tr>
+        <td>{{$k}}</td>
+        <td>{{$v}}</td>
+    </tr>
+    {{end}}
+    </tbody>
+</table>
 {{end}}
 
 
 
-
+{{/* @apiSuccess 和 @apiError */}}
 {{define "response"}}
         <p><span class="status-code">status:{{.Code}}</span>{{.Summary}}</p>
 
         {{if .Headers}}
-        <h5>请求头</h5>
-        <ul>
-            {{range $k,$v:=.Headers}}
-            <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
-            {{end}}
-        </ul>
+            <h5>请求头</h5>
+            {{template "headers" .Headers}}
         {{end}}
 
         {{if .Params}}
-        <h5>参数:</h5>
+            <h5>参数:</h5>
             {{template "param" .Params}}
         {{end}}
 

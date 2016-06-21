@@ -129,18 +129,8 @@ header .filter label{
     margin-right:2rem;
 }
 
-.main .param-name{
-    min-width:7rem;
-    display:inline-block;
-}
-
-.main .api-content{
+.main .content{
     display:none;
-}
-
-.main .param-type{
-    min-width:5rem;
-    display:inline-block;
 }
 
 .main .header-key{
@@ -151,6 +141,19 @@ header .filter label{
 .main .status-code{
     min-width:6rem;
     display:inline-block;
+}
+
+.main table{
+    text-align:left;
+    border-collapse:collapse;
+}
+
+.main table thead tr, .main table tbody tr:nth-child(even){
+    background:#ddd;
+}
+
+.main table th, .main table td{
+    padding:.3rem 1rem;
 }
 
 /*=============== footer ================*/
