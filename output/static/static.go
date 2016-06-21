@@ -51,13 +51,13 @@ header{
 
 }
 
-header .title{
+header h1{
     font-size:2rem;
     display:inline-block;
     margin:0rem;
 }
 
-header .title .version{
+header h1 .version{
     font-size:1rem;
 }
 
@@ -74,90 +74,98 @@ header .filter label{
     vertical-align: bottom;
 }
 
-/*=============== main ================*/
-
 .main{
     padding:0rem 2rem;
-    margin-top:8rem;
+    margin-top:5.5rem;
 }
 
-.main section{
+/*=============== .api ================*/
+
+.main .api{
     padding:1rem;
     margin:1rem 0rem;
     border:1px solid #eee;
 }
 
-.main h3{
+.api h3{
     cursor:pointer;
     margin:0rem;
 }
 
-.main h4{
-    margin-bottom:0rem;
+.api h4{
+    font-size:1.1rem;
+    margin-bottom:.2rem;
     border-bottom:1px solid #eee;
     padding-bottom:.2rem;
 }
 
-.main h5{
-    margin:1rem 0rem;
+.api h5{
+    margin:.8rem 0rem .2rem 0rem;
+    font-size:1rem;
 }
 
-.main h3 .method{
+.api h3 .method{
     width:5rem;
     font-weight:bold;
     display:inline-block;
     text-transform:uppercase;
 }
 
-.main h3 .get{
+.api h3 .get{
     color:green;
 }
 
-.main h3 .options{
+.api h3 .options{
     color:green;
 }
 
-.main h3 .delete{
+.api h3 .delete{
     color:red;
 }
 
-.main h3 .put,.main h3 .patch{
+.api h3 .put,.api h3 .patch{
     color:rgb(193,174,49);
 }
 
-.main h3 .post{
+.api h3 .post{
     color:rgb(240,114,11);
 }
 
-.main h3 .url{
+.api h3 .url{
     display:inline-block;
     margin-right:2rem;
 }
 
-.main .content{
+.api h4 .success{
+    color:green;
+    margin-right:1rem;
+}
+
+.api h4 .error{
+    color:green;
+    margin-right:1rem;
+}
+
+.api .content{
     display:none;
 }
 
-.main .header-key{
-    min-width:15rem;
-    display:inline-block;
-}
-
-.main .status-code{
-    min-width:6rem;
-    display:inline-block;
-}
-
-.main table{
+.api table{
     text-align:left;
     border-collapse:collapse;
+    border:1px solid #ddd;
 }
 
-.main table thead tr, .main table tbody tr:nth-child(even){
-    background:#ddd;
+.api table thead tr{
+    background:#eee;
 }
 
-.main table th, .main table td{
+.api table tr{
+    border-bottom:1px solid #ddd;
+    line-height:1.5rem;
+}
+
+.api table th, .api table td{
     padding:.3rem 1rem;
 }
 
@@ -220,18 +228,18 @@ var Templates=map[string]string{
         {{end}}
 
         {{if .Queries}}
-            <h4>查询参数</h4>
+            <h5>查询参数</h5>
             {{template "param" .Queries}}
         {{end}}
 
         {{if .Params}}
-            <h4>参数</h4>
+            <h5>参数</h5>
             {{template "param" .Params}}
         {{end}}
 
         {{if .Request}}
         <div>
-            <h4>请求{{if .Request.Type}}:{{.Request.Type}}{{end}}</h4>
+            <h4>请求{{if .Request.Type}}:&#160;{{.Request.Type}}{{end}}</h4>
             <div>
                 {{if .Request.Headers}}
                     <h5>报头:</h5>
@@ -244,10 +252,8 @@ var Templates=map[string]string{
                 {{end}}
 
                 {{if .Request.Examples}}
-                <h5>示例:</h5>
-                    {{range .Request.Examples}}
-                    <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
-                    {{end}}
+                    <h5>示例:</h5>
+                    {{template "examples" .Request.Examples}}
                 {{end}}
             </div>
         </div>
@@ -255,19 +261,28 @@ var Templates=map[string]string{
 
         {{if .Success}}
         <div>
-            <h4>响应-SUCCESS</h4>
+            <h4><span class="success">SUCCESS:</span>{{.Success.Code}},&#160;{{.Success.Summary}}</h4>
             {{template "response" .Success}}
         </div>
         {{end}}
 
         {{if .Error}}
         <div>
-            <h4>响应-ERROR</h4>
+            <h4><span class="error">ERROR:</span>{{.Success.Code}},&#160;{{.Success.Summary}}</h4>
             {{template "response" .Error}}
         </div>
         {{end}}
     </div>
 </section>
+{{end}}
+
+
+
+{{define "examples"}}
+{{range .}}
+<pre><code class="language-{{.Type}}">{{- .Code -}}
+</code></pre>
+{{end}}
 {{end}}
 
 
@@ -312,8 +327,6 @@ var Templates=map[string]string{
 
 {{/* @apiSuccess 和 @apiError */}}
 {{define "response"}}
-        <p><span class="status-code">status:{{.Code}}</span>{{.Summary}}</p>
-
         {{if .Headers}}
             <h5>请求头</h5>
             {{template "headers" .Headers}}
@@ -325,10 +338,8 @@ var Templates=map[string]string{
         {{end}}
 
         {{if .Examples}}
-        <h5>示例:</h5>
-            {{range .Examples}}
-            <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
-            {{end}}
+            <h5>示例:</h5>
+            {{template "examples" .Examples}}
         {{end}}
 {{end}}
 `,"./header.html":`{{define "header" -}}<!DOCTYPE html>
@@ -350,7 +361,7 @@ var Templates=map[string]string{
     </head>
     <body>
         <header>
-            <h1 class="title">
+            <h1>
                 <a href="./index.html">{{.Title}}</a>
                 {{if .Version}}<span class="version">{{.Version}}</span>{{end}}
             </h1>
