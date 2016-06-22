@@ -52,8 +52,7 @@ var langs = map[string][]*block{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
-		// BUG(caixw): 一个单行注释后紧跟前多行注释时，多行注释会被忽略。
-		&block{Type: blockTypeMComment, Begin: "\n=pod", End: "\n=cut"},
+		&block{Type: blockTypeMComment, Begin: "\n=pod\n", End: "\n=cut\n"},
 	},
 
 	// python
@@ -75,8 +74,7 @@ var langs = map[string][]*block{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
-		// BUG(caixw): 一个单行注释后紧跟前多行注释时，多行注释会被忽略。
-		&block{Type: blockTypeMComment, Begin: "\n=begin", End: "\n=end"},
+		&block{Type: blockTypeMComment, Begin: "\n=begin\n", End: "\n=end\n"},
 	},
 
 	// rust

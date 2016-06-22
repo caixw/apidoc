@@ -170,6 +170,10 @@ func (b *block) endSComments(l *lexer) ([]rune, *app.SyntaxError) {
 		}
 	}
 
+	if len(ret) > 0 { // 最后一个换行符返还给 lexer
+		l.pos--
+	}
+
 	return ret, nil
 }
 

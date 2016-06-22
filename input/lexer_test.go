@@ -76,12 +76,20 @@ func(){}
 mcomment1
 mcomment2
 */
+
+// scomment3
+// scomment4
+=pod
+ mcomment3
+ mcomment4
+=cut
 `),
 	}
 
 	blocks := []*block{
 		&block{Type: blockTypeSComment, Begin: "//"},
 		&block{Type: blockTypeMComment, Begin: "/*", End: "*/"},
+		&block{Type: blockTypeMComment, Begin: "\n=pod", End: "\n=cut"},
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: "\\"},
 	}
 
@@ -104,6 +112,18 @@ mcomment2
 	a.Equal(b.Type, blockTypeMComment) // mcomment1
 	rs, err = b.end(l)
 	a.NotError(err).Equal(string(rs), "\nmcomment1\nmcomment2\n")
+
+	/* 测试一段单行注释后紧跟 \n=pod 形式的多行注释，是否会出错 */
+
+	b = l.block(blocks) // scomment3,scomment4
+	a.Equal(b.Type, blockTypeSComment)
+	rs, err = b.end(l)
+	a.NotError(err).Equal(string(rs), " scomment3\n scomment4\n")
+
+	b = l.block(blocks) // mcomment3,mcomment4
+	a.Equal(b.Type, blockTypeMComment)
+	rs, err = b.end(l)
+	a.NotError(err).Equal(string(rs), "\n mcomment3\n mcomment4")
 }
 
 func TestBlock_endString(t *testing.T) {
