@@ -18,11 +18,11 @@ func TestLexer_lineNumber(t *testing.T) {
 	l.pos = 3
 	a.Equal(l.lineNumber(), 1)
 
-	l.line()
+	l.pos += 3
 	a.Equal(l.lineNumber(), 2)
 
-	l.line()
-	l.line()
+	l.pos += 3
+	l.pos += 3
 	a.Equal(l.lineNumber(), 4)
 }
 
@@ -43,25 +43,6 @@ func TestLexer_next(t *testing.T) {
 	a.Equal(utf8.RuneError, l.next())
 	a.Equal(utf8.RuneError, l.next())
 	a.True(l.atEOF())
-}
-
-func TestLexer_line(t *testing.T) {
-	a := assert.New(t)
-
-	l := &lexer{
-		data: []byte("line1\n line2 \n line3\n"),
-	}
-
-	a.Equal(string(l.line()), "line1\n")
-	a.Equal(string(l.line()), " line2 \n")
-	a.Equal(string(l.line()), " line3\n")
-
-	// 最后一行没有换行符，则自动取到字符串末尾
-	l = &lexer{
-		data: []byte("line1\n line2"),
-	}
-	a.Equal(string(l.line()), "line1\n")
-	a.Equal(string(l.line()), " line2")
 }
 
 func TestLexer_match(t *testing.T) {

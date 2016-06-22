@@ -25,7 +25,7 @@ type block struct {
 	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释
 	Begin  string // 块的起始字符串
 	End    string // 块的结束字符串，单行注释不用定义此值
-	Escape string // 转义字符，非字符串，不用定义此值
+	Escape string // 当 Type 为 blockTypeString 时，此值表示转义字符，Type 为其它值时，此值无意义；
 }
 
 type lexer struct {
@@ -49,22 +49,6 @@ func (l *lexer) next() rune {
 	}
 
 	return r
-}
-
-// 读取之后一行的内容，包括换行符本身。
-func (l *lexer) line() []rune {
-	ret := make([]rune, 0, 100)
-
-	for {
-		r := l.next()
-		ret = append(ret, r)
-
-		if l.atEOF() || r == '\n' {
-			break
-		}
-	}
-
-	return ret
 }
 
 // 接下来的 n 个字符是否匹配指定的字符串，
@@ -157,8 +141,6 @@ LOOP:
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
 func (b *block) endSComments(l *lexer) ([]rune, *app.SyntaxError) {
-	ret := l.line()
-
 	// 跳过除换行符以外的所有空白字符。
 	skipSpace := func() {
 		for {
@@ -170,30 +152,51 @@ func (b *block) endSComments(l *lexer) ([]rune, *app.SyntaxError) {
 		}
 	} // end skipSpace
 
+	ret := make([]rune, 0, 1000)
 	for {
-		skipSpace()
+		for { // 读取一行的内容到 ret 变量中
+			r := l.next()
+			ret = append(ret, r)
 
-		if !l.match(b.Begin) {
+			if l.atEOF() || r == '\n' {
+				break
+			}
+		}
+
+		skipSpace()            // 去掉新行的前导空格，若是存在的话。
+		if !l.match(b.Begin) { // 不是接连着的注释块了，结束当前的匹配
 			break
 		}
-		ret = append(ret, l.line()...)
 	}
 
 	return ret, nil
 }
 
 func (b *block) endMComments(l *lexer) ([]rune, *app.SyntaxError) {
-	ret := make([]rune, 0, 100)
+	lines := make([][]rune, 0, 20)
+	line := make([]rune, 0, 100)
 
+LOOP:
 	for {
 		switch {
 		case l.atEOF():
 			return nil, l.syntaxError("未找到注释的结束标记:" + b.End)
 		case l.match(b.End):
-			return ret, nil
+			lines = append(lines, line)
+			break LOOP
 		default:
 			r := l.next()
-			ret = append(ret, r)
+			line = append(line, r)
+			if r == '\n' {
+				lines = append(lines, line)
+				line = make([]rune, 0, 100)
+			}
 		}
 	}
+
+	ret := make([]rune, 0, 1000)
+	for _, v := range lines {
+		ret = append(ret, v...)
+	}
+	return ret, nil
 }
