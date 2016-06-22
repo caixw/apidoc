@@ -10,6 +10,7 @@ import (
 
 	"github.com/issue9/assert"
 	"github.com/issue9/is"
+	"github.com/issue9/version"
 )
 
 // 对一些堂量的基本检测。
@@ -19,4 +20,6 @@ func TestConsts(t *testing.T) {
 	a.True(is.URL(RepoURL))
 	a.True(is.URL(OfficialURL))
 	a.True(strings.IndexRune(Symbols, '@') < 0)
+
+	a.True(version.SemVerValid(Version))
 }
