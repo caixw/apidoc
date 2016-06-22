@@ -6,6 +6,7 @@ package input
 
 import (
 	"bytes"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 
@@ -172,6 +173,8 @@ func (b *block) endSComments(l *lexer) ([]rune, *app.SyntaxError) {
 	return ret, nil
 }
 
+// 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
+// 会对每一行应用 filterSymbols 规则。
 func (b *block) endMComments(l *lexer) ([]rune, *app.SyntaxError) {
 	lines := make([][]rune, 0, 20)
 	line := make([]rune, 0, 100)
@@ -182,13 +185,13 @@ LOOP:
 		case l.atEOF():
 			return nil, l.syntaxError("未找到注释的结束标记:" + b.End)
 		case l.match(b.End):
-			lines = append(lines, line)
+			lines = append(lines, filterSymbols(line))
 			break LOOP
 		default:
 			r := l.next()
 			line = append(line, r)
 			if r == '\n' {
-				lines = append(lines, line)
+				lines = append(lines, filterSymbols(line))
 				line = make([]rune, 0, 100)
 			}
 		}
@@ -199,4 +202,26 @@ LOOP:
 		ret = append(ret, v...)
 	}
 	return ret, nil
+}
+
+// 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。
+// symbol 为全局变量 app.Symbols 中定义的任意字符。
+func filterSymbols(line []rune) []rune {
+	for k, v := range line {
+		if unicode.IsSpace(v) { // 跳过行首的空格
+			continue
+		}
+
+		// 不存在指定的符号，直接返回原数据
+		if strings.IndexRune(app.Symbols, v) < 0 {
+			return line
+		}
+
+		// 若下个字符正好是是空格
+		if len(line) > k+1 && unicode.IsSpace(line[k+1]) {
+			return line[k+2:]
+		}
+	}
+
+	return line
 }

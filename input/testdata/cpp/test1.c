@@ -28,21 +28,22 @@ void login(http::ResponseWriter w, http::Request& r) {
 	// TODO
 }
 
-/* @api DELETE /users/login 注销登录
-@apiGroup users
-
-@apiRequest json
-@apiHeader Authorization xxxx
-
-@apiSuccess 201 OK
-@apiParam expires int 过期时间
-@apiParam token string 凭证
-@apiExample json
-{
-    "expires": 11111111,
-    "token": "adl;kfqwer;q;afd"
-}
-*/
+/*
+ * @api DELETE /users/login 注销登录
+ * @apiGroup users
+ *
+ * @apiRequest json
+ * @apiHeader Authorization xxxx
+ *
+ * @apiSuccess 201 OK
+ * @apiParam expires int 过期时间
+ * @apiParam token string 凭证
+ * @apiExample json
+ * {
+ *    "expires": 11111111,
+ *    "token": "adl;kfqwer;q;afd"
+ * }
+ */
 void logout(http::ResponseWriter w, http::Request& r) {
     cout << "logout" << "*******/" << endl;
 	// TODO

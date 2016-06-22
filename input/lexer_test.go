@@ -204,3 +204,24 @@ func TestBlock_endMComment(t *testing.T) {
 	rs, err = b.endMComments(l)
 	a.Error(err).Nil(rs)
 }
+
+func TestFilterSyhmbols(t *testing.T) {
+	a := assert.New(t)
+
+	eq := func(v1, v2 string) {
+		s1 := string(filterSymbols([]rune(v1)))
+		a.Equal(s1, v2)
+	}
+
+	eq("* line", "line")
+	eq("*   line", "  line")
+	eq("*\tline", "line")
+	eq("* \tline", "\tline")
+	eq("*\nline", "line")
+
+	eq("  * line", "line")
+	eq("  *  line", " line")
+	eq("\t*  line", " line")
+	eq("\t* \nline", "\nline")
+	eq("\t*\n line", " line")
+}
