@@ -18,11 +18,11 @@ func TestLexer_lineNumber(t *testing.T) {
 	l.pos = 3
 	a.Equal(l.lineNumber(), 1)
 
-	l.line()
+	l.pos += 3
 	a.Equal(l.lineNumber(), 2)
 
-	l.line()
-	l.line()
+	l.pos += 3
+	l.pos += 3
 	a.Equal(l.lineNumber(), 4)
 }
 
@@ -43,25 +43,6 @@ func TestLexer_next(t *testing.T) {
 	a.Equal(utf8.RuneError, l.next())
 	a.Equal(utf8.RuneError, l.next())
 	a.True(l.atEOF())
-}
-
-func TestLexer_line(t *testing.T) {
-	a := assert.New(t)
-
-	l := &lexer{
-		data: []byte("line1\n line2 \n line3\n"),
-	}
-
-	a.Equal(string(l.line()), "line1\n")
-	a.Equal(string(l.line()), " line2 \n")
-	a.Equal(string(l.line()), " line3\n")
-
-	// 最后一行没有换行符，则自动取到字符串末尾
-	l = &lexer{
-		data: []byte("line1\n line2"),
-	}
-	a.Equal(string(l.line()), "line1\n")
-	a.Equal(string(l.line()), " line2")
 }
 
 func TestLexer_match(t *testing.T) {
@@ -95,12 +76,20 @@ func(){}
 mcomment1
 mcomment2
 */
+
+// scomment3
+// scomment4
+=pod
+ mcomment3
+ mcomment4
+=cut
 `),
 	}
 
 	blocks := []*block{
 		&block{Type: blockTypeSComment, Begin: "//"},
 		&block{Type: blockTypeMComment, Begin: "/*", End: "*/"},
+		&block{Type: blockTypeMComment, Begin: "\n=pod", End: "\n=cut"},
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: "\\"},
 	}
 
@@ -123,6 +112,18 @@ mcomment2
 	a.Equal(b.Type, blockTypeMComment) // mcomment1
 	rs, err = b.end(l)
 	a.NotError(err).Equal(string(rs), "\nmcomment1\nmcomment2\n")
+
+	/* 测试一段单行注释后紧跟 \n=pod 形式的多行注释，是否会出错 */
+
+	b = l.block(blocks) // scomment3,scomment4
+	a.Equal(b.Type, blockTypeSComment)
+	rs, err = b.end(l)
+	a.NotError(err).Equal(string(rs), " scomment3\n scomment4\n")
+
+	b = l.block(blocks) // mcomment3,mcomment4
+	a.Equal(b.Type, blockTypeMComment)
+	rs, err = b.end(l)
+	a.NotError(err).Equal(string(rs), "\n mcomment3\n mcomment4")
 }
 
 func TestBlock_endString(t *testing.T) {
@@ -222,4 +223,25 @@ func TestBlock_endMComment(t *testing.T) {
 	}
 	rs, err = b.endMComments(l)
 	a.Error(err).Nil(rs)
+}
+
+func TestFilterSyhmbols(t *testing.T) {
+	a := assert.New(t)
+
+	eq := func(v1, v2 string) {
+		s1 := string(filterSymbols([]rune(v1)))
+		a.Equal(s1, v2)
+	}
+
+	eq("* line", "line")
+	eq("*   line", "  line")
+	eq("*\tline", "line")
+	eq("* \tline", "\tline")
+	eq("*\nline", "line")
+
+	eq("  * line", "line")
+	eq("  *  line", " line")
+	eq("\t*  line", " line")
+	eq("\t* \nline", "\nline")
+	eq("\t*\n line", " line")
 }

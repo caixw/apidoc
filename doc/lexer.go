@@ -256,7 +256,7 @@ func (t *tag) skipSpace() {
 	}
 }
 
-// 去掉首尾的空格
+// 去掉尾部空格
 func trimRight(data []rune) []rune {
 	end := len(data) - 1
 	for ; end >= 0; end-- {

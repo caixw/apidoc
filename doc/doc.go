@@ -32,7 +32,7 @@ type API struct {
 
 // Request 表示用户请求所表示的数据。
 type Request struct {
-	Type     string            `json:"type"`              // 请求的数据类型，多个用逗号分隔
+	Type     string            `json:"type"`              // 请求所支持的数据类型，多个用逗号分隔
 	Headers  map[string]string `json:"headers,omitempty"` // 请求必须携带的头
 	Params   []*Param          `json:"params,omitempty"`  // 提交的各个字段的描述
 	Examples []*Example        `json:"example,omitempty"` // 请求数据的示例

@@ -6,6 +6,7 @@ package input
 
 import (
 	"bytes"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 
@@ -25,7 +26,7 @@ type block struct {
 	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释
 	Begin  string // 块的起始字符串
 	End    string // 块的结束字符串，单行注释不用定义此值
-	Escape string // 转义字符，非字符串，不用定义此值
+	Escape string // 当 Type 为 blockTypeString 时，此值表示转义字符，Type 为其它值时，此值无意义；
 }
 
 type lexer struct {
@@ -51,23 +52,8 @@ func (l *lexer) next() rune {
 	return r
 }
 
-// 读取之后一行的内容，包括换行符本身。
-func (l *lexer) line() []rune {
-	ret := make([]rune, 0, 100)
-
-	for {
-		r := l.next()
-		ret = append(ret, r)
-
-		if l.atEOF() || r == '\n' {
-			break
-		}
-	}
-
-	return ret
-}
-
-// 是否匹配指定的字符串，若匹配，则将指定移向该字符串这后，否则不作任何操作。
+// 接下来的 n 个字符是否匹配指定的字符串，
+// 若匹配，则将指定移向该字符串这后，否则不作任何操作。
 func (l *lexer) match(word string) bool {
 	if l.atEOF() || (l.pos+len(word) > len(l.data)) { // 剩余字符没有word长，直接返回false
 		return false
@@ -135,7 +121,7 @@ func (b *block) end(l *lexer) ([]rune, *app.SyntaxError) {
 }
 
 // 从 l 的当前位置开始往后查找，直到找到 b 中定义的 end 字符串，
-// 将将 l 中的指针移到该位置。
+// 将 l 中的指针移到该位置。
 // 正常找到结束符的返回 true，否则返回 false。
 func (b *block) endString(l *lexer) *app.SyntaxError {
 LOOP:
@@ -156,8 +142,6 @@ LOOP:
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
 func (b *block) endSComments(l *lexer) ([]rune, *app.SyntaxError) {
-	ret := l.line()
-
 	// 跳过除换行符以外的所有空白字符。
 	skipSpace := func() {
 		for {
@@ -169,30 +153,79 @@ func (b *block) endSComments(l *lexer) ([]rune, *app.SyntaxError) {
 		}
 	} // end skipSpace
 
+	ret := make([]rune, 0, 1000)
 	for {
-		skipSpace()
+		for { // 读取一行的内容到 ret 变量中
+			r := l.next()
+			ret = append(ret, r)
 
-		if !l.match(b.Begin) {
+			if l.atEOF() || r == '\n' {
+				break
+			}
+		}
+
+		skipSpace()            // 去掉新行的前导空格，若是存在的话。
+		if !l.match(b.Begin) { // 不是接连着的注释块了，结束当前的匹配
 			break
 		}
-		ret = append(ret, l.line()...)
+	}
+
+	if len(ret) > 0 { // 最后一个换行符返还给 lexer
+		l.pos--
 	}
 
 	return ret, nil
 }
 
+// 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
+// 会对每一行应用 filterSymbols 规则。
 func (b *block) endMComments(l *lexer) ([]rune, *app.SyntaxError) {
-	ret := make([]rune, 0, 100)
+	lines := make([][]rune, 0, 20)
+	line := make([]rune, 0, 100)
 
+LOOP:
 	for {
 		switch {
 		case l.atEOF():
 			return nil, l.syntaxError("未找到注释的结束标记:" + b.End)
 		case l.match(b.End):
-			return ret, nil
+			lines = append(lines, filterSymbols(line))
+			break LOOP
 		default:
 			r := l.next()
-			ret = append(ret, r)
+			line = append(line, r)
+			if r == '\n' {
+				lines = append(lines, filterSymbols(line))
+				line = make([]rune, 0, 100)
+			}
 		}
 	}
+
+	ret := make([]rune, 0, 1000)
+	for _, v := range lines {
+		ret = append(ret, v...)
+	}
+	return ret, nil
+}
+
+// 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。
+// symbol 为全局变量 app.Symbols 中定义的任意字符。
+func filterSymbols(line []rune) []rune {
+	for k, v := range line {
+		if unicode.IsSpace(v) { // 跳过行首的空格
+			continue
+		}
+
+		// 不存在指定的符号，直接返回原数据
+		if strings.IndexRune(app.Symbols, v) < 0 {
+			return line
+		}
+
+		// 若下个字符正好是是空格
+		if len(line) > k+1 && unicode.IsSpace(line[k+1]) {
+			return line[k+2:]
+		}
+	}
+
+	return line
 }

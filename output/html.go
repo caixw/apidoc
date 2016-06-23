@@ -23,7 +23,7 @@ const htmlSuffix = ".html"
 
 // 用于页首和页脚的附加信息
 type htmlPage struct {
-	Content        template.HTML         // 索引文件的其它内容
+	Content        string                // 索引文件的其它内容
 	Groups         map[string][]*doc.API // 按组名形式组织的文档集合
 	GroupName      string                // 当前分组名称
 	Group          []*doc.API            // 当前组的文档集合
@@ -101,7 +101,7 @@ func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlP
 
 func buildHTMLPage(docs *doc.Doc, opt *Options) *htmlPage {
 	p := &htmlPage{
-		Content:        template.HTML(strings.Replace(docs.Content, "\n", "<br />", -1)),
+		Content:        docs.Content,
 		Title:          docs.Title,
 		Version:        docs.Version,
 		AppVersion:     app.Version,
@@ -131,11 +131,23 @@ func buildHTMLPage(docs *doc.Doc, opt *Options) *htmlPage {
 func compileHTMLTemplate(tplDir string) (*template.Template, error) {
 	t := template.New("html").
 		Funcs(template.FuncMap{
-			"groupURL": func(name string) string {
+			"groupURL": func(name string) string { // 根据分组名称，获取其相应的 URL
 				return path.Join(".", name+htmlSuffix)
 			},
-			"dateFormat": func(t time.Time) string {
+			"dateFormat": func(t time.Time) string { // 格式化日期
 				return t.Format(app.TimeFormat)
+			},
+			"nl2br": func(str string) string { // 将字符串的换行符转成 <br />
+				return strings.Replace(str, "\n", "<br />", -1)
+			},
+			"html": func(str string) interface{} { // 转换成 html
+				return template.HTML(str)
+			},
+			"upper": func(str string) string { // 转大写
+				return strings.ToUpper(str)
+			},
+			"lower": func(str string) string { // 转大写
+				return strings.ToLower(str)
 			},
 		})
 

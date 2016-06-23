@@ -37,7 +37,7 @@ LOOP:
 		case l.matchTag("@api"):
 			err = l.scanAPI(api)
 		case l.match("@api"): // 不认识标签
-			err = l.syntaxError("不认识的标签")
+			err = l.syntaxError("不认识的标签" + l.readWord())
 		default:
 			if l.atEOF() {
 				break LOOP

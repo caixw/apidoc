@@ -1,111 +1,128 @@
-{{define "api"}}
+{{- define "api" -}}
 <section class="api">
-    <h3>
+    <h3 class="title">
         <span class="method {{.Method}}">{{.Method}}</span>
         <span class="url">{{.URL}}</span>
         <span class="summary">{{.Summary}}</span>
     </h3>
-    <div class="api-content">
+
+    <div class="content">
         {{if .Description}}
         <p class="description">{{.Description}}</p>
         {{end}}
 
         {{if .Queries}}
-            <h4>查询参数</h4>
-            {{template "param" .Queries}}
+            <h5>查询参数</h5>
+            {{template "params" .Queries}}
         {{end}}
 
         {{if .Params}}
-            <h4>参数</h4>
-            {{template "param" .Params}}
+            <h5>参数</h5>
+            {{template "params" .Params}}
         {{end}}
 
         {{if .Request}}
-        <div>
-            <h4>请求</h4>
+        <div class="request">
+            <h4>请求{{if .Request.Type}}:&#160;{{.Request.Type}}{{end}}</h4>
             <div>
-                <p>数据类型: {{if .Request.Type}}{{.Request.Type}}{{else}}none{{end}}</p>
-
                 {{if .Request.Headers}}
-                <h5>请求头:</h5>
-                <ul>
-                    {{range $k,$v:=.Request.Headers}}
-                    <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
-                    {{end}}
-                </ul>
+                    <h5>报头:</h5>
+                    {{template "headers" .Request.Headers}}
                 {{end}}
 
                 {{if .Request.Params}}
-                <h5>参数:</h5>
-                    {{template "param" .Request.Params}}
+                    <h5>参数:</h5>
+                    {{template "params" .Request.Params}}
                 {{end}}
 
                 {{if .Request.Examples}}
-                <h5>示例:</h5>
-                    {{range .Request.Examples}}
-                    <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
-                    {{end}}
+                    <h5>示例:</h5>
+                    {{template "examples" .Request.Examples}}
                 {{end}}
             </div>
         </div>
         {{end}}
 
         {{if .Success}}
-        <div>
-            <h4>响应-SUCCESS</h4>
+        <div class="response success">
+            <h4><span class="success">SUCCESS:</span>{{.Success.Code}},&#160;{{.Success.Summary}}</h4>
             {{template "response" .Success}}
         </div>
         {{end}}
 
         {{if .Error}}
-        <div>
-            <h4>响应-ERROR</h4>
+        <div class="response error">
+            <h4><span class="error">ERROR:</span>{{.Success.Code}},&#160;{{.Success.Summary}}</h4>
             {{template "response" .Error}}
         </div>
         {{end}}
     </div>
 </section>
+{{- end -}}
+
+
+
+{{- define "examples" -}}
+{{range .}}
+<pre><code class="language-{{.Type|lower}}">{{- .Code -}}
+</code></pre>
 {{end}}
+{{- end -}}
 
 
 
+{{/* @apiParam 和 @apiQuery */}}
+{{- define "params" -}}
+<table class="params">
+    <thead>
+        <tr><th>名称</th><th>类型</th><th>描述</th></tr>
+    </thead>
+    <tbody>
+    {{range . -}}
+    <tr>
+        <th>{{.Name}}</th>
+        <td>{{.Type}}</td>
+        <td>{{.Summary}}</td>
+    </tr>
+    {{- end}}
+    </tbody>
+</table>
+{{- end -}}
 
-{{define "param"}}
-    <ul>
-    {{range .}}
-    <li>
-        <span class="param-name">{{.Name}}</span>
-        <span class="param-type">{{.Type}}</span>
-        <span>{{.Summary}}</span>
-    </li>
-    {{end}}
-    </ul>
-{{end}}
+
+{{/* @apiHeader */}}
+{{- define "headers" -}}
+<table>
+    <thead>
+        <tr><th>名称</th><th>描述</th></tr>
+    </thead>
+    <tbody>
+    {{range $k, $v := . -}}
+    <tr>
+        <th>{{$k}}</th>
+        <td>{{$v}}</td>
+    </tr>
+    {{- end}}
+    </tbody>
+</table>
+{{- end -}}
 
 
 
+{{/* @apiSuccess 和 @apiError */}}
+{{- define "response" -}}
+        {{if .Headers -}}
+            <h5>请求头</h5>
+            {{template "headers" .Headers}}
+        {{- end}}
 
-{{define "response"}}
-        <p><span class="status-code">status:{{.Code}}</span>{{.Summary}}</p>
+        {{- if .Params -}}
+            <h5>参数:</h5>
+            {{template "params" .Params}}
+        {{- end}}
 
-        {{if .Headers}}
-        <h5>请求头</h5>
-        <ul>
-            {{range $k,$v:=.Headers}}
-            <li><span class="header-key">{{$k}}:</span>{{$v}}</li>
-            {{end}}
-        </ul>
-        {{end}}
-
-        {{if .Params}}
-        <h5>参数:</h5>
-            {{template "param" .Params}}
-        {{end}}
-
-        {{if .Examples}}
-        <h5>示例:</h5>
-            {{range .Examples}}
-            <pre class="code" data-type="{{.Type}}">{{.Code}}</pre>
-            {{end}}
-        {{end}}
-{{end}}
+        {{- if .Examples -}}
+            <h5>示例:</h5>
+            {{template "examples" .Examples}}
+        {{- end}}
+{{- end -}}

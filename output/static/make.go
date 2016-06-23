@@ -31,6 +31,7 @@ const (
 var assets = []string{
 	"./style.css",
 	"./jquery-3.0.0.min.js",
+	"./app.js",
 }
 
 // 需要序列化的模板文件。
