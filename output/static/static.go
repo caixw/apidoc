@@ -242,7 +242,7 @@ $(document).ready(function(){
     }
 });
 
-// 对齐代码，对于缩时量大于 2 的，按 4 个空格，小于 2 个空格的，按 0 个空格对齐。
+// 对齐代码。
 function alignCode(code) {
     return code.replace(/^\s*/gm, function(word) {
         word = word.replace('\t', repeatSpace(indentSize));
@@ -264,7 +264,7 @@ function repeatSpace(len) {
 `),}
 var Templates=map[string]string{
 "./index.html":`{{- define "index" -}}
-    {{- template "header" . -}}
+    {{template "header" .}}
 
     {{- if .Content -}}
     <article>
@@ -273,10 +273,10 @@ var Templates=map[string]string{
     {{- end -}}
 
     {{- range .Group -}}
-        {{- template "api" . -}}
+        {{template "api" .}}
     {{- end -}}
 
-    {{- template "footer" . -}}
+    {{template "footer" .}}
 {{- end -}}
 `,"./group.html":`{{- define "group" -}}
     {{template "header" .}}
@@ -314,7 +314,7 @@ var Templates=map[string]string{
             <div>
                 {{if .Request.Headers}}
                     <h5>报头:</h5>
-                    {{template "headers" .Request.Headers }}
+                    {{template "headers" .Request.Headers}}
                 {{end}}
 
                 {{if .Request.Params}}
@@ -365,13 +365,13 @@ var Templates=map[string]string{
         <tr><th>名称</th><th>类型</th><th>描述</th></tr>
     </thead>
     <tbody>
-    {{range .}}
+    {{range . -}}
     <tr>
         <th>{{.Name}}</th>
         <td>{{.Type}}</td>
         <td>{{.Summary}}</td>
     </tr>
-    {{end}}
+    {{- end}}
     </tbody>
 </table>
 {{- end -}}
@@ -384,12 +384,12 @@ var Templates=map[string]string{
         <tr><th>名称</th><th>描述</th></tr>
     </thead>
     <tbody>
-    {{range $k, $v := .}}
+    {{range $k, $v := . -}}
     <tr>
         <th>{{$k}}</th>
         <td>{{$v}}</td>
     </tr>
-    {{end}}
+    {{- end}}
     </tbody>
 </table>
 {{- end -}}
@@ -398,23 +398,23 @@ var Templates=map[string]string{
 
 {{/* @apiSuccess 和 @apiError */}}
 {{- define "response" -}}
-        {{if .Headers}}
+        {{if .Headers -}}
             <h5>请求头</h5>
             {{template "headers" .Headers}}
-        {{end}}
+        {{- end}}
 
-        {{if .Params}}
+        {{- if .Params -}}
             <h5>参数:</h5>
             {{template "params" .Params}}
-        {{end}}
+        {{- end}}
 
-        {{if .Examples}}
+        {{- if .Examples -}}
             <h5>示例:</h5>
             {{template "examples" .Examples}}
-        {{end}}
+        {{- end}}
 {{- end -}}
 `,"./header.html":`{{define "header" -}}<!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -422,13 +422,14 @@ var Templates=map[string]string{
         <meta name="generator" content="{{.AppOfficialURL}}" />
         <title>
         {{- if .GroupName -}}
-            {{- .GroupName -}} &#8250; {{- .Title -}}
+            {{- .GroupName -}}&#160;&#8250;&#160;{{- .Title -}}
         {{- else -}}
             {{- .Title -}}
         {{- end -}}
         </title>
         <link href="https://cdn.bootcss.com/prism/1.5.1/themes/prism.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="./style.css" />
+
         <script src="./jquery-3.0.0.min.js"></script>
         <script src="https://cdn.bootcss.com/prism/1.5.1/prism.min.js" data-manual></script>
         <script src="https://cdn.bootcss.com/prism/1.5.1/plugins/autoloader/prism-autoloader.min.js"></script>
@@ -438,12 +439,12 @@ var Templates=map[string]string{
         <header>
             <h1>
                 <a href="./index.html">{{.Title}}</a>
-                {{if .Version}}<span class="version">{{.Version}}</span>{{end}}
+                {{- if .Version}}<span class="version">{{.Version}}</span>{{end}}
             </h1>
-            
+
             <select id="groups">
-                {{$currGroup := .GroupName}}
-                {{range $key, $val := .Groups}}
+                {{- $currGroup := .GroupName -}}
+                {{- range $key, $val := .Groups -}}
                 <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
                 {{end}}
             </select>
@@ -459,7 +460,7 @@ var Templates=map[string]string{
         </header>
         <div class="main">
 {{- end -}}
-`,"./footer.html":`{{- define "footer" -}}
+`,"./footer.html":`{{- define "footer"}}
     </div><!-- end .main -->
         <footer>
             <p>

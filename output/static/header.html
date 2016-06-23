@@ -1,5 +1,5 @@
 {{define "header" -}}<!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,6 +14,7 @@
         </title>
         <link href="https://cdn.bootcss.com/prism/1.5.1/themes/prism.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="./style.css" />
+
         <script src="./jquery-3.0.0.min.js"></script>
         <script src="https://cdn.bootcss.com/prism/1.5.1/prism.min.js" data-manual></script>
         <script src="https://cdn.bootcss.com/prism/1.5.1/plugins/autoloader/prism-autoloader.min.js"></script>
@@ -23,9 +24,9 @@
         <header>
             <h1>
                 <a href="./index.html">{{.Title}}</a>
-                {{if .Version}}<span class="version">{{.Version}}</span>{{end}}
+                {{- if .Version}}<span class="version">{{.Version}}</span>{{end}}
             </h1>
-            
+
             <select id="groups">
                 {{- $currGroup := .GroupName -}}
                 {{- range $key, $val := .Groups -}}
