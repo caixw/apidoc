@@ -1,4 +1,4 @@
-{{define "api"}}
+{{- define "api" -}}
 <section class="api">
     <h3 class="title">
         <span class="method {{.Method}}">{{.Method}}</span>
@@ -13,26 +13,26 @@
 
         {{if .Queries}}
             <h5>查询参数</h5>
-            {{template "param" .Queries}}
+            {{template "params" .Queries}}
         {{end}}
 
         {{if .Params}}
             <h5>参数</h5>
-            {{template "param" .Params}}
+            {{template "params" .Params}}
         {{end}}
 
         {{if .Request}}
-        <div>
+        <div class="request">
             <h4>请求{{if .Request.Type}}:&#160;{{.Request.Type}}{{end}}</h4>
             <div>
                 {{if .Request.Headers}}
                     <h5>报头:</h5>
-                    {{template "headers" .Request.Headers }}
+                    {{template "headers" .Request.Headers}}
                 {{end}}
 
                 {{if .Request.Params}}
                     <h5>参数:</h5>
-                    {{template "param" .Request.Params}}
+                    {{template "params" .Request.Params}}
                 {{end}}
 
                 {{if .Request.Examples}}
@@ -44,85 +44,85 @@
         {{end}}
 
         {{if .Success}}
-        <div>
+        <div class="response success">
             <h4><span class="success">SUCCESS:</span>{{.Success.Code}},&#160;{{.Success.Summary}}</h4>
             {{template "response" .Success}}
         </div>
         {{end}}
 
         {{if .Error}}
-        <div>
+        <div class="response error">
             <h4><span class="error">ERROR:</span>{{.Success.Code}},&#160;{{.Success.Summary}}</h4>
             {{template "response" .Error}}
         </div>
         {{end}}
     </div>
 </section>
-{{end}}
+{{- end -}}
 
 
 
-{{define "examples"}}
+{{- define "examples" -}}
 {{range .}}
-<pre><code class="language-{{.Type}}">{{- .Code -}}
+<pre><code class="language-{{.Type|lower}}">{{- .Code -}}
 </code></pre>
 {{end}}
-{{end}}
+{{- end -}}
 
 
 
 {{/* @apiParam 和 @apiQuery */}}
-{{define "param"}}
-<table>
+{{- define "params" -}}
+<table class="params">
     <thead>
         <tr><th>名称</th><th>类型</th><th>描述</th></tr>
     </thead>
     <tbody>
-    {{range .}}
+    {{range . -}}
     <tr>
-        <td>{{.Name}}</td>
+        <th>{{.Name}}</th>
         <td>{{.Type}}</td>
         <td>{{.Summary}}</td>
     </tr>
-    {{end}}
+    {{- end}}
     </tbody>
 </table>
-{{end}}
+{{- end -}}
 
 
 {{/* @apiHeader */}}
-{{define "headers"}}
+{{- define "headers" -}}
 <table>
     <thead>
         <tr><th>名称</th><th>描述</th></tr>
     </thead>
     <tbody>
-    {{range $k, $v := .}}
+    {{range $k, $v := . -}}
     <tr>
-        <td>{{$k}}</td>
+        <th>{{$k}}</th>
         <td>{{$v}}</td>
     </tr>
-    {{end}}
+    {{- end}}
     </tbody>
 </table>
-{{end}}
+{{- end -}}
 
 
 
 {{/* @apiSuccess 和 @apiError */}}
-{{define "response"}}
-        {{if .Headers}}
+{{- define "response" -}}
+        {{if .Headers -}}
             <h5>请求头</h5>
             {{template "headers" .Headers}}
-        {{end}}
+        {{- end}}
 
-        {{if .Params}}
+        {{- if .Params -}}
             <h5>参数:</h5>
-            {{template "param" .Params}}
-        {{end}}
+            {{template "params" .Params}}
+        {{- end}}
 
-        {{if .Examples}}
+        {{- if .Examples -}}
             <h5>示例:</h5>
             {{template "examples" .Examples}}
-        {{end}}
-{{end}}
+        {{- end}}
+{{- end -}}

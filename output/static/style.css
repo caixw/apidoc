@@ -2,7 +2,7 @@
 
 /*============== reset =================*/
 body{
-    margin:0rem;
+    margin:0 auto;
 }
 
 a{
@@ -158,6 +158,10 @@ header .filter label{
 .api table tr{
     border-bottom:1px solid #ddd;
     line-height:1.5rem;
+}
+
+.api table tbody th .parent{
+    color:#ccc;
 }
 
 .api table th, .api table td{

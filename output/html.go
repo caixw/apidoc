@@ -143,6 +143,12 @@ func compileHTMLTemplate(tplDir string) (*template.Template, error) {
 			"html": func(str string) interface{} { // 转换成 html
 				return template.HTML(str)
 			},
+			"upper": func(str string) string { // 转大写
+				return strings.ToUpper(str)
+			},
+			"lower": func(str string) string { // 转大写
+				return strings.ToLower(str)
+			},
 		})
 
 	if len(tplDir) > 0 { // 自定义模板
