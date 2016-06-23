@@ -83,7 +83,7 @@ func genConfigFile() error {
 		},
 		Output: &output.Options{
 			Type: "html",
-			Dir:  "./apidoc",
+			Dir:  "./doc",
 		},
 	}
 	data, err := json.MarshalIndent(cfg, "", "    ")
