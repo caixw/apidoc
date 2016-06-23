@@ -1,11 +1,26 @@
 <!DOCTYPE html>
-<html lang="zh-Hans">
-    <head>
-        <meta charset='utf-8' />
-        <title>apidoc - RESTful API 文档生成工具</title>
+<html lang="zh-cmn-Hans" itemscope itemtype="https://schema.org/Article" xmlns:og="http://ogp.me/ns#">
+    <head itemscope itemtype="http://schema.org/WebSite">
+        <meta charset='utf-8' itemprop="encoding" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="keywords" content="apidoc,API,doc,RESTful API,C/CPP,Go,Java,Javascript,Perl,PHP,Python,Ruby,Rust,文档生成" />
-        <meta name="description" content="apidoc : RESTful API 文档生成工具" />
+
+        <title>apidoc - RESTful API 文档生成工具</title>
+        <meta property="og:title" content="apidoc - RESTful API 文档生成工具"/>
+
+        <meta property="og:site_name" content="APIDOC"/>
+        <meta itemprop="name" content="APIDOC" />
+
+        <meta name="keywords" itemprop="keywords" content="apidoc,API,doc,RESTful API,C/CPP,Go,Java,Javascript,Perl,PHP,Python,Ruby,Rust,文档生成" />
+        <meta name="description"
+              property="og:description"
+              itemprop="description"
+              content="apidoc:RESTful API 文档生成工具" />
+
+        <meta property="og:type" content="article" />
+        <meta property="og:locale" content="zh-cmn-Hans" />
+        <meta property="og:url" content="https://apidoc.site" />
+        <link itemprop="url" rel="canonical" href="https://apidoc.site" />
+
         <link rel="stylesheet" href="https://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.css" />
         <link rel="stylesheet" href="./style.css" />
         <script src="https://cdn.bootcss.com/jquery/3.0.0/jquery.min.js"></script>
@@ -38,7 +53,7 @@
                 <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。目前已支持以下语言：C/C++、Go、Java、Javascript、Perl、PHP、Python、Rust、Ruby。</p>
                 <p>以下是一段简短的 Go 代码下的示例：</p>
                 <pre data-indent="4">
-                /*
+                /**
                  * @api get /users/:id 获取指定用户的相关信息
                  * @apiGroup users
                  * @apiParam id int 表示用户id的唯一值
@@ -48,7 +63,7 @@
                  * {"id":1, "name": "n1"}
                  */
                 </pre>
-                <p>多行注释中，每一行中以<code>空白字符+!#$%&amp;*+-=[]{};:(任意字符)+空白字符</code>开头的，这些字符将会被过滤。比如以上代码中，所有的 <code>*</code> 将被过滤。</p>
+                <p>多行注释中，每一行中以<code>空白字符+!#$%&amp;*+-=[];:{}(任意字符)+空白字符</code>开头的，这些字符将会被过滤。比如以上代码中，所有的 <code>*</code> 将被过滤。</p>
             </article>
 
             <!-- usage -->
@@ -80,7 +95,7 @@
                 <section>
                     <h3>配置文件</h3>
                     <p>apidoc 通过工作目录下的配置文件来控制其行为。文件名称固定为 .apidoc.json。以下为 .apidoc.json 的一个示例。</p>
-                    <pre data-indent="5" class="language-json">
+                    <pre data-indent="5" data-language="json">
                     {
                         "version": "2.0.52.160529",
                         "input": {
@@ -246,7 +261,7 @@
                     <pre data-indent="5">
                     /**
                      @api get /users/{id} 获取指定用户的相关信息
-                    */
+                     */
                     </pre>
                 </section>
 
@@ -498,7 +513,7 @@
 
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
-                    <p>更新于 <time>2016-06-23T00:48:43+0800</time></p>
+                    <p>更新于 <time itemprop="datePublished dateCreated" datetime="2016-06-23T00:48:43+0800">2016-06-23T00:48:43+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>

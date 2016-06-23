@@ -61,6 +61,14 @@ pre .keyword{
     color:green;
 }
 
+pre .string{
+    color:#c82;
+}
+
+pre .bool{
+    color:#90c;
+}
+
 #main{
     margin-top:6.5rem;
 }
