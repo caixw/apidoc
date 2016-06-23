@@ -1,55 +1,51 @@
-
-
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="generator" content="https://caixw.github.io/apidoc" />
-        <title>
-        
-            index &#8250; api 示例文档
-        
-        </title>
+        <title>index&#8250;api 示例文档</title>
+        <link href="https://cdn.bootcss.com/prism/1.5.1/themes/prism.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="./style.css" />
         <script src="./jquery-3.0.0.min.js"></script>
+        <script src="https://cdn.bootcss.com/prism/1.5.1/prism.min.js" data-manual></script>
+        <script src="https://cdn.bootcss.com/prism/1.5.1/plugins/autoloader/prism-autoloader.min.js"></script>
+        <script src="./app.js"></script>
     </head>
     <body>
         <header>
-            <a class="title" href="./index.html">api 示例文档</a>
-            <span>2.0</span>
+            <h1>
+                <a href="./index.html">api 示例文档</a>
+                <span class="version">2.0</span>
+            </h1>
+            
             <select id="groups">
                 
                 
                 <option selected="selected" value="index.html">index</option>
                 
             </select>
+
             <div class="fr filter">
                 <label><input type="checkbox" checked="checked" value="get">GET</label>
                 <label><input type="checkbox" checked="checked" value="post">POST</label>
                 <label><input type="checkbox" checked="checked" value="put">PUT</label>
                 <label><input type="checkbox" checked="checked" value="patch">PATCH</label>
                 <label><input type="checkbox" checked="checked" value="delete">DELETE</label>
+                <label><input type="checkbox" checked="checked" value="options">OPTIONS</label>
             </div>
         </header>
-        <div class="main">
-
-    
-    <article>
+        <div class="main"><article>
         <br /><br /> 这是一份 API 接口文档的定义。<br /> 所有内容均为示例内容，并无实际用途。<br /><br /> OPTIONS:<br /> 所有的 API 均支持 OPTIONS 请求方法。支持方法通过报头的 Allow 返回。<br /><br /> 错误:<br /> ...<br />
-    </article>
-    
-
-    
-        
-<section class="api method-delete">
-    <h3>
-        <span class="method">delete</span>
+    </article><section class="api">
+    <h3 class="title">
+        <span class="method post">post</span>
         <span class="url">/login</span>
+        <span class="summary">用户登录</span>
     </h3>
-    <div class="api-content">
-        <p>注销用户</p>
+
+    <div class="content">
         
 
         
@@ -57,185 +53,153 @@
         
 
         
-        <div>
-            <h4>请求</h4>
+        <div class="request">
+            <h4>请求:&#160;json</h4>
             <div>
-                <p>数据类型: json</p>
-
-                
-                <h5>请求头:</h5>
-                <ul>
-                    
-                    <li><span class="header-key">Authorization:</span>当前登录用户的 token</li>
-                    
-                </ul>
                 
 
                 
-
-                
-            </div>
-        </div>
-        
-
-        
-        <div>
-            <h4>响应-SUCCESS</h4>
-            
-        <p><span class="status-code">status:204</span>注销成功</p>
-
-        
-
-        
-
-        
-
-        </div>
-        
-
-        
-    </div>
-</section>
-
+                    <h5>参数:</h5>
+                    <table class="params">
+    <thead>
+        <tr><th>名称</th><th>类型</th><th>描述</th></tr>
+    </thead>
+    <tbody>
     
-        
-<section class="api method-post">
-    <h3>
-        <span class="method">post</span>
-        <span class="url">/login</span>
-    </h3>
-    <div class="api-content">
-        <p>用户登录</p>
-        
-
-        
-
-        
-
-        
-        <div>
-            <h4>请求</h4>
-            <div>
-                <p>数据类型: json</p>
-
+    <tr>
+        <th>username</th>
+        <td>string</td>
+        <td>用户名</td>
+    </tr>
+    
+    <tr>
+        <th>password</th>
+        <td>string</td>
+        <td>密码</td>
+    </tr>
+    
+    </tbody>
+</table>
                 
 
                 
-                <h5>参数:</h5>
+                    <h5>示例:</h5>
                     
-    <ul>
-    
-    <li>
-        <span class="param-name">username</span>
-        <span class="param-type">string</span>
-        <span>用户名</span>
-    </li>
-    
-    <li>
-        <span class="param-name">password</span>
-        <span class="param-type">string</span>
-        <span>密码</span>
-    </li>
-    
-    </ul>
-
-                
-
-                
-                <h5>示例:</h5>
-                    
-                    <pre class="code" data-type="json">{
+<pre><code class="language-json">{
      &#34;username&#34;: &#34;admin&#34;,
      &#34;password&#34;: &#34;123456&#34;
- }</pre>
-                    
+ }</code></pre>
+
                 
             </div>
         </div>
         
 
         
-        <div>
-            <h4>响应-SUCCESS</h4>
+        <div class="response success">
+            <h4><span class="success">SUCCESS:</span>201,&#160;成功登录</h4>
             
-        <p><span class="status-code">status:201</span>成功登录</p>
 
         
-
-        
-        <h5>参数:</h5>
-            
-    <ul>
+            <h5>参数:</h5>
+            <table class="params">
+    <thead>
+        <tr><th>名称</th><th>类型</th><th>描述</th></tr>
+    </thead>
+    <tbody>
     
-    <li>
-        <span class="param-name">expries</span>
-        <span class="param-type">int</span>
-        <span>过期的时间，单位秒</span>
-    </li>
+    <tr>
+        <th>expries</th>
+        <td>int</td>
+        <td>过期的时间，单位秒</td>
+    </tr>
     
-    <li>
-        <span class="param-name">token</span>
-        <span class="param-type">string</span>
-        <span>存储 token</span>
-    </li>
+    <tr>
+        <th>token</th>
+        <td>string</td>
+        <td>存储 token</td>
+    </tr>
     
-    </ul>
-
+    </tbody>
+</table>
         
 
         
-
         </div>
         
 
         
-        <div>
-            <h4>响应-ERROR</h4>
+        <div class="response error">
+            <h4><span class="error">ERROR:</span>201,&#160;成功登录</h4>
             
-        <p><span class="status-code">status:401</span>账号密码验证错误</p>
 
         
 
         
-
-        
-
         </div>
         
     </div>
-</section>
+</section><section class="api">
+    <h3 class="title">
+        <span class="method delete">delete</span>
+        <span class="url">/login</span>
+        <span class="summary">注销用户</span>
+    </h3>
 
-    
+    <div class="content">
+        
 
+        
+
+        
+
+        
+        <div class="request">
+            <h4>请求:&#160;json</h4>
+            <div>
+                
+                    <h5>报头:</h5>
+                    <table>
+    <thead>
+        <tr><th>名称</th><th>描述</th></tr>
+    </thead>
+    <tbody>
     
+    <tr>
+        <th>Authorization</th>
+        <td>当前登录用户的 token</td>
+    </tr>
+    
+    </tbody>
+</table>
+                
+
+                
+
+                
+            </div>
+        </div>
+        
+
+        
+        <div class="response success">
+            <h4><span class="success">SUCCESS:</span>204,&#160;注销成功</h4>
+            
+
+        
+
+        
+        </div>
+        
+
+        
     </div>
+</section></div>
         <footer>
             <p>
-                内容由 <a href="https://caixw.github.io/apidoc">apidoc</a> 编译于 <time>2016-06-16T23:12:38&#43;08:00</time>，
-                用时1.671034ms。
+                内容由 <a href="https://caixw.github.io/apidoc">apidoc</a> 编译于 <time>2016-06-23T23:22:24&#43;08:00</time>，
+                用时1.716455ms。
             </p>
         </footer>
-        <script>
-        $(document).ready(function(){
-            
-            $('header .filter input').on('change', function(){
-                var val = $(this).attr('value');
-                $('.main section.method-'+val).each(function(index, elem){
-                    $(elem).slideToggle();
-                });
-            })
-
-            
-            $('#groups').on('change', function(){
-                window.location.href = $(this).find('option:selected').val();
-            });
-
-            $('.api h3').on('click', function(){
-                $(this).siblings('.api-content').slideToggle();
-            });
-        });
-        </script>
     </body>
 </html>
-
-

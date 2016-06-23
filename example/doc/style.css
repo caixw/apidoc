@@ -2,7 +2,7 @@
 
 /*============== reset =================*/
 body{
-    margin:0rem;
+    margin:0 auto;
 }
 
 a{
@@ -11,7 +11,7 @@ a{
 }
 
 p{
-    margin:0.5rem 0rem;
+    margin:.5rem 0rem;
 }
 
 ul{
@@ -46,99 +46,126 @@ header{
 
 }
 
-header .title{
+header h1{
     font-size:2rem;
+    display:inline-block;
+    margin:0rem;
 }
 
-header .filter{
-    margin-top:0.8rem;
+header h1 .version{
+    font-size:1rem;
 }
 
 header #groups{
     margin-left:20%;
 }
 
-header label{
+header .filter{
+    margin-top:.8rem;
+}
+
+header .filter label{
     margin-left:1rem;
     vertical-align: bottom;
 }
 
-/*=============== main ================*/
-
 .main{
     padding:0rem 2rem;
-    margin-top:8rem;
+    margin-top:5.5rem;
 }
 
-.main section{
+/*=============== .api ================*/
+
+.main .api{
     padding:1rem;
     margin:1rem 0rem;
     border:1px solid #eee;
 }
 
-.main .method-get{
-    border:1px solid rgba(0,255,0,0.5);
-}
-
-.main .method-options{
-    border:1px solid rgba(0,255,0,0.5);
-}
-
-.main .method-delete{
-    border:1px solid rgba(255,0,0,0.5);
-}
-
-.main .method-put,.main .method-patch{
-    border:1px solid rgba(193,174,49,0.5);
-}
-
-.main .method-post{
-    border:1px solid rgba(240,114,11,0.5);
-}
-
-.main h3{
+.api h3{
+    cursor:pointer;
     margin:0rem;
 }
 
-.main h4{
-    margin-bottom:0rem;
+.api h4{
+    font-size:1.1rem;
+    margin-bottom:.2rem;
     border-bottom:1px solid #eee;
-    padding-bottom:0.2rem;
+    padding-bottom:.2rem;
 }
 
-.main h5{
-    margin:1rem 0rem;
+.api h5{
+    margin:.8rem 0rem .2rem 0rem;
+    font-size:1rem;
 }
 
-.main .method{
+.api h3 .method{
     width:5rem;
+    font-weight:bold;
     display:inline-block;
     text-transform:uppercase;
 }
 
-.main .param-name{
-    min-width:7rem;
-    display:inline-block;
+.api h3 .get{
+    color:green;
 }
 
-.main .api-content{
-    margin-top:1rem;
+.api h3 .options{
+    color:green;
+}
+
+.api h3 .delete{
+    color:red;
+}
+
+.api h3 .put,.api h3 .patch{
+    color:rgb(193,174,49);
+}
+
+.api h3 .post{
+    color:rgb(240,114,11);
+}
+
+.api h3 .url{
+    display:inline-block;
+    margin-right:2rem;
+}
+
+.api h4 .success{
+    color:green;
+    margin-right:1rem;
+}
+
+.api h4 .error{
+    color:green;
+    margin-right:1rem;
+}
+
+.api .content{
     display:none;
 }
 
-.main .param-type{
-    min-width:5rem;
-    display:inline-block;
+.api table{
+    text-align:left;
+    border-collapse:collapse;
+    border:1px solid #ddd;
 }
 
-.main .header-key{
-    min-width:15rem;
-    display:inline-block;
+.api table thead tr{
+    background:#eee;
 }
 
-.main .status-code{
-    min-width:6rem;
-    display:inline-block;
+.api table tr{
+    border-bottom:1px solid #ddd;
+    line-height:1.5rem;
+}
+
+.api table tbody th .parent{
+    color:#ccc;
+}
+
+.api table th, .api table td{
+    padding:.3rem 1rem;
 }
 
 /*=============== footer ================*/
@@ -151,6 +178,6 @@ footer{
 }
 
 footer p{
-    margin:0.5rem;
+    margin:.5rem;
     padding:0px;
 }
