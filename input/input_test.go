@@ -5,6 +5,7 @@
 package input
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/caixw/apidoc/doc"
@@ -103,8 +104,8 @@ func TestRecursivePath(t *testing.T) {
 	paths, err := recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
-		"testdir/testfile.c",
-		"testdir/testfile.h",
+		filepath.Join("testdir", "testfile.c"),
+		filepath.Join("testdir", "testfile.h"),
 	})
 
 	opt.Dir = "./testdir"
@@ -113,10 +114,10 @@ func TestRecursivePath(t *testing.T) {
 	paths, err = recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
-		"testdir/testdir1/testfile.1",
-		"testdir/testdir1/testfile.2",
-		"testdir/testdir2/testfile.1",
-		"testdir/testfile.1",
+		filepath.Join("testdir", "testdir1", "testfile.1"),
+		filepath.Join("testdir", "testdir1", "testfile.2"),
+		filepath.Join("testdir", "testdir2", "testfile.1"),
+		filepath.Join("testdir", "testfile.1"),
 	})
 
 	opt.Dir = "./testdir/testdir1"
@@ -125,8 +126,8 @@ func TestRecursivePath(t *testing.T) {
 	paths, err = recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
-		"testdir/testdir1/testfile.1",
-		"testdir/testdir1/testfile.2",
+		filepath.Join("testdir", "testdir1", "testfile.1"),
+		filepath.Join("testdir", "testdir1", "testfile.2"),
 	})
 
 	opt.Dir = "./testdir"
@@ -135,9 +136,9 @@ func TestRecursivePath(t *testing.T) {
 	paths, err = recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
-		"testdir/testdir1/testfile.1",
-		"testdir/testdir2/testfile.1",
-		"testdir/testfile.1",
+		filepath.Join("testdir", "testdir1", "testfile.1"),
+		filepath.Join("testdir", "testdir2", "testfile.1"),
+		filepath.Join("testdir", "testfile.1"),
 	})
 }
 
