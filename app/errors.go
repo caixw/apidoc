@@ -24,5 +24,5 @@ func (err *SyntaxError) Error() string {
 }
 
 func (err *OptionsError) Error() string {
-	return fmt.Sprintf("字段[%v]错误:[%v]", err.Field, err.Message)
+	return fmt.Sprintf("配置文件[%v]中配置项[%v]错误:[%v]", ConfigFilename, err.Field, err.Message)
 }

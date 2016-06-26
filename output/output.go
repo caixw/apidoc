@@ -11,6 +11,7 @@
 package output
 
 import (
+	"os"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -38,6 +39,13 @@ type Options struct {
 func (o *Options) Init() *app.OptionsError {
 	if len(o.Dir) == 0 {
 		return &app.OptionsError{Field: "output.dir", Message: "不能为空"}
+	}
+
+	if !utils.FileExists(o.Dir) {
+		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
+			msg := "不存在，且在创建时提示以下信息：" + err.Error()
+			return &app.OptionsError{Field: "output.dir", Message: msg}
+		}
 	}
 
 	if !isSuppertedType(o.Type) {
