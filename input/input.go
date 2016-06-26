@@ -35,19 +35,19 @@ type Options struct {
 // Init 检测 Options 变量是否符合要求
 func (opt *Options) Init() *app.OptionsError {
 	if len(opt.Dir) == 0 {
-		return &app.OptionsError{Field: "Dir", Message: "不能为空"}
+		return &app.OptionsError{Field: "input.dir", Message: "不能为空"}
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return &app.OptionsError{Field: "Dir", Message: "该目录不存在"}
+		return &app.OptionsError{Field: "input.dir", Message: "该目录不存在"}
 	}
 
 	if len(opt.Lang) == 0 {
-		return &app.OptionsError{Field: "Lang", Message: "不能为空"}
+		return &app.OptionsError{Field: "input.lang", Message: "不能为空"}
 	}
 
 	if !langIsSupported(opt.Lang) {
-		return &app.OptionsError{Field: "Lang", Message: "不支持该语言"}
+		return &app.OptionsError{Field: "input.lang", Message: "不支持该语言"}
 	}
 
 	opt.Dir += string(os.PathSeparator)

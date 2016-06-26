@@ -13,6 +13,7 @@ import (
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
+	"github.com/issue9/version"
 )
 
 // 项目的配置内容，分别引用到了 input.Options 和 output.Options。
@@ -43,6 +44,10 @@ func loadConfig() (*config, error) {
 	cfg := &config{}
 	if err = json.Unmarshal(data, cfg); err != nil {
 		return nil, err
+	}
+
+	if !version.SemVerValid(cfg.Version) {
+		return nil, &app.OptionsError{Field: "version", Message: "格式不正确"}
 	}
 
 	if err := cfg.Input.Init(); err != nil {
