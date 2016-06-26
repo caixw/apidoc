@@ -18,18 +18,6 @@ import (
 	"github.com/issue9/version"
 )
 
-const usage = `%v 是一个 RESTful API 文档生成工具。
-
-参数:
- -h       显示帮助信息；
- -v       显示版本信息；
- -l       显示所有支持的语言类型；
- -g       在当前目录下创建一个默认的配置文件。
-
-源代码采用 MIT 开源许可证，发布于 %v
-详细信息，可访问：%v
-`
-
 func main() {
 	if flags() {
 		return
@@ -65,17 +53,25 @@ func main() {
 		app.Error(err)
 		return
 	}
-
-	app.Info("编译完成，总用时：", time.Now().Sub(start))
+	app.Info("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
 }
 
 // 处理命令行参数，若被处理，返回 true，否则返回 false。
 func flags() bool {
-	flag.Usage = func() { fmt.Printf(usage, app.Name, app.RepoURL, app.OfficialURL) }
+	out := os.Stdout
+
 	h := flag.Bool("h", false, "显示帮助信息")
 	v := flag.Bool("v", false, "显示版本信息")
 	l := flag.Bool("l", false, "显示所有支持的语言")
 	g := flag.Bool("g", false, "在当前目录下创建一个默认的配置文件")
+	flag.Usage = func() {
+		fmt.Fprintln(out, app.Name, "是一个 RESTful API 文档生成工具。\n")
+		fmt.Fprintln(out, "参数:")
+		flag.CommandLine.SetOutput(out)
+		flag.PrintDefaults()
+		fmt.Fprintln(out, "\n源代码采用 MIT 开源许可证，发布于", app.RepoURL)
+		fmt.Fprintln(out, "详细信息可访问官网", app.OfficialURL)
+	}
 	flag.Parse()
 
 	switch {
@@ -83,10 +79,10 @@ func flags() bool {
 		flag.Usage()
 		return true
 	case *v:
-		fmt.Fprintln(os.Stdout, app.Name, app.Version, "build with", runtime.Version())
+		fmt.Fprintln(out, app.Name, app.Version, "build with", runtime.Version())
 		return true
 	case *l:
-		fmt.Fprintln(os.Stdout, "目前支持以下语言：", input.Langs())
+		fmt.Fprintln(out, "目前支持以下语言：", input.Langs())
 		return true
 	case *g:
 		if err := genConfigFile(); err != nil {
