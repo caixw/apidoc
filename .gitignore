@@ -34,3 +34,4 @@ apidoc
 
 # project
 .apidoc.json
+/.vscode
