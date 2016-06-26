@@ -50,15 +50,19 @@ go get github.com/caixw/apidoc
 若需要将 apidoc 当作包集成到其它 Go 程序中，可分别引用 `input` 和 `output` 的相关函数：
 
 ```go
+start := time.Now()
+
 // 分析文档内容
-docs, err := input.Parse(cfg.Input)
+inputOptions := &input.Options{}
+docs, err := input.Parse(inputOptions)
 if err != nil {
     // TODO
 }
 
 // 输出内容
-cfg.Output.Elapsed = time.Now().Sub(start)
-if err = output.Render(docs, cfg.Output); err != nil {
+outputOptions := &output.Options{}
+outputOptions.Elapsed = time.Now().Sub(start)
+if err = output.Render(docs, outputOptions); err != nil {
     // TODO
 }
 ```
