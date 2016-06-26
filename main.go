@@ -42,12 +42,14 @@ func main() {
 		return
 	}
 
+	// 分析文档内容
 	docs, err := input.Parse(cfg.Input)
 	if err != nil {
 		app.Error(err)
 		return
 	}
 
+	// 输出内容
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err = output.Render(docs, cfg.Output); err != nil {
 		app.Error(err)
@@ -82,7 +84,7 @@ func flags() bool {
 		fmt.Fprintln(out, app.Name, app.Version, "build with", runtime.Version())
 		return true
 	case *l:
-		fmt.Fprintln(out, "目前支持以下语言：", input.Langs())
+		fmt.Fprintln(out, "目前支持以下语言", input.Langs())
 		return true
 	case *g:
 		if err := genConfigFile(); err != nil {
