@@ -62,8 +62,9 @@ func genConfigFile() error {
 	if err != nil {
 		return err
 	}
+	path := filepath.Join(wd, app.ConfigFilename)
 
-	fi, err := os.Create(filepath.Join(wd, app.ConfigFilename))
+	fi, err := os.Create(path)
 	if err != nil {
 		return err
 	}
@@ -87,6 +88,14 @@ func genConfigFile() error {
 		},
 	}
 	data, err := json.MarshalIndent(cfg, "", "    ")
-	_, err = fi.Write(data)
-	return err
+	if err != nil {
+		return err
+	}
+
+	if _, err = fi.Write(data); err != nil {
+		return err
+	}
+
+	app.Info("配置内容成功写入", path)
+	return nil
 }

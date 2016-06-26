@@ -65,8 +65,8 @@ func flags() bool {
 	l := flag.Bool("l", false, "显示所有支持的语言")
 	g := flag.Bool("g", false, "在当前目录下创建一个默认的配置文件")
 	flag.Usage = func() {
-		fmt.Fprintln(out, app.Name, "是一个 RESTful API 文档生成工具。\n")
-		fmt.Fprintln(out, "参数:")
+		fmt.Fprintln(out, app.Name, "是一个 RESTful API 文档生成工具。")
+		fmt.Fprintln(out, "\n参数:")
 		flag.CommandLine.SetOutput(out)
 		flag.PrintDefaults()
 		fmt.Fprintln(out, "\n源代码采用 MIT 开源许可证，发布于", app.RepoURL)
