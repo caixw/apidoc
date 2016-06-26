@@ -27,14 +27,9 @@ type config struct {
 	Output  *output.Options `json:"output"`
 }
 
-// 从配置文件中加载配置项。
-func loadConfig() (*config, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := ioutil.ReadFile(filepath.Join(wd, app.ConfigFilename))
+// 加载 path 所指的文件内容到 *config 实例。
+func loadConfig(path string) (*config, error) {
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -60,14 +55,10 @@ func loadConfig() (*config, error) {
 }
 
 // 在当前目录下产生个默认的配置文件。
-func genConfigFile() error {
-	wd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	path := filepath.Join(wd, app.ConfigFilename)
-
-	lang, err := input.DetectDirLang(wd)
+// path 为需要创建的文件。
+func genConfigFile(path string) error {
+	dir := filepath.Dir(path)
+	lang, err := input.DetectDirLang(dir)
 	if err != nil { // 不中断，仅作提示用。
 		app.Warn(err)
 	}
@@ -75,13 +66,13 @@ func genConfigFile() error {
 	cfg := &config{
 		Version: app.Version,
 		Input: &input.Options{
-			Dir:       "./",
+			Dir:       dir,
 			Recursive: true,
 			Lang:      lang,
 		},
 		Output: &output.Options{
 			Type: "html",
-			Dir:  "./doc",
+			Dir:  filepath.Join(dir, "doc"),
 		},
 	}
 	data, err := json.MarshalIndent(cfg, "", "    ")
@@ -95,10 +86,6 @@ func genConfigFile() error {
 	}
 	defer fi.Close()
 
-	if _, err = fi.Write(data); err != nil {
-		return err
-	}
-
-	app.Info("配置内容成功写入", path)
-	return nil
+	_, err = fi.Write(data)
+	return err
 }

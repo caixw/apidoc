@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"time"
 
@@ -19,13 +20,20 @@ import (
 )
 
 func main() {
-	if flags() {
+	start := time.Now() // 记录处理开始时间
+
+	wd, err := os.Getwd()
+	if err != nil {
+		app.Error(err)
+		return
+	}
+	path := filepath.Join(wd, app.ConfigFilename)
+
+	if flags(path) {
 		return
 	}
 
-	start := time.Now() // 记录处理开始时间
-
-	cfg, err := loadConfig()
+	cfg, err := loadConfig(path)
 	if err != nil {
 		app.Error(err)
 		return
@@ -55,11 +63,13 @@ func main() {
 		app.Error(err)
 		return
 	}
+
 	app.Info("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
 }
 
 // 处理命令行参数，若被处理，返回 true，否则返回 false。
-func flags() bool {
+// path 配置文件的路径。
+func flags(path string) bool {
 	out := os.Stdout
 
 	h := flag.Bool("h", false, "显示帮助信息")
@@ -87,9 +97,11 @@ func flags() bool {
 		fmt.Fprintln(out, "目前支持以下语言", input.Langs())
 		return true
 	case *g:
-		if err := genConfigFile(); err != nil {
+		if err := genConfigFile(path); err != nil {
 			app.Error(err)
+			return true
 		}
+		app.Info("配置内容成功写入", path)
 		return true
 	}
 	return false
