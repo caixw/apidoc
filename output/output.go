@@ -11,6 +11,7 @@
 package output
 
 import (
+	"os"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -37,24 +38,31 @@ type Options struct {
 // 对 Options 作一些初始化操作。
 func (o *Options) Init() *app.OptionsError {
 	if len(o.Dir) == 0 {
-		return &app.OptionsError{Field: "Dir", Message: "不能为空"}
+		return &app.OptionsError{Field: "output.dir", Message: "不能为空"}
+	}
+
+	if !utils.FileExists(o.Dir) {
+		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
+			msg := "不存在，且在创建时提示以下信息：" + err.Error()
+			return &app.OptionsError{Field: "output.dir", Message: msg}
+		}
 	}
 
 	if !isSuppertedType(o.Type) {
-		return &app.OptionsError{Field: "Type", Message: "不支持的类型"}
+		return &app.OptionsError{Field: "output.type", Message: "不支持的类型"}
 	}
 
 	// 只有 html 和 html+ 才需要判断模板文件是否存在
 	if o.Type == "html" || o.Type == "html+" {
 		if len(o.Template) > 0 && !utils.FileExists(o.Template) {
-			return &app.OptionsError{Field: "Template", Message: "目录不存在"}
+			return &app.OptionsError{Field: "output.template", Message: "目录不存在"}
 		}
 	}
 
 	// 调试模式，必须得有端口
 	if o.Type == "html+" {
 		if len(o.Port) == 0 {
-			return &app.OptionsError{Field: "Port", Message: "不能为空"}
+			return &app.OptionsError{Field: "output.port", Message: "不能为空"}
 		}
 
 		if o.Port[0] != ':' {

@@ -82,6 +82,9 @@ func testParseFile(a *assert.Assertion, lang string, path string) {
 	api0 := docs.Apis[0]
 	api1 := docs.Apis[1]
 
+	a.T().Log(api0.Success.Examples[0])
+	a.T().Log(api1.Success.Examples[0])
+
 	a.Equal(api0.URL, "/users/login").
 		Equal(api1.URL, "/users/login").
 		Equal(api0.Group, "users").

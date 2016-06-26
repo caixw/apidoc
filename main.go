@@ -42,12 +42,14 @@ func main() {
 		return
 	}
 
+	// 分析文档内容
 	docs, err := input.Parse(cfg.Input)
 	if err != nil {
 		app.Error(err)
 		return
 	}
 
+	// 输出内容
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err = output.Render(docs, cfg.Output); err != nil {
 		app.Error(err)
@@ -65,8 +67,8 @@ func flags() bool {
 	l := flag.Bool("l", false, "显示所有支持的语言")
 	g := flag.Bool("g", false, "在当前目录下创建一个默认的配置文件")
 	flag.Usage = func() {
-		fmt.Fprintln(out, app.Name, "是一个 RESTful API 文档生成工具。\n")
-		fmt.Fprintln(out, "参数:")
+		fmt.Fprintln(out, app.Name, "是一个 RESTful API 文档生成工具。")
+		fmt.Fprintln(out, "\n参数:")
 		flag.CommandLine.SetOutput(out)
 		flag.PrintDefaults()
 		fmt.Fprintln(out, "\n源代码采用 MIT 开源许可证，发布于", app.RepoURL)
@@ -82,7 +84,7 @@ func flags() bool {
 		fmt.Fprintln(out, app.Name, app.Version, "build with", runtime.Version())
 		return true
 	case *l:
-		fmt.Fprintln(out, "目前支持以下语言：", input.Langs())
+		fmt.Fprintln(out, "目前支持以下语言", input.Langs())
 		return true
 	case *g:
 		if err := genConfigFile(); err != nil {
