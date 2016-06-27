@@ -50,7 +50,7 @@ $(document).ready(function(){
     }
 });
 
-// 对齐代码，对于缩时量大于 2 的，按 4 个空格，小于 2 个空格的，按 0 个空格对齐。
+// 对齐代码。
 function alignCode(code) {
     return code.replace(/^\s*/gm, function(word) {
         word = word.replace('\t', repeatSpace(indentSize));

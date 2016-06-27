@@ -4,8 +4,11 @@
 
 package example
 
-// @apidoc 2.0 api 示例文档
-//
+// @apidoc api 示例文档
+// @apiVersion 2.13.3+20160627
+// @apiBaseURL https://api.caixw.io
+// @apiLicense MIT https://opensources.org/licenses/MIT
+// @apiContent
 // 这是一份 API 接口文档的定义。
 // 所有内容均为示例内容，并无实际用途。
 //

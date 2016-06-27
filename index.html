@@ -32,7 +32,7 @@
         <header>
             <div class="ui container">
                 <h1 class="ui text menu left floated">
-                    <a class="item" href="#">APIDOC<sub class="version">2.12</sub></a>
+                    <a class="item" href="#">APIDOC<sub class="version">2.13</sub></a>
                 </h1>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
@@ -191,45 +191,123 @@
             <article class="ui stacked segment" id="docs">
                 <h2 class="ui header">文档</h2>
 
+                <!-- @apidoc -->
                 <section id="apidoc">
                     <h3>@apidoc</h3>
-                    <p>@apidoc 用于指定文档的的摘要信息，比如标题，版本号，以及摘要内容，整个文档只能出现一次，多次出现将报错。</p>
-                    <p>语法:<code>@apidoc version title [\n content]</code></p>
+                    <p>@apidoc 用于指定一些全局性的设定，本身带一个标题属性，整个文档中只能出现一次。子元素有：
+                        <a herf="#apiversion">@apiVersion</a>、
+                        <a herf="#apibaseurl">@apiBaseURL</a>、
+                        <a herf="#apilicense">@apilicense</a>和
+                        <a herf="#apicontent">@apiContent</a>
+                    </p>
+                    <p>语法:<code>@apidoc title</code></p>
                     <table class="ui very compact table">
                         <thead>
                             <tr>
-                                <th>参数</th>
-                                <th>必填</th>
-                                <th>说明</th>
+                                <th>参数</th><th>必填</th><th>说明</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>version</td>
-                                <td>true</td>
-                                <td>文档的版本号</td>
-                            </tr>
-                            <tr>
-                                <td>title</td>
-                                <td>true</td>
-                                <td>文档的标题，到行尾</td>
-                            </tr>
-                            <tr>
-                                <td>摘要内容</td>
-                                <td>false</td>
-                                <td>整个文档的一个摘要说明，其中的换行符会替换成 <code>&lt;br&gt;</code>，其它内容原样输出。</td>
+                                <td>title</td><td>true</td><td>文档的标题，到行尾</td>
                             </tr>
                         </tbody>
                     </table>
                     <p>示例：</p>
                     <pre data-indent="5">
                     /**
-                     @apidoc 2.0.1 api 文档
-
-                     这是 xx 项目的 api 文档说明...
-                     ...
-                    */
+                     * @apidoc title of doc
+                     * @apiVersion 2.0
+                     * @apiBaseURL https://api.caixw.io
+                     * @apiLicense MIT https://opensource.org/licenses/MIT
+                     * @apiContent
+                     * <p>这里可以是html</p>
+                     * <p>会被原样输出</p>
+                     */
                     </pre>
+                </section>
+
+                <!-- @apiVersion -->
+                <section id="apiversion">
+                    <h3>@apiVerson</h3>
+                    <p>用于指定文档的版本号。父标签：<a href="#apidoc">@apidoc</a></p>
+                    <p>语法:<code>@apiVersion version</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>title</td>
+                                <td>true</td>
+                                <td>文档的版本号，可以是任何字符串形式的内容</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- @apiBaseURL -->
+                <section id="apibaseurl">
+                    <h3>@apiBaseURL</h3>
+                    <p>用于指定文档所有地址的一个公共前缀。父标签：<a href="#apidoc">@apidoc</a></p>
+                    <p>语法:<code>@apiBaseURL url</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>url</td><td>true</td><td>一般为一个 URL</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- @apiLicense -->
+                <section id="apilicense">
+                    <h3>@apiLicense</h3>
+                    <p>用于指定文档的版权信息。父标签：<a href="#apidoc">@apidoc</a></p>
+                    <p>语法:<code>@apiLicense name url</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td><td>true</td><td>版权的名称</td>
+                            </tr>
+                            <tr>
+                                <td>url</td><td>false</td><td>版权的详细文本地址</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- @apiContent -->
+                <section id="apicontent">
+                    <h3>@apiContent</h3>
+                    <p>文档首页的一些介绍性内容，该内容将会被原样输出。父标签：<a href="#apidoc">@apidoc</a></p>
+                    <p>语法:<code>@apiContent content</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>content</td>
+                                <td>true</td>
+                                <td>多行字符串，一直到文档结尾</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </section>
 
                 <!-- @api -->
@@ -513,7 +591,7 @@
 
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a></p>
-                    <p>更新于 <time itemprop="datePublished" datetime="2016-06-24T00:04:20+0800">2016-06-24T00:04:20+0800</time></p>
+                    <p>更新于 <time itemprop="datePublished" datetime="2016-06-24T00:04:20+0800">2016-06-27T20:57:27+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
