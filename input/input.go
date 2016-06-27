@@ -107,7 +107,7 @@ func Parse(o *Options) (*doc.Doc, error) {
 // 分析 path 指向的文件，并将内容写入到 docs 中。
 func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logger) {
 	data, err := ioutil.ReadFile(path)
-	if err != nil {
+	if err != nil && synerrLog != nil {
 		synerr := &app.SyntaxError{Message: err.Error()}
 		synerrLog.Println(synerr)
 		return
@@ -129,7 +129,7 @@ LOOP:
 			block = l.block(blocks)
 		case block != nil:
 			rs, err := block.end(l)
-			if err != nil {
+			if err != nil && synerrLog != nil {
 				err.File = path
 				synerrLog.Println(err)
 				return
@@ -143,7 +143,7 @@ LOOP:
 
 			wg.Add(1)
 			go func(ln int) {
-				if err = docs.Scan(rs); err != nil {
+				if err = docs.Scan(rs); err != nil && synerrLog != nil {
 					err.Line += ln
 					err.File = path
 					synerrLog.Println(err)
