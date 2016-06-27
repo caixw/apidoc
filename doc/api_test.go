@@ -140,6 +140,19 @@ line1
 line2`
 	l = newLexer([]rune(code))
 	a.Error(l.scanAPIDoc(doc))
+
+	// 检测各个都是空值的情况
+	code = `2.9 title of apidoc
+`
+	l = newLexer([]rune(code))
+	a.NotNil(l)
+	doc = &Doc{}
+	a.NotError(l.scanAPIDoc(doc))
+	a.Equal(doc.Title, "2.9 title of apidoc").
+		Equal(doc.Version, "").
+		Equal(doc.BaseURL, "").
+		Equal(doc.LicenseName, "").
+		Equal(doc.LicenseURL, "")
 }
 
 func TestScanAPIRequest(t *testing.T) {
