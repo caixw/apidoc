@@ -98,8 +98,12 @@ func checkAPI(api *API) *app.SyntaxError {
 	}
 }
 
-// @apidoc version title
+// @apidoc title of doc
+// @apiVersion 2.0
+// @apiBaseURL https://api.caixw.io
+// @apiLicense MIT https://opensource.org/licenses/MIT
 //
+// @apiContent
 // content1
 // content2
 func (l *lexer) scanAPIDoc(d *Doc) *app.SyntaxError {
@@ -107,10 +111,55 @@ func (l *lexer) scanAPIDoc(d *Doc) *app.SyntaxError {
 		return l.syntaxError("重复的 @apidoc 标签:title=" + d.Title + ",Version=" + d.Version)
 	}
 
-	// @apidoc 标签之后，不再关注是否还有其它标签，直到文本最后，所以不用 readTag 函数。
-	d.Version = l.readWord()
-	d.Title = l.readLine()
-	d.Content = string(l.data[l.pos:])
+	t := l.readTag()
+	d.Title = t.readLine()
+	if len(d.Title) == 0 {
+		return l.syntaxError("@apidoc 未指定标题")
+	}
+	if !t.atEOF() {
+		return l.syntaxError("@apidoc 过多的参数")
+	}
+
+LOOP:
+	for {
+		switch {
+		case l.matchTag("@apiVersion"):
+			t := l.readTag()
+			d.Version = t.readLine()
+			if len(d.Title) == 0 {
+				return l.syntaxError("@apiVersion 未指定参数")
+			}
+			if !t.atEOF() {
+				return l.syntaxError("@apiVersion 过多的参数")
+			}
+		case l.matchTag("@apiBaseURL"):
+			t := l.readTag()
+			d.BaseURL = t.readLine()
+			if len(d.BaseURL) == 0 {
+				return l.syntaxError("@apiBaseURL 未指定参数")
+			}
+			if !t.atEOF() {
+				return l.syntaxError("@apiBaseURL 过多的参数")
+			}
+		case l.matchTag("@apiLicense"):
+			t := l.readTag()
+			d.LicenseName = t.readWord()
+			d.LicenseURL = t.readLine()
+			if len(d.LicenseName) == 0 {
+				return l.syntaxError("@apiLicense 缺少必要的参数")
+			}
+			if !t.atEOF() {
+				return l.syntaxError("@apiLicense 过多的参数")
+			}
+		case l.matchTag("@apiContent"):
+			d.Content = string(l.data[l.pos:])
+		default:
+			if l.atEOF() {
+				break LOOP
+			}
+			l.pos++ // 去掉无用的字符。
+		}
+	}
 
 	return nil
 }
