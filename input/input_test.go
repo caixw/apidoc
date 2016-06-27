@@ -76,7 +76,7 @@ func testParseFile(a *assert.Assertion, lang string, path string) {
 		a.T().Error("不支持该语言")
 	}
 
-	parseFile(docs, path, b)
+	parseFile(docs, path, b, nil)
 	a.Equal(2, len(docs.Apis))
 
 	api0 := docs.Apis[0]
