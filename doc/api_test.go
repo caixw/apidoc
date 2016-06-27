@@ -113,8 +113,11 @@ func TestScanAPI(t *testing.T) {
 func TestScanAPIDoc(t *testing.T) {
 	a := assert.New(t)
 
-	code := `2.0.1 title of apidoc
-
+	code := ` title of apidoc
+@apiVersion 2.0.1
+@apiBaseURL https://api.caixw.io
+@apiLicense MIT https://opensource.org/licenses/MIT
+@apiContent
 line1
 line2`
 
@@ -125,15 +128,31 @@ line2`
 	a.NotError(l.scanAPIDoc(doc))
 	a.Equal(doc.Version, "2.0.1").
 		Equal(doc.Title, "title of apidoc").
-		Equal(doc.Content, "\n\nline1\nline2")
+		Equal(doc.BaseURL, "https://api.caixw.io").
+		Equal(doc.LicenseName, "MIT").
+		Equal(doc.LicenseURL, "https://opensource.org/licenses/MIT").
+		Equal(doc.Content, "\nline1\nline2")
 
 		// 重复内容，报错
-	code = `2.0.2 title of apidoc2
+	code = `title of apidoc2
 		@apiBaseURL http://api.caixw.io
 line1
 line2`
 	l = newLexer([]rune(code))
 	a.Error(l.scanAPIDoc(doc))
+
+	// 检测各个都是空值的情况
+	code = `2.9 title of apidoc
+`
+	l = newLexer([]rune(code))
+	a.NotNil(l)
+	doc = &Doc{}
+	a.NotError(l.scanAPIDoc(doc))
+	a.Equal(doc.Title, "2.9 title of apidoc").
+		Equal(doc.Version, "").
+		Equal(doc.BaseURL, "").
+		Equal(doc.LicenseName, "").
+		Equal(doc.LicenseURL, "")
 }
 
 func TestScanAPIRequest(t *testing.T) {
@@ -373,23 +392,4 @@ ab @apiIgnore
 	l = len(doc1.Apis)
 	err = doc1.Scan([]rune(code))
 	a.ErrorType(err, synerr)
-
-	// @apidoc
-	code = `@apidoc 1.1 title of api
-
-line1
-line2`
-	l = len(doc1.Apis)
-	a.NotError(doc1.Scan([]rune(code)))
-	a.Equal(doc1.Version, "1.1").
-		Equal(doc1.Title, "title of api").
-		Equal(doc1.Content, "\n\nline1\nline2")
-
-		// @apidoc 上面已经有一个了，重复会报错。
-	code = `@apidoc 1.1 title of api
-
-line1
-line2`
-	l = len(doc1.Apis)
-	a.ErrorType(doc1.Scan([]rune(code)), synerr)
 }

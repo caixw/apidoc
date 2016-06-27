@@ -39,6 +39,14 @@ func testParse(a *assert.Assertion, lang string) {
 		NotNil(docs).
 		Equal(len(docs.Apis), 2)
 
+		// doc.xx
+	a.Equal(docs.Title, "title of api").
+		Equal(docs.Version, "2.9").
+		Equal(docs.BaseURL, "https://api.caixw.io").
+		Equal(docs.LicenseName, "MIT").
+		Equal(docs.LicenseURL, "https://opensources.org/licenses/MIT").
+		Equal(docs.Content, "\n line1\n line2\n")
+
 	// test1.xx
 	api0 := docs.Apis[0]
 	api1 := docs.Apis[1]
@@ -46,11 +54,6 @@ func testParse(a *assert.Assertion, lang string) {
 		Equal(api1.URL, "/users/login").
 		Equal(api0.Group, "users").
 		Equal(api1.Group, "users")
-
-		// doc.xx
-	a.Equal(docs.Title, "title of api").
-		Equal(docs.Version, "2.9").
-		Equal(docs.Content, "\n\n line1\n line2\n")
 }
 
 func TestParseFile(t *testing.T) {
@@ -67,7 +70,7 @@ func TestParseFile(t *testing.T) {
 	testParseFile(a, "rust", "./testdata/rust/test1.rs")
 }
 
-func testParseFile(a *assert.Assertion, lang string, path string) {
+func testParseFile(a *assert.Assertion, lang, path string) {
 	docs := doc.New()
 	a.NotNil(docs)
 
