@@ -126,7 +126,7 @@ LOOP:
 		case l.matchTag("@apiVersion"):
 			t := l.readTag()
 			d.Version = t.readLine()
-			if len(d.Title) == 0 {
+			if len(d.Version) == 0 {
 				return l.syntaxError("@apiVersion 未指定参数")
 			}
 			if !t.atEOF() {
