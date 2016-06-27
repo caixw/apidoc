@@ -51,8 +51,8 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 
 // renderHTML 的调试模式
 func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
-	app.Info("当前为模板调试模式，调试端口为：", opt.Port)
-	app.Info("当前为模板调试模式，调试模板为：", opt.Template)
+	app.Infoln("当前为模板调试模式，调试端口为：", opt.Port)
+	app.Infoln("当前为模板调试模式，调试模板为：", opt.Template)
 
 	p := buildHTMLPage(docs, opt)
 
@@ -82,7 +82,7 @@ func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
 func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlPage) {
 	t, err := compileHTMLTemplate(tplDir)
 	if err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -93,7 +93,7 @@ func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlP
 	}
 
 	if err = t.ExecuteTemplate(w, tplName, p); err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

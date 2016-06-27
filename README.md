@@ -45,6 +45,30 @@ go get github.com/caixw/apidoc
 
 
 
+### 集成
+
+若需要将 apidoc 当作包集成到其它 Go 程序中，可分别引用 `input` 和 `output` 的相关函数：
+
+```go
+start := time.Now()
+
+// 分析文档内容
+inputOptions := &input.Options{}
+docs, err := input.Parse(inputOptions)
+if err != nil {
+    // TODO
+}
+
+// 输出内容
+outputOptions := &output.Options{}
+outputOptions.Elapsed = time.Now().Sub(start)
+if err = output.Render(docs, outputOptions); err != nil {
+    // TODO
+}
+```
+
+
+
 ### 版权
 
 本项目采用 [MIT](http://opensource.org/licenses/MIT) 开源授权许可证，完整的授权说明可在 [LICENSE](LICENSE) 文件中找到。

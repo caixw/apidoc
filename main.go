@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"time"
 
@@ -19,47 +20,57 @@ import (
 )
 
 func main() {
-	if flags() {
+	start := time.Now() // 记录处理开始时间
+
+	wd, err := os.Getwd()
+	if err != nil {
+		app.Errorln(err)
+		return
+	}
+	path := filepath.Join(wd, app.ConfigFilename)
+
+	if flags(path) {
 		return
 	}
 
-	start := time.Now() // 记录处理开始时间
-
-	cfg, err := loadConfig()
+	cfg, err := loadConfig(path)
 	if err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		return
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(app.Version, cfg.Version)
 	if err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		return
 	}
 	if !compatible {
-		app.Error("当前程序与配置文件中指定的版本号不兼容")
+		app.Errorln("当前程序与配置文件中指定的版本号不兼容")
 		return
 	}
 
 	// 分析文档内容
+	cfg.Input.SyntaxLog = newSyntaxLog()
 	docs, err := input.Parse(cfg.Input)
 	if err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		return
 	}
 
 	// 输出内容
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err = output.Render(docs, cfg.Output); err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		return
 	}
-	app.Info("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
+
+	app.Infoln("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
 }
 
 // 处理命令行参数，若被处理，返回 true，否则返回 false。
-func flags() bool {
+// path 配置文件的路径。
+func flags(path string) bool {
 	out := os.Stdout
 
 	h := flag.Bool("h", false, "显示帮助信息")
@@ -87,9 +98,11 @@ func flags() bool {
 		fmt.Fprintln(out, "目前支持以下语言", input.Langs())
 		return true
 	case *g:
-		if err := genConfigFile(); err != nil {
-			app.Error(err)
+		if err := genConfigFile(path); err != nil {
+			app.Errorln(err)
+			return true
 		}
+		app.Infoln("配置内容成功写入", path)
 		return true
 	}
 	return false
