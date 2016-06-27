@@ -17,7 +17,7 @@ const (
 	// 版本号
 	//
 	// 版本号按照 http://semver.org 中的规则
-	Version = "2.12.27+20160626"
+	Version = "2.12.28+20160626"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -59,6 +59,11 @@ const (
 // 参数起作用，其它字符串依然使用系统默认的颜色。
 func Message(out int, color colors.Color, prefix string, v ...interface{}) {
 	colors.Print(out, color, colors.Default, prefix)
+	colors.Print(out, colors.Default, colors.Default, v...)
+}
+
+func Messageln(out int, color colors.Color, prefix string, v ...interface{}) {
+	colors.Print(out, color, colors.Default, prefix)
 	colors.Println(out, colors.Default, colors.Default, v...)
 }
 
@@ -75,4 +80,19 @@ func Error(v ...interface{}) {
 // Info 输出提示信息
 func Info(v ...interface{}) {
 	Message(colors.Stdout, colors.Green, "[INFO] ", v...)
+}
+
+// Warnln 输出警告性的信息，带换行符
+func Warnln(v ...interface{}) {
+	Messageln(colors.Stderr, colors.Cyan, "[WARN] ", v...)
+}
+
+// Errorln 输出错误的信息，带换行符
+func Errorln(v ...interface{}) {
+	Messageln(colors.Stderr, colors.Red, "[ERROR] ", v...)
+}
+
+// Infoln 输出提示信息，带换行符
+func Infoln(v ...interface{}) {
+	Messageln(colors.Stdout, colors.Green, "[INFO] ", v...)
 }

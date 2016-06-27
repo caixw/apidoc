@@ -24,7 +24,7 @@ func main() {
 
 	wd, err := os.Getwd()
 	if err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		return
 	}
 	path := filepath.Join(wd, app.ConfigFilename)
@@ -35,36 +35,37 @@ func main() {
 
 	cfg, err := loadConfig(path)
 	if err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		return
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(app.Version, cfg.Version)
 	if err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		return
 	}
 	if !compatible {
-		app.Error("当前程序与配置文件中指定的版本号不兼容")
+		app.Errorln("当前程序与配置文件中指定的版本号不兼容")
 		return
 	}
 
 	// 分析文档内容
+	cfg.Input.SyntaxLog = newSyntaxLog()
 	docs, err := input.Parse(cfg.Input)
 	if err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		return
 	}
 
 	// 输出内容
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err = output.Render(docs, cfg.Output); err != nil {
-		app.Error(err)
+		app.Errorln(err)
 		return
 	}
 
-	app.Info("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
+	app.Infoln("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
 }
 
 // 处理命令行参数，若被处理，返回 true，否则返回 false。
@@ -98,10 +99,10 @@ func flags(path string) bool {
 		return true
 	case *g:
 		if err := genConfigFile(path); err != nil {
-			app.Error(err)
+			app.Errorln(err)
 			return true
 		}
-		app.Info("配置内容成功写入", path)
+		app.Infoln("配置内容成功写入", path)
 		return true
 	}
 	return false

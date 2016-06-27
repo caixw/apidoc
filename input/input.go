@@ -13,6 +13,7 @@ package input
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -22,14 +23,12 @@ import (
 	"github.com/issue9/utils"
 )
 
-// printSyntaxError 的锁，保证其在多协程环境下不串内容。
-var syntaxErrorMux = sync.Mutex{}
-
 type Options struct {
-	Lang      string   `json:"lang"`           // 输入的目标语言
-	Dir       string   `json:"dir"`            // 源代码目录
-	Exts      []string `json:"exts,omitempty"` // 需要扫描的文件扩展名，若未指定，则使用默认值
-	Recursive bool     `json:"recursive"`      // 是否查找Dir的子目录
+	SyntaxLog *log.Logger `json:"-"`              // 语法错误输出通道
+	Lang      string      `json:"lang"`           // 输入的目标语言
+	Dir       string      `json:"dir"`            // 源代码目录
+	Exts      []string    `json:"exts,omitempty"` // 需要扫描的文件扩展名，若未指定，则使用默认值
+	Recursive bool        `json:"recursive"`      // 是否查找Dir的子目录
 }
 
 // Init 检测 Options 变量是否符合要求
@@ -97,7 +96,7 @@ func Parse(o *Options) (*doc.Doc, error) {
 	for _, path := range paths {
 		wg.Add(1)
 		go func(path string) {
-			parseFile(docs, path, blocks)
+			parseFile(docs, path, blocks, o.SyntaxLog)
 			wg.Done()
 		}(path)
 	}
@@ -106,11 +105,11 @@ func Parse(o *Options) (*doc.Doc, error) {
 }
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。
-func parseFile(docs *doc.Doc, path string, blocks []*block) {
+func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logger) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		synerr := &app.SyntaxError{Message: err.Error()}
-		printSyntaxError(synerr)
+		synerrLog.Println(synerr)
 		return
 	}
 
@@ -132,7 +131,7 @@ LOOP:
 			rs, err := block.end(l)
 			if err != nil {
 				err.File = path
-				printSyntaxError(err)
+				synerrLog.Println(err)
 				return
 			}
 
@@ -147,21 +146,12 @@ LOOP:
 				if err = docs.Scan(rs); err != nil {
 					err.Line += ln
 					err.File = path
-					printSyntaxError(err)
+					synerrLog.Println(err)
 				}
 				wg.Done()
 			}(ln)
 		} // end switch
 	} // end for
-}
-
-// 向终端输出错误信息。
-// 由于在多协程环境上被调用，需要保证其内容是一次输出。
-func printSyntaxError(err *app.SyntaxError) {
-	syntaxErrorMux.Lock()
-	defer syntaxErrorMux.Unlock()
-
-	app.Error(err)
 }
 
 // 根据recursive值确定是否递归查找paths每个目录下的子目录。
