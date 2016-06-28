@@ -110,6 +110,10 @@ func build(inputs []*input.Options, out *output.Options) error {
 		}
 	}
 
+	if len(docs.Title) == 0 {
+		docs.Title = app.DefaultTitle
+	}
+
 	// 输出内容
 	out.Elapsed = time.Now().Sub(start)
 	return output.Render(docs, out)
