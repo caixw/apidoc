@@ -44,11 +44,13 @@ $(document).ready(function(){
 
 
     /* sticky */
-    var header = $('header');
-    var top = header.offset().top;
-    $(document).on('scroll', function(e){
-        window.scrollY > top ? header.addClass('sticky') : header.removeClass('sticky');
-    });
+    if (!navigator.userAgent.match(/firefox/i)){
+        var header = $('header');
+        var top = header.offset().top;
+        $(document).on('scroll', function(e){
+            window.scrollY > top ? header.addClass('sticky') : header.removeClass('sticky');
+        });
+    }
 
 
     // 代码高亮，依赖于是否能访问网络。
