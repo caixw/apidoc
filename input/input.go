@@ -82,14 +82,7 @@ func Parse(docs *doc.Doc, o *Options) error {
 	}
 
 	wg := sync.WaitGroup{}
-	defer func() {
-		wg.Wait()
-
-		// 要等所有内容解析完了，才能判断默认标题是否为空
-		if len(docs.Title) == 0 {
-			docs.Title = app.DefaultTitle
-		}
-	}()
+	defer wg.Wait()
 	for _, path := range paths {
 		wg.Add(1)
 		go func(path string) {
