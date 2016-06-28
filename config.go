@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
@@ -62,14 +63,17 @@ func loadConfig(path string) (*config, error) {
 	}
 
 	l := log.New(&syntaxWriter{}, "", 0)
-	for _, opt := range cfg.Inputs {
+	for i, opt := range cfg.Inputs {
+		index := strconv.Itoa(i)
 		if err := opt.Init(); err != nil {
+			err.Field = "inputs[" + index + "]." + err.Field
 			return nil, err
 		}
 		opt.SyntaxLog = l
 	}
 
 	if err := cfg.Output.Init(); err != nil {
+		err.Field = "outputs." + err.Field
 		return nil, err
 	}
 
