@@ -28,7 +28,7 @@ type Options struct {
 	Lang      string      `json:"lang"`           // 输入的目标语言
 	Dir       string      `json:"dir"`            // 源代码目录
 	Exts      []string    `json:"exts,omitempty"` // 需要扫描的文件扩展名，若未指定，则使用默认值
-	Recursive bool        `json:"recursive"`      // 是否查找Dir的子目录
+	Recursive bool        `json:"recursive"`      // 是否查找 Dir 的子目录
 }
 
 // Init 检测 Options 变量是否符合要求
