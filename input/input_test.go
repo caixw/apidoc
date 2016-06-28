@@ -34,9 +34,9 @@ func testParse(a *assert.Assertion, lang string) {
 	}
 	a.NotError(o.Init()) // 初始化扩展名信息
 
-	docs, err := Parse(o)
+	docs := doc.New()
+	err := Parse(docs, o)
 	a.NotError(err).
-		NotNil(docs).
 		Equal(len(docs.Apis), 2)
 
 		// doc.xx

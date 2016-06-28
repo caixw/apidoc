@@ -49,8 +49,6 @@ func (opt *Options) Init() *app.OptionsError {
 		return &app.OptionsError{Field: "input.lang", Message: "不支持该语言"}
 	}
 
-	opt.Dir += string(os.PathSeparator)
-
 	if len(opt.Exts) > 0 {
 		exts := make([]string, 0, len(opt.Exts))
 		for _, ext := range opt.Exts {
@@ -72,18 +70,17 @@ func (opt *Options) Init() *app.OptionsError {
 }
 
 // Parse 分析源代码，获取相应的文档内容。
-func Parse(o *Options) (*doc.Doc, error) {
+func Parse(docs *doc.Doc, o *Options) error {
 	blocks, found := langs[o.Lang]
 	if !found {
-		return nil, fmt.Errorf("不支持该语言:[%v]", o.Lang)
+		return fmt.Errorf("不支持该语言:[%v]", o.Lang)
 	}
 
 	paths, err := recursivePath(o)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	docs := doc.New()
 	wg := sync.WaitGroup{}
 	defer func() {
 		wg.Wait()
@@ -101,7 +98,7 @@ func Parse(o *Options) (*doc.Doc, error) {
 		}(path)
 	}
 
-	return docs, nil
+	return nil
 }
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。

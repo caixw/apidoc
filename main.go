@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/caixw/apidoc/app"
+	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
 	"github.com/issue9/version"
@@ -50,17 +51,7 @@ func main() {
 		return
 	}
 
-	// 分析文档内容
-	cfg.Input.SyntaxLog = newSyntaxLog()
-	docs, err := input.Parse(cfg.Input)
-	if err != nil {
-		app.Errorln(err)
-		return
-	}
-
-	// 输出内容
-	cfg.Output.Elapsed = time.Now().Sub(start)
-	if err = output.Render(docs, cfg.Output); err != nil {
+	if err := build(cfg.Inputs, cfg.Output); err != nil {
 		app.Errorln(err)
 		return
 	}
@@ -106,4 +97,20 @@ func flags(path string) bool {
 		return true
 	}
 	return false
+}
+
+func build(inputs []*input.Options, out *output.Options) error {
+	start := time.Now()
+	docs := doc.New()
+
+	// 分析文档内容
+	for _, opt := range inputs {
+		if err := input.Parse(docs, opt); err != nil {
+			return err
+		}
+	}
+
+	// 输出内容
+	out.Elapsed = time.Now().Sub(start)
+	return output.Render(docs, out)
 }

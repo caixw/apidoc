@@ -22,9 +22,9 @@ import (
 // 而如果只是改变输出内容的，应该直接以标签的形式出现在代码中，
 // 比如文档的版本号、标题等，都是直接使用 `@apidoc` 来指定的。
 type config struct {
-	Version string          `json:"version"` // 产生此配置文件的程序版本号
-	Input   *input.Options  `json:"input"`
-	Output  *output.Options `json:"output"`
+	Version string           `json:"version"` // 产生此配置文件的程序版本号
+	Inputs  []*input.Options `json:"inputs"`
+	Output  *output.Options  `json:"output"`
 }
 
 // 加载 path 所指的文件内容到 *config 实例。
@@ -43,8 +43,20 @@ func loadConfig(path string) (*config, error) {
 		return nil, &app.OptionsError{Field: "version", Message: "格式不正确"}
 	}
 
-	if err := cfg.Input.Init(); err != nil {
-		return nil, err
+	if len(cfg.Inputs) == 0 {
+		return nil, &app.OptionsError{Field: "inputs", Message: "不能为空"}
+	}
+
+	if cfg.Output == nil {
+		return nil, &app.OptionsError{Field: "output", Message: "不能为空"}
+	}
+
+	l := newSyntaxLog()
+	for _, opt := range cfg.Inputs {
+		if err := opt.Init(); err != nil {
+			return nil, err
+		}
+		opt.SyntaxLog = l
 	}
 
 	if err := cfg.Output.Init(); err != nil {
@@ -65,10 +77,12 @@ func genConfigFile(path string) error {
 
 	cfg := &config{
 		Version: app.Version,
-		Input: &input.Options{
-			Dir:       dir,
-			Recursive: true,
-			Lang:      lang,
+		Inputs: []*input.Options{
+			&input.Options{
+				Dir:       dir,
+				Recursive: true,
+				Lang:      lang,
+			},
 		},
 		Output: &output.Options{
 			Type: "html",
