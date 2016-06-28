@@ -7,6 +7,7 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -15,6 +16,20 @@ import (
 	"github.com/caixw/apidoc/output"
 	"github.com/issue9/version"
 )
+
+// 带色彩输出的控制台。
+type syntaxWriter struct {
+}
+
+// io.Writer
+func (w *syntaxWriter) Write(bs []byte) (size int, err error) {
+	app.Error(string(bs))
+	return len(bs), nil
+}
+
+func newSyntaxLog() *log.Logger {
+	return log.New(&syntaxWriter{}, "", 0)
+}
 
 // 项目的配置内容，分别引用到了 input.Options 和 output.Options。
 //
@@ -51,7 +66,7 @@ func loadConfig(path string) (*config, error) {
 		return nil, &app.OptionsError{Field: "output", Message: "不能为空"}
 	}
 
-	l := newSyntaxLog()
+	l := log.New(&syntaxWriter{}, "", 0)
 	for _, opt := range cfg.Inputs {
 		if err := opt.Init(); err != nil {
 			return nil, err

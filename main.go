@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -104,10 +105,16 @@ func build(inputs []*input.Options, out *output.Options) error {
 	docs := doc.New()
 
 	// 分析文档内容
+	wg := &sync.WaitGroup{}
+	defer wg.Wait()
 	for _, opt := range inputs {
-		if err := input.Parse(docs, opt); err != nil {
-			return err
-		}
+		wg.Add(1)
+		go func() {
+			if err := input.Parse(docs, opt); err != nil {
+				app.Errorln(err)
+			}
+			wg.Done()
+		}()
 	}
 
 	if len(docs.Title) == 0 {

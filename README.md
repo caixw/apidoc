@@ -66,6 +66,7 @@ if err = output.Render(docs, outputOptions); err != nil {
     // TODO
 }
 ```
+具体可参考 main.go 中的 `build` 函数。
 
 
 
