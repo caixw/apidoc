@@ -23,17 +23,20 @@ const htmlSuffix = ".html"
 
 // 用于页首和页脚的附加信息
 type htmlPage struct {
+	Title          string                // 标题
+	Version        string                // 文档版本
+	BaseURL        string                // 所有接口地址的前缀
+	LicenseName    string                // 文档版权的名称
+	LicenseURL     string                // 文档版权的地址
 	Content        string                // 索引文件的其它内容
 	Groups         map[string][]*doc.API // 按组名形式组织的文档集合
 	GroupName      string                // 当前分组名称
 	Group          []*doc.API            // 当前组的文档集合
 	Date           time.Time             // 生成日期
-	Version        string                // 文档版本
 	AppVersion     string                // apidoc 的版本号
 	AppName        string                // 程序名称
 	AppRepoURL     string                // 仓库地址
 	AppOfficialURL string                // 官网地址
-	Title          string                // 标题
 	Elapsed        time.Duration         // 生成文档所用的时间
 }
 
@@ -101,9 +104,12 @@ func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlP
 
 func buildHTMLPage(docs *doc.Doc, opt *Options) *htmlPage {
 	p := &htmlPage{
-		Content:        docs.Content,
 		Title:          docs.Title,
 		Version:        docs.Version,
+		BaseURL:        docs.BaseURL,
+		LicenseName:    docs.LicenseName,
+		LicenseURL:     docs.LicenseURL,
+		Content:        docs.Content,
 		AppVersion:     app.Version,
 		AppName:        app.Name,
 		AppRepoURL:     app.RepoURL,
