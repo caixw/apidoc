@@ -43,6 +43,14 @@ $(document).ready(function(){
     });
 
 
+    /* sticky */
+    var header = $('header');
+    var top = header.offset().top;
+    $(document).on('scroll', function(e){
+        window.scrollY > top ? header.addClass('sticky') : header.removeClass('sticky');
+    });
+
+
     // 代码高亮，依赖于是否能访问网络。
     if (typeof(Prism) != 'undefined') {
         Prism.plugins.autoloader.languages_path='https://cdn.bootcss.com/prism/1.5.1/components/';
