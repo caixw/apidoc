@@ -52,7 +52,26 @@ func main() {
 		return
 	}
 
-	if err := build(cfg.Inputs, cfg.Output); err != nil {
+	// 分析文档内容
+	docs := doc.New()
+	wg := &sync.WaitGroup{}
+	defer wg.Wait()
+	for _, opt := range cfg.Inputs {
+		wg.Add(1)
+		go func() {
+			if err := input.Parse(docs, opt); err != nil {
+				app.Errorln(err)
+			}
+			wg.Done()
+		}()
+	}
+	if len(docs.Title) == 0 {
+		docs.Title = app.DefaultTitle
+	}
+
+	// 输出内容
+	cfg.Output.Elapsed = time.Now().Sub(start)
+	if err := output.Render(docs, cfg.Output); err != nil {
 		app.Errorln(err)
 		return
 	}
@@ -98,30 +117,4 @@ func flags(path string) bool {
 		return true
 	}
 	return false
-}
-
-func build(inputs []*input.Options, out *output.Options) error {
-	start := time.Now()
-	docs := doc.New()
-
-	// 分析文档内容
-	wg := &sync.WaitGroup{}
-	defer wg.Wait()
-	for _, opt := range inputs {
-		wg.Add(1)
-		go func() {
-			if err := input.Parse(docs, opt); err != nil {
-				app.Errorln(err)
-			}
-			wg.Done()
-		}()
-	}
-
-	if len(docs.Title) == 0 {
-		docs.Title = app.DefaultTitle
-	}
-
-	// 输出内容
-	out.Elapsed = time.Now().Sub(start)
-	return output.Render(docs, out)
 }

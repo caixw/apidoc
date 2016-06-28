@@ -17,20 +17,6 @@ import (
 	"github.com/issue9/version"
 )
 
-// 带色彩输出的控制台。
-type syntaxWriter struct {
-}
-
-// io.Writer
-func (w *syntaxWriter) Write(bs []byte) (size int, err error) {
-	app.Error(string(bs))
-	return len(bs), nil
-}
-
-func newSyntaxLog() *log.Logger {
-	return log.New(&syntaxWriter{}, "", 0)
-}
-
 // 项目的配置内容，分别引用到了 input.Options 和 output.Options。
 //
 // 所有可能改变输出的表现形式的，应该添加此配置中；
@@ -40,6 +26,15 @@ type config struct {
 	Version string           `json:"version"` // 产生此配置文件的程序版本号
 	Inputs  []*input.Options `json:"inputs"`
 	Output  *output.Options  `json:"output"`
+}
+
+// 带色彩输出的控制台。
+type syntaxWriter struct {
+}
+
+func (w *syntaxWriter) Write(bs []byte) (size int, err error) {
+	app.Error(string(bs))
+	return len(bs), nil
 }
 
 // 加载 path 所指的文件内容到 *config 实例。
