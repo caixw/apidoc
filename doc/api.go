@@ -130,32 +130,32 @@ LOOP:
 			t := l.readTag()
 			d.Version = t.readLine()
 			if len(d.Version) == 0 {
-				return l.syntaxError("@apiVersion 未指定参数")
+				return t.syntaxError("@apiVersion 未指定参数")
 			}
 			if !t.atEOF() {
-				return l.syntaxError("@apiVersion 过多的参数")
+				return t.syntaxError("@apiVersion 过多的参数")
 			}
 		case l.matchTag("@apiBaseURL"):
 			t := l.readTag()
 			d.BaseURL = t.readLine()
 			if len(d.BaseURL) == 0 {
-				return l.syntaxError("@apiBaseURL 未指定参数")
+				return t.syntaxError("@apiBaseURL 未指定参数")
 			}
 			if !t.atEOF() {
-				return l.syntaxError("@apiBaseURL 过多的参数")
+				return t.syntaxError("@apiBaseURL 过多的参数")
 			}
 		case l.matchTag("@apiLicense"):
 			t := l.readTag()
 			d.LicenseName = t.readWord()
 			d.LicenseURL = t.readLine()
 			if len(d.LicenseName) == 0 {
-				return l.syntaxError("@apiLicense 缺少必要的参数")
+				return t.syntaxError("@apiLicense 缺少必要的参数")
 			}
 			if len(d.LicenseURL) > 0 && !is.URL(d.LicenseURL) {
-				return l.syntaxError("@apiLicense 第二个参数必须为一个 URL")
+				return t.syntaxError("@apiLicense 第二个参数必须为一个 URL")
 			}
 			if !t.atEOF() {
-				return l.syntaxError("@apiLicense 过多的参数")
+				return t.syntaxError("@apiLicense 过多的参数")
 			}
 		case l.matchTag("@apiContent"):
 			d.Content = string(l.data[l.pos:])
@@ -175,11 +175,11 @@ func (l *lexer) scanGroup(api *API) *app.SyntaxError {
 
 	api.Group = t.readWord()
 	if len(api.Group) == 0 {
-		return l.syntaxError("@apiGroup 未指定名称")
+		return t.syntaxError("@apiGroup 未指定名称")
 	}
 
 	if !t.atEOF() {
-		l.syntaxError("@apiGroup 参数过多")
+		t.syntaxError("@apiGroup 参数过多")
 	}
 
 	return nil
@@ -221,7 +221,7 @@ func (l *lexer) scanAPIRequest(api *API) *app.SyntaxError {
 		Examples: []*Example{},
 	}
 	if !t.atEOF() {
-		return l.syntaxError("@apiRequest 过多的参数:" + t.readEnd())
+		return t.syntaxError("@apiRequest 过多的参数:" + t.readEnd())
 	}
 
 LOOP:
@@ -232,10 +232,10 @@ LOOP:
 			key := t.readWord()
 			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
-				return l.syntaxError("@apiHeader 缺少必要的参数")
+				return t.syntaxError("@apiHeader 缺少必要的参数")
 			}
 			if !t.atEOF() {
-				return l.syntaxError("@apiHeader 参数过多")
+				return t.syntaxError("@apiHeader 参数过多")
 			}
 			r.Headers[string(key)] = string(val)
 		case l.matchTag("@apiParam"):
@@ -331,7 +331,7 @@ func (l *lexer) scanAPIExample() (*Example, *app.SyntaxError) {
 	}
 
 	if len(example.Type) == 0 || len(example.Code) == 0 {
-		return nil, l.syntaxError("@apiExample 缺少必要的参数")
+		return nil, tag.syntaxError("@apiExample 缺少必要的参数")
 	}
 
 	return example, nil
@@ -345,7 +345,7 @@ func (l *lexer) scanAPIParam() (*Param, *app.SyntaxError) {
 	p.Type = tag.readWord()
 	p.Summary = tag.readEnd()
 	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Summary) == 0 {
-		return nil, l.syntaxError("@apiParam 或是 @apiQuery 缺少必要的参数")
+		return nil, tag.syntaxError("@apiParam 或是 @apiQuery 缺少必要的参数")
 	}
 	return p, nil
 }
@@ -362,7 +362,7 @@ func (l *lexer) scanAPI(api *API) *app.SyntaxError {
 	api.Summary = t.readLine()
 
 	if len(api.Method) == 0 || len(api.URL) == 0 || len(api.Summary) == 0 {
-		return l.syntaxError("@api 缺少必要的参数")
+		return t.syntaxError("@api 缺少必要的参数")
 	}
 
 	api.Description = t.readEnd()
