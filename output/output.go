@@ -54,7 +54,7 @@ func (o *Options) Init() *app.OptionsError {
 
 	// 只有 html 和 html+ 才需要判断模板文件是否存在
 	if o.Type == "html" || o.Type == "html+" {
-		if len(o.Template) == 0 || !utils.FileExists(o.Template) {
+		if len(o.Template) > 0 && !utils.FileExists(o.Template) {
 			return &app.OptionsError{Field: "template", Message: "模板目录不存在"}
 		}
 	}
