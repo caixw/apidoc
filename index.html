@@ -32,7 +32,7 @@
         <header>
             <div class="ui container">
                 <h1 class="ui text menu left floated">
-                    <a class="item" href="#">APIDOC<sub class="version">2.13</sub></a>
+                    <a class="item" href="#">APIDOC<sub class="version">2.14</sub></a>
                 </h1>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
@@ -98,11 +98,13 @@
                     <pre data-indent="5" data-language="json">
                     {
                         "version": "2.0.52.160529",
-                        "input": {
-                            "lang": "go",
-                            "dir": "./",
-                            "recursive": true
-                        },
+                        "inputs": [
+                            {
+                                "lang": "go",
+                                "dir": "./",
+                                "recursive": true
+                            }
+                        ],
                         "output": {
                             "dir": "./output/doc",
                             "type": "html",
@@ -124,9 +126,9 @@
 
                             <!-- input -->
                             <tr class="warning">
-                                <td>input</td>
-                                <td>{}</td>
-                                <td>控制输入行为</td>
+                                <td>inputs</td>
+                                <td>[]</td>
+                                <td>指定输入的数据</td>
                             </tr>
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;dir</td>
@@ -172,6 +174,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <p>inputs 为一个对象数组，每个数组元素可以指定一个独立项目。不过不支持同一项目下多语言的解析。</p>
                 </section>
 
                 <section>
@@ -587,7 +590,7 @@
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a>，<a href="https://github.com/caixw/apidoc/issues/new">纠正内容错误</a>
                     </p>
-                    <p>更新于 <time itemprop="datePublished" datetime="2016-06-24T00:04:20+0800">2016-06-27T20:57:27+0800</time></p>
+                    <p>更新于 <time itemprop="datePublished" datetime="2016-06-29T18:41:27+0800">2016-06-29T18:41:27+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
