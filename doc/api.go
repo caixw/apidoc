@@ -4,7 +4,10 @@
 
 package doc
 
-import "github.com/caixw/apidoc/app"
+import (
+	"github.com/caixw/apidoc/app"
+	"github.com/issue9/is"
+)
 
 // Scan 扫描文档，生成一个 Doc 实例。
 //
@@ -147,6 +150,9 @@ LOOP:
 			d.LicenseURL = t.readLine()
 			if len(d.LicenseName) == 0 {
 				return l.syntaxError("@apiLicense 缺少必要的参数")
+			}
+			if len(d.LicenseURL) > 0 && !is.URL(d.LicenseURL) {
+				return l.syntaxError("@apiLicense 第二个参数必须为一个 URL")
 			}
 			if !t.atEOF() {
 				return l.syntaxError("@apiLicense 过多的参数")
