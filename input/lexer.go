@@ -29,10 +29,14 @@ type block struct {
 	Escape string // 当 Type 为 blockTypeString 时，此值表示转义字符，Type 为其它值时，此值无意义；
 }
 
+// NOTE: 非线程安全
 type lexer struct {
 	data    []byte
 	pos     int
 	isAtEOF bool
+
+	ln    int // 上次记录的行号
+	lnPos int // 上次记录行号时所在的位置
 }
 
 // 是否已经在文件末尾。
@@ -77,7 +81,12 @@ func (l *lexer) match(word string) bool {
 var newLine = []byte("\n")
 
 func (l *lexer) lineNumber() int {
-	return bytes.Count(l.data[:l.pos], newLine)
+	if l.lnPos < l.pos {
+		l.ln += bytes.Count(l.data[l.lnPos:l.pos], newLine)
+		l.lnPos = l.pos
+	}
+
+	return l.ln
 }
 
 // 构建一个语法错误的信息。
