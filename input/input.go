@@ -98,8 +98,7 @@ func Parse(docs *doc.Doc, o *Options) error {
 func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logger) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil && synerrLog != nil {
-		synerr := &app.SyntaxError{Message: err.Error()}
-		synerrLog.Println(synerr)
+		synerrLog.Println(&app.SyntaxError{Message: err.Error()})
 		return
 	}
 
@@ -111,36 +110,41 @@ func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logge
 
 LOOP:
 	for {
-		ln := l.lineNumber() + 1 // 记录当前的行号，顺便调整为行号起始行号为 1
-		switch {
-		case l.atEOF():
+
+		if l.atEOF() {
 			return
-		case block == nil:
+		}
+
+		if block == nil {
 			block = l.block(blocks)
-		case block != nil:
-			rs, err := block.end(l)
-			if err != nil && synerrLog != nil {
-				err.File = path
-				synerrLog.Println(err)
+			if block == nil { // 没有匹配的 block 了
 				return
 			}
+		}
 
-			if block.Type == blockTypeString {
-				block = nil
-				continue LOOP
-			}
+		ln := l.lineNumber() + 1 // 记录当前的行号，顺便调整为行号起始行号为 1
+		rs, err := block.end(l)
+		if err != nil && synerrLog != nil {
+			err.File = path
+			synerrLog.Println(err)
+			return
+		}
+
+		if block.Type == blockTypeString {
 			block = nil
+			continue LOOP
+		}
+		block = nil
 
-			wg.Add(1)
-			go func(ln int) {
-				if err = docs.Scan(rs); err != nil && synerrLog != nil {
-					err.Line += ln
-					err.File = path
-					synerrLog.Println(err)
-				}
-				wg.Done()
-			}(ln)
-		} // end switch
+		wg.Add(1)
+		go func(ln int) {
+			if err = docs.Scan(rs); err != nil && synerrLog != nil {
+				err.Line += ln
+				err.File = path
+				synerrLog.Println(err)
+			}
+			wg.Done()
+		}(ln)
 	} // end for
 }
 

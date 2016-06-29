@@ -59,9 +59,8 @@ func (l *lexer) match(word string) bool {
 		return false
 	}
 
-	rs := []rune(word)
 	width := 0
-	for _, r := range rs {
+	for _, r := range word {
 		rr, w := utf8.DecodeRune(l.data[l.pos:])
 		if rr != r {
 			l.pos -= width
@@ -75,8 +74,10 @@ func (l *lexer) match(word string) bool {
 	return true
 }
 
+var newLine = []byte("\n")
+
 func (l *lexer) lineNumber() int {
-	return bytes.Count(l.data[:l.pos], []byte("\n"))
+	return bytes.Count(l.data[:l.pos], newLine)
 }
 
 // 构建一个语法错误的信息。
