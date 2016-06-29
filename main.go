@@ -11,9 +11,11 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/caixw/apidoc/app"
+	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
 	"github.com/issue9/version"
@@ -51,16 +53,26 @@ func main() {
 	}
 
 	// 分析文档内容
-	cfg.Input.SyntaxLog = newSyntaxLog()
-	docs, err := input.Parse(cfg.Input)
-	if err != nil {
-		app.Errorln(err)
-		return
+	docs := doc.New()
+	wg := &sync.WaitGroup{}
+	for _, opt := range cfg.Inputs {
+		wg.Add(1)
+		go func() {
+			if err := input.Parse(docs, opt); err != nil {
+				app.Errorln(err)
+			}
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+
+	if len(docs.Title) == 0 {
+		docs.Title = app.DefaultTitle
 	}
 
 	// 输出内容
 	cfg.Output.Elapsed = time.Now().Sub(start)
-	if err = output.Render(docs, cfg.Output); err != nil {
+	if err := output.Render(docs, cfg.Output); err != nil {
 		app.Errorln(err)
 		return
 	}

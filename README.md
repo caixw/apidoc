@@ -51,10 +51,11 @@ go get github.com/caixw/apidoc
 
 ```go
 start := time.Now()
+docs := doc.New()
 
 // 分析文档内容
 inputOptions := &input.Options{}
-docs, err := input.Parse(inputOptions)
+docs, err := input.Parse(docs, inputOptions)
 if err != nil {
     // TODO
 }

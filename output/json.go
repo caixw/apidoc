@@ -15,13 +15,16 @@ import (
 )
 
 type jsonPage struct {
-	Title     string        `json:"title"`
-	Version   string        `json:"version,omitempty"`
-	Content   string        `json:"content,omitempty"`
-	Date      time.Time     `json:"date"`
-	Elapsed   time.Duration `json:"elapsed"`
-	GroupName string        `json:"groupName"` // 当前分组的名称
-	Apis      []*doc.API    `json:"apis"`      // 当前分组的 api 文档
+	Title       string        `json:"title"`
+	Version     string        `json:"version,omitempty"`
+	BaseURL     string        `json:"baseURL"`
+	LicenseName string        `json:"licenseName"`
+	LicenseURL  string        `json:"licenseURL"`
+	Content     string        `json:"content,omitempty"`
+	Date        time.Time     `json:"date"`
+	Elapsed     time.Duration `json:"elapsed"`
+	GroupName   string        `json:"groupName"` // 当前分组的名称
+	Apis        []*doc.API    `json:"apis"`      // 当前分组的 api 文档
 }
 
 func renderJSON(docs *doc.Doc, opt *Options) error {

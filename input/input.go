@@ -28,28 +28,26 @@ type Options struct {
 	Lang      string      `json:"lang"`           // 输入的目标语言
 	Dir       string      `json:"dir"`            // 源代码目录
 	Exts      []string    `json:"exts,omitempty"` // 需要扫描的文件扩展名，若未指定，则使用默认值
-	Recursive bool        `json:"recursive"`      // 是否查找Dir的子目录
+	Recursive bool        `json:"recursive"`      // 是否查找 Dir 的子目录
 }
 
 // Init 检测 Options 变量是否符合要求
 func (opt *Options) Init() *app.OptionsError {
 	if len(opt.Dir) == 0 {
-		return &app.OptionsError{Field: "input.dir", Message: "不能为空"}
+		return &app.OptionsError{Field: "dir", Message: "不能为空"}
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return &app.OptionsError{Field: "input.dir", Message: "该目录不存在"}
+		return &app.OptionsError{Field: "dir", Message: "该目录不存在"}
 	}
 
 	if len(opt.Lang) == 0 {
-		return &app.OptionsError{Field: "input.lang", Message: "不能为空"}
+		return &app.OptionsError{Field: "lang", Message: "不能为空"}
 	}
 
 	if !langIsSupported(opt.Lang) {
-		return &app.OptionsError{Field: "input.lang", Message: "不支持该语言"}
+		return &app.OptionsError{Field: "lang", Message: "不支持该语言"}
 	}
-
-	opt.Dir += string(os.PathSeparator)
 
 	if len(opt.Exts) > 0 {
 		exts := make([]string, 0, len(opt.Exts))
@@ -72,27 +70,19 @@ func (opt *Options) Init() *app.OptionsError {
 }
 
 // Parse 分析源代码，获取相应的文档内容。
-func Parse(o *Options) (*doc.Doc, error) {
+func Parse(docs *doc.Doc, o *Options) error {
 	blocks, found := langs[o.Lang]
 	if !found {
-		return nil, fmt.Errorf("不支持该语言:[%v]", o.Lang)
+		return fmt.Errorf("不支持该语言:[%v]", o.Lang)
 	}
 
 	paths, err := recursivePath(o)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	docs := doc.New()
 	wg := sync.WaitGroup{}
-	defer func() {
-		wg.Wait()
-
-		// 要等所有内容解析完了，才能判断默认标题是否为空
-		if len(docs.Title) == 0 {
-			docs.Title = app.DefaultTitle
-		}
-	}()
+	defer wg.Wait()
 	for _, path := range paths {
 		wg.Add(1)
 		go func(path string) {
@@ -101,7 +91,7 @@ func Parse(o *Options) (*doc.Doc, error) {
 		}(path)
 	}
 
-	return docs, nil
+	return nil
 }
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。

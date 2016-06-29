@@ -5,6 +5,16 @@
                 内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date|dateFormat}}</time>，
                 用时{{.Elapsed}}。
             </p>
+
+            {{if .LicenseName}}
+            <p>
+                内容采用
+                {{ if .LicenseURL}}<a href="{{.LicenseURL}}">{{end}}
+                    {{- .LicenseName -}}
+                {{ if .LicenseURL}}</a>{{end}}
+                进行许可。
+            </p>
+            {{end}}
         </footer>
     </body>
 </html>
