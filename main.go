@@ -55,7 +55,6 @@ func main() {
 	// 分析文档内容
 	docs := doc.New()
 	wg := &sync.WaitGroup{}
-	defer wg.Wait()
 	for _, opt := range cfg.Inputs {
 		wg.Add(1)
 		go func() {
@@ -65,6 +64,8 @@ func main() {
 			wg.Done()
 		}()
 	}
+	wg.Wait()
+
 	if len(docs.Title) == 0 {
 		docs.Title = app.DefaultTitle
 	}
