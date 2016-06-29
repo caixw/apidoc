@@ -138,20 +138,20 @@ func TestBlock_endString(t *testing.T) {
 	l := &lexer{
 		data: []byte(`text"`),
 	}
-	a.NotError(b.endString(l))
+	a.True(b.endString(l))
 
 	// 带转义字符
 	l = &lexer{
 		data: []byte(`te\"xt"`),
 	}
-	a.NotError(b.endString(l)).
+	a.True(b.endString(l)).
 		Equal(l.pos, len(l.data))
 
 	// 找不到匹配字符串
 	l = &lexer{
 		data: []byte("text"),
 	}
-	a.Error(b.endString(l))
+	a.False(b.endString(l))
 }
 
 func TestBlock_endSComment(t *testing.T) {
@@ -200,29 +200,29 @@ func TestBlock_endMComment(t *testing.T) {
 	l := &lexer{
 		data: []byte("comment1\n*/"),
 	}
-	rs, err := b.endMComments(l)
-	a.NotError(err).Equal(string(rs), "comment1\n")
+	rs, found := b.endMComments(l)
+	a.True(found).Equal(string(rs), "comment1\n")
 
 	// 多个注释结束符
 	l = &lexer{
 		data: []byte("comment1\ncomment2*/*/"),
 	}
-	rs, err = b.endMComments(l)
-	a.NotError(err).Equal(string(rs), "comment1\ncomment2")
+	rs, found = b.endMComments(l)
+	a.True(found).Equal(string(rs), "comment1\ncomment2")
 
 	// 空格开头
 	l = &lexer{
 		data: []byte("\ncomment1\ncomment2*/*/"),
 	}
-	rs, err = b.endMComments(l)
-	a.NotError(err).Equal(string(rs), "\ncomment1\ncomment2")
+	rs, found = b.endMComments(l)
+	a.True(found).Equal(string(rs), "\ncomment1\ncomment2")
 
 	// 没有注释结束符
 	l = &lexer{
 		data: []byte("comment1"),
 	}
-	rs, err = b.endMComments(l)
-	a.Error(err).Nil(rs)
+	rs, found = b.endMComments(l)
+	a.False(found).Nil(rs)
 }
 
 func TestFilterSyhmbols(t *testing.T) {

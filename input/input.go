@@ -98,7 +98,7 @@ func Parse(docs *doc.Doc, o *Options) error {
 func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logger) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil && synerrLog != nil {
-		synerrLog.Println(&app.SyntaxError{Message: err.Error()})
+		synerrLog.Println(&app.SyntaxError{Message: err.Error(), File: path})
 		return
 	}
 
@@ -108,9 +108,7 @@ func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logge
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
 
-LOOP:
 	for {
-
 		if l.atEOF() {
 			return
 		}
@@ -123,28 +121,27 @@ LOOP:
 		}
 
 		ln := l.lineNumber() + 1 // 记录当前的行号，顺便调整为行号起始行号为 1
-		rs, err := block.end(l)
-		if err != nil && synerrLog != nil {
-			err.File = path
-			synerrLog.Println(err)
+		rs, ok := block.end(l)
+		if !ok && synerrLog != nil {
+			synerrLog.Println(&app.SyntaxError{Line: ln, File: path, Message: "找不到结束标记"})
 			return
 		}
 
 		if block.Type == blockTypeString {
 			block = nil
-			continue LOOP
+			continue
 		}
 		block = nil
 
 		wg.Add(1)
-		go func(ln int) {
-			if err = docs.Scan(rs); err != nil && synerrLog != nil {
+		go func(rs []rune, ln int) {
+			if err := docs.Scan(rs); err != nil && synerrLog != nil {
 				err.Line += ln
 				err.File = path
 				synerrLog.Println(err)
 			}
 			wg.Done()
-		}(ln)
+		}(rs, ln)
 	} // end for
 }
 
