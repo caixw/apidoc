@@ -29,10 +29,14 @@ type block struct {
 	Escape string // 当 Type 为 blockTypeString 时，此值表示转义字符，Type 为其它值时，此值无意义；
 }
 
+// NOTE: 非线程安全
 type lexer struct {
 	data    []byte
 	pos     int
 	isAtEOF bool
+
+	ln    int // 上次记录的行号
+	lnPos int // 上次记录行号时所在的位置
 }
 
 // 是否已经在文件末尾。
@@ -59,9 +63,8 @@ func (l *lexer) match(word string) bool {
 		return false
 	}
 
-	rs := []rune(word)
 	width := 0
-	for _, r := range rs {
+	for _, r := range word {
 		rr, w := utf8.DecodeRune(l.data[l.pos:])
 		if rr != r {
 			l.pos -= width
@@ -75,8 +78,15 @@ func (l *lexer) match(word string) bool {
 	return true
 }
 
+var newLine = []byte("\n")
+
 func (l *lexer) lineNumber() int {
-	return bytes.Count(l.data[:l.pos], []byte("\n"))
+	if l.lnPos < l.pos {
+		l.ln += bytes.Count(l.data[l.lnPos:l.pos], newLine)
+		l.lnPos = l.pos
+	}
+
+	return l.ln
 }
 
 // 构建一个语法错误的信息。
@@ -105,25 +115,26 @@ func (l *lexer) block(blocks []*block) *block {
 }
 
 // 返回从当前位置到定义结束的所有字符
-func (b *block) end(l *lexer) ([]rune, *app.SyntaxError) {
+// 返回值 bool 提示是否正常找到结束标记
+func (b *block) end(l *lexer) ([]rune, bool) {
 	var rs []rune
-	var err *app.SyntaxError
+	ok := false
 
 	switch b.Type {
 	case blockTypeString:
-		err = b.endString(l)
+		ok = b.endString(l)
 	case blockTypeMComment:
-		rs, err = b.endMComments(l)
+		rs, ok = b.endMComments(l)
 	case blockTypeSComment:
-		rs, err = b.endSComments(l)
+		rs, ok = b.endSComments(l)
 	}
-	return rs, err
+	return rs, ok
 }
 
 // 从 l 的当前位置开始往后查找，直到找到 b 中定义的 end 字符串，
 // 将 l 中的指针移到该位置。
 // 正常找到结束符的返回 true，否则返回 false。
-func (b *block) endString(l *lexer) *app.SyntaxError {
+func (b *block) endString(l *lexer) bool {
 LOOP:
 	for {
 		switch {
@@ -132,16 +143,16 @@ LOOP:
 		case (len(b.Escape) > 0) && l.match(b.Escape):
 			l.next()
 		case l.match(b.End):
-			return nil
+			return true
 		default:
 			l.next()
 		}
 	} // end for
-	return l.syntaxError("未找到字符串的结束标记")
+	return false
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-func (b *block) endSComments(l *lexer) ([]rune, *app.SyntaxError) {
+func (b *block) endSComments(l *lexer) ([]rune, bool) {
 	// 跳过除换行符以外的所有空白字符。
 	skipSpace := func() {
 		for {
@@ -174,12 +185,12 @@ func (b *block) endSComments(l *lexer) ([]rune, *app.SyntaxError) {
 		l.pos--
 	}
 
-	return ret, nil
+	return ret, true
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *block) endMComments(l *lexer) ([]rune, *app.SyntaxError) {
+func (b *block) endMComments(l *lexer) ([]rune, bool) {
 	lines := make([][]rune, 0, 20)
 	line := make([]rune, 0, 100)
 
@@ -187,7 +198,7 @@ LOOP:
 	for {
 		switch {
 		case l.atEOF():
-			return nil, l.syntaxError("未找到注释的结束标记:" + b.End)
+			return nil, false
 		case l.match(b.End):
 			lines = append(lines, filterSymbols(line))
 			break LOOP
@@ -205,7 +216,7 @@ LOOP:
 	for _, v := range lines {
 		ret = append(ret, v...)
 	}
-	return ret, nil
+	return ret, true
 }
 
 // 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。

@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/pprof"
 	"sync"
 	"time"
 
@@ -21,7 +22,23 @@ import (
 	"github.com/issue9/version"
 )
 
+const cpuProfile = true
+
 func main() {
+	if cpuProfile {
+		f, err := os.Create("./cpuprofile")
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		if err := pprof.StartCPUProfile(f); err != nil {
+			panic(err)
+		}
+
+		defer pprof.StopCPUProfile()
+	}
+
 	start := time.Now() // 记录处理开始时间
 
 	wd, err := os.Getwd()

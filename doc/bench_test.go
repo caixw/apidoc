@@ -88,7 +88,10 @@ func BenchmarkTag_readEnd(b *testing.B) {
 
 // go1.6 BenchmarkNewLexer-4    	300000000	         5.63 ns/op
 func BenchmarkNewLexer(b *testing.B) {
+	data := []rune("line")
 	for i := 0; i < b.N; i++ {
-		_ = newLexer([]rune("line"))
+		l := newLexer(data)
+		if l.atEOF() {
+		}
 	}
 }

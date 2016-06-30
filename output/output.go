@@ -61,6 +61,10 @@ func (o *Options) Init() *app.OptionsError {
 
 	// 调试模式，必须得有端口
 	if o.Type == "html+" {
+		if len(o.Template) == 0 {
+			return &app.OptionsError{Field: "template", Message: "不能为空"}
+		}
+
 		if len(o.Port) == 0 {
 			return &app.OptionsError{Field: "port", Message: "不能为空"}
 		}
