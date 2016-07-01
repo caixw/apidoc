@@ -29,26 +29,30 @@ ul li{
     margin:.2rem 0rem;
 }
 
-.fl{
-    float:left;
-}
-
-.fr{
-    float:right;
-}
-
 /*=============== header ================*/
 
 header{
     color:#777;
     background-color:#fafafa;
     border:1px solid #eee;
-    padding:1rem 2.3rem;
-    left:0;
-    right:0;
+    padding:1rem;
+    top:0;
+    position:sticky; /* TODO: 暂时只有 Firefox 支持，其它浏览器通过 js 模拟 */
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-flow:row wrap;
+}
+
+.sticky{
     top:0;
     position:fixed;
+    box-sizing:border-box;
+    width:100%;
+}
 
+header .left{
+    flex:1 1 auto;
 }
 
 header h1{
@@ -66,17 +70,19 @@ header #groups{
 }
 
 header .filter{
-    margin-top:.8rem;
+    text-align:right;
+    flex:1 1 auto;
 }
+
 
 header .filter label{
     margin-left:1rem;
     vertical-align: bottom;
+    text-align:right;
 }
 
 .main{
-    padding:0rem 2rem;
-    margin-top:5.5rem;
+    padding:1rem;
 }
 
 /*=============== .api ================*/
@@ -90,6 +96,8 @@ header .filter label{
 .api h3{
     cursor:pointer;
     margin:0rem;
+    display:flex;
+    align-items:center;
 }
 
 .api h4{
@@ -107,7 +115,6 @@ header .filter label{
 .api h3 .method{
     width:5rem;
     font-weight:bold;
-    display:inline-block;
     text-transform:uppercase;
 }
 
@@ -132,7 +139,6 @@ header .filter label{
 }
 
 .api h3 .url{
-    display:inline-block;
     margin-right:2rem;
 }
 
@@ -179,7 +185,6 @@ footer{
     background-color:#fafafa;
     color:#777;
     padding:1rem;
-    margin-top:2rem;
 }
 
 footer p{
@@ -235,6 +240,16 @@ $(document).ready(function(){
     });
 
 
+    /* sticky */
+    if (!navigator.userAgent.match(/firefox/i)){
+        var header = $('header');
+        var top = header.offset().top;
+        $(document).on('scroll', function(e){
+            window.scrollY > top ? header.addClass('sticky') : header.removeClass('sticky');
+        });
+    }
+
+
     // 代码高亮，依赖于是否能访问网络。
     if (typeof(Prism) != 'undefined') {
         Prism.plugins.autoloader.languages_path='https://cdn.bootcss.com/prism/1.5.1/components/';
@@ -287,7 +302,7 @@ var Templates=map[string]string{
 {{- end -}}
 `,"./api.html":`{{- define "api" -}}
 <section class="api">
-    <h3 class="title">
+    <h3>
         <span class="method {{.Method}}">{{.Method}}</span>
         <span class="url">{{.URL}}</span>
         <span class="summary">{{.Summary}}</span>
@@ -339,7 +354,7 @@ var Templates=map[string]string{
 
         {{if .Error}}
         <div class="response error">
-            <h4><span class="error">ERROR:</span>{{.Success.Code}},&#160;{{.Success.Summary}}</h4>
+            <h4><span class="error">ERROR:</span>{{.Error.Code}},&#160;{{.Error.Summary}}</h4>
             {{template "response" .Error}}
         </div>
         {{end}}
@@ -437,19 +452,21 @@ var Templates=map[string]string{
     </head>
     <body>
         <header>
-            <h1>
-                <a href="./index.html">{{.Title}}</a>
-                {{- if .Version}}<span class="version">{{.Version}}</span>{{end}}
-            </h1>
+            <div class="left">
+                <h1>
+                    <a href="./index.html">{{.Title}}</a>
+                    {{- if .Version}}<span class="version">{{.Version}}</span>{{end}}
+                </h1>
 
-            <select id="groups">
-                {{- $currGroup := .GroupName -}}
-                {{- range $key, $val := .Groups -}}
-                <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
-                {{end}}
-            </select>
+                <select id="groups">
+                    {{- $currGroup := .GroupName -}}
+                    {{- range $key, $val := .Groups -}}
+                    <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
+                    {{end}}
+                </select>
+            </div>
 
-            <div class="fr filter">
+            <div class="filter">
                 <label><input type="checkbox" checked="checked" value="get">GET</label>
                 <label><input type="checkbox" checked="checked" value="post">POST</label>
                 <label><input type="checkbox" checked="checked" value="put">PUT</label>
@@ -467,6 +484,16 @@ var Templates=map[string]string{
                 内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date|dateFormat}}</time>，
                 用时{{.Elapsed}}。
             </p>
+
+            {{if .LicenseName}}
+            <p>
+                内容采用
+                {{ if .LicenseURL}}<a href="{{.LicenseURL}}">{{end}}
+                    {{- .LicenseName -}}
+                {{ if .LicenseURL}}</a>{{end}}
+                进行许可。
+            </p>
+            {{end}}
         </footer>
     </body>
 </html>
