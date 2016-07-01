@@ -52,7 +52,7 @@
 
         {{if .Error}}
         <div class="response error">
-            <h4><span class="error">ERROR:</span>{{.Success.Code}},&#160;{{.Success.Summary}}</h4>
+            <h4><span class="error">ERROR:</span>{{.Error.Code}},&#160;{{.Error.Summary}}</h4>
             {{template "response" .Error}}
         </div>
         {{end}}
