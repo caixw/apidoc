@@ -62,7 +62,13 @@ func main() {
 			app.Errorln(err)
 			return
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				app.Errorln(err)
+				return
+			}
+			app.Infoln("pprof 的相关参数已经写入到", profile)
+		}()
 
 		switch *pprofType {
 		case "mem":
@@ -153,8 +159,6 @@ func run() {
 }
 
 // 获取配置文件路径。目前只支持从工作路径获取。
-//
-// TODO 是否有必要通过从参数获取工具路径？
 func getConfigFile() (string, error) {
 	wd, err := os.Getwd()
 	if err != nil {
