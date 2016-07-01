@@ -17,7 +17,7 @@ const (
 	// 版本号
 	//
 	// 版本号按照 http://semver.org 中的规则
-	Version = "2.14.10+20160629"
+	Version = "2.14.12+20160701"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -51,6 +51,9 @@ const (
 	//
 	// NOTE: 不能包含 @ 符号。
 	Symbols = "!#$%&*+-=[]{};:"
+
+	// 输出的 profile 文件的名称
+	Profile = "apidoc.prof"
 )
 
 // Message 向终端输出不同颜色的提示信息

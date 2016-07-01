@@ -22,33 +22,94 @@ import (
 	"github.com/issue9/version"
 )
 
-const cpuProfile = true
-
 func main() {
-	if cpuProfile {
-		f, err := os.Create("./cpuprofile")
+	h := flag.Bool("h", false, "显示帮助信息")
+	v := flag.Bool("v", false, "显示版本信息")
+	l := flag.Bool("l", false, "显示所有支持的语言")
+	g := flag.Bool("g", false, "在当前目录下创建一个默认的配置文件")
+	pprofType := flag.String("pprof", "", "指定一种调试输出类型，可以为 cpu 或是 mem")
+	flag.Usage = usage
+	flag.Parse()
+
+	switch {
+	case *h:
+		flag.Usage()
+		return
+	case *v:
+		fmt.Fprintln(os.Stdout, app.Name, app.Version, "build with", runtime.Version())
+		return
+	case *l:
+		fmt.Fprintln(os.Stdout, "目前支持以下语言", input.Langs())
+		return
+	case *g:
+		path, err := getConfigFile()
 		if err != nil {
-			panic(err)
+			app.Errorln(err)
+			return
 		}
-		defer f.Close()
-
-		if err := pprof.StartCPUProfile(f); err != nil {
-			panic(err)
+		if err = genConfigFile(path); err != nil {
+			app.Errorln(err)
+			return
 		}
-
-		defer pprof.StopCPUProfile()
-	}
-
-	start := time.Now() // 记录处理开始时间
-
-	wd, err := os.Getwd()
-	if err != nil {
-		app.Errorln(err)
+		app.Infoln("配置内容成功写入", path)
 		return
 	}
-	path := filepath.Join(wd, app.ConfigFilename)
 
-	if flags(path) {
+	if len(*pprofType) > 0 {
+		profile := filepath.Join("./", app.Profile)
+		f, err := os.Create(profile)
+		if err != nil {
+			app.Errorln(err)
+			return
+		}
+		defer func() {
+			if err := f.Close(); err != nil {
+				app.Errorln(err)
+				return
+			}
+			app.Infoln("pprof 的相关参数已经写入到", profile)
+		}()
+
+		switch *pprofType {
+		case "mem":
+			defer func() {
+				if err = pprof.Lookup("heap").WriteTo(f, 1); err != nil {
+					app.Errorln(err)
+				}
+			}()
+		case "cpu":
+			if err := pprof.StartCPUProfile(f); err != nil {
+				app.Errorln(err)
+			}
+			defer pprof.StopCPUProfile()
+		default:
+			app.Errorln("无效的 pprof 参数")
+			return
+		}
+	}
+
+	run()
+}
+
+func usage() {
+	fmt.Fprintln(os.Stdout, app.Name, "是一个 RESTful API 文档生成工具。")
+
+	fmt.Fprintln(os.Stdout, "\n参数:")
+	flag.CommandLine.SetOutput(os.Stdout)
+	flag.PrintDefaults()
+
+	fmt.Fprintln(os.Stdout, "\n源代码采用 MIT 开源许可证，发布于", app.RepoURL)
+	fmt.Fprintln(os.Stdout, "详细信息可访问官网", app.OfficialURL)
+}
+
+// 真正的程序入口，main 主要是作为一个调试代码的处理。
+// path 指定了配置文件的地址
+func run() {
+	start := time.Now() // 记录处理开始时间
+
+	path, err := getConfigFile()
+	if err != nil {
+		app.Errorln(err)
 		return
 	}
 
@@ -74,12 +135,12 @@ func main() {
 	wg := &sync.WaitGroup{}
 	for _, opt := range cfg.Inputs {
 		wg.Add(1)
-		go func() {
-			if err := input.Parse(docs, opt); err != nil {
+		go func(o *input.Options) {
+			if err := input.Parse(docs, o); err != nil {
 				app.Errorln(err)
 			}
 			wg.Done()
-		}()
+		}(opt)
 	}
 	wg.Wait()
 
@@ -97,42 +158,11 @@ func main() {
 	app.Infoln("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
 }
 
-// 处理命令行参数，若被处理，返回 true，否则返回 false。
-// path 配置文件的路径。
-func flags(path string) bool {
-	out := os.Stdout
-
-	h := flag.Bool("h", false, "显示帮助信息")
-	v := flag.Bool("v", false, "显示版本信息")
-	l := flag.Bool("l", false, "显示所有支持的语言")
-	g := flag.Bool("g", false, "在当前目录下创建一个默认的配置文件")
-	flag.Usage = func() {
-		fmt.Fprintln(out, app.Name, "是一个 RESTful API 文档生成工具。")
-		fmt.Fprintln(out, "\n参数:")
-		flag.CommandLine.SetOutput(out)
-		flag.PrintDefaults()
-		fmt.Fprintln(out, "\n源代码采用 MIT 开源许可证，发布于", app.RepoURL)
-		fmt.Fprintln(out, "详细信息可访问官网", app.OfficialURL)
+// 获取配置文件路径。目前只支持从工作路径获取。
+func getConfigFile() (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
 	}
-	flag.Parse()
-
-	switch {
-	case *h:
-		flag.Usage()
-		return true
-	case *v:
-		fmt.Fprintln(out, app.Name, app.Version, "build with", runtime.Version())
-		return true
-	case *l:
-		fmt.Fprintln(out, "目前支持以下语言", input.Langs())
-		return true
-	case *g:
-		if err := genConfigFile(path); err != nil {
-			app.Errorln(err)
-			return true
-		}
-		app.Infoln("配置内容成功写入", path)
-		return true
-	}
-	return false
+	return filepath.Join(wd, app.ConfigFilename), nil
 }
