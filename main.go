@@ -22,9 +22,6 @@ import (
 	"github.com/issue9/version"
 )
 
-// 提示信息输出的通道。
-var out = os.Stdout
-
 func main() {
 	h := flag.Bool("h", false, "显示帮助信息")
 	v := flag.Bool("v", false, "显示版本信息")
@@ -39,10 +36,10 @@ func main() {
 		flag.Usage()
 		return
 	case *v:
-		fmt.Fprintln(out, app.Name, app.Version, "build with", runtime.Version())
+		fmt.Fprintln(os.Stdout, app.Name, app.Version, "build with", runtime.Version())
 		return
 	case *l:
-		fmt.Fprintln(out, "目前支持以下语言", input.Langs())
+		fmt.Fprintln(os.Stdout, "目前支持以下语言", input.Langs())
 		return
 	case *g:
 		path, err := getConfigFile()
@@ -69,15 +66,14 @@ func main() {
 
 		switch *pprofType {
 		case "mem":
-
 			defer func() {
 				if err = pprof.Lookup("heap").WriteTo(f, 1); err != nil {
-					panic(err)
+					app.Errorln(err)
 				}
 			}()
 		case "cpu":
 			if err := pprof.StartCPUProfile(f); err != nil {
-				panic(err)
+				app.Errorln(err)
 			}
 			defer pprof.StopCPUProfile()
 		default:
@@ -90,14 +86,14 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(out, app.Name, "是一个 RESTful API 文档生成工具。")
+	fmt.Fprintln(os.Stdout, app.Name, "是一个 RESTful API 文档生成工具。")
 
-	fmt.Fprintln(out, "\n参数:")
-	flag.CommandLine.SetOutput(out)
+	fmt.Fprintln(os.Stdout, "\n参数:")
+	flag.CommandLine.SetOutput(os.Stdout)
 	flag.PrintDefaults()
 
-	fmt.Fprintln(out, "\n源代码采用 MIT 开源许可证，发布于", app.RepoURL)
-	fmt.Fprintln(out, "详细信息可访问官网", app.OfficialURL)
+	fmt.Fprintln(os.Stdout, "\n源代码采用 MIT 开源许可证，发布于", app.RepoURL)
+	fmt.Fprintln(os.Stdout, "详细信息可访问官网", app.OfficialURL)
 }
 
 // 真正的程序入口，main 主要是作为一个调试代码的处理。
@@ -133,12 +129,12 @@ func run() {
 	wg := &sync.WaitGroup{}
 	for _, opt := range cfg.Inputs {
 		wg.Add(1)
-		go func() {
-			if err := input.Parse(docs, opt); err != nil {
+		go func(o *input.Options) {
+			if err := input.Parse(docs, o); err != nil {
 				app.Errorln(err)
 			}
 			wg.Done()
-		}()
+		}(opt)
 	}
 	wg.Wait()
 
