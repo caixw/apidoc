@@ -85,6 +85,14 @@ var langs = map[string][]*block{
 		&block{Type: blockTypeSComment, Begin: `//`},
 		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 	},
+
+	// swift
+	// NOTE: 不支持嵌套的块注释
+	"swift": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `//`},
+		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+	},
 }
 
 // 各语言默认支持的文件扩展名。
@@ -100,6 +108,7 @@ var langExts = map[string][]string{
 	"python":     []string{".py"},
 	"ruby":       []string{".rb"},
 	"rust":       []string{".rs"},
+	"swift":      []string{".swift"},
 }
 
 // 返回所有支持的语言

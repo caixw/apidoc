@@ -24,6 +24,7 @@ func TestParse(t *testing.T) {
 	testParse(a, "python")
 	testParse(a, "ruby")
 	testParse(a, "rust")
+	testParse(a, "swift")
 }
 
 func testParse(a *assert.Assertion, lang string) {
@@ -68,6 +69,7 @@ func TestParseFile(t *testing.T) {
 	testParseFile(a, "python", "./testdata/python/test1.py")
 	testParseFile(a, "ruby", "./testdata/ruby/test1.rb")
 	testParseFile(a, "rust", "./testdata/rust/test1.rs")
+	testParseFile(a, "swift", "./testdata/swift/test1.swift")
 }
 
 func testParseFile(a *assert.Assertion, lang, path string) {
