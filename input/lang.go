@@ -16,11 +16,7 @@ import (
 // NOTE: 应该保持键名为小写，按字母顺序排列，方便查找。
 var langs = map[string][]*block{
 	// c/c++
-	"cpp": []*block{
-		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-		&block{Type: blockTypeSComment, Begin: `//`},
-		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
-	},
+	"cpp": cStyle,
 
 	// golang
 	"go": []*block{
@@ -31,11 +27,7 @@ var langs = map[string][]*block{
 	},
 
 	// java
-	"java": []*block{
-		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-		&block{Type: blockTypeSComment, Begin: `//`},
-		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
-	},
+	"java": cStyle,
 
 	// javascript
 	"javascript": []*block{
@@ -78,21 +70,17 @@ var langs = map[string][]*block{
 	},
 
 	// rust
-	"rust": []*block{
-		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-		// &block{Type: blockTypeSComment, Begin: `//!`},
-		&block{Type: blockTypeSComment, Begin: `///`},
-		&block{Type: blockTypeSComment, Begin: `//`},
-		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
-	},
+	"rust": cStyle,
 
 	// swift
 	// NOTE: 不支持嵌套的块注释
-	"swift": []*block{
-		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-		&block{Type: blockTypeSComment, Begin: `//`},
-		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
-	},
+	"swift": cStyle,
+}
+
+var cStyle = []*block{
+	&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+	&block{Type: blockTypeSComment, Begin: `//`},
+	&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 }
 
 // 各语言默认支持的文件扩展名。
