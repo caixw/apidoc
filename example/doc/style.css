@@ -24,26 +24,30 @@ ul li{
     margin:.2rem 0rem;
 }
 
-.fl{
-    float:left;
-}
-
-.fr{
-    float:right;
-}
-
 /*=============== header ================*/
 
 header{
     color:#777;
     background-color:#fafafa;
     border:1px solid #eee;
-    padding:1rem 2.3rem;
-    left:0;
-    right:0;
+    padding:1rem;
+    top:0;
+    position:sticky; /* TODO: 暂时只有 Firefox 支持，其它浏览器通过 js 模拟 */
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-flow:row wrap;
+}
+
+.sticky{
     top:0;
     position:fixed;
+    box-sizing:border-box;
+    width:100%;
+}
 
+header .left{
+    flex:1 1 auto;
 }
 
 header h1{
@@ -61,17 +65,19 @@ header #groups{
 }
 
 header .filter{
-    margin-top:.8rem;
+    text-align:right;
+    flex:1 1 auto;
 }
+
 
 header .filter label{
     margin-left:1rem;
     vertical-align: bottom;
+    text-align:right;
 }
 
 .main{
-    padding:0rem 2rem;
-    margin-top:5.5rem;
+    padding:1rem;
 }
 
 /*=============== .api ================*/
@@ -85,6 +91,8 @@ header .filter label{
 .api h3{
     cursor:pointer;
     margin:0rem;
+    display:flex;
+    align-items:center;
 }
 
 .api h4{
@@ -102,7 +110,6 @@ header .filter label{
 .api h3 .method{
     width:5rem;
     font-weight:bold;
-    display:inline-block;
     text-transform:uppercase;
 }
 
@@ -127,7 +134,6 @@ header .filter label{
 }
 
 .api h3 .url{
-    display:inline-block;
     margin-right:2rem;
 }
 
@@ -174,7 +180,6 @@ footer{
     background-color:#fafafa;
     color:#777;
     padding:1rem;
-    margin-top:2rem;
 }
 
 footer p{

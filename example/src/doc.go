@@ -5,15 +5,17 @@
 package example
 
 // @apidoc api 示例文档
-// @apiVersion 2.13.3+20160627
+// @apiVersion 2.13.4+20160704
 // @apiBaseURL https://api.caixw.io
 // @apiLicense MIT https://opensources.org/licenses/MIT
 // @apiContent
-// 这是一份 API 接口文档的定义。
-// 所有内容均为示例内容，并无实际用途。
+//
+// 这是一份 apidoc 示例文档，对应的源码在 <a href="https://github.com/caixw/apidoc/tree/gh-pages/example/src">src</a> 目录下。
+//
 //
 // OPTIONS:
-// 所有的 API 均支持 OPTIONS 请求方法。支持方法通过报头的 Allow 返回。
+//
+// 所有的 API 均支持 OPTIONS 请求方法。该方法通过报头的 Allow 返回。
 //
 // 错误:
 // ...

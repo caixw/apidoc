@@ -16,15 +16,17 @@
     </head>
     <body>
         <header>
-            <h1>
-                <a href="./index.html">api 示例文档</a><span class="version">2.13.3&#43;20160627</span>
-            </h1>
+            <div class="left">
+                <h1>
+                    <a href="./index.html">api 示例文档</a><span class="version">2.13.4&#43;20160704</span>
+                </h1>
 
-            <select id="groups"><option selected="selected" value="index.html">index</option>
-                
-            </select>
+                <select id="groups"><option selected="selected" value="index.html">index</option>
+                    
+                </select>
+            </div>
 
-            <div class="fr filter">
+            <div class="filter">
                 <label><input type="checkbox" checked="checked" value="get">GET</label>
                 <label><input type="checkbox" checked="checked" value="post">POST</label>
                 <label><input type="checkbox" checked="checked" value="put">PUT</label>
@@ -34,9 +36,9 @@
             </div>
         </header>
         <div class="main"><article>
-        <br /> 这是一份 API 接口文档的定义。<br /> 所有内容均为示例内容，并无实际用途。<br /><br /> OPTIONS:<br /> 所有的 API 均支持 OPTIONS 请求方法。支持方法通过报头的 Allow 返回。<br /><br /> 错误:<br /> ...<br />
+        <br /><br /> 这是一份 apidoc 示例文档，对应的源码在 <a href="https://github.com/caixw/apidoc/tree/gh-pages/example/src">src</a> 目录下。<br /><br /><br /> OPTIONS:<br /><br /> 所有的 API 均支持 OPTIONS 请求方法。该方法通过报头的 Allow 返回。<br /><br /> 错误:<br /> ...<br />
     </article><section class="api">
-    <h3 class="title">
+    <h3>
         <span class="method post">post</span>
         <span class="url">/login</span>
         <span class="summary">用户登录</span>
@@ -113,13 +115,13 @@
 
         
         <div class="response error">
-            <h4><span class="error">ERROR:</span>201,&#160;成功登录</h4>
+            <h4><span class="error">ERROR:</span>401,&#160;账号密码验证错误</h4>
             
         </div>
         
     </div>
 </section><section class="api">
-    <h3 class="title">
+    <h3>
         <span class="method delete">delete</span>
         <span class="url">/login</span>
         <span class="summary">注销用户</span>
@@ -171,9 +173,17 @@
     </div>
         <footer>
             <p>
-                内容由 <a href="https://caixw.github.io/apidoc">apidoc</a> 编译于 <time>2016-07-01T21:08:39&#43;08:00</time>，
-                用时1.157513ms。
+                内容由 <a href="https://caixw.github.io/apidoc">apidoc</a> 编译于 <time>2016-07-04T22:33:08&#43;08:00</time>，
+                用时3.507543ms。
             </p>
+
+            
+            <p>
+                内容采用
+                <a href="https://opensources.org/licenses/MIT">MIT</a>
+                进行许可。
+            </p>
+            
         </footer>
     </body>
 </html>

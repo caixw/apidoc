@@ -3,12 +3,12 @@
     "inputs": [
         {
             "lang": "go",
-            "dir": "./src",
+            "dir": "./",
             "recursive": true
         }
     ],
     "output": {
-        "dir": "./doc",
+        "dir": "../doc",
         "type": "html"
     }
 }
