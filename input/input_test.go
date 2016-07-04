@@ -15,7 +15,7 @@ import (
 func TestParse(t *testing.T) {
 	a := assert.New(t)
 
-	testParse(a, "cpp")
+	testParse(a, "c++")
 	testParse(a, "go")
 	testParse(a, "java")
 	testParse(a, "javascript")
@@ -60,7 +60,7 @@ func testParse(a *assert.Assertion, lang string) {
 func TestParseFile(t *testing.T) {
 	a := assert.New(t)
 
-	testParseFile(a, "cpp", "./testdata/cpp/test1.c")
+	testParseFile(a, "c++", "./testdata/c++/test1.c")
 	testParseFile(a, "go", "./testdata/go/test1.go")
 	testParseFile(a, "java", "./testdata/java/test1.java")
 	testParseFile(a, "javascript", "./testdata/javascript/test1.js")
@@ -161,12 +161,12 @@ func TestOptions_Init(t *testing.T) {
 	a.Error(o.Init())
 
 	// 未指定扩展名，则使用系统默认的
-	o.Lang = "cpp"
+	o.Lang = "c++"
 	a.NotError(o.Init())
-	a.Equal(o.Exts, langExts["cpp"])
+	a.Equal(o.Exts, langExts["c++"])
 
 	// 指定了 Exts，自动调整扩展名样式。
-	o.Lang = "cpp"
+	o.Lang = "c++"
 	o.Exts = []string{"c1", ".c2"}
 	a.NotError(o.Init())
 	a.Equal(o.Exts, []string{".c1", ".c2"})

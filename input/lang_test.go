@@ -40,7 +40,7 @@ func TestDetectDirLang(t *testing.T) {
 	a := assert.New(t)
 
 	lang, err := DetectDirLang("./testdir")
-	a.NotError(err).Equal(lang, "cpp")
+	a.NotError(err).Equal(lang, "c++")
 
 	lang, err = DetectDirLang("./testdir/testdir1")
 	a.Error(err).Empty(lang)
@@ -49,9 +49,9 @@ func TestDetectDirLang(t *testing.T) {
 func TestGetLangByExt(t *testing.T) {
 	a := assert.New(t)
 
-	a.Equal(getLangByExt(".C"), "cpp")
-	a.Equal(getLangByExt(".h"), "cpp")
-	a.Equal(getLangByExt(".c"), "cpp")
+	a.Equal(getLangByExt(".C"), "c++")
+	a.Equal(getLangByExt(".h"), "c++")
+	a.Equal(getLangByExt(".c"), "c++")
 	a.Equal(getLangByExt(".php"), "php")
 
 	a.Equal(getLangByExt("php"), "")         // 扩展名不带.符号，查不到

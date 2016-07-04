@@ -15,8 +15,11 @@ import (
 //
 // NOTE: 应该保持键名为小写，按字母顺序排列，方便查找。
 var langs = map[string][]*block{
+	// C#
+	"c#": cStyle,
+
 	// c/c++
-	"cpp": cStyle,
+	"c++": cStyle,
 
 	// golang
 	"go": []*block{
@@ -87,7 +90,8 @@ var cStyle = []*block{
 //
 // NOTE: 应该保持键名、键值均为小写
 var langExts = map[string][]string{
-	"cpp":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
+	"c#":         []string{".cs"},
+	"c++":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
 	"go":         []string{".go"},
 	"java":       []string{".java"},
 	"javascript": []string{".js"},
