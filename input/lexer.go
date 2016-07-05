@@ -152,6 +152,7 @@ LOOP:
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
+// 会对每一行应用 filterSymbols 规则。
 func (b *block) endSComments(l *lexer) ([]rune, bool) {
 	// 跳过除换行符以外的所有空白字符。
 	skipSpace := func() {
@@ -165,15 +166,19 @@ func (b *block) endSComments(l *lexer) ([]rune, bool) {
 	} // end skipSpace
 
 	ret := make([]rune, 0, 1000)
+	line := make([]rune, 0, 100)
 	for {
 		for { // 读取一行的内容到 ret 变量中
 			r := l.next()
-			ret = append(ret, r)
+			line = append(line, r)
 
 			if l.atEOF() || r == '\n' {
 				break
 			}
 		}
+
+		ret = append(ret, filterSymbols(line)...)
+		line = line[:0]
 
 		skipSpace()            // 去掉新行的前导空格，若是存在的话。
 		if !l.match(b.Begin) { // 不是接连着的注释块了，结束当前的匹配
