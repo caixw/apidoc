@@ -1,6 +1,15 @@
 'use strict';
 
 $(document).ready(function(){
+    /* sticky */
+    if (!navigator.userAgent.match(/firefox/i)){
+        var header = $('header');
+        var top = header.offset().top;
+        $(document).on('scroll', function(e){
+            window.scrollY > top ? header.addClass('sticky') : header.removeClass('sticky');
+        });
+    }
+
     // 根据与页面顶部的距离，控制是否显示 top 按钮。
     $(window).on('scroll', function(){
         var button = $('#top');
