@@ -12,7 +12,7 @@ $(document).ready(function(){
     }).trigger('scroll'); // end $(window).onscroll
 
     // 滚动到顶部
-    $('#top').on('click', function(){
+    $('.goto-top').on('click', function(){
         var times = 20;
         var height = $('#top').offset().top;
         var offset = height / times;
