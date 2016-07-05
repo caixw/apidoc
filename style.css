@@ -50,6 +50,19 @@ footer .clearfix{
 }
 
 
+#top{
+    position: fixed;
+    right:2rem;
+    bottom:5rem;
+    color:black;
+}
+
+#top:hover{
+    text-decoration:none;
+    color:#699cc8;
+}
+
+
 
 code, pre{
     border:1px solid #eee;

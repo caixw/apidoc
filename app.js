@@ -1,6 +1,34 @@
 'use strict';
 
 $(document).ready(function(){
+    // 根据与页面顶部的距离，控制是否显示 top 按钮。
+    $(window).on('scroll', function(){
+        var button = $('#top');
+        if($(document).scrollTop() > 30){
+            button.fadeIn();
+        }else{
+            button.fadeOut();
+        }
+    }).trigger('scroll'); // end $(window).onscroll
+
+    // 滚动到顶部
+    $('#top').on('click', function(){
+        var times = 20;
+        var height = $('#top').offset().top;
+        var offset = height / times;
+
+        var tick = window.setInterval(function(){
+            height -= offset;
+            window.scrollTo(0, height);
+
+            if (height <= 0){
+                window.clearInterval(tick);
+            }
+        }, 10);
+
+        return false;
+    });
+
     /* 高亮和格式化代码块 */
     $('pre').each(function(index, elem){
         // 去多余的前导空格，由 data-indent 属性指定缩进多少个 tab
