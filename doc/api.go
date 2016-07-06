@@ -37,21 +37,6 @@ LOOP:
 	return nil
 }
 
-// 检测 api 的所有基本要素是否齐全。
-//
-// NOTE: scan* 系列函数负责解析标签，及该标签是否合法，
-// 但若整个标签缺失则无能为力，此即 checkAPI 的存在的作用。
-func checkAPI(api *API) *app.SyntaxError {
-	switch {
-	case len(api.URL) == 0 || len(api.Method) == 0:
-		return &app.SyntaxError{Message: "缺少必要的元素 @api"}
-	case api.Success == nil && api.Error == nil:
-		return &app.SyntaxError{Message: "@apiSuccess @apiError 必须得有一个"}
-	default:
-		return nil
-	}
-}
-
 // 解析 @apidoc 及其子标签
 //
 // @apidoc title of doc
@@ -183,8 +168,8 @@ LOOP:
 	if ignore {
 		return nil
 	}
-	if err := checkAPI(api); err != nil {
-		return err
+	if api.Success == nil && api.Error == nil {
+		return &app.SyntaxError{Message: "@apiSuccess @apiError 必须得有一个"}
 	}
 
 	if len(api.Group) == 0 {

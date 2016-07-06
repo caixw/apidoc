@@ -30,6 +30,9 @@ func TestLexer_lineNumber(t *testing.T) {
 
 	l.pos++
 	a.Equal(2, l.lineNumber())
+
+	l = newLexer([]rune(""))
+	a.Equal(0, l.lineNumber())
 }
 
 func TestLexer_match(t *testing.T) {
