@@ -64,7 +64,7 @@
                  * {"id":1, "name": "n1"}
                  */
                 </pre>
-                <p>多行注释中，每一行中以<code>空白字符+!#$%&amp;*+-=[];:{}(任意字符)+空白字符</code>开头的，这些字符将会被过滤。比如以上代码中，所有的 <code>*</code> 将被过滤。</p>
+                <p>多行注释中，每一行中以<code>空白字符+!#$%&amp;*+-=[];:{}(任意字符)+空白字符</code>开头的，这些字符将会被过滤。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
             </article>
 
             <!-- usage -->
@@ -162,21 +162,21 @@
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;type</td>
                                 <td>string</td>
-                                <td>渲染类型，目前支持 html、html+ 和 json 三种类型</td>
+                                <td>渲染类型，目前支持 <var>html</var>、<var>html+</var> 和 <var>json</var> 三种类型</td>
                             </tr>
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;template</td>
                                 <td>string</td>
-                                <td>模板所在路径，当渲染类型为 html 或 html+ 时可用。</td>
+                                <td>模板所在路径，当渲染类型为 <var>html</var> 或 <var>html+</var> 时可用。</td>
                             </tr>
                             <tr>
                                 <td>&#160;&#160;&#160;&#160;port</td>
                                 <td>string</td>
-                                <td>指定一个访问端口，当渲染类型为 html+ 时，必须指定此值。</td>
+                                <td>指定一个访问端口，当渲染类型为 <var>html+</var> 时，必须指定此值。</td>
                             </tr>
                         </tbody>
                     </table>
-                    <p>inputs 为一个对象数组，每个数组元素可以指定一个独立项目。不过不支持同一项目下多语言的解析。</p>
+                    <p><var>inputs</var> 为一个对象数组，每个数组元素可以指定一个独立项目。不过不支持同一项目下多语言的解析。</p>
                 </section>
 
                 <section>
@@ -186,9 +186,9 @@
 
                 <section>
                     <h3>自定义模板</h3>
-                    <p>在输出类型为 html 时，可以通过在配置文件 .apidoc.json 中的 template 参数指定自定义模板，只会分析模板当前目录下的 <code>*.html</code> 文件，其它文件将被忽略。</p>
-                    <p>模板格式采用的是 Go 标准库的 <a href="https://godoc.org/html/template">html/template</a>，系统会调用 <code>group</code> 和 <code>index</code> 两个子模板，具体的可用数据可参考源码目录下的 <a href="https://github.com/caixw/apidoc/tree/master/output/static">output/static</a> 下的模板。</p>
-                    <p>html+ 为 html 的增强模式，在该模式下不会输出任何文件内容，而是可以直接在浏览器访问相关页面，方便调试模板页面。</p>
+                    <p>在输出类型为 <var>html</var> 时，可以通过在配置文件 <samp>.apidoc.json</samp> 中的 <var>template</var> 参数指定自定义模板，只会分析模板当前目录下的 <samp>*.html</samp> 文件，其它文件将被忽略。</p>
+                    <p>模板格式采用的是 Go 标准库的 <a href="https://godoc.org/html/template">html/template</a>，系统会调用 <var>group</var> 和 <var>index</var> 两个子模板，具体的可用数据可参考源码目录下的 <a href="https://github.com/caixw/apidoc/tree/master/output/static">output/static</a> 下的模板。</p>
+                    <p><var>html+</var> 为 <var>html</var> 的增强模式，在该模式下不会输出任何文件内容，而是可以直接在浏览器访问相关页面，方便调试模板页面。</p>
                 </section>
             </article>
 
@@ -503,7 +503,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>type</td><td>true</td><td>示例代码的语言类型，默认模板调用<a href="//prismjs.com">prismjs</a>为示例代码着色</td>
+                                <td>type</td><td>true</td><td>示例代码的语言类型，默认模板调用 <a href="//prismjs.com">prismjs</a> 为示例代码着色</td>
                             </tr>
                         </tbody>
                     </table>
@@ -598,7 +598,7 @@
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a>，<a href="https://github.com/caixw/apidoc/issues/new">纠正内容错误</a>
                     </p>
-                    <p>更新于 <time itemprop="datePublished" datetime="2016-07-05T23:07:17+0800">2016-07-05T23:07:17+0800</time></p>
+                    <p>更新于 <time itemprop="datePublished" datetime="2016-07-06T22:41:48+0800">2016-07-06T22:41:48+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
