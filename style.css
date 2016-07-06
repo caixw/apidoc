@@ -1,3 +1,7 @@
+.clearfix{
+    clear:both;
+}
+
 header{
     padding:.5rem;
     background:white;
@@ -32,7 +36,6 @@ footer{
     padding:1rem;
     margin-top:2rem;
     border-top:1px solid #eee;
-    background:white;
 }
 
 footer p{
@@ -50,16 +53,12 @@ footer .right{
     float:right;
 }
 
-footer .clearfix{
-    clear:both;
-}
 
 
 #top{
     position: fixed;
     right:2rem;
     bottom:5rem;
-    color:black;
 }
 
 #top:hover{
@@ -99,7 +98,6 @@ pre .bool{
     padding:0rem;
     margin:1.2rem 0rem .5rem 0rem;
 }
-
 
 @media (max-width:560px){
     footer .right{
