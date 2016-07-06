@@ -32,7 +32,7 @@
         <header>
             <div class="ui container">
                 <h1 class="ui text menu left floated">
-                    <a class="item goto-top" href="#">APIDOC<sub class="version">2.14</sub></a>
+                    <a class="item goto-top" href="#">APIDOC<sub class="version">2.15</sub></a>
                 </h1>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
@@ -64,7 +64,7 @@
                  * {"id":1, "name": "n1"}
                  */
                 </pre>
-                <p>多行注释中，每一行中以<code>空白字符+!#$%&amp;*+-=[];:{}(任意字符)+空白字符</code>开头的，这些字符将会被过滤。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
+                <p>多行注释中，每一行中以<code>空白字符+symbol+空白字符</code>开头的，这些字符将会被过滤，symbol 表示该注释块的起始字符中的任意字符。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
             </article>
 
             <!-- usage -->
@@ -320,6 +320,15 @@
                 <!-- @api -->
                 <section id="api">
                     <h3>@api</h3>
+                    <p>指定一个 api 文档的内容，这是除 <a href="#apidoc">@apidoc</a> 之外的另一顶级标签。子标签包括：
+                        <a href="@apigroup">@apiGroup</a>、
+                        <a href="@apiignore">@apiIgnore</a>、
+                        <a href="@apiquery">@apiQuery</a>、
+                        <a href="@apiparam">@apiParam</a>、
+                        <a href="@apirequest">@apiRequest</a>、
+                        <a href="@apisuccess">@apiSuccess</a> 和
+                        <a href="@apierror">@apiError</a>
+                    </p>
                     <p>语法:<code>@api method url summary [\n detail]</code></p>
                     <table class="ui very compact table">
                         <thead>
@@ -354,14 +363,14 @@
                 <!-- @apiIgnore -->
                 <section id="apiignore">
                     <h3>@apiIgnore</h3>
-                    <p>凡是带此标签的代码块，表示该文档暂时被忽略。</p>
+                    <p>凡是带此标签的代码块，表示该文档暂时被忽略。父标签：<a href="@api">@api</a>。</p>
                     <p>语法：<code>@apiIgnore</code></p>
                 </section>
 
                 <!-- @apiGroup -->
                 <section id="apigroup">
                     <h3>@apiGroup</h3>
-                    <p>@apiGroup 提供了对 api 的分组信息，不同的分组，最终可能会被呈现在不同的页面。</p>
+                    <p>@apiGroup 提供了对 api 的分组信息，不同的分组，最终可能会被呈现在不同的页面。父标签：<a href="@api">@api</a>。</p>
                     <p>若要将文档显示在首页，则不需要指定此标签或是指定为 <var>index</var>。</p>
                     <p>语法：<code>@apiGroup name</code></p>
                     <table class="ui vry compact table">
@@ -379,7 +388,7 @@
                 <!-- apiQuery -->
                 <section id="apiquery">
                     <h3>@apiQuery</h3>
-                    <p>@apiQuery 描述 api 的查询参数。父标签：<a href="#api">@api</a></p>
+                    <p>@apiQuery 描述 api 的查询参数。父标签：<a href="#api">@api</a>。</p>
                     <p>语法：<code>@apiQuery name type summary</code></p>
                     <table class="ui very compact table">
                         <thead>
@@ -446,7 +455,7 @@
                         <a href="#api">@api</a>、
                         <a href="#apirequest">@apiRequest</a>、
                         <a href="#apisuccess">@apiSuccess</a> 和
-                        <a href="#apierror">@apiError</a>
+                        <a href="#apierror">@apiError</a>。
                     </p>
                     <p>语法：<code>@apiParam name type summary</code></p>
                     <table class="ui very compact table">
@@ -498,7 +507,7 @@
                     <p>指定示例代码。父标签：
                         <a href="#apirequest">@apiRequest</a>、
                         <a href="#apisuccess">@apiSuccess</a> 和
-                        <a href="##apierror">@apiError</a>
+                        <a href="##apierror">@apiError</a>。
                     </p>
                     <p>语法：<code>@apiExample type</code></p>
                     <table class="ui very compact table">
@@ -525,7 +534,7 @@
                     <p>@apiRequest 描述了所有的请求该包含的内容，其本身可包含
                         <a href="#apiheader">@apiHeader</a>、
                         <a href="#aipexample">@apiExample</a> 和
-                        <a href="#apiparam">@apiParam</a> 三个子标签。</p>
+                        <a href="#apiparam">@apiParam</a> 三个子标签。父标签：<a href="@api">@api</a>。</p>
                     <p>语法：<code>@apiRequest type</code></p>
                     <table class="ui very compact table">
                         <thead>
@@ -555,7 +564,7 @@
                     <p>@apiSuccess 描述了成功响应时包含的内容，其本身可包含
                         <a href="#apiheader">@apiHeader</a>、
                         <a href="#apiexample">@apiExample</a> 和
-                        <a href="#apiparam">@apiParam</a> 三个子标签。</p>
+                        <a href="#apiparam">@apiParam</a> 三个子标签。父标签：<a href="@api">@api</a>。</p>
                     <p>语法：<code>@apiSuccess status summary</code></p>
                     <table class="ui very compact table">
                         <thead>
@@ -602,7 +611,7 @@
                 <div class="right">
                     <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a>，<a href="https://github.com/caixw/apidoc/issues/new">纠正内容错误</a>
                     </p>
-                    <p>更新于 <time itemprop="datePublished" datetime="2016-07-06T22:41:48+0800">2016-07-06T22:41:48+0800</time></p>
+                    <p>更新于 <time itemprop="datePublished" datetime="2016-07-07T01:41:45+0800">2016-07-07T01:41:45+0800</time></p>
                 </div>
             </div>
             <div class="clearfix"></div>
