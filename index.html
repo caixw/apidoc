@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         <title>apidoc - RESTful API 文档生成工具</title>
-        <meta property="og:title" content="apidoc - RESTful API 文档生成工具"/>
+        <meta property="og:title" content="apidoc - RESTful API 文档生成工具" />
 
         <meta property="og:site_name" content="APIDOC"/>
         <meta itemprop="name" content="APIDOC" />
@@ -28,7 +28,7 @@
         <script src="./app.js"></script>
     </head>
 
-    <body id="body">
+    <body>
         <header>
             <div class="ui container">
                 <h1 class="ui text menu left floated">
@@ -57,7 +57,7 @@
                 /**
                  * @api get /users/:id 获取指定用户的相关信息
                  * @apiGroup users
-                 * @apiParam id int 表示用户id的唯一值
+                 * @apiParam id int 表示用户 id 的唯一值
                  *
                  * @apiSuccess 200 json ok
                  * @apiExample
@@ -89,7 +89,7 @@
                             <tr><td>-v</td><td>显示版本信息</td></tr>
                             <tr><td>-l</td><td>列出当前支持的语言</td></tr>
                             <tr><td>-g</td><td>在当前目录下创建配置文件模板</td></tr>
-                            <tr><td>-pprof</td><td>指定个性能测试项，目前支持 cpu 和 mem 两个选项</td></tr>
+                            <tr><td>-pprof</td><td>指定个性能测试项，目前支持 <var>cpu</var> 和 <var>mem</var> 两个选项</td></tr>
                         </tbody>
                     </table>
                 </section>
@@ -195,6 +195,10 @@
             <!-- docs -->
             <article class="ui stacked segment" id="docs">
                 <h2 class="ui header">文档</h2>
+
+                <section>
+                    <p>在 apidoc 中，标签存在一定的从属关系，下文中均会注明所有标签的父标或及子标签。判断一个标签属于哪个父标签，只需要根据当前标签往前查找，直到找到可作为该标签的父标签的标签即可。</p>
+                </section>
 
                 <!-- @apidoc -->
                 <section id="apidoc">
@@ -307,7 +311,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>content</td><td>true</td><td>多行字符串，一直到文档结尾，换行符会被转换成 &lt;br&gt;，其它内容原样输出</td>
+                                <td>content</td><td>true</td><td>多行字符串，一直到文档结尾，换行符会被转换成 <var>&lt;br&gt;</var>，其它内容原样输出</td>
                             </tr>
                         </tbody>
                     </table>
@@ -334,7 +338,7 @@
                             <tr>
                                 <td>detail</td>
                                 <td>false</td>
-                                <td>api 的详细信息，可以多行，直到碰到以 <code>@api</code> 开头的行</td>
+                                <td>api 的详细信息，可以多行，直到碰到以 <strong>@api</strong> 开头的行</td>
                             </tr>
                         </tbody>
                     </table>
@@ -582,7 +586,7 @@
 
                 <section id="apierror">
                     <h3>@apiError</h3>
-                    <p>@apiError 结构与 @apiSuccess 完全相同，只是一个用于描述错误时的返回，一个用于描述成功时的返回信息。</p>
+                    <p>@apiError 结构与 <a href="#apisuccess">@apiSuccess</a> 完全相同，只是一个用于描述错误时的返回，一个用于描述成功时的返回信息。</p>
                 </section>
 
             </article>
