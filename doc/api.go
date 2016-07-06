@@ -15,60 +15,25 @@ import (
 // block 该代码块的内容；
 func (d *Doc) Scan(data []rune) *app.SyntaxError {
 	l := newLexer(data)
-	api := &API{}
 
-	var err *app.SyntaxError
 LOOP:
 	for {
 		switch {
 		case l.matchTag("@apidoc"):
 			return l.scanAPIDoc(d)
-		case l.matchTag("@apiIgnore"):
-			return nil
-		case l.matchTag("@apiGroup"):
-			err = l.scanGroup(api)
-		case l.matchTag("@apiQuery"):
-			err = l.scanAPIQueries(api)
-		case l.matchTag("@apiParam"):
-			err = l.scanAPIParams(api)
-		case l.matchTag("@apiRequest"):
-			err = l.scanAPIRequest(api)
-		case l.matchTag("@apiError"):
-			api.Error, err = l.scanResponse()
-		case l.matchTag("@apiSuccess"):
-			api.Success, err = l.scanResponse()
 		case l.matchTag("@api"):
-			err = l.scanAPI(api)
+			return l.scanAPI(d)
 		case l.match("@api"): // 不认识标签
-			err = l.syntaxError("不认识的标签" + l.readWord())
+			l.backup()
+			return l.syntaxError("不认识的顶层标签" + l.readWord())
 		default:
 			if l.atEOF() {
 				break LOOP
 			}
 			l.pos++ // 去掉无用的字符。
 		}
-
-		if err != nil {
-			return err
-		}
 	} // end for
 
-	// 所有字段都为空，说明这段注释中没有任何标签可解析，将其判断为
-	// 普通的注释代码，可以忽略。
-	if apiIsEmpty(api) {
-		return nil
-	}
-	if err := checkAPI(api); err != nil {
-		return err
-	}
-
-	if len(api.Group) == 0 {
-		api.Group = app.DefaultGroupName
-	}
-
-	d.mux.Lock()
-	d.Apis = append(d.Apis, api)
-	d.mux.Unlock()
 	return nil
 }
 
@@ -159,6 +124,8 @@ LOOP:
 			}
 		case l.matchTag("@apiContent"):
 			d.Content = string(l.data[l.pos:])
+		case l.match("@api"):
+			return l.syntaxError("不认识的标签" + l.readWord())
 		default:
 			if l.atEOF() {
 				break LOOP
@@ -355,7 +322,8 @@ func (l *lexer) scanAPIParam() (*Param, *app.SyntaxError) {
 //  @api get /test.com/api/user.json api summary
 //  api description
 //  api description
-func (l *lexer) scanAPI(api *API) *app.SyntaxError {
+func (l *lexer) scanAPI(d *Doc) (err *app.SyntaxError) {
+	api := &API{}
 	t := l.readTag()
 	api.Method = t.readWord()
 	api.URL = t.readWord()
@@ -367,5 +335,52 @@ func (l *lexer) scanAPI(api *API) *app.SyntaxError {
 
 	api.Description = t.readEnd()
 
+	ignore := false
+LOOP:
+	for {
+		switch {
+		case l.matchTag("@apiIgnore"):
+			ignore = true
+			break LOOP
+		case l.matchTag("@apiGroup"):
+			err = l.scanGroup(api)
+		case l.matchTag("@apiQuery"):
+			err = l.scanAPIQueries(api)
+		case l.matchTag("@apiParam"):
+			err = l.scanAPIParams(api)
+		case l.matchTag("@apiRequest"):
+			err = l.scanAPIRequest(api)
+		case l.matchTag("@apiError"):
+			api.Error, err = l.scanResponse()
+		case l.matchTag("@apiSuccess"):
+			api.Success, err = l.scanResponse()
+		case l.match("@api"): // 不认识的标签，抛给外层解决
+			return l.syntaxError("不认识的标签" + l.readWord())
+		default:
+			if l.atEOF() {
+				break LOOP
+			}
+			l.pos++ // 去掉无用的字符。
+		}
+
+		if err != nil {
+			return err
+		}
+	}
+
+	if ignore {
+		return nil
+	}
+	if err := checkAPI(api); err != nil {
+		return err
+	}
+
+	if len(api.Group) == 0 {
+		api.Group = app.DefaultGroupName
+	}
+
+	d.mux.Lock()
+	d.Apis = append(d.Apis, api)
+	d.mux.Unlock()
 	return nil
 }

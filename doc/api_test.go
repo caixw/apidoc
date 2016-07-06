@@ -71,35 +71,40 @@ func TestScanAPIParam(t *testing.T) {
 
 func TestScanAPI(t *testing.T) {
 	a := assert.New(t)
-	api := &API{}
+	d := &Doc{Apis: []*API{}}
 
 	// 正常情况
-	l := newLexer([]rune(" get test.com/api.json?k=1 summary summary\n api description"))
-	a.NotError(l.scanAPI(api))
+	l := newLexer([]rune(" get test.com/api.json?k=1 summary summary\n api description\n@apiSuccess 200 OK"))
+
+	a.NotError(l.scanAPI(d))
+	api := d.Apis[0]
 	a.Equal(api.Method, "get").
 		Equal(api.URL, "test.com/api.json?k=1").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "api description")
 
 	// 多行description
-	l = newLexer([]rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@api summary"))
-	a.NotError(l.scanAPI(api))
+	l = newLexer([]rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@apiError 400 summary"))
+	a.NotError(l.scanAPI(d))
+	api = d.Apis[1]
 	a.Equal(api.URL, "test.com/api.json?K=1").
 		Equal(api.Method, "post").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "api \ndescription")
 
 	// 缺少description参数
-	l = newLexer([]rune("get test.com/api.json summary summary"))
-	a.NotError(l.scanAPI(api))
+	l = newLexer([]rune("get test.com/api.json summary summary \n@apiError 400 error"))
+	a.NotError(l.scanAPI(d))
+	api = d.Apis[2]
 	a.Equal(api.Method, "get").
 		Equal(api.URL, "test.com/api.json").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "")
 
 	// 缺少description参数
-	l = newLexer([]rune("get test.com/api.json summary summary\n@apiURL"))
-	a.NotError(l.scanAPI(api))
+	l = newLexer([]rune("get test.com/api.json summary summary\n \n@apiError 400 error"))
+	a.NotError(l.scanAPI(d))
+	api = d.Apis[3]
 	a.Equal(api.Method, "get").
 		Equal(api.URL, "test.com/api.json").
 		Equal(api.Summary, "summary summary").
@@ -107,7 +112,7 @@ func TestScanAPI(t *testing.T) {
 
 	// 没有任何参数
 	l = newLexer([]rune("  "))
-	a.ErrorType(l.scanAPI(api), synerr)
+	a.ErrorType(l.scanAPI(d), synerr)
 }
 
 func TestScanAPIDoc(t *testing.T) {
@@ -185,7 +190,11 @@ func TestScanAPIRequest(t *testing.T) {
 		Equal(r.Params[0].Name, "p1").
 		Equal(r.Params[1].Summary, "p2 summary").
 		Equal(r.Examples[0].Type, "json").
-		Equal(r.Examples[1].Type, "xml")
+		Equal(r.Examples[1].Type, "xml").
+		Equal(r.Examples[1].Code, `<root>
+    <p1>v1</p1>
+    <p2>v2</p2>
+</root>`)
 
 	code = ` xml
 @apiHeader h1 v1
@@ -353,6 +362,7 @@ license that can be found in the LICENSE file.
 @api delete /admin/users/{id} delete users
 @apiGroup
 @apiParam id int user id
+@apiError 400 error
 `
 	l = len(doc1.Apis)
 	a.ErrorType(doc1.Scan([]rune(code)), synerr) // @apiGroup 少参数
@@ -362,6 +372,7 @@ license that can be found in the LICENSE file.
 @api delete /admin/users/{id} delete users
 @apiIgnore
 @apiParam id int user id
+@apiError 400 error
 `
 	l = len(doc1.Apis)
 	err = doc1.Scan([]rune(code))
