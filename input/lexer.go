@@ -166,19 +166,15 @@ func (b *block) endSComments(l *lexer) ([]rune, bool) {
 	} // end skipSpace
 
 	ret := make([]rune, 0, 1000)
-	line := make([]rune, 0, 100)
 	for {
 		for { // 读取一行的内容到 ret 变量中
 			r := l.next()
-			line = append(line, r)
+			ret = append(ret, r)
 
 			if l.atEOF() || r == '\n' {
 				break
 			}
 		}
-
-		ret = append(ret, filterSymbols(line)...)
-		line = line[:0]
 
 		skipSpace()            // 去掉新行的前导空格，若是存在的话。
 		if !l.match(b.Begin) { // 不是接连着的注释块了，结束当前的匹配
@@ -205,13 +201,13 @@ LOOP:
 		case l.atEOF():
 			return nil, false
 		case l.match(b.End):
-			lines = append(lines, filterSymbols(line))
+			lines = append(lines, b.filterSymbols(line))
 			break LOOP
 		default:
 			r := l.next()
 			line = append(line, r)
 			if r == '\n' {
-				lines = append(lines, filterSymbols(line))
+				lines = append(lines, b.filterSymbols(line))
 				line = make([]rune, 0, 100)
 			}
 		}
@@ -225,21 +221,23 @@ LOOP:
 }
 
 // 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。
-// symbol 为全局变量 app.Symbols 中定义的任意字符。
-func filterSymbols(line []rune) []rune {
+// symbol 为 b.Begin 中的任意字符。
+func (b *block) filterSymbols(line []rune) []rune {
 	for k, v := range line {
 		if unicode.IsSpace(v) { // 跳过行首的空格
 			continue
 		}
 
 		// 不存在指定的符号，直接返回原数据
-		if strings.IndexRune(app.Symbols, v) < 0 {
+		if strings.IndexRune(b.Begin, v) < 0 {
 			return line
 		}
 
 		// 若下个字符正好是是空格
 		if len(line) > k+1 && unicode.IsSpace(line[k+1]) {
 			return line[k+2:]
+		} else {
+			return line
 		}
 	}
 

@@ -5,7 +5,6 @@
 package app
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -19,7 +18,6 @@ func TestConsts(t *testing.T) {
 
 	a.True(is.URL(RepoURL))
 	a.True(is.URL(OfficialURL))
-	a.True(strings.IndexRune(Symbols, '@') < 0)
 
 	a.True(version.SemVerValid(Version))
 }
