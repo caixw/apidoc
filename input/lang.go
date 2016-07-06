@@ -73,7 +73,12 @@ var langs = map[string][]*block{
 	},
 
 	// rust
-	"rust": cStyle,
+	"rust": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `///`}, // 需要在 // 之前定义
+		&block{Type: blockTypeSComment, Begin: `//`},
+		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+	},
 
 	// swift
 	// NOTE: 不支持嵌套的块注释
