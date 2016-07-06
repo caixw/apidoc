@@ -202,7 +202,7 @@
                     <p>@apidoc 用于指定一些全局性的设定，本身带一个标题属性，整个文档中只能出现一次。子元素有：
                         <a herf="#apiversion">@apiVersion</a>、
                         <a herf="#apibaseurl">@apiBaseURL</a>、
-                        <a herf="#apilicense">@apilicense</a>和
+                        <a herf="#apilicense">@apiLicense</a>和
                         <a herf="#apicontent">@apiContent</a>
                     </p>
                     <p>语法:<code>@apidoc title</code></p>
@@ -307,7 +307,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>content</td><td>true</td><td>多行字符串，一直到文档结尾</td>
+                                <td>content</td><td>true</td><td>多行字符串，一直到文档结尾，换行符会被转换成 &lt;br&gt;，其它内容原样输出</td>
                             </tr>
                         </tbody>
                     </table>
@@ -496,7 +496,17 @@
                         <a href="#apisuccess">@apiSuccess</a> 和
                         <a href="##apierror">@apiError</a>
                     </p>
-                    <p>语法：<code>@apiExample type</code>type 表示请求体的格式，可是以 json，xml。</p>
+                    <p>语法：<code>@apiExample type</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>type</td><td>true</td><td>示例代码的语言类型，默认模板调用<a href="//prismjs.com">prismjs</a>为示例代码着色</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <p>示例：</p>
                     <pre data-indent="5">
                     /**
@@ -512,7 +522,17 @@
                         <a href="#apiheader">@apiHeader</a>、
                         <a href="#aipexample">@apiExample</a> 和
                         <a href="#apiparam">@apiParam</a> 三个子标签。</p>
-                    <p>语法：<code>@apiRequest type</code>，type 表示请求体的格式，可是以 json，xml。</p>
+                    <p>语法：<code>@apiRequest type</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>type</td><td>true</td><td>请求的数据类型</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <p>示例：</p>
                     <pre data-indent="5">
                     /**
