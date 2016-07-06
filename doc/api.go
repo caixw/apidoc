@@ -37,20 +37,6 @@ LOOP:
 	return nil
 }
 
-// 检测变量 api 是否为空值。
-func apiIsEmpty(api *API) bool {
-	return api == nil || (len(api.Method) == 0 &&
-		len(api.URL) == 0 &&
-		len(api.Summary) == 0 &&
-		len(api.Description) == 0 &&
-		len(api.Group) == 0 &&
-		len(api.Queries) == 0 &&
-		len(api.Params) == 0 &&
-		api.Request == nil &&
-		api.Success == nil &&
-		api.Error == nil)
-}
-
 // 检测 api 的所有基本要素是否齐全。
 //
 // NOTE: scan* 系列函数负责解析标签，及该标签是否合法，
