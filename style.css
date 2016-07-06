@@ -4,7 +4,7 @@
 
 header{
     padding:.5rem;
-    background:white;
+    background:inherit;
     border-bottom:1px solid #eee;
     position:sticky; /* TODO: 暂时只有 Firefox 支持，其它浏览器通过 js 模拟 */;
     z-index:10;

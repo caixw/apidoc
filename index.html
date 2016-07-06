@@ -358,7 +358,7 @@
                 <section id="apigroup">
                     <h3>@apiGroup</h3>
                     <p>@apiGroup 提供了对 api 的分组信息，不同的分组，最终可能会被呈现在不同的页面。</p>
-                    <p>若要将文档显示在首页，则不需要指定此标签或是指定为 index。</p>
+                    <p>若要将文档显示在首页，则不需要指定此标签或是指定为 <var>index</var>。</p>
                     <p>语法：<code>@apiGroup name</code></p>
                     <table class="ui vry compact table">
                         <thead>
@@ -465,12 +465,12 @@
                     <pre data-indent="5">
                     /**
                      * @api get /users/{id} 获取所有的用户信息。
-                     * @apiParam id int 用户id
+                     * @apiParam id int 用户 id
                      *
                      * @apiSuccess 200 OK
-                     * @apiParam id    int    用户id
+                     * @apiParam id    int    用户 id
                      * @apiParam name  string 用户名称
-                     * @apiParam group id     用户所属组id
+                     * @apiParam group id     用户所属组 id
                      */
                     </pre>
                     <p>示例-2：</p>
