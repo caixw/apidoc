@@ -23,6 +23,7 @@ import (
 	"github.com/issue9/utils"
 )
 
+// Options 指定输入内容的相关信息。
 type Options struct {
 	SyntaxLog *log.Logger `json:"-"`              // 语法错误输出通道
 	Lang      string      `json:"lang"`           // 输入的目标语言

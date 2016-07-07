@@ -17,7 +17,7 @@ $(document).ready(function(){
         $(elem).html(text);
     });
 
-    // 隐藏不当前页面用不到的过滤器
+    // 隐藏当前页面用不到的过滤器
     $('header .filter input').each(function(index, elem){
         var val = $(elem).val();
         if ($('.main .api .method.'+val).length == 0) {

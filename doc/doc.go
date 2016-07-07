@@ -58,9 +58,9 @@ type Param struct {
 	Summary string `json:"summary"` // 参数介绍
 }
 
-// Example 示例代码
+// Example 表示示例代码
 type Example struct {
-	Type string `json:"type"` // 示例代码的类型，xml 或是 json
+	Type string `json:"type"` // 示例代码的语言类型
 	Code string `json:"code"` // 示例代码
 }
 

@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/pprof"
+	"strings"
 	"sync"
 	"time"
 
@@ -55,6 +56,7 @@ func main() {
 		return
 	}
 
+	// 指定了 pprof 参数
 	if len(*pprofType) > 0 {
 		profile := filepath.Join("./", app.Profile)
 		f, err := os.Create(profile)
@@ -70,7 +72,7 @@ func main() {
 			app.Infoln("pprof 的相关参数已经写入到", profile)
 		}()
 
-		switch *pprofType {
+		switch strings.ToLower(*pprofType) {
 		case "mem":
 			defer func() {
 				if err = pprof.Lookup("heap").WriteTo(f, 1); err != nil {
@@ -102,10 +104,9 @@ func usage() {
 	fmt.Fprintln(os.Stdout, "详细信息可访问官网", app.OfficialURL)
 }
 
-// 真正的程序入口，main 主要是作为一个调试代码的处理。
-// path 指定了配置文件的地址
+// 真正的程序入口，main 主要是作参数的处理。
 func run() {
-	start := time.Now() // 记录处理开始时间
+	start := time.Now()
 
 	path, err := getConfigFile()
 	if err != nil {
@@ -164,5 +165,6 @@ func getConfigFile() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return filepath.Join(wd, app.ConfigFilename), nil
 }
