@@ -204,10 +204,10 @@
                 <section id="apidoc">
                     <h3>@apidoc</h3>
                     <p>@apidoc 用于指定一些全局性的设定，本身带一个标题属性，整个文档中只能出现一次。子元素有：
-                        <a herf="#apiversion">@apiVersion</a>、
-                        <a herf="#apibaseurl">@apiBaseURL</a>、
-                        <a herf="#apilicense">@apiLicense</a>和
-                        <a herf="#apicontent">@apiContent</a>
+                        <a href="#apiversion">@apiVersion</a>、
+                        <a href="#apibaseurl">@apiBaseURL</a>、
+                        <a href="#apilicense">@apiLicense</a> 和
+                        <a href="#apicontent">@apiContent</a>。
                     </p>
                     <p>语法:<code>@apidoc title</code></p>
                     <table class="ui very compact table">
@@ -240,7 +240,7 @@
                 <section id="apiversion">
                     <h3>@apiVerson</h3>
                     <p>用于指定文档的版本号。父标签：<a href="#apidoc">@apidoc</a></p>
-                    <p>语法:<code>@apiVersion version</code></p>
+                    <p>语法:<code>@apiVersion version</code>。</p>
                     <table class="ui very compact table">
                         <thead>
                             <tr>
@@ -260,7 +260,7 @@
                 <!-- @apiBaseURL -->
                 <section id="apibaseurl">
                     <h3>@apiBaseURL</h3>
-                    <p>用于指定文档所有地址的一个公共前缀。父标签：<a href="#apidoc">@apidoc</a></p>
+                    <p>用于指定文档所有地址的一个公共前缀。父标签：<a href="#apidoc">@apidoc</a>。</p>
                     <p>语法:<code>@apiBaseURL url</code></p>
                     <table class="ui very compact table">
                         <thead>
@@ -301,7 +301,7 @@
                 <!-- @apiContent -->
                 <section id="apicontent">
                     <h3>@apiContent</h3>
-                    <p>文档首页的一些介绍性内容，该内容将会被原样输出。父标签：<a href="#apidoc">@apidoc</a></p>
+                    <p>文档首页的一些介绍性内容，该内容将会被原样输出。父标签：<a href="#apidoc">@apidoc</a>。</p>
                     <p>语法:<code>@apiContent content</code></p>
                     <table class="ui very compact table">
                         <thead>
@@ -327,7 +327,7 @@
                         <a href="@apiparam">@apiParam</a>、
                         <a href="@apirequest">@apiRequest</a>、
                         <a href="@apisuccess">@apiSuccess</a> 和
-                        <a href="@apierror">@apiError</a>
+                        <a href="@apierror">@apiError</a>。
                     </p>
                     <p>语法:<code>@api method url summary [\n detail]</code></p>
                     <table class="ui very compact table">
@@ -421,7 +421,7 @@
                     <p>@apiHeader 用于指定报头内容。父标签：
                         <a href="#apirequest">@apiRequest</a>、
                         <a href="#apisuccess">@apiSuccess</a> 和
-                        <a href="#apierror">@apiError</a>
+                        <a href="#apierror">@apiError</a>。
                     </p>
                     <p>语法：<code>@apiHeader key summary</code></p>
                     <table class="ui very compact table">
