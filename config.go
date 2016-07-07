@@ -80,8 +80,7 @@ func loadConfig(path string) (*config, error) {
 	return cfg, nil
 }
 
-// 在当前目录下产生个默认的配置文件。
-// path 为需要创建的文件。
+// 生成一个默认的配置文件，并写入到 path 中。
 func genConfigFile(path string) error {
 	dir := filepath.Dir(path)
 	lang, err := input.DetectDirLang(dir)

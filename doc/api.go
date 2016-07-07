@@ -112,12 +112,6 @@ LOOP:
 }
 
 // 解析 @api 及其子标签
-//
-// 若存在 description 参数，会原样输出，不会像其它一样去掉前导空格。
-// 扫描以下格式内容：
-//  @api get /test.com/api/user.json api summary
-//  api description
-//  api description
 func (l *lexer) scanAPI(d *Doc) (err *app.SyntaxError) {
 	api := &API{}
 	t := l.readTag()
@@ -223,7 +217,7 @@ func (l *lexer) scanAPIParams(api *API) *app.SyntaxError {
 	return nil
 }
 
-// @apiRequest json,xml
+// 解析 @apiRequest 及其子标签
 func (l *lexer) scanAPIRequest(api *API) *app.SyntaxError {
 	t := l.readTag()
 	r := &Request{
@@ -278,6 +272,7 @@ LOOP:
 	return nil
 }
 
+// 解析 @apiSuccess 或是 @apiError 及其子标签。
 func (l *lexer) scanResponse() (*Response, *app.SyntaxError) {
 	tag := l.readTag()
 	resp := &Response{
@@ -335,6 +330,7 @@ LOOP:
 	return resp, nil
 }
 
+// 解析 @apiExample 标签
 func (l *lexer) scanAPIExample() (*Example, *app.SyntaxError) {
 	tag := l.readTag()
 	example := &Example{
@@ -349,6 +345,7 @@ func (l *lexer) scanAPIExample() (*Example, *app.SyntaxError) {
 	return example, nil
 }
 
+// 解析 @apiParam 标签
 func (l *lexer) scanAPIParam() (*Param, *app.SyntaxError) {
 	p := &Param{}
 

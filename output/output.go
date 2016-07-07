@@ -5,8 +5,8 @@
 // output 对解析后的数据进行渲染输出。
 //
 // 目前支持以下三种渲染方式：
-//  - html: 以 html 格式输出文本，模板可自定义；
-//  - html+: html 的调试模式，程序不会输出任何，而是在浏览器中展示相关页面；
+//  - html: 以 HTML 格式输出文本，模板可自定义；
+//  - html+: HTML 的调试模式，程序不会输出任何，而是在浏览器中展示相关页面；
 //  - json: 以 JSON 格式输出内容。
 package output
 
@@ -26,7 +26,7 @@ var renderTypes = []string{
 	"json",
 }
 
-// 渲染输出的相关设置项。
+// Options 指定了渲染输出的相关设置项。
 type Options struct {
 	Dir      string        `json:"dir"`                // 文档的保存目录
 	Type     string        `json:"type"`               // 渲染方式，默认为 html
@@ -35,10 +35,14 @@ type Options struct {
 	Elapsed  time.Duration `json:"-"`                  // 编译用时
 }
 
-// 对 Options 作一些初始化操作。
+// Init 对 Options 作一些初始化操作。
 func (o *Options) Init() *app.OptionsError {
 	if len(o.Dir) == 0 {
 		return &app.OptionsError{Field: "dir", Message: "不能为空"}
+	}
+
+	if len(o.Type) == 0 {
+		return &app.OptionsError{Field: "type", Message: "不能为空"}
 	}
 
 	if !utils.FileExists(o.Dir) {
@@ -59,7 +63,7 @@ func (o *Options) Init() *app.OptionsError {
 		}
 	}
 
-	// 调试模式，必须得有端口
+	// 调试模式，必须得有模板和端口
 	if o.Type == "html+" {
 		if len(o.Template) == 0 {
 			return &app.OptionsError{Field: "template", Message: "不能为空"}
