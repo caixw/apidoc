@@ -321,13 +321,13 @@
                 <section id="api">
                     <h3>@api</h3>
                     <p>指定一个 api 文档的内容，这是除 <a href="#apidoc">@apidoc</a> 之外的另一顶级标签。子标签包括：
-                        <a href="@apigroup">@apiGroup</a>、
-                        <a href="@apiignore">@apiIgnore</a>、
-                        <a href="@apiquery">@apiQuery</a>、
-                        <a href="@apiparam">@apiParam</a>、
-                        <a href="@apirequest">@apiRequest</a>、
-                        <a href="@apisuccess">@apiSuccess</a> 和
-                        <a href="@apierror">@apiError</a>。
+                        <a href="#apigroup">@apiGroup</a>、
+                        <a href="#apiignore">@apiIgnore</a>、
+                        <a href="#apiquery">@apiQuery</a>、
+                        <a href="#apiparam">@apiParam</a>、
+                        <a href="#apirequest">@apiRequest</a>、
+                        <a href="#apisuccess">@apiSuccess</a> 和
+                        <a href="#apierror">@apiError</a>。
                     </p>
                     <p>语法:<code>@api method url summary [\n detail]</code></p>
                     <table class="ui very compact table">
@@ -363,14 +363,14 @@
                 <!-- @apiIgnore -->
                 <section id="apiignore">
                     <h3>@apiIgnore</h3>
-                    <p>凡是带此标签的代码块，表示该文档暂时被忽略。父标签：<a href="@api">@api</a>。</p>
+                    <p>凡是带此标签的代码块，表示该文档暂时被忽略。父标签：<a href="#api">@api</a>。</p>
                     <p>语法：<code>@apiIgnore</code></p>
                 </section>
 
                 <!-- @apiGroup -->
                 <section id="apigroup">
                     <h3>@apiGroup</h3>
-                    <p>@apiGroup 提供了对 api 的分组信息，不同的分组，最终可能会被呈现在不同的页面。父标签：<a href="@api">@api</a>。</p>
+                    <p>@apiGroup 提供了对 api 的分组信息，不同的分组，最终可能会被呈现在不同的页面。父标签：<a href="#api">@api</a>。</p>
                     <p>若要将文档显示在首页，则不需要指定此标签或是指定为 <var>index</var>。</p>
                     <p>语法：<code>@apiGroup name</code></p>
                     <table class="ui vry compact table">
