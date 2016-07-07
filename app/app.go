@@ -17,7 +17,7 @@ const (
 	// 版本号
 	//
 	// 版本号按照 http://semver.org 中的规则
-	Version = "2.15.3+20160707"
+	Version = "2.15.4+20160707"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -26,7 +26,7 @@ const (
 	RepoURL = "https://github.com/caixw/apidoc"
 
 	// 官网
-	OfficialURL = "https://caixw.github.io/apidoc"
+	OfficialURL = "https://apidoc.tools"
 
 	// 配置文件名称。
 	ConfigFilename = ".apidoc.json"
@@ -54,6 +54,7 @@ func Message(out int, color colors.Color, prefix string, v ...interface{}) {
 	colors.Print(out, colors.Default, colors.Default, v...)
 }
 
+// Messageln 向终端输出不同颜色的提示信息，带换行符
 func Messageln(out int, color colors.Color, prefix string, v ...interface{}) {
 	colors.Print(out, color, colors.Default, prefix)
 	colors.Println(out, colors.Default, colors.Default, v...)

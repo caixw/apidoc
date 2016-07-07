@@ -133,7 +133,7 @@ func buildHTMLPage(docs *doc.Doc, opt *Options) *htmlPage {
 // 编译模板
 //
 // tplDir 模板所在的路径，其目录下所有的 .html 文件会被编译，不查找子目录。
-// 若 tplDir 这空，则使用系统默认的模板。
+// 若 tplDir 为空，则使用系统默认的模板。
 func compileHTMLTemplate(tplDir string) (*template.Template, error) {
 	t := template.New("html").
 		Funcs(template.FuncMap{

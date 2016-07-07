@@ -33,7 +33,7 @@ type config struct {
 type syntaxWriter struct {
 }
 
-func (w *syntaxWriter) Write(bs []byte) (size int, err error) {
+func (w *syntaxWriter) Write(bs []byte) (int, error) {
 	app.Error(string(bs))
 	return len(bs), nil
 }
