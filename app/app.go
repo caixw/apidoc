@@ -17,7 +17,7 @@ const (
 	// 版本号
 	//
 	// 版本号按照 http://semver.org 中的规则
-	Version = "2.15.4+20160707"
+	Version = "2.15.5+20160708"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -26,7 +26,7 @@ const (
 	RepoURL = "https://github.com/caixw/apidoc"
 
 	// 官网
-	OfficialURL = "https://apidoc.tools"
+	OfficialURL = "http://apidoc.tools"
 
 	// 配置文件名称。
 	ConfigFilename = ".apidoc.json"
