@@ -14,6 +14,7 @@ import (
 // 所有支持的语言模型定义
 //
 // NOTE: 应该保持键名为小写，按字母顺序排列，方便查找。
+// langs 应该和 langExts 保持一一对应关系。
 var langs = map[string][]*block{
 	// C#
 	"c#": cStyle,
