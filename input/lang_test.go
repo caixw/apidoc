@@ -17,6 +17,21 @@ func TestLangs(t *testing.T) {
 	a.Contains(list, "go", "php")
 }
 
+func TestChkBlockType(t *testing.T) {
+	a := assert.New(t)
+
+	for name, blocks := range langs {
+		for index, blk := range blocks {
+			b, ok := blk.(*block)
+			if !ok {
+				continue
+			}
+			v := b.Type != blockTypeString || b.Type != blockTypeMComment || b.Type != blockTypeSComment
+			a.True(v, "langs[%v].[%v].Type 值为非法值", name, index)
+		}
+	}
+}
+
 // 比较 langs 和 langExts 中的语言类型是否都一样。
 func TestCompareLangsAndLangExts(t *testing.T) {
 	a := assert.New(t)

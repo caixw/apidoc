@@ -5,6 +5,7 @@
 package app
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -16,8 +17,13 @@ import (
 func TestConsts(t *testing.T) {
 	a := assert.New(t)
 
+	a.True(version.SemVerValid(Version))
+	a.True(len(Name) > 0)
 	a.True(is.URL(RepoURL))
 	a.True(is.URL(OfficialURL))
-
-	a.True(version.SemVerValid(Version))
+	a.True(len(ConfigFilename) > 0).True(strings.IndexAny(ConfigFilename, "/\\") < 0)
+	a.True(len(DefaultTitle) > 0)
+	a.True(len(DefaultGroupName) > 0).True(strings.IndexAny(DefaultGroupName, "/\\") < 0)
+	a.True(len(Profile) > 0).True(strings.IndexAny(Profile, "/\\") < 0)
+	a.True(MiniSize >= 0)
 }

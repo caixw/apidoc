@@ -14,7 +14,8 @@ import (
 // 所有支持的语言模型定义
 //
 // NOTE: 应该保持键名为小写，按字母顺序排列，方便查找。
-var langs = map[string][]*block{
+// langs 应该和 langExts 保持一一对应关系。
+var langs = map[string][]blocker{
 	// C#
 	"c#": cStyle,
 
@@ -22,7 +23,7 @@ var langs = map[string][]*block{
 	"c++": cStyle,
 
 	// golang
-	"go": []*block{
+	"go": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "`", End: "`"},
 		&block{Type: blockTypeSComment, Begin: `//`},
@@ -33,7 +34,7 @@ var langs = map[string][]*block{
 	"java": cStyle,
 
 	// javascript
-	"javascript": []*block{
+	"javascript": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `//`},
@@ -42,8 +43,16 @@ var langs = map[string][]*block{
 		&block{Type: blockTypeString, Begin: "/", End: "/", Escape: `\`}, // 正则表达式
 	},
 
+	// pascal
+	"pascal": []blocker{
+		newPascalStringBlock('\''),
+		newPascalStringBlock('"'),
+		&block{Type: blockTypeMComment, Begin: "{", End: "}"},
+		&block{Type: blockTypeMComment, Begin: "(*", End: "*)"},
+	},
+
 	// perl
-	"perl": []*block{
+	"perl": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
@@ -51,13 +60,13 @@ var langs = map[string][]*block{
 	},
 
 	// python
-	"python": []*block{
+	"python": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
 	},
 
 	// php
-	"php": []*block{
+	"php": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `//`},
@@ -65,7 +74,7 @@ var langs = map[string][]*block{
 	},
 
 	// ruby
-	"ruby": []*block{
+	"ruby": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
@@ -73,7 +82,7 @@ var langs = map[string][]*block{
 	},
 
 	// rust
-	"rust": []*block{
+	"rust": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `///`}, // 需要在 // 之前定义
 		&block{Type: blockTypeSComment, Begin: `//`},
@@ -81,11 +90,14 @@ var langs = map[string][]*block{
 	},
 
 	// swift
-	// NOTE: 不支持嵌套的块注释
-	"swift": cStyle,
+	"swift": []blocker{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `//`},
+		newSwiftNestMCommentBlock("/*", "*/"),
+	},
 }
 
-var cStyle = []*block{
+var cStyle = []blocker{
 	&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 	&block{Type: blockTypeSComment, Begin: `//`},
 	&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
@@ -100,6 +112,7 @@ var langExts = map[string][]string{
 	"go":         []string{".go"},
 	"java":       []string{".java"},
 	"javascript": []string{".js"},
+	"pascal":     []string{".pas", ".pp"},
 	"perl":       []string{".perl", ".prl", ".pl"},
 	"php":        []string{".php"},
 	"python":     []string{".py"},
