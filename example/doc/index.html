@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="generator" content="https://caixw.github.io/apidoc" />
+        <meta name="generator" content="http://apidoc.tools" />
         <title>index&#160;&#8250;&#160;api 示例文档</title>
         <link href="https://cdn.bootcss.com/prism/1.5.1/themes/prism.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="./style.css" />
@@ -38,6 +38,55 @@
         <div class="main"><article>
         <br /><br /> 这是一份 apidoc 示例文档，对应的源码在 <a href="https://github.com/caixw/apidoc/tree/gh-pages/example/src">src</a> 目录下。<br /><br /><br /> OPTIONS:<br /><br /> 所有的 API 均支持 OPTIONS 请求方法。该方法通过报头的 Allow 返回。<br /><br /> 错误:<br /> ...<br />
     </article><section class="api">
+    <h3>
+        <span class="method delete">delete</span>
+        <span class="url">/login</span>
+        <span class="summary">注销用户</span>
+    </h3>
+
+    <div class="content">
+        
+
+        
+
+        
+
+        
+        <div class="request">
+            <h4>请求:&#160;json</h4>
+            <div>
+                
+                    <h5>报头:</h5>
+                    <table>
+    <thead>
+        <tr><th>名称</th><th>描述</th></tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th>Authorization</th>
+        <td>当前登录用户的 token</td>
+    </tr>
+    </tbody>
+</table>
+                
+
+                
+
+                
+            </div>
+        </div>
+        
+
+        
+        <div class="response success">
+            <h4><span class="success">SUCCESS:</span>204,&#160;注销成功</h4>
+            
+        </div>
+        
+
+        
+    </div>
+</section><section class="api">
     <h3>
         <span class="method post">post</span>
         <span class="url">/login</span>
@@ -120,61 +169,12 @@
         </div>
         
     </div>
-</section><section class="api">
-    <h3>
-        <span class="method delete">delete</span>
-        <span class="url">/login</span>
-        <span class="summary">注销用户</span>
-    </h3>
-
-    <div class="content">
-        
-
-        
-
-        
-
-        
-        <div class="request">
-            <h4>请求:&#160;json</h4>
-            <div>
-                
-                    <h5>报头:</h5>
-                    <table>
-    <thead>
-        <tr><th>名称</th><th>描述</th></tr>
-    </thead>
-    <tbody>
-    <tr>
-        <th>Authorization</th>
-        <td>当前登录用户的 token</td>
-    </tr>
-    </tbody>
-</table>
-                
-
-                
-
-                
-            </div>
-        </div>
-        
-
-        
-        <div class="response success">
-            <h4><span class="success">SUCCESS:</span>204,&#160;注销成功</h4>
-            
-        </div>
-        
-
-        
-    </div>
 </section>
     </div>
         <footer>
             <p>
-                内容由 <a href="https://caixw.github.io/apidoc">apidoc</a> 编译于 <time>2016-07-07T01:41:21&#43;08:00</time>，
-                用时5.812385ms。
+                内容由 <a href="http://apidoc.tools">apidoc</a> 编译于 <time>2016-07-12T02:14:31&#43;08:00</time>，
+                用时2.275254ms。
             </p>
 
             
