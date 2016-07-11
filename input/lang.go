@@ -45,8 +45,6 @@ var langs = map[string][]blocker{
 
 	// pascal
 	"pascal": []blocker{
-		//&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `"`},
-		//&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `'`},
 		newPascalStringBlock('\''),
 		newPascalStringBlock('"'),
 		&block{Type: blockTypeMComment, Begin: "{", End: "}"},
