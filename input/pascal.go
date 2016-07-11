@@ -18,7 +18,7 @@ func newPascalStringBlock(symbol byte) blocker {
 }
 
 func (b *pascalStringBlock) BeginFunc(l *lexer) bool {
-	return l.match("'")
+	return l.match(b.symbol)
 }
 
 func (b *pascalStringBlock) EndFunc(l *lexer) ([]rune, bool) {
@@ -30,7 +30,7 @@ LOOP:
 		case l.match(b.escape): // 转义
 			continue LOOP
 		case l.match(b.symbol): // 结束
-			break LOOP
+			return nil, true
 		default:
 			l.next()
 		}

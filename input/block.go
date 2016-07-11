@@ -28,10 +28,10 @@ type blocker interface {
 
 // block 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
 type block struct {
-	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释。仅在 EndFunc 为空时启作用。
+	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释
 	Begin  string // 块的起始字符串
 	End    string // 块的结束字符串，单行注释不用定义此值
-	Escape string // 当 Type 为 blockTypeString 时，此值表示转义字符，Type 为其它值时，此值无意义；
+	Escape string // 当 Type 为 blockTypeString 时，此值表示转义字符，Type 为其它值时，此值无意义
 }
 
 func (b *block) BeginFunc(l *lexer) bool {

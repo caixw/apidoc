@@ -12,6 +12,24 @@ import (
 
 var _ blocker = &block{}
 
+func TestBlock_BeginFunc_EndFunc(t *testing.T) {
+	a := assert.New(t)
+	bStr := &block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: "\\"}
+	bSComment := &block{Type: blockTypeSComment, Begin: "//"}
+	bMComment := &block{Type: blockTypeMComment, Begin: "/*", End: "*/"}
+
+	l := &lexer{
+		data: []byte("// scomment1\n// scomment2"),
+	}
+	a.False(bStr.BeginFunc(l))
+	a.True(bSComment.BeginFunc(l))
+	a.False(bMComment.BeginFunc(l))
+	ret, ok := bSComment.EndFunc(l)
+	a.True(ok).Equal(ret, []rune(" scomment1\n scomment2"))
+	ret, ok = bMComment.EndFunc(l)
+	a.False(ok).Equal(len(ret), 0)
+}
+
 func TestBlock_endString(t *testing.T) {
 	a := assert.New(t)
 	b := &block{
