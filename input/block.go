@@ -122,13 +122,13 @@ LOOP:
 		case l.atEOF():
 			return nil, false
 		case l.match(b.End):
-			lines = append(lines, b.filterSymbols(line))
+			lines = append(lines, filterSymbols(line, b.Begin))
 			break LOOP
 		default:
 			r := l.next()
 			line = append(line, r)
 			if r == '\n' {
-				lines = append(lines, b.filterSymbols(line))
+				lines = append(lines, filterSymbols(line, b.Begin))
 				line = make([]rune, 0, 100)
 			}
 		}
@@ -142,15 +142,15 @@ LOOP:
 }
 
 // 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。
-// symbol 为 b.Begin 中的任意字符。
-func (b *block) filterSymbols(line []rune) []rune {
+// symbol 为 charset 中的任意字符。
+func filterSymbols(line []rune, charset string) []rune {
 	for k, v := range line {
 		if unicode.IsSpace(v) { // 跳过行首的空格
 			continue
 		}
 
 		// 不存在指定的符号，直接返回原数据
-		if strings.IndexRune(b.Begin, v) < 0 {
+		if strings.IndexRune(charset, v) < 0 {
 			return line
 		}
 

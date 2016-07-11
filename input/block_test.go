@@ -133,46 +133,44 @@ func TestBlock_endMComment(t *testing.T) {
 	a.False(found).Nil(rs)
 }
 
-func TestBlock_filterSymbols(t *testing.T) {
+func TestFilterSymbols(t *testing.T) {
 	a := assert.New(t)
-	b := &block{Begin: "/*"}
 
-	eq := func(b *block, v1, v2 string) {
-		s1 := string(b.filterSymbols([]rune(v1)))
+	eq := func(charset, v1, v2 string) {
+		s1 := string(filterSymbols([]rune(v1), charset))
 		a.Equal(s1, v2)
 	}
 
-	neq := func(b *block, v1, v2 string) {
-		s1 := string(b.filterSymbols([]rune(v1)))
+	neq := func(charset, v1, v2 string) {
+		s1 := string(filterSymbols([]rune(v1), charset))
 		a.NotEqual(s1, v2)
 	}
 
-	eq(b, "* line", "line")
-	eq(b, "*   line", "  line")
-	eq(b, "*\tline", "line")
-	eq(b, "* \tline", "\tline")
-	eq(b, "*\nline", "line")
+	eq("/*", "* line", "line")
+	eq("/*", "*   line", "  line")
+	eq("/*", "*\tline", "line")
+	eq("/*", "* \tline", "\tline")
+	eq("/*", "*\nline", "line")
 
-	eq(b, "/ line", "line")
-	eq(b, "/   line", "  line")
+	eq("/*", "/ line", "line")
+	eq("/*", "/   line", "  line")
 
-	eq(b, "  * line", "line")
-	eq(b, "  *  line", " line")
-	eq(b, "\t*  line", " line")
-	eq(b, "\t* \nline", "\nline")
-	eq(b, "\t*\n line", " line")
+	eq("/*", "  * line", "line")
+	eq("/*", "  *  line", " line")
+	eq("/*", "\t*  line", " line")
+	eq("/*", "\t* \nline", "\nline")
+	eq("/*", "\t*\n line", " line")
 
 	// 包含多个符号
-	neq(b, "// line", "line")
-	neq(b, "**   line", "  line")
-	neq(b, "/* line", "line")
-	neq(b, "*/   line", "  line")
+	neq("/*", "// line", "line")
+	neq("/*", "**   line", "  line")
+	neq("/*", "/* line", "line")
+	neq("/*", "*/   line", "  line")
 
 	// 非定义的符号
-	neq(b, "+ line", "line")
-	neq(b, "+   line", "  line")
+	neq("/*", "+ line", "line")
+	neq("/*", "+   line", "  line")
 
-	b = &block{Begin: "++"}
-	eq(b, "+ line", "line")
-	neq(b, "++ line", "line")
+	eq("++", "+ line", "line")
+	neq("++", "++ line", "line")
 }
