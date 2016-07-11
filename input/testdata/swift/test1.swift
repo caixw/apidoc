@@ -47,5 +47,5 @@ func login(w http.ResponseWriter, r *http.Request) {
 */
 func logout(w http.ResponseWriter, r *http.Request) {
 	println("logout", "**********/")
-	// TODO
+	/*/* TODO */*/
 }

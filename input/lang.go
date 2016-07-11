@@ -90,8 +90,11 @@ var langs = map[string][]blocker{
 	},
 
 	// swift
-	// BUG(caixw): 不支持嵌套的块注释
-	"swift": cStyle,
+	"swift": []blocker{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `//`},
+		newSwiftNestMCommentBlock("/*", "*/"),
+	},
 }
 
 var cStyle = []blocker{
@@ -109,7 +112,7 @@ var langExts = map[string][]string{
 	"go":         []string{".go"},
 	"java":       []string{".java"},
 	"javascript": []string{".js"},
-	"pascal":     []string{".pas"},
+	"pascal":     []string{".pas", ".pp"},
 	"perl":       []string{".perl", ".prl", ".pl"},
 	"php":        []string{".php"},
 	"python":     []string{".py"},
