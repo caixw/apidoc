@@ -152,7 +152,6 @@ LOOP:
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-// 会对每一行应用 filterSymbols 规则。
 func (b *block) endSComments(l *lexer) ([]rune, bool) {
 	// 跳过除换行符以外的所有空白字符。
 	skipSpace := func() {
