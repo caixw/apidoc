@@ -128,11 +128,10 @@ func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logge
 			return
 		}
 
-		if block.Type == blockTypeString {
-			block = nil
+		block = nil
+		if len(rs) == 0 {
 			continue
 		}
-		block = nil
 
 		wg.Add(1)
 		go func(rs []rune, ln int) {

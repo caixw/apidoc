@@ -23,7 +23,10 @@ const (
 
 // block 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
 type block struct {
-	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释
+	BeginFunc func(l *lexer) bool
+	EndFunc   func(l *lexer) ([]rune, bool)
+
+	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释。
 	Begin  string // 块的起始字符串
 	End    string // 块的结束字符串，单行注释不用定义此值
 	Escape string // 当 Type 为 blockTypeString 时，此值表示转义字符，Type 为其它值时，此值无意义；
@@ -105,7 +108,7 @@ func (l *lexer) block(blocks []*block) *block {
 		}
 
 		for _, block := range blocks {
-			if l.match(block.Begin) {
+			if block.match(l) {
 				return block
 			}
 		}
@@ -114,19 +117,29 @@ func (l *lexer) block(blocks []*block) *block {
 	}
 }
 
+func (b *block) match(l *lexer) bool {
+	if b.BeginFunc != nil {
+		return b.BeginFunc(l)
+	}
+
+	return l.match(b.Begin)
+}
+
 // 返回从当前位置到定义结束的所有字符
 // 返回值 bool 提示是否正常找到结束标记
 func (b *block) end(l *lexer) ([]rune, bool) {
-	switch b.Type {
-	case blockTypeString:
+	switch {
+	case b.EndFunc != nil:
+		return b.EndFunc(l)
+	case b.Type == blockTypeString:
 		return b.endString(l)
-	case blockTypeMComment:
+	case b.Type == blockTypeMComment:
 		return b.endMComments(l)
-	case blockTypeSComment:
+	case b.Type == blockTypeSComment:
 		return b.endSComments(l)
 	}
 
-	panic("无效的 block.Type")
+	return nil, false
 }
 
 // 从 l 的当前位置开始往后查找，直到找到 b 中定义的 end 字符串，
