@@ -43,6 +43,14 @@ var langs = map[string][]*block{
 		&block{Type: blockTypeString, Begin: "/", End: "/", Escape: `\`}, // 正则表达式
 	},
 
+	// pascal
+	"pascal": []*block{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `"`},
+		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `'`},
+		&block{Type: blockTypeMComment, Begin: "{", End: "}"},
+		&block{Type: blockTypeMComment, Begin: "(*", End: "*)"},
+	},
+
 	// perl
 	"perl": []*block{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
@@ -101,6 +109,7 @@ var langExts = map[string][]string{
 	"go":         []string{".go"},
 	"java":       []string{".java"},
 	"javascript": []string{".js"},
+	"pascal":     []string{".pas"},
 	"perl":       []string{".perl", ".prl", ".pl"},
 	"php":        []string{".php"},
 	"python":     []string{".py"},
