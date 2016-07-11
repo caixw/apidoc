@@ -90,7 +90,7 @@ var langs = map[string][]blocker{
 	},
 
 	// swift
-	// NOTE: 不支持嵌套的块注释
+	// BUG(caixw): 不支持嵌套的块注释
 	"swift": cStyle,
 }
 

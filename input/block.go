@@ -18,9 +18,12 @@ const (
 	blockTypeMComment      // 多行注释
 )
 
+// blocker 接口定义了解析代码块的所有操作。
+// 通过 BeginFunc 查找匹配的起始位置，通过
+// EndFunc 查找结束位置，并返回所有的块内容。
 type blocker interface {
-	BeginFunc(l *lexer) bool         // 通过函数匹配块的起始位置，若找到，则返回 true。
-	EndFunc(l *lexer) ([]rune, bool) // 通过函数匹配块的结束位置，并返回中间的字符串。
+	BeginFunc(l *lexer) bool         // 确定 l 的当前位置是否匹配 blocker 的起始位置。
+	EndFunc(l *lexer) ([]rune, bool) // 确定 l 的当前位置是否匹配 blocker 的结束位置，若匹配返回中间的字符串。
 }
 
 // block 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。

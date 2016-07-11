@@ -1,11 +1,10 @@
+program testdata;
+
 { Copyright 2016 by caixw, All rights reserved.
  Use of this source code is governed by a MIT
  license that can be found in the LICENSE file.
 }
 
-package testdata
-
-import "net/http"
 
 (* @api POST /users/login 登录
  * @apiGroup users
@@ -25,10 +24,11 @@ import "net/http"
  *
  * @apiError 401 账号或密码错误
  *)
-func login(w http.ResponseWriter, r *http.Request) {
-	println('{********** ''login')
-    { TODO}
-}
+procedure login();
+begin
+	writeln('{********** ''login')
+    { TODO }
+end
 
 { 123
  123
@@ -48,7 +48,9 @@ func login(w http.ResponseWriter, r *http.Request) {
     "token": "adl;kfqwer;q;afd"
 }
 *)
-func logout(w http.ResponseWriter, r *http.Request) {
-	println("logout", "**********/")
-    { TODO}
-}
+
+procedure logout();
+begin
+	println("logout""""**********)")
+    { TODO }
+end
