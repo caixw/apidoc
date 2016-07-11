@@ -41,7 +41,7 @@ func (l *lexer) next() rune {
 // 接下来的 n 个字符是否匹配指定的字符串，
 // 若匹配，则将指定移向该字符串这后，否则不作任何操作。
 func (l *lexer) match(word string) bool {
-	if l.atEOF() || (l.pos+len(word) > len(l.data)) { // 剩余字符没有word长，直接返回false
+	if l.atEOF() || (l.pos+len(word) > len(l.data)) { // 剩余字符没有 word 长，直接返回 false
 		return false
 	}
 

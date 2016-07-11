@@ -4,11 +4,11 @@ license that can be found in the LICENSE file.}
 
 package testdata
 
-{ @apidoc title of api
-@apiVersion 2.9
-@apiBaseURL https://api.caixw.io
-@apiLicense MIT https://opensources.org/licenses/MIT
-@apiContent
-line1
-line2
+{@apidoc title of api
+ @apiVersion 2.9
+ @apiBaseURL https://api.caixw.io
+ @apiLicense MIT https://opensources.org/licenses/MIT
+ @apiContent
+ line1
+ line2
 }

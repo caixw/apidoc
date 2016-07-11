@@ -19,8 +19,8 @@ const (
 )
 
 type blocker interface {
-	BeginFunc(l *lexer) bool         // 通过函数匹配块，此函数的优先级高于 Begin 变量
-	EndFunc(l *lexer) ([]rune, bool) // 通过函数匹配块，此函数的优先级高于 End 变量
+	BeginFunc(l *lexer) bool         // 通过函数匹配块的起始位置，若找到，则返回 true。
+	EndFunc(l *lexer) ([]rune, bool) // 通过函数匹配块的结束位置，并返回中间的字符串。
 }
 
 // block 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
