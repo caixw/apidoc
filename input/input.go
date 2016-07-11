@@ -129,7 +129,7 @@ func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logge
 		}
 
 		block = nil
-		if len(rs) == 0 {
+		if len(rs) < app.MiniSize {
 			continue
 		}
 

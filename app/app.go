@@ -17,7 +17,7 @@ const (
 	// 版本号
 	//
 	// 版本号按照 http://semver.org 中的规则
-	Version = "2.15.10+20160711"
+	Version = "2.15.11+20160711"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -43,6 +43,9 @@ const (
 
 	// 输出的 profile 文件的名称
 	Profile = "apidoc.prof"
+
+	// 需要解析的最小代码块，小于此值，将不作解析
+	MiniSize = len("@api ")
 )
 
 // Message 向终端输出不同颜色的提示信息
