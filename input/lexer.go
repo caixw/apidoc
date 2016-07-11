@@ -117,24 +117,22 @@ func (l *lexer) block(blocks []*block) *block {
 // 返回从当前位置到定义结束的所有字符
 // 返回值 bool 提示是否正常找到结束标记
 func (b *block) end(l *lexer) ([]rune, bool) {
-	var rs []rune
-	ok := false
-
 	switch b.Type {
 	case blockTypeString:
-		ok = b.endString(l)
+		return b.endString(l)
 	case blockTypeMComment:
-		rs, ok = b.endMComments(l)
+		return b.endMComments(l)
 	case blockTypeSComment:
-		rs, ok = b.endSComments(l)
+		return b.endSComments(l)
 	}
-	return rs, ok
+
+	panic("无效的 block.Type")
 }
 
 // 从 l 的当前位置开始往后查找，直到找到 b 中定义的 end 字符串，
 // 将 l 中的指针移到该位置。
 // 正常找到结束符的返回 true，否则返回 false。
-func (b *block) endString(l *lexer) bool {
+func (b *block) endString(l *lexer) ([]rune, bool) {
 LOOP:
 	for {
 		switch {
@@ -143,12 +141,12 @@ LOOP:
 		case (len(b.Escape) > 0) && l.match(b.Escape):
 			l.next()
 		case l.match(b.End):
-			return true
+			return nil, true
 		default:
 			l.next()
 		}
 	} // end for
-	return false
+	return nil, false
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。

@@ -138,20 +138,24 @@ func TestBlock_endString(t *testing.T) {
 	l := &lexer{
 		data: []byte(`text"`),
 	}
-	a.True(b.endString(l))
+	rs, ok := b.endString(l)
+	a.True(ok).Nil(rs)
 
 	// 带转义字符
 	l = &lexer{
 		data: []byte(`te\"xt"`),
 	}
-	a.True(b.endString(l)).
+	rs, ok = b.endString(l)
+	a.True(ok).
+		Nil(rs).
 		Equal(l.pos, len(l.data))
 
 	// 找不到匹配字符串
 	l = &lexer{
 		data: []byte("text"),
 	}
-	a.False(b.endString(l))
+	rs, ok = b.endString(l)
+	a.False(ok).Nil(rs)
 }
 
 func TestBlock_endSComment(t *testing.T) {
