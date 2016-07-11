@@ -79,15 +79,15 @@ func (l *lexer) syntaxError(msg string) *app.SyntaxError {
 	}
 }
 
-// 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 block 。
-func (l *lexer) block(blocks []*block) *block {
+// 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 blocker 。
+func (l *lexer) block(blocks []blocker) blocker {
 	for {
 		if l.atEOF() {
 			return nil
 		}
 
 		for _, block := range blocks {
-			if block.match(l) {
+			if block.BeginFunc(l) {
 				return block
 			}
 		}

@@ -10,6 +10,8 @@ import (
 	"github.com/issue9/assert"
 )
 
+var _ blocker = &block{}
+
 func TestBlock_endString(t *testing.T) {
 	a := assert.New(t)
 	b := &block{

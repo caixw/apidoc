@@ -18,36 +18,32 @@ const (
 	blockTypeMComment      // 多行注释
 )
 
+type blocker interface {
+	BeginFunc(l *lexer) bool         // 通过函数匹配块，此函数的优先级高于 Begin 变量
+	EndFunc(l *lexer) ([]rune, bool) // 通过函数匹配块，此函数的优先级高于 End 变量
+}
+
 // block 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
 type block struct {
-	BeginFunc func(l *lexer) bool
-	EndFunc   func(l *lexer) ([]rune, bool)
-
-	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释。
+	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释。仅在 EndFunc 为空时启作用。
 	Begin  string // 块的起始字符串
 	End    string // 块的结束字符串，单行注释不用定义此值
 	Escape string // 当 Type 为 blockTypeString 时，此值表示转义字符，Type 为其它值时，此值无意义；
 }
 
-func (b *block) match(l *lexer) bool {
-	if b.BeginFunc != nil {
-		return b.BeginFunc(l)
-	}
-
+func (b *block) BeginFunc(l *lexer) bool {
 	return l.match(b.Begin)
 }
 
 // 返回从当前位置到定义结束的所有字符
 // 返回值 bool 提示是否正常找到结束标记
-func (b *block) end(l *lexer) ([]rune, bool) {
-	switch {
-	case b.EndFunc != nil:
-		return b.EndFunc(l)
-	case b.Type == blockTypeString:
+func (b *block) EndFunc(l *lexer) ([]rune, bool) {
+	switch b.Type {
+	case blockTypeString:
 		return b.endString(l)
-	case b.Type == blockTypeMComment:
+	case blockTypeMComment:
 		return b.endMComments(l)
-	case b.Type == blockTypeSComment:
+	case blockTypeSComment:
 		return b.endSComments(l)
 	}
 
