@@ -17,7 +17,7 @@ const (
 	// 版本号
 	//
 	// 版本号按照 http://semver.org 中的规则
-	Version = "2.15.11+20160711"
+	Version = "2.15.12+20160711"
 
 	// 程序的正式名称
 	Name = "apidoc"
