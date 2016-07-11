@@ -96,7 +96,7 @@ func Parse(docs *doc.Doc, o *Options) error {
 }
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。
-func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logger) {
+func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logger) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil && synerrLog != nil {
 		synerrLog.Println(&app.SyntaxError{Message: err.Error(), File: path})
@@ -104,7 +104,7 @@ func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logge
 	}
 
 	l := &lexer{data: data}
-	var block *block
+	var block blocker
 
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
@@ -122,17 +122,16 @@ func parseFile(docs *doc.Doc, path string, blocks []*block, synerrLog *log.Logge
 		}
 
 		ln := l.lineNumber() + 1 // 记录当前的行号，顺便调整为行号起始行号为 1
-		rs, ok := block.end(l)
+		rs, ok := block.EndFunc(l)
 		if !ok && synerrLog != nil {
 			synerrLog.Println(&app.SyntaxError{Line: ln, File: path, Message: "找不到结束标记"})
 			return
 		}
 
-		if block.Type == blockTypeString {
-			block = nil
+		block = nil
+		if len(rs) < app.MiniSize {
 			continue
 		}
-		block = nil
 
 		wg.Add(1)
 		go func(rs []rune, ln int) {
