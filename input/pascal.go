@@ -4,6 +4,8 @@
 
 package input
 
+// 描述了 pascal/delphi 语言的注释，在 pascal 中
+// 转义字符即引号本身，不适合直接在 block 中定义。
 type pascalStringBlock struct {
 	symbol string
 	escape string

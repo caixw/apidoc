@@ -11,7 +11,7 @@ import (
 	"github.com/caixw/apidoc/app"
 )
 
-// NOTE: 非线程安全
+// lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
 type lexer struct {
 	data    []byte
 	pos     int
@@ -71,7 +71,7 @@ func (l *lexer) lineNumber() int {
 	return l.ln
 }
 
-// 构建一个语法错误的信息。
+// 构建一条语法错误的信息。
 func (l *lexer) syntaxError(msg string) *app.SyntaxError {
 	return &app.SyntaxError{
 		Line:    l.lineNumber(),
