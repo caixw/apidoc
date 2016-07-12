@@ -92,6 +92,9 @@ var langs = map[string][]blocker{
 		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 	},
 
+	// scala
+	"scala": cStyle,
+
 	// swift
 	"swift": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
@@ -124,6 +127,7 @@ var langExts = map[string][]string{
 	"python":     []string{".py"},
 	"ruby":       []string{".rb"},
 	"rust":       []string{".rs"},
+	"scala":      []string{".scala"},
 	"swift":      []string{".swift"},
 }
 
