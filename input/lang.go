@@ -33,6 +33,15 @@ var langs = map[string][]blocker{
 		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 	},
 
+	// groovy
+	"groovy": []blocker{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+		&block{Type: blockTypeString, Begin: "'''", End: "'''", Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `//`},
+		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+	},
+
 	// java
 	"java": cStyle,
 
@@ -119,6 +128,7 @@ var langExts = map[string][]string{
 	"c++":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
 	"d":          []string{".d"},
 	"go":         []string{".go"},
+	"groovy":     []string{".groovy"},
 	"java":       []string{".java"},
 	"javascript": []string{".js"},
 	"pascal":     []string{".pas", ".pp"},
