@@ -22,6 +22,9 @@ var langs = map[string][]blocker{
 	// c/c++
 	"c++": cStyle,
 
+	// d
+	"d": cStyle,
+
 	// golang
 	"go": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
@@ -111,6 +114,7 @@ var cStyle = []blocker{
 var langExts = map[string][]string{
 	"c#":         []string{".cs"},
 	"c++":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
+	"d":          []string{".d"},
 	"go":         []string{".go"},
 	"java":       []string{".java"},
 	"javascript": []string{".js"},
