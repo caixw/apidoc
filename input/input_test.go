@@ -15,8 +15,6 @@ import (
 func TestParse(t *testing.T) {
 	a := assert.New(t)
 
-	testParse(a, "c++")
-	testParse(a, "d")
 	testParse(a, "go")
 	testParse(a, "java")
 	testParse(a, "javascript")
@@ -62,8 +60,6 @@ func testParse(a *assert.Assertion, lang string) {
 func TestParseFile(t *testing.T) {
 	a := assert.New(t)
 
-	testParseFile(a, "c++", "./testdata/c++/test1.c")
-	testParseFile(a, "d", "./testdata/d/test1.d")
 	testParseFile(a, "go", "./testdata/go/test1.go")
 	testParseFile(a, "java", "./testdata/java/test1.java")
 	testParseFile(a, "javascript", "./testdata/javascript/test1.js")
