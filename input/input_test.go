@@ -16,6 +16,7 @@ func TestParse(t *testing.T) {
 	a := assert.New(t)
 
 	testParse(a, "go")
+	testParse(a, "groovy")
 	testParse(a, "java")
 	testParse(a, "javascript")
 	testParse(a, "pascal")
@@ -61,6 +62,7 @@ func TestParseFile(t *testing.T) {
 	a := assert.New(t)
 
 	testParseFile(a, "go", "./testdata/go/test1.go")
+	testParseFile(a, "groovy", "./testdata/groovy/test1.groovy")
 	testParseFile(a, "java", "./testdata/java/test1.java")
 	testParseFile(a, "javascript", "./testdata/javascript/test1.js")
 	testParseFile(a, "pascal", "./testdata/pascal/test1.pas")
