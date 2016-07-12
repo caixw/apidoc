@@ -4,6 +4,7 @@
 
 package input
 
+// swift 嵌套风格的块注释。会忽略掉内嵌的注释块。
 type swiftNestMCommentBlock struct {
 	begin      string
 	end        string

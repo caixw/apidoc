@@ -13,7 +13,7 @@ import (
 
 // 所有支持的语言模型定义
 //
-// NOTE: 应该保持键名为小写，按字母顺序排列，方便查找。
+// NOTE: 应该保持键名为非大写，按字母顺序排列，方便查找。
 // langs 应该和 langExts 保持一一对应关系。
 var langs = map[string][]blocker{
 	// C#
@@ -43,7 +43,7 @@ var langs = map[string][]blocker{
 		&block{Type: blockTypeString, Begin: "/", End: "/", Escape: `\`}, // 正则表达式
 	},
 
-	// pascal
+	// pascal/delphi
 	"pascal": []blocker{
 		newPascalStringBlock('\''),
 		newPascalStringBlock('"'),
@@ -105,7 +105,9 @@ var cStyle = []blocker{
 
 // 各语言默认支持的文件扩展名。
 //
-// NOTE: 应该保持键名、键值均为小写
+// NOTE: 键名与 langs 中的键一一对应。
+// 键值为可能的文件扩展名列表，应该使用非大写状态。
+// `go test` 会作大量名称是否规范的检测。
 var langExts = map[string][]string{
 	"c#":         []string{".cs"},
 	"c++":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
@@ -121,7 +123,7 @@ var langExts = map[string][]string{
 	"swift":      []string{".swift"},
 }
 
-// 返回所有支持的语言
+// Langs 返回所有支持的语言
 func Langs() []string {
 	ret := make([]string, 0, len(langs))
 	for l := range langs {
@@ -131,9 +133,10 @@ func Langs() []string {
 	return ret
 }
 
-// 检测指定目录下的语言类型。
+// DetectDirLang 检测指定目录下的语言类型。
 //
 // 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
+// 不会分析子目录。
 func DetectDirLang(dir string) (string, error) {
 	fs, err := ioutil.ReadDir(dir)
 	if err != nil {

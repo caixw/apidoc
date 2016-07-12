@@ -6,6 +6,7 @@ package input
 
 import (
 	"testing"
+	"unicode"
 
 	"github.com/issue9/assert"
 )
@@ -17,6 +18,7 @@ func TestLangs(t *testing.T) {
 	a.Contains(list, "go", "php")
 }
 
+// 检测 block.Type 的取值是否正确。
 func TestChkBlockType(t *testing.T) {
 	a := assert.New(t)
 
@@ -26,10 +28,32 @@ func TestChkBlockType(t *testing.T) {
 			if !ok {
 				continue
 			}
-			v := b.Type != blockTypeString || b.Type != blockTypeMComment || b.Type != blockTypeSComment
+			v := (b.Type == blockTypeString || b.Type == blockTypeMComment || b.Type == blockTypeSComment)
 			a.True(v, "langs[%v].[%v].Type 值为非法值", name, index)
 		}
 	}
+}
+
+func isNotUpperString(str string) bool {
+	for _, r := range str {
+		if unicode.IsUpper(r) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func TestNameAndExtsIsnotUpper(t *testing.T) {
+	a := assert.New(t)
+
+	for name, exts := range langExts {
+		a.True(isNotUpperString(name), "非小写名称:%v", name)
+		for _, ext := range exts {
+			a.True(isNotUpperString(ext))
+		}
+	}
+
 }
 
 // 比较 langs 和 langExts 中的语言类型是否都一样。

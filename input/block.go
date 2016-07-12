@@ -5,6 +5,7 @@
 package input
 
 import (
+	"fmt"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -27,6 +28,8 @@ type blocker interface {
 }
 
 // block 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
+//
+// block 作为 blocker 的默认实现，能适应大部分语言的定义。
 type block struct {
 	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释
 	Begin  string // 块的起始字符串
@@ -38,8 +41,6 @@ func (b *block) BeginFunc(l *lexer) bool {
 	return l.match(b.Begin)
 }
 
-// 返回从当前位置到定义结束的所有字符
-// 返回值 bool 提示是否正常找到结束标记
 func (b *block) EndFunc(l *lexer) ([]rune, bool) {
 	switch b.Type {
 	case blockTypeString:
@@ -48,9 +49,9 @@ func (b *block) EndFunc(l *lexer) ([]rune, bool) {
 		return b.endMComments(l)
 	case blockTypeSComment:
 		return b.endSComments(l)
+	default:
+		panic(fmt.Sprint("定义了一个无效的 block.Type 值:", b.Type))
 	}
-
-	return nil, false
 }
 
 // 从 l 的当前位置开始往后查找，直到找到 b 中定义的 end 字符串，
