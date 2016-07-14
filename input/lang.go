@@ -22,10 +22,22 @@ var langs = map[string][]blocker{
 	// c/c++
 	"c++": cStyle,
 
+	// d
+	"d": cStyle,
+
 	// golang
 	"go": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "`", End: "`"},
+		&block{Type: blockTypeSComment, Begin: `//`},
+		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+	},
+
+	// groovy
+	"groovy": []blocker{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+		&block{Type: blockTypeString, Begin: "'''", End: "'''", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `//`},
 		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 	},
@@ -89,6 +101,9 @@ var langs = map[string][]blocker{
 		&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 	},
 
+	// scala
+	"scala": cStyle,
+
 	// swift
 	"swift": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
@@ -111,7 +126,9 @@ var cStyle = []blocker{
 var langExts = map[string][]string{
 	"c#":         []string{".cs"},
 	"c++":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
+	"d":          []string{".d"},
 	"go":         []string{".go"},
+	"groovy":     []string{".groovy"},
 	"java":       []string{".java"},
 	"javascript": []string{".js"},
 	"pascal":     []string{".pas", ".pp"},
@@ -120,6 +137,7 @@ var langExts = map[string][]string{
 	"python":     []string{".py"},
 	"ruby":       []string{".rb"},
 	"rust":       []string{".rs"},
+	"scala":      []string{".scala"},
 	"swift":      []string{".swift"},
 }
 
