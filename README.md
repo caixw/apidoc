@@ -25,7 +25,7 @@ PHP、Python、Ruby、Rust、Scala 和 Swift。
  *         {"id":2, "username": "admin2", "name": "管理员2"}
  *     ],
  * }
- * @apiExmaple xml
+ * @apiExample xml
  * <users count="500">
  *     <user id="1" username="admin1" name="管理员1" />
  *     <user id="2" username="admin2" name="管理员2" />
