@@ -46,12 +46,6 @@ go get github.com/caixw/apidoc
 
 
 
-### 添加新语言
-
-若需要添加对新语言的支持，可以在 `input/lang.go` 中，根据要求添加新语言的定义即可。
-
-
-
 ### 集成
 
 若需要将 apidoc 当作包集成到其它 Go 程序中，可分别引用 `input` 和 `output` 的相关函数：
@@ -74,6 +68,12 @@ if err = output.Render(docs, outputOptions); err != nil {
     // TODO
 }
 ```
+
+
+
+### 参与开发
+
+请阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 文件的相关内容。
 
 
 
