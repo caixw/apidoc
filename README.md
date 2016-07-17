@@ -2,8 +2,8 @@ apidoc [![Build Status](https://travis-ci.org/caixw/apidoc.svg?branch=master)](h
 ======
 
 apidoc 是一个简单的 RESTful API 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。
-目前支持支持以下语言：C#、C/C++、D、Go、Groovy、Java、Javascript、Pascal/Delphi、Perl、
-PHP、Python、Ruby、Rust、Scala 和 Swift。
+目前支持支持以下语言：C#、C/C++、D、Erlang、Go、Groovy、Java、Javascript、Pascal/Delphi、
+Perl、PHP、Python、Ruby、Rust、Scala 和 Swift。
 
 具体文档可参考：http://apidoc.tools
 
