@@ -25,6 +25,12 @@ var langs = map[string][]blocker{
 	// d
 	"d": cStyle,
 
+	// erlang
+	"erlang": []blocker{
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+		&block{Type: blockTypeSComment, Begin: `%`},
+	},
+
 	// golang
 	"go": []blocker{
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
@@ -127,6 +133,7 @@ var langExts = map[string][]string{
 	"c#":         []string{".cs"},
 	"c++":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
 	"d":          []string{".d"},
+	"erlang":     []string{".erl", "hrl"},
 	"go":         []string{".go"},
 	"groovy":     []string{".groovy"},
 	"java":       []string{".java"},
