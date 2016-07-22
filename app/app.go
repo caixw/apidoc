@@ -5,7 +5,14 @@
 // app 提供了一些公共的函数、结构体及代码级别的设置项。
 package app
 
-import "time"
+import (
+	"fmt"
+	"time"
+
+	"github.com/caixw/apidoc/app/locale"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+)
 
 // 一些代码级别的配置项。
 // 可运行 go test 来检测常量是否符合规范。
@@ -42,4 +49,19 @@ const (
 
 	// 需要解析的最小代码块，小于此值，将不作解析
 	MiniSize = len("@api ")
+
+	// 默认的语言，目前仅能保证简体中文是最新的。
+	defaultTag = "zh-cmn-Hans"
 )
+
+func init() {
+	locale.Init(defaultTag)
+
+	//tag := language.MustParse(os.Getenv("LC_TYPE"))
+	tag := language.TraditionalChinese
+	localePrinter = message.NewPrinter(tag)
+
+	if localePrinter == nil {
+		panic(fmt.Errorf("无法获取指定语言[%v]的相关翻译内容", tag))
+	}
+}

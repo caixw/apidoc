@@ -5,27 +5,16 @@
 package app
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/issue9/term/colors"
-	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
 var localePrinter *message.Printer
 
-func init() {
-	// TODO 获取 os.env() 中的 LC_TYPE
-	tag := language.SimplifiedChinese
-	localePrinter = message.NewPrinter(tag)
-
-	if localePrinter == nil {
-		panic(fmt.Errorf("无法获取指定语言[%v]的相关翻译内容", tag))
-	}
-}
-
-// 向终端输出不同颜色的提示信息，颜色仅对 prefix 参数启作用。
+// PrintPrefix 向终端输出不同颜色的提示信息，颜色仅对 prefix 参数启作用。
+// 具体内容可通过返回的 *message.Printer 来输出。
 func PrintPrefix(out int, color colors.Color, prefix string) *message.Printer {
 	_, err := colors.Print(out, color, colors.Default, prefix)
 	if err != nil {

@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/caixw/apidoc/app"
+	"github.com/caixw/apidoc/app/locale"
 	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
@@ -24,11 +25,11 @@ import (
 )
 
 func main() {
-	h := flag.Bool("h", false, "显示帮助信息")
-	v := flag.Bool("v", false, "显示版本信息")
-	l := flag.Bool("l", false, "显示所有支持的语言")
-	g := flag.Bool("g", false, "在当前目录下创建一个默认的配置文件")
-	pprofType := flag.String("pprof", "", "指定一种调试输出类型，可以为 cpu 或是 mem")
+	h := flag.Bool("h", false, app.Sprintf(locale.FlagHUsage))
+	v := flag.Bool("v", false, app.Sprintf(locale.FlagVUsage))
+	l := flag.Bool("l", false, app.Sprintf(locale.FlagLUsage))
+	g := flag.Bool("g", false, app.Sprintf(locale.FlagGUsage))
+	pprofType := flag.String("pprof", "", app.Sprintf(locale.FlagPprofUsage))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -156,7 +157,7 @@ func run() {
 		return
 	}
 
-	app.Info().Println("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
+	app.Info().Printf("完成！文档保存在 %v，总用时 %v\n", cfg.Output.Dir, time.Now().Sub(start))
 }
 
 // 获取配置文件路径。目前只支持从工作路径获取。
