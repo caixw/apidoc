@@ -65,7 +65,7 @@ func main() {
 			return
 		}
 		defer func() {
-			if err := f.Close(); err != nil {
+			if err = f.Close(); err != nil {
 				app.Errorln(err)
 				return
 			}
