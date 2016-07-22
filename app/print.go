@@ -25,49 +25,29 @@ func init() {
 	}
 }
 
-// printMessage 向终端输出不同颜色的提示信息
-//
-// color 是输出的字体颜色，仅对 prefix
-// 参数起作用，其它字符串依然使用系统默认的颜色。
-func printMessage(out int, color colors.Color, prefix string, v ...interface{}) {
-	colors.Print(out, color, colors.Default, prefix)
-	colors.Print(out, colors.Default, colors.Default, v...)
+// 向终端输出不同颜色的提示信息，颜色仅对 prefix 参数启作用。
+func PrintPrefix(out int, color colors.Color, prefix string) *message.Printer {
+	_, err := colors.Print(out, color, colors.Default, prefix)
+	if err != nil {
+		panic(err)
+	}
+
+	return localePrinter
 }
 
-// printMessageln 向终端输出不同颜色的提示信息，带换行符
-func printMessageln(out int, color colors.Color, prefix string, v ...interface{}) {
-	colors.Print(out, color, colors.Default, prefix)
-	colors.Println(out, colors.Default, colors.Default, v...)
+// Warn 输出警告性信息的前缀内容，具体内容可通过返回的 *message.Printer 来输出。
+func Warn() *message.Printer {
+	return PrintPrefix(colors.Stderr, colors.Cyan, "[WARN] ")
 }
 
-// Warn 输出警告性的信息
-func Warn(v ...interface{}) {
-	printMessage(colors.Stderr, colors.Cyan, "[WARN] ", v...)
+// Error 输出错误信息的前缀内容，具体内容可通过返回的 *message.Printer 来输出。
+func Error(v ...interface{}) *message.Printer {
+	return PrintPrefix(colors.Stderr, colors.Red, "[ERROR] ")
 }
 
-// Error 输出错误的信息
-func Error(v ...interface{}) {
-	printMessage(colors.Stderr, colors.Red, "[ERROR] ", v...)
-}
-
-// Info 输出提示信息
-func Info(v ...interface{}) {
-	printMessage(colors.Stdout, colors.Green, "[INFO] ", v...)
-}
-
-// Warnln 输出警告性的信息，带换行符
-func Warnln(v ...interface{}) {
-	printMessageln(colors.Stderr, colors.Cyan, "[WARN] ", v...)
-}
-
-// Errorln 输出错误的信息，带换行符
-func Errorln(v ...interface{}) {
-	printMessageln(colors.Stderr, colors.Red, "[ERROR] ", v...)
-}
-
-// Infoln 输出提示信息，带换行符
-func Infoln(v ...interface{}) {
-	printMessageln(colors.Stdout, colors.Green, "[INFO] ", v...)
+// Info 输出提示信息信息的前缀内容，具体内容可通过返回的 *message.Printer 来输出。
+func Info(v ...interface{}) *message.Printer {
+	return PrintPrefix(colors.Stdout, colors.Green, "[INFO] ")
 }
 
 func Print(v ...interface{}) (int, error) {

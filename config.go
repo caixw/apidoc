@@ -34,7 +34,7 @@ type syntaxWriter struct {
 }
 
 func (w *syntaxWriter) Write(bs []byte) (int, error) {
-	app.Error(string(bs))
+	app.Error().Print(string(bs))
 	return len(bs), nil
 }
 
@@ -85,7 +85,7 @@ func genConfigFile(path string) error {
 	dir := filepath.Dir(path)
 	lang, err := input.DetectDirLang(dir)
 	if err != nil { // 不中断，仅作提示用。
-		app.Warn(err)
+		app.Warn().Print(err)
 	}
 
 	cfg := &config{

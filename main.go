@@ -45,14 +45,14 @@ func main() {
 	case *g:
 		path, err := getConfigFile()
 		if err != nil {
-			app.Errorln(err)
+			app.Error().Println(err)
 			return
 		}
 		if err = genConfigFile(path); err != nil {
-			app.Errorln(err)
+			app.Error().Println(err)
 			return
 		}
-		app.Infoln("配置内容成功写入", path)
+		app.Info().Println("配置内容成功写入", path)
 		return
 	}
 
@@ -61,31 +61,31 @@ func main() {
 		profile := filepath.Join("./", app.Profile)
 		f, err := os.Create(profile)
 		if err != nil {
-			app.Errorln(err)
+			app.Error().Println(err)
 			return
 		}
 		defer func() {
 			if err = f.Close(); err != nil {
-				app.Errorln(err)
+				app.Error().Println(err)
 				return
 			}
-			app.Infoln("pprof 的相关参数已经写入到", profile)
+			app.Info().Println("pprof 的相关参数已经写入到", profile)
 		}()
 
 		switch strings.ToLower(*pprofType) {
 		case "mem":
 			defer func() {
 				if err = pprof.Lookup("heap").WriteTo(f, 1); err != nil {
-					app.Errorln(err)
+					app.Error().Println(err)
 				}
 			}()
 		case "cpu":
 			if err := pprof.StartCPUProfile(f); err != nil {
-				app.Errorln(err)
+				app.Error().Println(err)
 			}
 			defer pprof.StopCPUProfile()
 		default:
-			app.Errorln("无效的 pprof 参数")
+			app.Error().Println("无效的 pprof 参数")
 			return
 		}
 	}
@@ -110,24 +110,24 @@ func run() {
 
 	path, err := getConfigFile()
 	if err != nil {
-		app.Errorln(err)
+		app.Error().Println(err)
 		return
 	}
 
 	cfg, err := loadConfig(path)
 	if err != nil {
-		app.Errorln(err)
+		app.Error().Println(err)
 		return
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(app.Version, cfg.Version)
 	if err != nil {
-		app.Errorln(err)
+		app.Error().Println(err)
 		return
 	}
 	if !compatible {
-		app.Errorln("当前程序与配置文件中指定的版本号不兼容")
+		app.Error().Println("当前程序与配置文件中指定的版本号不兼容")
 		return
 	}
 
@@ -138,7 +138,7 @@ func run() {
 		wg.Add(1)
 		go func(o *input.Options) {
 			if err := input.Parse(docs, o); err != nil {
-				app.Errorln(err)
+				app.Error().Println(err)
 			}
 			wg.Done()
 		}(opt)
@@ -152,11 +152,11 @@ func run() {
 	// 输出内容
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err := output.Render(docs, cfg.Output); err != nil {
-		app.Errorln(err)
+		app.Error().Println(err)
 		return
 	}
 
-	app.Infoln("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
+	app.Info().Println("完成！文档保存在", cfg.Output.Dir, "总用时", time.Now().Sub(start))
 }
 
 // 获取配置文件路径。目前只支持从工作路径获取。
