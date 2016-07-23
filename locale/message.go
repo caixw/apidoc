@@ -4,8 +4,11 @@
 
 package locale
 
+// 各个语种的语言对照表，通过相应文件的 init() 作初始化这样
+// 在删除文件是，就自动删除相应的语言文件，不需要手修改代码。
 var locales = map[string]map[string]string{}
 
+// 各个语言需要翻译的所有字符串
 const (
 	SyntaxError  = "在[%v:%v]出现语法错误[%v]"      // app/errors.go:23
 	OptionsError = "配置文件[%v]中配置项[%v]错误:[%v]" // app/errors.go:27
@@ -25,6 +28,13 @@ const (
 	VersionInCompatible = "当前程序与配置文件中指定的版本号不兼容\n" // main.go:131
 	Complete            = "完成！文档保存在 %v，总用时 %v\n"  // main.go:160
 
-	ErrRequired      = "不能为空"
-	ErrInvalidFormat = "格式不正确"
+	DebugPort     = "当前为模板调试模式，调试端口为：%v\n" // output/html.go:58
+	DebugTemplate = "当前为模板调试模式，调试模板为：%v\n" // output/html.go:59
+
+	// 错误信息，可能在地方用到
+	ErrRequired          = "不能为空"
+	ErrInvalidFormat     = "格式不正确"
+	ErrInvalidOutputType = "无效的输出类型"       // output/output.go
+	ErrTemplateNotExists = "模板不存在"         // output/output.go
+	ErrMkdirError        = "创建目录时发生以下错误%v" // output/output.go:51
 )

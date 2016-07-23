@@ -16,6 +16,7 @@ import (
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/locale"
 	"github.com/issue9/utils"
 )
 
@@ -38,39 +39,39 @@ type Options struct {
 // Init 对 Options 作一些初始化操作。
 func (o *Options) Init() *app.OptionsError {
 	if len(o.Dir) == 0 {
-		return &app.OptionsError{Field: "dir", Message: "不能为空"}
+		return &app.OptionsError{Field: "dir", Message: app.Sprintf(locale.ErrRequired)}
 	}
 
 	if len(o.Type) == 0 {
-		return &app.OptionsError{Field: "type", Message: "不能为空"}
+		return &app.OptionsError{Field: "type", Message: app.Sprintf(locale.ErrRequired)}
 	}
 
 	if !utils.FileExists(o.Dir) {
 		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
-			msg := "不存在，且在创建时提示以下信息：" + err.Error()
+			msg := app.Sprintf(locale.ErrMkdirError, err)
 			return &app.OptionsError{Field: "dir", Message: msg}
 		}
 	}
 
 	if !isSuppertedType(o.Type) {
-		return &app.OptionsError{Field: "type", Message: "不支持的类型"}
+		return &app.OptionsError{Field: "type", Message: app.Sprintf(locale.ErrInvalidFormat)}
 	}
 
 	// 只有 html 和 html+ 才需要判断模板文件是否存在
 	if o.Type == "html" || o.Type == "html+" {
 		if len(o.Template) > 0 && !utils.FileExists(o.Template) {
-			return &app.OptionsError{Field: "template", Message: "模板目录不存在"}
+			return &app.OptionsError{Field: "template", Message: app.Sprintf(locale.ErrTemplateNotExists)}
 		}
 	}
 
 	// 调试模式，必须得有模板和端口
 	if o.Type == "html+" {
 		if len(o.Template) == 0 {
-			return &app.OptionsError{Field: "template", Message: "不能为空"}
+			return &app.OptionsError{Field: "template", Message: app.Sprintf(locale.ErrRequired)}
 		}
 
 		if len(o.Port) == 0 {
-			return &app.OptionsError{Field: "port", Message: "不能为空"}
+			return &app.OptionsError{Field: "port", Message: app.Sprintf(locale.ErrRequired)}
 		}
 
 		if o.Port[0] != ':' {
@@ -91,7 +92,7 @@ func Render(docs *doc.Doc, o *Options) error {
 	case "json":
 		return renderJSON(docs, o)
 	default:
-		return &app.OptionsError{Field: "Type", Message: "不支持该类型"}
+		return &app.OptionsError{Field: "Type", Message: app.Sprintf(locale.ErrInvalidOutputType)}
 	}
 }
 

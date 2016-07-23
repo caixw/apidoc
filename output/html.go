@@ -15,6 +15,7 @@ import (
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output/static"
 )
 
@@ -54,8 +55,8 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 
 // renderHTML 的调试模式
 func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
-	app.Info().Println("当前为模板调试模式，调试端口为：", opt.Port)
-	app.Info().Println("当前为模板调试模式，调试模板为：", opt.Template)
+	app.Info().Printf(locale.DebugPort, opt.Port)
+	app.Info().Printf(locale.DebugTemplate, opt.Template)
 
 	p := buildHTMLPage(docs, opt)
 
