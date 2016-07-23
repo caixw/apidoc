@@ -6,6 +6,7 @@ package doc
 
 import (
 	"github.com/caixw/apidoc/app"
+	"github.com/caixw/apidoc/locale"
 	"github.com/issue9/is"
 )
 
@@ -25,7 +26,7 @@ LOOP:
 			return l.scanAPI(d)
 		case l.match("@api"): // 不认识标签
 			l.backup()
-			return l.syntaxError("不认识的顶层标签" + l.readWord())
+			return l.syntaxError(locale.ErrUnknownTopTag, l.readWord())
 		default:
 			if l.atEOF() {
 				break LOOP
@@ -49,16 +50,16 @@ LOOP:
 // content2
 func (l *lexer) scanAPIDoc(d *Doc) *app.SyntaxError {
 	if len(d.Title) > 0 || len(d.Version) > 0 {
-		return l.syntaxError("重复的 @apidoc 标签:title=" + d.Title + ",Version=" + d.Version)
+		return l.syntaxError(locale.ErrDuplicateTag, "@apidoc")
 	}
 
 	t := l.readTag()
 	d.Title = t.readLine()
 	if len(d.Title) == 0 {
-		return l.syntaxError("@apidoc 未指定标题")
+		return l.syntaxError(locale.ErrTagArgNotEnough, "@apidoc")
 	}
 	if !t.atEOF() {
-		return l.syntaxError("@apidoc 过多的参数")
+		return l.syntaxError(locale.ErrTagArgTooMuch, "@apidoc")
 	}
 
 LOOP:
@@ -68,38 +69,38 @@ LOOP:
 			t := l.readTag()
 			d.Version = t.readLine()
 			if len(d.Version) == 0 {
-				return t.syntaxError("@apiVersion 未指定参数")
+				return t.syntaxError(locale.ErrTagArgNotEnough, "@apiVersion")
 			}
 			if !t.atEOF() {
-				return t.syntaxError("@apiVersion 过多的参数")
+				return t.syntaxError(locale.ErrTagArgTooMuch, "@apiVersion")
 			}
 		case l.matchTag("@apiBaseURL"):
 			t := l.readTag()
 			d.BaseURL = t.readLine()
 			if len(d.BaseURL) == 0 {
-				return t.syntaxError("@apiBaseURL 未指定参数")
+				return t.syntaxError(locale.ErrTagArgNotEnough, "@apiBaseURL")
 			}
 			if !t.atEOF() {
-				return t.syntaxError("@apiBaseURL 过多的参数")
+				return t.syntaxError(locale.ErrTagArgTooMuch, "@apiBaseURL")
 			}
 		case l.matchTag("@apiLicense"):
 			t := l.readTag()
 			d.LicenseName = t.readWord()
 			d.LicenseURL = t.readLine()
 			if len(d.LicenseName) == 0 {
-				return t.syntaxError("@apiLicense 缺少必要的参数")
+				return t.syntaxError(locale.ErrTagArgNotEnough, "@apiLicense")
 			}
 			if len(d.LicenseURL) > 0 && !is.URL(d.LicenseURL) {
-				return t.syntaxError("@apiLicense 第二个参数必须为一个 URL")
+				return t.syntaxError(locale.ErrSecondArgMustURL)
 			}
 			if !t.atEOF() {
-				return t.syntaxError("@apiLicense 过多的参数")
+				return t.syntaxError(locale.ErrTagArgTooMuch, "@apiLicense")
 			}
 		case l.matchTag("@apiContent"):
 			d.Content = string(l.data[l.pos:])
 		case l.match("@api"):
 			l.backup()
-			return l.syntaxError("不认识的标签" + l.readWord())
+			return l.syntaxError(locale.ErrUnknownTag, l.readWord())
 		default:
 			if l.atEOF() {
 				break LOOP
@@ -120,7 +121,7 @@ func (l *lexer) scanAPI(d *Doc) (err *app.SyntaxError) {
 	api.Summary = t.readLine()
 
 	if len(api.Method) == 0 || len(api.URL) == 0 || len(api.Summary) == 0 {
-		return t.syntaxError("@api 缺少必要的参数")
+		return t.syntaxError(locale.ErrTagArgNotEnough, "@api")
 	}
 
 	api.Description = t.readEnd()
@@ -141,12 +142,12 @@ LOOP:
 		case l.matchTag("@apiRequest"):
 			err = l.scanAPIRequest(api)
 		case l.matchTag("@apiError"):
-			api.Error, err = l.scanResponse()
+			api.Error, err = l.scanResponse("@apiError")
 		case l.matchTag("@apiSuccess"):
-			api.Success, err = l.scanResponse()
+			api.Success, err = l.scanResponse("@apiSuccess")
 		case l.match("@api"):
 			l.backup()
-			return l.syntaxError("不认识的标签" + l.readWord())
+			return l.syntaxError(locale.ErrUnknownTag, l.readWord())
 		default:
 			if l.atEOF() {
 				break LOOP
@@ -181,11 +182,11 @@ func (l *lexer) scanGroup(api *API) *app.SyntaxError {
 
 	api.Group = t.readWord()
 	if len(api.Group) == 0 {
-		return t.syntaxError("@apiGroup 未指定名称")
+		return t.syntaxError(locale.ErrTagArgNotEnough, "@apiGroup")
 	}
 
 	if !t.atEOF() {
-		t.syntaxError("@apiGroup 参数过多")
+		t.syntaxError(locale.ErrTagArgTooMuch, "@apiGroup")
 	}
 
 	return nil
@@ -196,7 +197,7 @@ func (l *lexer) scanAPIQueries(api *API) *app.SyntaxError {
 		api.Queries = make([]*Param, 0, 1)
 	}
 
-	p, err := l.scanAPIParam()
+	p, err := l.scanAPIParam("@apiQuery")
 	if err != nil {
 		return err
 	}
@@ -209,7 +210,7 @@ func (l *lexer) scanAPIParams(api *API) *app.SyntaxError {
 		api.Params = make([]*Param, 0, 1)
 	}
 
-	p, err := l.scanAPIParam()
+	p, err := l.scanAPIParam("@apiParam")
 	if err != nil {
 		return err
 	}
@@ -227,7 +228,7 @@ func (l *lexer) scanAPIRequest(api *API) *app.SyntaxError {
 		Examples: []*Example{},
 	}
 	if !t.atEOF() {
-		return t.syntaxError("@apiRequest 过多的参数:" + t.readEnd())
+		return t.syntaxError(locale.ErrTagArgTooMuch, "@apiRequest")
 	}
 
 LOOP:
@@ -238,14 +239,14 @@ LOOP:
 			key := t.readWord()
 			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
-				return t.syntaxError("@apiHeader 缺少必要的参数")
+				return t.syntaxError(locale.ErrTagArgNotEnough, "@apiHeader")
 			}
 			if !t.atEOF() {
-				return t.syntaxError("@apiHeader 参数过多")
+				return t.syntaxError(locale.ErrTagArgTooMuch, "@apiHeader")
 			}
 			r.Headers[string(key)] = string(val)
 		case l.matchTag("@apiParam"):
-			p, err := l.scanAPIParam()
+			p, err := l.scanAPIParam("@apiParam")
 			if err != nil {
 				return err
 			}
@@ -273,7 +274,7 @@ LOOP:
 }
 
 // 解析 @apiSuccess 或是 @apiError 及其子标签。
-func (l *lexer) scanResponse() (*Response, *app.SyntaxError) {
+func (l *lexer) scanResponse(tagName string) (*Response, *app.SyntaxError) {
 	tag := l.readTag()
 	resp := &Response{
 		Code:     tag.readWord(),
@@ -284,10 +285,10 @@ func (l *lexer) scanResponse() (*Response, *app.SyntaxError) {
 	}
 
 	if len(resp.Code) == 0 || len(resp.Summary) == 0 {
-		return nil, tag.syntaxError("@apiSuccess 或是 @apiError 缺少必要的元素")
+		return nil, tag.syntaxError(locale.ErrTagArgNotEnough, tagName)
 	}
 	if !tag.atEOF() {
-		return nil, tag.syntaxError("@apiSuccess 或是 @apiError 参数过多")
+		return nil, tag.syntaxError(locale.ErrTagArgTooMuch, tagName)
 	}
 
 LOOP:
@@ -298,14 +299,14 @@ LOOP:
 			key := t.readWord()
 			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
-				return nil, t.syntaxError("@apiHeader 缺少必要的参数")
+				return nil, t.syntaxError(locale.ErrTagArgNotEnough, "@apiHeader")
 			}
 			if !t.atEOF() {
-				return nil, t.syntaxError("@apiHeader 参数过多")
+				return nil, t.syntaxError(locale.ErrTagArgTooMuch, "@apiHeader")
 			}
 			resp.Headers[key] = val
 		case l.matchTag("@apiParam"):
-			p, err := l.scanAPIParam()
+			p, err := l.scanAPIParam("@apiParam")
 			if err != nil {
 				return nil, err
 			}
@@ -339,14 +340,14 @@ func (l *lexer) scanAPIExample() (*Example, *app.SyntaxError) {
 	}
 
 	if len(example.Type) == 0 || len(example.Code) == 0 {
-		return nil, tag.syntaxError("@apiExample 缺少必要的参数")
+		return nil, tag.syntaxError(locale.ErrTagArgNotEnough, "@apiExample")
 	}
 
 	return example, nil
 }
 
 // 解析 @apiParam 标签
-func (l *lexer) scanAPIParam() (*Param, *app.SyntaxError) {
+func (l *lexer) scanAPIParam(tagName string) (*Param, *app.SyntaxError) {
 	p := &Param{}
 
 	tag := l.readTag()
@@ -354,7 +355,7 @@ func (l *lexer) scanAPIParam() (*Param, *app.SyntaxError) {
 	p.Type = tag.readWord()
 	p.Summary = tag.readEnd()
 	if len(p.Name) == 0 || len(p.Type) == 0 || len(p.Summary) == 0 {
-		return nil, tag.syntaxError("@apiParam 或是 @apiQuery 缺少必要的参数")
+		return nil, tag.syntaxError(locale.ErrTagArgNotEnough, tagName)
 	}
 	return p, nil
 }

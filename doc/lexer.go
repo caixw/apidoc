@@ -45,10 +45,10 @@ func (l *lexer) lineNumber() int {
 }
 
 // 构建一个语法错误的信息。
-func (l *lexer) syntaxError(msg string) *app.SyntaxError {
+func (l *lexer) syntaxError(format string, v ...interface{}) *app.SyntaxError {
 	return &app.SyntaxError{
 		Line:    l.lineNumber(),
-		Message: msg,
+		Message: app.Sprintf(format, v...),
 	}
 }
 
@@ -207,10 +207,10 @@ func (t *tag) lineNumber() int {
 }
 
 // 提示语法错误
-func (t *tag) syntaxError(msg string) *app.SyntaxError {
+func (t *tag) syntaxError(format string, v ...interface{}) *app.SyntaxError {
 	return &app.SyntaxError{
 		Line:    t.lineNumber(),
-		Message: msg,
+		Message: app.Sprintf(format, v...),
 	}
 }
 

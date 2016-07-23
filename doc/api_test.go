@@ -52,7 +52,7 @@ func TestScanAPIParam(t *testing.T) {
 
 	// 正常语法测试
 	l := newLexer([]rune("id int optional 用户 id号\n"))
-	p, err := l.scanAPIParam()
+	p, err := l.scanAPIParam("@apiQuery")
 	a.NotError(err).NotNil(p)
 	a.Equal(p.Name, "id").
 		Equal(p.Type, "int").
@@ -60,12 +60,12 @@ func TestScanAPIParam(t *testing.T) {
 
 	// 缺少参数
 	l = newLexer([]rune("id int \n"))
-	p, err = l.scanAPIParam()
+	p, err = l.scanAPIParam("@apiQuery")
 	a.ErrorType(err, synerr).Nil(p)
 
 	// 缺少参数
 	l = newLexer([]rune("id  \n"))
-	p, err = l.scanAPIParam()
+	p, err = l.scanAPIParam("@apiQuery")
 	a.ErrorType(err, synerr).Nil(p)
 }
 
@@ -240,7 +240,7 @@ func TestScanResponse(t *testing.T) {
 </root>
 `
 	l := newLexer([]rune(code))
-	resp, err := l.scanResponse()
+	resp, err := l.scanResponse("@apiError")
 	a.NotError(err).NotNil(resp)
 	a.Equal(resp.Code, "200").
 		Equal(resp.Summary, "json").
@@ -265,7 +265,7 @@ func TestScanResponse(t *testing.T) {
     <p1>v1</p1>
 </root>`
 	l = newLexer([]rune(code))
-	resp, err = l.scanResponse()
+	resp, err = l.scanResponse("@apiError")
 	a.NotError(err).NotNil(resp)
 	a.Equal(resp.Code, "200").
 		Equal(resp.Summary, "xml  status summary").
@@ -278,7 +278,7 @@ func TestScanResponse(t *testing.T) {
 @apiSuccess g
 `
 	l = newLexer([]rune(code))
-	resp, err = l.scanResponse()
+	resp, err = l.scanResponse("@apiError")
 	a.Error(err).Nil(resp)
 }
 
