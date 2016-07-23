@@ -13,6 +13,7 @@ import (
 	"strconv"
 
 	"github.com/caixw/apidoc/app"
+	"github.com/caixw/apidoc/app/locale"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
 	"github.com/issue9/version"
@@ -51,15 +52,15 @@ func loadConfig(path string) (*config, error) {
 	}
 
 	if !version.SemVerValid(cfg.Version) {
-		return nil, &app.OptionsError{Field: "version", Message: "格式不正确"}
+		return nil, &app.OptionsError{Field: "version", Message: app.Sprintf(locale.ErrInvalidFormat)}
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return nil, &app.OptionsError{Field: "inputs", Message: "不能为空"}
+		return nil, &app.OptionsError{Field: "inputs", Message: app.Sprintf(locale.ErrRequired)}
 	}
 
 	if cfg.Output == nil {
-		return nil, &app.OptionsError{Field: "output", Message: "不能为空"}
+		return nil, &app.OptionsError{Field: "output", Message: app.Sprintf(locale.ErrRequired)}
 	}
 
 	l := log.New(&syntaxWriter{}, "", 0)

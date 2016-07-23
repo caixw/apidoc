@@ -38,10 +38,10 @@ func main() {
 		flag.Usage()
 		return
 	case *v:
-		fmt.Fprintln(os.Stdout, app.Name, app.Version, "build with", runtime.Version())
+		app.Fprintf(os.Stdout, locale.FlagVersionBuildWith, app.Name, app.Version, runtime.Version())
 		return
 	case *l:
-		fmt.Fprintln(os.Stdout, "目前支持以下语言", input.Langs())
+		fmt.Fprintf(os.Stdout, locale.FlagSuppertedLangs, input.Langs())
 		return
 	case *g:
 		path, err := getConfigFile()
@@ -53,7 +53,7 @@ func main() {
 			app.Error().Println(err)
 			return
 		}
-		app.Info().Println("配置内容成功写入", path)
+		app.Info().Printf(locale.FlagConfigWritedSuccess, path)
 		return
 	}
 
@@ -70,7 +70,7 @@ func main() {
 				app.Error().Println(err)
 				return
 			}
-			app.Info().Println("pprof 的相关参数已经写入到", profile)
+			app.Info().Printf(locale.FlagPprofWritedSuccess, profile)
 		}()
 
 		switch strings.ToLower(*pprofType) {
@@ -86,7 +86,7 @@ func main() {
 			}
 			defer pprof.StopCPUProfile()
 		default:
-			app.Error().Println("无效的 pprof 参数")
+			app.Error().Printf(locale.FlagInvalidPprrof)
 			return
 		}
 	}
@@ -128,7 +128,7 @@ func run() {
 		return
 	}
 	if !compatible {
-		app.Error().Println("当前程序与配置文件中指定的版本号不兼容")
+		app.Error().Printf(locale.VersionInCompatible)
 		return
 	}
 
@@ -157,7 +157,7 @@ func run() {
 		return
 	}
 
-	app.Info().Printf("完成！文档保存在 %v，总用时 %v\n", cfg.Output.Dir, time.Now().Sub(start))
+	app.Info().Printf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start))
 }
 
 // 获取配置文件路径。目前只支持从工作路径获取。
