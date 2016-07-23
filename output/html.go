@@ -55,8 +55,8 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 
 // renderHTML 的调试模式
 func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
-	app.Info().Printf(locale.DebugPort, opt.Port)
-	app.Info().Printf(locale.DebugTemplate, opt.Template)
+	app.Info(locale.Sprintf(locale.DebugPort, opt.Port))
+	app.Info(locale.Sprintf(locale.DebugTemplate, opt.Template))
 
 	p := buildHTMLPage(docs, opt)
 
@@ -86,7 +86,7 @@ func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
 func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlPage) {
 	t, err := compileHTMLTemplate(tplDir)
 	if err != nil {
-		app.Error().Println(err)
+		app.Errorln(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -97,7 +97,7 @@ func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlP
 	}
 
 	if err = t.ExecuteTemplate(w, tplName, p); err != nil {
-		app.Error().Println(err)
+		app.Errorln(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

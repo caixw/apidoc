@@ -25,7 +25,10 @@ import (
 )
 
 func main() {
-	locale.Init(app.DefaultTag, "cmn-Hant")
+	err := locale.Init(app.DefaultTag)
+	if err != nil {
+		panic(err)
+	}
 
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
@@ -48,14 +51,14 @@ func main() {
 	case *g:
 		path, err := getConfigFile()
 		if err != nil {
-			app.Error().Println(err)
+			app.Errorln(err)
 			return
 		}
 		if err = genConfigFile(path); err != nil {
-			app.Error().Println(err)
+			app.Errorln(err)
 			return
 		}
-		app.Info().Printf(locale.FlagConfigWritedSuccess, path)
+		app.Info(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
 		return
 	}
 
@@ -64,31 +67,31 @@ func main() {
 		profile := filepath.Join("./", app.Profile)
 		f, err := os.Create(profile)
 		if err != nil {
-			app.Error().Println(err)
+			app.Errorln(err)
 			return
 		}
 		defer func() {
 			if err = f.Close(); err != nil {
-				app.Error().Println(err)
+				app.Errorln(err)
 				return
 			}
-			app.Info().Printf(locale.FlagPprofWritedSuccess, profile)
+			app.Info(locale.Sprintf(locale.FlagPprofWritedSuccess, profile))
 		}()
 
 		switch strings.ToLower(*pprofType) {
 		case "mem":
 			defer func() {
 				if err = pprof.Lookup("heap").WriteTo(f, 1); err != nil {
-					app.Error().Println(err)
+					app.Errorln(err)
 				}
 			}()
 		case "cpu":
 			if err := pprof.StartCPUProfile(f); err != nil {
-				app.Error().Println(err)
+				app.Errorln(err)
 			}
 			defer pprof.StopCPUProfile()
 		default:
-			app.Error().Printf(locale.FlagInvalidPprrof)
+			app.Error(locale.Sprintf(locale.FlagInvalidPprrof))
 			return
 		}
 	}
@@ -113,24 +116,24 @@ func run() {
 
 	path, err := getConfigFile()
 	if err != nil {
-		app.Error().Println(err)
+		app.Errorln(err)
 		return
 	}
 
 	cfg, err := loadConfig(path)
 	if err != nil {
-		app.Error().Println(err)
+		app.Errorln(err)
 		return
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(app.Version, cfg.Version)
 	if err != nil {
-		app.Error().Println(err)
+		app.Errorln(err)
 		return
 	}
 	if !compatible {
-		app.Error().Printf(locale.VersionInCompatible)
+		app.Error(locale.Sprintf(locale.VersionInCompatible))
 		return
 	}
 
@@ -141,7 +144,7 @@ func run() {
 		wg.Add(1)
 		go func(o *input.Options) {
 			if err := input.Parse(docs, o); err != nil {
-				app.Error().Println(err)
+				app.Errorln(err)
 			}
 			wg.Done()
 		}(opt)
@@ -155,11 +158,11 @@ func run() {
 	// 输出内容
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err := output.Render(docs, cfg.Output); err != nil {
-		app.Error().Println(err)
+		app.Errorln(err)
 		return
 	}
 
-	app.Info().Printf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start))
+	app.Info(locale.Sprintf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start)))
 }
 
 // 获取配置文件路径。目前只支持从工作路径获取。

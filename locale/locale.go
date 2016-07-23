@@ -2,9 +2,14 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// locale 提供了一个本地化翻译服务。
+//
+// NOTE: locale 包作为一个最底层的功能实现，不应该依赖
+// 程序中其它任何包，它们都有可能调用 locale 包中的相关内容。
 package locale
 
 import (
+	"errors"
 	"fmt"
 
 	"golang.org/x/text/language"
@@ -12,12 +17,11 @@ import (
 )
 
 // Init 初始化 locale 包。
-// defaultTag 默认的语言
-func Init(defaultLang, lang string) {
-
+// defaultTag 默认的语言，在所有语言都查找不到时，会查找此语言的翻译；
+func Init(defaultLang string) error {
 	messages, found := locales[defaultLang]
 	if !found {
-		panic("参数 defaultTag 所指的语言不存在")
+		return errors.New("参数 defaultTag 所指的语言不存在")
 	}
 	locales["und"] = messages
 
@@ -28,9 +32,13 @@ func Init(defaultLang, lang string) {
 		}
 	}
 
+	// lang := os.GetEnv("LC_TYPE")
+	lang := "cmn-Hant"
 	tag := language.MustParse(lang)
 	localePrinter = message.NewPrinter(tag)
 	if localePrinter == nil {
-		panic(fmt.Errorf("无法获取指定语言[%v]的相关翻译内容", tag))
+		return fmt.Errorf("无法获取指定语言[%v]的相关翻译内容", tag)
 	}
+
+	return nil
 }
