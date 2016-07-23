@@ -86,7 +86,7 @@ func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
 func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlPage) {
 	t, err := compileHTMLTemplate(tplDir)
 	if err != nil {
-		app.Errorln(err)
+		app.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -97,7 +97,7 @@ func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlP
 	}
 
 	if err = t.ExecuteTemplate(w, tplName, p); err != nil {
-		app.Errorln(err)
+		app.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

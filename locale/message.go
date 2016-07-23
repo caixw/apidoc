@@ -31,15 +31,15 @@ const (
 	FlagPprofUsage          = "指定一种调试输出类型，可以为 cpu 或是 mem" // main.go:32
 	FlagVersionBuildWith    = "%v %v build with %v\n"     // main.go:41
 	FlagSupportedLangs      = "目前支持以下语言 %v\n"             // main.go:44
-	FlagConfigWritedSuccess = "配置内容成功写入 %v\n"             // main.go:56
-	FlagPprofWritedSuccess  = "pprof 的相关数据已经写入到 %v\n"     // main.go:73
-	FlagInvalidPprrof       = "无效的 pprof 参数\n"            // main.go:89
+	FlagConfigWritedSuccess = "配置内容成功写入 %v"               // main.go:56
+	FlagPprofWritedSuccess  = "pprof 的相关数据已经写入到 %v"       // main.go:73
+	FlagInvalidPprrof       = "无效的 pprof 参数"              // main.go:89
 
-	VersionInCompatible = "当前程序与配置文件中指定的版本号不兼容\n" // main.go:131
-	Complete            = "完成！文档保存在：%v，总用时：%v\n"  // main.go:160
+	VersionInCompatible = "当前程序与配置文件中指定的版本号不兼容" // main.go:131
+	Complete            = "完成！文档保存在：%v，总用时：%v"  // main.go:160
 
-	DebugPort     = "当前为模板调试模式，调试端口为：%v\n" // output/html.go:58
-	DebugTemplate = "当前为模板调试模式，调试模板为：%v\n" // output/html.go:59
+	DebugPort     = "当前为模板调试模式，调试端口为：%v" // output/html.go:58
+	DebugTemplate = "当前为模板调试模式，调试模板为：%v" // output/html.go:59
 
 	// 错误信息，可能在地方用到
 	ErrRequired              = "不能为空"

@@ -51,11 +51,11 @@ func main() {
 	case *g:
 		path, err := getConfigFile()
 		if err != nil {
-			app.Errorln(err)
+			app.Error(err)
 			return
 		}
 		if err = genConfigFile(path); err != nil {
-			app.Errorln(err)
+			app.Error(err)
 			return
 		}
 		app.Info(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
@@ -67,12 +67,12 @@ func main() {
 		profile := filepath.Join("./", app.Profile)
 		f, err := os.Create(profile)
 		if err != nil {
-			app.Errorln(err)
+			app.Error(err)
 			return
 		}
 		defer func() {
 			if err = f.Close(); err != nil {
-				app.Errorln(err)
+				app.Error(err)
 				return
 			}
 			app.Info(locale.Sprintf(locale.FlagPprofWritedSuccess, profile))
@@ -82,12 +82,12 @@ func main() {
 		case "mem":
 			defer func() {
 				if err = pprof.Lookup("heap").WriteTo(f, 1); err != nil {
-					app.Errorln(err)
+					app.Error(err)
 				}
 			}()
 		case "cpu":
 			if err := pprof.StartCPUProfile(f); err != nil {
-				app.Errorln(err)
+				app.Error(err)
 			}
 			defer pprof.StopCPUProfile()
 		default:
@@ -116,20 +116,20 @@ func run() {
 
 	path, err := getConfigFile()
 	if err != nil {
-		app.Errorln(err)
+		app.Error(err)
 		return
 	}
 
 	cfg, err := loadConfig(path)
 	if err != nil {
-		app.Errorln(err)
+		app.Error(err)
 		return
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(app.Version, cfg.Version)
 	if err != nil {
-		app.Errorln(err)
+		app.Error(err)
 		return
 	}
 	if !compatible {
@@ -144,7 +144,7 @@ func run() {
 		wg.Add(1)
 		go func(o *input.Options) {
 			if err := input.Parse(docs, o); err != nil {
-				app.Errorln(err)
+				app.Error(err)
 			}
 			wg.Done()
 		}(opt)
@@ -158,7 +158,7 @@ func run() {
 	// 输出内容
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err := output.Render(docs, cfg.Output); err != nil {
-		app.Errorln(err)
+		app.Error(err)
 		return
 	}
 

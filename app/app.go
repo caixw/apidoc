@@ -15,7 +15,7 @@ import (
 // 可运行 go test 来检测常量是否符合规范。
 const (
 	// 版本号，规则参照 http://semver.org
-	Version = "3.0.0-alpha+20160723"
+	Version = "3.0.1-alpha+20160723"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -55,12 +55,6 @@ const (
 // 参数起作用，其它字符串依然使用系统默认的颜色。
 func Message(out int, color colors.Color, prefix string, v ...interface{}) {
 	colors.Print(out, color, colors.Default, prefix)
-	colors.Print(out, colors.Default, colors.Default, v...)
-}
-
-// Messageln 向终端输出不同颜色的提示信息，带换行符
-func Messageln(out int, color colors.Color, prefix string, v ...interface{}) {
-	colors.Print(out, color, colors.Default, prefix)
 	colors.Println(out, colors.Default, colors.Default, v...)
 }
 
@@ -77,19 +71,4 @@ func Error(v ...interface{}) {
 // Info 输出提示信息
 func Info(v ...interface{}) {
 	Message(colors.Stdout, colors.Green, "[INFO] ", v...)
-}
-
-// Warnln 输出警告性的信息，带换行符
-func Warnln(v ...interface{}) {
-	Messageln(colors.Stderr, colors.Cyan, "[WARN] ", v...)
-}
-
-// Errorln 输出错误的信息，带换行符
-func Errorln(v ...interface{}) {
-	Messageln(colors.Stderr, colors.Red, "[ERROR] ", v...)
-}
-
-// Infoln 输出提示信息，带换行符
-func Infoln(v ...interface{}) {
-	Messageln(colors.Stdout, colors.Green, "[INFO] ", v...)
 }

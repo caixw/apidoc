@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -34,7 +35,10 @@ type config struct {
 type syntaxWriter struct {
 }
 
+var newline = []byte("\n")
+
 func (w *syntaxWriter) Write(bs []byte) (int, error) {
+	bs = bytes.TrimSuffix(bs, newline)
 	app.Error(string(bs))
 	return len(bs), nil
 }
@@ -86,7 +90,7 @@ func genConfigFile(path string) error {
 	dir := filepath.Dir(path)
 	lang, err := input.DetectDirLang(dir)
 	if err != nil { // 不中断，仅作提示用。
-		app.Warnln(err)
+		app.Warn(err)
 	}
 
 	cfg := &config{

@@ -17,15 +17,15 @@ func init() {
 		FlagPprofUsage:          "指定壹種調試輸出類型，可以為 cpu 或是 mem",
 		FlagVersionBuildWith:    "%v %v build with %v\n",
 		FlagSupportedLangs:      "目前支持以下語言 %v\n",
-		FlagConfigWritedSuccess: "配置內容成功寫入 %v\n",
-		FlagPprofWritedSuccess:  "pprof 的相關數據已經寫入到 %v\n",
-		FlagInvalidPprrof:       "無效的 pprof 參數\n",
+		FlagConfigWritedSuccess: "配置內容成功寫入 %v",
+		FlagPprofWritedSuccess:  "pprof 的相關數據已經寫入到 %v",
+		FlagInvalidPprrof:       "無效的 pprof 參數",
 
-		VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容\n",
-		Complete:            "完成！文檔保存在：%v，總用時：%v\n",
+		VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
+		Complete:            "完成！文檔保存在：%v，總用時：%v",
 
-		DebugPort:     "當前為模板調試模式，調試端口為：%v\n",
-		DebugTemplate: "當前為模板調試模式，調試模板為：%v\n",
+		DebugPort:     "當前為模板調試模式，調試端口為：%v",
+		DebugTemplate: "當前為模板調試模式，調試模板為：%v",
 
 		// 錯誤信息，可能在地方用到
 		ErrRequired:              "不能為空",
