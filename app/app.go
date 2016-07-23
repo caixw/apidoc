@@ -17,10 +17,8 @@ import (
 // 一些代码级别的配置项。
 // 可运行 go test 来检测常量是否符合规范。
 const (
-	// 版本号
-	//
-	// 版本号按照 http://semver.org 中的规则
-	Version = "3.0.0-alpha+20160721"
+	// 版本号，规则参照 http://semver.org
+	Version = "3.0.0-alpha+20160723"
 
 	// 程序的正式名称
 	Name = "apidoc"

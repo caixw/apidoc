@@ -9,12 +9,9 @@ import (
 	"golang.org/x/text/message"
 )
 
+// Init 初始化 locale 包。
 // defaultTag 默认的语言
 func Init(defaultTag string) {
-	if len(locales) == 0 {
-		return
-	}
-
 	tag, found := locales[defaultTag]
 	if !found {
 		panic("参数 defaultTag 所指的语言不存在")
