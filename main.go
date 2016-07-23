@@ -17,9 +17,9 @@ import (
 	"time"
 
 	"github.com/caixw/apidoc/app"
-	"github.com/caixw/apidoc/app/locale"
 	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
 	"github.com/issue9/version"
 )

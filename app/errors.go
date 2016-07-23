@@ -4,7 +4,7 @@
 
 package app
 
-import "github.com/caixw/apidoc/app/locale"
+import "github.com/caixw/apidoc/locale"
 
 // SyntaxError 语法错误
 type SyntaxError struct {

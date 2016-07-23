@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/caixw/apidoc/app/locale"
+	"github.com/caixw/apidoc/locale"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
