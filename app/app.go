@@ -49,7 +49,7 @@ const (
 	MiniSize = len("@api ")
 
 	// 默认的语言，目前仅能保证简体中文是最新的。
-	defaultTag = "zh-cmn-Hans"
+	defaultTag = "cmn-Hans"
 )
 
 func init() {
