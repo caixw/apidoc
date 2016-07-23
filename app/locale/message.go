@@ -4,9 +4,7 @@
 
 package locale
 
-// 之所以用常量代替直接使用字符串，是因为若直接在源码中直接使用字符串，
-// 则在修改字符串之后，很难反向查找该字符串所对应的所有语种下的相应代码；
-// 而使用常量，则可以通过工具 (godef 等) 可以直接跳转到定义处。
+var locales = map[string]map[string]string{}
 
 const (
 	SyntaxError  = "在[%v:%v]出现语法错误[%v]"      // app/errors.go:23

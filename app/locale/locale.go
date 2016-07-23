@@ -11,18 +11,17 @@ import (
 
 // defaultTag 默认的语言
 func Init(defaultTag string) {
-	list := map[string]map[string]string{
-		"zh-cmn-Hans": zh_cmn_Hans,
-		"zh-cmn-Hant": zh_cmn_Hant,
+	if len(locales) == 0 {
+		return
 	}
 
-	tag, found := list[defaultTag]
+	tag, found := locales[defaultTag]
 	if !found {
 		panic("参数 defaultTag 所指的语言不存在")
 	}
-	list["und"] = tag
+	locales["und"] = tag
 
-	for id, messages := range list {
+	for id, messages := range locales {
 		tag := language.MustParse(id)
 		for key, val := range messages {
 			message.SetString(tag, key, val)
