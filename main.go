@@ -41,7 +41,7 @@ func main() {
 		app.Fprintf(os.Stdout, locale.FlagVersionBuildWith, app.Name, app.Version, runtime.Version())
 		return
 	case *l:
-		fmt.Fprintf(os.Stdout, locale.FlagSuppertedLangs, input.Langs())
+		fmt.Fprintf(os.Stdout, locale.FlagSupportedLangs, input.Langs())
 		return
 	case *g:
 		path, err := getConfigFile()

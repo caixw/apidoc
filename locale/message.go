@@ -20,7 +20,7 @@ const (
 	FlagGUsage              = "在当前目录下创建一个默认的配置文件"         // main.go:31
 	FlagPprofUsage          = "指定一种调试输出类型，可以为 cpu 或是 mem" // main.go:32
 	FlagVersionBuildWith    = "%v %v build with %v\n"     // main.go:41
-	FlagSuppertedLangs      = "目前支持以下语言 %v\n"             // main.go:44
+	FlagSupportedLangs      = "目前支持以下语言 %v\n"             // main.go:44
 	FlagConfigWritedSuccess = "配置内容成功写入 %v\n"             // main.go:56
 	FlagPprofWritedSuccess  = "pprof 的相关数据已经写入到 %v\n"     // main.go:73
 	FlagInvalidPprrof       = "无效的 pprof 参数\n"            // main.go:89
@@ -32,9 +32,14 @@ const (
 	DebugTemplate = "当前为模板调试模式，调试模板为：%v\n" // output/html.go:59
 
 	// 错误信息，可能在地方用到
-	ErrRequired          = "不能为空"
-	ErrInvalidFormat     = "格式不正确"
-	ErrInvalidOutputType = "无效的输出类型"       // output/output.go
-	ErrTemplateNotExists = "模板不存在"         // output/output.go
-	ErrMkdirError        = "创建目录时发生以下错误%v" // output/output.go:51
+	ErrRequired              = "不能为空"
+	ErrInvalidFormat         = "格式不正确"
+	ErrDirNotExists          = "目录不存在"
+	ErrInvalidOutputType     = "无效的输出类型"            // output/output.go
+	ErrTemplateNotExists     = "模板不存在"              // output/output.go
+	ErrMkdirError            = "创建目录时发生以下错误%v"      // output/output.go:51
+	ErrInvalidBlockType      = "无效的 block.Type 值%v" // input/block
+	ErrUnsupportedInputLang  = "无效的输入语言%v"          // input
+	ErrNotFoundEndFlag       = "找不到结束符号"            // input
+	ErrNotFoundSupportedLang = "该目录下没有支持的语言文件"      // input/lang.go
 )

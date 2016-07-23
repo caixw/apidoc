@@ -11,7 +11,7 @@
 package input
 
 import (
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -20,6 +20,7 @@ import (
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/locale"
 	"github.com/issue9/utils"
 )
 
@@ -35,19 +36,19 @@ type Options struct {
 // Init 检测 Options 变量是否符合要求
 func (opt *Options) Init() *app.OptionsError {
 	if len(opt.Dir) == 0 {
-		return &app.OptionsError{Field: "dir", Message: "不能为空"}
+		return &app.OptionsError{Field: "dir", Message: app.Sprintf(locale.ErrRequired)}
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return &app.OptionsError{Field: "dir", Message: "该目录不存在"}
+		return &app.OptionsError{Field: "dir", Message: app.Sprintf(locale.ErrDirNotExists)}
 	}
 
 	if len(opt.Lang) == 0 {
-		return &app.OptionsError{Field: "lang", Message: "不能为空"}
+		return &app.OptionsError{Field: "lang", Message: app.Sprintf(locale.ErrRequired)}
 	}
 
 	if !langIsSupported(opt.Lang) {
-		return &app.OptionsError{Field: "lang", Message: "不支持该语言"}
+		return &app.OptionsError{Field: "lang", Message: app.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang)}
 	}
 
 	if len(opt.Exts) > 0 {
@@ -74,7 +75,7 @@ func (opt *Options) Init() *app.OptionsError {
 func Parse(docs *doc.Doc, o *Options) error {
 	blocks, found := langs[o.Lang]
 	if !found {
-		return fmt.Errorf("不支持该语言:[%v]", o.Lang)
+		return errors.New(app.Sprintf(locale.ErrUnsupportedInputLang, o.Lang))
 	}
 
 	paths, err := recursivePath(o)
@@ -124,7 +125,7 @@ func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logg
 		ln := l.lineNumber() + 1 // 记录当前的行号，顺便调整为行号起始行号为 1
 		rs, ok := block.EndFunc(l)
 		if !ok && synerrLog != nil {
-			synerrLog.Println(&app.SyntaxError{Line: ln, File: path, Message: "找不到结束标记"})
+			synerrLog.Println(&app.SyntaxError{Line: ln, File: path, Message: app.Sprintf(locale.ErrNotFoundEndFlag)})
 			return
 		}
 
