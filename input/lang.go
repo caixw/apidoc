@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/locale"
 )
 
@@ -186,7 +185,7 @@ func DetectDirLang(dir string) (string, error) {
 	}
 
 	if len(langsMap) == 0 {
-		return "", errors.New(app.Sprintf(locale.ErrNotFoundSupportedLang))
+		return "", errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
 	}
 
 	lang := ""
@@ -201,7 +200,7 @@ func DetectDirLang(dir string) (string, error) {
 	if len(lang) > 0 {
 		return lang, nil
 	}
-	return "", errors.New(app.Sprintf(locale.ErrNotFoundSupportedLang))
+	return "", errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
 }
 
 // 根据扩展名获取其对应的语言名称。

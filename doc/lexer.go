@@ -8,6 +8,7 @@ import (
 	"unicode"
 
 	"github.com/caixw/apidoc/app"
+	"github.com/caixw/apidoc/locale"
 )
 
 // 简单的词法分析
@@ -48,7 +49,7 @@ func (l *lexer) lineNumber() int {
 func (l *lexer) syntaxError(format string, v ...interface{}) *app.SyntaxError {
 	return &app.SyntaxError{
 		Line:    l.lineNumber(),
-		Message: app.Sprintf(format, v...),
+		Message: locale.Sprintf(format, v...),
 	}
 }
 
@@ -210,7 +211,7 @@ func (t *tag) lineNumber() int {
 func (t *tag) syntaxError(format string, v ...interface{}) *app.SyntaxError {
 	return &app.SyntaxError{
 		Line:    t.lineNumber(),
-		Message: app.Sprintf(format, v...),
+		Message: locale.Sprintf(format, v...),
 	}
 }
 

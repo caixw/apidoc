@@ -9,7 +9,6 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/locale"
 )
 
@@ -52,7 +51,7 @@ func (b *block) EndFunc(l *lexer) ([]rune, bool) {
 	case blockTypeSComment:
 		return b.endSComments(l)
 	default:
-		panic(app.Sprintf(locale.ErrInvalidBlockType, b.Type))
+		panic(locale.Sprintf(locale.ErrInvalidBlockType, b.Type))
 	}
 }
 

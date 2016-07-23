@@ -25,11 +25,13 @@ import (
 )
 
 func main() {
-	h := flag.Bool("h", false, app.Sprintf(locale.FlagHUsage))
-	v := flag.Bool("v", false, app.Sprintf(locale.FlagVUsage))
-	l := flag.Bool("l", false, app.Sprintf(locale.FlagLUsage))
-	g := flag.Bool("g", false, app.Sprintf(locale.FlagGUsage))
-	pprofType := flag.String("pprof", "", app.Sprintf(locale.FlagPprofUsage))
+	locale.Init(app.DefaultTag, "cmn-Hant")
+
+	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
+	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
+	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLUsage))
+	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
+	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -38,10 +40,10 @@ func main() {
 		flag.Usage()
 		return
 	case *v:
-		app.Fprintf(os.Stdout, locale.FlagVersionBuildWith, app.Name, app.Version, runtime.Version())
+		locale.Fprintf(os.Stdout, locale.FlagVersionBuildWith, app.Name, app.Version, runtime.Version())
 		return
 	case *l:
-		fmt.Fprintf(os.Stdout, locale.FlagSupportedLangs, input.Langs())
+		locale.Fprintf(os.Stdout, locale.FlagSupportedLangs, input.Langs())
 		return
 	case *g:
 		path, err := getConfigFile()

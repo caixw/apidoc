@@ -20,9 +20,9 @@ type OptionsError struct {
 }
 
 func (err *SyntaxError) Error() string {
-	return Sprintf(locale.SyntaxError, err.File, err.Line, err.Message)
+	return locale.Sprintf(locale.SyntaxError, err.File, err.Line, err.Message)
 }
 
 func (err *OptionsError) Error() string {
-	return Sprintf(locale.OptionsError, ConfigFilename, err.Field, err.Message)
+	return locale.Sprintf(locale.OptionsError, ConfigFilename, err.Field, err.Message)
 }

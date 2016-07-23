@@ -4,6 +4,14 @@
 
 package locale
 
+import (
+	"io"
+
+	"golang.org/x/text/message"
+)
+
+var localePrinter *message.Printer
+
 // 各个语种的语言对照表，通过相应文件的 init() 作初始化这样
 // 在删除文件是，就自动删除相应的语言文件，不需要手修改代码。
 var locales = map[string]map[string]string{}
@@ -49,3 +57,53 @@ const (
 	ErrTagArgNotEnough       = "标签：%v 参数不够"               // doc
 	ErrSecondArgMustURL      = "@apiLicense 第二个参数必须为 URL" // doc
 )
+
+// Printer 获取当前语言的 *message.Printer 实例
+func Printer() *message.Printer {
+	return localePrinter
+}
+
+// Print 类型 fmt.Print，与特定的语言绑定。
+func Print(v ...interface{}) (int, error) {
+	return localePrinter.Print(v...)
+}
+
+// Println 类型 fmt.Println，与特定的语言绑定。
+func Println(v ...interface{}) (int, error) {
+	return localePrinter.Println(v...)
+}
+
+// Printf 类型 fmt.Printf，与特定的语言绑定。
+func Printf(key string, v ...interface{}) (int, error) {
+	return localePrinter.Printf(key, v...)
+}
+
+// Sprint 类型 fmt.Sprint，与特定的语言绑定。
+func Sprint(v ...interface{}) string {
+	return localePrinter.Sprint(v...)
+}
+
+// Sprintln 类型 fmt.Sprintln，与特定的语言绑定。
+func Sprintln(v ...interface{}) string {
+	return localePrinter.Sprintln(v...)
+}
+
+// Sprintf 类型 fmt.Sprintf，与特定的语言绑定。
+func Sprintf(key message.Reference, v ...interface{}) string {
+	return localePrinter.Sprintf(key, v...)
+}
+
+// Fprint 类型 fmt.Fprint，与特定的语言绑定。
+func Fprint(w io.Writer, v ...interface{}) (int, error) {
+	return localePrinter.Fprint(w, v...)
+}
+
+// Fprintln 类型 fmt.Fprintln，与特定的语言绑定。
+func Fprintln(w io.Writer, v ...interface{}) (int, error) {
+	return localePrinter.Fprintln(w, v...)
+}
+
+// Fprintf 类型 fmt.Fprintf，与特定的语言绑定。
+func Fprintf(w io.Writer, key message.Reference, v ...interface{}) (int, error) {
+	return localePrinter.Fprintf(w, key, v...)
+}

@@ -52,15 +52,15 @@ func loadConfig(path string) (*config, error) {
 	}
 
 	if !version.SemVerValid(cfg.Version) {
-		return nil, &app.OptionsError{Field: "version", Message: app.Sprintf(locale.ErrInvalidFormat)}
+		return nil, &app.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return nil, &app.OptionsError{Field: "inputs", Message: app.Sprintf(locale.ErrRequired)}
+		return nil, &app.OptionsError{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if cfg.Output == nil {
-		return nil, &app.OptionsError{Field: "output", Message: app.Sprintf(locale.ErrRequired)}
+		return nil, &app.OptionsError{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	l := log.New(&syntaxWriter{}, "", 0)
