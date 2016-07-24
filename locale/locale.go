@@ -10,7 +10,10 @@ package locale
 
 import (
 	"errors"
-	"fmt"
+	"os"
+	"runtime"
+	"syscall"
+	"unsafe"
 
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
@@ -32,13 +35,42 @@ func Init(defaultLang string) error {
 		}
 	}
 
-	// lang := os.GetEnv("LC_TYPE")
-	lang := "cmn-Hant"
-	tag := language.MustParse(lang)
-	localePrinter = message.NewPrinter(tag)
-	if localePrinter == nil {
-		return fmt.Errorf("无法获取指定语言[%v]的相关翻译内容", tag)
+	localeName, err := getLocaleName()
+	if err != nil {
+		return err
 	}
 
+	tag := language.MustParse(localeName)
+	localePrinter = message.NewPrinter(tag)
 	return nil
+}
+
+func getLocaleName() (string, error) {
+	if runtime.GOOS == "windows" {
+		return getWindowsLocale()
+	}
+
+	return os.Getenv("LC_ALL"), nil
+}
+
+func getWindowsLocale() (string, error) {
+	k32, err := syscall.LoadDLL("kernel32.dll")
+	if err != nil {
+		return "", err
+	}
+	defer k32.Release()
+
+	f, err := k32.FindProc("GetUserDefaultLocaleName")
+	if err != nil {
+		return "", err
+	}
+
+	l := 85
+	buf := make([]uint16, l)
+	r1, _, err := f.Call(uintptr(unsafe.Pointer(&buf[0])), uintptr(l))
+	if uint32(r1) == 0 {
+		return "", err
+	}
+
+	return syscall.UTF16ToString(buf), nil
 }
