@@ -5,11 +5,7 @@
 // app 提供了一些公共的函数、结构体及代码级别的设置项。
 package app
 
-import (
-	"time"
-
-	"github.com/issue9/term/colors"
-)
+import "github.com/issue9/term/colors"
 
 // 一些代码级别的配置项。
 // 可运行 go test 来检测常量是否符合规范。
@@ -36,14 +32,8 @@ const (
 	// 系统会给其加到此分组中，同时也是默认的索引文件名。
 	DefaultGroupName = "index"
 
-	// 默认的时间格式，仅对 HTML 中的默认模板启作用。自定义模板中可自定义格式。
-	TimeFormat = time.RFC3339
-
 	// 输出的 profile 文件的名称
 	Profile = "apidoc.prof"
-
-	// 需要解析的最小代码块，小于此值，将不作解析
-	MiniSize = len("@api ")
 
 	// 默认的语言，目前仅能保证简体中文是最新的。
 	DefaultTag = "cmn-Hans"

@@ -142,7 +142,7 @@ func compileHTMLTemplate(tplDir string) (*template.Template, error) {
 				return path.Join(".", name+htmlSuffix)
 			},
 			"dateFormat": func(t time.Time) string { // 格式化日期
-				return t.Format(app.TimeFormat)
+				return t.Format(time.RFC3339)
 			},
 			"nl2br": func(str string) string { // 将字符串的换行符转成 <br />
 				return strings.Replace(str, "\n", "<br />", -1)

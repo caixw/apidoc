@@ -24,6 +24,9 @@ import (
 	"github.com/issue9/utils"
 )
 
+// 需要解析的最小代码块，小于此值，将不作解析
+const miniSize = len("@api ")
+
 // Options 指定输入内容的相关信息。
 type Options struct {
 	SyntaxLog *log.Logger `json:"-"`              // 语法错误输出通道
@@ -130,7 +133,7 @@ func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logg
 		}
 
 		block = nil
-		if len(rs) < app.MiniSize {
+		if len(rs) < miniSize {
 			continue
 		}
 
