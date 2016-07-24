@@ -1,7 +1,11 @@
 // Copyright 2016 by caixw, All rights reserved.
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
+
+package locale
+
 import (
+	"os"
 	"syscall"
 	"unsafe"
 )
@@ -10,6 +14,10 @@ import (
 const maxlen = 85
 
 func getLocaleName() (string, error) {
+	if name := os.Getenv("LANG"); len(name) > 0 {
+		return name, nil
+	}
+
 	k32, err := syscall.LoadDLL("kernel32.dll")
 	if err != nil {
 		return "", err
