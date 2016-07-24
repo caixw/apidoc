@@ -36,7 +36,7 @@ const (
 	Profile = "apidoc.prof"
 
 	// 默认的语言，目前仅能保证简体中文是最新的。
-	DefaultTag = "cmn-Hans"
+	DefaultLocale = "cmn-Hans"
 )
 
 // Message 向终端输出不同颜色的提示信息

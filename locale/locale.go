@@ -9,21 +9,12 @@
 package locale
 
 import (
-	"errors"
-
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
-// Init 初始化 locale 包。
-// defaultTag 默认的语言，在所有语言都查找不到时，会查找此语言的翻译；
-func Init(defaultLang string) error {
-	messages, found := locales[defaultLang]
-	if !found {
-		return errors.New("参数 defaultTag 所指的语言不存在")
-	}
-	locales["und"] = messages
-
+// GetLocale 获取当前系统默认的本地化语言信息。
+func GetLocale() (language.Tag, error) {
 	for id, messages := range locales {
 		tag := language.MustParse(id)
 		for key, val := range messages {
@@ -33,10 +24,13 @@ func Init(defaultLang string) error {
 
 	localeName, err := getLocaleName()
 	if err != nil {
-		return err
+		return language.Und, err
 	}
 
-	tag := language.MustParse(localeName)
+	return language.Parse(localeName)
+}
+
+// SetLocale 设置程序的本地化语言信息为 tag
+func SetLocale(tag language.Tag) {
 	localePrinter = message.NewPrinter(tag)
-	return nil
 }

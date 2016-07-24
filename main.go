@@ -22,13 +22,22 @@ import (
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
 	"github.com/issue9/version"
+	"golang.org/x/text/language"
 )
 
 func main() {
-	err := locale.Init(app.DefaultTag)
+	tag, err := locale.GetLocale()
 	if err != nil {
-		panic(err)
+		app.Error(err) // 输出错误信息，但不中断执行
+	} else {
+		app.Info("使用默认的本化语言：", app.DefaultLocale)
+		tag, err = language.Parse(app.DefaultLocale)
+		if err != nil {
+			app.Error(err)
+			return
+		}
 	}
+	locale.SetLocale(tag)
 
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))

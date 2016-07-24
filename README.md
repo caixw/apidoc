@@ -54,6 +54,12 @@ go get github.com/caixw/apidoc
 start := time.Now()
 docs := doc.New()
 
+tag, err := locale.GetLocale()
+if err != nil {
+    panic(err)
+}
+locale.SetLocale(tag)
+
 // 分析文档内容
 inputOptions := &input.Options{...}
 docs, err := input.Parse(docs, inputOptions)
