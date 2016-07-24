@@ -6,8 +6,19 @@
 
 package locale
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 func getLocaleName() (string, error) {
-	return os.Getenv("LANG"), nil
+	name := os.Getenv("LANG")
+
+	// LANG = zh_CN.UTF-8 过滤掉最后的编译方式
+	index := strings.LastIndexByte(name, '.')
+	if index > 0 {
+		name = name[:index]
+	}
+
+	return name, nil
 }
