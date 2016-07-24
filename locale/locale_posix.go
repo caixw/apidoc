@@ -9,5 +9,5 @@ package locale
 import "os"
 
 func getLocaleName() (string, error) {
-	return os.Getenv("LC_ALL"), nil
+	return os.Getenv("LANG"), nil
 }
