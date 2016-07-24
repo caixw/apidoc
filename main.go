@@ -6,8 +6,8 @@
 package main
 
 import (
+	"bytes"
 	"flag"
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -100,14 +100,11 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stdout, app.Name, "是一个 RESTful API 文档生成工具。")
-
-	fmt.Fprintln(os.Stdout, "\n参数:")
-	flag.CommandLine.SetOutput(os.Stdout)
+	buf := new(bytes.Buffer)
+	flag.CommandLine.SetOutput(buf)
 	flag.PrintDefaults()
 
-	fmt.Fprintln(os.Stdout, "\n源代码采用 MIT 开源许可证，发布于", app.RepoURL)
-	fmt.Fprintln(os.Stdout, "详细信息可访问官网", app.OfficialURL)
+	locale.Fprintf(os.Stdout, locale.FlagUsage, app.Name, buf.String(), app.RepoURL, app.OfficialURL)
 }
 
 // 真正的程序入口，main 主要是作参数的处理。

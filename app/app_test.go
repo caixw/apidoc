@@ -25,5 +25,4 @@ func TestConsts(t *testing.T) {
 	a.True(len(DefaultTitle) > 0)
 	a.True(len(DefaultGroupName) > 0).True(strings.IndexAny(DefaultGroupName, "/\\") < 0)
 	a.True(len(Profile) > 0).True(strings.IndexAny(Profile, "/\\") < 0)
-	a.True(MiniSize >= 0)
 }

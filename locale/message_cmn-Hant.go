@@ -10,6 +10,14 @@ func init() {
 		OptionsError: "配置文件[%v]中配置項[%v]錯誤[%v]",
 
 		// 與 flag 包相關的處理
+		FlagUsage: `%v 是壹個 RESTful API 文檔生成工具。
+
+參數：
+%v
+
+源代碼采用 MIT 開源許可證，發布於 %v
+詳細信息可訪問官網 %v
+`,
 		FlagHUsage:              "顯示幫助信息",
 		FlagVUsage:              "顯示版本信息",
 		FlagLUsage:              "顯示所有支持的語言",

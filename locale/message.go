@@ -24,6 +24,14 @@ const (
 	OptionsError = "配置文件[%v]中配置项[%v]错误[%v]" // app/errors.go:27
 
 	// 与 flag 包相关的处理
+	FlagUsage = `%v 是一个 RESTful API 文档生成工具。
+
+参数：
+%v
+
+源代码采用 MIT 开源许可证，发布于 %v
+详细信息可访问官网 %v
+`
 	FlagHUsage              = "显示帮助信息"                    // main.go:28
 	FlagVUsage              = "显示版本信息"                    // main.go:29
 	FlagLUsage              = "显示所有支持的语言"                 // main.go:30
