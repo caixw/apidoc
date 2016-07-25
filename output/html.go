@@ -15,7 +15,6 @@ import (
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output/static"
 )
 
@@ -49,15 +48,11 @@ func renderHTML(docs *doc.Doc, opt *Options) error {
 	}
 
 	p := buildHTMLPage(docs, opt)
-
 	return renderHTMLGroups(p, t, opt.Dir)
 }
 
-// renderHTML 的调试模式
+// renderHTMLPlus 是 renderHTML 的调试模式
 func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
-	app.Info(locale.Sprintf(locale.DebugPort, opt.Port))
-	app.Info(locale.Sprintf(locale.DebugTemplate, opt.Template))
-
 	p := buildHTMLPage(docs, opt)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +66,7 @@ func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
 		if group, found := p.Groups[groupName]; found {
 			p.GroupName = groupName
 			p.Group = group
-			handleGroup(w, r, opt.Template, p)
+			handleGroup(w, r, opt, p)
 			return
 		}
 
@@ -83,10 +78,12 @@ func renderHTMLPlus(docs *doc.Doc, opt *Options) error {
 }
 
 // 编译模板，并输出 p 的内容。
-func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlPage) {
-	t, err := compileHTMLTemplate(tplDir)
+func handleGroup(w http.ResponseWriter, r *http.Request, opt *Options, p *htmlPage) {
+	t, err := compileHTMLTemplate(opt.Template)
 	if err != nil {
-		app.Error(err)
+		if opt.ErrorLog != nil {
+			opt.ErrorLog.Println(err)
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -97,7 +94,9 @@ func handleGroup(w http.ResponseWriter, r *http.Request, tplDir string, p *htmlP
 	}
 
 	if err = t.ExecuteTemplate(w, tplName, p); err != nil {
-		app.Error(err)
+		if opt.ErrorLog != nil {
+			opt.ErrorLog.Println(err)
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

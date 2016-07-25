@@ -5,10 +5,8 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -29,18 +27,6 @@ type config struct {
 	Version string           `json:"version"` // 产生此配置文件的程序版本号
 	Inputs  []*input.Options `json:"inputs"`
 	Output  *output.Options  `json:"output"`
-}
-
-// 带色彩输出的控制台。
-type syntaxWriter struct {
-}
-
-var newline = []byte("\n")
-
-func (w *syntaxWriter) Write(bs []byte) (int, error) {
-	bs = bytes.TrimSuffix(bs, newline)
-	app.Error(string(bs))
-	return len(bs), nil
 }
 
 // 加载 path 所指的文件内容到 *config 实例。
@@ -67,14 +53,13 @@ func loadConfig(path string) (*config, error) {
 		return nil, &app.OptionsError{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
-	l := log.New(&syntaxWriter{}, "", 0)
 	for i, opt := range cfg.Inputs {
 		index := strconv.Itoa(i)
 		if err := opt.Init(); err != nil {
 			err.Field = "inputs[" + index + "]." + err.Field
 			return nil, err
 		}
-		opt.SyntaxLog = l
+		opt.SyntaxLog = erro // 语法错误输出到 erro 中
 	}
 
 	if err := cfg.Output.Init(); err != nil {
@@ -90,7 +75,7 @@ func genConfigFile(path string) error {
 	dir := filepath.Dir(path)
 	lang, err := input.DetectDirLang(dir)
 	if err != nil { // 不中断，仅作提示用。
-		app.Warn(err)
+		warn.Println(err)
 	}
 
 	cfg := &config{

@@ -11,6 +11,7 @@
 package output
 
 import (
+	"log"
 	"os"
 	"time"
 
@@ -34,6 +35,7 @@ type Options struct {
 	Template string        `json:"template,omitempty"` // 指定一个输出模板
 	Port     string        `json:"port,omitempty"`     // 调试的端口
 	Elapsed  time.Duration `json:"-"`                  // 编译用时
+	ErrorLog *log.Logger   `json:"-"`                  // 错误信息输出通道，在 html+ 模式下会用到。
 }
 
 // Init 对 Options 作一些初始化操作。

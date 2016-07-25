@@ -28,12 +28,11 @@ import (
 func main() {
 	tag, err := locale.GetLocale()
 	if err != nil {
-		app.Error(err) // 输出错误信息，但不中断执行
-	} else {
-		app.Info("使用默认的本化语言：", app.DefaultLocale)
+		warn.Println(err)
+		info.Println("无法获取系统语言，使用默认的本化语言：", app.DefaultLocale)
 		tag, err = language.Parse(app.DefaultLocale)
 		if err != nil {
-			app.Error(err)
+			erro.Println(err)
 			return
 		}
 	}
@@ -60,14 +59,14 @@ func main() {
 	case *g:
 		path, err := getConfigFile()
 		if err != nil {
-			app.Error(err)
+			erro.Println(err)
 			return
 		}
 		if err = genConfigFile(path); err != nil {
-			app.Error(err)
+			erro.Println(err)
 			return
 		}
-		app.Info(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
+		info.Println(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
 		return
 	}
 
@@ -76,35 +75,36 @@ func main() {
 		profile := filepath.Join("./", app.Profile)
 		f, err := os.Create(profile)
 		if err != nil {
-			app.Error(err)
-			return
+			warn.Println(err)
+			goto RUN
 		}
 		defer func() {
 			if err = f.Close(); err != nil {
-				app.Error(err)
+				erro.Println(err)
 				return
 			}
-			app.Info(locale.Sprintf(locale.FlagPprofWritedSuccess, profile))
+			info.Println(locale.Sprintf(locale.FlagPprofWritedSuccess, profile))
 		}()
 
 		switch strings.ToLower(*pprofType) {
 		case "mem":
 			defer func() {
 				if err = pprof.Lookup("heap").WriteTo(f, 1); err != nil {
-					app.Error(err)
+					warn.Println(err)
 				}
 			}()
 		case "cpu":
 			if err := pprof.StartCPUProfile(f); err != nil {
-				app.Error(err)
+				warn.Println(err)
 			}
 			defer pprof.StopCPUProfile()
 		default:
-			app.Error(locale.Sprintf(locale.FlagInvalidPprrof))
+			erro.Println(locale.Sprintf(locale.FlagInvalidPprrof))
 			return
 		}
 	}
 
+RUN:
 	run()
 }
 
@@ -122,24 +122,24 @@ func run() {
 
 	path, err := getConfigFile()
 	if err != nil {
-		app.Error(err)
+		erro.Println(err)
 		return
 	}
 
 	cfg, err := loadConfig(path)
 	if err != nil {
-		app.Error(err)
+		erro.Println(err)
 		return
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(app.Version, cfg.Version)
 	if err != nil {
-		app.Error(err)
+		erro.Println(err)
 		return
 	}
 	if !compatible {
-		app.Error(locale.Sprintf(locale.VersionInCompatible))
+		erro.Println(locale.Sprintf(locale.VersionInCompatible))
 		return
 	}
 
@@ -150,7 +150,7 @@ func run() {
 		wg.Add(1)
 		go func(o *input.Options) {
 			if err := input.Parse(docs, o); err != nil {
-				app.Error(err)
+				erro.Println(err)
 			}
 			wg.Done()
 		}(opt)
@@ -164,11 +164,11 @@ func run() {
 	// 输出内容
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err := output.Render(docs, cfg.Output); err != nil {
-		app.Error(err)
+		erro.Println(err)
 		return
 	}
 
-	app.Info(locale.Sprintf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start)))
+	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start)))
 }
 
 // 获取配置文件路径。目前只支持从工作路径获取。
