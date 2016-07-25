@@ -5,7 +5,6 @@
 package locale
 
 import (
-	"os"
 	"syscall"
 	"unsafe"
 )
@@ -14,7 +13,7 @@ import (
 const maxlen = 85
 
 func getLocaleName() (string, error) {
-	if name := os.Getenv("LANG"); len(name) > 0 {
+	if name := getEnvLang(); len(name) > 0 {
 		return name, nil
 	}
 
