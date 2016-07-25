@@ -5,7 +5,11 @@
 // app 提供了一些公共的函数、结构体及代码级别的设置项。
 package app
 
-import "github.com/issue9/term/colors"
+import (
+	"os"
+
+	"github.com/issue9/term/colors"
+)
 
 // 一些代码级别的配置项。
 // 可运行 go test 来检测常量是否符合规范。
@@ -43,22 +47,22 @@ const (
 //
 // color 是输出的字体颜色，仅对 prefix
 // 参数起作用，其它字符串依然使用系统默认的颜色。
-func Message(out int, color colors.Color, prefix string, v ...interface{}) {
-	colors.Print(out, color, colors.Default, prefix)
-	colors.Println(out, colors.Default, colors.Default, v...)
+func Message(out *os.File, color colors.Color, prefix string, v ...interface{}) {
+	colors.Fprint(out, color, colors.Default, prefix)
+	colors.Fprintln(out, colors.Default, colors.Default, v...)
 }
 
 // Warn 输出警告性的信息
 func Warn(v ...interface{}) {
-	Message(colors.Stderr, colors.Cyan, "[WARN] ", v...)
+	Message(os.Stderr, colors.Cyan, "[WARN] ", v...)
 }
 
 // Error 输出错误的信息
 func Error(v ...interface{}) {
-	Message(colors.Stderr, colors.Red, "[ERROR] ", v...)
+	Message(os.Stderr, colors.Red, "[ERROR] ", v...)
 }
 
 // Info 输出提示信息
 func Info(v ...interface{}) {
-	Message(colors.Stdout, colors.Green, "[INFO] ", v...)
+	Message(os.Stdout, colors.Green, "[INFO] ", v...)
 }
