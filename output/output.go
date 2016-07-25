@@ -11,11 +11,13 @@
 package output
 
 import (
+	"log"
 	"os"
 	"time"
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/locale"
 	"github.com/issue9/utils"
 )
 
@@ -33,44 +35,46 @@ type Options struct {
 	Template string        `json:"template,omitempty"` // 指定一个输出模板
 	Port     string        `json:"port,omitempty"`     // 调试的端口
 	Elapsed  time.Duration `json:"-"`                  // 编译用时
+	ErrorLog *log.Logger   `json:"-"`                  // 错误信息输出通道，在 html+ 模式下会用到。
 }
 
 // Init 对 Options 作一些初始化操作。
 func (o *Options) Init() *app.OptionsError {
 	if len(o.Dir) == 0 {
-		return &app.OptionsError{Field: "dir", Message: "不能为空"}
+		return &app.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if len(o.Type) == 0 {
-		return &app.OptionsError{Field: "type", Message: "不能为空"}
+		return &app.OptionsError{Field: "type", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if !utils.FileExists(o.Dir) {
 		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
-			msg := "不存在，且在创建时提示以下信息：" + err.Error()
+			msg := locale.Sprintf(locale.ErrMkdirError, err)
 			return &app.OptionsError{Field: "dir", Message: msg}
 		}
 	}
 
 	if !isSuppertedType(o.Type) {
-		return &app.OptionsError{Field: "type", Message: "不支持的类型"}
+		return &app.OptionsError{Field: "type", Message: locale.Sprintf(locale.ErrInvalidFormat)}
 	}
 
 	// 只有 html 和 html+ 才需要判断模板文件是否存在
 	if o.Type == "html" || o.Type == "html+" {
 		if len(o.Template) > 0 && !utils.FileExists(o.Template) {
-			return &app.OptionsError{Field: "template", Message: "模板目录不存在"}
+			msg := locale.Sprintf(locale.ErrTemplateNotExists)
+			return &app.OptionsError{Field: "template", Message: msg}
 		}
 	}
 
 	// 调试模式，必须得有模板和端口
 	if o.Type == "html+" {
 		if len(o.Template) == 0 {
-			return &app.OptionsError{Field: "template", Message: "不能为空"}
+			return &app.OptionsError{Field: "template", Message: locale.Sprintf(locale.ErrRequired)}
 		}
 
 		if len(o.Port) == 0 {
-			return &app.OptionsError{Field: "port", Message: "不能为空"}
+			return &app.OptionsError{Field: "port", Message: locale.Sprintf(locale.ErrRequired)}
 		}
 
 		if o.Port[0] != ':' {
@@ -91,7 +95,7 @@ func Render(docs *doc.Doc, o *Options) error {
 	case "json":
 		return renderJSON(docs, o)
 	default:
-		return &app.OptionsError{Field: "Type", Message: "不支持该类型"}
+		return &app.OptionsError{Field: "Type", Message: locale.Sprintf(locale.ErrInvalidOutputType)}
 	}
 }
 

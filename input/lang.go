@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"strings"
+
+	"github.com/caixw/apidoc/locale"
 )
 
 // 所有支持的语言模型定义
@@ -183,7 +185,7 @@ func DetectDirLang(dir string) (string, error) {
 	}
 
 	if len(langsMap) == 0 {
-		return "", errors.New("该目录下没有支持的语言文件")
+		return "", errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
 	}
 
 	lang := ""
@@ -198,7 +200,7 @@ func DetectDirLang(dir string) (string, error) {
 	if len(lang) > 0 {
 		return lang, nil
 	}
-	return "", errors.New("该目录下没有支持的语言文件")
+	return "", errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
 }
 
 // 根据扩展名获取其对应的语言名称。

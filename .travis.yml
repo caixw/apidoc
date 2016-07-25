@@ -9,3 +9,5 @@ install:
     - go get github.com/issue9/utils
     - go get github.com/issue9/version
     - go get github.com/issue9/is
+    - go get golang.org/x/text/language
+    - go get golang.org/x/text/message

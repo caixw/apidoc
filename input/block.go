@@ -5,10 +5,11 @@
 package input
 
 import (
-	"fmt"
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/caixw/apidoc/locale"
 )
 
 // 用于描述 block.Type 的值。
@@ -50,7 +51,7 @@ func (b *block) EndFunc(l *lexer) ([]rune, bool) {
 	case blockTypeSComment:
 		return b.endSComments(l)
 	default:
-		panic(fmt.Sprint("定义了一个无效的 block.Type 值:", b.Type))
+		panic(locale.Sprintf(locale.ErrInvalidBlockType, b.Type))
 	}
 }
 
@@ -158,9 +159,8 @@ func filterSymbols(line []rune, charset string) []rune {
 		// 若下个字符正好是是空格
 		if len(line) > k+1 && unicode.IsSpace(line[k+1]) {
 			return line[k+2:]
-		} else {
-			return line
 		}
+		return line
 	}
 
 	return line

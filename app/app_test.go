@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"golang.org/x/text/language"
+
 	"github.com/issue9/assert"
 	"github.com/issue9/is"
 	"github.com/issue9/version"
@@ -25,5 +27,7 @@ func TestConsts(t *testing.T) {
 	a.True(len(DefaultTitle) > 0)
 	a.True(len(DefaultGroupName) > 0).True(strings.IndexAny(DefaultGroupName, "/\\") < 0)
 	a.True(len(Profile) > 0).True(strings.IndexAny(Profile, "/\\") < 0)
-	a.True(MiniSize >= 0)
+
+	tag, err := language.Parse(DefaultLocale)
+	a.NotError(err).NotEqual(tag, language.Und)
 }

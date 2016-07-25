@@ -4,7 +4,7 @@
 
 package app
 
-import "fmt"
+import "github.com/caixw/apidoc/locale"
 
 // SyntaxError 语法错误
 type SyntaxError struct {
@@ -20,9 +20,9 @@ type OptionsError struct {
 }
 
 func (err *SyntaxError) Error() string {
-	return fmt.Sprintf("在[%v:%v]出现语法错误[%v]", err.File, err.Line, err.Message)
+	return locale.Sprintf(locale.SyntaxError, err.File, err.Line, err.Message)
 }
 
 func (err *OptionsError) Error() string {
-	return fmt.Sprintf("配置文件[%v]中配置项[%v]错误:[%v]", ConfigFilename, err.Field, err.Message)
+	return locale.Sprintf(locale.OptionsError, ConfigFilename, err.Field, err.Message)
 }

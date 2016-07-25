@@ -7,13 +7,13 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
 	"github.com/issue9/version"
 )
@@ -29,15 +29,6 @@ type config struct {
 	Output  *output.Options  `json:"output"`
 }
 
-// 带色彩输出的控制台。
-type syntaxWriter struct {
-}
-
-func (w *syntaxWriter) Write(bs []byte) (int, error) {
-	app.Error(string(bs))
-	return len(bs), nil
-}
-
 // 加载 path 所指的文件内容到 *config 实例。
 func loadConfig(path string) (*config, error) {
 	data, err := ioutil.ReadFile(path)
@@ -51,25 +42,24 @@ func loadConfig(path string) (*config, error) {
 	}
 
 	if !version.SemVerValid(cfg.Version) {
-		return nil, &app.OptionsError{Field: "version", Message: "格式不正确"}
+		return nil, &app.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return nil, &app.OptionsError{Field: "inputs", Message: "不能为空"}
+		return nil, &app.OptionsError{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if cfg.Output == nil {
-		return nil, &app.OptionsError{Field: "output", Message: "不能为空"}
+		return nil, &app.OptionsError{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
-	l := log.New(&syntaxWriter{}, "", 0)
 	for i, opt := range cfg.Inputs {
 		index := strconv.Itoa(i)
 		if err := opt.Init(); err != nil {
 			err.Field = "inputs[" + index + "]." + err.Field
 			return nil, err
 		}
-		opt.SyntaxLog = l
+		opt.SyntaxLog = erro // 语法错误输出到 erro 中
 	}
 
 	if err := cfg.Output.Init(); err != nil {
@@ -85,7 +75,7 @@ func genConfigFile(path string) error {
 	dir := filepath.Dir(path)
 	lang, err := input.DetectDirLang(dir)
 	if err != nil { // 不中断，仅作提示用。
-		app.Warn(err)
+		warn.Println(err)
 	}
 
 	cfg := &config{

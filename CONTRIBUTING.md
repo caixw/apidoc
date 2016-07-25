@@ -5,6 +5,13 @@ apidoc 是一个基于 [MIT](https://opensource.org/licenses/MIT) 的开源软�
 
 
 
+## 本地化
+
+本地化的内容在 `locale` 包中，欢迎大家对即有的内容作出翻译修改，但
+暂时不支持添加以新语言的支持。
+
+
+
 ## 添加新语言
 
 `input/lang.go` 文件中有所有语言模型的定义，若需要添加对

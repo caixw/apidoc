@@ -5,19 +5,11 @@
 // app 提供了一些公共的函数、结构体及代码级别的设置项。
 package app
 
-import (
-	"time"
-
-	"github.com/issue9/term/colors"
-)
-
 // 一些代码级别的配置项。
 // 可运行 go test 来检测常量是否符合规范。
 const (
-	// 版本号
-	//
-	// 版本号按照 http://semver.org 中的规则
-	Version = "2.16.13+20160717"
+	// 版本号，规则参照 http://semver.org
+	Version = "3.1.0-alpha+20160726"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -38,57 +30,9 @@ const (
 	// 系统会给其加到此分组中，同时也是默认的索引文件名。
 	DefaultGroupName = "index"
 
-	// 默认的时间格式，仅对 HTML 中的默认模板启作用。自定义模板中可自定义格式。
-	TimeFormat = time.RFC3339
-
 	// 输出的 profile 文件的名称
 	Profile = "apidoc.prof"
 
-	// 需要解析的最小代码块，小于此值，将不作解析
-	MiniSize = len("@api ")
+	// 默认的语言，目前仅能保证简体中文是最新的。
+	DefaultLocale = "cmn-Hans"
 )
-
-// Message 向终端输出不同颜色的提示信息
-//
-// color 是输出的字体颜色，仅对 prefix
-// 参数起作用，其它字符串依然使用系统默认的颜色。
-func Message(out int, color colors.Color, prefix string, v ...interface{}) {
-	colors.Print(out, color, colors.Default, prefix)
-	colors.Print(out, colors.Default, colors.Default, v...)
-}
-
-// Messageln 向终端输出不同颜色的提示信息，带换行符
-func Messageln(out int, color colors.Color, prefix string, v ...interface{}) {
-	colors.Print(out, color, colors.Default, prefix)
-	colors.Println(out, colors.Default, colors.Default, v...)
-}
-
-// Warn 输出警告性的信息
-func Warn(v ...interface{}) {
-	Message(colors.Stderr, colors.Cyan, "[WARN] ", v...)
-}
-
-// Error 输出错误的信息
-func Error(v ...interface{}) {
-	Message(colors.Stderr, colors.Red, "[ERROR] ", v...)
-}
-
-// Info 输出提示信息
-func Info(v ...interface{}) {
-	Message(colors.Stdout, colors.Green, "[INFO] ", v...)
-}
-
-// Warnln 输出警告性的信息，带换行符
-func Warnln(v ...interface{}) {
-	Messageln(colors.Stderr, colors.Cyan, "[WARN] ", v...)
-}
-
-// Errorln 输出错误的信息，带换行符
-func Errorln(v ...interface{}) {
-	Messageln(colors.Stderr, colors.Red, "[ERROR] ", v...)
-}
-
-// Infoln 输出提示信息，带换行符
-func Infoln(v ...interface{}) {
-	Messageln(colors.Stdout, colors.Green, "[INFO] ", v...)
-}
