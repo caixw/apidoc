@@ -5,7 +5,7 @@
 package locale
 
 func init() {
-	locales["cmn-Hans"] = map[string]string{
+	locales["zh-Hans"] = map[string]string{
 		SyntaxError:  "在[%v:%v]出现语法错误[%v]",
 		OptionsError: "配置文件[%v]中配置项[%v]错误[%v]",
 

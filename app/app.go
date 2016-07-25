@@ -9,7 +9,7 @@ package app
 // 可运行 go test 来检测常量是否符合规范。
 const (
 	// 版本号，规则参照 http://semver.org
-	Version = "3.1.0-alpha+20160726"
+	Version = "3.1.1-alpha+20160726"
 
 	// 程序的正式名称
 	Name = "apidoc"
