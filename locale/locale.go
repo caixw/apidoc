@@ -16,8 +16,8 @@ import (
 	"golang.org/x/text/message"
 )
 
-// GetLocale 获取当前系统默认的本地化语言信息。
-func GetLocale() (language.Tag, error) {
+// Init 初始化 locale 包并返回当前系统默认的本地化语言信息。
+func Init() (language.Tag, error) {
 	for id, messages := range locales {
 		tag := language.MustParse(id)
 		for key, val := range messages {

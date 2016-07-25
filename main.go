@@ -36,7 +36,7 @@ var (
 )
 
 func main() {
-	tag, err := locale.GetLocale()
+	tag, err := locale.Init()
 	if err != nil {
 		warn.Println(err)
 		info.Println("无法获取系统语言，使用默认的本化语言：", app.DefaultLocale)
