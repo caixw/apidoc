@@ -9,12 +9,15 @@
 package locale
 
 import (
+	"os"
+	"strings"
+
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
-// GetLocale 获取当前系统默认的本地化语言信息。
-func GetLocale() (language.Tag, error) {
+// Init 初始化 locale 包并返回当前系统默认的本地化语言信息。
+func Init() (language.Tag, error) {
 	for id, messages := range locales {
 		tag := language.MustParse(id)
 		for key, val := range messages {
@@ -33,4 +36,17 @@ func GetLocale() (language.Tag, error) {
 // SetLocale 设置程序的本地化语言信息为 tag
 func SetLocale(tag language.Tag) {
 	localePrinter = message.NewPrinter(tag)
+}
+
+// 获取环境变量 LANG
+func getEnvLang() string {
+	name := os.Getenv("LANG")
+
+	// LANG = zh_CN.UTF-8 过滤掉最后的编译方式
+	index := strings.LastIndexByte(name, '.')
+	if index > 0 {
+		name = name[:index]
+	}
+
+	return name
 }

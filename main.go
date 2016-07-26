@@ -7,7 +7,9 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -21,12 +23,20 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
+	"github.com/issue9/term/colors"
 	"github.com/issue9/version"
 	"golang.org/x/text/language"
 )
 
+// 日志信息输出
+var (
+	info = log.New(&logWriter{out: os.Stdout, color: colors.Green, prefix: "[INFO] "}, "", 0)
+	warn = log.New(&logWriter{out: os.Stderr, color: colors.Cyan, prefix: "[WARN] "}, "", 0)
+	erro = log.New(&logWriter{out: os.Stderr, color: colors.Red, prefix: "[ERRO] "}, "", 0)
+)
+
 func main() {
-	tag, err := locale.GetLocale()
+	tag, err := locale.Init()
 	if err != nil {
 		warn.Println(err)
 		info.Println("无法获取系统语言，使用默认的本化语言：", app.DefaultLocale)
@@ -51,10 +61,10 @@ func main() {
 		flag.Usage()
 		return
 	case *v:
-		locale.Fprintf(os.Stdout, locale.FlagVersionBuildWith, app.Name, app.Version, runtime.Version())
+		locale.Printf(locale.FlagVersionBuildWith, app.Name, app.Version, runtime.Version())
 		return
 	case *l:
-		locale.Fprintf(os.Stdout, locale.FlagSupportedLangs, input.Langs())
+		locale.Printf(locale.FlagSupportedLangs, input.Langs())
 		return
 	case *g:
 		path, err := getConfigFile()
@@ -74,7 +84,7 @@ func main() {
 	if len(*pprofType) > 0 {
 		profile := filepath.Join("./", app.Profile)
 		f, err := os.Create(profile)
-		if err != nil {
+		if err != nil { // 不能创建文件，则忽略 pprof 相关操作
 			warn.Println(err)
 			goto RUN
 		}
@@ -106,14 +116,6 @@ func main() {
 
 RUN:
 	run()
-}
-
-func usage() {
-	buf := new(bytes.Buffer)
-	flag.CommandLine.SetOutput(buf)
-	flag.PrintDefaults()
-
-	locale.Fprintf(os.Stdout, locale.FlagUsage, app.Name, buf.String(), app.RepoURL, app.OfficialURL)
 }
 
 // 真正的程序入口，main 主要是作参数的处理。
@@ -171,6 +173,14 @@ func run() {
 	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start)))
 }
 
+func usage() {
+	buf := new(bytes.Buffer)
+	flag.CommandLine.SetOutput(buf)
+	flag.PrintDefaults()
+
+	locale.Printf(locale.FlagUsage, app.Name, buf.String(), app.RepoURL, app.OfficialURL)
+}
+
 // 获取配置文件路径。目前只支持从工作路径获取。
 func getConfigFile() (string, error) {
 	wd, err := os.Getwd()
@@ -179,4 +189,41 @@ func getConfigFile() (string, error) {
 	}
 
 	return filepath.Join(wd, app.ConfigFilename), nil
+}
+
+// 生成一个默认的配置文件，并写入到 path 中。
+func genConfigFile(path string) error {
+	dir := filepath.Dir(path)
+	lang, err := input.DetectDirLang(dir)
+	if err != nil { // 不中断，仅作提示用。
+		warn.Println(err)
+	}
+
+	cfg := &config{
+		Version: app.Version,
+		Inputs: []*input.Options{
+			&input.Options{
+				Dir:       dir,
+				Recursive: true,
+				Lang:      lang,
+			},
+		},
+		Output: &output.Options{
+			Type: "html",
+			Dir:  filepath.Join(dir, "doc"),
+		},
+	}
+	data, err := json.MarshalIndent(cfg, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	fi, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer fi.Close()
+
+	_, err = fi.Write(data)
+	return err
 }

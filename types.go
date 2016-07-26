@@ -6,17 +6,24 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
-	"os"
-	"path/filepath"
 	"strconv"
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
+	"github.com/issue9/term/colors"
 	"github.com/issue9/version"
 )
+
+// 带色彩输出的控制台。
+type logWriter struct {
+	out    io.Writer
+	color  colors.Color
+	prefix string
+}
 
 // 项目的配置内容，分别引用到了 input.Options 和 output.Options。
 //
@@ -27,6 +34,11 @@ type config struct {
 	Version string           `json:"version"` // 产生此配置文件的程序版本号
 	Inputs  []*input.Options `json:"inputs"`
 	Output  *output.Options  `json:"output"`
+}
+
+func (w *logWriter) Write(bs []byte) (int, error) {
+	colors.Fprint(w.out, w.color, colors.Default, w.prefix)
+	return colors.Fprint(w.out, colors.Default, colors.Default, string(bs))
 }
 
 // 加载 path 所指的文件内容到 *config 实例。
@@ -41,68 +53,40 @@ func loadConfig(path string) (*config, error) {
 		return nil, err
 	}
 
-	if !version.SemVerValid(cfg.Version) {
-		return nil, &app.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
-	}
-
-	if len(cfg.Inputs) == 0 {
-		return nil, &app.OptionsError{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
-	}
-
-	if cfg.Output == nil {
-		return nil, &app.OptionsError{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
-	}
-
-	for i, opt := range cfg.Inputs {
-		index := strconv.Itoa(i)
-		if err := opt.Init(); err != nil {
-			err.Field = "inputs[" + index + "]." + err.Field
-			return nil, err
-		}
-		opt.SyntaxLog = erro // 语法错误输出到 erro 中
-	}
-
-	if err := cfg.Output.Init(); err != nil {
-		err.Field = "outputs." + err.Field
+	// NOTE: 这里的 err 类型是 *app.OptionsError 而不是 error 所以需要新值
+	if err := cfg.init(); err != nil {
 		return nil, err
 	}
 
 	return cfg, nil
 }
 
-// 生成一个默认的配置文件，并写入到 path 中。
-func genConfigFile(path string) error {
-	dir := filepath.Dir(path)
-	lang, err := input.DetectDirLang(dir)
-	if err != nil { // 不中断，仅作提示用。
-		warn.Println(err)
+func (cfg *config) init() *app.OptionsError {
+	if !version.SemVerValid(cfg.Version) {
+		return &app.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
 	}
 
-	cfg := &config{
-		Version: app.Version,
-		Inputs: []*input.Options{
-			&input.Options{
-				Dir:       dir,
-				Recursive: true,
-				Lang:      lang,
-			},
-		},
-		Output: &output.Options{
-			Type: "html",
-			Dir:  filepath.Join(dir, "doc"),
-		},
+	if len(cfg.Inputs) == 0 {
+		return &app.OptionsError{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
 	}
-	data, err := json.MarshalIndent(cfg, "", "    ")
-	if err != nil {
+
+	if cfg.Output == nil {
+		return &app.OptionsError{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
+	}
+
+	for i, opt := range cfg.Inputs {
+		if err := opt.Init(); err != nil {
+			index := strconv.Itoa(i)
+			err.Field = "inputs[" + index + "]." + err.Field
+			return err
+		}
+		opt.SyntaxLog = erro // 语法错误输出到 erro 中
+	}
+
+	if err := cfg.Output.Init(); err != nil {
+		err.Field = "outputs." + err.Field
 		return err
 	}
 
-	fi, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer fi.Close()
-
-	_, err = fi.Write(data)
-	return err
+	return nil
 }
