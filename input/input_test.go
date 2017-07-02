@@ -80,7 +80,7 @@ func testParseFile(a *assert.Assertion, lang, path string) {
 
 	b, found := langs[lang]
 	if !found {
-		a.T().Error("不支持该语言")
+		a.TB().Error("不支持该语言")
 	}
 
 	parseFile(docs, path, b, nil)
@@ -89,8 +89,8 @@ func testParseFile(a *assert.Assertion, lang, path string) {
 	api0 := docs.Apis[0]
 	api1 := docs.Apis[1]
 
-	a.T().Log(api0.Success.Examples[0])
-	a.T().Log(api1.Success.Examples[0])
+	a.TB().Log(api0.Success.Examples[0])
+	a.TB().Log(api1.Success.Examples[0])
 
 	a.Equal(api0.URL, "/users/login").
 		Equal(api1.URL, "/users/login").
