@@ -8,7 +8,7 @@ apidoc 是一个基于 [MIT](https://opensource.org/licenses/MIT) 的开源软�
 ## 本地化
 
 本地化的内容在 `locale` 包中，欢迎大家对即有的内容作出翻译修改，但
-暂时不支持添加以新语言的支持。
+暂时不支持添加新语言的支持。
 
 
 

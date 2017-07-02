@@ -192,6 +192,6 @@ func renderHTMLGroups(p *htmlPage, t *template.Template, destDir string) error {
 		}
 	}
 
-	// 输出static
+	// 输出 static
 	return static.Output(destDir)
 }
