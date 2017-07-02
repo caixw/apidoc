@@ -1,0 +1,107 @@
+.clearfix{
+    clear:both;
+}
+
+header{
+    padding:.5rem;
+    background:inherit;
+    border-bottom:1px solid #eee;
+    position:sticky; /* TODO: 暂时只有 Firefox 支持，其它浏览器通过 js 模拟 */;
+    z-index:10;
+    top:0;
+}
+
+.sticky{
+    top:0;
+    position:fixed;
+    box-sizing:border-box;
+    width:100%;
+}
+
+header .menu{
+    font-size:1.2rem !important;
+}
+
+header h1{
+    font-size:1.2rem !important;
+}
+
+header .version{
+    margin-left:.2rem;
+}
+
+
+
+footer{
+    padding:1rem;
+    margin-top:2rem;
+    border-top:1px solid #eee;
+}
+
+footer p{
+    margin:0rem 0rem .5rem 0rem;
+    padding:0rem;
+}
+
+footer .left{
+    text-align:left;
+    float:left;
+}
+
+footer .right{
+    text-align:right;
+    float:right;
+}
+
+
+
+#top{
+    position: fixed;
+    right:2rem;
+    bottom:5rem;
+}
+
+#top:hover{
+    text-decoration:none;
+    color:#699cc8;
+}
+
+
+
+code, pre{
+    border:1px solid #eee;
+    border-radius:3px;
+    padding:0.1rem 0.5rem;
+}
+
+pre .keyword{
+    color:green;
+}
+
+pre .string{
+    color:#c82;
+}
+
+pre .bool{
+    color:#90c;
+}
+
+#main{
+    margin-top:.5rem;
+}
+
+#main article{
+    margin-top:2rem;
+}
+
+#main article h3{
+    padding:0rem;
+    margin:1.2rem 0rem .5rem 0rem;
+}
+
+@media (max-width:560px){
+    footer .right{
+        text-align:left;
+        float:left;
+    }
+}

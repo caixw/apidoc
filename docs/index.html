@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" itemscope itemtype="https://schema.org/Article" xmlns:og="http://ogp.me/ns#">
+    <head itemscope itemtype="https://schema.org/WebSite">
+        <meta charset='utf-8' itemprop="encoding" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>apidoc - RESTful API 文档生成工具</title>
+        <meta property="og:title" content="apidoc - RESTful API 文档生成工具" />
+
+        <meta property="og:site_name" content="APIDOC"/>
+        <meta itemprop="name" content="APIDOC" />
+
+        <meta name="keywords" itemprop="keywords" content="apidoc,API,doc,REST,RESTful API,HTML,C#,C/C++,D,Erlang,Go,Groovy,Java,Javascript,Pascal,Delphi,Perl,PHP,Python,Ruby,Rust,Scala,Swift,文档生成" />
+        <meta name="description"
+              property="og:description"
+              itemprop="description"
+              content="apidoc:RESTful API 文档生成工具的使用说明。支持大部分语言，可生成精美的 HTML 文档或是 JSON 数据格式。" />
+
+        <meta property="og:type" content="article" />
+        <meta property="og:locale" content="zh-cmn-Hans" />
+        <meta property="og:url" content="http://apidoc.tools" />
+        <link itemprop="url" rel="canonical" href="http://apidoc.tools" />
+
+        <link rel="stylesheet" href="https://cdn.bootcss.com/semantic-ui/2.2.1/semantic.min.css" />
+        <link rel="stylesheet" href="./style.css" />
+        <script src="https://cdn.bootcss.com/jquery/3.0.0/jquery.min.js"></script>
+        <script src="https://cdn.bootcss.com/semantic-ui/2.2.1/semantic.min.js"></script>
+        <script src="./app.js"></script>
+    </head>
+
+    <body>
+        <header>
+            <div class="ui container">
+                <h1 class="ui text menu left floated">
+                    <a class="item goto-top" href="#">APIDOC<sub class="version">3.0</sub></a>
+                </h1>
+                <nav class="ui text menu right floated">
+                    <a class="item" href="#about">关于</a>
+                    <a class="item" href="#usage">使用</a>
+                    <a class="item" href="#docs">文档</a>
+                    <a class="item" href="https://github.com/caixw/apidoc">
+                        <i class="icon github"></i>Github
+                    </a>
+                </nav>
+                <div class="clearfix"></div>
+            </div>
+        </header>
+
+        <div class="ui container" id="main">
+            <!-- about -->
+            <article class="ui stacked segment" id="about">
+                <h2 class="ui header">关于</h2>
+                <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。目前已支持以下语言：C#、C/C++、D、Erlang、Go、Groovy、Java、Javascript、Pascal/Delphi、Perl、PHP、Python、Rust、Ruby、Scala 和 Swift。</p>
+                <p>apidoc 拥有以下特点：</p>
+                <ol>
+                    <li>跨平台，linux、windows、macOS 等都支持；</li>
+                    <li>支持语言广泛，即使是不支持，也很方便扩展；</li>
+                    <li>支持多个不同语言的多个项目生成一份文档；</li>
+                    <li>输出模板可自定义；</li>
+                </ol>
+
+                <p>以下是一段简短的 Go 代码下的示例：</p>
+                <pre data-indent="4">
+                /**
+                 * @api get /users/:id 获取指定用户的相关信息
+                 * @apiGroup users
+                 * @apiParam id int 表示用户 id 的唯一值
+                 *
+                 * @apiSuccess 200 json ok
+                 * @apiExample
+                 * {"id":1, "name": "n1"}
+                 */
+                </pre>
+                <p>多行注释中，每一行中以<code>空白字符+symbol+空白字符</code>开头的，这些字符将会被过滤，symbol 表示该注释块的起始字符中的任意字符。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
+            </article>
+
+            <!-- usage -->
+            <article class="ui stacked segment" id="usage">
+                <h2 class="ui header">使用</h2>
+
+                <section>
+                    <h3>安装</h3>
+                    <p>若是你已经有 Go 开发环境，则可以直接通过 <samp>go get</samp> 来获取代码并安装：<samp>go get github.com/caixw/apidoc</samp></p>
+
+                    <p>也可以通过 <a href="https://gobuild.io/caixw/apidoc/master">gobuild.io</a> 选择已经编译好的程序，下载使用。</p>
+                </section>
+
+                <section>
+                    <h3>环境变量</h3>
+                    <p>apidoc 会读取 <var>LANG</var> 的环境变量作为其本地化的依据，若想指定其它语种，可以手动指定 <var>LANG</var> 环境变量：<samp>LANG=cmn-Hant apidoc</samp>。在 windows 系统中，若不存在 <var>LANG</var> 环境变量，则会调用 <samp>GetUserDefaultLocaleName</samp> 函数来获取相应的语言信息。</p>
+                </section>
+
+                <section>
+                    <h3>命令行参数</h3>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>-h</td><td>显示帮助信息</td></tr>
+                            <tr><td>-v</td><td>显示版本信息</td></tr>
+                            <tr><td>-l</td><td>列出当前支持的语言</td></tr>
+                            <tr><td>-g</td><td>在当前目录下创建配置文件模板</td></tr>
+                            <tr><td>-pprof</td><td>指定个性能测试项，目前支持 <var>cpu</var> 和 <var>mem</var> 两个选项</td></tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section>
+                    <h3>配置文件</h3>
+                    <p>apidoc 通过工作目录下的配置文件来控制其行为。文件名称固定为 .apidoc.json。以下为 .apidoc.json 的一个示例。</p>
+                    <pre data-indent="5" data-language="json">
+                    {
+                        "version": "2.0.52.160529",
+                        "inputs": [
+                            {
+                                "lang": "go",
+                                "dir": "./",
+                                "recursive": true
+                            }
+                        ],
+                        "output": {
+                            "dir": "./output/doc",
+                            "type": "html",
+                            "template":"",
+                            "port":":9999"
+                        }
+                    }
+                    </pre>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>名称</th><th>类型</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>version</td>
+                                <td>string</td>
+                                <td>产生此配置文件的 apidoc 版本号</td>
+                            </tr>
+
+                            <!-- input -->
+                            <tr class="warning">
+                                <td>inputs</td>
+                                <td>array</td>
+                                <td>指定输入的数据</td>
+                            </tr>
+                            <tr>
+                                <td>&#160;&#160;&#160;&#160;dir</td>
+                                <td>string</td>
+                                <td>需要解析的源文件所在目录</td>
+                            </tr>
+                            <tr>
+                                <td>&#160;&#160;&#160;&#160;recursive</td>
+                                <td>bool</td>
+                                <td>是否解析子目录下的源文件</td>
+                            </tr>
+                            <tr>
+                                <td>&#160;&#160;&#160;&#160;lang</td>
+                                <td>string</td>
+                                <td>源文件类型。具体支持的类型可通过 -l 参数进行查找</td>
+                            </tr>
+
+                            <!-- output -->
+                            <tr class="warning">
+                                <td>output</td>
+                                <td>object</td>
+                                <td>控制输出行为</td>
+                            </tr>
+                            <tr>
+                                <td>&#160;&#160;&#160;&#160;dir</td>
+                                <td>string</td>
+                                <td>指定文档的保存目录</td>
+                            </tr>
+                            <tr>
+                                <td>&#160;&#160;&#160;&#160;type</td>
+                                <td>string</td>
+                                <td>渲染类型，目前支持 <var>html</var>、<var>html+</var> 和 <var>json</var> 三种类型</td>
+                            </tr>
+                            <tr>
+                                <td>&#160;&#160;&#160;&#160;template</td>
+                                <td>string</td>
+                                <td>模板所在路径，当渲染类型为 <var>html</var> 或 <var>html+</var> 时可用。</td>
+                            </tr>
+                            <tr>
+                                <td>&#160;&#160;&#160;&#160;port</td>
+                                <td>string</td>
+                                <td>指定一个访问端口，当渲染类型为 <var>html+</var> 时，必须指定此值。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><var>inputs</var> 为一个对象数组，每个数组元素可以指定一个独立项目。不过不支持同一项目下多语言的解析。</p>
+                </section>
+
+                <section>
+                    <h3>示例</h3>
+                    <p>这里是一段简单的示例代码 <a href="./example/doc/index.html">./example</a></p>
+                </section>
+
+                <section>
+                    <h3>自定义模板</h3>
+                    <p>在输出类型为 <var>html</var> 时，可以通过在配置文件 <samp>.apidoc.json</samp> 中的 <var>template</var> 参数指定自定义模板，只会分析模板当前目录下的 <samp>*.html</samp> 文件，其它文件将被忽略。</p>
+                    <p>模板格式采用的是 Go 标准库的 <a href="https://godoc.org/html/template">html/template</a>，系统会调用 <var>group</var> 和 <var>index</var> 两个子模板，具体的可用数据可参考源码目录下的 <a href="https://github.com/caixw/apidoc/tree/master/output/static">output/static</a> 下的模板。</p>
+                    <p><var>html+</var> 为 <var>html</var> 的增强模式，在该模式下不会输出任何文件内容，而是可以直接在浏览器访问相关页面，方便调试模板页面。</p>
+                </section>
+            </article>
+
+            <!-- docs -->
+            <article class="ui stacked segment" id="docs">
+                <h2 class="ui header">文档</h2>
+
+                <section>
+                    <p>在 apidoc 中，标签存在一定的从属关系，下文中均会注明所有标签的父标或及子标签。判断一个标签属于哪个父标签，只需要根据当前标签往前查找，直到找到可作为该标签的父标签的标签即可。</p>
+                </section>
+
+                <!-- @apidoc -->
+                <section id="apidoc">
+                    <h3>@apidoc</h3>
+                    <p>@apidoc 用于指定一些全局性的设定，本身带一个标题属性，整个文档中只能出现一次。子元素有：
+                        <a href="#apiversion">@apiVersion</a>、
+                        <a href="#apibaseurl">@apiBaseURL</a>、
+                        <a href="#apilicense">@apiLicense</a> 和
+                        <a href="#apicontent">@apiContent</a>。
+                    </p>
+                    <p>语法:<code>@apidoc title</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>title</td><td>true</td><td>文档的标题，到行尾</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre data-indent="5">
+                    /**
+                     * @apidoc title of doc
+                     * @apiVersion 2.0
+                     * @apiBaseURL https://api.caixw.io
+                     * @apiLicense MIT https://opensource.org/licenses/MIT
+                     * @apiContent
+                     * &lt;p&gt;这里可以是html&lt;/p&gt;
+                     * &lt;p&gt;会被原样输出&lt;/p&gt;
+                     */
+                    </pre>
+                </section>
+
+                <!-- @apiVersion -->
+                <section id="apiversion">
+                    <h3>@apiVerson</h3>
+                    <p>用于指定文档的版本号。父标签：<a href="#apidoc">@apidoc</a>。</p>
+                    <p>语法:<code>@apiVersion version</code>。</p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>title</td>
+                                <td>true</td>
+                                <td>文档的版本号，可以是任何字符串形式的内容</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- @apiBaseURL -->
+                <section id="apibaseurl">
+                    <h3>@apiBaseURL</h3>
+                    <p>用于指定文档所有地址的一个公共前缀。父标签：<a href="#apidoc">@apidoc</a>。</p>
+                    <p>语法:<code>@apiBaseURL url</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>url</td><td>true</td><td>一般为一个 URL</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- @apiLicense -->
+                <section id="apilicense">
+                    <h3>@apiLicense</h3>
+                    <p>用于指定文档的版权信息。父标签：<a href="#apidoc">@apidoc</a>。</p>
+                    <p>语法:<code>@apiLicense name url</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td><td>true</td><td>版权的名称</td>
+                            </tr>
+                            <tr>
+                                <td>url</td><td>false</td><td>版权的详细文本地址</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- @apiContent -->
+                <section id="apicontent">
+                    <h3>@apiContent</h3>
+                    <p>文档首页的一些介绍性内容，该内容将会被原样输出。父标签：<a href="#apidoc">@apidoc</a>。</p>
+                    <p>语法:<code>@apiContent content</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>content</td><td>true</td><td>多行字符串，一直到文档结尾，换行符会被转换成 <var>&lt;br&gt;</var>，其它内容原样输出</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- @api -->
+                <section id="api">
+                    <h3>@api</h3>
+                    <p>指定一个 api 文档的内容，这是除 <a href="#apidoc">@apidoc</a> 之外的另一顶级标签。子标签包括：
+                        <a href="#apigroup">@apiGroup</a>、
+                        <a href="#apiignore">@apiIgnore</a>、
+                        <a href="#apiquery">@apiQuery</a>、
+                        <a href="#apiparam">@apiParam</a>、
+                        <a href="#apirequest">@apiRequest</a>、
+                        <a href="#apisuccess">@apiSuccess</a> 和
+                        <a href="#apierror">@apiError</a>。
+                    </p>
+                    <p>语法:<code>@api method url summary [\n detail]</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>参数说明</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>method</td><td>true</td><td>该 api 对应的请求方法</td>
+                            </tr>
+                            <tr>
+                                <td>url</td><td>true</td><td>该 api 的请求地址</td>
+                            </tr>
+                            <tr>
+                                <td>summary</td><td>true</td><td>该 api 的简要描述信息，到行尾结束</td>
+                            </tr>
+                            <tr>
+                                <td>detail</td>
+                                <td>false</td>
+                                <td>api 的详细信息，可以多行，直到碰到以 <strong>@api</strong> 开头的行</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre data-indent="5">
+                    /**
+                     * @api get /users/{id} 获取指定用户的相关信息
+                     * @apiGroup users
+                     */
+                    </pre>
+                </section>
+
+                <!-- @apiIgnore -->
+                <section id="apiignore">
+                    <h3>@apiIgnore</h3>
+                    <p>凡是带此标签的代码块，表示该文档暂时被忽略。父标签：<a href="#api">@api</a>。</p>
+                    <p>语法：<code>@apiIgnore</code></p>
+                </section>
+
+                <!-- @apiGroup -->
+                <section id="apigroup">
+                    <h3>@apiGroup</h3>
+                    <p>@apiGroup 提供了对 api 的分组信息，不同的分组，最终可能会被呈现在不同的页面。父标签：<a href="#api">@api</a>。</p>
+                    <p>若要将文档显示在首页，则不需要指定此标签或是指定为 <var>index</var>。</p>
+                    <p>语法：<code>@apiGroup name</code></p>
+                    <table class="ui vry compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td><td>true</td><td>分组名称，相同名称不同大小写，将会被分配到同一个分组，但名称上依旧区分大小写。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- apiQuery -->
+                <section id="apiquery">
+                    <h3>@apiQuery</h3>
+                    <p>@apiQuery 描述 api 的查询参数。父标签：<a href="#api">@api</a>。</p>
+                    <p>语法：<code>@apiQuery name type summary</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td><td>true</td><td>参数名称</td>
+                            </tr>
+                            <tr>
+                                <td>type</td><td>true</td><td>参数的类型</td>
+                            </tr>
+                            <tr>
+                                <td>summary</td><td>true</td><td>一行简短的语名用于描述该参数作用。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre data-indent="5">
+                    /**
+                     * @api get /users 获取所有的用户信息。
+                     * @apiQuery page int 获取第几页的内容。
+                     * @apiQuery size int 每页显示的数量，必须大于 0。
+                     */
+                    </pre>
+                </section>
+
+                <section id="apiheader">
+                    <h3>@apiHeader</h3>
+                    <p>@apiHeader 用于指定报头内容。父标签：
+                        <a href="#apirequest">@apiRequest</a>、
+                        <a href="#apisuccess">@apiSuccess</a> 和
+                        <a href="#apierror">@apiError</a>。
+                    </p>
+                    <p>语法：<code>@apiHeader key summary</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr>
+                                <th>参数</th><th>必填</th><th>描述</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>key</td><td>true</td><td>报头名称</td>
+                            </tr>
+                            <tr>
+                                <td>summary</td><td>true</td><td>到行尾，对此报头的描述。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre data-indent="5">
+                    /**
+                     * @api delete /users/login 注销用户
+                     * @apiHeader Authorization Basic xx-af
+                     */
+                    </pre>
+                </section>
+
+                <!-- apiParam -->
+                <section id="apiparam">
+                    <h3>@apiParam</h3>
+                    <p>@apiParam 用于描述参数信息。父标签：
+                        <a href="#api">@api</a>、
+                        <a href="#apirequest">@apiRequest</a>、
+                        <a href="#apisuccess">@apiSuccess</a> 和
+                        <a href="#apierror">@apiError</a>。
+                    </p>
+                    <p>语法：<code>@apiParam name type summary</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td><td>true</td><td>参数名称</td>
+                            </tr>
+                            <tr>
+                                <td>type</td><td>true</td><td>参数的类型</td>
+                            </tr>
+                            <tr>
+                                <td>summary</td><td>true</td><td>一行简短的语名用于描述该参数作用。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例-1：</p>
+                    <pre data-indent="5">
+                    /**
+                     * @api get /users/{id} 获取所有的用户信息。
+                     * @apiParam id int 用户 id
+                     *
+                     * @apiSuccess 200 OK
+                     * @apiParam id    int    用户 id
+                     * @apiParam name  string 用户名称
+                     * @apiParam group id     用户所属组 id
+                     */
+                    </pre>
+                    <p>示例-2：</p>
+                    <pre data-indent="5">
+                    /**
+                     * @api post /users/ 新增用户
+                     * @apiGroup users
+                     *
+                     * @apiRequest json
+                     * @apiParam name     string 用户名称
+                     * @apiParam password string 密码
+                     *
+                     * @apiSuccess 200 OK
+                     * @apiHeader location xxxx
+                     */
+                    </pre>
+                </section>
+
+                <section id="apiexample">
+                    <h3>@apiExample</h3>
+                    <p>指定示例代码。父标签：
+                        <a href="#apirequest">@apiRequest</a>、
+                        <a href="#apisuccess">@apiSuccess</a> 和
+                        <a href="##apierror">@apiError</a>。
+                    </p>
+                    <p>语法：<code>@apiExample type</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>type</td><td>true</td><td>示例代码的语言类型，默认模板在联网状态下会调用 <a href="//prismjs.com">prismjs</a> 为示例代码着色</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre data-indent="5">
+                    /**
+                     * @apiExample json
+                     * { "id":1, "name":"admin" }
+                     */
+                    </pre>
+                </section>
+
+                <section id="apirequest">
+                    <h3>@apiRequest</h3>
+                    <p>@apiRequest 描述了所有的请求该包含的内容，其本身可包含
+                        <a href="#apiheader">@apiHeader</a>、
+                        <a href="#aipexample">@apiExample</a> 和
+                        <a href="#apiparam">@apiParam</a> 三个子标签。父标签：<a href="@api">@api</a>。</p>
+                    <p>语法：<code>@apiRequest type</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>type</td><td>true</td><td>请求的数据类型</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre data-indent="5">
+                    /**
+                     * @apiRequest json
+                     * @apiHeader Authorization Basic xxxx
+                     * @apiParam username string 登录账号
+                     * @apiParam password string 登录密码
+                     * @apiExample json
+                     * {"username":"admin", "password":"123"}
+                     */
+                    </pre>
+                </section>
+
+                <section id="apisuccess">
+                    <h3>@apiSuccess</h3>
+                    <p>@apiSuccess 描述了成功响应时包含的内容，其本身可包含
+                        <a href="#apiheader">@apiHeader</a>、
+                        <a href="#apiexample">@apiExample</a> 和
+                        <a href="#apiparam">@apiParam</a> 三个子标签。父标签：<a href="#api">@api</a>。</p>
+                    <p>语法：<code>@apiSuccess status summary</code></p>
+                    <table class="ui very compact table">
+                        <thead>
+                            <tr><th>参数</th><th>必填</th><th>描述</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>status</td><td>true</td><td>返回的状态码</td>
+                            </tr>
+                            <tr>
+                                <td>summary</td><td>true</td><td>一个简短的描述信息。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>示例：</p>
+                    <pre data-indent="5">
+                    /**
+                     * @apiSuccess 200 OK
+                     * @apiHeader Authorization Basic xxxx
+                     * @apiParam username string 登录账号
+                     * @apiParam name string 用户名称
+                     * @apiParam sex string 用户性别
+                     * @apiExample json
+                     * {"username":"admin", "name":"admin", "sex":"male"}
+                     */
+                    </pre>
+                </section>
+
+                <section id="apierror">
+                    <h3>@apiError</h3>
+                    <p>@apiError 结构与 <a href="#apisuccess">@apiSuccess</a> 完全相同，只是一个用于描述错误时的返回，一个用于描述成功时的返回信息。</p>
+                </section>
+
+            </article>
+        </div>
+
+        <footer>
+            <div class="ui container">
+                <div class="left">
+                    <p><a href="https://github.com/caixw/apidoc">apidoc</a> 是基于 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a> 协议发布的开源软件</p>
+                    <p>本页面内容采用<a rel="license" href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>进行许可</p>
+                </div>
+
+                <div class="right">
+                    <p>本页面内容托管于 <a href="https://github.com/caixw/apidoc/tree/gh-pages">Github</a>，<a href="https://github.com/caixw/apidoc/issues/new">纠正内容错误</a>
+                    </p>
+                    <p>更新于 <time itemprop="datePublished" datetime="2016-07-23T23:03:05+0800">2016-07-23T23:03:05+0800</time></p>
+
+                    <!-- 站长统计 -->
+                    <p><script src="https://s13.cnzz.com/z_stat.php?id=2003942&web_id=2003942"></script></p>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </footer>
+        <a class="goto-top" id="top" href="#"><i class="big thin angle double up icon"></i></a>
+    </body>
+</html>

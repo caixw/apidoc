@@ -1,0 +1,188 @@
+@charset "utf-8";
+
+/*============== reset =================*/
+body{
+    margin:0 auto;
+}
+
+a{
+    text-decoration:none;
+    color:#3b8bba;
+}
+
+p{
+    margin:.5rem 0rem;
+}
+
+ul{
+    margin:.5rem -0.5rem;
+    padding:0rem 1.5rem;
+    list-style:none;
+}
+
+ul li{
+    margin:.2rem 0rem;
+}
+
+/*=============== header ================*/
+
+header{
+    color:#777;
+    background-color:#fafafa;
+    border:1px solid #eee;
+    padding:1rem;
+    top:0;
+    position:sticky; /* TODO: 暂时只有 Firefox 支持，其它浏览器通过 js 模拟 */
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-flow:row wrap;
+}
+
+.sticky{
+    top:0;
+    position:fixed;
+    box-sizing:border-box;
+    width:100%;
+}
+
+header .left{
+    flex:1 1 auto;
+}
+
+header h1{
+    font-size:2rem;
+    display:inline-block;
+    margin:0rem;
+}
+
+header h1 .version{
+    font-size:1rem;
+}
+
+header #groups{
+    margin-left:20%;
+}
+
+header .filter{
+    text-align:right;
+    flex:1 1 auto;
+}
+
+
+header .filter label{
+    margin-left:1rem;
+    vertical-align: bottom;
+    text-align:right;
+}
+
+.main{
+    padding:1rem;
+}
+
+/*=============== .api ================*/
+
+.main .api{
+    padding:1rem;
+    margin:1rem 0rem;
+    border:1px solid #eee;
+}
+
+.api h3{
+    cursor:pointer;
+    margin:0rem;
+    display:flex;
+    align-items:center;
+}
+
+.api h4{
+    font-size:1.1rem;
+    margin-bottom:.2rem;
+    border-bottom:1px solid #eee;
+    padding-bottom:.2rem;
+}
+
+.api h5{
+    margin:.8rem 0rem .2rem 0rem;
+    font-size:1rem;
+}
+
+.api h3 .method{
+    width:5rem;
+    font-weight:bold;
+    text-transform:uppercase;
+}
+
+.api h3 .get{
+    color:green;
+}
+
+.api h3 .options{
+    color:green;
+}
+
+.api h3 .delete{
+    color:red;
+}
+
+.api h3 .put,.api h3 .patch{
+    color:rgb(193,174,49);
+}
+
+.api h3 .post{
+    color:rgb(240,114,11);
+}
+
+.api h3 .url{
+    margin-right:2rem;
+}
+
+.api h4 .success{
+    color:green;
+    margin-right:1rem;
+}
+
+.api h4 .error{
+    color:green;
+    margin-right:1rem;
+}
+
+.api .content{
+    display:none;
+}
+
+.api table{
+    text-align:left;
+    border-collapse:collapse;
+    border:1px solid #ddd;
+}
+
+.api table thead tr{
+    background:#eee;
+}
+
+.api table tr{
+    border-bottom:1px solid #ddd;
+    line-height:1.5rem;
+}
+
+.api table tbody th .parent{
+    color:#ccc;
+}
+
+.api table th, .api table td{
+    padding:.3rem 1rem;
+}
+
+/*=============== footer ================*/
+footer{
+    border-top:1px solid #eee;
+    background-color:#fafafa;
+    color:#777;
+    padding:1rem;
+}
+
+footer p{
+    margin:.5rem;
+    padding:0px;
+}
