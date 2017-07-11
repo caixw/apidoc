@@ -2,14 +2,14 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// app 提供了一些公共的函数、结构体及代码级别的设置项。
+// Package app 提供了一些公共的函数、结构体及代码级别的设置项。
 package app
 
 // 一些代码级别的配置项。
 // 可运行 go test 来检测常量是否符合规范。
 const (
 	// 版本号，规则参照 http://semver.org
-	Version = "3.1.3-alpha+20160726"
+	Version = "3.1.4+20170711"
 
 	// 程序的正式名称
 	Name = "apidoc"
