@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// output 对解析后的数据进行渲染输出。
+// Package output 对解析后的数据进行渲染输出。
 //
 // 目前支持以下三种渲染方式：
 //  - html: 以 HTML 格式输出文本，模板可自定义；
