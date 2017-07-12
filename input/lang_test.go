@@ -67,12 +67,7 @@ func TestCompareLangsAndLangExts(t *testing.T) {
 			True(len(exts) > 0)
 	}
 
-	// 查询 langExts 中的键名是否存在于 langs
-	for lang := range langExts {
-		blocks, found := langs[lang]
-		a.True(found, "未找到与[%v]相对应的代码块定义", lang).
-			True(len(blocks) > 0)
-	}
+	a.Equal(len(langs), len(langExts))
 }
 
 func TestDetectDirLang(t *testing.T) {
