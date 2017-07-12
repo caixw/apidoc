@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -23,16 +22,8 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
-	"github.com/issue9/term/colors"
 	"github.com/issue9/version"
 	"golang.org/x/text/language"
-)
-
-// 日志信息输出
-var (
-	info = log.New(&logWriter{out: os.Stdout, color: colors.Green, prefix: "[INFO] "}, "", 0)
-	warn = log.New(&logWriter{out: os.Stderr, color: colors.Cyan, prefix: "[WARN] "}, "", 0)
-	erro = log.New(&logWriter{out: os.Stderr, color: colors.Red, prefix: "[ERRO] "}, "", 0)
 )
 
 func main() {

@@ -1,6 +1,6 @@
 ### apidoc
 
-gh-pages 分支对应的是 [https://caixw.github.io/apidoc](https://caixw.github.io/apidoc) 下的内容。
+此目录下对应的是 [http://apidoc.tools](http://apidoc.tools) 下的内容。
 
 
 ### 注意事项

@@ -6,7 +6,6 @@ package main
 
 import (
 	"encoding/json"
-	"io"
 	"io/ioutil"
 	"strconv"
 
@@ -14,16 +13,8 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
-	"github.com/issue9/term/colors"
 	"github.com/issue9/version"
 )
-
-// 带色彩输出的控制台。
-type logWriter struct {
-	out    io.Writer
-	color  colors.Color
-	prefix string
-}
 
 // 项目的配置内容，分别引用到了 input.Options 和 output.Options。
 //
@@ -34,11 +25,6 @@ type config struct {
 	Version string           `json:"version"` // 产生此配置文件的程序版本号
 	Inputs  []*input.Options `json:"inputs"`
 	Output  *output.Options  `json:"output"`
-}
-
-func (w *logWriter) Write(bs []byte) (int, error) {
-	colors.Fprint(w.out, w.color, colors.Default, w.prefix)
-	return colors.Fprint(w.out, colors.Default, colors.Default, string(bs))
 }
 
 // 加载 path 所指的文件内容到 *config 实例。

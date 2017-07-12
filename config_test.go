@@ -5,7 +5,6 @@
 package main
 
 import (
-	"io"
 	"os"
 	"strings"
 	"testing"
@@ -16,8 +15,6 @@ import (
 	"github.com/issue9/assert"
 	"github.com/issue9/term/colors"
 )
-
-var _ io.Writer = &logWriter{}
 
 func TestLogWriter_Write(t *testing.T) {
 	a := assert.New(t)
