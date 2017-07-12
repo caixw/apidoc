@@ -7,10 +7,11 @@
         <title>apidoc - RESTful API 文档生成工具</title>
         <meta property="og:title" content="apidoc - RESTful API 文档生成工具" />
 
-        <meta property="og:site_name" content="APIDOC"/>
-        <meta itemprop="name" content="APIDOC" />
+        <meta itemprop="name" property="og:site_name" content="APIDOC"/>
 
-        <meta name="keywords" itemprop="keywords" content="apidoc,API,doc,REST,RESTful API,HTML,C#,C/C++,D,Erlang,Go,Groovy,Java,Javascript,Pascal,Delphi,Perl,PHP,Python,Ruby,Rust,Scala,Swift,文档生成" />
+        <meta name="keywords"
+              itemprop="keywords"
+              content="apidoc,API,doc,REST,RESTful API,HTML,C#,C/C++,D,Erlang,Go,Groovy,Java,Javascript,Pascal,Delphi,Perl,PHP,Python,Ruby,Rust,Scala,Swift,文档生成" />
         <meta name="description"
               property="og:description"
               itemprop="description"
@@ -111,7 +112,7 @@
                     <p>apidoc 通过工作目录下的配置文件来控制其行为。文件名称固定为 .apidoc.json。以下为 .apidoc.json 的一个示例。</p>
                     <pre data-indent="5" data-language="json">
                     {
-                        "version": "2.0.52.160529",
+                        "version": "3.0.52.160529",
                         "inputs": [
                             {
                                 "lang": "go",
