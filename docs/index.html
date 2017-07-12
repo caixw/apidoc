@@ -82,8 +82,6 @@
                 <section>
                     <h3>安装</h3>
                     <p>若是你已经有 Go 开发环境，则可以直接通过 <samp>go get</samp> 来获取代码并安装：<samp>go get github.com/caixw/apidoc</samp></p>
-
-                    <p>也可以通过 <a href="https://gobuild.io/caixw/apidoc/master">gobuild.io</a> 选择已经编译好的程序，下载使用。</p>
                 </section>
 
                 <section>
@@ -190,6 +188,12 @@
                         </tbody>
                     </table>
                     <p><var>inputs</var> 为一个对象数组，每个数组元素可以指定一个独立项目。不过不支持同一项目下多语言的解析。</p>
+                </section>
+
+                <section>
+                    <h3>使用</h3>
+                    <p>运行 apidoc 时，程序会从<strong>当前的工作目录</strong>中查找 <code>.apidoc.json</code> 文件，并将其当作配置文件来执行相应操作。</p>
+                    <p><samp>apidoc -g</samp> 会为你产生一个默认的 <code>.apidoc.json</code> 配置文件。</p>
                 </section>
 
                 <section>
