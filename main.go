@@ -52,7 +52,7 @@ func main() {
 		flag.Usage()
 		return
 	case *v:
-		locale.Printf(locale.FlagVersionBuildWith, app.Name, app.Version, runtime.Version())
+		printVersion()
 		return
 	case *l:
 		locale.Printf(locale.FlagSupportedLangs, input.Langs())
@@ -126,7 +126,7 @@ func run() {
 	}
 
 	// 比较版本号兼容问题
-	compatible, err := version.SemVerCompatible(app.Version, cfg.Version)
+	compatible, err := version.SemVerCompatible(app.Version(), cfg.Version)
 	if err != nil {
 		erro.Println(err)
 		return
@@ -191,7 +191,7 @@ func genConfigFile(path string) error {
 	}
 
 	cfg := &config{
-		Version: app.Version,
+		Version: app.Version(),
 		Inputs: []*input.Options{
 			&input.Options{
 				Dir:       dir,
@@ -217,4 +217,9 @@ func genConfigFile(path string) error {
 
 	_, err = fi.Write(data)
 	return err
+}
+
+func printVersion() {
+	locale.Printf(locale.FlagVersionBuildWith, app.Name, app.Version(), runtime.Version())
+	locale.Printf(locale.FlagVersionCommitHash, app.CommitHash())
 }

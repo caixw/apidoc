@@ -8,8 +8,9 @@ package app
 // 一些代码级别的配置项。
 // 可运行 go test 来检测常量是否符合规范。
 const (
-	// 版本号，规则参照 http://semver.org
-	Version = "3.1.5+20171124"
+	// 主版本号，实际版本号可能还会加上构建日期，
+	// 可通过 Version() 函数获取实际的版本号。
+	mainVersion = "3.1.5"
 
 	// 程序的正式名称
 	Name = "apidoc"
@@ -36,3 +37,27 @@ const (
 	// 默认的语言，目前仅能保证简体中文是最新的。
 	DefaultLocale = "cmn-Hans"
 )
+
+var (
+	version    string
+	buildDate  string
+	commitHash string
+)
+
+func init() {
+	if len(buildDate) == 0 {
+		version = mainVersion
+	} else {
+		version = mainVersion + "+" + buildDate
+	}
+}
+
+// Version 完整的版本号
+func Version() string {
+	return version
+}
+
+// CommitHash Git 上最后的提交记录 hash 值。
+func CommitHash() string {
+	return commitHash
+}

@@ -24,6 +24,7 @@ func init() {
 		FlagGUsage:              "在當前目錄下創建壹個默認的配置文件",
 		FlagPprofUsage:          "指定壹種調試輸出類型，可以為 cpu 或是 mem",
 		FlagVersionBuildWith:    "%v %v build with %v\n",
+		FlagVersionCommitHash:   "commit hash %v\n",
 		FlagSupportedLangs:      "目前支持以下語言 %v\n",
 		FlagConfigWritedSuccess: "配置內容成功寫入 %v",
 		FlagPprofWritedSuccess:  "pprof 的相關數據已經寫入到 %v",

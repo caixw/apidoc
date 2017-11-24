@@ -110,7 +110,7 @@ func buildHTMLPage(docs *doc.Doc, opt *Options) *htmlPage {
 		LicenseName:    docs.LicenseName,
 		LicenseURL:     docs.LicenseURL,
 		Content:        docs.Content,
-		AppVersion:     app.Version,
+		AppVersion:     app.Version(),
 		AppName:        app.Name,
 		AppRepoURL:     app.RepoURL,
 		AppOfficialURL: app.OfficialURL,

@@ -12,14 +12,15 @@ import (
 
 	"github.com/issue9/assert"
 	"github.com/issue9/is"
-	"github.com/issue9/version"
+	v "github.com/issue9/version"
 )
 
 // 对一些堂量的基本检测。
 func TestConsts(t *testing.T) {
 	a := assert.New(t)
 
-	a.True(version.SemVerValid(Version))
+	a.True(v.SemVerValid(version))
+	a.True(v.SemVerValid(Version()))
 	a.True(len(Name) > 0)
 	a.True(is.URL(RepoURL))
 	a.True(is.URL(OfficialURL))

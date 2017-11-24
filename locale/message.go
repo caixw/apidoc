@@ -38,6 +38,7 @@ const (
 	FlagGUsage              = "在当前目录下创建一个默认的配置文件"
 	FlagPprofUsage          = "指定一种调试输出类型，可以为 cpu 或是 mem"
 	FlagVersionBuildWith    = "%v %v build with %v\n"
+	FlagVersionCommitHash   = "commit hash %v\n"
 	FlagSupportedLangs      = "目前支持以下语言 %v\n"
 	FlagConfigWritedSuccess = "配置内容成功写入 %v"
 	FlagPprofWritedSuccess  = "pprof 的相关数据已经写入到 %v"
