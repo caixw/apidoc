@@ -73,47 +73,47 @@ func Printer() *message.Printer {
 	return localePrinter
 }
 
-// Print 类型 fmt.Print，与特定的语言绑定。
+// Print 类似 fmt.Print，与特定的语言绑定。
 func Print(v ...interface{}) (int, error) {
 	return localePrinter.Print(v...)
 }
 
-// Println 类型 fmt.Println，与特定的语言绑定。
+// Println 类似 fmt.Println，与特定的语言绑定。
 func Println(v ...interface{}) (int, error) {
 	return localePrinter.Println(v...)
 }
 
-// Printf 类型 fmt.Printf，与特定的语言绑定。
+// Printf 类似 fmt.Printf，与特定的语言绑定。
 func Printf(key string, v ...interface{}) (int, error) {
 	return localePrinter.Printf(key, v...)
 }
 
-// Sprint 类型 fmt.Sprint，与特定的语言绑定。
+// Sprint 类似 fmt.Sprint，与特定的语言绑定。
 func Sprint(v ...interface{}) string {
 	return localePrinter.Sprint(v...)
 }
 
-// Sprintln 类型 fmt.Sprintln，与特定的语言绑定。
+// Sprintln 类似 fmt.Sprintln，与特定的语言绑定。
 func Sprintln(v ...interface{}) string {
 	return localePrinter.Sprintln(v...)
 }
 
-// Sprintf 类型 fmt.Sprintf，与特定的语言绑定。
+// Sprintf 类似 fmt.Sprintf，与特定的语言绑定。
 func Sprintf(key message.Reference, v ...interface{}) string {
 	return localePrinter.Sprintf(key, v...)
 }
 
-// Fprint 类型 fmt.Fprint，与特定的语言绑定。
+// Fprint 类似 fmt.Fprint，与特定的语言绑定。
 func Fprint(w io.Writer, v ...interface{}) (int, error) {
 	return localePrinter.Fprint(w, v...)
 }
 
-// Fprintln 类型 fmt.Fprintln，与特定的语言绑定。
+// Fprintln 类似 fmt.Fprintln，与特定的语言绑定。
 func Fprintln(w io.Writer, v ...interface{}) (int, error) {
 	return localePrinter.Fprintln(w, v...)
 }
 
-// Fprintf 类型 fmt.Fprintf，与特定的语言绑定。
+// Fprintf 类似 fmt.Fprintf，与特定的语言绑定。
 func Fprintf(w io.Writer, key message.Reference, v ...interface{}) (int, error) {
 	return localePrinter.Fprintf(w, key, v...)
 }

@@ -13,6 +13,7 @@ package output
 import (
 	"log"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/caixw/apidoc/app"
@@ -87,6 +88,11 @@ func (o *Options) Init() *app.OptionsError {
 
 // Render 渲染 docs 的内容，具体的渲染参数由 o 指定。
 func Render(docs *doc.Doc, o *Options) error {
+	// 输出之前进行一次排序，可以保证每次渲染的数据都量样的。
+	sort.SliceStable(docs.Apis, func(i, j int) bool {
+		return docs.Apis[i].URL < docs.Apis[j].URL
+	})
+
 	switch o.Type {
 	case "html":
 		return renderHTML(docs, o)
