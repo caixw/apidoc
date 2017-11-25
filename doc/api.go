@@ -10,10 +10,10 @@ import (
 	"github.com/issue9/is"
 )
 
-// Scan 扫描文档，生成一个 Doc 实例。
+// Scan 扫描一段代码，生成一个 API 实例。
 //
 // 若代码块没有 api 文档定义，则会返回空值。
-// block 该代码块的内容；
+// data 该代码块的内容；
 func (d *Doc) Scan(data []rune) *app.SyntaxError {
 	l := newLexer(data)
 

@@ -64,6 +64,7 @@ type Example struct {
 	Code string `json:"code"` // 示例代码
 }
 
+// New 声明一个 Doc 对象。
 func New() *Doc {
 	return &Doc{
 		Apis: make([]*API, 0, 100),

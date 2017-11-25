@@ -29,11 +29,12 @@ const miniSize = len("@api ")
 
 // Options 指定输入内容的相关信息。
 type Options struct {
-	SyntaxLog *log.Logger `json:"-"`              // 语法错误输出通道
-	Lang      string      `json:"lang"`           // 输入的目标语言
-	Dir       string      `json:"dir"`            // 源代码目录
-	Exts      []string    `json:"exts,omitempty"` // 需要扫描的文件扩展名，若未指定，则使用默认值
-	Recursive bool        `json:"recursive"`      // 是否查找 Dir 的子目录
+	SyntaxLog       *log.Logger `json:"-"`               // 语法错误输出通道
+	StartLineNumber int         `json:"startLineNumber"` // 代码的超始行号，默认为 0
+	Lang            string      `json:"lang"`            // 输入的目标语言
+	Dir             string      `json:"dir"`             // 源代码目录
+	Exts            []string    `json:"exts,omitempty"`  // 需要扫描的文件扩展名，若未指定，则使用默认值
+	Recursive       bool        `json:"recursive"`       // 是否查找 Dir 的子目录
 }
 
 // Init 检测 Options 变量是否符合要求
@@ -91,7 +92,7 @@ func Parse(docs *doc.Doc, o *Options) error {
 	for _, path := range paths {
 		wg.Add(1)
 		go func(path string) {
-			parseFile(docs, path, blocks, o.SyntaxLog)
+			parseFile(docs, path, blocks, o.SyntaxLog, o.StartLineNumber)
 			wg.Done()
 		}(path)
 	}
@@ -100,7 +101,7 @@ func Parse(docs *doc.Doc, o *Options) error {
 }
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。
-func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logger) {
+func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logger, startLine int) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil && synerrLog != nil {
 		synerrLog.Println(&app.SyntaxError{Message: err.Error(), File: path})
@@ -125,7 +126,7 @@ func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logg
 			}
 		}
 
-		ln := l.lineNumber() + 1 // 记录当前的行号，顺便调整为行号起始行号为 1
+		ln := l.lineNumber() + startLine // 记录当前的行号，顺便调整起始行号
 		rs, ok := block.EndFunc(l)
 		if !ok && synerrLog != nil {
 			synerrLog.Println(&app.SyntaxError{Line: ln, File: path, Message: locale.Sprintf(locale.ErrNotFoundEndFlag)})
