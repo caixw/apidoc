@@ -22,7 +22,7 @@ const (
 	OfficialURL = "http://apidoc.tools"
 
 	// 配置文件名称。
-	ConfigFilename = ".apidoc.json"
+	ConfigFilename = ".apidoc.yaml"
 
 	// 默认的文档标题
 	DefaultTitle = "APIDOC"

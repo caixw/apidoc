@@ -29,12 +29,12 @@ const miniSize = len("@api ")
 
 // Options 指定输入内容的相关信息。
 type Options struct {
-	SyntaxLog       *log.Logger `json:"-"`               // 语法错误输出通道
-	StartLineNumber int         `json:"startLineNumber"` // 代码的超始行号，默认为 0
-	Lang            string      `json:"lang"`            // 输入的目标语言
-	Dir             string      `json:"dir"`             // 源代码目录
-	Exts            []string    `json:"exts,omitempty"`  // 需要扫描的文件扩展名，若未指定，则使用默认值
-	Recursive       bool        `json:"recursive"`       // 是否查找 Dir 的子目录
+	SyntaxLog       *log.Logger `yaml:"-"`                         // 语法错误输出通道
+	StartLineNumber int         `yaml:"startLineNumber,omitempty"` // 代码的超始行号，默认为 0
+	Lang            string      `yaml:"lang"`                      // 输入的目标语言
+	Dir             string      `yaml:"dir"`                       // 源代码目录
+	Exts            []string    `yaml:"exts,omitempty"`            // 需要扫描的文件扩展名，若未指定，则使用默认值
+	Recursive       bool        `yaml:"recursive"`                 // 是否查找 Dir 的子目录
 }
 
 // Init 检测 Options 变量是否符合要求
@@ -150,7 +150,7 @@ func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logg
 	} // end for
 }
 
-// 根据recursive值确定是否递归查找paths每个目录下的子目录。
+// 根据 recursive 值确定是否递归查找 paths 每个目录下的子目录。
 func recursivePath(o *Options) ([]string, error) {
 	paths := []string{}
 

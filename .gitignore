@@ -33,5 +33,6 @@ _testmain.go
 apidoc
 
 # project
-.apidoc.json
+.apidoc.yaml
+.apidoc.yml
 /.vscode

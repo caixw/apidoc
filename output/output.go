@@ -31,12 +31,12 @@ var renderTypes = []string{
 
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
-	Dir      string        `json:"dir"`                // 文档的保存目录
-	Type     string        `json:"type"`               // 渲染方式，默认为 html
-	Template string        `json:"template,omitempty"` // 指定一个输出模板
-	Port     string        `json:"port,omitempty"`     // 调试的端口
-	Elapsed  time.Duration `json:"-"`                  // 编译用时
-	ErrorLog *log.Logger   `json:"-"`                  // 错误信息输出通道，在 html+ 模式下会用到。
+	Dir      string        `yaml:"dir"`                // 文档的保存目录
+	Type     string        `yaml:"type"`               // 渲染方式，默认为 html
+	Template string        `yaml:"template,omitempty"` // 指定一个输出模板
+	Port     string        `yaml:"port,omitempty"`     // 调试的端口
+	Elapsed  time.Duration `yaml:"-"`                  // 编译用时
+	ErrorLog *log.Logger   `yaml:"-"`                  // 错误信息输出通道，在 html+ 模式下会用到。
 }
 
 // Init 对 Options 作一些初始化操作。

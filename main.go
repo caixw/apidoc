@@ -7,7 +7,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"flag"
 	"os"
 	"path/filepath"
@@ -24,6 +23,7 @@ import (
 	"github.com/caixw/apidoc/output"
 	"github.com/issue9/version"
 	"golang.org/x/text/language"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func main() {
@@ -204,7 +204,7 @@ func genConfigFile(path string) error {
 			Dir:  filepath.Join(dir, "doc"),
 		},
 	}
-	data, err := json.MarshalIndent(cfg, "", "    ")
+	data, err := yaml.Marshal(cfg)
 	if err != nil {
 		return err
 	}
