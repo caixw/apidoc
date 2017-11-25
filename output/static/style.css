@@ -76,13 +76,13 @@ header .filter label{
     text-align:right;
 }
 
-.main{
+main{
     padding:1rem;
 }
 
 /*=============== .api ================*/
 
-.main .api{
+main .api{
     padding:1rem;
     margin:1rem 0rem;
     border:1px solid #eee;
