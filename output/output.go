@@ -13,6 +13,7 @@ package output
 import (
 	"log"
 	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -27,6 +28,8 @@ type Options struct {
 	Dir      string        `yaml:"dir"` // 文档的保存目录
 	Elapsed  time.Duration `yaml:"-"`   // 编译用时
 	ErrorLog *log.Logger   `yaml:"-"`   // 错误信息输出通道，在 html+ 模式下会用到。
+
+	dataDir string // json 数据保存的目录
 }
 
 // Init 对 Options 作一些初始化操作。
@@ -37,6 +40,14 @@ func (o *Options) Init() *app.OptionsError {
 
 	if !utils.FileExists(o.Dir) {
 		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
+			msg := locale.Sprintf(locale.ErrMkdirError, err)
+			return &app.OptionsError{Field: "dir", Message: msg}
+		}
+	}
+
+	o.dataDir = filepath.Join(o.Dir, app.JSONDataDirName)
+	if !utils.FileExists(o.dataDir) {
+		if err := os.MkdirAll(o.dataDir, os.ModePerm); err != nil {
 			msg := locale.Sprintf(locale.ErrMkdirError, err)
 			return &app.OptionsError{Field: "dir", Message: msg}
 		}

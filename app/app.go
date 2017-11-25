@@ -39,6 +39,15 @@ const (
 
 	// 生成的 JSON 数据存放的目录
 	JSONDataDirName = "data"
+
+	// JSON 生成的 JSON 文件，缩进量
+	JSONIndent = 2
+
+	// 页面信息的文件名
+	PageFileName = "page"
+
+	// 组文件的前缀，有前缀，不会与现有文件重名
+	GroupFilePrefix = "group_"
 )
 
 var (

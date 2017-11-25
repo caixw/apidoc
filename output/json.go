@@ -31,8 +31,8 @@ type page struct {
 type group struct {
 	path string // 相对路径名
 
-	Name string     `json:"groupName"` // 当前分组的名称
-	Apis []*doc.API `json:"apis"`      // 当前分组的 api 文档
+	Name string     `json:"name"` // 当前分组的名称
+	Apis []*doc.API `json:"apis"` // 当前分组的 api 文档
 }
 
 func render(docs *doc.Doc, opt *Options) error {
@@ -40,10 +40,11 @@ func render(docs *doc.Doc, opt *Options) error {
 
 	for _, api := range docs.Apis {
 		name := strings.ToLower(api.Group)
+		path := filepath.Join(opt.dataDir, app.GroupFilePrefix+name+".json")
 
 		if groups[name] == nil {
 			groups[name] = &group{
-				path: filepath.Join(opt.Dir, name),
+				path: path,
 				Name: api.Group, // 名称区分大小写，不采用 name 变量
 				Apis: make([]*doc.API, 0, 100),
 			}
@@ -68,17 +69,16 @@ func render(docs *doc.Doc, opt *Options) error {
 		Groups:      names,
 	}
 
-	if err := renderPage(page, opt.Dir); err != nil {
+	if err := renderPage(page, opt.dataDir); err != nil {
 		return err
 	}
 
-	return renderGroups(groups, opt.Dir)
+	return renderGroups(groups)
 }
 
 func renderPage(p *page, destDir string) error {
-	destDir = filepath.Join(destDir, app.JSONDataDirName)
+	path := filepath.Join(destDir, app.PageFileName+".json")
 
-	path := filepath.Join(destDir, "page.json")
 	if err := renderJSON(p, path); err != nil {
 		return err
 	}
@@ -86,9 +86,7 @@ func renderPage(p *page, destDir string) error {
 	return nil
 }
 
-func renderGroups(groups map[string]*group, destDir string) error {
-	destDir = filepath.Join(destDir, app.JSONDataDirName)
-
+func renderGroups(groups map[string]*group) error {
 	for _, g := range groups {
 		if err := renderJSON(g, g.path); err != nil {
 			return err
@@ -99,7 +97,7 @@ func renderGroups(groups map[string]*group, destDir string) error {
 }
 
 func renderJSON(obj interface{}, path string) error {
-	data, err := json.MarshalIndent(obj, "", "    ")
+	data, err := json.MarshalIndent(obj, "", strings.Repeat(" ", app.JSONIndent))
 	if err != nil {
 		return err
 	}
