@@ -22,21 +22,11 @@ import (
 	"github.com/issue9/utils"
 )
 
-// 支持的渲染方式
-var renderTypes = []string{
-	"html",
-	"html+",
-	"json",
-}
-
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
-	Dir      string        `yaml:"dir"`                // 文档的保存目录
-	Type     string        `yaml:"type"`               // 渲染方式，默认为 html
-	Template string        `yaml:"template,omitempty"` // 指定一个输出模板
-	Port     string        `yaml:"port,omitempty"`     // 调试的端口
-	Elapsed  time.Duration `yaml:"-"`                  // 编译用时
-	ErrorLog *log.Logger   `yaml:"-"`                  // 错误信息输出通道，在 html+ 模式下会用到。
+	Dir      string        `yaml:"dir"` // 文档的保存目录
+	Elapsed  time.Duration `yaml:"-"`   // 编译用时
+	ErrorLog *log.Logger   `yaml:"-"`   // 错误信息输出通道，在 html+ 模式下会用到。
 }
 
 // Init 对 Options 作一些初始化操作。
@@ -45,41 +35,10 @@ func (o *Options) Init() *app.OptionsError {
 		return &app.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
-	if len(o.Type) == 0 {
-		return &app.OptionsError{Field: "type", Message: locale.Sprintf(locale.ErrRequired)}
-	}
-
 	if !utils.FileExists(o.Dir) {
 		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
 			msg := locale.Sprintf(locale.ErrMkdirError, err)
 			return &app.OptionsError{Field: "dir", Message: msg}
-		}
-	}
-
-	if !isSuppertedType(o.Type) {
-		return &app.OptionsError{Field: "type", Message: locale.Sprintf(locale.ErrInvalidFormat)}
-	}
-
-	// 只有 html 和 html+ 才需要判断模板文件是否存在
-	if o.Type == "html" || o.Type == "html+" {
-		if len(o.Template) > 0 && !utils.FileExists(o.Template) {
-			msg := locale.Sprintf(locale.ErrTemplateNotExists)
-			return &app.OptionsError{Field: "template", Message: msg}
-		}
-	}
-
-	// 调试模式，必须得有模板和端口
-	if o.Type == "html+" {
-		if len(o.Template) == 0 {
-			return &app.OptionsError{Field: "template", Message: locale.Sprintf(locale.ErrRequired)}
-		}
-
-		if len(o.Port) == 0 {
-			return &app.OptionsError{Field: "port", Message: locale.Sprintf(locale.ErrRequired)}
-		}
-
-		if o.Port[0] != ':' {
-			o.Port = ":" + o.Port
 		}
 	}
 
@@ -93,24 +52,5 @@ func Render(docs *doc.Doc, o *Options) error {
 		return docs.Apis[i].URL < docs.Apis[j].URL
 	})
 
-	switch o.Type {
-	case "html":
-		return renderHTML(docs, o)
-	case "html+":
-		return renderHTMLPlus(docs, o)
-	case "json":
-		return renderJSON(docs, o)
-	default:
-		return &app.OptionsError{Field: "Type", Message: locale.Sprintf(locale.ErrInvalidOutputType)}
-	}
-}
-
-func isSuppertedType(typ string) bool {
-	for _, k := range renderTypes {
-		if k == typ {
-			return true
-		}
-	}
-
-	return false
+	return render(docs, o)
 }

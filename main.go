@@ -201,8 +201,7 @@ func genConfigFile(path string) error {
 			},
 		},
 		Output: &output.Options{
-			Type: "html",
-			Dir:  filepath.Join(dir, "doc"),
+			Dir: filepath.Join(dir, "doc"),
 		},
 	}
 	data, err := yaml.Marshal(cfg)

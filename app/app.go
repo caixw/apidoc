@@ -36,6 +36,9 @@ const (
 
 	// 默认的语言，目前仅能保证简体中文是最新的。
 	DefaultLocale = "cmn-Hans"
+
+	// 生成的 JSON 数据存放的目录
+	JSONDataDirName = "data"
 )
 
 var (
