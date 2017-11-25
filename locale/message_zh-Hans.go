@@ -40,8 +40,6 @@ func init() {
 		ErrRequired:              "不能为空",
 		ErrInvalidFormat:         "格式不正确",
 		ErrDirNotExists:          "目录不存在",
-		ErrInvalidOutputType:     "无效的输出类型",
-		ErrTemplateNotExists:     "模板不存在",
 		ErrMkdirError:            "创建目录时发生以下错误：%v",
 		ErrInvalidBlockType:      "无效的 block.Type 值：%v",
 		ErrUnsupportedInputLang:  "无效的输入语言：%v",
