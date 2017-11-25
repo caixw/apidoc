@@ -39,8 +39,6 @@ var templates = []string{
 	"./index.html",
 	"./group.html",
 	"./api.html",
-	"./header.html",
-	"./footer.html",
 }
 
 func main() {
