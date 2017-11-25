@@ -27,6 +27,10 @@ type page struct {
 	Date        time.Time         `json:"date"`
 	Elapsed     time.Duration     `json:"elapsed"`
 	Groups      map[string]string `json:"groups"` // 组名与文件名的对应关系
+
+	AppName    string `json:"appName"`
+	AppURL     string `json:"appURL"`
+	AppVersion string `json:"appVersion"`
 }
 
 type group struct {
@@ -73,6 +77,10 @@ func render(docs *doc.Doc, opt *Options) error {
 		Date:        time.Now(),
 		Elapsed:     opt.Elapsed,
 		Groups:      names,
+
+		AppName:    app.Name,
+		AppURL:     app.OfficialURL,
+		AppVersion: app.Version(),
 	}
 
 	if err := renderPage(page, opt.dataDir); err != nil {

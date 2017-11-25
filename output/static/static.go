@@ -81,13 +81,13 @@ header .filter label{
     text-align:right;
 }
 
-.main{
+main{
     padding:1rem;
 }
 
 /*=============== .api ================*/
 
-.main .api{
+main .api{
     padding:1rem;
     margin:1rem 0rem;
     border:1px solid #eee;
@@ -278,28 +278,68 @@ function repeatSpace(len) {
 }
 `),}
 var Templates=map[string]string{
-"./index.html":`{{- define "index" -}}
-    {{template "header" .}}
+"./index.html":`<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="generator" content="{{.AppOfficialURL}}" />
+        <title></title>
+        <link rel="stylesheet" href="./style.css" />
+        <link href="https://cdn.bootcss.com/prism/1.5.1/themes/prism.min.css" rel="stylesheet" />
 
-    {{- if .Content -}}
-    <article>
-        {{.Content|nl2br|html}}
-    </article>
-    {{- end -}}
+        <script src="./jquery-3.0.0.min.js"></script>
+        <script src="https://cdn.bootcss.com/prism/1.5.1/prism.min.js" data-manual></script>
+        <script src="https://cdn.bootcss.com/prism/1.5.1/plugins/autoloader/prism-autoloader.min.js"></script>
+        <script src="./app.js"></script>
+    </head>
+    <body>
+        <header>
+            <div class="left">
+                <h1>
+                    <a href="./index.html">{{.Title}}</a>
+                    {{- if .Version}}<span class="version">{{.Version}}</span>{{end}}
+                </h1>
 
-    {{- range .Group -}}
-        {{template "api" .}}
-    {{- end -}}
+                <select id="groups">
+                    {{- $currGroup := .GroupName -}}
+                    {{- range $key, $val := .Groups -}}
+                    <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
+                    {{end}}
+                </select>
+            </div>
 
-    {{template "footer" .}}
-{{- end -}}
-`,"./group.html":`{{- define "group" -}}
-    {{template "header" .}}
-    {{range .Group}}
-        {{template "api" .}}
-    {{end}}
-    {{template "footer" .}}
-{{- end -}}
+            <div class="filter">
+                <label><input type="checkbox" checked="checked" value="get">GET</label>
+                <label><input type="checkbox" checked="checked" value="post">POST</label>
+                <label><input type="checkbox" checked="checked" value="put">PUT</label>
+                <label><input type="checkbox" checked="checked" value="patch">PATCH</label>
+                <label><input type="checkbox" checked="checked" value="delete">DELETE</label>
+                <label><input type="checkbox" checked="checked" value="options">OPTIONS</label>
+            </div>
+        </header>
+
+        <main></main>
+
+        <footer>
+            <p>
+                内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date|dateFormat}}</time>，
+                用时{{.Elapsed}}。
+            </p>
+
+            {{if .LicenseName}}
+            <p>
+                内容采用
+                {{ if .LicenseURL}}<a href="{{.LicenseURL}}">{{end}}
+                    {{- .LicenseName -}}
+                {{ if .LicenseURL}}</a>{{end}}
+                进行许可。
+            </p>
+            {{end}}
+        </footer>
+    </body>
+</html>
 `,"./api.html":`{{- define "api" -}}
 <section class="api">
     <h3>
@@ -427,75 +467,5 @@ var Templates=map[string]string{
             <h5>示例:</h5>
             {{template "examples" .Examples}}
         {{- end}}
-{{- end -}}
-`,"./header.html":`{{define "header" -}}<!DOCTYPE html>
-<html lang="zh-cmn-Hans">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="generator" content="{{.AppOfficialURL}}" />
-        <title>
-        {{- if .GroupName -}}
-            {{- .GroupName -}}&#160;&#8250;&#160;{{- .Title -}}
-        {{- else -}}
-            {{- .Title -}}
-        {{- end -}}
-        </title>
-        <link rel="stylesheet" href="./style.css" />
-        <link href="https://cdn.bootcss.com/prism/1.5.1/themes/prism.min.css" rel="stylesheet" />
-
-        <script src="./jquery-3.0.0.min.js"></script>
-        <script src="https://cdn.bootcss.com/prism/1.5.1/prism.min.js" data-manual></script>
-        <script src="https://cdn.bootcss.com/prism/1.5.1/plugins/autoloader/prism-autoloader.min.js"></script>
-        <script src="./app.js"></script>
-    </head>
-    <body>
-        <header>
-            <div class="left">
-                <h1>
-                    <a href="./index.html">{{.Title}}</a>
-                    {{- if .Version}}<span class="version">{{.Version}}</span>{{end}}
-                </h1>
-
-                <select id="groups">
-                    {{- $currGroup := .GroupName -}}
-                    {{- range $key, $val := .Groups -}}
-                    <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
-                    {{end}}
-                </select>
-            </div>
-
-            <div class="filter">
-                <label><input type="checkbox" checked="checked" value="get">GET</label>
-                <label><input type="checkbox" checked="checked" value="post">POST</label>
-                <label><input type="checkbox" checked="checked" value="put">PUT</label>
-                <label><input type="checkbox" checked="checked" value="patch">PATCH</label>
-                <label><input type="checkbox" checked="checked" value="delete">DELETE</label>
-                <label><input type="checkbox" checked="checked" value="options">OPTIONS</label>
-            </div>
-        </header>
-        <div class="main">
-{{- end -}}
-`,"./footer.html":`{{- define "footer"}}
-    </div><!-- end .main -->
-        <footer>
-            <p>
-                内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date|dateFormat}}</time>，
-                用时{{.Elapsed}}。
-            </p>
-
-            {{if .LicenseName}}
-            <p>
-                内容采用
-                {{ if .LicenseURL}}<a href="{{.LicenseURL}}">{{end}}
-                    {{- .LicenseName -}}
-                {{ if .LicenseURL}}</a>{{end}}
-                进行许可。
-            </p>
-            {{end}}
-        </footer>
-    </body>
-</html>
 {{- end -}}
 `,}
