@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -55,6 +56,11 @@ func render(docs *doc.Doc, opt *Options) error {
 	names := make(map[string]string, len(groups))
 	for _, group := range groups {
 		names[group.Name] = group.path
+
+		// 排序
+		sort.SliceStable(group.Apis, func(i, j int) bool {
+			return group.Apis[i].URL < group.Apis[j].URL
+		})
 	}
 
 	page := &page{
