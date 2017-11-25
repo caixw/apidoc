@@ -20,9 +20,10 @@ import (
 
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
-	Dir      string        `yaml:"dir"` // 文档的保存目录
-	Elapsed  time.Duration `yaml:"-"`   // 编译用时
-	ErrorLog *log.Logger   `yaml:"-"`   // 错误信息输出通道，在 html+ 模式下会用到。
+	Dir      string        `yaml:"dir"`              // 文档的保存目录
+	Groups   []string      `yaml:"groups,omitempty"` // 仅输出这些组，为空表示输出所有
+	Elapsed  time.Duration `yaml:"-"`                // 编译用时
+	ErrorLog *log.Logger   `yaml:"-"`                // 错误信息输出通道，在 html+ 模式下会用到。
 
 	dataDir string // json 数据保存的目录
 }
@@ -49,6 +50,21 @@ func (o *Options) Init() *app.OptionsError {
 	}
 
 	return nil
+}
+
+// 指定的组是否需要输出
+func (o *Options) groupIsEnable(group string) bool {
+	if len(o.Groups) == 0 {
+		return true
+	}
+
+	for _, g := range o.Groups {
+		if g == group {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Render 渲染 docs 的内容，具体的渲染参数由 o 指定。

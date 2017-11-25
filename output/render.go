@@ -79,7 +79,7 @@ func render(docs *doc.Doc, opt *Options) error {
 		return err
 	}
 
-	return renderGroups(groups)
+	return renderGroups(groups, opt)
 }
 
 func renderPage(p *page, destDir string) error {
@@ -92,8 +92,12 @@ func renderPage(p *page, destDir string) error {
 	return nil
 }
 
-func renderGroups(groups map[string]*group) error {
+func renderGroups(groups map[string]*group, o *Options) error {
 	for _, g := range groups {
+		if !o.groupIsEnable(g.Name) {
+			continue
+		}
+
 		if err := renderJSON(g, g.path); err != nil {
 			return err
 		}
