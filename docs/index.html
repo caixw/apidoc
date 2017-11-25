@@ -33,7 +33,7 @@
         <header>
             <div class="ui container">
                 <h1 class="ui text menu left floated">
-                    <a class="item goto-top" href="#">APIDOC<sub class="version">3.0</sub></a>
+                    <a class="item goto-top" href="#">APIDOC<sub class="version">4.0</sub></a>
                 </h1>
                 <nav class="ui text menu right floated">
                     <a class="item" href="#about">关于</a>
@@ -63,7 +63,7 @@
                 <p>以下是一段简短的 Go 代码下的示例：</p>
                 <pre data-indent="4">
                 /**
-                 * @api get /users/:id 获取指定用户的相关信息
+                 * @api GET /users/:id 获取指定用户的相关信息
                  * @apiGroup users
                  * @apiParam id int 表示用户 id 的唯一值
                  *
@@ -107,24 +107,17 @@
 
                 <section>
                     <h3>配置文件</h3>
-                    <p>apidoc 通过工作目录下的配置文件来控制其行为。文件名称固定为 .apidoc.json。以下为 .apidoc.json 的一个示例。</p>
-                    <pre data-indent="5" data-language="json">
-                    {
-                        "version": "3.0.52.160529",
-                        "inputs": [
-                            {
-                                "lang": "go",
-                                "dir": "./",
-                                "recursive": true
-                            }
-                        ],
-                        "output": {
-                            "dir": "./output/doc",
-                            "type": "html",
-                            "template":"",
-                            "port":":9999"
-                        }
-                    }
+                    <p>apidoc 通过工作目录下的配置文件来控制其行为。文件名称固定为 .apidoc.yaml。以下为 .apidoc.yaml 的一个示例。</p>
+                    <pre data-indent="5" data-language="yaml">
+                    version: 4.0.0+20171125
+                    inputs:
+                        - lang: go
+                          dir: ./
+                          recursive: true
+                    output:
+                        dir: ./output/doc
+                        type: html
+                        port: :9999
                     </pre>
                     <table class="ui very compact table">
                         <thead>
@@ -192,8 +185,8 @@
 
                 <section>
                     <h3>使用</h3>
-                    <p>运行 apidoc 时，程序会从<strong>当前的工作目录</strong>中查找 <code>.apidoc.json</code> 文件，并将其当作配置文件来执行相应操作。</p>
-                    <p><samp>apidoc -g</samp> 会为你产生一个默认的 <code>.apidoc.json</code> 配置文件。</p>
+                    <p>运行 apidoc 时，程序会从<strong>当前的工作目录</strong>中查找 <code>.apidoc.yaml</code> 文件，并将其当作配置文件来执行相应操作。</p>
+                    <p><samp>apidoc -g</samp> 会为你产生一个默认的 <code>.apidoc.yaml</code> 配置文件。</p>
                 </section>
 
                 <section>
@@ -203,7 +196,7 @@
 
                 <section>
                     <h3>自定义模板</h3>
-                    <p>在输出类型为 <var>html</var> 时，可以通过在配置文件 <samp>.apidoc.json</samp> 中的 <var>template</var> 参数指定自定义模板，只会分析模板当前目录下的 <samp>*.html</samp> 文件，其它文件将被忽略。</p>
+                    <p>在输出类型为 <var>html</var> 时，可以通过在配置文件 <samp>.apidoc.yaml</samp> 中的 <var>template</var> 参数指定自定义模板，只会分析模板当前目录下的 <samp>*.html</samp> 文件，其它文件将被忽略。</p>
                     <p>模板格式采用的是 Go 标准库的 <a href="https://godoc.org/html/template">html/template</a>，系统会调用 <var>group</var> 和 <var>index</var> 两个子模板，具体的可用数据可参考源码目录下的 <a href="https://github.com/caixw/apidoc/tree/master/output/static">output/static</a> 下的模板。</p>
                     <p><var>html+</var> 为 <var>html</var> 的增强模式，在该模式下不会输出任何文件内容，而是可以直接在浏览器访问相关页面，方便调试模板页面。</p>
                 </section>

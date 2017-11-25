@@ -52,8 +52,8 @@ $(document).ready(function(){
 
         // 高亮代码
         var lang = $(elem).attr('data-language');
-        if (lang == 'json'){
-            text = text.replace(/(\"[^"']*\")(:)(.+)(,?)/g, '<span class="keyword">$1</span>$2$3$4').
+        if (lang == 'yaml'){
+            text = text.replace(/([^:]*)(:)(.*)(,?)/g, '<span class="keyword">$1</span>$2$3$4').
                 replace(/(:[&#160;]*)\"([^"']*)\"(,?)/g, '$1<span class="string">"$2"</span>$3').
                 replace(/(:[&#160;]*)(true|false)(,?)/g, '$1<span class="bool">$2</span>$3')
 
