@@ -64,18 +64,6 @@ header #groups{
     margin-left:20%;
 }
 
-header .filter{
-    text-align:right;
-    flex:1 1 auto;
-}
-
-
-header .filter label{
-    margin-left:1rem;
-    vertical-align: bottom;
-    text-align:right;
-}
-
 main{
     padding:1rem;
 }
