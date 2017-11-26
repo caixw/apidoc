@@ -15,39 +15,41 @@
         <script src="./app.js"></script>
     </head>
     <body>
-        <header>
-            <div class="left">
-                <h1>
-                    <a href="./index.html">{{.Title}}</a>
-                    {{- if .Version}}<span class="version">{{.Version}}</span>{{end}}
-                </h1>
+        <aside>
+            <header>
+                <h1>apidoc</h1>
+            </header>
 
-                <select id="groups">
-                    {{- $currGroup := .GroupName -}}
-                    {{- range $key, $val := .Groups -}}
-                    <option{{if eq $key $currGroup}} selected="selected"{{end}} value="{{$key|groupURL}}">{{$key}}</option>
-                    {{end}}
-                </select>
+            <div>
+                <ul>
+                    <li>123</li>
+                    <li>123</li>
+                    <li>123</li>
+                </ul>
             </div>
-        </header>
 
-        <main></main>
+            <footer>
+                <p>
+                    内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date|dateFormat}}</time>，
+                    用时{{.Elapsed}}。
+                </p>
 
-        <footer>
-            <p>
-                内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date|dateFormat}}</time>，
-                用时{{.Elapsed}}。
-            </p>
+                {{if .LicenseName}}
+                <p>
+                    内容采用
+                    {{ if .LicenseURL}}<a href="{{.LicenseURL}}">{{end}}
+                        {{- .LicenseName -}}
+                    {{ if .LicenseURL}}</a>{{end}}
+                    进行许可。
+                </p>
+                {{end}}
+            </footer>
+        </aside>
 
-            {{if .LicenseName}}
-            <p>
-                内容采用
-                {{ if .LicenseURL}}<a href="{{.LicenseURL}}">{{end}}
-                    {{- .LicenseName -}}
-                {{ if .LicenseURL}}</a>{{end}}
-                进行许可。
-            </p>
-            {{end}}
-        </footer>
+        <main>123</main>
+
+        <script>
+            import page from './data/page.json'
+        </script>
     </body>
 </html>

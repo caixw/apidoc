@@ -30,7 +30,6 @@ const (
 // 指定所有需要序列化的文件名。
 var assets = []string{
 	"./style.css",
-	"./jquery-3.0.0.min.js",
 	"./app.js",
 }
 

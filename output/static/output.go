@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// 默认模板
+// Package static 提供了默认模板
 package static
 
 //go:generate go run make.go
