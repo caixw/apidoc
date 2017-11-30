@@ -1,0 +1,101 @@
+{
+  "name": "admin.union",
+  "apis": [
+    {
+      "method": "post",
+      "url": "/admin/api/unions",
+      "summary": "添加一个新项",
+      "group": "admin.union",
+      "request": {
+        "type": "json",
+        "params": [
+          {
+            "name": "key",
+            "type": "string",
+            "summary": "唯一名称，若没子类，可为空。"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "summary": "字面内容。"
+          },
+          {
+            "name": "parent",
+            "type": "int",
+            "summary": "父类，若没有，则为0。"
+          }
+        ],
+        "example": [
+          {
+            "type": "json",
+            "code": "{\"key\":\"abc\", \"name\":\"n1\", \"parent\": 0}"
+          }
+        ]
+      },
+      "success": {
+        "code": "201",
+        "summary": "created"
+      }
+    },
+    {
+      "method": "delete",
+      "url": "/admin/api/unions/{id}",
+      "summary": "删除一个项",
+      "group": "admin.union",
+      "queries": [
+        {
+          "name": "id",
+          "type": "int",
+          "summary": "需要删除的id"
+        }
+      ],
+      "success": {
+        "code": "204",
+        "summary": "no content"
+      }
+    },
+    {
+      "method": "put",
+      "url": "/admin/api/unions/{id}",
+      "summary": "修改一个现有的项",
+      "group": "admin.union",
+      "queries": [
+        {
+          "name": "id",
+          "type": "int",
+          "summary": "子项id"
+        }
+      ],
+      "request": {
+        "type": "json",
+        "params": [
+          {
+            "name": "key",
+            "type": "string",
+            "summary": "唯一名称，若没子类，可为空。"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "summary": "字面内容。"
+          },
+          {
+            "name": "parent",
+            "type": "int",
+            "summary": "父类，若没有，则为0。"
+          }
+        ],
+        "example": [
+          {
+            "type": "json",
+            "code": "{\"key\":\"abc\", \"name\":\"n1\", \"parent\": 0}"
+          }
+        ]
+      },
+      "success": {
+        "code": "204",
+        "summary": "no content"
+      }
+    }
+  ]
+}

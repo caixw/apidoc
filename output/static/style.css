@@ -13,7 +13,7 @@ a {
 /*=============== aside ================*/
 
 aside {
-    background: rgb(119,119,119);
+    background: rgb(189,189,189);
 
     position: fixed;
     top: 0;
@@ -24,10 +24,17 @@ aside {
 
 aside header {
     padding: 1rem;
+    position: sticky;
+}
+
+aside menu {
 }
 
 aside footer {
     padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
 }
 
 /*=============== main ================*/

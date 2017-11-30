@@ -1,0 +1,18 @@
+{
+    "title": "title",
+	"version": "version",
+	"baseURL": "https://caixw.io",
+	"licenseName": "MIT",
+	"licenseURL": "https://opensource.org/MIT",
+	"content": "content<h1>title</h1>content",
+	"date": 192168122,
+	"elapsed": 192168122,
+	"groups": {
+        "admin.ad": "./data/group_admin.ad.json",
+        "admin.union": "./data/group_admin.union.json"
+	},
+
+	"appName": "appname",
+	"appURL": "http://apidoc.tools",
+	"appVersion": "4.0.0"
+}
