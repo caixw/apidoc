@@ -1,88 +1,53 @@
 @charset "utf-8";
 
 /*============== reset =================*/
-body{
-    margin:0 auto;
+body {
+    margin: 0
 }
 
-a{
-    text-decoration:none;
-    color:#3b8bba;
+a {
+    text-decoration: none;
+    color: #3b8bba;
 }
 
-p{
-    margin:.5rem 0rem;
+/*=============== aside ================*/
+
+aside {
+    background: rgb(189,189,189);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 350px;
 }
 
-ul{
-    margin:.5rem -0.5rem;
-    padding:0rem 1.5rem;
-    list-style:none;
+aside header {
+    padding: 1rem;
+    position: sticky;
+    position: -webkit-sticky;
 }
 
-ul li{
-    margin:.2rem 0rem;
+aside menu {
 }
 
-/*=============== header ================*/
-
-header{
-    color:#777;
-    background-color:#fafafa;
-    border:1px solid #eee;
-    padding:1rem;
-    top:0;
-    position:sticky; /* TODO: 暂时只有 Firefox 支持，其它浏览器通过 js 模拟 */
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-flow:row wrap;
+aside footer {
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
 }
 
-.sticky{
-    top:0;
-    position:fixed;
-    box-sizing:border-box;
-    width:100%;
-}
+/*=============== main ================*/
 
-header .left{
-    flex:1 1 auto;
-}
-
-header h1{
-    font-size:2rem;
-    display:inline-block;
-    margin:0rem;
-}
-
-header h1 .version{
-    font-size:1rem;
-}
-
-header #groups{
-    margin-left:20%;
-}
-
-header .filter{
-    text-align:right;
-    flex:1 1 auto;
-}
-
-
-header .filter label{
-    margin-left:1rem;
-    vertical-align: bottom;
-    text-align:right;
-}
-
-.main{
-    padding:1rem;
+main {
+    margin-left: 350px;
+    padding: 1rem;
 }
 
 /*=============== .api ================*/
 
-.main .api{
+main .api{
     padding:1rem;
     margin:1rem 0rem;
     border:1px solid #eee;
@@ -147,10 +112,6 @@ header .filter label{
     margin-right:1rem;
 }
 
-.api .content{
-    display:none;
-}
-
 .api table{
     text-align:left;
     border-collapse:collapse;
@@ -174,15 +135,3 @@ header .filter label{
     padding:.3rem 1rem;
 }
 
-/*=============== footer ================*/
-footer{
-    border-top:1px solid #eee;
-    background-color:#fafafa;
-    color:#777;
-    padding:1rem;
-}
-
-footer p{
-    margin:.5rem;
-    padding:0px;
-}

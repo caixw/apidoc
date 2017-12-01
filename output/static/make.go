@@ -30,17 +30,12 @@ const (
 // 指定所有需要序列化的文件名。
 var assets = []string{
 	"./style.css",
-	"./jquery-3.0.0.min.js",
 	"./app.js",
 }
 
 // 需要序列化的模板文件。
 var templates = []string{
 	"./index.html",
-	"./group.html",
-	"./api.html",
-	"./header.html",
-	"./footer.html",
 }
 
 func main() {

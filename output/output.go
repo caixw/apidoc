@@ -14,6 +14,7 @@ import (
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/output/static"
 
 	"github.com/issue9/utils"
 )
@@ -69,5 +70,9 @@ func (o *Options) groupIsEnable(group string) bool {
 
 // Render 渲染 docs 的内容，具体的渲染参数由 o 指定。
 func Render(docs *doc.Doc, o *Options) error {
+	if err := static.Output(o.Dir); err != nil {
+		return err
+	}
+
 	return render(docs, o)
 }
