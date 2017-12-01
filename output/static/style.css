@@ -25,6 +25,7 @@ aside {
 aside header {
     padding: 1rem;
     position: sticky;
+    position: -webkit-sticky;
 }
 
 aside menu {
@@ -109,10 +110,6 @@ main .api{
 .api h4 .error{
     color:red;
     margin-right:1rem;
-}
-
-.api .content{
-    display:none;
 }
 
 .api table{

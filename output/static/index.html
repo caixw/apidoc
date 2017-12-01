@@ -12,7 +12,6 @@
         <script src="https://cdn.bootcss.com/handlebars.js/4.0.11/handlebars.min.js"></script>
         <script src="https://cdn.bootcss.com/prism/1.5.1/prism.min.js" data-manual></script>
         <script src="https://cdn.bootcss.com/prism/1.5.1/plugins/autoloader/prism-autoloader.min.js"></script>
-        <!--script src="./app.js"></script-->
     </head>
     <body>
         <div id="app"></div>
@@ -165,54 +164,6 @@
             {{/each}}
         </script>
 
-        
-
-        <script>
-            var source = document.querySelector('#page').innerHTML
-            let pageTpl = Handlebars.compile(source)
-
-            source = document.querySelector('#examples').innerHTML
-            Handlebars.registerPartial('examples', source)
-
-            source = document.querySelector('#params').innerHTML
-            Handlebars.registerPartial('params', source)
-
-            source = document.querySelector('#headers').innerHTML
-            Handlebars.registerPartial('headers', source)
-
-            source = document.querySelector('#response').innerHTML
-            Handlebars.registerPartial('response', source)
-
-            source = document.querySelector('#api').innerHTML
-            let apiTpl = Handlebars.compile(source, {noEscape: false, strict: true})
-
-            fetch('./data/page.json').then((resp)=>{
-                return resp.json();
-            }).then((json)=>{
-                document.querySelector('#app').innerHTML = pageTpl(json)
-                document.title = json.title + ' | ' + json.appName
-
-                loadApis(json)
-            })
-
-            function loadApis(json) {
-                document.querySelector('.menu>li.content').addEventListener('click', (event)=>{
-                    document.querySelector('main').innerHTML = json.content
-                })
-
-                document.querySelectorAll('.menu>li.api').forEach((elem, index, list)=>{
-                    elem.addEventListener('click', (event)=>{
-                        let path = event.target.getAttribute('data-path')
-                        fetch(path).then((resp)=>{
-                            return resp.json()
-                        }).then((json)=>{
-                            document.querySelector('main').innerHTML = apiTpl(json)
-                        }).catch((reason)=>{
-                            console.error(reason)
-                        })
-                    })
-                })
-            } // end loadApis
-        </script>
+        <script src="./app.js"></script>
     </body>
 </html>

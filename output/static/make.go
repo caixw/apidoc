@@ -36,7 +36,6 @@ var assets = []string{
 // 需要序列化的模板文件。
 var templates = []string{
 	"./index.html",
-	"./api.html",
 }
 
 func main() {

@@ -18,7 +18,7 @@ a {
 /*=============== aside ================*/
 
 aside {
-    background: rgb(119,119,119);
+    background: rgb(189,189,189);
 
     position: fixed;
     top: 0;
@@ -29,10 +29,18 @@ aside {
 
 aside header {
     padding: 1rem;
+    position: sticky;
+    position: -webkit-sticky;
+}
+
+aside menu {
 }
 
 aside footer {
     padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
 }
 
 /*=============== main ================*/
@@ -109,10 +117,6 @@ main .api{
     margin-right:1rem;
 }
 
-.api .content{
-    display:none;
-}
-
 .api table{
     text-align:left;
     border-collapse:collapse;
@@ -141,54 +145,96 @@ main .api{
 // 代码缩进的空格数量。
 var indentSize = 4;
 
-$(document).ready(function(){
-    // 调整缩进
-    $('pre code').each(function(index, elem){
-        var code = $(elem).text();
-        $(elem).text(alignCode(code));
-    });
+window.onload = function() {
+    initTemplate()
+}
 
-    // 美化带有子元素的参数显示
+function initTemplate() {
+    var source = document.querySelector('#page').innerHTML
+    let pageTpl = Handlebars.compile(source)
+
+    source = document.querySelector('#examples').innerHTML
+    Handlebars.registerPartial('examples', source)
+
+    source = document.querySelector('#params').innerHTML
+    Handlebars.registerPartial('params', source)
+
+    source = document.querySelector('#headers').innerHTML
+    Handlebars.registerPartial('headers', source)
+
+    source = document.querySelector('#response').innerHTML
+    Handlebars.registerPartial('response', source)
+
+    source = document.querySelector('#api').innerHTML
+    let apiTpl = Handlebars.compile(source)
+
+
+    fetch('./data/page.json').then((resp)=>{
+        return resp.json();
+    }).then((json)=>{
+        document.querySelector('#app').innerHTML = pageTpl(json)
+        document.title = json.title + ' | ' + json.appName
+
+        loadApis(json)
+    })
+
+    // 加载 api 模板内容，json 为对应的数据
+    function loadApis(json) {
+        document.querySelector('.menu>li.content').addEventListener('click', (event)=>{
+            document.querySelector('main').innerHTML = json.content
+        })
+
+        document.querySelectorAll('.menu>li.api').forEach((elem, index, list)=>{
+            elem.addEventListener('click', (event)=>{
+                let path = event.target.getAttribute('data-path')
+                fetch(path).then((resp)=>{
+                    return resp.json()
+                }).then((json)=>{
+                    document.querySelector('main').innerHTML = apiTpl(json)
+
+                    indentCode()
+                    prettifyParams()
+                    highlightCode()
+                }).catch((reason)=>{
+                    console.error(reason)
+                })
+            })
+        })
+    } // end loadApis
+}
+
+// 美化带有子元素的参数显示
+function prettifyParams() {
     $('.request .params tbody th,.response .params tbody th').each(function(index, elem){
         var text = $(elem).text();
         text = text.replace(/(.*\.{1})/,'<span class="parent">$1</span>');
         $(elem).html(text);
     });
+}
 
-    // 按分组跳转页面
-    $('#groups').on('change', function(){
-        window.location.href = $(this).find('option:selected').val();
-    });
-
-    $('.api h3').on('click', function(){
-        $(this).siblings('.content').slideToggle();
-    });
-
-
-    /* sticky */
-    if (!navigator.userAgent.match(/firefox/i)){
-        var header = $('header');
-        var top = header.offset().top;
-        $(document).on('scroll', function(e){
-            window.scrollY > top ? header.addClass('sticky') : header.removeClass('sticky');
-        });
-    }
-
-
-    // 代码高亮，依赖于是否能访问网络。
+// 代码高亮，依赖于是否能访问网络。
+function highlightCode() {
     if (typeof(Prism) != 'undefined') {
         Prism.plugins.autoloader.languages_path='https://cdn.bootcss.com/prism/1.5.1/components/';
         Prism.highlightAll(false);
     }
-});
+}
+
+// 调整缩进
+function indentCode() {
+    $('pre code').each((index, elem)=>{
+        let code = $(elem).text();
+        $(elem).text(alignCode(code));
+    });
+}
 
 // 对齐代码。
 function alignCode(code) {
-    return code.replace(/^\s*/gm, function(word) {
+    return code.replace(/^\s*/gm, (word)=>{
         word = word.replace('\t', repeatSpace(indentSize));
 
         // 按 indentSize 的倍数取得缩进的量
-        var len = Math.ceil((word.length-2)/indentSize)*indentSize;
+        let len = Math.ceil((word.length-2)/indentSize)*indentSize;
         return repeatSpace(len);
     });
 }
@@ -209,181 +255,167 @@ var Templates=map[string]string{
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="generator" content="{{.AppOfficialURL}}" />
-        <title></title>
+        <title>APIDOC</title>
         <link rel="stylesheet" href="./style.css" />
         <link href="https://cdn.bootcss.com/prism/1.5.1/themes/prism.min.css" rel="stylesheet" />
 
-        <script src="./jquery-3.0.0.min.js"></script>
+        <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdn.bootcss.com/handlebars.js/4.0.11/handlebars.min.js"></script>
         <script src="https://cdn.bootcss.com/prism/1.5.1/prism.min.js" data-manual></script>
         <script src="https://cdn.bootcss.com/prism/1.5.1/plugins/autoloader/prism-autoloader.min.js"></script>
-        <script src="./app.js"></script>
     </head>
     <body>
-        <aside>
-            <header>
-                <h1>apidoc</h1>
-            </header>
+        <div id="app"></div>
 
-            <div>
-                <ul>
-                    <li>123</li>
-                    <li>123</li>
-                    <li>123</li>
+        <script id="page" type="text/x-handlebars-template">
+            <aside>
+                <header><p>{{title}}</p></header>
+
+                <ul class="menu">
+                    <li class="menu-item content" data-path="content">home</li>
+                    {{#each groups}}
+                    <li class="menu-item api" data-path="{{this}}">{{@key}}</li>
+                    {{/each}}
                 </ul>
-            </div>
 
-            <footer>
-                <p>
-                    内容由 <a href="{{.AppOfficialURL}}">{{.AppName}}</a> 编译于 <time>{{.Date|dateFormat}}</time>，
-                    用时{{.Elapsed}}。
-                </p>
+                <footer>
+                    <p>内容由 <a href="{{appURL}}">{{appName}}</a> 编译于 <time>{{date}}</time>，用时{{elapsed}}。</p>
 
-                {{if .LicenseName}}
-                <p>
-                    内容采用
-                    {{ if .LicenseURL}}<a href="{{.LicenseURL}}">{{end}}
-                        {{- .LicenseName -}}
-                    {{ if .LicenseURL}}</a>{{end}}
-                    进行许可。
-                </p>
-                {{end}}
-            </footer>
-        </aside>
+                    {{#if licenseName}}
+                    <p>内容采用<a href="{{licenseURL}}">{{licenseName}}</a>进行许可。</p>
+                    {{/if}}
+                </footer>
+            </aside>
 
-        <main>123</main>
-
-        <script>
-            import page from './data/page.json'
+            <main id="main">{{{content}}}</main>
         </script>
+
+
+        <script id="examples" type="text/x-handlebars-template">
+            {{#each examples}}
+            <pre><code class="language-{{type}}">{{code}}
+            </code></pre>
+            {{/each}}
+        </script>
+
+        <script id="params" type="text/x-handlebars-template">
+            <table class="params">
+                <thead>
+                    <tr><th>名称</th><th>类型</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                {{#each params}}
+                <tr>
+                    <th>{{name}}</th>
+                    <td>{{type}}</td>
+                    <td>{{summary}}</td>
+                </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </script>
+
+        <script id="headers" type="text/x-handlebars-template">
+            <table>
+                <thead>
+                    <tr><th>名称</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                {{#each headers}}
+                <tr>
+                    <th>{{@key}}</th>
+                    <td>{{this}}</td>
+                </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </script>
+
+        <script id="response" type="text/x-handlebars-template">
+        {{#if response.headers}}
+            <h5>请求头</h5>
+            {{> headers headers=response.headers}}
+        {{/if}}
+
+        {{#if response.params}}
+            <h5>参数:</h5>
+            {{> params params=response.params}}
+        {{/if}}
+
+        {{#if response.examples}}
+            <h5>示例:</h5>
+            {{> examples examples=response.examples}}
+        {{/if}}
+        </script>
+
+
+        <script id="api" type="text/x-handlebars-template">
+            <h2>{{name}}</h2>
+
+            {{#each apis}}
+            <section class="api">
+                <h3>
+                    <span class="method {{method}}">{{method}}</span>
+                    <span class="url">{{url}}</span>
+                    <span class="summary">{{summary}}</span>
+                </h3>
+
+                <div class="content">
+                    {{#if description}}
+                    <p class="description">{{description}}</p>
+                    {{/if}}
+
+                    {{#if queries}}
+                        <h5>查询参数</h5>
+                        {{> params params=queries}}
+                    {{/if}}
+
+                    {{#if params}}
+                        <h5>参数</h5>
+                        {{> params params=params}}
+                    {{/if}}
+
+                    {{#if request}}
+                    <div class="request">
+                        <h4>请求{{#if request.type}}:&#160;{{request.type}}{{/if}}</h4>
+                        <div>
+                            {{#if request.headers}}
+                                <h5>报头:</h5>
+                                {{> headers headers=request.headers}}
+                            {{/if}}
+
+                            {{#if request.params}}
+                                <h5>参数:</h5>
+                                {{> params params=request.params}}
+                            {{/if}}
+
+                            {{#if request.examples}}
+                                <h5>示例:</h5>
+                                {{> examples examples=request.examples}}
+                            {{/if}}
+                        </div>
+                    </div>
+                    {{/if}}
+
+                    {{#if success}}
+                    <div class="response success">
+                        <h4><span class="success">SUCCESS:</span>{{success.code}},&#160;{{success.summary}}</h4>
+                        {{> response response=success}}
+                    </div>
+                    {{/if}}
+
+                    {{#if error}}
+                    <div class="response error">
+                        <h4><span class="error">ERROR:</span>{{error.code}},&#160;{{error.summary}}</h4>
+                        {{> response response=error}}
+                    </div>
+                    {{/if}}
+                </div>
+            </section>
+            {{/each}}
+        </script>
+
+        <script src="./app.js"></script>
     </body>
 </html>
-`,"./api.html":`{{- define "api" -}}
-<section class="api">
-    <h3>
-        <span class="method {{.Method}}">{{.Method}}</span>
-        <span class="url">{{.URL}}</span>
-        <span class="summary">{{.Summary}}</span>
-    </h3>
-
-    <div class="content">
-        {{if .Description}}
-        <p class="description">{{.Description}}</p>
-        {{end}}
-
-        {{if .Queries}}
-            <h5>查询参数</h5>
-            {{template "params" .Queries}}
-        {{end}}
-
-        {{if .Params}}
-            <h5>参数</h5>
-            {{template "params" .Params}}
-        {{end}}
-
-        {{if .Request}}
-        <div class="request">
-            <h4>请求{{if .Request.Type}}:&#160;{{.Request.Type}}{{end}}</h4>
-            <div>
-                {{if .Request.Headers}}
-                    <h5>报头:</h5>
-                    {{template "headers" .Request.Headers}}
-                {{end}}
-
-                {{if .Request.Params}}
-                    <h5>参数:</h5>
-                    {{template "params" .Request.Params}}
-                {{end}}
-
-                {{if .Request.Examples}}
-                    <h5>示例:</h5>
-                    {{template "examples" .Request.Examples}}
-                {{end}}
-            </div>
-        </div>
-        {{end}}
-
-        {{if .Success}}
-        <div class="response success">
-            <h4><span class="success">SUCCESS:</span>{{.Success.Code}},&#160;{{.Success.Summary}}</h4>
-            {{template "response" .Success}}
-        </div>
-        {{end}}
-
-        {{if .Error}}
-        <div class="response error">
-            <h4><span class="error">ERROR:</span>{{.Error.Code}},&#160;{{.Error.Summary}}</h4>
-            {{template "response" .Error}}
-        </div>
-        {{end}}
-    </div>
-</section>
-{{- end -}}
-
-
-
-{{- define "examples" -}}
-{{range .}}
-<pre><code class="language-{{.Type|lower}}">{{- .Code -}}
-</code></pre>
-{{end}}
-{{- end -}}
-
-
-
-{{/* @apiParam 和 @apiQuery */}}
-{{- define "params" -}}
-<table class="params">
-    <thead>
-        <tr><th>名称</th><th>类型</th><th>描述</th></tr>
-    </thead>
-    <tbody>
-    {{range . -}}
-    <tr>
-        <th>{{.Name}}</th>
-        <td>{{.Type}}</td>
-        <td>{{.Summary}}</td>
-    </tr>
-    {{- end}}
-    </tbody>
-</table>
-{{- end -}}
-
-
-{{/* @apiHeader */}}
-{{- define "headers" -}}
-<table>
-    <thead>
-        <tr><th>名称</th><th>描述</th></tr>
-    </thead>
-    <tbody>
-    {{range $k, $v := . -}}
-    <tr>
-        <th>{{$k}}</th>
-        <td>{{$v}}</td>
-    </tr>
-    {{- end}}
-    </tbody>
-</table>
-{{- end -}}
-
-
-
-{{/* @apiSuccess 和 @apiError */}}
-{{- define "response" -}}
-        {{if .Headers -}}
-            <h5>请求头</h5>
-            {{template "headers" .Headers}}
-        {{- end}}
-
-        {{- if .Params -}}
-            <h5>参数:</h5>
-            {{template "params" .Params}}
-        {{- end}}
-
-        {{- if .Examples -}}
-            <h5>示例:</h5>
-            {{template "examples" .Examples}}
-        {{- end}}
-{{- end -}}
 `,}
