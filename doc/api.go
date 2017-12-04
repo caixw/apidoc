@@ -163,8 +163,8 @@ LOOP:
 	if ignore {
 		return nil
 	}
-	if api.Success == nil && api.Error == nil {
-		return &app.SyntaxError{Message: "@apiSuccess @apiError 必须得有一个"}
+	if api.Success == nil {
+		return &app.SyntaxError{Message: "@apiSuccess 不能为空"}
 	}
 
 	if len(api.Group) == 0 {
