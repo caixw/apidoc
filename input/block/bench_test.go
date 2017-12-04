@@ -2,11 +2,12 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package doc
+package block
 
 import (
 	"testing"
 
+	"github.com/caixw/apidoc/doc"
 	"github.com/issue9/assert"
 )
 
@@ -41,9 +42,9 @@ api description 2
 @apiHeader h2 v2
 `
 
-	doc := New()
+	d := doc.New()
 	for i := 0; i < b.N; i++ {
-		err := doc.Scan([]rune(code))
+		err := Scan(d, []rune(code))
 		if err != nil {
 			b.Error("BenchmarkLexer_scan:error")
 		}

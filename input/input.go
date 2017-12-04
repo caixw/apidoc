@@ -20,7 +20,9 @@ import (
 
 	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/doc"
+	b "github.com/caixw/apidoc/input/block"
 	"github.com/caixw/apidoc/locale"
+
 	"github.com/issue9/utils"
 )
 
@@ -140,7 +142,7 @@ func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logg
 
 		wg.Add(1)
 		go func(rs []rune, ln int) {
-			if err := docs.Scan(rs); err != nil && synerrLog != nil {
+			if err := b.Scan(docs, rs); err != nil && synerrLog != nil {
 				err.Line += ln
 				err.File = path
 				synerrLog.Println(err)

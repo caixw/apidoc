@@ -16,7 +16,7 @@ type Doc struct {
 	LicenseURL  string // 文档版权地址，可忽略
 	Content     string // 首页的简要介绍内容
 	Apis        []*API
-	mux         sync.Mutex // 控制 Apis 字段的多协程写入
+	locker      sync.Mutex // 控制 Apis 字段的多协程写入
 }
 
 // API 表示一个 API 文档。
@@ -69,4 +69,11 @@ func New() *Doc {
 	return &Doc{
 		Apis: make([]*API, 0, 100),
 	}
+}
+
+// NewAPI 添加一个新的 API 文档
+func (d *Doc) NewAPI(api *API) {
+	d.locker.Lock()
+	d.Apis = append(d.Apis, api)
+	d.locker.Unlock()
 }

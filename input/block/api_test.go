@@ -2,12 +2,13 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package doc
+package block
 
 import (
 	"testing"
 
 	"github.com/caixw/apidoc/app"
+	"github.com/caixw/apidoc/doc"
 	"github.com/issue9/assert"
 )
 
@@ -71,7 +72,7 @@ func TestScanAPIParam(t *testing.T) {
 
 func TestScanAPI(t *testing.T) {
 	a := assert.New(t)
-	d := &Doc{Apis: []*API{}}
+	d := &doc.Doc{Apis: []*doc.API{}}
 
 	// 正常情况
 	l := newLexer([]rune(" get test.com/api.json?k=1 summary summary\n api description\n@apiSuccess 200 OK"))
@@ -128,15 +129,15 @@ line2`
 
 	l := newLexer([]rune(code))
 	a.NotNil(l)
-	doc := &Doc{}
+	d := &doc.Doc{}
 
-	a.NotError(l.scanAPIDoc(doc))
-	a.Equal(doc.Version, "2.0.1").
-		Equal(doc.Title, "title of apidoc").
-		Equal(doc.BaseURL, "https://api.caixw.io").
-		Equal(doc.LicenseName, "MIT").
-		Equal(doc.LicenseURL, "https://opensource.org/licenses/MIT").
-		Equal(doc.Content, "\nline1\nline2")
+	a.NotError(l.scanAPIDoc(d))
+	a.Equal(d.Version, "2.0.1").
+		Equal(d.Title, "title of apidoc").
+		Equal(d.BaseURL, "https://api.caixw.io").
+		Equal(d.LicenseName, "MIT").
+		Equal(d.LicenseURL, "https://opensource.org/licenses/MIT").
+		Equal(d.Content, "\nline1\nline2")
 
 		// 重复内容，报错
 	code = `title of apidoc2
@@ -144,25 +145,25 @@ line2`
 line1
 line2`
 	l = newLexer([]rune(code))
-	a.Error(l.scanAPIDoc(doc))
+	a.Error(l.scanAPIDoc(d))
 
 	// 检测各个都是空值的情况
 	code = `2.9 title of apidoc
 `
 	l = newLexer([]rune(code))
 	a.NotNil(l)
-	doc = &Doc{}
-	a.NotError(l.scanAPIDoc(doc))
-	a.Equal(doc.Title, "2.9 title of apidoc").
-		Equal(doc.Version, "").
-		Equal(doc.BaseURL, "").
-		Equal(doc.LicenseName, "").
-		Equal(doc.LicenseURL, "")
+	d = &doc.Doc{}
+	a.NotError(l.scanAPIDoc(d))
+	a.Equal(d.Title, "2.9 title of apidoc").
+		Equal(d.Version, "").
+		Equal(d.BaseURL, "").
+		Equal(d.LicenseName, "").
+		Equal(d.LicenseURL, "")
 }
 
 func TestScanAPIRequest(t *testing.T) {
 	a := assert.New(t)
-	api := &API{}
+	api := &doc.API{}
 
 	code := ` xml
  @apiHeader h1 v1
@@ -284,7 +285,7 @@ func TestScanResponse(t *testing.T) {
 
 func TestDoc_Scan(t *testing.T) {
 	a := assert.New(t)
-	doc1 := New()
+	doc1 := doc.New()
 
 	code := `
 @api get /baseurl/api/login api summary
@@ -315,7 +316,7 @@ api description 2
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
-	err := doc1.Scan([]rune(code))
+	err := Scan(doc1, []rune(code))
 	a.NotError(err)
 	d := doc1.Apis[0]
 
@@ -353,7 +354,7 @@ Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.
 `
 	l := len(doc1.Apis)
-	err = doc1.Scan([]rune(code))
+	err = Scan(doc1, []rune(code))
 	a.NotError(err)
 	a.Equal(l, len(doc1.Apis))
 
@@ -365,7 +366,7 @@ license that can be found in the LICENSE file.
 @apiError 400 error
 `
 	l = len(doc1.Apis)
-	a.ErrorType(doc1.Scan([]rune(code)), synerr) // @apiGroup 少参数
+	a.ErrorType(Scan(doc1, []rune(code)), synerr) // @apiGroup 少参数
 
 	// @apiIgnore
 	code = `
@@ -375,7 +376,7 @@ license that can be found in the LICENSE file.
 @apiError 400 error
 `
 	l = len(doc1.Apis)
-	err = doc1.Scan([]rune(code))
+	err = Scan(doc1, []rune(code))
 	a.NotError(err)
 	a.Equal(l, len(doc1.Apis))
 
@@ -388,7 +389,7 @@ ab @apiIgnore
 @apiSuccess 200 OK
 `
 	l = len(doc1.Apis)
-	err = doc1.Scan([]rune(code))
+	err = Scan(doc1, []rune(code))
 	a.NotError(err)
 	a.Equal(l+1, len(doc1.Apis))
 
@@ -401,6 +402,6 @@ ab @apiIgnore
 @apiSuccess 200 OK
 `
 	l = len(doc1.Apis)
-	err = doc1.Scan([]rune(code))
+	err = Scan(doc1, []rune(code))
 	a.ErrorType(err, synerr)
 }
