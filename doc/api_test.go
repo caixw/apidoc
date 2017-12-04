@@ -13,7 +13,7 @@ import (
 
 var synerr = &app.SyntaxError{}
 
-func TestscanAPIExample(t *testing.T) {
+func TestScanAPIExample(t *testing.T) {
 	a := assert.New(t)
 
 	// 正常测试
@@ -84,7 +84,7 @@ func TestScanAPI(t *testing.T) {
 		Equal(api.Description, "api description")
 
 	// 多行description
-	l = newLexer([]rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@apiError 400 summary"))
+	l = newLexer([]rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@apiSuccess 400 summary"))
 	a.NotError(l.scanAPI(d))
 	api = d.Apis[1]
 	a.Equal(api.URL, "test.com/api.json?K=1").
@@ -93,7 +93,7 @@ func TestScanAPI(t *testing.T) {
 		Equal(api.Description, "api \ndescription")
 
 	// 缺少description参数
-	l = newLexer([]rune("get test.com/api.json summary summary \n@apiError 400 error"))
+	l = newLexer([]rune("get test.com/api.json summary summary \n@apiSuccess 400 error"))
 	a.NotError(l.scanAPI(d))
 	api = d.Apis[2]
 	a.Equal(api.Method, "get").
@@ -102,7 +102,7 @@ func TestScanAPI(t *testing.T) {
 		Equal(api.Description, "")
 
 	// 缺少description参数
-	l = newLexer([]rune("get test.com/api.json summary summary\n \n@apiError 400 error"))
+	l = newLexer([]rune("get test.com/api.json summary summary\n \n@apiSuccess 400 error"))
 	a.NotError(l.scanAPI(d))
 	api = d.Apis[3]
 	a.Equal(api.Method, "get").
