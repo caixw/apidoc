@@ -134,9 +134,9 @@ var cStyle = []blocker{
 // `go test` 会作大量名称是否规范的检测。
 var langExts = map[string][]string{
 	"c#":         []string{".cs"},
-	"c++":        []string{".h", ".c", ".cpp", ".cxx", "hpp"},
+	"c++":        []string{".h", ".c", ".cpp", ".cxx", ".hpp"},
 	"d":          []string{".d"},
-	"erlang":     []string{".erl", "hrl"},
+	"erlang":     []string{".erl", ".hrl"},
 	"go":         []string{".go"},
 	"groovy":     []string{".groovy"},
 	"java":       []string{".java"},
