@@ -12,6 +12,7 @@ import (
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/vars"
 
 	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
@@ -24,7 +25,7 @@ import (
 // 比如文档的版本号、标题等，都是直接使用 `@apidoc` 来指定的。
 type config struct {
 	Version string           `yaml:"version"` // 产生此配置文件的程序版本号
-	Inputs  []*input.Options `yaml:"inputs"`
+	Inputs  []*input.Options `yaml:"inputs"`  // 输入的配置项，可以指定多个项目
 	Output  *output.Options  `yaml:"output"`
 }
 
@@ -41,16 +42,25 @@ func loadConfig(path string) (*config, error) {
 	}
 
 	// NOTE: 这里的 err 类型是 *types.OptionsError 而不是 error 所以需要新值
-	if err := cfg.init(); err != nil {
+	if err := cfg.sanitize(); err != nil {
 		return nil, err
 	}
 
 	return cfg, nil
 }
 
-func (cfg *config) init() *types.OptionsError {
+func (cfg *config) sanitize() *types.OptionsError {
 	if !version.SemVerValid(cfg.Version) {
 		return &types.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
+	}
+
+	// 比较版本号兼容问题
+	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
+	if err != nil {
+		return &types.OptionsError{Field: "version", Message: err.Error()}
+	}
+	if !compatible {
+		return &types.OptionsError{Field: "version", Message: locale.Sprintf(locale.VersionInCompatible)}
 	}
 
 	if len(cfg.Inputs) == 0 {
@@ -62,7 +72,7 @@ func (cfg *config) init() *types.OptionsError {
 	}
 
 	for i, opt := range cfg.Inputs {
-		if err := opt.Init(); err != nil {
+		if err := opt.Sanitize(); err != nil {
 			index := strconv.Itoa(i)
 			err.Field = "inputs[" + index + "]." + err.Field
 			return err
@@ -70,7 +80,7 @@ func (cfg *config) init() *types.OptionsError {
 		opt.SyntaxLog = erro // 语法错误输出到 erro 中
 	}
 
-	if err := cfg.Output.Init(); err != nil {
+	if err := cfg.Output.Sanitize(); err != nil {
 		err.Field = "outputs." + err.Field
 		return err
 	}

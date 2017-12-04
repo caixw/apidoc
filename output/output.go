@@ -29,8 +29,8 @@ type Options struct {
 	dataDir string // json 数据保存的目录
 }
 
-// Init 对 Options 作一些初始化操作。
-func (o *Options) Init() *types.OptionsError {
+// Sanitize 对 Options 作一些初始化操作。
+func (o *Options) Sanitize() *types.OptionsError {
 	if len(o.Dir) == 0 {
 		return &types.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
 	}

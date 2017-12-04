@@ -42,7 +42,7 @@ func SetLocale(tag language.Tag) {
 func getEnvLang() string {
 	name := os.Getenv("LANG")
 
-	// LANG = zh_CN.UTF-8 过滤掉最后的编译方式
+	// LANG = zh_CN.UTF-8 过滤掉最后的编码方式
 	index := strings.LastIndexByte(name, '.')
 	if index > 0 {
 		name = name[:index]

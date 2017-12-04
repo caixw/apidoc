@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package types 一些公用类型的定义
 package types
 
 import "sync"

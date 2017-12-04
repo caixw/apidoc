@@ -38,8 +38,8 @@ type Options struct {
 	Recursive       bool        `yaml:"recursive"`                 // 是否查找 Dir 的子目录
 }
 
-// Init 检测 Options 变量是否符合要求
-func (opt *Options) Init() *types.OptionsError {
+// Sanitize 检测 Options 变量是否符合要求
+func (opt *Options) Sanitize() *types.OptionsError {
 	if len(opt.Dir) == 0 {
 		return &types.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
 	}

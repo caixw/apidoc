@@ -24,26 +24,31 @@ func TestLogWriter_Write(t *testing.T) {
 	a.NotError(err)
 }
 
-func TestConfig_init(t *testing.T) {
+func TestConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	conf := &config{}
-	err := conf.init()
+	err := conf.sanitize()
 	a.Equal(err.Field, "version")
 
 	// 版本号错误
-	conf.Version = "1.0"
-	err = conf.init()
+	conf.Version = "4.0"
+	err = conf.sanitize()
+	a.Equal(err.Field, "version")
+
+	// 版本号不兼容
+	conf.Version = "1000.0.1"
+	err = conf.sanitize()
 	a.Equal(err.Field, "version")
 
 	// 未声明 inputs
-	conf.Version = "1.0.1"
-	err = conf.init()
+	conf.Version = "4.0.1"
+	err = conf.sanitize()
 	a.Equal(err.Field, "inputs")
 
 	// 未声明 output
 	conf.Inputs = []*input.Options{&input.Options{}}
-	err = conf.init()
+	err = conf.sanitize()
 	a.Equal(err.Field, "output")
 
 	// 查看错误提示格式是否正确
@@ -51,7 +56,7 @@ func TestConfig_init(t *testing.T) {
 	conf.Inputs = append(conf.Inputs, &input.Options{
 		Lang: "123",
 	})
-	err = conf.init()
+	err = conf.sanitize()
 	a.True(strings.HasPrefix(err.Field, "inputs[0]"))
 }
 

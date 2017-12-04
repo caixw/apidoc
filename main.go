@@ -22,7 +22,6 @@ import (
 	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
 
-	"github.com/issue9/version"
 	"golang.org/x/text/language"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -123,17 +122,6 @@ func run() {
 	cfg, err := loadConfig(path)
 	if err != nil {
 		erro.Println(err)
-		return
-	}
-
-	// 比较版本号兼容问题
-	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
-	if err != nil {
-		erro.Println(err)
-		return
-	}
-	if !compatible {
-		erro.Println(locale.Sprintf(locale.VersionInCompatible))
 		return
 	}
 
