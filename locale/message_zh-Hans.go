@@ -48,7 +48,7 @@ func init() {
 		ErrUnknownTopTag:         "不认识的顶层标签：%v",
 		ErrUnknownTag:            "不认识的标签：%v",
 		ErrDuplicateTag:          "重复的标签：%v",
-		ErrSuccessnotEmpty:       "@apiSuccess 不能为空",
+		ErrSuccessNotEmpty:       "@apiSuccess 不能为空",
 		ErrTagArgTooMuch:         "标签：%v 指定了太多的参数",
 		ErrTagArgNotEnough:       "标签：%v 参数不够",
 		ErrSecondArgMustURL:      "@apiLicense 第二个参数必须为 URL",

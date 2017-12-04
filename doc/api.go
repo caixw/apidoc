@@ -164,7 +164,7 @@ LOOP:
 		return nil
 	}
 	if api.Success == nil {
-		return &app.SyntaxError{Message: "@apiSuccess 不能为空"}
+		return &app.SyntaxError{Message: locale.ErrSuccessNotEmpty}
 	}
 
 	if len(api.Group) == 0 {

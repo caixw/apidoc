@@ -48,7 +48,7 @@ func init() {
 		ErrUnknownTopTag:         "不認識的頂層標簽：%v",
 		ErrUnknownTag:            "不認識的標簽：%v",
 		ErrDuplicateTag:          "重復的標簽：%v",
-		ErrSuccessnotEmpty:       "@apiSuccess 不能为空",
+		ErrSuccessNotEmpty:       "@apiSuccess 不能为空",
 		ErrTagArgTooMuch:         "標簽：%v 指定了太多的參數",
 		ErrTagArgNotEnough:       "標簽：%v 參數不夠",
 		ErrSecondArgMustURL:      "@apiLicense 第二個參數必須為 URL",
