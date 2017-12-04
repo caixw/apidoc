@@ -138,7 +138,7 @@ func run() {
 	}
 
 	// 分析文档内容
-	docs := types.New()
+	docs := types.NewDoc()
 	wg := &sync.WaitGroup{}
 	for _, opt := range cfg.Inputs {
 		wg.Add(1)

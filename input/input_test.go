@@ -36,7 +36,7 @@ func testParse(a *assert.Assertion, lang string) {
 	}
 	a.NotError(o.Init()) // 初始化扩展名信息
 
-	docs := types.New()
+	docs := types.NewDoc()
 	err := Parse(docs, o)
 	a.NotError(err).
 		Equal(len(docs.Apis), 2)
@@ -75,7 +75,7 @@ func TestParseFile(t *testing.T) {
 }
 
 func testParseFile(a *assert.Assertion, lang, path string) {
-	docs := types.New()
+	docs := types.NewDoc()
 	a.NotNil(docs)
 
 	b, found := langs[lang]

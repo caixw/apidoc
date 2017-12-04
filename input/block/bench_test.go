@@ -42,7 +42,7 @@ api description 2
 @apiHeader h2 v2
 `
 
-	d := types.New()
+	d := types.NewDoc()
 	for i := 0; i < b.N; i++ {
 		err := Scan(d, []rune(code))
 		if err != nil {

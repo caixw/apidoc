@@ -64,14 +64,14 @@ type Example struct {
 	Code string `json:"code"` // 示例代码
 }
 
-// New 声明一个 Doc 对象。
-func New() *Doc {
+// NewDoc 声明一个 Doc 对象。
+func NewDoc() *Doc {
 	return &Doc{
 		Apis: make([]*API, 0, 100),
 	}
 }
 
-// NewAPI 添加一个新的 API 文档
+// NewAPI 添加一个新的 API 文档，协程安全
 func (d *Doc) NewAPI(api *API) {
 	d.locker.Lock()
 	d.Apis = append(d.Apis, api)

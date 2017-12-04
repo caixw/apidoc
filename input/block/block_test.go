@@ -285,7 +285,7 @@ func TestScanResponse(t *testing.T) {
 
 func TestDoc_Scan(t *testing.T) {
 	a := assert.New(t)
-	doc1 := types.New()
+	doc1 := types.NewDoc()
 
 	code := `
 @api get /baseurl/api/login api summary
