@@ -2,9 +2,12 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package app
+package types
 
-import "github.com/caixw/apidoc/locale"
+import (
+	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/vars"
+)
 
 // SyntaxError 语法错误
 type SyntaxError struct {
@@ -24,5 +27,5 @@ func (err *SyntaxError) Error() string {
 }
 
 func (err *OptionsError) Error() string {
-	return locale.Sprintf(locale.OptionsError, ConfigFilename, err.Field, err.Message)
+	return locale.Sprintf(locale.OptionsError, vars.ConfigFilename, err.Field, err.Message)
 }

@@ -16,11 +16,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/caixw/apidoc/app"
-	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
+	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/vars"
 
 	"github.com/issue9/version"
 	"golang.org/x/text/language"
@@ -31,8 +31,8 @@ func main() {
 	tag, err := locale.Init()
 	if err != nil {
 		warn.Println(err)
-		info.Println("无法获取系统语言，使用默认的本化语言：", app.DefaultLocale)
-		tag, err = language.Parse(app.DefaultLocale)
+		info.Println("无法获取系统语言，使用默认的本化语言：", vars.DefaultLocale)
+		tag, err = language.Parse(vars.DefaultLocale)
 		if err != nil {
 			erro.Println(err)
 			return
@@ -74,7 +74,7 @@ func main() {
 
 	// 指定了 pprof 参数
 	if len(*pprofType) > 0 {
-		profile := filepath.Join("./", app.Profile)
+		profile := filepath.Join("./", vars.Profile)
 		f, err := os.Create(profile)
 		if err != nil { // 不能创建文件，则忽略 pprof 相关操作
 			warn.Println(err)
@@ -127,7 +127,7 @@ func run() {
 	}
 
 	// 比较版本号兼容问题
-	compatible, err := version.SemVerCompatible(app.Version(), cfg.Version)
+	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
 	if err != nil {
 		erro.Println(err)
 		return
@@ -138,7 +138,7 @@ func run() {
 	}
 
 	// 分析文档内容
-	docs := doc.New()
+	docs := types.New()
 	wg := &sync.WaitGroup{}
 	for _, opt := range cfg.Inputs {
 		wg.Add(1)
@@ -152,7 +152,7 @@ func run() {
 	wg.Wait()
 
 	if len(docs.Title) == 0 {
-		docs.Title = app.DefaultTitle
+		docs.Title = vars.DefaultTitle
 	}
 
 	// 输出内容
@@ -170,7 +170,7 @@ func usage() {
 	flag.CommandLine.SetOutput(buf)
 	flag.PrintDefaults()
 
-	locale.Printf(locale.FlagUsage, app.Name, buf.String(), app.RepoURL, app.OfficialURL)
+	locale.Printf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
 }
 
 // 获取配置文件路径。目前只支持从工作路径获取。
@@ -180,7 +180,7 @@ func getConfigFile() (string, error) {
 		return "", err
 	}
 
-	return filepath.Join(wd, app.ConfigFilename), nil
+	return filepath.Join(wd, vars.ConfigFilename), nil
 }
 
 // 生成一个默认的配置文件，并写入到 path 中。
@@ -192,7 +192,7 @@ func genConfigFile(path string) error {
 	}
 
 	cfg := &config{
-		Version: app.Version(),
+		Version: vars.Version(),
 		Inputs: []*input.Options{
 			&input.Options{
 				Dir:       dir,
@@ -220,6 +220,6 @@ func genConfigFile(path string) error {
 }
 
 func printVersion() {
-	locale.Printf(locale.FlagVersionBuildWith, app.Name, app.Version(), runtime.Version())
-	locale.Printf(locale.FlagVersionCommitHash, app.CommitHash())
+	locale.Printf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version())
+	locale.Printf(locale.FlagVersionCommitHash, vars.CommitHash())
 }

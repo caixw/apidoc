@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/caixw/apidoc/app"
-	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output/static"
+	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/vars"
 
 	"github.com/issue9/utils"
 )
@@ -30,23 +30,23 @@ type Options struct {
 }
 
 // Init 对 Options 作一些初始化操作。
-func (o *Options) Init() *app.OptionsError {
+func (o *Options) Init() *types.OptionsError {
 	if len(o.Dir) == 0 {
-		return &app.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
+		return &types.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if !utils.FileExists(o.Dir) {
 		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
 			msg := locale.Sprintf(locale.ErrMkdirError, err)
-			return &app.OptionsError{Field: "dir", Message: msg}
+			return &types.OptionsError{Field: "dir", Message: msg}
 		}
 	}
 
-	o.dataDir = filepath.Join(o.Dir, app.JSONDataDirName)
+	o.dataDir = filepath.Join(o.Dir, vars.JSONDataDirName)
 	if !utils.FileExists(o.dataDir) {
 		if err := os.MkdirAll(o.dataDir, os.ModePerm); err != nil {
 			msg := locale.Sprintf(locale.ErrMkdirError, err)
-			return &app.OptionsError{Field: "dir", Message: msg}
+			return &types.OptionsError{Field: "dir", Message: msg}
 		}
 	}
 
@@ -69,7 +69,7 @@ func (o *Options) groupIsEnable(group string) bool {
 }
 
 // Render 渲染 docs 的内容，具体的渲染参数由 o 指定。
-func Render(docs *doc.Doc, o *Options) error {
+func Render(docs *types.Doc, o *Options) error {
 	if err := static.Output(o.Dir); err != nil {
 		return err
 	}

@@ -7,12 +7,12 @@ package block
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/app"
-	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/vars"
 	"github.com/issue9/assert"
 )
 
-var synerr = &app.SyntaxError{}
+var synerr = &types.SyntaxError{}
 
 func TestScanAPIExample(t *testing.T) {
 	a := assert.New(t)
@@ -72,7 +72,7 @@ func TestScanAPIParam(t *testing.T) {
 
 func TestScanAPI(t *testing.T) {
 	a := assert.New(t)
-	d := &doc.Doc{Apis: []*doc.API{}}
+	d := &types.Doc{Apis: []*types.API{}}
 
 	// 正常情况
 	l := newLexer([]rune(" get test.com/api.json?k=1 summary summary\n api description\n@apiSuccess 200 OK"))
@@ -129,7 +129,7 @@ line2`
 
 	l := newLexer([]rune(code))
 	a.NotNil(l)
-	d := &doc.Doc{}
+	d := &types.Doc{}
 
 	a.NotError(l.scanAPIDoc(d))
 	a.Equal(d.Version, "2.0.1").
@@ -152,7 +152,7 @@ line2`
 `
 	l = newLexer([]rune(code))
 	a.NotNil(l)
-	d = &doc.Doc{}
+	d = &types.Doc{}
 	a.NotError(l.scanAPIDoc(d))
 	a.Equal(d.Title, "2.9 title of apidoc").
 		Equal(d.Version, "").
@@ -163,7 +163,7 @@ line2`
 
 func TestScanAPIRequest(t *testing.T) {
 	a := assert.New(t)
-	api := &doc.API{}
+	api := &types.API{}
 
 	code := ` xml
  @apiHeader h1 v1
@@ -285,7 +285,7 @@ func TestScanResponse(t *testing.T) {
 
 func TestDoc_Scan(t *testing.T) {
 	a := assert.New(t)
-	doc1 := doc.New()
+	doc1 := types.New()
 
 	code := `
 @api get /baseurl/api/login api summary
@@ -321,7 +321,7 @@ api description 2
 	d := doc1.Apis[0]
 
 	a.Equal(d.URL, "/baseurl/api/login").
-		Equal(d.Group, app.DefaultGroupName).
+		Equal(d.Group, vars.DefaultGroupName).
 		Equal(d.Summary, "api summary").
 		Equal(d.Description, "api description 1\napi description 2")
 

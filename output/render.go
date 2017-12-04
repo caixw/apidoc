@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caixw/apidoc/app"
-	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/vars"
 )
 
 type page struct {
@@ -36,22 +36,22 @@ type page struct {
 type group struct {
 	path string // 相对路径名
 
-	Name string     `json:"name"` // 当前分组的名称
-	Apis []*doc.API `json:"apis"` // 当前分组的 api 文档
+	Name string       `json:"name"` // 当前分组的名称
+	Apis []*types.API `json:"apis"` // 当前分组的 api 文档
 }
 
-func render(docs *doc.Doc, opt *Options) error {
+func render(docs *types.Doc, opt *Options) error {
 	groups := make(map[string]*group, 100)
 
 	for _, api := range docs.Apis {
 		name := strings.ToLower(api.Group)
-		path := filepath.Join(opt.dataDir, app.GroupFilePrefix+name+".json")
+		path := filepath.Join(opt.dataDir, vars.GroupFilePrefix+name+".json")
 
 		if groups[name] == nil {
 			groups[name] = &group{
 				path: path,
 				Name: api.Group, // 名称区分大小写，不采用 name 变量
-				Apis: make([]*doc.API, 0, 100),
+				Apis: make([]*types.API, 0, 100),
 			}
 		}
 		groups[name].Apis = append(groups[name].Apis, api)
@@ -78,9 +78,9 @@ func render(docs *doc.Doc, opt *Options) error {
 		Elapsed:     opt.Elapsed,
 		Groups:      names,
 
-		AppName:    app.Name,
-		AppURL:     app.OfficialURL,
-		AppVersion: app.Version(),
+		AppName:    vars.Name,
+		AppURL:     vars.OfficialURL,
+		AppVersion: vars.Version(),
 	}
 
 	if err := renderPage(page, opt.dataDir); err != nil {
@@ -91,7 +91,7 @@ func render(docs *doc.Doc, opt *Options) error {
 }
 
 func renderPage(p *page, destDir string) error {
-	path := filepath.Join(destDir, app.PageFileName+".json")
+	path := filepath.Join(destDir, vars.PageFileName+".json")
 
 	if err := renderJSON(p, path); err != nil {
 		return err
@@ -115,7 +115,7 @@ func renderGroups(groups map[string]*group, o *Options) error {
 }
 
 func renderJSON(obj interface{}, path string) error {
-	data, err := json.MarshalIndent(obj, "", strings.Repeat(" ", app.JSONIndent))
+	data, err := json.MarshalIndent(obj, "", strings.Repeat(" ", vars.JSONIndent))
 	if err != nil {
 		return err
 	}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package app 提供了一些公共的函数、结构体及代码级别的设置项。
-package app
+// Package vars 提供了一些公共的函数、结构体及代码级别的设置项。
+package vars
 
 // 一些代码级别的配置项。
 // 可运行 go test 来检测常量是否符合规范。

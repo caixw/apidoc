@@ -18,10 +18,9 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/caixw/apidoc/app"
-	"github.com/caixw/apidoc/doc"
 	b "github.com/caixw/apidoc/input/block"
 	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/types"
 
 	"github.com/issue9/utils"
 )
@@ -40,21 +39,21 @@ type Options struct {
 }
 
 // Init 检测 Options 变量是否符合要求
-func (opt *Options) Init() *app.OptionsError {
+func (opt *Options) Init() *types.OptionsError {
 	if len(opt.Dir) == 0 {
-		return &app.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
+		return &types.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return &app.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrDirNotExists)}
+		return &types.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrDirNotExists)}
 	}
 
 	if len(opt.Lang) == 0 {
-		return &app.OptionsError{Field: "lang", Message: locale.Sprintf(locale.ErrRequired)}
+		return &types.OptionsError{Field: "lang", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if !langIsSupported(opt.Lang) {
-		return &app.OptionsError{Field: "lang", Message: locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang)}
+		return &types.OptionsError{Field: "lang", Message: locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang)}
 	}
 
 	if len(opt.Exts) > 0 {
@@ -78,7 +77,7 @@ func (opt *Options) Init() *app.OptionsError {
 }
 
 // Parse 分析源代码，获取相应的文档内容。
-func Parse(docs *doc.Doc, o *Options) error {
+func Parse(docs *types.Doc, o *Options) error {
 	blocks, found := langs[o.Lang]
 	if !found {
 		return errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang))
@@ -103,10 +102,10 @@ func Parse(docs *doc.Doc, o *Options) error {
 }
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。
-func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logger, startLine int) {
+func parseFile(docs *types.Doc, path string, blocks []blocker, synerrLog *log.Logger, startLine int) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil && synerrLog != nil {
-		synerrLog.Println(&app.SyntaxError{Message: err.Error(), File: path})
+		synerrLog.Println(&types.SyntaxError{Message: err.Error(), File: path})
 		return
 	}
 
@@ -131,7 +130,7 @@ func parseFile(docs *doc.Doc, path string, blocks []blocker, synerrLog *log.Logg
 		ln := l.lineNumber() + startLine // 记录当前的行号，顺便调整起始行号
 		rs, ok := block.EndFunc(l)
 		if !ok && synerrLog != nil {
-			synerrLog.Println(&app.SyntaxError{Line: ln, File: path, Message: locale.Sprintf(locale.ErrNotFoundEndFlag)})
+			synerrLog.Println(&types.SyntaxError{Line: ln, File: path, Message: locale.Sprintf(locale.ErrNotFoundEndFlag)})
 			return
 		}
 

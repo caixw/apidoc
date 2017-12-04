@@ -8,10 +8,10 @@ import (
 	"io/ioutil"
 	"strconv"
 
-	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
+	"github.com/caixw/apidoc/types"
 
 	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
@@ -40,7 +40,7 @@ func loadConfig(path string) (*config, error) {
 		return nil, err
 	}
 
-	// NOTE: 这里的 err 类型是 *app.OptionsError 而不是 error 所以需要新值
+	// NOTE: 这里的 err 类型是 *types.OptionsError 而不是 error 所以需要新值
 	if err := cfg.init(); err != nil {
 		return nil, err
 	}
@@ -48,17 +48,17 @@ func loadConfig(path string) (*config, error) {
 	return cfg, nil
 }
 
-func (cfg *config) init() *app.OptionsError {
+func (cfg *config) init() *types.OptionsError {
 	if !version.SemVerValid(cfg.Version) {
-		return &app.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
+		return &types.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return &app.OptionsError{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
+		return &types.OptionsError{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if cfg.Output == nil {
-		return &app.OptionsError{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
+		return &types.OptionsError{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	for i, opt := range cfg.Inputs {

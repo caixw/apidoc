@@ -7,7 +7,7 @@ package block
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/types"
 	"github.com/issue9/assert"
 )
 
@@ -42,7 +42,7 @@ api description 2
 @apiHeader h2 v2
 `
 
-	d := doc.New()
+	d := types.New()
 	for i := 0; i < b.N; i++ {
 		err := Scan(d, []rune(code))
 		if err != nil {

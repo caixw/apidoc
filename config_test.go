@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
+	"github.com/caixw/apidoc/vars"
 	"github.com/issue9/assert"
 	"github.com/issue9/term/colors"
 )
@@ -58,7 +58,7 @@ func TestConfig_init(t *testing.T) {
 func TestConfig(t *testing.T) {
 	a := assert.New(t)
 
-	path := "./" + app.ConfigFilename
+	path := "./" + vars.ConfigFilename
 	a.NotError(genConfigFile(path))
 
 	conf, err := loadConfig(path)

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// Package block 对注释块的解析
 package block
 
 import (
-	"github.com/caixw/apidoc/app"
-	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/vars"
 	"github.com/issue9/is"
 )
 
@@ -15,7 +16,7 @@ import (
 //
 // 若代码块没有 api 文档定义，则会返回空值。
 // data 该代码块的内容；
-func Scan(d *doc.Doc, data []rune) *app.SyntaxError {
+func Scan(d *types.Doc, data []rune) *types.SyntaxError {
 	l := newLexer(data)
 
 LOOP:
@@ -49,7 +50,7 @@ LOOP:
 // @apiContent
 // content1
 // content2
-func (l *lexer) scanAPIDoc(d *doc.Doc) *app.SyntaxError {
+func (l *lexer) scanAPIDoc(d *types.Doc) *types.SyntaxError {
 	if len(d.Title) > 0 || len(d.Version) > 0 {
 		return l.syntaxError(locale.ErrDuplicateTag, "@apidoc")
 	}
@@ -114,8 +115,8 @@ LOOP:
 }
 
 // 解析 @api 及其子标签
-func (l *lexer) scanAPI(d *doc.Doc) (err *app.SyntaxError) {
-	api := &doc.API{}
+func (l *lexer) scanAPI(d *types.Doc) (err *types.SyntaxError) {
+	api := &types.API{}
 	t := l.readTag()
 	api.Method = t.readWord()
 	api.URL = t.readWord()
@@ -165,18 +166,18 @@ LOOP:
 		return nil
 	}
 	if api.Success == nil {
-		return &app.SyntaxError{Message: locale.ErrSuccessNotEmpty}
+		return &types.SyntaxError{Message: locale.ErrSuccessNotEmpty}
 	}
 
 	if len(api.Group) == 0 {
-		api.Group = app.DefaultGroupName
+		api.Group = vars.DefaultGroupName
 	}
 
 	d.NewAPI(api)
 	return nil
 }
 
-func (l *lexer) scanGroup(api *doc.API) *app.SyntaxError {
+func (l *lexer) scanGroup(api *types.API) *types.SyntaxError {
 	t := l.readTag()
 
 	api.Group = t.readWord()
@@ -191,9 +192,9 @@ func (l *lexer) scanGroup(api *doc.API) *app.SyntaxError {
 	return nil
 }
 
-func (l *lexer) scanAPIQueries(api *doc.API) *app.SyntaxError {
+func (l *lexer) scanAPIQueries(api *types.API) *types.SyntaxError {
 	if api.Queries == nil {
-		api.Queries = make([]*doc.Param, 0, 1)
+		api.Queries = make([]*types.Param, 0, 1)
 	}
 
 	p, err := l.scanAPIParam("@apiQuery")
@@ -204,9 +205,9 @@ func (l *lexer) scanAPIQueries(api *doc.API) *app.SyntaxError {
 	return nil
 }
 
-func (l *lexer) scanAPIParams(api *doc.API) *app.SyntaxError {
+func (l *lexer) scanAPIParams(api *types.API) *types.SyntaxError {
 	if api.Params == nil {
-		api.Params = make([]*doc.Param, 0, 1)
+		api.Params = make([]*types.Param, 0, 1)
 	}
 
 	p, err := l.scanAPIParam("@apiParam")
@@ -218,13 +219,13 @@ func (l *lexer) scanAPIParams(api *doc.API) *app.SyntaxError {
 }
 
 // 解析 @apiRequest 及其子标签
-func (l *lexer) scanAPIRequest(api *doc.API) *app.SyntaxError {
+func (l *lexer) scanAPIRequest(api *types.API) *types.SyntaxError {
 	t := l.readTag()
-	r := &doc.Request{
+	r := &types.Request{
 		Type:     t.readLine(),
 		Headers:  map[string]string{},
-		Params:   []*doc.Param{},
-		Examples: []*doc.Example{},
+		Params:   []*types.Param{},
+		Examples: []*types.Example{},
 	}
 	if !t.atEOF() {
 		return t.syntaxError(locale.ErrTagArgTooMuch, "@apiRequest")
@@ -273,14 +274,14 @@ LOOP:
 }
 
 // 解析 @apiSuccess 或是 @apiError 及其子标签。
-func (l *lexer) scanResponse(tagName string) (*doc.Response, *app.SyntaxError) {
+func (l *lexer) scanResponse(tagName string) (*types.Response, *types.SyntaxError) {
 	tag := l.readTag()
-	resp := &doc.Response{
+	resp := &types.Response{
 		Code:     tag.readWord(),
 		Summary:  tag.readLine(),
 		Headers:  map[string]string{},
-		Params:   []*doc.Param{},
-		Examples: []*doc.Example{},
+		Params:   []*types.Param{},
+		Examples: []*types.Example{},
 	}
 
 	if len(resp.Code) == 0 || len(resp.Summary) == 0 {
@@ -331,9 +332,9 @@ LOOP:
 }
 
 // 解析 @apiExample 标签
-func (l *lexer) scanAPIExample() (*doc.Example, *app.SyntaxError) {
+func (l *lexer) scanAPIExample() (*types.Example, *types.SyntaxError) {
 	tag := l.readTag()
-	example := &doc.Example{
+	example := &types.Example{
 		Type: tag.readWord(),
 		Code: tag.readEnd(),
 	}
@@ -346,8 +347,8 @@ func (l *lexer) scanAPIExample() (*doc.Example, *app.SyntaxError) {
 }
 
 // 解析 @apiParam 标签
-func (l *lexer) scanAPIParam(tagName string) (*doc.Param, *app.SyntaxError) {
-	p := &doc.Param{}
+func (l *lexer) scanAPIParam(tagName string) (*types.Param, *types.SyntaxError) {
+	p := &types.Param{}
 
 	tag := l.readTag()
 	p.Name = tag.readWord()

@@ -7,8 +7,8 @@ package block
 import (
 	"unicode"
 
-	"github.com/caixw/apidoc/app"
 	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/types"
 )
 
 // 简单的词法分析
@@ -46,8 +46,8 @@ func (l *lexer) lineNumber() int {
 }
 
 // 构建一个语法错误的信息。
-func (l *lexer) syntaxError(format string, v ...interface{}) *app.SyntaxError {
-	return &app.SyntaxError{
+func (l *lexer) syntaxError(format string, v ...interface{}) *types.SyntaxError {
+	return &types.SyntaxError{
 		Line:    l.lineNumber(),
 		Message: locale.Sprintf(format, v...),
 	}
@@ -208,8 +208,8 @@ func (t *tag) lineNumber() int {
 }
 
 // 提示语法错误
-func (t *tag) syntaxError(format string, v ...interface{}) *app.SyntaxError {
-	return &app.SyntaxError{
+func (t *tag) syntaxError(format string, v ...interface{}) *types.SyntaxError {
+	return &types.SyntaxError{
 		Line:    t.lineNumber(),
 		Message: locale.Sprintf(format, v...),
 	}
