@@ -8,10 +8,6 @@ package vars
 // 一些代码级别的配置项。
 // 可运行 go test 来检测常量是否符合规范。
 const (
-	// 主版本号，实际版本号可能还会加上构建日期，
-	// 可通过 Version() 函数获取实际的版本号。
-	mainVersion = "4.0.0"
-
 	// 程序的正式名称
 	Name = "apidoc"
 
@@ -49,27 +45,3 @@ const (
 	// 组文件的前缀，有前缀，不会与现有文件重名
 	GroupFilePrefix = "group_"
 )
-
-var (
-	version    string
-	buildDate  string
-	commitHash string
-)
-
-func init() {
-	if len(buildDate) == 0 {
-		version = mainVersion
-	} else {
-		version = mainVersion + "+" + buildDate
-	}
-}
-
-// Version 完整的版本号
-func Version() string {
-	return version
-}
-
-// CommitHash Git 上最后的提交记录 hash 值。
-func CommitHash() string {
-	return commitHash
-}
