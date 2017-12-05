@@ -10,10 +10,10 @@ package locale
 
 import (
 	"errors"
-	"os"
-	"strings"
 
+	"github.com/caixw/apidoc/locale/syslocale"
 	"github.com/caixw/apidoc/vars"
+
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -47,7 +47,7 @@ func getTag() (language.Tag, error) {
 	// 此条必定成功，因为与 vars.DefaultLocale 相同的值已经在上面的 for 特环中执行过。
 	defaultLocaleTag := language.MustParse(vars.DefaultLocale)
 
-	localeName, err := getLocaleName()
+	localeName, err := syslocale.Get()
 	if err != nil {
 		return defaultLocaleTag, err
 	}
@@ -64,17 +64,4 @@ func getTag() (language.Tag, error) {
 // NewPrinter 根据 tag 生成一个新的语言输出环境
 func NewPrinter(tag language.Tag) *message.Printer {
 	return message.NewPrinter(tag)
-}
-
-// 获取环境变量 LANG
-func getEnvLang() string {
-	name := os.Getenv("LANG")
-
-	// LANG = zh_CN.UTF-8 过滤掉最后的编码方式
-	index := strings.LastIndexByte(name, '.')
-	if index > 0 {
-		name = name[:index]
-	}
-
-	return name
 }

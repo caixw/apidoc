@@ -4,7 +4,7 @@
 
 // +build !windows
 
-package locale
+package syslocale
 
 func getLocaleName() (string, error) {
 	return getEnvLang(), nil
