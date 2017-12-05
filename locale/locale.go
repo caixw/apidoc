@@ -38,12 +38,32 @@ func Init() (language.Tag, error) {
 		return language.Und, errors.New("vars.DefaultLocale 的值并不存在")
 	}
 
+	// 此条必定成功，因为与 vars.DefaultLocale 相同的值已经在上面的 for 特环中执行过。
+	defaultLocaleTag := language.MustParse(vars.DefaultLocale)
+
 	localeName, err := getLocaleName()
 	if err != nil {
-		return language.Und, err
+		return defaultLocaleTag, err
 	}
 
-	return language.Parse(localeName)
+	found = false
+	for id := range locales {
+		if id == localeName {
+			found = true
+		}
+	}
+	if !found {
+		return defaultLocaleTag, errors.New("不存在与系统相匹配的语言，采用默认方式")
+	}
+
+	tag, err := language.Parse(localeName)
+
+	// 成功获取了用户的语言信息，但无法解析成 language.Tag 类型
+	if err != nil {
+		return defaultLocaleTag, err
+	}
+
+	return tag, nil
 }
 
 // SetLocale 设置程序的本地化语言信息为 tag

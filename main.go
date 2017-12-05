@@ -22,7 +22,6 @@ import (
 	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
 
-	"golang.org/x/text/language"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -30,12 +29,6 @@ func main() {
 	tag, err := locale.Init()
 	if err != nil {
 		warn.Println(err)
-		info.Println("无法获取系统语言，使用默认的本化语言：", vars.DefaultLocale)
-		tag, err = language.Parse(vars.DefaultLocale)
-		if err != nil {
-			erro.Println(err)
-			return
-		}
 	}
 	locale.SetLocale(tag)
 
