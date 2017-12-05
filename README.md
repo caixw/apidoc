@@ -44,6 +44,13 @@ func login(w http.ResponseWriter, r *http.Request){
 go get github.com/caixw/apidoc
 ```
 
+支持多种本地化语言，默认情况下会根据当前系统所使用的语言进行调整。若需要手动指定，
+windows 可以设置一个 `LANG` 环境变量指定，*nix 系统可以使用以下命令：
+```shell
+LANG=lang apidoc
+```
+将其中的 lang 设置为你需要的语言。
+
 
 
 ### 集成
