@@ -6,7 +6,6 @@
 package output
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -21,10 +20,9 @@ import (
 
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
-	Dir      string        `yaml:"dir"`              // 文档的保存目录
-	Groups   []string      `yaml:"groups,omitempty"` // 仅输出这些组，为空表示输出所有
-	Elapsed  time.Duration `yaml:"-"`                // 编译用时
-	ErrorLog *log.Logger   `yaml:"-"`                // 错误信息输出通道，在 html+ 模式下会用到。
+	Dir     string        `yaml:"dir"`              // 文档的保存目录
+	Groups  []string      `yaml:"groups,omitempty"` // 仅输出这些组，为空表示输出所有
+	Elapsed time.Duration `yaml:"-"`                // 编译用时
 
 	dataDir string // json 数据保存的目录
 }
