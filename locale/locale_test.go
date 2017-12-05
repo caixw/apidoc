@@ -13,7 +13,7 @@ import (
 func TestInit(t *testing.T) {
 	a := assert.New(t)
 
-	_, err := Init()
+	err := Init()
 	a.NotError(err)
 	a.True(len(locales) > 0)
 }

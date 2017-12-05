@@ -26,11 +26,9 @@ import (
 )
 
 func main() {
-	tag, err := locale.Init()
-	if err != nil {
+	if err := locale.Init(); err != nil {
 		warn.Println(err)
 	}
-	locale.SetLocale(tag)
 
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))

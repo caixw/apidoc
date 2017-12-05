@@ -19,11 +19,16 @@ import (
 )
 
 // Init 初始化 locale 包并返回当前系统默认的本地化语言信息。
-func Init() (language.Tag, error) {
-	// NOTE: 需要在所有的 init() 函数完成之后，才能使用 locales 变量
+func Init() error {
+	tag, err := getTag()
+	localePrinter = message.NewPrinter(tag)
 
+	return err
+}
+
+func getTag() (language.Tag, error) {
 	found := false
-	for id, messages := range locales {
+	for id, messages := range locales { // 保证 locales 已经初始化，即要在 init() 函数之后调用
 		tag := language.MustParse(id)
 		for key, val := range messages {
 			message.SetString(tag, key, val)
@@ -46,19 +51,8 @@ func Init() (language.Tag, error) {
 		return defaultLocaleTag, err
 	}
 
-	found = false
-	for id := range locales {
-		if id == localeName {
-			found = true
-		}
-	}
-	if !found {
-		return defaultLocaleTag, errors.New("不存在与系统相匹配的语言，采用默认方式")
-	}
-
-	tag, err := language.Parse(localeName)
-
 	// 成功获取了用户的语言信息，但无法解析成 language.Tag 类型
+	tag, err := language.Parse(localeName)
 	if err != nil {
 		return defaultLocaleTag, err
 	}
@@ -66,9 +60,9 @@ func Init() (language.Tag, error) {
 	return tag, nil
 }
 
-// SetLocale 设置程序的本地化语言信息为 tag
-func SetLocale(tag language.Tag) {
-	localePrinter = message.NewPrinter(tag)
+// NewPrinter 根据 tag 生成一个新的语言输出环境
+func NewPrinter(tag language.Tag) *message.Printer {
+	return message.NewPrinter(tag)
 }
 
 // 获取环境变量 LANG
