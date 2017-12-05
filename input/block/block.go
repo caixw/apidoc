@@ -12,7 +12,7 @@ import (
 	"github.com/issue9/is"
 )
 
-// Scan 扫描一段代码，生成一个 API 实例。
+// Scan 扫描一段代码，并将结果保存到 d 中。
 //
 // 若代码块没有 api 文档定义，则会返回空值。
 // data 该代码块的内容；

@@ -77,7 +77,7 @@ func (cfg *config) sanitize() *types.OptionsError {
 			err.Field = "inputs[" + index + "]." + err.Field
 			return err
 		}
-		opt.SyntaxLog = erro // 语法错误输出到 erro 中
+		opt.SyntaxErrorLog = erro // 语法错误输出到 erro 中
 	}
 
 	if err := cfg.Output.Sanitize(); err != nil {

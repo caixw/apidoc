@@ -30,7 +30,7 @@ const miniSize = len("@api ")
 
 // Options 指定输入内容的相关信息。
 type Options struct {
-	SyntaxLog       *log.Logger `yaml:"-"`                         // 语法错误输出通道
+	SyntaxErrorLog  *log.Logger `yaml:"-"`                         // 语法错误输出通道
 	StartLineNumber int         `yaml:"startLineNumber,omitempty"` // 代码的超始行号，默认为 0
 	Lang            string      `yaml:"lang"`                      // 输入的目标语言
 	Dir             string      `yaml:"dir"`                       // 源代码目录
@@ -93,7 +93,7 @@ func Parse(docs *types.Doc, o *Options) error {
 	for _, path := range paths {
 		wg.Add(1)
 		go func(path string) {
-			parseFile(docs, path, blocks, o.SyntaxLog, o.StartLineNumber)
+			parseFile(docs, path, blocks, o.SyntaxErrorLog, o.StartLineNumber)
 			wg.Done()
 		}(path)
 	}
@@ -130,8 +130,13 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, synerrLog *log.Lo
 		ln := l.lineNumber() + startLine // 记录当前的行号，顺便调整起始行号
 		rs, ok := block.EndFunc(l)
 		if !ok && synerrLog != nil {
-			synerrLog.Println(&types.SyntaxError{Line: ln, File: path, Message: locale.Sprintf(locale.ErrNotFoundEndFlag)})
-			return
+			err := &types.SyntaxError{
+				Line:    ln,
+				File:    path,
+				Message: locale.Sprintf(locale.ErrNotFoundEndFlag),
+			}
+			synerrLog.Println(err)
+			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 		}
 
 		block = nil
