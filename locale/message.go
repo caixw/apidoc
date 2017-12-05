@@ -8,6 +8,7 @@ import (
 	"io"
 
 	"github.com/caixw/apidoc/vars"
+	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
@@ -65,9 +66,9 @@ const (
 	ErrSecondArgMustURL      = vars.APILicense + " 第二个参数必须为 URL"
 )
 
-// Printer 获取当前语言的 *message.Printer 实例
-func Printer() *message.Printer {
-	return localePrinter
+// NewPrinter 根据 tag 生成一个新的语言输出环境
+func NewPrinter(tag language.Tag) *message.Printer {
+	return message.NewPrinter(tag)
 }
 
 // Print 类似 fmt.Print，与特定的语言绑定。

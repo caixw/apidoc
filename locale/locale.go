@@ -51,8 +51,3 @@ func getTag() (language.Tag, error) {
 	}
 	return tag, nil
 }
-
-// NewPrinter 根据 tag 生成一个新的语言输出环境
-func NewPrinter(tag language.Tag) *message.Printer {
-	return message.NewPrinter(tag)
-}
