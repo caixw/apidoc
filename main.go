@@ -59,7 +59,7 @@ func main() {
 		f, err := os.Create(profile)
 		if err != nil { // 不能创建文件，则忽略 pprof 相关操作
 			warn.Println(err)
-			goto RUN
+			return
 		}
 
 		defer func() {
@@ -88,7 +88,6 @@ func main() {
 		}
 	}
 
-RUN:
 	run()
 }
 
