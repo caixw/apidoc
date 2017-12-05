@@ -4,6 +4,8 @@
 
 package locale
 
+import "github.com/caixw/apidoc/vars"
+
 func init() {
 	locales["zh-Hant"] = map[string]string{
 		SyntaxError:  "在[%v:%v]出現語法錯誤[%v]",
@@ -48,9 +50,9 @@ func init() {
 		ErrUnknownTopTag:         "不認識的頂層標簽：%v",
 		ErrUnknownTag:            "不認識的標簽：%v",
 		ErrDuplicateTag:          "重復的標簽：%v",
-		ErrSuccessNotEmpty:       "@apiSuccess 不能为空",
+		ErrSuccessNotEmpty:       vars.APISuccess + " 不能为空",
 		ErrTagArgTooMuch:         "標簽：%v 指定了太多的參數",
 		ErrTagArgNotEnough:       "標簽：%v 參數不夠",
-		ErrSecondArgMustURL:      "@apiLicense 第二個參數必須為 URL",
+		ErrSecondArgMustURL:      vars.APILicense + " 第二個參數必須為 URL",
 	}
 }

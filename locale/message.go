@@ -7,6 +7,7 @@ package locale
 import (
 	"io"
 
+	"github.com/caixw/apidoc/vars"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -62,10 +63,10 @@ const (
 	ErrUnknownTopTag         = "不认识的顶层标签：%v"
 	ErrUnknownTag            = "不认识的标签：%v"
 	ErrDuplicateTag          = "重复的标签：%v"
-	ErrSuccessNotEmpty       = "@apiSuccess 不能为空"
+	ErrSuccessNotEmpty       = vars.APISuccess + " 不能为空"
 	ErrTagArgTooMuch         = "标签：%v 指定了太多的参数"
 	ErrTagArgNotEnough       = "标签：%v 参数不够"
-	ErrSecondArgMustURL      = "@apiLicense 第二个参数必须为 URL"
+	ErrSecondArgMustURL      = vars.APILicense + " 第二个参数必须为 URL"
 )
 
 // Printer 获取当前语言的 *message.Printer 实例

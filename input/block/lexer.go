@@ -9,6 +9,7 @@ import (
 
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/vars"
 )
 
 // 简单的词法分析
@@ -125,7 +126,7 @@ func (l *lexer) readTag() *tag {
 	ln := l.lineNumber() // 记录行号
 	l.width = 0          // 防止外层已经调用 match
 	for {
-		if l.atEOF() || l.match("@api") { // 直到碰到下个标签或是结束
+		if l.atEOF() || l.match(vars.API) { // 直到碰到下个标签或是结束
 			l.backup() // 退回标签本身的字符串
 			break
 		}

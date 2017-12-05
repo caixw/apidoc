@@ -22,11 +22,11 @@ func Scan(d *types.Doc, data []rune) *types.SyntaxError {
 LOOP:
 	for {
 		switch {
-		case l.matchTag("@apidoc"):
+		case l.matchTag(vars.APIDoc):
 			return l.scanAPIDoc(d)
-		case l.matchTag("@api"):
+		case l.matchTag(vars.API):
 			return l.scanAPI(d)
-		case l.match("@api"): // 不认识标签
+		case l.match(vars.API): // 不认识标签
 			l.backup()
 			return l.syntaxError(locale.ErrUnknownTopTag, l.readWord())
 		default:
@@ -52,55 +52,55 @@ LOOP:
 // content2
 func (l *lexer) scanAPIDoc(d *types.Doc) *types.SyntaxError {
 	if len(d.Title) > 0 || len(d.Version) > 0 {
-		return l.syntaxError(locale.ErrDuplicateTag, "@apidoc")
+		return l.syntaxError(locale.ErrDuplicateTag, vars.APIDoc)
 	}
 
 	t := l.readTag()
 	d.Title = t.readLine()
 	if len(d.Title) == 0 {
-		return l.syntaxError(locale.ErrTagArgNotEnough, "@apidoc")
+		return l.syntaxError(locale.ErrTagArgNotEnough, vars.APIDoc)
 	}
 	if !t.atEOF() {
-		return l.syntaxError(locale.ErrTagArgTooMuch, "@apidoc")
+		return l.syntaxError(locale.ErrTagArgTooMuch, vars.APIDoc)
 	}
 
 LOOP:
 	for {
 		switch {
-		case l.matchTag("@apiVersion"):
+		case l.matchTag(vars.APIVersion):
 			t := l.readTag()
 			d.Version = t.readLine()
 			if len(d.Version) == 0 {
-				return t.syntaxError(locale.ErrTagArgNotEnough, "@apiVersion")
+				return t.syntaxError(locale.ErrTagArgNotEnough, vars.APIVersion)
 			}
 			if !t.atEOF() {
-				return t.syntaxError(locale.ErrTagArgTooMuch, "@apiVersion")
+				return t.syntaxError(locale.ErrTagArgTooMuch, vars.APIVersion)
 			}
-		case l.matchTag("@apiBaseURL"):
+		case l.matchTag(vars.APIBaseURL):
 			t := l.readTag()
 			d.BaseURL = t.readLine()
 			if len(d.BaseURL) == 0 {
-				return t.syntaxError(locale.ErrTagArgNotEnough, "@apiBaseURL")
+				return t.syntaxError(locale.ErrTagArgNotEnough, vars.APIBaseURL)
 			}
 			if !t.atEOF() {
-				return t.syntaxError(locale.ErrTagArgTooMuch, "@apiBaseURL")
+				return t.syntaxError(locale.ErrTagArgTooMuch, vars.APIBaseURL)
 			}
-		case l.matchTag("@apiLicense"):
+		case l.matchTag(vars.APILicense):
 			t := l.readTag()
 			d.LicenseName = t.readWord()
 			d.LicenseURL = t.readLine()
 			if len(d.LicenseName) == 0 {
-				return t.syntaxError(locale.ErrTagArgNotEnough, "@apiLicense")
+				return t.syntaxError(locale.ErrTagArgNotEnough, vars.APILicense)
 			}
 			if len(d.LicenseURL) > 0 && !is.URL(d.LicenseURL) {
 				return t.syntaxError(locale.ErrSecondArgMustURL)
 			}
 			if !t.atEOF() {
-				return t.syntaxError(locale.ErrTagArgTooMuch, "@apiLicense")
+				return t.syntaxError(locale.ErrTagArgTooMuch, vars.APILicense)
 			}
-		case l.matchTag("@apiContent"):
+		case l.matchTag(vars.APIContent):
 			d.Content = string(l.data[l.pos:])
-		case l.match("@api"):
+		case l.match(vars.API):
 			l.backup()
 			return l.syntaxError(locale.ErrUnknownTag, l.readWord())
 		default:
@@ -123,7 +123,7 @@ func (l *lexer) scanAPI(d *types.Doc) (err *types.SyntaxError) {
 	api.Summary = t.readLine()
 
 	if len(api.Method) == 0 || len(api.URL) == 0 || len(api.Summary) == 0 {
-		return t.syntaxError(locale.ErrTagArgNotEnough, "@api")
+		return t.syntaxError(locale.ErrTagArgNotEnough, vars.API)
 	}
 
 	api.Description = t.readEnd()
@@ -132,22 +132,22 @@ func (l *lexer) scanAPI(d *types.Doc) (err *types.SyntaxError) {
 LOOP:
 	for {
 		switch {
-		case l.matchTag("@apiIgnore"):
+		case l.matchTag(vars.APIIgnore):
 			ignore = true
 			break LOOP
-		case l.matchTag("@apiGroup"):
+		case l.matchTag(vars.APIGroup):
 			err = l.scanGroup(api)
-		case l.matchTag("@apiQuery"):
+		case l.matchTag(vars.APIQuery):
 			err = l.scanAPIQueries(api)
-		case l.matchTag("@apiParam"):
+		case l.matchTag(vars.APIParam):
 			err = l.scanAPIParams(api)
-		case l.matchTag("@apiRequest"):
+		case l.matchTag(vars.APIRequest):
 			err = l.scanAPIRequest(api)
-		case l.matchTag("@apiError"):
-			api.Error, err = l.scanResponse("@apiError")
-		case l.matchTag("@apiSuccess"):
-			api.Success, err = l.scanResponse("@apiSuccess")
-		case l.match("@api"):
+		case l.matchTag(vars.APIError):
+			api.Error, err = l.scanResponse(vars.APIError)
+		case l.matchTag(vars.APISuccess):
+			api.Success, err = l.scanResponse(vars.APISuccess)
+		case l.match(vars.API):
 			l.backup()
 			return l.syntaxError(locale.ErrUnknownTag, l.readWord())
 		default:
@@ -182,11 +182,11 @@ func (l *lexer) scanGroup(api *types.API) *types.SyntaxError {
 
 	api.Group = t.readWord()
 	if len(api.Group) == 0 {
-		return t.syntaxError(locale.ErrTagArgNotEnough, "@apiGroup")
+		return t.syntaxError(locale.ErrTagArgNotEnough, vars.APIGroup)
 	}
 
 	if !t.atEOF() {
-		t.syntaxError(locale.ErrTagArgTooMuch, "@apiGroup")
+		t.syntaxError(locale.ErrTagArgTooMuch, vars.APIGroup)
 	}
 
 	return nil
@@ -197,7 +197,7 @@ func (l *lexer) scanAPIQueries(api *types.API) *types.SyntaxError {
 		api.Queries = make([]*types.Param, 0, 1)
 	}
 
-	p, err := l.scanAPIParam("@apiQuery")
+	p, err := l.scanAPIParam(vars.APIQuery)
 	if err != nil {
 		return err
 	}
@@ -210,7 +210,7 @@ func (l *lexer) scanAPIParams(api *types.API) *types.SyntaxError {
 		api.Params = make([]*types.Param, 0, 1)
 	}
 
-	p, err := l.scanAPIParam("@apiParam")
+	p, err := l.scanAPIParam(vars.APIParam)
 	if err != nil {
 		return err
 	}
@@ -228,36 +228,36 @@ func (l *lexer) scanAPIRequest(api *types.API) *types.SyntaxError {
 		Examples: []*types.Example{},
 	}
 	if !t.atEOF() {
-		return t.syntaxError(locale.ErrTagArgTooMuch, "@apiRequest")
+		return t.syntaxError(locale.ErrTagArgTooMuch, vars.APIRequest)
 	}
 
 LOOP:
 	for {
 		switch {
-		case l.matchTag("@apiHeader"):
+		case l.matchTag(vars.APIHeader):
 			t := l.readTag()
 			key := t.readWord()
 			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
-				return t.syntaxError(locale.ErrTagArgNotEnough, "@apiHeader")
+				return t.syntaxError(locale.ErrTagArgNotEnough, vars.APIHeader)
 			}
 			if !t.atEOF() {
-				return t.syntaxError(locale.ErrTagArgTooMuch, "@apiHeader")
+				return t.syntaxError(locale.ErrTagArgTooMuch, vars.APIHeader)
 			}
 			r.Headers[string(key)] = string(val)
-		case l.matchTag("@apiParam"):
-			p, err := l.scanAPIParam("@apiParam")
+		case l.matchTag(vars.APIParam):
+			p, err := l.scanAPIParam(vars.APIParam)
 			if err != nil {
 				return err
 			}
 			r.Params = append(r.Params, p)
-		case l.matchTag("@apiExample"):
+		case l.matchTag(vars.APIExample):
 			e, err := l.scanAPIExample()
 			if err != nil {
 				return err
 			}
 			r.Examples = append(r.Examples, e)
-		case l.match("@api"): // 其它api*，退出。
+		case l.match(vars.API): // 其它api*，退出。
 			l.backup()
 			break LOOP
 		default:
@@ -294,30 +294,30 @@ func (l *lexer) scanResponse(tagName string) (*types.Response, *types.SyntaxErro
 LOOP:
 	for {
 		switch {
-		case l.matchTag("@apiHeader"):
+		case l.matchTag(vars.APIHeader):
 			t := l.readTag()
 			key := t.readWord()
 			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
-				return nil, t.syntaxError(locale.ErrTagArgNotEnough, "@apiHeader")
+				return nil, t.syntaxError(locale.ErrTagArgNotEnough, vars.APIHeader)
 			}
 			if !t.atEOF() {
-				return nil, t.syntaxError(locale.ErrTagArgTooMuch, "@apiHeader")
+				return nil, t.syntaxError(locale.ErrTagArgTooMuch, vars.APIHeader)
 			}
 			resp.Headers[key] = val
-		case l.matchTag("@apiParam"):
-			p, err := l.scanAPIParam("@apiParam")
+		case l.matchTag(vars.APIParam):
+			p, err := l.scanAPIParam(vars.APIParam)
 			if err != nil {
 				return nil, err
 			}
 			resp.Params = append(resp.Params, p)
-		case l.matchTag("@apiExample"):
+		case l.matchTag(vars.APIExample):
 			e, err := l.scanAPIExample()
 			if err != nil {
 				return nil, err
 			}
 			resp.Examples = append(resp.Examples, e)
-		case l.match("@api"): // 其它api*，退出。
+		case l.match(vars.API): // 其它api*，退出。
 			l.backup()
 			break LOOP
 		default:
@@ -340,7 +340,7 @@ func (l *lexer) scanAPIExample() (*types.Example, *types.SyntaxError) {
 	}
 
 	if len(example.Type) == 0 || len(example.Code) == 0 {
-		return nil, tag.syntaxError(locale.ErrTagArgNotEnough, "@apiExample")
+		return nil, tag.syntaxError(locale.ErrTagArgNotEnough, vars.APIExample)
 	}
 
 	return example, nil

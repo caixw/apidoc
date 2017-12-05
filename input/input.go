@@ -21,12 +21,14 @@ import (
 	b "github.com/caixw/apidoc/input/block"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/vars"
 
 	"github.com/issue9/utils"
 )
 
 // 需要解析的最小代码块，小于此值，将不作解析
-const miniSize = len("@api ")
+// 即其长度必须大于 @api 这四个字符串的长度
+const miniSize = len(vars.API) + 1
 
 // Options 指定输入内容的相关信息。
 type Options struct {
