@@ -9,20 +9,33 @@
 package locale
 
 import (
+	"errors"
 	"os"
 	"strings"
 
+	"github.com/caixw/apidoc/vars"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
 // Init 初始化 locale 包并返回当前系统默认的本地化语言信息。
 func Init() (language.Tag, error) {
+	// NOTE: 需要在所有的 init() 函数完成之后，才能使用 locales 变量
+
+	found := false
 	for id, messages := range locales {
 		tag := language.MustParse(id)
 		for key, val := range messages {
 			message.SetString(tag, key, val)
 		}
+
+		if id == vars.DefaultLocale {
+			found = true
+		}
+	}
+
+	if !found {
+		return language.Und, errors.New("vars.DefaultLocale 的值并不存在")
 	}
 
 	localeName, err := getLocaleName()
