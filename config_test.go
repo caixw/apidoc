@@ -11,7 +11,6 @@ import (
 
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
-	"github.com/caixw/apidoc/vars"
 	"github.com/issue9/assert"
 	"github.com/issue9/term/colors"
 )
@@ -58,15 +57,4 @@ func TestConfig_sanitize(t *testing.T) {
 	})
 	err = conf.sanitize()
 	a.True(strings.HasPrefix(err.Field, "inputs[0]"))
-}
-
-func TestConfig(t *testing.T) {
-	a := assert.New(t)
-
-	path := "./" + vars.ConfigFilename
-	a.NotError(genConfigFile(path))
-
-	conf, err := loadConfig(path)
-	a.NotError(err).NotNil(conf)
-	a.Equal(conf.Inputs[0].Lang, "go")
 }

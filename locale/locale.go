@@ -3,9 +3,6 @@
 // license that can be found in the LICENSE file.
 
 // Package locale 提供了一个本地化翻译服务。
-//
-// NOTE: locale 包作为一个最底层的功能实现，不应该依赖
-// 程序中其它任何包，它们都有可能调用 locale 包中的相关内容。
 package locale
 
 import (
@@ -44,20 +41,11 @@ func getTag() (language.Tag, error) {
 		return language.Und, errors.New("vars.DefaultLocale 的值并不存在")
 	}
 
-	// 此条必定成功，因为与 vars.DefaultLocale 相同的值已经在上面的 for 特环中执行过。
-	defaultLocaleTag := language.MustParse(vars.DefaultLocale)
-
-	localeName, err := syslocale.Get()
+	tag, err := syslocale.Get()
 	if err != nil {
-		return defaultLocaleTag, err
+		// 此条必定成功，因为与 vars.DefaultLocale 相同的值已经在上面的 for 特环中执行过。
+		return language.MustParse(vars.DefaultLocale), err
 	}
-
-	// 成功获取了用户的语言信息，但无法解析成 language.Tag 类型
-	tag, err := language.Parse(localeName)
-	if err != nil {
-		return defaultLocaleTag, err
-	}
-
 	return tag, nil
 }
 

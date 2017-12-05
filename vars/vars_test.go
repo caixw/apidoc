@@ -27,7 +27,6 @@ func TestConsts(t *testing.T) {
 	a.True(len(ConfigFilename) > 0).True(strings.IndexAny(ConfigFilename, "/\\") < 0)
 	a.True(len(DefaultTitle) > 0)
 	a.True(len(DefaultGroupName) > 0).True(strings.IndexAny(DefaultGroupName, "/\\") < 0)
-	a.True(len(Profile) > 0).True(strings.IndexAny(Profile, "/\\") < 0)
 
 	tag, err := language.Parse(DefaultLocale)
 	a.NotError(err).NotEqual(tag, language.Und)
