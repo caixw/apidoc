@@ -31,7 +31,7 @@ Perl、PHP、Python、Ruby、Rust、Scala 和 Swift。
  *     <user id="2" username="admin2" name="管理员2" />
  * </users>
  */
-func login(w http.ResponseWriter, r *http.Request){
+func login(w http.ResponseWriter, r *http.Request) {
     // TODO
 }
 ```

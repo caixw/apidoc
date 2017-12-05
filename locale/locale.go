@@ -18,7 +18,8 @@ import (
 	"golang.org/x/text/message"
 )
 
-// Init 初始化 locale 包并返回当前系统默认的本地化语言信息。
+// Init 初始化 locale 包并。
+// 无论是否返回错误信息，都会初始一种语言作为其交互语言。
 func Init() error {
 	tag, err := getTag()
 	localePrinter = message.NewPrinter(tag)

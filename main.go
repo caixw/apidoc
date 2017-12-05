@@ -49,27 +49,19 @@ func main() {
 		locale.Printf(locale.FlagSupportedLangs, input.Langs())
 		return
 	case *g:
-		path, err := getConfigFile()
-		if err != nil {
-			erro.Println(err)
-			return
-		}
-		if err = genConfigFile(path); err != nil {
-			erro.Println(err)
-			return
-		}
-		info.Println(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
+		genConfigFile()
 		return
 	}
 
-	// 指定了 pprof 参数
+	/* 对 pprof 的处理，pprof 需要运行程序，所以注意关闭文件的时间。 */
 	if len(*pprofType) > 0 {
-		profile := filepath.Join("./", vars.Profile)
+		profile := filepath.Join("./", *pprofType+".prof")
 		f, err := os.Create(profile)
 		if err != nil { // 不能创建文件，则忽略 pprof 相关操作
 			warn.Println(err)
 			goto RUN
 		}
+
 		defer func() {
 			if err = f.Close(); err != nil {
 				erro.Println(err)
@@ -152,18 +144,14 @@ func usage() {
 	locale.Printf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
 }
 
-// 获取配置文件路径。目前只支持从工作路径获取。
-func getConfigFile() (string, error) {
-	wd, err := os.Getwd()
+// 生成一个默认的配置文件，并写入到文件中。
+func genConfigFile() {
+	path, err := getConfigFile()
 	if err != nil {
-		return "", err
+		erro.Println(err)
+		return
 	}
 
-	return filepath.Join(wd, vars.ConfigFilename), nil
-}
-
-// 生成一个默认的配置文件，并写入到 path 中。
-func genConfigFile(path string) error {
 	dir := filepath.Dir(path)
 	lang, err := input.DetectDirLang(dir)
 	if err != nil { // 不中断，仅作提示用。
@@ -185,17 +173,23 @@ func genConfigFile(path string) error {
 	}
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
-		return err
+		erro.Println(err)
+		return
 	}
 
 	fi, err := os.Create(path)
 	if err != nil {
-		return err
+		erro.Println(err)
+		return
 	}
 	defer fi.Close()
 
-	_, err = fi.Write(data)
-	return err
+	if _, err = fi.Write(data); err != nil {
+		erro.Println(err)
+		return
+	}
+
+	info.Println(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
 }
 
 func printVersion() {

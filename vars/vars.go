@@ -27,9 +27,6 @@ const (
 	// 系统会给其加到此分组中，同时也是默认的索引文件名。
 	DefaultGroupName = "index"
 
-	// 输出的 profile 文件的名称
-	Profile = "apidoc.prof"
-
 	// 默认的语言，目前仅能保证简体中文是最新的。
 	DefaultLocale = "zh-Hans"
 

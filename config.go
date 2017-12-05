@@ -6,6 +6,8 @@ package main
 
 import (
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/caixw/apidoc/input"
@@ -86,4 +88,14 @@ func (cfg *config) sanitize() *types.OptionsError {
 	}
 
 	return nil
+}
+
+// 获取配置文件路径。目前只支持从工作路径获取。
+func getConfigFile() (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(wd, vars.ConfigFilename), nil
 }
