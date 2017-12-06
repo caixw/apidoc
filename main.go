@@ -22,9 +22,9 @@ import (
 	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
+
 	"github.com/issue9/logs/writers"
 	"github.com/issue9/term/colors"
-
 	yaml "gopkg.in/yaml.v2"
 )
 

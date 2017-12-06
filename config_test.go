@@ -5,23 +5,13 @@
 package main
 
 import (
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/output"
 	"github.com/issue9/assert"
-	"github.com/issue9/term/colors"
 )
-
-func TestLogWriter_Write(t *testing.T) {
-	a := assert.New(t)
-
-	l := &logWriter{out: os.Stdout, prefix: "[TEST] ", color: colors.Red}
-	_, err := l.Write([]byte("这是一行红色前缀的字"))
-	a.NotError(err)
-}
 
 func TestConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
