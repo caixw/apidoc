@@ -35,9 +35,6 @@ func init() {
 		VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
 		Complete:            "完成！文檔保存在：%v，總用時：%v",
 
-		DebugPort:     "當前為模板調試模式，調試端口為：%v",
-		DebugTemplate: "當前為模板調試模式，調試模板為：%v",
-
 		// 錯誤信息，可能在地方用到
 		ErrRequired:              "不能為空",
 		ErrInvalidFormat:         "格式不正確",

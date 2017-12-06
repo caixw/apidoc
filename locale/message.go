@@ -45,9 +45,6 @@ const (
 	VersionInCompatible = "当前程序与配置文件中指定的版本号不兼容"
 	Complete            = "完成！文档保存在：%v，总用时：%v"
 
-	DebugPort     = "当前为模板调试模式，调试端口为：%v"
-	DebugTemplate = "当前为模板调试模式，调试模板为：%v"
-
 	// 错误信息，可能在地方用到
 	ErrRequired              = "不能为空"
 	ErrInvalidFormat         = "格式不正确"
