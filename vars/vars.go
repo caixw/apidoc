@@ -22,11 +22,11 @@ const (
 	// 默认的文档标题
 	DefaultTitle = "APIDOC"
 
-	// 默认的分组名称，在不指定分组名称的时候，
-	// 系统会给其加到此分组中，同时也是默认的索引文件名。
+	// 默认的分组名称，在不指定分组名称的时候，系统会给其加到此分组中。
 	DefaultGroupName = "index"
 
 	// 默认的语言，目前仅能保证简体中文是最新的。
+	// 需要保证存在于 locale.locales 中，否则运行时会报错。
 	DefaultLocale = "zh-Hans"
 
 	// 生成的 JSON 数据存放的目录

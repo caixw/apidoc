@@ -7,6 +7,7 @@ package locale
 import (
 	"testing"
 
+	"github.com/caixw/apidoc/vars"
 	"github.com/issue9/assert"
 )
 
@@ -16,4 +17,17 @@ func TestInit(t *testing.T) {
 	err := Init()
 	a.NotError(err)
 	a.True(len(locales) > 0)
+}
+
+func TestVarsDefaultLocale(t *testing.T) {
+	a := assert.New(t)
+
+	found := false
+	for name := range locales {
+		if name == vars.DefaultLocale {
+			found = true
+			break
+		}
+	}
+	a.True(found)
 }
