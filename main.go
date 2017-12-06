@@ -68,7 +68,7 @@ func main() {
 		profile := filepath.Join("./", *pprofType+".prof")
 		f, err := os.Create(profile)
 		if err != nil { // 不能创建文件，则忽略 pprof 相关操作
-			warn.Println(err)
+			erro.Println(err)
 			return
 		}
 
@@ -84,12 +84,12 @@ func main() {
 		case "mem":
 			defer func() {
 				if err = pprof.Lookup("heap").WriteTo(f, 1); err != nil {
-					warn.Println(err)
+					erro.Println(err)
 				}
 			}()
 		case "cpu":
 			if err := pprof.StartCPUProfile(f); err != nil {
-				warn.Println(err)
+				erro.Println(err)
 			}
 			defer pprof.StopCPUProfile()
 		default:
@@ -117,10 +117,23 @@ func run() {
 		return
 	}
 
-	// 分析文档内容
+	docs := parse(cfg.Inputs)
+
+	// 输出内容
+	cfg.Output.Elapsed = time.Now().Sub(start)
+	if err := output.Render(docs, cfg.Output); err != nil {
+		erro.Println(err)
+		return
+	}
+
+	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start)))
+}
+
+func parse(inputs []*input.Options) *types.Doc {
 	docs := types.NewDoc()
+
 	wg := &sync.WaitGroup{}
-	for _, opt := range cfg.Inputs {
+	for _, opt := range inputs {
 		wg.Add(1)
 		go func(o *input.Options) {
 			if err := input.Parse(docs, o); err != nil {
@@ -135,14 +148,7 @@ func run() {
 		docs.Title = vars.DefaultTitle
 	}
 
-	// 输出内容
-	cfg.Output.Elapsed = time.Now().Sub(start)
-	if err := output.Render(docs, cfg.Output); err != nil {
-		erro.Println(err)
-		return
-	}
-
-	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start)))
+	return docs
 }
 
 func usage() {
