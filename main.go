@@ -8,6 +8,7 @@ package main
 import (
 	"bytes"
 	"flag"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -21,8 +22,17 @@ import (
 	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
+	"github.com/issue9/logs/writers"
+	"github.com/issue9/term/colors"
 
 	yaml "gopkg.in/yaml.v2"
+)
+
+// 日志信息输出
+var (
+	info = log.New(writers.NewConsole(os.Stdout, colors.Green, colors.Default), "[INFO]", 0)
+	warn = log.New(writers.NewConsole(os.Stderr, colors.Cyan, colors.Default), "[WARN]", 0)
+	erro = log.New(writers.NewConsole(os.Stderr, colors.Red, colors.Default), "[ERRO]", 0)
 )
 
 func main() {
