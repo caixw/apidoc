@@ -25,6 +25,7 @@ import (
 
 	"github.com/issue9/logs/writers"
 	"github.com/issue9/term/colors"
+	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -115,6 +116,16 @@ func run() {
 	if err != nil {
 		erro.Println(err)
 		return
+	}
+
+	// 比较版本号兼容问题
+	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
+	if err != nil {
+		erro.Println(err)
+		return
+	}
+	if !compatible {
+		erro.Println(locale.Sprintf(locale.VersionInCompatible))
 	}
 
 	docs := parse(cfg.Inputs)

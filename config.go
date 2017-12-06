@@ -56,15 +56,6 @@ func (cfg *config) sanitize() *types.OptionsError {
 		return &types.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
 	}
 
-	// 比较版本号兼容问题
-	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
-	if err != nil {
-		return &types.OptionsError{Field: "version", Message: err.Error()}
-	}
-	if !compatible {
-		return &types.OptionsError{Field: "version", Message: locale.Sprintf(locale.VersionInCompatible)}
-	}
-
 	if len(cfg.Inputs) == 0 {
 		return &types.OptionsError{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
 	}
