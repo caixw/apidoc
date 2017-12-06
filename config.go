@@ -24,7 +24,7 @@ import (
 //
 // 所有可能改变输出的表现形式的，应该添加此配置中；
 // 而如果只是改变输出内容的，应该直接以标签的形式出现在代码中，
-// 比如文档的版本号、标题等，都是直接使用 `@apidoc` 来指定的。
+// 比如文档的版本号、标题等，都是直接使用 @apidoc 来指定的。
 type config struct {
 	Version string           `yaml:"version"` // 产生此配置文件的程序版本号
 	Inputs  []*input.Options `yaml:"inputs"`  // 输入的配置项，可以指定多个项目

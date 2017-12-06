@@ -107,7 +107,7 @@ func Parse(docs *types.Doc, o *Options) error {
 func parseFile(docs *types.Doc, path string, blocks []blocker, synerrLog *log.Logger, startLine int) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil && synerrLog != nil {
-		synerrLog.Println(&types.SyntaxError{Message: err.Error(), File: path})
+		synerrLog.Println(err)
 		return
 	}
 
