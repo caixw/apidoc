@@ -43,15 +43,14 @@ func loadConfig(path string) (*config, error) {
 		return nil, err
 	}
 
-	// NOTE: 这里的 err 类型是 *types.OptionsError 而不是 error 所以需要新值
-	if err := cfg.sanitize(); err != nil {
+	if err = cfg.sanitize(); err != nil {
 		return nil, err
 	}
 
 	return cfg, nil
 }
 
-func (cfg *config) sanitize() *types.OptionsError {
+func (cfg *config) sanitize() error {
 	if !version.SemVerValid(cfg.Version) {
 		return &types.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
 	}

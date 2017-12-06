@@ -37,15 +37,7 @@ var (
 )
 
 func main() {
-	if err := locale.Init(); err != nil {
-		warn.Println(err)
-	}
-
-	// 本地化环境初始化成功之后，再设置日志前缀
-	// BUG(caixw): 无法获取正确的 locale.InfoPrefix 本地化字符串
-	info.SetPrefix(locale.Sprint(locale.InfoPrefix))
-	warn.SetPrefix(locale.Sprint(locale.WarnPrefix))
-	erro.SetPrefix(locale.Sprint(locale.ErrorPrefix))
+	initLocale() // 最先初始化本地化信息
 
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
@@ -132,6 +124,7 @@ func run() {
 	}
 	if !compatible {
 		erro.Println(locale.Sprintf(locale.VersionInCompatible))
+		return
 	}
 
 	docs := parse(cfg.Inputs)
@@ -174,6 +167,17 @@ func usage() {
 	flag.PrintDefaults()
 
 	locale.Printf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
+}
+
+func initLocale() {
+	if err := locale.Init(); err != nil {
+		warn.Println(err)
+	}
+
+	// 本地化环境初始化成功之后，再设置日志前缀
+	info.SetPrefix(locale.Sprintf(locale.InfoPrefix))
+	warn.SetPrefix(locale.Sprintf(locale.WarnPrefix))
+	erro.SetPrefix(locale.Sprintf(locale.ErrorPrefix))
 }
 
 // 生成一个默认的配置文件，并写入到文件中。
