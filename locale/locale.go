@@ -32,7 +32,9 @@ func getTag() (language.Tag, error) {
 	for id, messages := range locales { // 保证 locales 已经初始化，即要在 init() 函数之后调用
 		tag := language.MustParse(id)
 		for key, val := range messages {
-			message.SetString(tag, key, val)
+			if err := message.SetString(tag, key, val); err != nil {
+				panic(err)
+			}
 		}
 
 		if id == vars.DefaultLocale {

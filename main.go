@@ -31,15 +31,21 @@ import (
 
 // 日志信息输出
 var (
-	info = log.New(writers.NewConsole(os.Stdout, colors.Green, colors.Default), "[INFO]", 0)
-	warn = log.New(writers.NewConsole(os.Stderr, colors.Cyan, colors.Default), "[WARN]", 0)
-	erro = log.New(writers.NewConsole(os.Stderr, colors.Red, colors.Default), "[ERRO]", 0)
+	info = newLog(os.Stdout, vars.InfoColor, "[INFO] ")
+	warn = newLog(os.Stderr, vars.WarnColor, "[WARN] ")
+	erro = newLog(os.Stderr, vars.ErroColor, "[ERRO] ")
 )
 
 func main() {
 	if err := locale.Init(); err != nil {
 		warn.Println(err)
 	}
+
+	// 本地化环境初始化成功之后，再设置日志前缀
+	// BUG(caixw): 无法获取正确的 locale.InfoPrefix 本地化字符串
+	info.SetPrefix(locale.Sprint(locale.InfoPrefix))
+	warn.SetPrefix(locale.Sprint(locale.WarnPrefix))
+	erro.SetPrefix(locale.Sprint(locale.ErrorPrefix))
 
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
@@ -221,4 +227,8 @@ func genConfigFile() {
 func printVersion() {
 	locale.Printf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version())
 	locale.Printf(locale.FlagVersionCommitHash, vars.CommitHash())
+}
+
+func newLog(out *os.File, color colors.Color, prefix string) *log.Logger {
+	return log.New(writers.NewConsole(out, color, colors.Default), prefix, 0)
 }

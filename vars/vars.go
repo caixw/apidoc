@@ -5,6 +5,10 @@
 // Package vars 提供了一些公共的函数、结构体及代码级别的设置项。
 package vars
 
+import (
+	"github.com/issue9/term/colors"
+)
+
 // 一些公用的常量
 const (
 	// 程序的正式名称
@@ -40,4 +44,9 @@ const (
 
 	// 组文件的前缀，有前缀，不会与现有文件重名
 	GroupFilePrefix = "group_"
+
+	// 控制台的颜色
+	InfoColor = colors.Green
+	WarnColor = colors.Cyan
+	ErroColor = colors.Red
 )

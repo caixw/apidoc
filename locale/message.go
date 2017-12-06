@@ -61,6 +61,11 @@ const (
 	ErrTagArgTooMuch         = "标签：%v 指定了太多的参数"
 	ErrTagArgNotEnough       = "标签：%v 参数不够"
 	ErrSecondArgMustURL      = vars.APILicense + " 第二个参数必须为 URL"
+
+	// logs
+	InfoPrefix  = "[INFO] "
+	WarnPrefix  = "[WARN] "
+	ErrorPrefix = "[ERRO] "
 )
 
 // NewPrinter 根据 tag 生成一个新的语言输出环境
