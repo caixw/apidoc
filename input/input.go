@@ -13,7 +13,6 @@ package input
 import (
 	"errors"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -45,7 +44,7 @@ func Parse(docs *types.Doc, o *Options) error {
 	for _, path := range paths {
 		wg.Add(1)
 		go func(path string) {
-			parseFile(docs, path, blocks, o.SyntaxErrorLog, o.StartLineNumber)
+			parseFile(docs, path, blocks, o)
 			wg.Done()
 		}(path)
 	}
@@ -54,10 +53,10 @@ func Parse(docs *types.Doc, o *Options) error {
 }
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。
-func parseFile(docs *types.Doc, path string, blocks []blocker, synerrLog *log.Logger, startLine int) {
+func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 	data, err := ioutil.ReadFile(path)
-	if err != nil && synerrLog != nil {
-		synerrLog.Println(err)
+	if err != nil && o.SyntaxErrorLog != nil {
+		o.SyntaxErrorLog.Println(err)
 		return
 	}
 
@@ -79,15 +78,15 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, synerrLog *log.Lo
 			}
 		}
 
-		ln := l.lineNumber() + startLine // 记录当前的行号，顺便调整起始行号
+		ln := l.lineNumber() + o.StartLineNumber // 记录当前的行号，顺便调整起始行号
 		rs, ok := block.EndFunc(l)
-		if !ok && synerrLog != nil {
+		if !ok && o.SyntaxErrorLog != nil {
 			err := &types.SyntaxError{
 				Line:    ln,
 				File:    path,
 				Message: locale.Sprintf(locale.ErrNotFoundEndFlag),
 			}
-			synerrLog.Println(err)
+			o.SyntaxErrorLog.Println(err)
 			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 		}
 
@@ -98,10 +97,10 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, synerrLog *log.Lo
 
 		wg.Add(1)
 		go func(rs []rune, ln int) {
-			if err := syntax.Parse(docs, rs); err != nil && synerrLog != nil {
+			if err := syntax.Parse(docs, rs); err != nil && o.SyntaxErrorLog != nil {
 				err.Line += ln
 				err.File = path
-				synerrLog.Println(err)
+				o.SyntaxErrorLog.Println(err)
 			}
 			wg.Done()
 		}(rs, ln)
