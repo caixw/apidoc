@@ -31,3 +31,26 @@ func TestOptions_Sanitize(t *testing.T) {
 	a.NotError(o.Sanitize())
 	a.Equal(o.Exts, []string{".c1", ".c2"})
 }
+
+func TestRecursiveDir(t *testing.T) {
+	a := assert.New(t)
+
+	files, err := recursiveDir("./testdir", false)
+	a.NotError(err)
+	a.Equal(len(files), 4)
+
+	files, err = recursiveDir("./testdir", true)
+	a.NotError(err)
+	a.Equal(len(files), 7)
+}
+
+/*func TestDetectDirLang(t *testing.T) {
+	a := assert.New(t)
+
+	lang, err := DetectDirLang("./testdir")
+	a.NotError(err).Equal(lang, "c++")
+
+	lang, err = DetectDirLang("./testdir/testdir1")
+	a.Error(err).Empty(lang)
+}
+*/

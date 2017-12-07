@@ -70,16 +70,6 @@ func TestCompareLangsAndLangExts(t *testing.T) {
 	a.Equal(len(langs), len(langExts))
 }
 
-func TestDetectDirLang(t *testing.T) {
-	a := assert.New(t)
-
-	lang, err := DetectDirLang("./testdir")
-	a.NotError(err).Equal(lang, "c++")
-
-	lang, err = DetectDirLang("./testdir/testdir1")
-	a.Error(err).Empty(lang)
-}
-
 func TestGetLangByExt(t *testing.T) {
 	a := assert.New(t)
 

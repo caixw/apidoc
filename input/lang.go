@@ -4,14 +4,7 @@
 
 package input
 
-import (
-	"errors"
-	"io/ioutil"
-	"path/filepath"
-	"strings"
-
-	"github.com/caixw/apidoc/locale"
-)
+import "strings"
 
 // 所有支持的语言模型定义
 //
@@ -159,49 +152,6 @@ func Langs() []string {
 	}
 
 	return ret
-}
-
-// DetectDirLang 检测指定目录下的语言类型。
-//
-// 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
-// 不会分析子目录。
-func DetectDirLang(dir string) (string, error) {
-	fs, err := ioutil.ReadDir(dir)
-	if err != nil {
-		return "", err
-	}
-
-	// langsMap 记录每个支持的语言对应的文件数量
-	langsMap := make(map[string]int, len(fs))
-	for _, f := range fs { // 遍历所有的文件
-		if f.IsDir() {
-			continue
-		}
-
-		ext := strings.ToLower(filepath.Ext(f.Name()))
-		lang := getLangByExt(ext)
-		if len(lang) > 0 {
-			langsMap[lang]++
-		}
-	}
-
-	if len(langsMap) == 0 {
-		return "", errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
-	}
-
-	lang := ""
-	cnt := 0
-	for k, v := range langsMap {
-		if v >= cnt {
-			lang = k
-			cnt = v
-		}
-	}
-
-	if len(lang) > 0 {
-		return lang, nil
-	}
-	return "", errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
 }
 
 // 根据扩展名获取其对应的语言名称。

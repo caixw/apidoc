@@ -5,7 +5,11 @@
 package input
 
 import (
+	"errors"
 	"log"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
@@ -58,4 +62,78 @@ func (opt *Options) Sanitize() *types.OptionsError {
 	}
 
 	return nil
+}
+
+// Detect 检测指定目录下的内容，并为其生成一个合适的 Options 实例。
+//
+// 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
+// 不会分析子目录。
+func Detect(dir string, recursive bool) (*Options, error) {
+	paths, err := recursiveDir(dir, recursive)
+	if err != nil {
+		return nil, err
+	}
+
+	// langsMap 记录每个支持的语言对应的文件数量
+	langsMap := make(map[string]int, len(paths))
+	for _, f := range paths { // 遍历所有的文件
+		ext := strings.ToLower(filepath.Ext(f))
+		lang := getLangByExt(ext)
+		if len(lang) > 0 {
+			langsMap[lang]++
+		}
+	}
+
+	if len(langsMap) == 0 {
+		return nil, errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
+	}
+
+	lang := ""
+	cnt := 0
+	for k, v := range langsMap {
+		if v >= cnt {
+			lang = k
+			cnt = v
+		}
+	}
+
+	if len(lang) == 0 {
+		return nil, errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
+	}
+
+	return &Options{
+		StartLineNumber: 0,
+		Lang:            lang,
+		Dir:             dir,
+		Exts:            langExts[lang],
+		Recursive:       recursive,
+	}, nil
+}
+
+// 返回 dir 目录下所有的文件集合。
+// recursive 表示是否查找子目录下的文件。
+func recursiveDir(dir string, recursive bool) ([]string, error) {
+	paths := []string{}
+
+	walk := func(path string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if fi.IsDir() {
+			if !recursive && dir != path {
+				return filepath.SkipDir
+			}
+		} else {
+			paths = append(paths, path)
+		}
+
+		return nil
+	}
+
+	if err := filepath.Walk(dir, walk); err != nil {
+		return nil, err
+	}
+
+	return paths, nil
 }

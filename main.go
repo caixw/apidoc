@@ -189,20 +189,14 @@ func genConfigFile() {
 	}
 
 	dir := filepath.Dir(path)
-	lang, err := input.DetectDirLang(dir)
+	o, err := input.Detect(dir, true)
 	if err != nil { // 不中断，仅作提示用。
 		warn.Println(err)
 	}
 
 	cfg := &config{
 		Version: vars.Version(),
-		Inputs: []*input.Options{
-			&input.Options{
-				Dir:       dir,
-				Recursive: true,
-				Lang:      lang,
-			},
-		},
+		Inputs:  []*input.Options{o},
 		Output: &output.Options{
 			Dir: filepath.Join(dir, "doc"),
 		},

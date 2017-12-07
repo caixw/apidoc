@@ -108,7 +108,7 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, synerrLog *log.Lo
 	} // end for
 }
 
-// 根据 recursive 值确定是否递归查找 paths 每个目录下的子目录。
+// 按 Options 中的规则查找所有符合条件的文件列表。
 func recursivePath(o *Options) ([]string, error) {
 	paths := []string{}
 
