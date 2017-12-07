@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package syntax 对代码码的语法解析功能
+// Package syntax 提供对代码块的语法进行解析
 package syntax
 
 import (

@@ -58,27 +58,24 @@ LANG=lang apidoc
 若需要将 apidoc 当作包集成到其它 Go 程序中，可分别引用 `input` 和 `output` 的相关函数：
 
 ```go
+// 初始本地化内容
+locale.Init()
+
 start := time.Now()
 docs := doc.New()
-
-tag, err := locale.GetLocale()
-if err != nil {
-    panic(err)
-}
-locale.SetLocale(tag)
 
 // 分析文档内容
 inputOptions := &input.Options{...}
 docs, err := input.Parse(docs, inputOptions)
 if err != nil {
-    // TODO
+    panic(err)
 }
 
 // 输出内容
 outputOptions := &output.Options{...}
 outputOptions.Elapsed = time.Now().Sub(start)
 if err = output.Render(docs, outputOptions); err != nil {
-    // TODO
+    panic(err)
 }
 ```
 

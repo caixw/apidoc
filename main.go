@@ -102,8 +102,6 @@ func main() {
 
 // 真正的程序入口，main 主要是作参数的处理。
 func run() {
-	start := time.Now()
-
 	path, err := getConfigFile()
 	if err != nil {
 		erro.Println(err)
@@ -127,23 +125,15 @@ func run() {
 		return
 	}
 
-	docs := parse(cfg.Inputs)
-
-	// 输出内容
-	cfg.Output.Elapsed = time.Now().Sub(start)
-	if err := output.Render(docs, cfg.Output); err != nil {
-		erro.Println(err)
-		return
-	}
-
-	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start)))
+	do(cfg)
 }
 
-func parse(inputs []*input.Options) *types.Doc {
+func do(cfg *config) {
+	start := time.Now()
 	docs := types.NewDoc()
 
 	wg := &sync.WaitGroup{}
-	for _, opt := range inputs {
+	for _, opt := range cfg.Inputs {
 		wg.Add(1)
 		go func(o *input.Options) {
 			if err := input.Parse(docs, o); err != nil {
@@ -158,7 +148,14 @@ func parse(inputs []*input.Options) *types.Doc {
 		docs.Title = vars.DefaultTitle
 	}
 
-	return docs
+	// 输出内容
+	cfg.Output.Elapsed = time.Now().Sub(start)
+	if err := output.Render(docs, cfg.Output); err != nil {
+		erro.Println(err)
+		return
+	}
+
+	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start)))
 }
 
 func usage() {
