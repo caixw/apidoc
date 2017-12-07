@@ -18,7 +18,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	b "github.com/caixw/apidoc/input/block"
+	"github.com/caixw/apidoc/input/syntax"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
@@ -98,7 +98,7 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, synerrLog *log.Lo
 
 		wg.Add(1)
 		go func(rs []rune, ln int) {
-			if err := b.Scan(docs, rs); err != nil && synerrLog != nil {
+			if err := syntax.Parse(docs, rs); err != nil && synerrLog != nil {
 				err.Line += ln
 				err.File = path
 				synerrLog.Println(err)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package block
+package syntax
 
 import (
 	"testing"
@@ -283,7 +283,7 @@ func TestScanResponse(t *testing.T) {
 	a.Error(err).Nil(resp)
 }
 
-func TestDoc_Scan(t *testing.T) {
+func TestParse(t *testing.T) {
 	a := assert.New(t)
 	doc1 := types.NewDoc()
 
@@ -316,7 +316,7 @@ api description 2
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
-	err := Scan(doc1, []rune(code))
+	err := Parse(doc1, []rune(code))
 	a.NotError(err)
 	d := doc1.Apis[0]
 
@@ -354,7 +354,7 @@ Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.
 `
 	l := len(doc1.Apis)
-	err = Scan(doc1, []rune(code))
+	err = Parse(doc1, []rune(code))
 	a.NotError(err)
 	a.Equal(l, len(doc1.Apis))
 
@@ -366,7 +366,7 @@ license that can be found in the LICENSE file.
 @apiError 400 error
 `
 	l = len(doc1.Apis)
-	a.ErrorType(Scan(doc1, []rune(code)), synerr) // @apiGroup 少参数
+	a.ErrorType(Parse(doc1, []rune(code)), synerr) // @apiGroup 少参数
 
 	// @apiIgnore
 	code = `
@@ -376,7 +376,7 @@ license that can be found in the LICENSE file.
 @apiError 400 error
 `
 	l = len(doc1.Apis)
-	err = Scan(doc1, []rune(code))
+	err = Parse(doc1, []rune(code))
 	a.NotError(err)
 	a.Equal(l, len(doc1.Apis))
 
@@ -389,7 +389,7 @@ ab @apiIgnore
 @apiSuccess 200 OK
 `
 	l = len(doc1.Apis)
-	err = Scan(doc1, []rune(code))
+	err = Parse(doc1, []rune(code))
 	a.NotError(err)
 	a.Equal(l+1, len(doc1.Apis))
 
@@ -402,6 +402,6 @@ ab @apiIgnore
 @apiSuccess 200 OK
 `
 	l = len(doc1.Apis)
-	err = Scan(doc1, []rune(code))
+	err = Parse(doc1, []rune(code))
 	a.ErrorType(err, synerr)
 }

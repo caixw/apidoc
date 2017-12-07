@@ -2,7 +2,7 @@
 // Use of this source code is governed t. a MIT
 // license that can t. found in the LICENSE file.
 
-package block
+package syntax
 
 import (
 	"unicode"

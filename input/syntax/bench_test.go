@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package block
+package syntax
 
 import (
 	"testing"
@@ -11,8 +11,8 @@ import (
 	"github.com/issue9/assert"
 )
 
-// go1.6 BenchmarkDoc_Scan-4    	   50000	     33875 ns/op
-func BenchmarkDoc_Scan(b *testing.B) {
+// go1.9 BenchmarkDoc_Parse-4      	   50000	     24044 ns/op
+func BenchmarkDoc_Parse(b *testing.B) {
 	code := `
 @api get /baseurl/api/login api summary
 api description 1
@@ -44,14 +44,14 @@ api description 2
 
 	d := types.NewDoc()
 	for i := 0; i < b.N; i++ {
-		err := Scan(d, []rune(code))
+		err := Parse(d, []rune(code))
 		if err != nil {
 			b.Error("BenchmarkLexer_scan:error")
 		}
 	}
 }
 
-// go1.6 BenchmarkTag_readWord-4	10000000	       131 ns/op
+// go1.9 BenchmarkTag_readWord-4   	20000000	       109 ns/op
 func BenchmarkTag_readWord(b *testing.B) {
 	a := assert.New(b)
 	t := &tag{data: []rune("line1\n @delimiter line2 \n")}
@@ -63,7 +63,7 @@ func BenchmarkTag_readWord(b *testing.B) {
 	}
 }
 
-// go1.6 BenchmarkTag_readLine-4	10000000	       109 ns/op
+// go1.9 BenchmarkTag_readLine-4   	20000000	        93.6 ns/op
 func BenchmarkTag_readLine(b *testing.B) {
 	a := assert.New(b)
 	t := &tag{data: []rune("line1\n @delimiter line2 \n")}
@@ -75,7 +75,7 @@ func BenchmarkTag_readLine(b *testing.B) {
 	}
 }
 
-// go1.6 BenchmarkTag_readEnd-4 	10000000	       181 ns/op
+// go1.9 BenchmarkTag_readEnd-4    	10000000	       172 ns/op
 func BenchmarkTag_readEnd(b *testing.B) {
 	a := assert.New(b)
 	t := &tag{data: []rune("line1\n line2 \n")}
@@ -87,7 +87,7 @@ func BenchmarkTag_readEnd(b *testing.B) {
 	}
 }
 
-// go1.6 BenchmarkNewLexer-4    	300000000	         5.63 ns/op
+// go1.9 BenchmarkNewLexer-4       	1000000000	         2.71 ns/op
 func BenchmarkNewLexer(b *testing.B) {
 	data := []rune("line")
 	for i := 0; i < b.N; i++ {

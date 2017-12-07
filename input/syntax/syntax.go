@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package block 对注释块的解析
-package block
+// Package syntax 对代码码的语法解析功能
+package syntax
 
 import (
 	"github.com/caixw/apidoc/locale"
@@ -12,11 +12,11 @@ import (
 	"github.com/issue9/is"
 )
 
-// Scan 扫描一段代码，并将结果保存到 d 中。
+// Parse 分析一段代码，并将结果保存到 d 中。
 //
 // 若代码块没有 api 文档定义，则会返回空值。
 // data 该代码块的内容；
-func Scan(d *types.Doc, data []rune) *types.SyntaxError {
+func Parse(d *types.Doc, data []rune) *types.SyntaxError {
 	l := newLexer(data)
 
 LOOP:
