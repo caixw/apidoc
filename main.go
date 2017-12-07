@@ -125,15 +125,23 @@ func run() {
 		return
 	}
 
-	do(cfg)
+	docs, elapsed := parse(cfg.Inputs)
+	cfg.Output.Elapsed = elapsed
+	if err := output.Render(docs, cfg.Output); err != nil {
+		erro.Println(err)
+		return
+	}
+
+	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, elapsed))
 }
 
-func do(cfg *config) {
+// 解析 inputs 中指定的所有项目，返回其文档信息和所消耗的时间。
+func parse(inputs []*input.Options) (*types.Doc, time.Duration) {
 	start := time.Now()
 	docs := types.NewDoc()
 
 	wg := &sync.WaitGroup{}
-	for _, opt := range cfg.Inputs {
+	for _, opt := range inputs {
 		wg.Add(1)
 		go func(o *input.Options) {
 			if err := input.Parse(docs, o); err != nil {
@@ -148,14 +156,7 @@ func do(cfg *config) {
 		docs.Title = vars.DefaultTitle
 	}
 
-	// 输出内容
-	cfg.Output.Elapsed = time.Now().Sub(start)
-	if err := output.Render(docs, cfg.Output); err != nil {
-		erro.Println(err)
-		return
-	}
-
-	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, time.Now().Sub(start)))
+	return docs, time.Now().Sub(start)
 }
 
 func usage() {
@@ -166,6 +167,7 @@ func usage() {
 	locale.Printf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
 }
 
+// 初始化本地化信息，确定在第一时间调用。
 func initLocale() {
 	if err := locale.Init(); err != nil {
 		warn.Println(err)
