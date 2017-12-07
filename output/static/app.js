@@ -1,36 +1,28 @@
 "use strict";
 
 // 代码缩进的空格数量。
-var indentSize = 4;
+let indentSize = 4
 
-window.onload = function() {
+// 对应 vars.JSONDataDirName 的值
+let dataDirName = 'data'
+
+$(()=>{
     initTemplate()
-}
+})
 
 function initTemplate() {
-    var source = document.querySelector('#page').innerHTML
-    let pageTpl = Handlebars.compile(source)
+    let pageTpl = Handlebars.compile($('#page').html())
+    let apiTpl = Handlebars.compile($('#api').html())
 
-    source = document.querySelector('#examples').innerHTML
-    Handlebars.registerPartial('examples', source)
+    Handlebars.registerPartial('examples', $('#examples').html())
+    Handlebars.registerPartial('params', $('#params').html())
+    Handlebars.registerPartial('headers', $('#headers').html())
+    Handlebars.registerPartial('response', $('#response').html())
 
-    source = document.querySelector('#params').innerHTML
-    Handlebars.registerPartial('params', source)
-
-    source = document.querySelector('#headers').innerHTML
-    Handlebars.registerPartial('headers', source)
-
-    source = document.querySelector('#response').innerHTML
-    Handlebars.registerPartial('response', source)
-
-    source = document.querySelector('#api').innerHTML
-    let apiTpl = Handlebars.compile(source)
-
-
-    fetch('./data/page.json').then((resp)=>{
+    fetch(`./${dataDirName}/page.json`).then((resp)=>{
         return resp.json();
     }).then((json)=>{
-        document.querySelector('#app').innerHTML = pageTpl(json)
+        $('#app').html(pageTpl(json))
         document.title = json.title + ' | ' + json.appName
 
         loadApis(json)
@@ -38,24 +30,22 @@ function initTemplate() {
 
     // 加载 api 模板内容，json 为对应的数据
     function loadApis(json) {
-        document.querySelector('.menu>li.content').addEventListener('click', (event)=>{
-            document.querySelector('main').innerHTML = json.content
+        $('.menu>li.content').on('click', (event)=>{
+            $('main').html(json.content)
         })
 
-        document.querySelectorAll('.menu>li.api').forEach((elem, index, list)=>{
-            elem.addEventListener('click', (event)=>{
-                let path = event.target.getAttribute('data-path')
-                fetch(path).then((resp)=>{
-                    return resp.json()
-                }).then((json)=>{
-                    document.querySelector('main').innerHTML = apiTpl(json)
+        $('.menu>li.api').on('click', (event)=>{
+            let path = event.target.getAttribute('data-path')
+            fetch(path).then((resp)=>{
+                return resp.json()
+            }).then((json)=>{
+                $('main').html(apiTpl(json))
 
-                    indentCode()
-                    prettifyParams()
-                    highlightCode()
-                }).catch((reason)=>{
-                    console.error(reason)
-                })
+                indentCode()
+                prettifyParams()
+                highlightCode()
+            }).catch((reason)=>{
+                console.error(reason)
             })
         })
     } // end loadApis
@@ -64,7 +54,7 @@ function initTemplate() {
 // 美化带有子元素的参数显示
 function prettifyParams() {
     $('.request .params tbody th,.response .params tbody th').each(function(index, elem){
-        var text = $(elem).text();
+        let text = $(elem).text();
         text = text.replace(/(.*\.{1})/,'<span class="parent">$1</span>');
         $(elem).html(text);
     });
