@@ -247,9 +247,7 @@ function repeatSpace(len) {
 
     return code.join('');
 }
-`),}
-var Templates=map[string]string{
-"./index.html":`<!DOCTYPE html>
+`),"./index.html":[]byte(`<!DOCTYPE html>
 <html lang="zh-cmn-Hans">
     <head>
         <meta charset="utf-8" />
@@ -418,4 +416,4 @@ var Templates=map[string]string{
         <script src="./app.js"></script>
     </body>
 </html>
-`,}
+`),}

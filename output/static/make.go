@@ -31,10 +31,6 @@ const (
 var assets = []string{
 	"./style.css",
 	"./app.js",
-}
-
-// 需要序列化的模板文件。
-var templates = []string{
 	"./index.html",
 }
 
@@ -54,7 +50,6 @@ func main() {
 	w.WriteString("\n\n")
 
 	makeStatic(w)
-	makeTemplates(w)
 
 	if err = w.Flush(); err != nil {
 		panic(err)
@@ -76,25 +71,6 @@ func makeStatic(w *bufio.Writer) {
 		w.WriteString("[]byte(`")
 		w.Write(data)
 		w.WriteString("`),")
-	}
-	w.WriteString("}\n")
-}
-
-// 输出 template 变量的整体。
-func makeTemplates(w *bufio.Writer) {
-	w.WriteString("var Templates=map[string]string{\n")
-	for _, file := range templates {
-		data, err := ioutil.ReadFile(file)
-		if err != nil {
-			panic(err)
-		}
-
-		w.WriteByte('"')
-		w.WriteString(file)
-		w.WriteString(`":`)
-		w.WriteString("`")
-		w.Write(data)
-		w.WriteString("`,")
 	}
 	w.WriteString("}\n")
 }

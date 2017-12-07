@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -58,8 +59,8 @@ func render(docs *types.Doc, opt *Options) error {
 	}
 
 	names := make(map[string]string, len(groups))
-	for _, group := range groups {
-		names[group.Name] = group.path
+	for name, group := range groups {
+		names[group.Name] = path.Join(vars.JSONDataDirName, vars.GroupFilePrefix+name+".json")
 
 		// 排序
 		sort.SliceStable(group.Apis, func(i, j int) bool {
