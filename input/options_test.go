@@ -32,25 +32,24 @@ func TestOptions_Sanitize(t *testing.T) {
 	a.Equal(o.Exts, []string{".c1", ".c2"})
 }
 
-func TestRecursiveDir(t *testing.T) {
+func TestDetectExts(t *testing.T) {
 	a := assert.New(t)
 
-	files, err := recursiveDir("./testdir", false)
+	files, err := detectExts("./testdir", false)
 	a.NotError(err)
 	a.Equal(len(files), 4)
+	a.Equal(files[".php"], 1).Equal(files[".c"], 1)
 
-	files, err = recursiveDir("./testdir", true)
+	files, err = detectExts("./testdir", true)
 	a.NotError(err)
-	a.Equal(len(files), 7)
+	a.Equal(len(files), 5)
+	a.Equal(files[".php"], 1).Equal(files[".1"], 3)
 }
 
-/*func TestDetectDirLang(t *testing.T) {
+func TestDetect(t *testing.T) {
 	a := assert.New(t)
 
-	lang, err := DetectDirLang("./testdir")
-	a.NotError(err).Equal(lang, "c++")
-
-	lang, err = DetectDirLang("./testdir/testdir1")
-	a.Error(err).Empty(lang)
+	o, err := Detect("./testdir", true)
+	a.NotError(err).NotEmpty(o)
+	a.NotContains(o.Exts, ".1") // .1 不存在于已定义的语言中
 }
-*/

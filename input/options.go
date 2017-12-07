@@ -67,30 +67,27 @@ func (opt *Options) Sanitize() *types.OptionsError {
 // Detect 检测指定目录下的内容，并为其生成一个合适的 Options 实例。
 //
 // 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
-// 不会分析子目录。
 func Detect(dir string, recursive bool) (*Options, error) {
-	paths, err := recursiveDir(dir, recursive)
+	exts, err := detectExts(dir, recursive)
 	if err != nil {
 		return nil, err
 	}
 
-	// langsMap 记录每个支持的语言对应的文件数量
-	langsMap := make(map[string]int, len(paths))
-	for _, f := range paths { // 遍历所有的文件
-		ext := strings.ToLower(filepath.Ext(f))
+	// 删除不存在的扩展名
+	for ext := range exts {
 		lang := getLangByExt(ext)
-		if len(lang) > 0 {
-			langsMap[lang]++
+		if len(lang) <= 0 {
+			delete(exts, ext)
 		}
 	}
 
-	if len(langsMap) == 0 {
+	if len(exts) == 0 {
 		return nil, errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
 	}
 
 	lang := ""
 	cnt := 0
-	for k, v := range langsMap {
+	for k, v := range exts {
 		if v >= cnt {
 			lang = k
 			cnt = v
@@ -110,10 +107,10 @@ func Detect(dir string, recursive bool) (*Options, error) {
 	}, nil
 }
 
-// 返回 dir 目录下所有的文件集合。
-// recursive 表示是否查找子目录下的文件。
-func recursiveDir(dir string, recursive bool) ([]string, error) {
-	paths := []string{}
+// 返回 dir 目录下所有的文件的扩展名集合。
+// recursive 表示是否查找子目录。
+func detectExts(dir string, recursive bool) (map[string]int, error) {
+	exts := map[string]int{}
 
 	walk := func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
@@ -125,7 +122,8 @@ func recursiveDir(dir string, recursive bool) ([]string, error) {
 				return filepath.SkipDir
 			}
 		} else {
-			paths = append(paths, path)
+			ext := strings.ToLower(filepath.Ext(path))
+			exts[ext]++
 		}
 
 		return nil
@@ -135,5 +133,5 @@ func recursiveDir(dir string, recursive bool) ([]string, error) {
 		return nil, err
 	}
 
-	return paths, nil
+	return exts, nil
 }
