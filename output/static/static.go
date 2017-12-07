@@ -161,7 +161,7 @@ function initTemplate() {
     Handlebars.registerPartial('headers', $('#headers').html())
     Handlebars.registerPartial('response', $('#response').html())
 
-    fetch(`./${dataDirName}/page.json`).then((resp)=>{
+    fetch('./'+dataDirName+'/page.json').then((resp)=>{
         return resp.json();
     }).then((json)=>{
         $('#app').html(pageTpl(json))
@@ -177,7 +177,7 @@ function initTemplate() {
         })
 
         $('.menu>li.api').on('click', (event)=>{
-            let path = event.target.getAttribute('data-path')
+            let path = $(event.target).attr('data-path')
             fetch(path).then((resp)=>{
                 return resp.json()
             }).then((json)=>{
@@ -196,46 +196,46 @@ function initTemplate() {
 // 美化带有子元素的参数显示
 function prettifyParams() {
     $('.request .params tbody th,.response .params tbody th').each(function(index, elem){
-        let text = $(elem).text();
-        text = text.replace(/(.*\.{1})/,'<span class="parent">$1</span>');
-        $(elem).html(text);
-    });
+        let text = $(elem).text()
+        text = text.replace(/(.*\.{1})/,'<span class="parent">$1</span>')
+        $(elem).html(text)
+    })
 }
 
 // 代码高亮，依赖于是否能访问网络。
 function highlightCode() {
     if (typeof(Prism) != 'undefined') {
-        Prism.plugins.autoloader.languages_path='https://cdn.bootcss.com/prism/1.5.1/components/';
-        Prism.highlightAll(false);
+        Prism.plugins.autoloader.languages_path='https://cdn.bootcss.com/prism/1.5.1/components/'
+        Prism.highlightAll(false)
     }
 }
 
 // 调整缩进
 function indentCode() {
     $('pre code').each((index, elem)=>{
-        let code = $(elem).text();
-        $(elem).text(alignCode(code));
-    });
+        let code = $(elem).text()
+        $(elem).text(alignCode(code))
+    })
 }
 
 // 对齐代码。
 function alignCode(code) {
     return code.replace(/^\s*/gm, (word)=>{
-        word = word.replace('\t', repeatSpace(indentSize));
+        word = word.replace('\t', repeatSpace(indentSize))
 
         // 按 indentSize 的倍数取得缩进的量
-        let len = Math.ceil((word.length-2)/indentSize)*indentSize;
-        return repeatSpace(len);
-    });
+        let len = Math.ceil((word.length-2)/indentSize)*indentSize
+        return repeatSpace(len)
+    })
 }
 
 function repeatSpace(len) {
-    var code = [];
+    var code = []
     while(code.length < len) {
-        code.push(' ');
+        code.push(' ')
     }
 
-    return code.join('');
+    return code.join('')
 }
 `),"./index.html":[]byte(`<!DOCTYPE html>
 <html lang="zh-cmn-Hans">
