@@ -11,13 +11,16 @@ $(()=>{
 })
 
 function initTemplate() {
-    let pageTpl = Handlebars.compile($('#page').html())
-    let apiTpl = Handlebars.compile($('#api').html())
-
     Handlebars.registerPartial('examples', $('#examples').html())
     Handlebars.registerPartial('params', $('#params').html())
     Handlebars.registerPartial('headers', $('#headers').html())
     Handlebars.registerPartial('response', $('#response').html())
+
+    Handlebars.registerHelper('dateFormat', formatDate)
+    Handlebars.registerHelper('elapsedFormat', formatElapsed)
+
+    let pageTpl = Handlebars.compile($('#page').html())
+    let apiTpl = Handlebars.compile($('#api').html())
 
     fetch('./'+dataDirName+'/page.json').then((resp)=>{
         return resp.json();
@@ -30,11 +33,12 @@ function initTemplate() {
 
     // 加载 api 模板内容，json 为对应的数据
     function loadApis(json) {
-        $('.menu>li.content').on('click', (event)=>{
+        let menu = $('aside .menu')
+        menu.find('li.content').on('click', (event)=>{
             $('main').html(json.content)
         })
 
-        $('.menu>li.api').on('click', (event)=>{
+        menu.find('li.api').on('click', (event)=>{
             let path = $(event.target).attr('data-path')
             fetch(path).then((resp)=>{
                 return resp.json()
@@ -94,4 +98,21 @@ function repeatSpace(len) {
     }
 
     return code.join('')
+}
+
+function formatDate(unix) {
+    let date = new Date(unix*1000)
+
+    let str = []
+    str.push(date.getFullYear(), '-')
+    str.push(date.getMonth(), '-')
+    str.push(date.getDate(), ' ')
+    str.push(date.getHours(), ':')
+    str.push(date.getMinutes(), ':')
+    str.push(date.getSeconds())
+    return str.join('')
+}
+
+function formatElapsed(number) {
+    return (number / 100000000).toFixed(4) + '秒'
 }

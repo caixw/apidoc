@@ -5,6 +5,12 @@ package static
 var assets=map[string][]byte{
 "./style.css":[]byte(`@charset "utf-8";
 
+:root {
+    --aside-width: 350px;
+    --aside-footer-height: 140px;
+    --aside-header-height: 80px;
+}
+
 /*============== reset =================*/
 body {
     margin: 0
@@ -19,34 +25,54 @@ a {
 
 aside {
     background: rgb(189,189,189);
-
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
-    width: 350px;
+    width: var(--aside-width);
+    box-sizing: border-box;
 }
 
 aside header {
     padding: 1rem;
-    position: sticky;
-    position: -webkit-sticky;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--aside-width);
+    height: var(--aside-header-height);
+    box-sizing: border-box;
 }
 
 aside menu {
+    box-sizing: border-box;
+    overflow-y:scroll;
+    position: absolute;
+    left: 0;
+    top: var(--aside-header-height);
+    bottom: var(--aside-footer-height);
+    width: var(--aside-width);
 }
 
 aside footer {
     padding: 1rem;
-    position: fixed;
+    position: -webkit-sticky;
+    position: absolute;
     bottom: 0;
     left: 0;
+    height: var(--aside-footer-height);
+    width: var(--aside-width);
+    box-sizing: border-box;
+}
+
+aside menu ul>li {
+    cursor: pointer;
+    line-height: 1.5;
 }
 
 /*=============== main ================*/
 
 main {
-    margin-left: 350px;
+    margin-left: var(--aside-width);
     padding: 1rem;
 }
 
@@ -153,13 +179,16 @@ $(()=>{
 })
 
 function initTemplate() {
-    let pageTpl = Handlebars.compile($('#page').html())
-    let apiTpl = Handlebars.compile($('#api').html())
-
     Handlebars.registerPartial('examples', $('#examples').html())
     Handlebars.registerPartial('params', $('#params').html())
     Handlebars.registerPartial('headers', $('#headers').html())
     Handlebars.registerPartial('response', $('#response').html())
+
+    Handlebars.registerHelper('dateFormat', formatDate)
+    Handlebars.registerHelper('elapsedFormat', formatElapsed)
+
+    let pageTpl = Handlebars.compile($('#page').html())
+    let apiTpl = Handlebars.compile($('#api').html())
 
     fetch('./'+dataDirName+'/page.json').then((resp)=>{
         return resp.json();
@@ -172,11 +201,12 @@ function initTemplate() {
 
     // 加载 api 模板内容，json 为对应的数据
     function loadApis(json) {
-        $('.menu>li.content').on('click', (event)=>{
+        let menu = $('aside .menu')
+        menu.find('li.content').on('click', (event)=>{
             $('main').html(json.content)
         })
 
-        $('.menu>li.api').on('click', (event)=>{
+        menu.find('li.api').on('click', (event)=>{
             let path = $(event.target).attr('data-path')
             fetch(path).then((resp)=>{
                 return resp.json()
@@ -237,6 +267,23 @@ function repeatSpace(len) {
 
     return code.join('')
 }
+
+function formatDate(unix) {
+    let date = new Date(unix*1000)
+
+    let str = []
+    str.push(date.getFullYear(), '-')
+    str.push(date.getMonth(), '-')
+    str.push(date.getDate(), ' ')
+    str.push(date.getHours(), ':')
+    str.push(date.getMinutes(), ':')
+    str.push(date.getSeconds())
+    return str.join('')
+}
+
+function formatElapsed(number) {
+    return (number / 100000000).toFixed(4) + '秒'
+}
 `),"./index.html":[]byte(`<!DOCTYPE html>
 <html lang="zh-cmn-Hans">
     <head>
@@ -257,17 +304,19 @@ function repeatSpace(len) {
 
         <script id="page" type="text/x-handlebars-template">
             <aside>
-                <header><p>{{title}}</p></header>
+                <header><h1>{{title}}</h1></header>
 
-                <ul class="menu">
-                    <li class="menu-item content" data-path="content">home</li>
-                    {{#each groups}}
-                    <li class="menu-item api" data-path="{{this}}">{{@key}}</li>
-                    {{/each}}
-                </ul>
+                <menu>
+                    <ul class="menu">
+                        <li class="menu-item content" data-path="content">home</li>
+                        {{#each groups}}
+                        <li class="menu-item api" data-path="{{this}}">{{@key}}</li>
+                        {{/each}}
+                    </ul>
+                </menu>
 
                 <footer>
-                    <p>内容由 <a href="{{appURL}}">{{appName}}</a> 编译于 <time>{{date}}</time>，用时{{elapsed}}。</p>
+                    <p>内容由<a href="{{appURL}}">{{appName}}</a>编译于 <time>{{dateFormat date}}</time>，用时{{elapsedFormat elapsed}}。</p>
 
                     {{#if licenseName}}
                     <p>内容采用<a href="{{licenseURL}}">{{licenseName}}</a>进行许可。</p>
