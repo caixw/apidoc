@@ -24,6 +24,7 @@
 function login(w, r) {
 	println("/********** login");
 	println(/login/.test('login'));
+	println(`/******`);
 	// TODO
 }
 
@@ -43,6 +44,9 @@ function login(w, r) {
 }
 */
 function logout(w, r) {
-	println('logout **********/')
+    println('logout **********/')
+    let x = 5
+    println(`xx${x}xx
+    ****/`)
 	// TODO
 }
