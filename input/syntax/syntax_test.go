@@ -285,7 +285,7 @@ func TestScanResponse(t *testing.T) {
 
 func TestParse(t *testing.T) {
 	a := assert.New(t)
-	doc1 := types.NewDoc()
+	doc := types.NewDoc()
 
 	code := `
 @api get /baseurl/api/login api summary
@@ -316,9 +316,9 @@ api description 2
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
-	err := Parse(doc1, []rune(code))
+	err := Parse(doc, []rune(code))
 	a.NotError(err)
-	d := doc1.Apis[0]
+	d := doc.Apis[0]
 
 	a.Equal(d.URL, "/baseurl/api/login").
 		Equal(d.Group, vars.DefaultGroupName).
@@ -353,10 +353,10 @@ Copyright 2015 by caixw, All rights reserved.
 Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.
 `
-	l := len(doc1.Apis)
-	err = Parse(doc1, []rune(code))
+	l := len(doc.Apis)
+	err = Parse(doc, []rune(code))
 	a.NotError(err)
-	a.Equal(l, len(doc1.Apis))
+	a.Equal(l, len(doc.Apis))
 
 	// @apiGroup
 	code = `
@@ -365,8 +365,8 @@ license that can be found in the LICENSE file.
 @apiParam id int user id
 @apiError 400 error
 `
-	l = len(doc1.Apis)
-	a.ErrorType(Parse(doc1, []rune(code)), synerr) // @apiGroup 少参数
+	l = len(doc.Apis)
+	a.ErrorType(Parse(doc, []rune(code)), synerr) // @apiGroup 少参数
 
 	// @apiIgnore
 	code = `
@@ -375,10 +375,10 @@ license that can be found in the LICENSE file.
 @apiParam id int user id
 @apiError 400 error
 `
-	l = len(doc1.Apis)
-	err = Parse(doc1, []rune(code))
+	l = len(doc.Apis)
+	err = Parse(doc, []rune(code))
 	a.NotError(err)
-	a.Equal(l, len(doc1.Apis))
+	a.Equal(l, len(doc.Apis))
 
 	// @apiIgnore 非正常标签，标签只能出现在行首
 	code = `
@@ -388,10 +388,10 @@ ab @apiIgnore
 @apiParam id int user id
 @apiSuccess 200 OK
 `
-	l = len(doc1.Apis)
-	err = Parse(doc1, []rune(code))
+	l = len(doc.Apis)
+	err = Parse(doc, []rune(code))
 	a.NotError(err)
-	a.Equal(l+1, len(doc1.Apis))
+	a.Equal(l+1, len(doc.Apis))
 
 	// @apiIgno 不认识的标签，会提示错误信息
 	code = `
@@ -401,8 +401,8 @@ ab @apiIgnore
 @apiParam id int user id
 @apiSuccess 200 OK
 `
-	l = len(doc1.Apis)
-	err = Parse(doc1, []rune(code))
+	l = len(doc.Apis)
+	err = Parse(doc, []rune(code))
 	a.ErrorType(err, synerr)
-	a.Equal(l, len(doc1.Apis))
+	a.Equal(l, len(doc.Apis))
 }
