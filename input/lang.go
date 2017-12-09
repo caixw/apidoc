@@ -21,13 +21,13 @@ var langs = map[string][]blocker{
 	"d": cStyle,
 
 	// erlang
-	"erlang": []blocker{
+	"erlang": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `%`},
 	},
 
 	// golang
-	"go": []blocker{
+	"go": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "`", End: "`"},
 		&block{Type: blockTypeSComment, Begin: `//`},
@@ -35,7 +35,7 @@ var langs = map[string][]blocker{
 	},
 
 	// groovy
-	"groovy": []blocker{
+	"groovy": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'''", End: "'''", Escape: `\`},
@@ -47,7 +47,7 @@ var langs = map[string][]blocker{
 	"java": cStyle,
 
 	// javascript
-	"javascript": []blocker{
+	"javascript": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeString, Begin: "`", End: "`", Escape: `\`},
@@ -58,7 +58,7 @@ var langs = map[string][]blocker{
 	},
 
 	// pascal/delphi
-	"pascal": []blocker{
+	"pascal": {
 		newPascalStringBlock('\''),
 		newPascalStringBlock('"'),
 		&block{Type: blockTypeMComment, Begin: "{", End: "}"},
@@ -66,7 +66,7 @@ var langs = map[string][]blocker{
 	},
 
 	// perl
-	"perl": []blocker{
+	"perl": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
@@ -74,14 +74,14 @@ var langs = map[string][]blocker{
 	},
 
 	// python
-	"python": []blocker{
+	"python": {
 		&block{Type: blockTypeMComment, Begin: `"""`, End: `"""`},
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
 	},
 
 	// php
-	"php": []blocker{
+	"php": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `//`},
@@ -89,7 +89,7 @@ var langs = map[string][]blocker{
 	},
 
 	// ruby
-	"ruby": []blocker{
+	"ruby": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
@@ -97,7 +97,7 @@ var langs = map[string][]blocker{
 	},
 
 	// rust
-	"rust": []blocker{
+	"rust": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `///`}, // 需要在 // 之前定义
 		&block{Type: blockTypeSComment, Begin: `//`},
@@ -108,7 +108,7 @@ var langs = map[string][]blocker{
 	"scala": cStyle,
 
 	// swift
-	"swift": []blocker{
+	"swift": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `//`},
 		newSwiftNestMCommentBlock("/*", "*/"),
@@ -127,22 +127,22 @@ var cStyle = []blocker{
 // 键值为可能的文件扩展名列表，应该使用非大写状态。
 // `go test` 会作大量名称是否规范的检测。
 var langExts = map[string][]string{
-	"c#":         []string{".cs"},
-	"c++":        []string{".h", ".c", ".cpp", ".cxx", ".hpp"},
-	"d":          []string{".d"},
-	"erlang":     []string{".erl", ".hrl"},
-	"go":         []string{".go"},
-	"groovy":     []string{".groovy"},
-	"java":       []string{".java"},
-	"javascript": []string{".js"},
-	"pascal":     []string{".pas", ".pp"},
-	"perl":       []string{".perl", ".prl", ".pl"},
-	"php":        []string{".php"},
-	"python":     []string{".py"},
-	"ruby":       []string{".rb"},
-	"rust":       []string{".rs"},
-	"scala":      []string{".scala"},
-	"swift":      []string{".swift"},
+	"c#":         {".cs"},
+	"c++":        {".h", ".c", ".cpp", ".cxx", ".hpp"},
+	"d":          {".d"},
+	"erlang":     {".erl", ".hrl"},
+	"go":         {".go"},
+	"groovy":     {".groovy"},
+	"java":       {".java"},
+	"javascript": {".js"},
+	"pascal":     {".pas", ".pp"},
+	"perl":       {".perl", ".prl", ".pl"},
+	"php":        {".php"},
+	"python":     {".py"},
+	"ruby":       {".rb"},
+	"rust":       {".rs"},
+	"scala":      {".scala"},
+	"swift":      {".swift"},
 }
 
 // Langs 返回所有支持的语言

@@ -2,8 +2,8 @@
 
 package static
 
-var assets=map[string][]byte{
-"./style.css":[]byte(`@charset "utf-8";
+var assets = map[string][]byte{
+	"./style.css": []byte(`@charset "utf-8";
 
 :root {
     --aside-width: 350px;
@@ -166,7 +166,7 @@ main .api{
     padding:.3rem 1rem;
 }
 
-`),"./app.js":[]byte(`"use strict";
+`), "./app.js": []byte(`"use strict";
 
 // 代码缩进的空格数量。
 let indentSize = 4
@@ -284,7 +284,7 @@ function formatDate(unix) {
 function formatElapsed(number) {
     return (number / 100000000).toFixed(4) + '秒'
 }
-`),"./index.html":[]byte(`<!DOCTYPE html>
+`), "./index.html": []byte(`<!DOCTYPE html>
 <html lang="zh-cmn-Hans">
     <head>
         <meta charset="utf-8" />
@@ -455,4 +455,4 @@ function formatElapsed(number) {
         <script src="./app.js"></script>
     </body>
 </html>
-`),}
+`)}

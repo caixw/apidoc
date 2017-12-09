@@ -12,7 +12,8 @@
 package main
 
 import (
-	"bufio"
+	"bytes"
+	"go/format"
 	"io/ioutil"
 	"os"
 )
@@ -39,7 +40,7 @@ func main() {
 	}
 	defer f.Close()
 
-	w := bufio.NewWriter(f)
+	w := new(bytes.Buffer)
 	w.WriteString(warning)
 
 	// 输出包定义
@@ -49,13 +50,22 @@ func main() {
 
 	makeStatic(w)
 
-	if err = w.Flush(); err != nil {
+	data, err := format.Source(w.Bytes())
+	if err != nil {
 		panic(err)
+	}
+
+	l, err := f.Write(data)
+	if err != nil {
+		panic(err)
+	}
+	if l != len(data) {
+		panic("未全部输出到文件")
 	}
 }
 
 // 输出 assets 变量的整体。
-func makeStatic(w *bufio.Writer) {
+func makeStatic(w *bytes.Buffer) {
 	w.WriteString("var assets=map[string][]byte{\n")
 	for _, file := range assets {
 		data, err := ioutil.ReadFile(file)

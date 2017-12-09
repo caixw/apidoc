@@ -18,7 +18,7 @@ import "net/http"
 // }
 //
 // @apiSuccess 201 成功登录
-// @apiParam expries int 过期的时间，单位秒
+// @apiParam expires int 过期的时间，单位秒
 // @apiParam token string 存储 token
 //
 // @apiError 401 账号密码验证错误

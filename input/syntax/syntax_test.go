@@ -404,4 +404,5 @@ ab @apiIgnore
 	l = len(doc1.Apis)
 	err = Parse(doc1, []rune(code))
 	a.ErrorType(err, synerr)
+	a.Equal(l, len(doc1.Apis))
 }

@@ -94,11 +94,7 @@ func render(docs *types.Doc, opt *Options) error {
 func renderPage(p *page, destDir string) error {
 	path := filepath.Join(destDir, vars.PageFileName+".json")
 
-	if err := renderJSON(p, path); err != nil {
-		return err
-	}
-
-	return nil
+	return renderJSON(p, path)
 }
 
 func renderGroups(groups map[string]*group, o *Options) error {

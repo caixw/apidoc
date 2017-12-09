@@ -35,7 +35,7 @@ func TestConfig_sanitize(t *testing.T) {
 	a.Equal(err.(*types.OptionsError).Field, "inputs")
 
 	// 未声明 output
-	conf.Inputs = []*input.Options{&input.Options{}}
+	conf.Inputs = []*input.Options{{}}
 	err = conf.sanitize()
 	a.Error(err)
 	a.Equal(err.(*types.OptionsError).Field, "output")
