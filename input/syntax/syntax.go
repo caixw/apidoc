@@ -27,7 +27,6 @@ LOOP:
 		case l.matchTag(vars.API):
 			return l.scanAPI(d)
 		case l.match(vars.API): // 不认识标签
-			l.backup()
 			return l.syntaxError(locale.ErrUnknownTopTag, l.readWord())
 		default:
 			if l.atEOF() {
@@ -100,8 +99,7 @@ LOOP:
 			}
 		case l.matchTag(vars.APIContent):
 			d.Content = string(l.data[l.pos:])
-		case l.match(vars.API):
-			l.backup()
+		case l.match(vars.API): // 不认识的标签
 			return l.syntaxError(locale.ErrUnknownTag, l.readWord())
 		default:
 			if l.atEOF() {
@@ -127,14 +125,11 @@ func (l *lexer) scanAPI(d *types.Doc) (err *types.SyntaxError) {
 	}
 
 	api.Description = t.readEnd()
-
-	ignore := false
 LOOP:
 	for {
 		switch {
 		case l.matchTag(vars.APIIgnore):
-			ignore = true
-			break LOOP
+			return nil
 		case l.matchTag(vars.APIGroup):
 			err = l.scanGroup(api)
 		case l.matchTag(vars.APIQuery):
@@ -147,8 +142,7 @@ LOOP:
 			api.Error, err = l.scanResponse(vars.APIError)
 		case l.matchTag(vars.APISuccess):
 			api.Success, err = l.scanResponse(vars.APISuccess)
-		case l.match(vars.API):
-			l.backup()
+		case l.match(vars.API): // 不认识的标签
 			return l.syntaxError(locale.ErrUnknownTag, l.readWord())
 		default:
 			if l.atEOF() {
@@ -162,9 +156,6 @@ LOOP:
 		}
 	}
 
-	if ignore {
-		return nil
-	}
 	if api.Success == nil {
 		return &types.SyntaxError{Message: locale.ErrSuccessNotEmpty}
 	}
