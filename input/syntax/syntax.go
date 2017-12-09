@@ -19,7 +19,6 @@ import (
 func Parse(d *types.Doc, data []rune) *types.SyntaxError {
 	l := newLexer(data)
 
-LOOP:
 	for {
 		switch {
 		case l.matchTag(vars.APIDoc):
@@ -30,13 +29,11 @@ LOOP:
 			return l.syntaxError(locale.ErrUnknownTopTag, l.readWord())
 		default:
 			if l.atEOF() {
-				break LOOP
+				return nil
 			}
 			l.pos++ // 去掉无用的字符。
 		}
 	} // end for
-
-	return nil
 }
 
 // 解析 @apidoc 及其子标签
@@ -63,7 +60,6 @@ func (l *lexer) scanAPIDoc(d *types.Doc) *types.SyntaxError {
 		return l.syntaxError(locale.ErrTagArgTooMuch, vars.APIDoc)
 	}
 
-LOOP:
 	for {
 		switch {
 		case l.matchTag(vars.APIVersion):
@@ -103,13 +99,11 @@ LOOP:
 			return l.syntaxError(locale.ErrUnknownTag, l.readWord())
 		default:
 			if l.atEOF() {
-				break LOOP
+				return nil
 			}
 			l.pos++ // 去掉无用的字符。
 		}
-	}
-
-	return nil
+	} // end for
 }
 
 // 解析 @api 及其子标签
@@ -248,7 +242,7 @@ LOOP:
 				return err
 			}
 			r.Examples = append(r.Examples, e)
-		case l.match(vars.API): // 其它api*，退出。
+		case l.match(vars.API): // 其它 api*，退出。
 			l.backup()
 			break LOOP
 		default:
@@ -308,7 +302,7 @@ LOOP:
 				return nil, err
 			}
 			resp.Examples = append(resp.Examples, e)
-		case l.match(vars.API): // 其它api*，退出。
+		case l.match(vars.API): // 其它 api*，退出。
 			l.backup()
 			break LOOP
 		default:
