@@ -59,26 +59,9 @@ func (l *lexer) syntaxError(format string, v ...interface{}) *types.SyntaxError 
 //
 // NOTE: 可通过 backup 来撤消最后一次 match 调用。
 func (l *lexer) match(word string) bool {
-	if l.atEOF() || (l.pos+len(word) > len(l.data)) { // 剩余字符没有word长，直接返回false
-		return false
-	}
-
-	pos := l.pos
-	isSpace := true
-	if pos > 0 {
-		for {
-			pos--
-			r := l.data[pos]
-			if r == '\n' || pos == 0 {
-				break
-			}
-			if !unicode.IsSpace(r) {
-				isSpace = false
-				break
-			}
-		}
-	}
-	if !isSpace {
+	if l.atEOF() ||
+		(l.pos+len(word) > len(l.data)) || // 剩余字符没有 word 长
+		!l.prefixIsSpace() {
 		return false
 	}
 
@@ -96,6 +79,27 @@ func (l *lexer) match(word string) bool {
 
 	l.width = width
 	return true
+}
+
+// 当前行在当前位置之前，只有空白字符。
+func (l *lexer) prefixIsSpace() bool {
+	if l.pos <= 0 {
+		return true
+	}
+
+	pos := l.pos
+	for {
+		pos--
+		r := l.data[pos]
+
+		if l.data[pos] == '\n' || pos == 0 {
+			return true
+		}
+
+		if !unicode.IsSpace(r) {
+			return false
+		}
+	}
 }
 
 // 接下的单词是否和一个标签匹配。

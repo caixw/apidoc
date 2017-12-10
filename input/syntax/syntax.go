@@ -26,6 +26,7 @@ func Parse(d *types.Doc, data []rune) *types.SyntaxError {
 		case l.matchTag(vars.API):
 			return l.scanAPI(d)
 		case l.match(vars.API): // 不认识标签
+			l.backup() // 回退 vars.API 表示的几个字符
 			return l.syntaxError(locale.ErrUnknownTopTag, l.readWord())
 		default:
 			if l.atEOF() {
@@ -96,6 +97,7 @@ func (l *lexer) scanAPIDoc(d *types.Doc) *types.SyntaxError {
 		case l.matchTag(vars.APIContent):
 			d.Content = string(l.data[l.pos:])
 		case l.match(vars.API): // 不认识的标签
+			l.backup()
 			return l.syntaxError(locale.ErrUnknownTag, l.readWord())
 		default:
 			if l.atEOF() {
@@ -137,6 +139,7 @@ LOOP:
 		case l.matchTag(vars.APISuccess):
 			api.Success, err = l.scanResponse(vars.APISuccess)
 		case l.match(vars.API): // 不认识的标签
+			l.backup()
 			return l.syntaxError(locale.ErrUnknownTag, l.readWord())
 		default:
 			if l.atEOF() {
