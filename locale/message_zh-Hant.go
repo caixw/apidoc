@@ -44,7 +44,6 @@ func init() {
 		ErrUnsupportedInputLang:  "無效的輸入語言：%v",
 		ErrNotFoundEndFlag:       "找不到結束符號",
 		ErrNotFoundSupportedLang: "該目錄下沒有支持的語言文件",
-		ErrUnknownTopTag:         "不認識的頂層標簽：%v",
 		ErrUnknownTag:            "不認識的標簽：%v",
 		ErrDuplicateTag:          "重復的標簽：%v",
 		ErrSuccessNotEmpty:       vars.APISuccess + " 不能为空",

@@ -122,7 +122,7 @@ func (l *lexer) backup() {
 	l.width = 0
 }
 
-// 读到下一个标签处，但不包含标签本身的内容。
+// 将当前内容到下一个标签之前的内容，组成一个 tag 实例。
 func (l *lexer) readTag() *tag {
 	l.skipSpace()
 

@@ -26,9 +26,6 @@ func Parse(d *types.Doc, data []rune) *types.SyntaxError {
 			return l.scanAPIDoc(d)
 		case l.matchTag(vars.API):
 			return l.scanAPI(d)
-		case l.match(vars.API): // 不认识标签
-			l.backup() // 回退 vars.API 表示的几个字符
-			return l.syntaxError(locale.ErrUnknownTopTag, l.readWord())
 		default:
 			if l.atEOF() {
 				return nil

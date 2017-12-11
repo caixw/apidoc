@@ -382,6 +382,23 @@ license that can be found in the LICENSE file.
 
 	// @apiIgnore 非正常标签，标签只能出现在行首
 	code = `
+@apiUnknownTag xxx
+@api delete /admin/users/{id} delete users
+@apiGroup group
+ab @apiIgnore
+@apiParam id int user id
+@apiSuccess 200 OK
+`
+	l = len(doc.Apis)
+	err = Parse(doc, []rune(code))
+	a.NotError(err)
+	a.Equal(l+1, len(doc.Apis))
+
+	// 不认识的标签，可以出现在所有标签出现之前
+	code = `
+@apiUnknownTag1 xxx
+
+@apiUnknownTag2 xxx
 @api delete /admin/users/{id} delete users
 @apiGroup group
 ab @apiIgnore
