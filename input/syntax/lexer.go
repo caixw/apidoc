@@ -122,7 +122,7 @@ func (l *lexer) backup() {
 	l.width = 0
 }
 
-// 读到下一个标签处。
+// 读到下一个标签处，但不包含标签本身的内容。
 func (l *lexer) readTag() *tag {
 	l.skipSpace()
 
@@ -136,6 +136,7 @@ func (l *lexer) readTag() *tag {
 		}
 		l.pos++
 	}
+
 	return &tag{
 		data: trimRight(l.data[start:l.pos]),
 		ln:   ln,

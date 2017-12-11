@@ -9,6 +9,7 @@ import (
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
+
 	"github.com/issue9/is"
 )
 
