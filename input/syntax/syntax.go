@@ -17,16 +17,14 @@ import (
 
 // Input 输入的数据
 type Input struct {
-	File string
-	Line int
-	Data []rune
+	File  string
+	Line  int
+	Data  []rune
+	Error *log.Logger
 }
 
 // Parse 分析一段代码，并将结果保存到 d 中。
-//
-// 若代码块没有 api 文档定义，则会返回空值。
-// data 该代码块的内容；
-func Parse(d *types.Doc, input *Input, erro *log.Logger) {
+func Parse(d *types.Doc, input *Input) {
 	l := newLexer(input.Data)
 
 	for {
@@ -35,14 +33,14 @@ func Parse(d *types.Doc, input *Input, erro *log.Logger) {
 			if err := l.scanAPIDoc(d); err != nil {
 				err.File = input.File
 				err.Line += input.Line
-				erro.Println(err)
+				input.Error.Println(err)
 			}
 			return
 		case l.matchTag(vars.API):
 			if err := l.scanAPI(d); err != nil {
 				err.File = input.File
 				err.Line += input.Line
-				erro.Println(err)
+				input.Error.Println(err)
 			}
 
 			return

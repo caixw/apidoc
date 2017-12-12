@@ -98,11 +98,12 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 		wg.Add(1)
 		go func(rs []rune, ln int) {
 			i := &syntax.Input{
-				File: path,
-				Line: ln,
-				Data: rs,
+				File:  path,
+				Line:  ln,
+				Data:  rs,
+				Error: o.SyntaxErrorLog,
 			}
-			syntax.Parse(docs, i, o.SyntaxErrorLog)
+			syntax.Parse(docs, i)
 
 			wg.Done()
 		}(rs, ln)
