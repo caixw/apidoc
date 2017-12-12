@@ -21,6 +21,7 @@ type Input struct {
 	Line  int
 	Data  []rune
 	Error *log.Logger
+	Warn  *log.Logger
 }
 
 // Parse 分析一段代码，并将结果保存到 d 中。
@@ -42,8 +43,10 @@ func Parse(d *types.Doc, input *Input) {
 				err.Line += input.Line
 				input.Error.Println(err)
 			}
-
 			return
+		case l.match(vars.API):
+			l.backup()
+			input.Warn.Println(locale.Sprintf(locale.ErrUnknownTag, l.readWord()))
 		default:
 			if l.atEOF() {
 				return

@@ -69,7 +69,10 @@ func (cfg *config) sanitize() error {
 			err.Field = "inputs[" + index + "]." + err.Field
 			return err
 		}
-		opt.SyntaxErrorLog = erro // 语法错误输出到 erro 中
+
+		// 指定语法检测输出通道
+		opt.SyntaxErrorLog = erro
+		opt.SyntaxWarnLog = warn
 	}
 
 	if err := cfg.Output.Sanitize(); err != nil {

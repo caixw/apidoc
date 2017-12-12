@@ -18,12 +18,14 @@ import (
 
 // Options 指定输入内容的相关信息。
 type Options struct {
-	SyntaxErrorLog  *log.Logger `yaml:"-"`                         // 语法错误输出通道
-	StartLineNumber int         `yaml:"startLineNumber,omitempty"` // 代码的超始行号，默认为 0
-	Lang            string      `yaml:"lang"`                      // 输入的目标语言
-	Dir             string      `yaml:"dir"`                       // 源代码目录
-	Exts            []string    `yaml:"exts,omitempty"`            // 需要扫描的文件扩展名，若未指定，则使用默认值
-	Recursive       bool        `yaml:"recursive"`                 // 是否查找 Dir 的子目录
+	SyntaxErrorLog *log.Logger `yaml:"-"` // 语法错误输出通道
+	SyntaxWarnLog  *log.Logger `yaml:"-"` // 语法警告输出通道
+
+	StartLineNumber int      `yaml:"startLineNumber,omitempty"` // 代码的超始行号，默认为 0
+	Lang            string   `yaml:"lang"`                      // 输入的目标语言
+	Dir             string   `yaml:"dir"`                       // 源代码目录
+	Exts            []string `yaml:"exts,omitempty"`            // 需要扫描的文件扩展名，若未指定，则使用默认值
+	Recursive       bool     `yaml:"recursive"`                 // 是否查找 Dir 的子目录
 }
 
 // Sanitize 检测 Options 变量是否符合要求
