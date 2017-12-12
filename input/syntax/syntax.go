@@ -47,6 +47,7 @@ func Parse(d *types.Doc, input *Input) {
 		case l.match(vars.API):
 			l.backup()
 			input.Warn.Println(locale.Sprintf(locale.ErrUnknownTag, l.readWord()))
+			l.readTag() // 指针移到下一个标签处
 		default:
 			if l.atEOF() {
 				return
