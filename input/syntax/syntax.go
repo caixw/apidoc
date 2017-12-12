@@ -6,6 +6,8 @@
 package syntax
 
 import (
+	"log"
+
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
@@ -13,22 +15,40 @@ import (
 	"github.com/issue9/is"
 )
 
+// Input 输入的数据
+type Input struct {
+	File string
+	Line int
+	Data []rune
+}
+
 // Parse 分析一段代码，并将结果保存到 d 中。
 //
 // 若代码块没有 api 文档定义，则会返回空值。
 // data 该代码块的内容；
-func Parse(d *types.Doc, data []rune) *types.SyntaxError {
-	l := newLexer(data)
+func Parse(d *types.Doc, input *Input, erro *log.Logger) {
+	l := newLexer(input.Data)
 
 	for {
 		switch {
 		case l.matchTag(vars.APIDoc):
-			return l.scanAPIDoc(d)
+			if err := l.scanAPIDoc(d); err != nil {
+				err.File = input.File
+				err.Line += input.Line
+				erro.Println(err)
+			}
+			return
 		case l.matchTag(vars.API):
-			return l.scanAPI(d)
+			if err := l.scanAPI(d); err != nil {
+				err.File = input.File
+				err.Line += input.Line
+				erro.Println(err)
+			}
+
+			return
 		default:
 			if l.atEOF() {
-				return nil
+				return
 			}
 			l.pos++ // 去掉无用的字符。
 		}
