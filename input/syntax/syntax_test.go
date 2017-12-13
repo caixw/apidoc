@@ -12,8 +12,6 @@ import (
 	"github.com/issue9/assert"
 )
 
-var synerr = &types.SyntaxError{}
-
 func TestScanAPIExample(t *testing.T) {
 	a := assert.New(t)
 
@@ -25,7 +23,7 @@ func TestScanAPIExample(t *testing.T) {
 	matchCode := `<root>
     <data>123</data>
 </root>`
-	l := newLexer([]rune(code))
+	l := newLexer(&Input{Data: []rune(code)})
 	a.NotNil(l)
 	e, err := l.scanAPIExample()
 	a.NotError(err).
@@ -39,7 +37,7 @@ func TestScanAPIExample(t *testing.T) {
 	matchCode = `<root>
     <data>123</data>
 </root>`
-	l = newLexer([]rune(code))
+	l = newLexer(&Input{Data: []rune(code)})
 	a.NotNil(l)
 	e, err = l.scanAPIExample()
 	a.NotError(err).
@@ -52,68 +50,68 @@ func TestScanAPIParam(t *testing.T) {
 	a := assert.New(t)
 
 	// 正常语法测试
-	l := newLexer([]rune("id int optional 用户 id号\n"))
-	p, err := l.scanAPIParam(vars.APIQuery)
-	a.NotError(err).NotNil(p)
+	l := newLexer(&Input{Data: []rune("id int optional 用户 id号\n")})
+	p, ok := l.scanAPIParam(vars.APIQuery)
+	a.True(ok).NotNil(p)
 	a.Equal(p.Name, "id").
 		Equal(p.Type, "int").
 		Equal(p.Summary, "optional 用户 id号")
 
 	// 缺少参数
-	l = newLexer([]rune("id int \n"))
-	p, err = l.scanAPIParam(vars.APIQuery)
-	a.ErrorType(err, synerr).Nil(p)
+	l = newLexer(&Input{Data: []rune("id int \n")})
+	p, ok = l.scanAPIParam(vars.APIQuery)
+	a.False(ok).Nil(p)
 
 	// 缺少参数
-	l = newLexer([]rune("id  \n"))
-	p, err = l.scanAPIParam(vars.APIQuery)
-	a.ErrorType(err, synerr).Nil(p)
+	l = newLexer(&Input{Data: []rune("id  \n")})
+	p, ok = l.scanAPIParam(vars.APIQuery)
+	a.False(ok).Nil(p)
 }
 
 func TestScanAPI(t *testing.T) {
 	a := assert.New(t)
-	d := &types.Doc{Apis: []*types.API{}}
 
 	// 正常情况
-	l := newLexer([]rune(" get test.com/api.json?k=1 summary summary\n api description\n@apiSuccess 200 OK"))
+	l := newLexer(&Input{Data: []rune(" get test.com/api.json?k=1 summary summary\n api description\n@apiSuccess 200 OK")})
 
-	a.NotError(l.scanAPI(d))
-	api := d.Apis[0]
+	api, ok := l.scanAPI()
+	a.True(ok).NotNil(api)
 	a.Equal(api.Method, "get").
 		Equal(api.URL, "test.com/api.json?k=1").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "api description")
 
 	// 多行description
-	l = newLexer([]rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@apiSuccess 400 summary"))
-	a.NotError(l.scanAPI(d))
-	api = d.Apis[1]
+	l = newLexer(&Input{Data: []rune(" post test.com/api.json?K=1  summary summary\n api \ndescription\n@apiSuccess 400 summary")})
+	api, ok = l.scanAPI()
+	a.True(ok)
 	a.Equal(api.URL, "test.com/api.json?K=1").
 		Equal(api.Method, "post").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "api \ndescription")
 
 	// 缺少description参数
-	l = newLexer([]rune("get test.com/api.json summary summary \n@apiSuccess 400 error"))
-	a.NotError(l.scanAPI(d))
-	api = d.Apis[2]
+	l = newLexer(&Input{Data: []rune("get test.com/api.json summary summary \n@apiSuccess 400 error")})
+	api, ok = l.scanAPI()
+	a.True(ok).NotNil(api)
 	a.Equal(api.Method, "get").
 		Equal(api.URL, "test.com/api.json").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "")
 
 	// 缺少description参数
-	l = newLexer([]rune("get test.com/api.json summary summary\n \n@apiSuccess 400 error"))
-	a.NotError(l.scanAPI(d))
-	api = d.Apis[3]
+	l = newLexer(&Input{Data: []rune("get test.com/api.json summary summary\n \n@apiSuccess 400 error")})
+	api, ok = l.scanAPI()
+	a.True(ok).NotNil(api)
 	a.Equal(api.Method, "get").
 		Equal(api.URL, "test.com/api.json").
 		Equal(api.Summary, "summary summary").
 		Equal(api.Description, "")
 
 	// 没有任何参数
-	l = newLexer([]rune("  "))
-	a.ErrorType(l.scanAPI(d), synerr)
+	l = newLexer(&Input{Data: []rune("  ")})
+	api, ok = l.scanAPI()
+	a.False(ok).Nil(api)
 }
 
 func TestScanAPIDoc(t *testing.T) {
@@ -127,7 +125,7 @@ func TestScanAPIDoc(t *testing.T) {
 line1
 line2`
 
-	l := newLexer([]rune(code))
+	l := newLexer(&Input{Data: []rune(code)})
 	a.NotNil(l)
 	d := &types.Doc{}
 
@@ -144,13 +142,13 @@ line2`
 		@apiBaseURL http://api.caixw.io
 line1
 line2`
-	l = newLexer([]rune(code))
-	a.Error(l.scanAPIDoc(d))
+	l = newLexer(&Input{Data: []rune(code)})
+	a.False(l.scanAPIDoc(d))
 
 	// 检测各个都是空值的情况
 	code = `2.9 title of apidoc
 `
-	l = newLexer([]rune(code))
+	l = newLexer(&Input{Data: []rune(code)})
 	a.NotNil(l)
 	d = &types.Doc{}
 	a.NotError(l.scanAPIDoc(d))
@@ -163,7 +161,6 @@ line2`
 
 func TestScanAPIRequest(t *testing.T) {
 	a := assert.New(t)
-	api := &types.API{}
 
 	code := ` xml
  @apiHeader h1 v1
@@ -181,10 +178,9 @@ func TestScanAPIRequest(t *testing.T) {
     <p2>v2</p2>
 </root>
 `
-	l := newLexer([]rune(code))
-	a.NotError(l.scanAPIRequest(api))
-	a.NotNil(api.Request)
-	r := api.Request
+	l := newLexer(&Input{Data: []rune(code)})
+	r, ok := l.scanAPIRequest()
+	a.True(ok).NotNil(r)
 	a.Equal(2, len(r.Headers)).
 		Equal(r.Headers["h1"], "v1").
 		Equal(r.Headers["h2"], "v2").
@@ -210,10 +206,9 @@ func TestScanAPIRequest(t *testing.T) {
 	matchCode := `<root>
     <p1>v1</p1>
 </root>`
-	l = newLexer([]rune(code))
-	a.NotError(l.scanAPIRequest(api))
-	a.NotNil(api.Request)
-	r = api.Request
+	l = newLexer(&Input{Data: []rune(code)})
+	r, ok = l.scanAPIRequest()
+	a.True(ok).NotNil(r)
 	a.Equal(1, len(r.Headers)).
 		Equal(r.Headers["h1"], "v1").
 		Equal(r.Params[0].Name, "p1").
@@ -240,9 +235,9 @@ func TestScanResponse(t *testing.T) {
     <p2>v2</p2>
 </root>
 `
-	l := newLexer([]rune(code))
-	resp, err := l.scanResponse(vars.APIError)
-	a.NotError(err).NotNil(resp)
+	l := newLexer(&Input{Data: []rune(code)})
+	resp, ok := l.scanResponse(vars.APIError)
+	a.True(ok).NotNil(resp)
 	a.Equal(resp.Code, "200").
 		Equal(resp.Summary, "json").
 		Equal(resp.Headers["h1"], "v1").
@@ -265,9 +260,9 @@ func TestScanResponse(t *testing.T) {
 	matchCode := `<root>
     <p1>v1</p1>
 </root>`
-	l = newLexer([]rune(code))
-	resp, err = l.scanResponse(vars.APIError)
-	a.NotError(err).NotNil(resp)
+	l = newLexer(&Input{Data: []rune(code)})
+	resp, ok = l.scanResponse(vars.APIError)
+	a.True(ok).NotNil(resp)
 	a.Equal(resp.Code, "200").
 		Equal(resp.Summary, "xml  status summary").
 		Equal(resp.Headers["h1"], "v1").
@@ -278,9 +273,9 @@ func TestScanResponse(t *testing.T) {
 	code = `
 @apiSuccess g
 `
-	l = newLexer([]rune(code))
-	resp, err = l.scanResponse(vars.APIError)
-	a.Error(err).Nil(resp)
+	l = newLexer(&Input{Data: []rune(code)})
+	resp, ok = l.scanResponse(vars.APIError)
+	a.False(ok).Nil(resp)
 }
 
 func TestParse(t *testing.T) {
@@ -316,8 +311,7 @@ api description 2
 @apiHeader h1 v1
 @apiHeader h2 v2
 `
-	err := Parse(doc, []rune(code))
-	a.NotError(err)
+	Parse(doc, &Input{Data: []rune(code)})
 	d := doc.Apis[0]
 
 	a.Equal(d.URL, "/baseurl/api/login").
@@ -354,9 +348,8 @@ Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.
 `
 	l := len(doc.Apis)
-	err = Parse(doc, []rune(code))
-	a.NotError(err)
-	a.Equal(l, len(doc.Apis))
+	Parse(doc, &Input{Data: []rune(code)})
+	a.Equal(l, len(doc.Apis)) // 没有增加新内容
 
 	// @apiGroup
 	code = `
@@ -366,7 +359,8 @@ license that can be found in the LICENSE file.
 @apiError 400 error
 `
 	l = len(doc.Apis)
-	a.ErrorType(Parse(doc, []rune(code)), synerr) // @apiGroup 少参数
+	Parse(doc, &Input{Data: []rune(code)})
+	a.Equal(l, len(doc.Apis)) // 不会增加新的内容
 
 	// @apiIgnore
 	code = `
@@ -376,11 +370,10 @@ license that can be found in the LICENSE file.
 @apiError 400 error
 `
 	l = len(doc.Apis)
-	err = Parse(doc, []rune(code))
-	a.NotError(err)
+	Parse(doc, &Input{Data: []rune(code)})
 	a.Equal(l, len(doc.Apis))
 
-	// @apiIgnore 非正常标签，标签只能出现在行首
+	// @apiUnknownTag 非正常标签，标签只能出现在行首
 	code = `
 @apiUnknownTag xxx
 @api delete /admin/users/{id} delete users
@@ -390,8 +383,7 @@ ab @apiIgnore
 @apiSuccess 200 OK
 `
 	l = len(doc.Apis)
-	err = Parse(doc, []rune(code))
-	a.NotError(err)
+	Parse(doc, &Input{Data: []rune(code)})
 	a.Equal(l+1, len(doc.Apis))
 
 	// 不认识的标签，可以出现在所有标签出现之前
@@ -406,8 +398,7 @@ ab @apiIgnore
 @apiSuccess 200 OK
 `
 	l = len(doc.Apis)
-	err = Parse(doc, []rune(code))
-	a.NotError(err)
+	Parse(doc, &Input{Data: []rune(code)})
 	a.Equal(l+1, len(doc.Apis))
 
 	// @apiIgno 不认识的标签，会提示错误信息
@@ -419,7 +410,6 @@ ab @apiIgnore
 @apiSuccess 200 OK
 `
 	l = len(doc.Apis)
-	err = Parse(doc, []rune(code))
-	a.ErrorType(err, synerr)
+	Parse(doc, &Input{Data: []rune(code)})
 	a.Equal(l, len(doc.Apis))
 }

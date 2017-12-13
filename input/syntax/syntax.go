@@ -6,6 +6,7 @@
 package syntax
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/caixw/apidoc/locale"
@@ -36,14 +37,21 @@ func Parse(d *types.Doc, input *Input) {
 			}
 		case l.matchTag(vars.API):
 			if api, ok := l.scanAPI(); ok {
+				if api == nil { // @apiIgnore
+					return
+				}
 				d.NewAPI(api)
 			} else {
 				return
 			}
 		case l.match(vars.API):
 			l.backup()
-			// TODO 行号等信息
-			input.Warn.Println(locale.Sprintf(locale.ErrUnknownTag, l.readWord()))
+			if input.Warn != nil {
+				// TODO 行号等信息
+				word := l.readWord()
+				fmt.Println("===", word)
+				input.Warn.Println(locale.Sprintf(locale.ErrUnknownTag, word))
+			}
 			l.readTag() // 指针移到下一个标签处
 		default:
 			if l.atEOF() {
@@ -168,21 +176,23 @@ LOOP:
 				return nil, false
 			}
 		case l.matchTag(vars.APIRequest):
-			if !l.scanAPIRequest(api) {
+			req, ok := l.scanAPIRequest()
+			if !ok {
 				return nil, false
 			}
+			api.Request = req
 		case l.matchTag(vars.APIError):
-			if resp, ok := l.scanResponse(vars.APIError); ok {
-				api.Error = resp
-			} else {
+			resp, ok := l.scanResponse(vars.APIError)
+			if !ok {
 				return nil, false
 			}
+			api.Error = resp
 		case l.matchTag(vars.APISuccess):
-			if resp, ok := l.scanResponse(vars.APISuccess); ok {
-				api.Success = resp
-			} else {
+			resp, ok := l.scanResponse(vars.APISuccess)
+			if !ok {
 				return nil, false
 			}
+			api.Success = resp
 		case l.match(vars.API): // 不认识的标签
 			l.backup()
 			l.syntaxWarn(locale.ErrUnknownTag, l.readWord())
@@ -249,7 +259,7 @@ func (l *lexer) scanAPIParams(api *types.API) bool {
 }
 
 // 解析 @apiRequest 及其子标签
-func (l *lexer) scanAPIRequest(api *types.API) bool {
+func (l *lexer) scanAPIRequest() (*types.Request, bool) {
 	t := l.readTag()
 	r := &types.Request{
 		Type:     t.readLine(),
@@ -259,7 +269,7 @@ func (l *lexer) scanAPIRequest(api *types.API) bool {
 	}
 	if !t.atEOF() {
 		t.syntaxError(locale.ErrTagArgTooMuch, vars.APIRequest)
-		return false
+		return nil, false
 	}
 
 LOOP:
@@ -271,23 +281,23 @@ LOOP:
 			val := t.readLine()
 			if len(key) == 0 || len(val) == 0 {
 				t.syntaxError(locale.ErrTagArgNotEnough, vars.APIHeader)
-				return false
+				return nil, false
 			}
 			if !t.atEOF() {
 				t.syntaxError(locale.ErrTagArgTooMuch, vars.APIHeader)
-				return false
+				return nil, false
 			}
 			r.Headers[string(key)] = string(val)
 		case l.matchTag(vars.APIParam):
 			p, ok := l.scanAPIParam(vars.APIParam)
 			if !ok {
-				return false
+				return nil, false
 			}
 			r.Params = append(r.Params, p)
 		case l.matchTag(vars.APIExample):
 			e, ok := l.scanAPIExample()
 			if !ok {
-				return false
+				return nil, false
 			}
 			r.Examples = append(r.Examples, e)
 		case l.match(vars.API): // 其它 api*，退出。
@@ -302,8 +312,7 @@ LOOP:
 		} // end switch
 	} // end for
 
-	api.Request = r
-	return true
+	return r, true
 }
 
 // 解析 @apiSuccess 或是 @apiError 及其子标签。

@@ -12,7 +12,7 @@ import (
 
 func TestLexer_readLine(t *testing.T) {
 	a := assert.New(t)
-	l := &lexer{data: []rune(" line1\n line2 \n")}
+	l := &lexer{input: &Input{Data: []rune(" line1\n line2 \n")}}
 
 	a.Equal(l.readLine(), []rune("line1"))
 	a.Equal(l.readLine(), []rune("line2"))
@@ -20,7 +20,7 @@ func TestLexer_readLine(t *testing.T) {
 
 func TestLexer_lineNumber(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]rune("\n\n"))
+	l := newLexer(&Input{Data: []rune("\n\n")})
 	a.NotNil(l)
 
 	a.Equal(0, l.lineNumber())
@@ -31,17 +31,17 @@ func TestLexer_lineNumber(t *testing.T) {
 	l.pos++
 	a.Equal(2, l.lineNumber())
 
-	l = newLexer([]rune(""))
+	l = newLexer(&Input{Data: []rune("")})
 	a.Equal(0, l.lineNumber())
 }
 
 func TestLexer_match(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer([]rune("line1\n line2 \n\t\tline3\n"))
+	l := newLexer(&Input{Data: []rune("line1\n line2 \n\t\tline3\n")})
 	a.NotNil(l)
 
 	a.True(l.match("Line"))
-	a.Equal('1', l.data[l.pos])
+	a.Equal('1', l.input.Data[l.pos])
 	l.pos++
 
 	l.pos++ // \n
@@ -62,7 +62,7 @@ func TestLexer_match(t *testing.T) {
 	a.True(l.match("line3\n"))
 
 	// 能正确匹配结尾字符
-	l = newLexer([]rune("line1\n"))
+	l = newLexer(&Input{Data: []rune("line1\n")})
 	a.NotNil(l)
 	a.True(l.match("line1\n"))
 }
@@ -70,7 +70,7 @@ func TestLexer_match(t *testing.T) {
 func TestLexer_matchTag(t *testing.T) {
 	a := assert.New(t)
 
-	l := newLexer([]rune("@line1\n@line2\tabc \n"))
+	l := newLexer(&Input{Data: []rune("@line1\n@line2\tabc \n")})
 	a.NotNil(l)
 	a.True(l.matchTag("@line1"))
 	l.pos++
@@ -81,21 +81,21 @@ func TestLexer_matchTag(t *testing.T) {
 func TestLexer_skipSpace(t *testing.T) {
 	a := assert.New(t)
 
-	l := newLexer([]rune(" line1\n line2 \n"))
+	l := newLexer(&Input{Data: []rune(" line1\n line2 \n")})
 	a.NotNil(l)
 
 	l.skipSpace()
-	a.Equal(l.data[l.pos:], "line1\n line2 \n")
+	a.Equal(l.input.Data[l.pos:], "line1\n line2 \n")
 
 	a.True(l.match("line1"))
-	a.Equal(l.data[l.pos:], "\n line2 \n")
+	a.Equal(l.input.Data[l.pos:], "\n line2 \n")
 	l.skipSpace()
-	a.Equal(l.data[l.pos:], "line2 \n")
+	a.Equal(l.input.Data[l.pos:], "line2 \n")
 }
 
 func TestTag_lineNumber(t *testing.T) {
 	a := assert.New(t)
-	l := &lexer{data: []rune("line0\nline1\nline2\n @api line3\n")}
+	l := &lexer{input: &Input{Data: []rune("line0\nline1\nline2\n @api line3\n")}}
 
 	t1 := l.readTag()
 	a.NotNil(t1)

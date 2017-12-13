@@ -49,6 +49,10 @@ func (l *lexer) lineNumber() int {
 
 // 输出一条错误信息
 func (l *lexer) syntaxError(format string, v ...interface{}) {
+	if l.input.Error == nil {
+		return
+	}
+
 	err := &types.SyntaxError{
 		Line:    l.lineNumber(),
 		Message: locale.Sprintf(format, v...),
@@ -59,6 +63,10 @@ func (l *lexer) syntaxError(format string, v ...interface{}) {
 
 // 输出一条警告信息
 func (l *lexer) syntaxWarn(format string, v ...interface{}) {
+	if l.input.Warn == nil {
+		return
+	}
+
 	err := &types.SyntaxError{
 		Line:    l.lineNumber(),
 		Message: locale.Sprintf(format, v...),
@@ -240,6 +248,10 @@ func (t *tag) lineNumber() int {
 
 // 输出语法错误
 func (t *tag) syntaxError(format string, v ...interface{}) {
+	if t.lexer.input.Error == nil {
+		return
+	}
+
 	err := &types.SyntaxError{
 		Line:    t.lineNumber(),
 		Message: locale.Sprintf(format, v...),
@@ -249,6 +261,10 @@ func (t *tag) syntaxError(format string, v ...interface{}) {
 
 // 输出语法警告信息
 func (t *tag) syntaxWarn(format string, v ...interface{}) {
+	if t.lexer.input.Warn == nil {
+		return
+	}
+
 	err := &types.SyntaxError{
 		Line:    t.lineNumber(),
 		Message: locale.Sprintf(format, v...),

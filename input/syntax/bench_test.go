@@ -43,11 +43,11 @@ api description 2
 `
 
 	d := types.NewDoc()
+	input := &Input{
+		Data: []rune(code),
+	}
 	for i := 0; i < b.N; i++ {
-		err := Parse(d, []rune(code))
-		if err != nil {
-			b.Error("BenchmarkLexer_scan:error")
-		}
+		Parse(d, input)
 	}
 }
 
@@ -89,9 +89,11 @@ func BenchmarkTag_readEnd(b *testing.B) {
 
 // go1.9 BenchmarkNewLexer-4       	1000000000	         2.71 ns/op
 func BenchmarkNewLexer(b *testing.B) {
-	data := []rune("line")
+	input := &Input{
+		Data: []rune("line"),
+	}
 	for i := 0; i < b.N; i++ {
-		l := newLexer(data)
+		l := newLexer(input)
 		if l.atEOF() {
 		}
 	}
