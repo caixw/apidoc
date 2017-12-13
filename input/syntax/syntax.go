@@ -122,7 +122,7 @@ func (l *lexer) scanAPIDoc(d *types.Doc) bool {
 				return false
 			}
 		case l.matchTag(vars.APIContent):
-			d.Content = string(l.data[l.pos:])
+			d.Content = l.readEnd()
 		case l.match(vars.API): // 不认识的标签
 			l.backup()
 			l.syntaxError(locale.ErrUnknownTag, l.readWord())

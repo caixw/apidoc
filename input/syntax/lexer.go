@@ -15,7 +15,6 @@ import (
 // 简单的词法分析
 type lexer struct {
 	input *Input
-	data  []rune
 	pos   int // 当前指针位置
 	width int // 最后移的字符数量
 }
@@ -33,7 +32,6 @@ func newLexer(input *Input) *lexer {
 	// TODO(caixw) lexer 会大量产生，将其封装到 sync.Pool 是否对性能有一定提升。
 	return &lexer{
 		input: input,
-		data:  input.Data,
 	}
 }
 
@@ -41,7 +39,7 @@ func newLexer(input *Input) *lexer {
 func (l *lexer) lineNumber() int {
 	count := 0
 	for i := 0; i < l.pos; i++ {
-		if l.data[i] == '\n' {
+		if l.input.Data[i] == '\n' {
 			count++
 		}
 	}
@@ -75,14 +73,14 @@ func (l *lexer) syntaxWarn(format string, v ...interface{}) {
 // NOTE: 可通过 backup 来撤消最后一次 match 调用。
 func (l *lexer) match(word string) bool {
 	if l.atEOF() ||
-		(l.pos+len(word) > len(l.data)) || // 剩余字符没有 word 长
+		(l.pos+len(word) > len(l.input.Data)) || // 剩余字符没有 word 长
 		!l.prefixIsSpace() {
 		return false
 	}
 
 	width := 0
 	for _, r := range word {
-		rr := l.data[l.pos]
+		rr := l.input.Data[l.pos]
 		if unicode.ToLower(rr) != unicode.ToLower(r) {
 			l.pos -= width
 			return false
@@ -105,9 +103,9 @@ func (l *lexer) prefixIsSpace() bool {
 	pos := l.pos
 	for {
 		pos--
-		r := l.data[pos]
+		r := l.input.Data[pos]
 
-		if l.data[pos] == '\n' || pos == 0 {
+		if l.input.Data[pos] == '\n' || pos == 0 {
 			return true
 		}
 
@@ -123,7 +121,7 @@ func (l *lexer) matchTag(tagName string) bool {
 		return false
 	}
 
-	if !unicode.IsSpace(l.data[l.pos]) {
+	if !unicode.IsSpace(l.input.Data[l.pos]) {
 		l.backup()
 		return false
 	}
@@ -154,15 +152,26 @@ func (l *lexer) readTag() *tag {
 
 	return &tag{
 		lexer: l,
-		data:  trimRight(l.data[start:l.pos]),
+		data:  trimRight(l.input.Data[start:l.pos]),
 		ln:    ln,
 	}
+}
+
+// 读取从当前位置到结尾的所有内容
+func (l *lexer) readEnd() string {
+	if l.atEOF() {
+		return ""
+	}
+
+	start := l.pos
+	l.pos = len(l.input.Data)
+	return string(l.input.Data[start:])
 }
 
 // 跳过之后的空白字符。
 func (l *lexer) skipSpace() {
 	for {
-		if l.atEOF() || !unicode.IsSpace(l.data[l.pos]) {
+		if l.atEOF() || !unicode.IsSpace(l.input.Data[l.pos]) {
 			return
 		}
 
@@ -176,12 +185,12 @@ func (l *lexer) readLine() string {
 
 	start := l.pos
 	for {
-		if l.atEOF() || l.data[l.pos] == '\n' {
+		if l.atEOF() || l.input.Data[l.pos] == '\n' {
 			break
 		}
 		l.pos++
 	}
-	return string(trimRight(l.data[start:l.pos]))
+	return string(trimRight(l.input.Data[start:l.pos]))
 }
 
 // 往后读取，真到碰到第一个空字符或是结尾。返回字符串去掉首尾空字符。
@@ -190,17 +199,17 @@ func (l *lexer) readWord() string {
 
 	start := l.pos
 	for {
-		if l.atEOF() || unicode.IsSpace(l.data[l.pos]) {
+		if l.atEOF() || unicode.IsSpace(l.input.Data[l.pos]) {
 			break
 		}
 		l.pos++
 	}
-	return string(trimRight(l.data[start:l.pos]))
+	return string(trimRight(l.input.Data[start:l.pos]))
 }
 
 // 是否已经到结尾
 func (l *lexer) atEOF() bool {
-	return l.pos >= len(l.data)
+	return l.pos >= len(l.input.Data)
 }
 
 // 往后读取，真到碰到第一个空字符或是结尾。返回字符串去掉首尾空字符。
