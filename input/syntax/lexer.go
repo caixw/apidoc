@@ -14,6 +14,7 @@ import (
 
 // 简单的词法分析
 type lexer struct {
+	input *Input
 	data  []rune
 	pos   int // 当前指针位置
 	width int // 最后移的字符数量
@@ -21,20 +22,22 @@ type lexer struct {
 
 // 表示一个标签的内容
 type tag struct {
-	ln   int // 当前 tag 在 lexer 中的起始行号
-	data []rune
-	pos  int
+	lexer *lexer
+	ln    int // 当前 tag 在文件中的起始行号
+	data  []rune
+	pos   int
 }
 
 // 声明一个新的 lexer 实例。
-func newLexer(data []rune) *lexer {
+func newLexer(input *Input) *lexer {
 	// TODO(caixw) lexer 会大量产生，将其封装到 sync.Pool 是否对性能有一定提升。
 	return &lexer{
-		data: data,
+		input: input,
+		data:  input.Data,
 	}
 }
 
-// 当前位置在源代码中的行号，起始行为 0
+// 当前位置在源代码文件中的行号
 func (l *lexer) lineNumber() int {
 	count := 0
 	for i := 0; i < l.pos; i++ {
@@ -43,15 +46,27 @@ func (l *lexer) lineNumber() int {
 		}
 	}
 
-	return count
+	return count + l.input.Line
 }
 
-// 构建一个语法错误的信息。
-func (l *lexer) syntaxError(format string, v ...interface{}) *types.SyntaxError {
-	return &types.SyntaxError{
+// 输出一条错误信息
+func (l *lexer) syntaxError(format string, v ...interface{}) {
+	err := &types.SyntaxError{
 		Line:    l.lineNumber(),
 		Message: locale.Sprintf(format, v...),
 	}
+
+	l.input.Error.Println(err)
+}
+
+// 输出一条警告信息
+func (l *lexer) syntaxWarn(format string, v ...interface{}) {
+	err := &types.SyntaxError{
+		Line:    l.lineNumber(),
+		Message: locale.Sprintf(format, v...),
+	}
+
+	l.input.Warn.Println(err)
 }
 
 // 判断接下去的几个字符连接起来是否正好为 word，且处在行首位置(word 之前不能有非空白字符)。
@@ -138,8 +153,9 @@ func (l *lexer) readTag() *tag {
 	}
 
 	return &tag{
-		data: trimRight(l.data[start:l.pos]),
-		ln:   ln,
+		lexer: l,
+		data:  trimRight(l.data[start:l.pos]),
+		ln:    ln,
 	}
 }
 
@@ -201,7 +217,7 @@ func (t *tag) readWord() string {
 	return string(trimRight(t.data[start:t.pos]))
 }
 
-// 当前位置在源代码中的行号，起始行为 0
+// 当前位置在源代码文件中的行号
 func (t *tag) lineNumber() int {
 	count := t.ln
 	for i := 0; i < t.pos; i++ {
@@ -213,12 +229,22 @@ func (t *tag) lineNumber() int {
 	return count
 }
 
-// 提示语法错误
-func (t *tag) syntaxError(format string, v ...interface{}) *types.SyntaxError {
-	return &types.SyntaxError{
+// 输出语法错误
+func (t *tag) syntaxError(format string, v ...interface{}) {
+	err := &types.SyntaxError{
 		Line:    t.lineNumber(),
 		Message: locale.Sprintf(format, v...),
 	}
+	t.lexer.input.Error.Println(err)
+}
+
+// 输出语法警告信息
+func (t *tag) syntaxWarn(format string, v ...interface{}) {
+	err := &types.SyntaxError{
+		Line:    t.lineNumber(),
+		Message: locale.Sprintf(format, v...),
+	}
+	t.lexer.input.Warn.Println(err)
 }
 
 // 往后读取一行内容，不包含首尾空格。
