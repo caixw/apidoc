@@ -47,8 +47,12 @@ func Parse(d *types.Doc, input *Input) {
 			l.backup()
 			word := l.readWord()
 			if input.Warn != nil {
-				// TODO 行号等信息
-				input.Warn.Println(locale.Sprintf(locale.ErrUnknownTag, word))
+				err := &types.SyntaxError{
+					File:    input.File,
+					Line:    input.Line,
+					Message: locale.Sprintf(locale.ErrUnknownTag, word),
+				}
+				input.Warn.Println(err)
 			}
 			l.readTag() // 指针移到下一个标签处
 		default:

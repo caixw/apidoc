@@ -54,6 +54,7 @@ func (l *lexer) syntaxError(format string, v ...interface{}) {
 	}
 
 	err := &types.SyntaxError{
+		File:    l.input.File,
 		Line:    l.lineNumber(),
 		Message: locale.Sprintf(format, v...),
 	}
@@ -68,6 +69,7 @@ func (l *lexer) syntaxWarn(format string, v ...interface{}) {
 	}
 
 	err := &types.SyntaxError{
+		File:    l.input.File,
 		Line:    l.lineNumber(),
 		Message: locale.Sprintf(format, v...),
 	}
@@ -253,6 +255,7 @@ func (t *tag) syntaxError(format string, v ...interface{}) {
 	}
 
 	err := &types.SyntaxError{
+		File:    t.lexer.input.File,
 		Line:    t.lineNumber(),
 		Message: locale.Sprintf(format, v...),
 	}
@@ -266,6 +269,7 @@ func (t *tag) syntaxWarn(format string, v ...interface{}) {
 	}
 
 	err := &types.SyntaxError{
+		File:    t.lexer.input.File,
 		Line:    t.lineNumber(),
 		Message: locale.Sprintf(format, v...),
 	}
