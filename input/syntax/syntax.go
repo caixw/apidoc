@@ -6,7 +6,6 @@
 package syntax
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/caixw/apidoc/locale"
@@ -46,10 +45,9 @@ func Parse(d *types.Doc, input *Input) {
 			}
 		case l.match(vars.API):
 			l.backup()
+			word := l.readWord()
 			if input.Warn != nil {
 				// TODO 行号等信息
-				word := l.readWord()
-				fmt.Println("===", word)
 				input.Warn.Println(locale.Sprintf(locale.ErrUnknownTag, word))
 			}
 			l.readTag() // 指针移到下一个标签处

@@ -384,16 +384,15 @@ ab @apiIgnore
 `
 	l = len(doc.Apis)
 	Parse(doc, &Input{Data: []rune(code)})
-	a.Equal(l+1, len(doc.Apis))
+	a.Equal(l, len(doc.Apis))
 
-	// 不认识的标签，可以出现在所有标签出现之前
+	// 不认识的标签
 	code = `
 @apiUnknownTag1 xxx
 
 @apiUnknownTag2 xxx
 @api delete /admin/users/{id} delete users
 @apiGroup group
-ab @apiIgnore
 @apiParam id int user id
 @apiSuccess 200 OK
 `
@@ -401,7 +400,7 @@ ab @apiIgnore
 	Parse(doc, &Input{Data: []rune(code)})
 	a.Equal(l+1, len(doc.Apis))
 
-	// @apiIgno 不认识的标签，会提示错误信息
+	// @apiIgno 不认识的标签，会被过滤
 	code = `
 @api delete /admin/users/{id} delete users
 @apiIgno
@@ -411,5 +410,5 @@ ab @apiIgnore
 `
 	l = len(doc.Apis)
 	Parse(doc, &Input{Data: []rune(code)})
-	a.Equal(l, len(doc.Apis))
+	a.Equal(l+1, len(doc.Apis))
 }
