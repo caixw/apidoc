@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package syntax 提供对代码块的语法进行解析
+// Package syntax 负责对标签语法的解析操作。
 package syntax
 
 import (
@@ -15,13 +15,13 @@ import (
 	"github.com/issue9/is"
 )
 
-// Input 输入的数据
+// Input 由外界提供的与标签语法相关的内容。
 type Input struct {
-	File  string
-	Line  int
-	Data  []rune
-	Error *log.Logger
-	Warn  *log.Logger
+	File  string      // 该段代码所在的文件
+	Line  int         // 该段代码在文件中的行号
+	Data  []rune      // 需要解析的代码段
+	Error *log.Logger // 出错时的输出通道
+	Warn  *log.Logger // 警告信息的输出通道
 }
 
 // Parse 分析一段代码，并将结果保存到 d 中。
@@ -45,15 +45,7 @@ func Parse(d *types.Doc, input *Input) {
 			}
 		case l.match(vars.API):
 			l.backup()
-			word := l.readWord()
-			if input.Warn != nil {
-				err := &types.SyntaxError{
-					File:    input.File,
-					Line:    input.Line,
-					Message: locale.Sprintf(locale.ErrUnknownTag, word),
-				}
-				input.Warn.Println(err)
-			}
+			l.syntaxWarn(locale.ErrUnknownTag, l.readWord())
 			l.readTag() // 指针移到下一个标签处
 		default:
 			if l.atEOF() {
