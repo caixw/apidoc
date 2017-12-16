@@ -45,16 +45,6 @@ func (l *lexer) lineNumber() int {
 	return count + l.input.Line
 }
 
-// 输出一条错误信息
-func (l *lexer) syntaxError(format string, v ...interface{}) {
-	OutputError(l.input.Error, l.input.File, l.lineNumber(), format, v...)
-}
-
-// 输出一条警告信息
-func (l *lexer) syntaxWarn(format string, v ...interface{}) {
-	OutputError(l.input.Warn, l.input.File, l.lineNumber(), format, v...)
-}
-
 // 判断接下去的几个字符连接起来是否正好为 word，且处在行首位置(word 之前不能有非空白字符)。
 // 若是，则移动指针到 word 之后，且返回 true；否则不移动指针，返回 false。
 //
@@ -225,16 +215,6 @@ func (t *tag) lineNumber() int {
 	}
 
 	return count
-}
-
-// 输出语法错误
-func (t *tag) syntaxError(format string, v ...interface{}) {
-	OutputError(t.lexer.input.Warn, t.lexer.input.File, t.lineNumber(), format, v...)
-}
-
-// 输出语法警告信息
-func (t *tag) syntaxWarn(format string, v ...interface{}) {
-	OutputError(t.lexer.input.Warn, t.lexer.input.File, t.lineNumber(), format, v...)
 }
 
 // 往后读取一行内容，不包含首尾空格。
