@@ -7,8 +7,6 @@ package input
 import (
 	"bytes"
 	"unicode/utf8"
-
-	"github.com/caixw/apidoc/types"
 )
 
 // lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
@@ -69,14 +67,6 @@ func (l *lexer) lineNumber() int {
 	}
 
 	return l.ln
-}
-
-// 构建一条语法错误的信息。
-func (l *lexer) syntaxError(msg string) *types.SyntaxError {
-	return &types.SyntaxError{
-		Line:    l.lineNumber(),
-		Message: msg,
-	}
 }
 
 // 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 blocker 。

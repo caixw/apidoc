@@ -80,13 +80,8 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 
 		ln := l.lineNumber() + o.StartLineNumber // 记录当前的行号，顺便调整起始行号
 		rs, ok := block.EndFunc(l)
-		if !ok && o.SyntaxErrorLog != nil {
-			err := &types.SyntaxError{
-				Line:    ln,
-				File:    path,
-				Message: locale.Sprintf(locale.ErrNotFoundEndFlag),
-			}
-			o.SyntaxErrorLog.Println(err)
+		if !ok {
+			syntax.OutputError(o.SyntaxErrorLog, path, ln, locale.ErrNotFoundEndFlag)
 			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 		}
 

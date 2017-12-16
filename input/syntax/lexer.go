@@ -7,8 +7,6 @@ package syntax
 import (
 	"unicode"
 
-	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
 )
 
@@ -49,32 +47,12 @@ func (l *lexer) lineNumber() int {
 
 // 输出一条错误信息
 func (l *lexer) syntaxError(format string, v ...interface{}) {
-	if l.input.Error == nil {
-		return
-	}
-
-	err := &types.SyntaxError{
-		File:    l.input.File,
-		Line:    l.lineNumber(),
-		Message: locale.Sprintf(format, v...),
-	}
-
-	l.input.Error.Println(err)
+	OutputError(l.input.Error, l.input.File, l.lineNumber(), format, v...)
 }
 
 // 输出一条警告信息
 func (l *lexer) syntaxWarn(format string, v ...interface{}) {
-	if l.input.Warn == nil {
-		return
-	}
-
-	err := &types.SyntaxError{
-		File:    l.input.File,
-		Line:    l.lineNumber(),
-		Message: locale.Sprintf(format, v...),
-	}
-
-	l.input.Warn.Println(err)
+	OutputError(l.input.Warn, l.input.File, l.lineNumber(), format, v...)
 }
 
 // 判断接下去的几个字符连接起来是否正好为 word，且处在行首位置(word 之前不能有非空白字符)。
@@ -251,30 +229,12 @@ func (t *tag) lineNumber() int {
 
 // 输出语法错误
 func (t *tag) syntaxError(format string, v ...interface{}) {
-	if t.lexer.input.Error == nil {
-		return
-	}
-
-	err := &types.SyntaxError{
-		File:    t.lexer.input.File,
-		Line:    t.lineNumber(),
-		Message: locale.Sprintf(format, v...),
-	}
-	t.lexer.input.Error.Println(err)
+	OutputError(t.lexer.input.Warn, t.lexer.input.File, t.lineNumber(), format, v...)
 }
 
 // 输出语法警告信息
 func (t *tag) syntaxWarn(format string, v ...interface{}) {
-	if t.lexer.input.Warn == nil {
-		return
-	}
-
-	err := &types.SyntaxError{
-		File:    t.lexer.input.File,
-		Line:    t.lineNumber(),
-		Message: locale.Sprintf(format, v...),
-	}
-	t.lexer.input.Warn.Println(err)
+	OutputError(t.lexer.input.Warn, t.lexer.input.File, t.lineNumber(), format, v...)
 }
 
 // 往后读取一行内容，不包含首尾空格。

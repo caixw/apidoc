@@ -25,6 +25,9 @@ type Input struct {
 }
 
 // Parse 分析一段代码，并将结果保存到 d 中。
+//
+// 若出错，则会在 Input.Error 中输出错误信息，并中断解析，
+// 也不会在 d 中添加任何内容；若是警告信息，会继续执行。
 func Parse(input *Input, d *types.Doc) {
 	l := newLexer(input)
 
