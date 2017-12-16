@@ -126,6 +126,7 @@ func (l *lexer) prefixIsSpace() bool {
 }
 
 // 接下的单词是否和一个标签匹配。
+// 若是不匹配，不会移动指针
 func (l *lexer) matchTag(tagName string) bool {
 	if !l.match(tagName) {
 		return false
