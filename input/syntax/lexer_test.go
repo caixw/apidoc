@@ -10,6 +10,10 @@ import (
 	"github.com/issue9/assert"
 )
 
+func newLexerString(data string) *lexer {
+	return newLexer(newInput([]rune(data)))
+}
+
 func TestLexer_readLine(t *testing.T) {
 	a := assert.New(t)
 	l := &lexer{input: &Input{Data: []rune(" line1\n line2 \n")}}
@@ -20,7 +24,7 @@ func TestLexer_readLine(t *testing.T) {
 
 func TestLexer_lineNumber(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer(&Input{Data: []rune("\n\n")})
+	l := newLexerString("\n\n")
 	a.NotNil(l)
 
 	a.Equal(0, l.lineNumber())
@@ -31,13 +35,13 @@ func TestLexer_lineNumber(t *testing.T) {
 	l.pos++
 	a.Equal(2, l.lineNumber())
 
-	l = newLexer(&Input{Data: []rune("")})
+	l = newLexerString("")
 	a.Equal(0, l.lineNumber())
 }
 
 func TestLexer_match(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer(&Input{Data: []rune("line1\n line2 \n\t\tline3\n")})
+	l := newLexerString("line1\n line2 \n\t\tline3\n")
 	a.NotNil(l)
 
 	a.True(l.match("Line"))
@@ -62,7 +66,7 @@ func TestLexer_match(t *testing.T) {
 	a.True(l.match("line3\n"))
 
 	// 能正确匹配结尾字符
-	l = newLexer(&Input{Data: []rune("line1\n")})
+	l = newLexerString("line1\n")
 	a.NotNil(l)
 	a.True(l.match("line1\n"))
 }
@@ -70,7 +74,7 @@ func TestLexer_match(t *testing.T) {
 func TestLexer_matchTag(t *testing.T) {
 	a := assert.New(t)
 
-	l := newLexer(&Input{Data: []rune("@line1\n@line2\tabc \n")})
+	l := newLexerString("@line1\n@line2\tabc \n")
 	a.NotNil(l)
 	a.True(l.matchTag("@line1"))
 	l.pos++
@@ -81,7 +85,7 @@ func TestLexer_matchTag(t *testing.T) {
 func TestLexer_skipSpace(t *testing.T) {
 	a := assert.New(t)
 
-	l := newLexer(&Input{Data: []rune(" line1\n line2 \n")})
+	l := newLexerString(" line1\n line2 \n")
 	a.NotNil(l)
 
 	l.skipSpace()

@@ -104,7 +104,7 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 				Error: o.SyntaxErrorLog,
 				Warn:  o.SyntaxWarnLog,
 			}
-			syntax.Parse(docs, i)
+			syntax.Parse(i, docs)
 
 			wg.Done()
 		}(rs, ln)

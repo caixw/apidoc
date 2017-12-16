@@ -25,7 +25,7 @@ type Input struct {
 }
 
 // Parse 分析一段代码，并将结果保存到 d 中。
-func Parse(d *types.Doc, input *Input) {
+func Parse(input *Input, d *types.Doc) {
 	l := newLexer(input)
 
 	for {
