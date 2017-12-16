@@ -391,7 +391,7 @@ license that can be found in the LICENSE file.
 	Parse(&Input{Data: []rune(code)}, doc)
 	a.Equal(l, len(doc.Apis))
 
-	// @apiUnknownTag 非正常标签，标签只能出现在行首
+	// @apiUnknownTag 非正常标签
 	code = `
 @apiUnknownTag xxx
 @api delete /admin/users/{id} delete users
@@ -406,13 +406,13 @@ ab @apiIgnore
 
 	// 不认识的标签
 	code = `
-@apiUnknownTag1 xxx
+@apiUnknownTag1 不认识的标签
 
-@apiUnknownTag2 xxx
 @api delete /admin/users/{id} delete users
 @apiGroup group
 @apiParam id int user id
 @apiSuccess 200 OK
+@apiUnknownTag2 不认识的标签
 `
 	l = len(doc.Apis)
 	Parse(&Input{Data: []rune(code)}, doc)

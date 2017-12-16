@@ -35,14 +35,12 @@ func Parse(input *Input, d *types.Doc) {
 				return
 			}
 		case l.matchTag(vars.API):
-			if api, ok := l.scanAPI(); ok {
-				if api == nil { // @apiIgnore
-					return
-				}
-				d.NewAPI(api)
-			} else {
+			api, ok := l.scanAPI()
+			if !ok || api == nil { // 当有 ignore 标签时，会返回 nil,true
 				return
 			}
+
+			d.NewAPI(api)
 		case l.match(vars.API):
 			l.backup()
 			l.syntaxWarn(locale.ErrUnknownTag, l.readWord())
