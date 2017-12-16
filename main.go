@@ -43,6 +43,7 @@ func main() {
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
 	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLUsage))
 	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
+	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
 	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage))
 	flag.Usage = usage
 	flag.Parse()
@@ -58,7 +59,7 @@ func main() {
 		locale.Printf(locale.FlagSupportedLangs, input.Langs())
 		return
 	case *g:
-		genConfigFile()
+		genConfigFile(*wd)
 		return
 	}
 
@@ -97,18 +98,12 @@ func main() {
 		}
 	}
 
-	run()
+	run(*wd)
 }
 
 // 真正的程序入口，main 主要是作参数的处理。
-func run() {
-	path, err := getConfigFile()
-	if err != nil {
-		erro.Println(err)
-		return
-	}
-
-	cfg, err := loadConfig(path)
+func run(wd string) {
+	cfg, err := loadConfig(filepath.Join(wd, vars.ConfigFilename))
 	if err != nil {
 		erro.Println(err)
 		return
@@ -180,15 +175,8 @@ func initLocale() {
 }
 
 // 生成一个默认的配置文件，并写入到文件中。
-func genConfigFile() {
-	path, err := getConfigFile()
-	if err != nil {
-		erro.Println(err)
-		return
-	}
-
-	dir := filepath.Dir(path)
-	o, err := input.Detect(dir, true)
+func genConfigFile(wd string) {
+	o, err := input.Detect(wd, true)
 	if err != nil { // 不中断，仅作提示用。
 		warn.Println(err)
 	}
@@ -197,7 +185,7 @@ func genConfigFile() {
 		Version: vars.Version(),
 		Inputs:  []*input.Options{o},
 		Output: &output.Options{
-			Dir: filepath.Join(dir, "doc"),
+			Dir: filepath.Join(wd, "doc"),
 		},
 	}
 	data, err := yaml.Marshal(cfg)
@@ -206,6 +194,7 @@ func genConfigFile() {
 		return
 	}
 
+	path := filepath.Join(wd, vars.ConfigFilename)
 	fi, err := os.Create(path)
 	if err != nil {
 		erro.Println(err)

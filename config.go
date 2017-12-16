@@ -6,15 +6,12 @@ package main
 
 import (
 	"io/ioutil"
-	"os"
-	"path/filepath"
 	"strconv"
 
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/types"
-	"github.com/caixw/apidoc/vars"
 
 	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
@@ -81,14 +78,4 @@ func (cfg *config) sanitize() error {
 	}
 
 	return nil
-}
-
-// 获取配置文件路径。目前只支持从工作路径获取。
-func getConfigFile() (string, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(wd, vars.ConfigFilename), nil
 }

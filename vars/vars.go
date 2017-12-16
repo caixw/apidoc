@@ -5,9 +5,7 @@
 // Package vars 提供了一些公共的函数、结构体及代码级别的设置项。
 package vars
 
-import (
-	"github.com/issue9/term/colors"
-)
+import "github.com/issue9/term/colors"
 
 // 一些公用的常量
 const (
