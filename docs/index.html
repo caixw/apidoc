@@ -99,7 +99,8 @@
                             <tr><td>-h</td><td>显示帮助信息</td></tr>
                             <tr><td>-v</td><td>显示版本信息</td></tr>
                             <tr><td>-l</td><td>列出当前支持的语言</td></tr>
-                            <tr><td>-g</td><td>在当前目录下创建配置文件模板</td></tr>
+                            <tr><td>-g</td><td>创建配置文件模板</td></tr>
+                            <tr><td>-wd</td><td>指定工作目录</td></tr>
                             <tr><td>-pprof</td><td>指定个性能测试项，目前支持 <var>cpu</var> 和 <var>mem</var> 两个选项</td></tr>
                         </tbody>
                     </table>
@@ -171,11 +172,12 @@
                         </tbody>
                     </table>
                     <p><var>inputs</var> 为一个对象数组，每个数组元素可以指定一个独立项目。不过不支持同一项目下多语言的解析。</p>
+                    <p>配置文件中的与目录相关的参数，若以 <var>./</var> 开头，则会被转换成程序的工作目录，而不是配置文件的当前所在目录。</p>
                 </section>
 
                 <section>
                     <h3>使用</h3>
-                    <p>运行 apidoc 时，程序会从<strong>当前的工作目录</strong>中查找 <code>.apidoc.yaml</code> 文件，并将其当作配置文件来执行相应操作。</p>
+                    <p>运行 apidoc 时，程序会从<strong><var>-wd</var> 参数指定的目录</strong>中查找 <code>.apidoc.yaml</code> 文件，并将其当作配置文件来执行相应操作，若未指定，则使用程序的工作目录。</p>
                     <p><samp>apidoc -g</samp> 会为你产生一个默认的 <code>.apidoc.yaml</code> 配置文件。</p>
                 </section>
 
