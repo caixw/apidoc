@@ -70,6 +70,11 @@ func (opt *Options) Sanitize() *types.OptionsError {
 //
 // 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
 func Detect(dir string, recursive bool) (*Options, error) {
+	dir, err := filepath.Abs(dir)
+	if err != nil {
+		return nil, err
+	}
+
 	exts, err := detectExts(dir, recursive)
 	if err != nil {
 		return nil, err

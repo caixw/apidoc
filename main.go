@@ -8,6 +8,7 @@ package main
 import (
 	"bytes"
 	"flag"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -177,17 +178,19 @@ func initLocale() {
 // 生成一个默认的配置文件，并写入到文件中。
 func genConfigFile(wd string) {
 	o, err := input.Detect(wd, true)
-	if err != nil { // 不中断，仅作提示用。
-		warn.Println(err)
+	if err != nil {
+		erro.Println(err)
+		return
 	}
 
 	cfg := &config{
 		Version: vars.Version(),
 		Inputs:  []*input.Options{o},
 		Output: &output.Options{
-			Dir: filepath.Join(wd, "doc"),
+			Dir: filepath.Join(o.Dir, "doc"),
 		},
 	}
+
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
 		erro.Println(err)
@@ -195,14 +198,7 @@ func genConfigFile(wd string) {
 	}
 
 	path := filepath.Join(wd, vars.ConfigFilename)
-	fi, err := os.Create(path)
-	if err != nil {
-		erro.Println(err)
-		return
-	}
-	defer fi.Close()
-
-	if _, err = fi.Write(data); err != nil {
+	if err = ioutil.WriteFile(path, data, os.ModePerm); err != nil {
 		erro.Println(err)
 		return
 	}
