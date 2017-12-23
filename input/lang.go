@@ -4,7 +4,10 @@
 
 package input
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 // 所有支持的语言模型定义
 //
@@ -151,6 +154,10 @@ func Languages() []string {
 	for l := range langs {
 		ret = append(ret, l)
 	}
+
+	sort.SliceStable(ret, func(i, j int) bool {
+		return ret[i] > ret[j]
+	})
 
 	return ret
 }
