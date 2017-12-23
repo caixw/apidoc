@@ -145,8 +145,8 @@ var langExts = map[string][]string{
 	"swift":      {".swift"},
 }
 
-// Langs 返回所有支持的语言
-func Langs() []string {
+// Languages 返回所有支持的语言
+func Languages() []string {
 	ret := make([]string, 0, len(langs))
 	for l := range langs {
 		ret = append(ret, l)

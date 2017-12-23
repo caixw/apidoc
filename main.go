@@ -42,8 +42,8 @@ func main() {
 
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
-	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLUsage))
 	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
+	languages := flag.Bool("languages", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	encodings := flag.Bool("encodings", false, locale.Sprintf(locale.FlagEncodingsUsage))
 	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
 	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage))
@@ -57,8 +57,8 @@ func main() {
 	case *v:
 		printVersion()
 		return
-	case *l:
-		locale.Printf(locale.FlagSupportedLangs, input.Langs())
+	case *languages:
+		locale.Printf(locale.FlagSupportedLanguages, input.Languages())
 		return
 	case *encodings:
 		locale.Printf(locale.FlagSupportedEncodings, input.Encodings())
