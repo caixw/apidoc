@@ -15,13 +15,10 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strings"
-	"sync"
-	"time"
 
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
-	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
 
 	"github.com/issue9/logs/writers"
@@ -125,7 +122,8 @@ func run(wd string) {
 		return
 	}
 
-	docs, elapsed := parse(cfg.Inputs)
+	docs, elapsed := input.Parse(cfg.Inputs...)
+
 	cfg.Output.Elapsed = elapsed
 	if err := output.Render(docs, cfg.Output); err != nil {
 		erro.Println(err)
@@ -133,30 +131,6 @@ func run(wd string) {
 	}
 
 	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, elapsed))
-}
-
-// 解析 inputs 中指定的所有项目，返回其文档信息和所消耗的时间。
-func parse(inputs []*input.Options) (*types.Doc, time.Duration) {
-	start := time.Now()
-	docs := types.NewDoc()
-
-	wg := &sync.WaitGroup{}
-	for _, opt := range inputs {
-		wg.Add(1)
-		go func(o *input.Options) {
-			if err := input.Parse(docs, o); err != nil {
-				erro.Println(err)
-			}
-			wg.Done()
-		}(opt)
-	}
-	wg.Wait()
-
-	if len(docs.Title) == 0 {
-		docs.Title = vars.DefaultTitle
-	}
-
-	return docs, time.Now().Sub(start)
 }
 
 func usage() {

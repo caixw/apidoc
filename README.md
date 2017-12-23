@@ -64,19 +64,15 @@ LANG=lang apidoc
 // 初始本地化内容
 locale.Init()
 
-start := time.Now()
-docs := doc.New()
-
 // 分析文档内容
-inputOptions := &input.Options{...}
-docs, err := input.Parse(docs, inputOptions)
-if err != nil {
-    panic(err)
+inputOptions := &input.Options{
+    ErrorLog: log.New(...),
 }
+docs, elapsed := input.Parse(inputOptions)
 
 // 输出内容
 outputOptions := &output.Options{...}
-outputOptions.Elapsed = time.Now().Sub(start)
+outputOptions.Elapsed = elapsed
 if err = output.Render(docs, outputOptions); err != nil {
     panic(err)
 }
