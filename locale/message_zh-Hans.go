@@ -51,6 +51,7 @@ func init() {
 		ErrTagArgTooMuch:         "标签：%v 指定了太多的参数",
 		ErrTagArgNotEnough:       "标签：%v 参数不够",
 		ErrSecondArgMustURL:      vars.APILicense + " 第二个参数必须为 URL",
+		ErrUnsupportedEncoding:   "不支持的编码方式：%v",
 
 		// logs
 		InfoPrefix:  "[信息] ",

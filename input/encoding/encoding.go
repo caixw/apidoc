@@ -14,6 +14,8 @@ import (
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/encoding/traditionalchinese"
 	"golang.org/x/text/transform"
+
+	"github.com/caixw/apidoc/locale"
 )
 
 // DefaultEncoding 默认的编码名称，只能是 utf-8
@@ -54,7 +56,7 @@ func Transform(path, encoding string) ([]byte, error) {
 
 	enc, found := encodings[strings.ToLower(encoding)]
 	if !found {
-		return nil, errors.New("not found")
+		return nil, errors.New(locale.Sprintf(locale.ErrUnsupportedEncoding, enc))
 	}
 
 	if enc == nil {

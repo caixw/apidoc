@@ -51,6 +51,7 @@ func init() {
 		ErrTagArgTooMuch:         "標簽：%v 指定了太多的參數",
 		ErrTagArgNotEnough:       "標簽：%v 參數不夠",
 		ErrSecondArgMustURL:      vars.APILicense + " 第二個參數必須為 URL",
+		ErrUnsupportedEncoding:   "不支持的編碼方式：%v",
 
 		// logs
 		InfoPrefix:  "[信息] ",
