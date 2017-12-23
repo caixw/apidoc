@@ -12,11 +12,11 @@ package input
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
 
+	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/input/syntax"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
@@ -54,9 +54,11 @@ func Parse(docs *types.Doc, o *Options) error {
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。
 func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
-	data, err := ioutil.ReadFile(path)
-	if err != nil && o.SyntaxErrorLog != nil {
-		o.SyntaxErrorLog.Println(err)
+	data, err := encoding.Transform(path, o.Encoding)
+	if err != nil {
+		if o.SyntaxErrorLog != nil {
+			o.SyntaxErrorLog.Println(err)
+		}
 		return
 	}
 

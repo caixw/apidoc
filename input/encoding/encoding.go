@@ -16,11 +16,15 @@ import (
 	"golang.org/x/text/transform"
 )
 
+// DefaultEncoding 默认的编码名称，只能是 utf-8
+// 这里给出一个常量，是方便给其它包引用，统一名称。
+var DefaultEncoding = "utf8"
+
 // 一个编码名称与解码器的关联。
 // 若解码器为空，表示不需要解码。
 var encodings = map[string]encoding.Encoding{
-	"utf8":  nil,
-	"utf-8": nil,
+	DefaultEncoding: nil,
+	"utf-8":         nil,
 
 	"gbk":     simplifiedchinese.GBK,
 	"gb18083": simplifiedchinese.GB18030,
