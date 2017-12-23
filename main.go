@@ -8,6 +8,7 @@ package main
 import (
 	"bytes"
 	"flag"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -43,6 +44,7 @@ func main() {
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
 	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLUsage))
 	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
+	encodings := flag.Bool("encodings", false, locale.Sprintf(locale.FlagEncodingsUsage))
 	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
 	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage))
 	flag.Usage = usage
@@ -57,6 +59,9 @@ func main() {
 		return
 	case *l:
 		locale.Printf(locale.FlagSupportedLangs, input.Langs())
+		return
+	case *encodings:
+		locale.Printf(locale.FlagSupportedEncodings, input.Encodings())
 		return
 	case *g:
 		genConfigFile(*wd)
@@ -177,17 +182,19 @@ func initLocale() {
 // 生成一个默认的配置文件，并写入到文件中。
 func genConfigFile(wd string) {
 	o, err := input.Detect(wd, true)
-	if err != nil { // 不中断，仅作提示用。
-		warn.Println(err)
+	if err != nil {
+		erro.Println(err)
+		return
 	}
 
 	cfg := &config{
 		Version: vars.Version(),
 		Inputs:  []*input.Options{o},
 		Output: &output.Options{
-			Dir: filepath.Join(wd, "doc"),
+			Dir: filepath.Join(o.Dir, "doc"),
 		},
 	}
+
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
 		erro.Println(err)
@@ -195,14 +202,7 @@ func genConfigFile(wd string) {
 	}
 
 	path := filepath.Join(wd, vars.ConfigFilename)
-	fi, err := os.Create(path)
-	if err != nil {
-		erro.Println(err)
-		return
-	}
-	defer fi.Close()
-
-	if _, err = fi.Write(data); err != nil {
+	if err = ioutil.WriteFile(path, data, os.ModePerm); err != nil {
 		erro.Println(err)
 		return
 	}

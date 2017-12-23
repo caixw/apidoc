@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package input 用于处理文件输入，过滤代码，生成 doc.Doc 数据。
+// Package input 用于处理文件输入，过滤代码，生成 types.Doc 数据。
 //
 // 多行注释和单行注释在处理上会有一定区别：
 //  - 单行注释，风格相同且相邻的注释会被合并成一个注释块；
@@ -12,11 +12,11 @@ package input
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
 
+	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/input/syntax"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
@@ -52,11 +52,18 @@ func Parse(docs *types.Doc, o *Options) error {
 	return nil
 }
 
+// Encodings 返回支持的编码方式
+func Encodings() []string {
+	return encoding.Encodings()
+}
+
 // 分析 path 指向的文件，并将内容写入到 docs 中。
 func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
-	data, err := ioutil.ReadFile(path)
-	if err != nil && o.SyntaxErrorLog != nil {
-		o.SyntaxErrorLog.Println(err)
+	data, err := encoding.Transform(path, o.Encoding)
+	if err != nil {
+		if o.SyntaxErrorLog != nil {
+			o.SyntaxErrorLog.Println(err)
+		}
 		return
 	}
 

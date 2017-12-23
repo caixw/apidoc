@@ -24,11 +24,13 @@ func init() {
 		FlagVUsage:              "顯示版本信息",
 		FlagLUsage:              "顯示所有支持的語言",
 		FlagGUsage:              "創建壹個默認的配置文件",
+		FlagEncodingsUsage:      "顯示支持的編碼方式",
 		FlagWDUsage:             "指定工作目錄，默認為當前目錄",
 		FlagPprofUsage:          "指定壹種調試輸出類型，可以為 cpu 或是 mem",
 		FlagVersionBuildWith:    "%v %v build with %v\n",
 		FlagVersionCommitHash:   "commit hash %v\n",
 		FlagSupportedLangs:      "目前支持以下語言 %v\n",
+		FlagSupportedEncodings:  "目前支持以下編碼 %v\n",
 		FlagConfigWritedSuccess: "配置內容成功寫入 %v",
 		FlagPprofWritedSuccess:  "pprof 的相關數據已經寫入到 %v",
 		FlagInvalidPprrof:       "無效的 pprof 參數",
@@ -51,6 +53,7 @@ func init() {
 		ErrTagArgTooMuch:         "標簽：%v 指定了太多的參數",
 		ErrTagArgNotEnough:       "標簽：%v 參數不夠",
 		ErrSecondArgMustURL:      vars.APILicense + " 第二個參數必須為 URL",
+		ErrUnsupportedEncoding:   "不支持的編碼方式：%v",
 
 		// logs
 		InfoPrefix:  "[信息] ",

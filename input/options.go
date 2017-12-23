@@ -11,9 +11,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/issue9/utils"
+
+	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
-	"github.com/issue9/utils"
 )
 
 // Options 指定输入内容的相关信息。
@@ -26,6 +28,7 @@ type Options struct {
 	Dir             string   `yaml:"dir"`                       // 源代码目录
 	Exts            []string `yaml:"exts,omitempty"`            // 需要扫描的文件扩展名，若未指定，则使用默认值
 	Recursive       bool     `yaml:"recursive"`                 // 是否查找 Dir 的子目录
+	Encoding        string   `yaml:"encoding,omitempty"`        // 文件的编码
 }
 
 // Sanitize 检测 Options 变量是否符合要求
@@ -44,6 +47,10 @@ func (opt *Options) Sanitize() *types.OptionsError {
 
 	if !langIsSupported(opt.Lang) {
 		return &types.OptionsError{Field: "lang", Message: locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang)}
+	}
+
+	if len(opt.Encoding) == 0 {
+		opt.Encoding = encoding.DefaultEncoding
 	}
 
 	if len(opt.Exts) > 0 {
@@ -70,12 +77,17 @@ func (opt *Options) Sanitize() *types.OptionsError {
 //
 // 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
 func Detect(dir string, recursive bool) (*Options, error) {
+	dir, err := filepath.Abs(dir)
+	if err != nil {
+		return nil, err
+	}
+
 	exts, err := detectExts(dir, recursive)
 	if err != nil {
 		return nil, err
 	}
 
-	// 删除不存在的扩展名
+	// 删除不支持的扩展名
 	for ext := range exts {
 		lang := getLangByExt(ext)
 		if len(lang) <= 0 {
@@ -109,7 +121,7 @@ func Detect(dir string, recursive bool) (*Options, error) {
 	}, nil
 }
 
-// 返回 dir 目录下所有的文件的扩展名集合。
+// 返回 dir 目录下文件类型及对应的文件数量的一个集合。
 // recursive 表示是否查找子目录。
 func detectExts(dir string, recursive bool) (map[string]int, error) {
 	exts := map[string]int{}

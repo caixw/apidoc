@@ -34,11 +34,13 @@ const (
 	FlagVUsage              = "显示版本信息"
 	FlagLUsage              = "显示所有支持的语言"
 	FlagGUsage              = "创建一个默认的配置文件"
+	FlagEncodingsUsage      = "显示支持的编码方式"
 	FlagWDUsage             = "指定工作目录，默认为当前目录"
 	FlagPprofUsage          = "指定一种调试输出类型，可以为 cpu 或是 mem"
 	FlagVersionBuildWith    = "%v %v build with %v\n"
 	FlagVersionCommitHash   = "commit hash %v\n"
 	FlagSupportedLangs      = "目前支持以下语言 %v\n"
+	FlagSupportedEncodings  = "目前支持以下编码 %v\n"
 	FlagConfigWritedSuccess = "配置内容成功写入 %v"
 	FlagPprofWritedSuccess  = "pprof 的相关数据已经写入到 %v"
 	FlagInvalidPprrof       = "无效的 pprof 参数"
@@ -61,6 +63,7 @@ const (
 	ErrTagArgTooMuch         = "标签：%v 指定了太多的参数"
 	ErrTagArgNotEnough       = "标签：%v 参数不够"
 	ErrSecondArgMustURL      = vars.APILicense + " 第二个参数必须为 URL"
+	ErrUnsupportedEncoding   = "不支持的编码方式：%v"
 
 	// logs
 	InfoPrefix  = "[INFO] "

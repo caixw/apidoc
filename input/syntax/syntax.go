@@ -8,11 +8,11 @@ package syntax
 import (
 	"log"
 
+	"github.com/issue9/is"
+
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
-
-	"github.com/issue9/is"
 )
 
 // Input 由外界提供的与标签语法相关的内容。

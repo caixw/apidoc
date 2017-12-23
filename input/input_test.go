@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/types"
 	"github.com/issue9/assert"
 )
@@ -85,7 +86,7 @@ func testParseFile(a *assert.Assertion, lang, path string) {
 		a.TB().Error("不支持该语言")
 	}
 
-	parseFile(docs, path, b, &Options{StartLineNumber: 1})
+	parseFile(docs, path, b, &Options{StartLineNumber: 1, Encoding: encoding.DefaultEncoding})
 	a.Equal(2, len(docs.Apis))
 
 	api0 := docs.Apis[0]
