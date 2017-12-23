@@ -14,7 +14,7 @@ import (
 func TestLangs(t *testing.T) {
 	a := assert.New(t)
 
-	list := Langs()
+	list := Languages()
 	a.Contains(list, "go", "php")
 }
 

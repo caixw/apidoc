@@ -20,8 +20,8 @@ import (
 
 // Options 指定输入内容的相关信息。
 type Options struct {
-	SyntaxErrorLog *log.Logger `yaml:"-"` // 语法错误输出通道
-	SyntaxWarnLog  *log.Logger `yaml:"-"` // 语法警告输出通道
+	ErrorLog *log.Logger `yaml:"-"` // 错误输出通道
+	WarnLog  *log.Logger `yaml:"-"` // 警告输出通道
 
 	StartLineNumber int      `yaml:"startLineNumber,omitempty"` // 代码的超始行号，默认为 0
 	Lang            string   `yaml:"lang"`                      // 输入的目标语言

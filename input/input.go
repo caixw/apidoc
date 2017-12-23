@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/input/syntax"
@@ -28,7 +29,30 @@ import (
 const miniSize = len(vars.API) + 1
 
 // Parse 分析源代码，获取相应的文档内容。
-func Parse(docs *types.Doc, o *Options) error {
+func Parse(options ...*Options) (*types.Doc, time.Duration) {
+	start := time.Now()
+	docs := types.NewDoc()
+
+	wg := &sync.WaitGroup{}
+	for _, o := range options {
+		wg.Add(1)
+		go func(o *Options) {
+			if err := parse(docs, o); err != nil {
+				o.ErrorLog.Println(err)
+			}
+			wg.Done()
+		}(o)
+	}
+	wg.Wait()
+
+	if len(docs.Title) == 0 {
+		docs.Title = vars.DefaultTitle
+	}
+
+	return docs, time.Now().Sub(start)
+}
+
+func parse(docs *types.Doc, o *Options) error {
 	blocks, found := langs[o.Lang]
 	if !found {
 		return errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang))
@@ -36,7 +60,7 @@ func Parse(docs *types.Doc, o *Options) error {
 
 	paths, err := recursivePath(o)
 	if err != nil {
-		return err
+		return errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang))
 	}
 
 	wg := sync.WaitGroup{}
@@ -61,8 +85,8 @@ func Encodings() []string {
 func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 	data, err := encoding.Transform(path, o.Encoding)
 	if err != nil {
-		if o.SyntaxErrorLog != nil {
-			o.SyntaxErrorLog.Println(err)
+		if o.ErrorLog != nil {
+			o.ErrorLog.Println(err)
 		}
 		return
 	}
@@ -88,7 +112,7 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 		ln := l.lineNumber() + o.StartLineNumber // 记录当前的行号，顺便调整起始行号
 		rs, ok := block.EndFunc(l)
 		if !ok {
-			syntax.OutputError(o.SyntaxErrorLog, path, ln, locale.ErrNotFoundEndFlag)
+			syntax.OutputError(o.ErrorLog, path, ln, locale.ErrNotFoundEndFlag)
 			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 		}
 
@@ -103,8 +127,8 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 				File:  path,
 				Line:  ln,
 				Data:  rs,
-				Error: o.SyntaxErrorLog,
-				Warn:  o.SyntaxWarnLog,
+				Error: o.ErrorLog,
+				Warn:  o.WarnLog,
 			}
 			syntax.Parse(i, docs)
 

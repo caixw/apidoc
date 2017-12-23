@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"errors"
 	"io/ioutil"
+	"sort"
 	"strings"
 
 	"golang.org/x/text/encoding"
@@ -39,10 +40,13 @@ var encodings = map[string]encoding.Encoding{
 // Encodings 返回支持的编码列表
 func Encodings() []string {
 	ret := make([]string, 0, len(encodings))
-
 	for name := range encodings {
 		ret = append(ret, name)
 	}
+
+	sort.SliceStable(ret, func(i, j int) bool {
+		return ret[i] > ret[j]
+	})
 
 	return ret
 }
