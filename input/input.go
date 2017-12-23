@@ -52,6 +52,11 @@ func Parse(docs *types.Doc, o *Options) error {
 	return nil
 }
 
+// Encodings 返回支持的编码方式
+func Encodings() []string {
+	return encoding.Encodings()
+}
+
 // 分析 path 指向的文件，并将内容写入到 docs 中。
 func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 	data, err := encoding.Transform(path, o.Encoding)
