@@ -11,9 +11,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/issue9/utils"
+
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
-	"github.com/issue9/utils"
 )
 
 // Options 指定输入内容的相关信息。
@@ -80,7 +81,7 @@ func Detect(dir string, recursive bool) (*Options, error) {
 		return nil, err
 	}
 
-	// 删除不存在的扩展名
+	// 删除不支持的扩展名
 	for ext := range exts {
 		lang := getLangByExt(ext)
 		if len(lang) <= 0 {
@@ -114,7 +115,7 @@ func Detect(dir string, recursive bool) (*Options, error) {
 	}, nil
 }
 
-// 返回 dir 目录下所有的文件的扩展名集合。
+// 返回 dir 目录下文件类型及对应的文件数量的一个集合。
 // recursive 表示是否查找子目录。
 func detectExts(dir string, recursive bool) (map[string]int, error) {
 	exts := map[string]int{}
