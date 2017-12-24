@@ -8,13 +8,13 @@ import (
 	"io/ioutil"
 	"strconv"
 
+	"github.com/issue9/version"
+	yaml "gopkg.in/yaml.v2"
+
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/types"
-
-	"github.com/issue9/version"
-	yaml "gopkg.in/yaml.v2"
 )
 
 // 项目的配置内容，分别引用到了 input.Options 和 output.Options。

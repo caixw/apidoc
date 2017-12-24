@@ -16,15 +16,15 @@ import (
 	"runtime/pprof"
 	"strings"
 
-	"github.com/caixw/apidoc/input"
-	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/output"
-	"github.com/caixw/apidoc/vars"
-
 	"github.com/issue9/logs/writers"
 	"github.com/issue9/term/colors"
 	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/output"
+	"github.com/caixw/apidoc/vars"
 )
 
 // 日志信息输出
@@ -40,9 +40,9 @@ func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
 	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
+	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
 	languages := flag.Bool("languages", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	encodings := flag.Bool("encodings", false, locale.Sprintf(locale.FlagEncodingsUsage))
-	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
 	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage))
 	flag.Usage = usage
 	flag.Parse()
@@ -67,7 +67,7 @@ func main() {
 
 	/* 对 pprof 的处理，pprof 需要运行程序，所以注意关闭文件的时间。 */
 	if len(*pprofType) > 0 {
-		profile := filepath.Join("./", *pprofType+".prof")
+		profile := filepath.Join(*wd, *pprofType+".prof")
 		f, err := os.Create(profile)
 		if err != nil { // 不能创建文件，则忽略 pprof 相关操作
 			erro.Println(err)
