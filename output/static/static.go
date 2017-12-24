@@ -256,7 +256,7 @@ function alignCode(code) {
         // 按 indentSize 的倍数取得缩进的量
         let len = Math.ceil((word.length-2)/indentSize)*indentSize
         return repeatSpace(len)
-    })
+    }).replace(/[ ]{12}/gm, '') // 产生的 json 中，会被格式化成缩进12个空格
 }
 
 function repeatSpace(len) {

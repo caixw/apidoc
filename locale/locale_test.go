@@ -14,8 +14,7 @@ import (
 func TestInit(t *testing.T) {
 	a := assert.New(t)
 
-	err := Init()
-	a.NotError(err)
+	a.NotError(Init())
 	a.True(len(locales) > 0)
 }
 
