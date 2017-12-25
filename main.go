@@ -65,34 +65,27 @@ func main() {
 		return
 	}
 
-	/* 对 pprof 的处理，pprof 需要运行程序，所以注意关闭文件的时间。 */
 	if len(*pprofType) > 0 {
-		profile := filepath.Join(*wd, *pprofType+".prof")
-		f, err := os.Create(profile)
-		if err != nil { // 不能创建文件，则忽略 pprof 相关操作
-			erro.Println(err)
-			return
-		}
-
-		defer func() {
-			if err = f.Close(); err != nil {
+		buf := new(bytes.Buffer)
+		defer func() { // 在程序结束时，将内容写入到文件
+			profile := filepath.Join(*wd, *pprofType+".prof")
+			if err := ioutil.WriteFile(profile, buf.Bytes(), os.ModePerm); err != nil {
 				erro.Println(err)
-				return
 			}
-			info.Println(locale.Sprintf(locale.FlagPprofWritedSuccess, profile))
 		}()
 
 		switch strings.ToLower(*pprofType) {
-		case "mem":
+		case vars.PprofMem:
 			defer func() {
-				if err = pprof.Lookup("heap").WriteTo(f, 1); err != nil {
+				if err := pprof.Lookup("heap").WriteTo(buf, 1); err != nil {
 					erro.Println(err)
 				}
 			}()
-		case "cpu":
-			if err := pprof.StartCPUProfile(f); err != nil {
+		case vars.PprofCPU:
+			if err := pprof.StartCPUProfile(buf); err != nil {
 				erro.Println(err)
 			}
+
 			defer pprof.StopCPUProfile()
 		default:
 			erro.Println(locale.Sprintf(locale.FlagInvalidPprrof))

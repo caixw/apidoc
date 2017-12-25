@@ -31,6 +31,10 @@ const (
 	// 需要保证存在于 locale.locales 中，否则运行时会报错。
 	DefaultLocale = "zh-Hans"
 
+	// 两个性能文件的名称
+	PprofCPU = "cpu"
+	PprofMem = "mem"
+
 	// 生成的 JSON 数据存放的目录
 	JSONDataDirName = "data"
 
