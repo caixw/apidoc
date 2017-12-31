@@ -26,7 +26,7 @@ func init() {
 		FlagGUsage:              "創建壹個默認的配置文件",
 		FlagEncodingsUsage:      "顯示支持的編碼方式",
 		FlagWDUsage:             "指定工作目錄，默認為當前目錄",
-		FlagPprofUsage:          "指定壹種調試輸出類型，可以為 cpu 或是 mem",
+		FlagPprofUsage:          "指定壹種調試輸出類型，可以為 %s 或是 %s",
 		FlagVersionBuildWith:    "%v %v build with %v\n",
 		FlagVersionCommitHash:   "commit hash %v\n",
 		FlagSupportedLanguages:  "目前支持以下語言 %v\n",

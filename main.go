@@ -34,16 +34,26 @@ var (
 	erro = newLog(os.Stderr, vars.ErroColor, "[ERRO] ")
 )
 
-func main() {
-	initLocale() // 最先初始化本地化信息
+// 确保第一时间初始化本地化信息
+func init() {
+	if err := locale.Init(); err != nil {
+		warn.Println(err)
+		return
+	}
 
+	info.SetPrefix(locale.Sprintf(locale.InfoPrefix))
+	warn.SetPrefix(locale.Sprintf(locale.WarnPrefix))
+	erro.SetPrefix(locale.Sprintf(locale.ErrorPrefix))
+}
+
+func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
 	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
 	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
 	languages := flag.Bool("languages", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	encodings := flag.Bool("encodings", false, locale.Sprintf(locale.FlagEncodingsUsage))
-	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage))
+	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage, vars.PprofCPU, vars.PprofMem))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -134,19 +144,7 @@ func usage() {
 	locale.Printf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
 }
 
-// 初始化本地化信息，确定在第一时间调用。
-func initLocale() {
-	if err := locale.Init(); err != nil {
-		warn.Println(err)
-	}
-
-	// 本地化环境初始化成功之后，再设置日志前缀
-	info.SetPrefix(locale.Sprintf(locale.InfoPrefix))
-	warn.SetPrefix(locale.Sprintf(locale.WarnPrefix))
-	erro.SetPrefix(locale.Sprintf(locale.ErrorPrefix))
-}
-
-// 生成一个默认的配置文件，并写入到文件中。
+// 根据 wd 所在目录的内容生成一个配置文件，并写入到 wd 目录下的 .apidoc.yaml 中
 func genConfigFile(wd string) {
 	o, err := input.Detect(wd, true)
 	if err != nil {
