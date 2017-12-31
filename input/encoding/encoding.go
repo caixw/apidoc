@@ -31,7 +31,7 @@ var encodings = map[string]encoding.Encoding{
 	"utf-8":         nil,
 
 	"gbk":     simplifiedchinese.GBK,
-	"gb18083": simplifiedchinese.GB18030,
+	"gb18030": simplifiedchinese.GB18030,
 	"gb2312":  simplifiedchinese.HZGB2312,
 
 	"big5": traditionalchinese.Big5,
