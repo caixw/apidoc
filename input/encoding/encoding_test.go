@@ -11,6 +11,13 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestEncodings(t *testing.T) {
+	a := assert.New(t)
+
+	// 保证多次返回的顺序的内容都是一样的
+	a.Equal(Encodings(), Encodings())
+}
+
 func TestTransform(t *testing.T) {
 	a := assert.New(t)
 
