@@ -61,7 +61,7 @@ func Transform(path, encoding string) ([]byte, error) {
 
 	enc, found := encodings[strings.ToLower(encoding)]
 	if !found {
-		return nil, errors.New(locale.Sprintf(locale.ErrUnsupportedEncoding, enc))
+		return nil, errors.New(locale.Sprintf(locale.ErrUnsupportedEncoding, encoding))
 	}
 
 	if enc == nil {
@@ -69,10 +69,5 @@ func Transform(path, encoding string) ([]byte, error) {
 	}
 
 	reader := transform.NewReader(bytes.NewReader(data), enc.NewDecoder())
-	ret, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return nil, err
-	}
-
-	return ret, nil
+	return ioutil.ReadAll(reader)
 }
