@@ -91,7 +91,7 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 		return
 	}
 
-	l := &lexer{data: data}
+	l := &lexer{data: data, blocks: blocks}
 	var block blocker
 
 	wg := sync.WaitGroup{}
@@ -103,7 +103,7 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 		}
 
 		if block == nil {
-			block = l.block(blocks)
+			block = l.block()
 			if block == nil { // 没有匹配的 block 了
 				return
 			}

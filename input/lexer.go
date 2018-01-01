@@ -11,6 +11,7 @@ import (
 
 // lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
 type lexer struct {
+	blocks  []blocker
 	data    []byte
 	pos     int
 	isAtEOF bool
@@ -70,13 +71,13 @@ func (l *lexer) lineNumber() int {
 }
 
 // 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 blocker 。
-func (l *lexer) block(blocks []blocker) blocker {
+func (l *lexer) block() blocker {
 	for {
 		if l.atEOF() {
 			return nil
 		}
 
-		for _, block := range blocks {
+		for _, block := range l.blocks {
 			if block.BeginFunc(l) {
 				return block
 			}

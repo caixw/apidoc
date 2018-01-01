@@ -29,7 +29,7 @@ var langs = map[string][]blocker{
 		&block{Type: blockTypeSComment, Begin: `%`},
 	},
 
-	// golang
+	// go
 	"go": {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeString, Begin: "`", End: "`"},
