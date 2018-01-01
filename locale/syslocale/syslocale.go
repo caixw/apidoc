@@ -2,7 +2,10 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package syslocale 获取所在系统的本地化信息
+// Package syslocale 获取所在系统的本地化语言信息。
+//
+// *nix 系统会使用 LANG 环境变量中的值，windows 在 LANG
+// 环境变量不存在的情况下，调用 GetUserDefaultLocaleName 函数获取。
 package syslocale
 
 import (
@@ -22,7 +25,7 @@ func Get() (language.Tag, error) {
 	return language.Parse(name)
 }
 
-// 获取环境变量 LANG
+// 获取环境变量 LANG 中有关本地化信息的值。
 func getEnvLang() string {
 	name := os.Getenv("LANG")
 
