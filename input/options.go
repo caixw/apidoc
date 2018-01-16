@@ -99,15 +99,19 @@ func Detect(dir string, recursive bool) (*Options, error) {
 		return nil, errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
 	}
 
-	lang := ""
+	ext := ""
 	cnt := 0
 	for k, v := range exts {
 		if v >= cnt {
-			lang = k
+			ext = k
 			cnt = v
 		}
 	}
+	if len(ext) == 0 {
+		return nil, errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
+	}
 
+	lang := getLangByExt(ext)
 	if len(lang) == 0 {
 		return nil, errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
 	}
