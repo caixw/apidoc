@@ -33,21 +33,6 @@ func (o *Options) Sanitize() *types.OptionsError {
 		return &types.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
-	if !utils.FileExists(o.Dir) {
-		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
-			msg := locale.Sprintf(locale.ErrMkdirError, err)
-			return &types.OptionsError{Field: "dir", Message: msg}
-		}
-	}
-
-	o.dataDir = filepath.Join(o.Dir, vars.JSONDataDirName)
-	if !utils.FileExists(o.dataDir) {
-		if err := os.MkdirAll(o.dataDir, os.ModePerm); err != nil {
-			msg := locale.Sprintf(locale.ErrMkdirError, err)
-			return &types.OptionsError{Field: "dir", Message: msg}
-		}
-	}
-
 	return nil
 }
 
@@ -68,6 +53,24 @@ func (o *Options) groupIsEnable(group string) bool {
 
 // Render 渲染 docs 的内容，具体的渲染参数由 o 指定。
 func Render(docs *types.Doc, o *Options) error {
+	// 文档目录下的文件名可能改变，先清除目录下的所有文件。
+	if err := os.RemoveAll(o.Dir); err != nil {
+		return err
+	}
+
+	if !utils.FileExists(o.Dir) {
+		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
+			return err
+		}
+	}
+
+	o.dataDir = filepath.Join(o.Dir, vars.JSONDataDirName)
+	if !utils.FileExists(o.dataDir) {
+		if err := os.MkdirAll(o.dataDir, os.ModePerm); err != nil {
+			return err
+		}
+	}
+
 	if err := static.Output(o.Dir); err != nil {
 		return err
 	}
