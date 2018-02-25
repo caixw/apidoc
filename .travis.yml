@@ -1,14 +1,21 @@
 language: go
+
+os:
+  - linux
+  - osx
+
 go:
-    - tip
-    - 1.9
-    - 1.8
+  - tip
+  - "1.10"
+  - 1.9
+  - 1.8
+
 install:
-    - go get github.com/issue9/assert
-    - go get github.com/issue9/term/colors
-    - go get github.com/issue9/utils
-    - go get github.com/issue9/version
-    - go get github.com/issue9/is
-    - go get github.com/issue9/logs/writers
-    - go get gopkg.in/yaml.v2
-    - go get golang.org/x/text
+  - go get github.com/issue9/assert
+  - go get github.com/issue9/term/colors
+  - go get github.com/issue9/utils
+  - go get github.com/issue9/version
+  - go get github.com/issue9/is
+  - go get github.com/issue9/logs/writers
+  - go get gopkg.in/yaml.v2
+  - go get golang.org/x/text
