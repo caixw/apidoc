@@ -120,7 +120,7 @@ type Parameter struct {
 	Required        bool                  `json:"required,omitempty" yaml:"required,omitempty"`
 	Deprecated      bool                  `json:"deprecated,omitempty" yaml:"deprecated,omitempty"`
 	AllowEmptyValue bool                  `json:"allowEmptyValue,omitempty" yaml:"allowEmptyValue,omitempty"`
-	Schema          *Schema               `json:"schema,omitemtpy" yaml:"schema,omitemtpy"`
+	Schema          *Schema               `json:"schema,omitempty" yaml:"schema,omitempty"`
 	Example         ExampleValue          `json:"example,omitempty" yaml:"example,omitempty"`
 	Examples        map[string]*Example   `json:"examples,omitempty" yaml:"examples,omitempty"`
 	Content         map[string]*MediaType `json:"content,omitempty" yaml:"content,omitempty"`
@@ -136,7 +136,7 @@ type RequestBody struct {
 // MediaType 媒体类型
 type MediaType struct {
 	Schema   *Schema              `json:"schema,omitempty" yaml:"schema,omitempty"`
-	Example  ExampleValue         `json:"example,omitempty" yaml:"example,omitemtpy"`
+	Example  ExampleValue         `json:"example,omitempty" yaml:"example,omitempty"`
 	Examples map[string]*Example  `json:"examples,omitempty" yaml:"examples,omitempty"`
 	Encoding map[string]*Encoding `json:"encoding,omitempty" yaml:"encoding,omitempty"`
 }
