@@ -7,7 +7,16 @@
 // https://github.com/OAI/OpenAPI-Specification
 package openapi
 
+import (
+	"strconv"
+
+	"github.com/issue9/version"
+)
+
 // TODO 扩展字段未加
+
+// openapi 最新的版本号
+const latestVersion = "3.0.1"
 
 // OpenAPI openAPI 的根对象
 type OpenAPI struct {
@@ -19,6 +28,36 @@ type OpenAPI struct {
 	Security     []*SecurityRequirement `json:"security,omitempty" yaml:"security,omitempty"`
 	Tags         []*Tag                 `json:"tags,omitempty" yaml:"tags,omitempty"`
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
+}
+
+// Sanitize 数据检测
+func (oa *OpenAPI) Sanitize() *Error {
+	if oa.OpenAPI == "" {
+		oa.OpenAPI = latestVersion
+	}
+
+	if !version.SemVerValid(oa.OpenAPI) {
+		return newError("openapi", "无效的格式，必须是 semver 格式")
+	}
+
+	if oa.Info == nil {
+		return newError("info", "不能为空")
+	}
+	if err := oa.Info.Sanitize(); err != nil {
+		err.Field = "info." + err.Field
+		return err
+	}
+
+	for index, srv := range oa.Servers {
+		if err := srv.Sanitize(); err != nil {
+			err.Field = "servers[" + strconv.Itoa(index) + "]."
+			return err
+		}
+	}
+
+	// TODO 其它字段检测
+
+	return nil
 }
 
 // PathItem 每一条路径的详细描述信息
