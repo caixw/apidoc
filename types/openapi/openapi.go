@@ -21,43 +21,6 @@ type OpenAPI struct {
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
 }
 
-// Info 接口文档的基本信息
-type Info struct {
-	Title          string   `json:"title" yaml:"title"`
-	Description    string   `json:"description,omitempty" yaml:"description,omitempty"`
-	TermsOfService string   `json:"termsOfService,omitempty" json:"termsOfService,omitempty"`
-	Contact        *Contact `json:"contact,omitempty" yaml:"contact,omitempty"`
-	License        *License `json:"license,omitempty" yaml:"license,omitempty"`
-	Version        string   `json:"version" yaml:"version"`
-}
-
-// Contact 描述联系方式
-type Contact struct {
-	Name  string `json:"name,omitempty" yaml:"name,omitempty"`
-	URL   string `json:"url,omitempty" yaml:"url,omitempty"`
-	Email string `json:"email,omitempty" yaml:"email,omitempty"`
-}
-
-// License 授权信息
-type License struct {
-	Name string `json:"name" yaml:"name"`
-	URL  string `json:"url,omitempty" yaml:"url,omitempty"`
-}
-
-// Server 服务器描述信息
-type Server struct {
-	URL         string                     `json:"url" yaml:"url"`
-	Description string                     `json:"description,omitempty" yaml:"description,omitempty"`
-	Variables   map[string]*ServerVariable `json:"variables,omitempty" yaml:"variables,omitempty"`
-}
-
-// ServerVariable Server 中 URL 模板中对应的参数变量值
-type ServerVariable struct {
-	Enum        []string `json:"enum,omitempty" yaml:"enum,omitempty"`
-	Default     string   `json:"default" yaml:"default"`
-	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
-}
-
 // PathItem 每一条路径的详细描述信息
 type PathItem struct {
 	Ref         string       `json:"ref,omitempty" yaml:"ref,omitempty"`
