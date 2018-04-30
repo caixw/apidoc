@@ -23,3 +23,14 @@ type Style struct {
 	Explode       bool   `json:"explode,omitempty" yaml:"explode,omitempty"`
 	AllowReserved bool   `json:"allowReserved,omitempty" yaml:"allowReserved,omitempty"`
 }
+
+// Sanitize 对数据进行验证
+func (style *Style) Sanitize() *Error {
+	switch style.Style {
+	case StyleMatrix, StyleLabel, StyleForm, StyleSimple, StyleSpaceDelimited, StylePipeDelimited, StyleDeepObject:
+	default:
+		return newError("style", "无效的值")
+	}
+
+	return nil
+}

@@ -110,22 +110,6 @@ type Operation struct {
 	Servers      []*Server              `json:"servers,omitempty" yaml:"servers,omitempty"`
 }
 
-// Parameter 参数信息
-// 可同时作用于路径参数、请求参数、报头内容和 Cookie 值。
-type Parameter struct {
-	Style
-	Name            string                `json:"name,omitempty" yaml:"name,omitempty"`
-	IN              string                `json:"in" yaml:"in"`
-	Description     string                `json:"description,omitempty" yaml:"description,omitempty"`
-	Required        bool                  `json:"required,omitempty" yaml:"required,omitempty"`
-	Deprecated      bool                  `json:"deprecated,omitempty" yaml:"deprecated,omitempty"`
-	AllowEmptyValue bool                  `json:"allowEmptyValue,omitempty" yaml:"allowEmptyValue,omitempty"`
-	Schema          *Schema               `json:"schema,omitempty" yaml:"schema,omitempty"`
-	Example         ExampleValue          `json:"example,omitempty" yaml:"example,omitempty"`
-	Examples        map[string]*Example   `json:"examples,omitempty" yaml:"examples,omitempty"`
-	Content         map[string]*MediaType `json:"content,omitempty" yaml:"content,omitempty"`
-}
-
 // RequestBody 请求内容
 type RequestBody struct {
 	Description string                `json:"description,omitempty" yaml:"description,omitempty"`
@@ -225,9 +209,6 @@ type Example struct {
 
 // ExampleValue 表示示例的内容类型。
 type ExampleValue string
-
-// Header 即 Parameter 的别名，但 Name 字段必须存在。
-type Header Parameter
 
 // Reference 引用类型
 type Reference struct {
