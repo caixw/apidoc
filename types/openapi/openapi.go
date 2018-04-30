@@ -101,6 +101,13 @@ func (oa *OpenAPI) Sanitize() *Error {
 		return err
 	}
 
+	// 没有，则采用默认值
+	if len(oa.Servers) == 0 {
+		oa.Servers = []*Server{&Server{
+			URL: "/",
+		}}
+	}
+
 	for index, srv := range oa.Servers {
 		if err := srv.Sanitize(); err != nil {
 			err.Field = "servers[" + strconv.Itoa(index) + "]."
