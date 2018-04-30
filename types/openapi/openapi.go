@@ -10,6 +10,7 @@ package openapi
 import (
 	"strconv"
 
+	"github.com/issue9/is"
 	"github.com/issue9/version"
 )
 
@@ -30,53 +31,6 @@ type OpenAPI struct {
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
 }
 
-// Sanitize 数据检测
-func (oa *OpenAPI) Sanitize() *Error {
-	if oa.OpenAPI == "" {
-		oa.OpenAPI = latestVersion
-	}
-
-	if !version.SemVerValid(oa.OpenAPI) {
-		return newError("openapi", "无效的格式，必须是 semver 格式")
-	}
-
-	if oa.Info == nil {
-		return newError("info", "不能为空")
-	}
-	if err := oa.Info.Sanitize(); err != nil {
-		err.Field = "info." + err.Field
-		return err
-	}
-
-	for index, srv := range oa.Servers {
-		if err := srv.Sanitize(); err != nil {
-			err.Field = "servers[" + strconv.Itoa(index) + "]."
-			return err
-		}
-	}
-
-	// TODO 其它字段检测
-
-	return nil
-}
-
-// PathItem 每一条路径的详细描述信息
-type PathItem struct {
-	Ref         string       `json:"ref,omitempty" yaml:"ref,omitempty"`
-	Summary     string       `json:"summary,omitempty" yaml:"summary,omitempty"`
-	Description string       `json:"description,omitempty" yaml:"description,omitempty"`
-	Get         *Operation   `json:"get,omitempty" yaml:"get,omitempty"`
-	Put         *Operation   `json:"put,omitempty" yaml:"put,omitempty"`
-	Post        *Operation   `json:"post,omitempty" yaml:"post,omitempty"`
-	Delete      *Operation   `json:"delete,omitempty" yaml:"delete,omitempty"`
-	Options     *Operation   `json:"options,omitempty" yaml:"options,omitempty"`
-	Head        *Operation   `json:"head,omitempty" yaml:"head,omitempty"`
-	Patch       *Operation   `json:"patch,omitempty" yaml:"patch,omitempty"`
-	Trace       *Operation   `json:"trace,omitempty" yaml:"trace,omitempty"`
-	Servers     []*Server    `json:"servers,omitempty" yaml:"servers,omitempty"`
-	Parameters  []*Parameter `json:"parameters,omitempty" yaml:"parameters,omitempty"`
-}
-
 // Components 可复用的对象
 type Components struct {
 	Schemas         map[string]*Schema         `json:"schemas,omitempty" yaml:"schemas,omitempty"`
@@ -94,94 +48,6 @@ type Components struct {
 type ExternalDocumentation struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	URL         string `json:"url" yaml:"url"`
-}
-
-// Operation 描述对某一个资源的操作具体操作
-type Operation struct {
-	Tags         []string               `json:"tags,omitempty" yaml:"tags,omitempty"`
-	Summary      string                 `json:"summary,omitempty" yaml:"summary,omitempty"`
-	Description  string                 `json:"description,omitempty" yaml:"description,omitempty"`
-	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
-	OperationID  string                 `json:"operationId,omitempty" yaml:"operationId,omitempty" `
-	Parameters   []*Parameter           `json:"parameters,omitempty" yaml:"parameters,omitempty"`
-	RequestBody  *RequestBody           `json:"requestBody,omitempty" yaml:"requestBody,omitempty"`
-	Responses    map[string]*Response   `json:"responses" yaml:"responses"`
-	Callbacks    map[string]*Callback   `json:"callbacks,omitempty" yaml:"callbacks,omitempty"`
-	Deprecated   bool                   `json:"deprecated,omitempty" yaml:"deprecated,omitempty"`
-	Security     []*SecurityRequirement `json:"security,omitempty" yaml:"security,omitempty"`
-	Servers      []*Server              `json:"servers,omitempty" yaml:"servers,omitempty"`
-}
-
-// RequestBody 请求内容
-type RequestBody struct {
-	Description string                `json:"description,omitempty" yaml:"description,omitempty"`
-	Content     map[string]*MediaType `json:"content" yaml:"content"`
-	Required    bool                  `json:"required,omitempty" yaml:"required,omitempty" `
-}
-
-// MediaType 媒体类型
-type MediaType struct {
-	Schema   *Schema              `json:"schema,omitempty" yaml:"schema,omitempty"`
-	Example  ExampleValue         `json:"example,omitempty" yaml:"example,omitempty"`
-	Examples map[string]*Example  `json:"examples,omitempty" yaml:"examples,omitempty"`
-	Encoding map[string]*Encoding `json:"encoding,omitempty" yaml:"encoding,omitempty"`
-}
-
-// Schema 定义了输出和输出的数据类型
-type Schema struct {
-	Type        string      `json:"type,omitempty" yaml:"type,omitempty"`
-	Items       *Schema     `json:"items,omitempty" yaml:"items,omitempty"`
-	Properties  *Schema     `json:"properties,omitempty" yaml:"properties,omitempty"`
-	Default     interface{} `json:"default,omitempty" yaml:"default,omitempty"`
-	Description string      `json:"description,omitempty" yaml:"description,omitempty"`
-
-	// NOTE: 仅声明了部分使用到的变量
-
-	Nullable      bool                   `json:"nullable,omitempty" yaml:"nullable,omitempty"`
-	Discriminator *Discriminator         `json:"discriminator,omitempty" yaml:"discriminator,omitempty"`
-	ReadOnly      bool                   `json:"readOnly,omitempty" yaml:"readOnly,omitempty"`
-	WriteOnly     bool                   `json:"writeOnly,omitempty" yaml:"writeOnly,omitempty"`
-	XML           *XML                   `json:"xml,omitempty" yaml:"xml,omitempty"`
-	ExternalDocs  *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
-	Example       ExampleValue           `json:"example,omitempty" yaml:"example,omitempty"`
-	Deprecated    bool                   `json:"deprecated,omitempty" yaml:"deprecated,omitempty"`
-}
-
-// XML 将 Schema 转换为 XML 的相关声明
-type XML struct {
-	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
-	Namespace string `json:"namespace,omitempty" yaml:"namespace,omitempty"`
-	Prefix    string `json:"prefix,omitempty" yaml:"prefix,omitempty"`
-	Attribute bool   `json:"attribute,omitempty" yaml:"attribute,omitempty"`
-	Wrapped   bool   `json:"wrapped,omitempty" yaml:"wrapped,omitempty"`
-}
-
-// Discriminator Object
-//
-// NOTE: 暂时未用到。
-type Discriminator struct {
-	PropertyName string            `json:"propertyName" yaml:"propertyName"`
-	Mapping      map[string]string `json:"mapping,omitempty" yaml:"mapping,omitempty"`
-}
-
-// Encoding 定义编码
-type Encoding struct {
-	Style
-	ContentType string             `json:"contentType,omitempty" yaml:"contentType,omitempty"`
-	Headers     map[string]*Header `json:"headers,omitempty" yaml:"headers,omitempty"`
-}
-
-// Callback Object
-//
-// NOTE: 暂时未用到
-type Callback PathItem
-
-// Response 每个 API 的返回信息
-type Response struct {
-	Description string                `json:"description" yaml:"description"`
-	Headers     map[string]*Header    `json:"headers,omitempty" yaml:"headers,omitempty"`
-	Content     map[string]*MediaType `json:"content,omitempty" yaml:"content,omitempty"`
-	Links       map[string]*Link      `json:"links,omitempty" yaml:"links,omitempty"`
 }
 
 // Link 链接信息
@@ -215,4 +81,140 @@ type ExampleValue string
 // Reference 引用类型
 type Reference struct {
 	Ref string `json:"$ref" yaml:"$ref"`
+}
+
+// Sanitize 数据检测
+func (oa *OpenAPI) Sanitize() *Error {
+	if oa.OpenAPI == "" {
+		oa.OpenAPI = latestVersion
+	}
+
+	if !version.SemVerValid(oa.OpenAPI) {
+		return newError("openapi", "无效的格式，必须是 semver 格式")
+	}
+
+	if oa.Info == nil {
+		return newError("info", "不能为空")
+	}
+	if err := oa.Info.Sanitize(); err != nil {
+		err.Field = "info." + err.Field
+		return err
+	}
+
+	for index, srv := range oa.Servers {
+		if err := srv.Sanitize(); err != nil {
+			err.Field = "servers[" + strconv.Itoa(index) + "]."
+			return err
+		}
+	}
+
+	if len(oa.Paths) == 0 {
+		return newError("paths", "不能为空")
+	}
+	// TODO 验证 paths
+
+	if oa.Components != nil {
+		if err := oa.Components.Sanitize(); err != nil {
+			err.Field = "components." + err.Field
+			return err
+		}
+	}
+
+	for index, item := range oa.Tags {
+		if err := item.Sanitize(); err != nil {
+			err.Field = "tags[" + strconv.Itoa(index) + "]." + err.Field
+			return err
+		}
+	}
+
+	if oa.ExternalDocs != nil {
+		if err := oa.ExternalDocs.Sanitize(); err != nil {
+			err.Field = "externalDocs." + err.Field
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Sanitize 数据检测
+func (c *Components) Sanitize() *Error {
+	for key, item := range c.Schemas {
+		if err := item.Sanitize(); err != nil {
+			err.Field = "schemas[" + key + "]." + err.Field
+			return err
+		}
+	}
+
+	for key, item := range c.Responses {
+		if err := item.Sanitize(); err != nil {
+			err.Field = "response[" + key + "]." + err.Field
+			return err
+		}
+	}
+
+	for key, item := range c.Parameters {
+		if err := item.Sanitize(); err != nil {
+			err.Field = "parameters[" + key + "]." + err.Field
+			return err
+		}
+	}
+
+	for key, item := range c.RequestBodies {
+		if err := item.Sanitize(); err != nil {
+			err.Field = "requestBodies[" + key + "]." + err.Field
+			return err
+		}
+	}
+
+	for key, item := range c.Headers {
+		if err := item.Sanitize(); err != nil {
+			err.Field = "headers[" + key + "]." + err.Field
+			return err
+		}
+	}
+
+	for key, item := range c.Links {
+		if err := item.Sanitize(); err != nil {
+			err.Field = "links[" + key + "]." + err.Field
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Sanitize 数据检测
+func (ext *ExternalDocumentation) Sanitize() *Error {
+	if !is.URL(ext.URL) {
+		return newError("url", "格式不正确")
+	}
+
+	return nil
+}
+
+// Sanitize 数据检测
+func (l *Link) Sanitize() *Error {
+	if err := l.Server.Sanitize(); err != nil {
+		err.Field = "server." + err.Field
+		return err
+	}
+
+	return nil
+}
+
+// Sanitize 数据检测
+func (tag *Tag) Sanitize() *Error {
+	if tag.Name == "" {
+		return newError("name", "不能为空")
+	}
+
+	if tag.ExternalDocs != nil {
+		if err := tag.ExternalDocs.Sanitize(); err != nil {
+			err.Field = "externalDocs." + err.Field
+			return err
+		}
+	}
+
+	return nil
 }
