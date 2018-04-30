@@ -4,7 +4,10 @@
 
 package openapi
 
-import "fmt"
+import (
+	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/vars"
+)
 
 // Error 错误接口
 type Error struct {
@@ -13,7 +16,7 @@ type Error struct {
 }
 
 func (err *Error) Error() string {
-	return fmt.Sprintf("在字段 %s 上发生以下错误：%s", err.Field, err.Message)
+	return locale.Sprintf(locale.OptionsError, vars.ConfigFilename, err.Field, err.Message)
 }
 
 // Sanitizer 数据验证接口
