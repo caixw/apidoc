@@ -10,7 +10,7 @@ type Schema struct {
 	Items       *Schema     `json:"items,omitempty" yaml:"items,omitempty"`
 	Properties  *Schema     `json:"properties,omitempty" yaml:"properties,omitempty"`
 	Default     interface{} `json:"default,omitempty" yaml:"default,omitempty"`
-	Description string      `json:"description,omitempty" yaml:"description,omitempty"`
+	Description Description `json:"description,omitempty" yaml:"description,omitempty"`
 
 	// NOTE: 仅声明了部分使用到的变量
 
