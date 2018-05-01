@@ -11,6 +11,8 @@ type Schema struct {
 	Properties  *Schema     `json:"properties,omitempty" yaml:"properties,omitempty"`
 	Default     interface{} `json:"default,omitempty" yaml:"default,omitempty"`
 	Description Description `json:"description,omitempty" yaml:"description,omitempty"`
+	Enum        []string    `json:"enum,omitempty" yaml:"enum,omitempty"`
+	Required    bool        `json:"required,omitempty" yaml:"required,omitempty"`
 
 	// NOTE: 仅声明了部分使用到的变量
 

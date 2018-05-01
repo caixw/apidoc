@@ -4,14 +4,26 @@
 
 package openapi
 
-// SecurityScheme.IN 的值定义
+// SecurityScheme.IN 的可选值
 const (
 	SecurityInQuery  = "query"
 	SecurityInHeader = "header"
 	SecurityInCookie = "cookie"
 )
 
+// Security.Type 的可选值
+const (
+	SecurityTypeAPIKey        = "apikey"
+	SecurityTypeHTTP          = "http"
+	SecurityTypeOAuth2        = "oauth2"
+	SecurityTypeOpenIDConnect = "openIdConnect"
+)
+
 // SecurityRequirement Object
+//
+// 键名指向的是 Components.SecuritySchemes 中的名称。
+// 若 SecurityScheme.Type 是 oauth2 或是 openIDConnect，
+// 则 SecurityRequirement 的键值必须是个空值，否则键值为一个 scope 列表。
 type SecurityRequirement map[string][]string
 
 // SecurityScheme Object
@@ -23,7 +35,7 @@ type SecurityScheme struct {
 	Scheme           string      `json:"scheme" yaml:"scheme"`
 	BearerFormat     string      `json:"bearerFormat,omitempty" yaml:"bearerFormat,omitempty"`
 	Flows            *OAuthFlows `json:"flows" yaml:"flows"`
-	OpenIDConnectURL string      `json:"openIdConnectUrl,omitempty" yaml:"openIdConnectUrl,omitempty"`
+	OpenIDConnectURL string      `json:"openIdConnectUrl" yaml:"openIdConnectUrl"`
 }
 
 // OAuthFlows Object
