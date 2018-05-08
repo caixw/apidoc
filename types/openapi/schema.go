@@ -4,6 +4,17 @@
 
 package openapi
 
+// Schema.Type 需要的一些预定义数据类型
+const (
+	TypeInt      = "integer"
+	TypeLong     = "long"
+	TypeFloat    = "float"
+	TypeDouble   = "double"
+	TypeString   = "string"
+	TypeBool     = "boolean"
+	TypePassword = "password"
+)
+
 // Schema 定义了输出和输出的数据类型
 type Schema struct {
 	Type        string      `json:"type,omitempty" yaml:"type,omitempty"`

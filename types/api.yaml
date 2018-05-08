@@ -1,0 +1,32 @@
+# Copyright 2018 by caixw, All rights reserved.
+# Use of this source code is governed by a MIT
+# license that can be found in the LICENSE file.
+
+
+# 以下定义了每个接口定义需要的内容
+
+@api GET /users/{id}/logs 获取用户的日志
+group: [g1,g2] # 所在的分组
+tags: [t1,t2]
+deprecated: false
+description: |markdown
+  == markdown
+  == markdown
+operationID: getuserid
+queries:
+  - page int default desc
+  - size int default desc markdown
+  - state:
+      type: array
+      default: normal
+      enum: [normal,lock,delete]
+params:
+  - id int desc markdown
+headers:
+  - content-type: desc
+  - authorization: auth
+request:
+
+response:
+  default:
+  200:
