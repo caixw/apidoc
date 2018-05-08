@@ -29,6 +29,8 @@ type Parameter struct {
 	Example         ExampleValue          `json:"example,omitempty" yaml:"example,omitempty"`
 	Examples        map[string]*Example   `json:"examples,omitempty" yaml:"examples,omitempty"`
 	Content         map[string]*MediaType `json:"content,omitempty" yaml:"content,omitempty"`
+
+	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
 // Sanitize 对数据进行验证

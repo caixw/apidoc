@@ -42,6 +42,8 @@ type RequestBody struct {
 	Description Description           `json:"description,omitempty" yaml:"description,omitempty"`
 	Content     map[string]*MediaType `json:"content" yaml:"content"`
 	Required    bool                  `json:"required,omitempty" yaml:"required,omitempty" `
+
+	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
 // MediaType 媒体类型
@@ -70,6 +72,8 @@ type Response struct {
 	Headers     map[string]*Header    `json:"headers,omitempty" yaml:"headers,omitempty"`
 	Content     map[string]*MediaType `json:"content,omitempty" yaml:"content,omitempty"`
 	Links       map[string]*Link      `json:"links,omitempty" yaml:"links,omitempty"`
+
+	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
 // Sanitize 数据检测

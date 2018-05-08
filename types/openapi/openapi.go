@@ -62,6 +62,8 @@ type Link struct {
 	RequestBody  map[string]string `json:"requestBody,omitempty" yaml:"requestBody,omitempty"`
 	Description  Description       `json:"description,omitempty" yaml:"description,omitempty"`
 	Server       *Server           `json:"server,omitempty" yaml:"server,omitempty"`
+
+	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
 // Tag 标签内容
@@ -77,15 +79,12 @@ type Example struct {
 	Description   Description  `json:"description,omitempty" yaml:"description,omitempty"`
 	Value         ExampleValue `json:"value,omitempty" yaml:"value,omitempty"`
 	ExternalValue string       `json:"external,omitempty" yaml:"external,omitempty"`
+
+	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
 // ExampleValue 表示示例的内容类型。
 type ExampleValue string
-
-// Reference 引用类型
-type Reference struct {
-	Ref string `json:"$ref" yaml:"$ref"`
-}
 
 // Sanitize 数据检测
 func (oa *OpenAPI) Sanitize() *Error {

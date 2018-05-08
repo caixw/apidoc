@@ -36,6 +36,8 @@ type SecurityScheme struct {
 	BearerFormat     string      `json:"bearerFormat,omitempty" yaml:"bearerFormat,omitempty"`
 	Flows            *OAuthFlows `json:"flows" yaml:"flows"`
 	OpenIDConnectURL string      `json:"openIdConnectUrl" yaml:"openIdConnectUrl"`
+
+	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
 // OAuthFlows Object

@@ -24,6 +24,8 @@ type Schema struct {
 	ExternalDocs  *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
 	Example       ExampleValue           `json:"example,omitempty" yaml:"example,omitempty"`
 	Deprecated    bool                   `json:"deprecated,omitempty" yaml:"deprecated,omitempty"`
+
+	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
 // XML 将 Schema 转换为 XML 的相关声明
