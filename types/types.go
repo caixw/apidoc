@@ -15,27 +15,18 @@ type OptionsError = openapi.Error
 
 // API 文档内容
 type API struct {
-	// TODO
+	API         string              // @api 后面的内容，包含了 method, url 和 summary
 	Group       string              `yaml:"group,omitempty"`
 	Tags        []string            `yaml:"tags,omitempty"`
 	Description openapi.Description `yaml:"description,omitempty"`
 	Deprecated  bool                `yaml:"deprecated,omitempty"`
 	OperationID string              `yaml:"operationId,omitempty" `
-	Queries     map[string]*Query   `yaml:"queries,omitempty"`
-	Params      map[string]*Param   `yaml:"params,omitempty"`
-	Headers     map[string]*Header  `yaml:"header,omitempty"`
+	Queries     []string            `yaml:"queries,omitempty"`
+	Params      []string            `yaml:"params,omitempty"`
+	Headers     []string            `yaml:"header,omitempty"`
 	Request     *Request            `yaml:"request,omitempty"` // GET 此值可能为空
 	Responses   []*Response         `yaml:"responses"`
 }
-
-// Query 表示查询参数
-type Query openapi.Parameter
-
-// Param 表示地址中的参数信息
-type Param openapi.Parameter
-
-// Header 表示报头记录
-type Header openapi.Header
 
 // Request 表示请求内容
 type Request struct {

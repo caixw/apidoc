@@ -16,15 +16,12 @@ operationID: getuserid
 queries:
   - page int default desc
   - size int default desc markdown
-  - state:
-      type: array
-      default: normal
-      enum: [normal,lock,delete]
+  - state array [normal,lock] [normal,lock,delete] 状态码
 params:
-  - id int desc markdown
+  id: int desc markdown
 headers:
-  - content-type: desc
-  - authorization: auth
+  content-type: desc
+  authorization: auth
 request:
 
 response:
