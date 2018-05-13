@@ -5,13 +5,9 @@
 // Package types 一些公用类型的定义
 package types
 
-import "github.com/caixw/apidoc/types/openapi"
-
-// Sanitizer 配置项的检测接口
-type Sanitizer = openapi.Sanitizer
-
-// OptionsError 提供对配置项错误的描述
-type OptionsError = openapi.Error
+import (
+	"github.com/caixw/apidoc/types/openapi"
+)
 
 // API 文档内容
 type API struct {
@@ -38,4 +34,9 @@ type Request struct {
 type Response struct {
 	Schema   *openapi.Schema                 `yaml:"schema"`
 	Examples map[string]openapi.ExampleValue `yaml:"examples,omitempty"`
+}
+
+func (doc *Doc) parseAPI(api *API) error {
+	// TODO
+	return nil
 }
