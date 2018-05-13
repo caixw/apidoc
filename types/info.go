@@ -4,7 +4,11 @@
 
 package types
 
-import "github.com/caixw/apidoc/types/openapi"
+import (
+	"errors"
+
+	"github.com/caixw/apidoc/types/openapi"
+)
 
 // Info 文档的信息
 type Info struct {
@@ -27,6 +31,27 @@ type Info struct {
 }
 
 func (doc *Doc) parseInfo(info *Info) error {
-	// TODO
+	doc.locker.Lock()
+	defer doc.locker.Unlock()
+
+	if doc.OpenAPI.Info != nil {
+		return errors.New("已经存在相关的文档信息")
+	}
+
+	doc.OpenAPI.Servers = info.Servers
+	doc.OpenAPI.Components = info.Components
+	doc.OpenAPI.Security = info.Security
+	doc.OpenAPI.Tags = info.Tags
+	doc.OpenAPI.ExternalDocs = info.ExternalDocs
+
+	doc.OpenAPI.Info = &openapi.Info{
+		Title:          info.Title,
+		Description:    info.Description,
+		TermsOfService: info.TermsOfService,
+		Contact:        info.Contact,
+		License:        info.License,
+		Version:        info.Version,
+	}
+
 	return nil
 }
