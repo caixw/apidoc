@@ -15,29 +15,32 @@ import (
 
 // API 文档内容
 type API struct {
-	API         string              // @api 后面的内容，包含了 method, url 和 summary
-	Group       string              `yaml:"group,omitempty"`
-	Tags        []string            `yaml:"tags,omitempty"`
-	Description openapi.Description `yaml:"description,omitempty"`
-	Deprecated  bool                `yaml:"deprecated,omitempty"`
-	OperationID string              `yaml:"operationId,omitempty" `
-	Queries     []string            `yaml:"queries,omitempty"`
-	Params      []string            `yaml:"params,omitempty"`
-	Headers     []string            `yaml:"header,omitempty"`
-	Request     *Request            `yaml:"request,omitempty"` // GET 此值可能为空
-	Responses   []*Response         `yaml:"responses"`
+	API         string               // @api 后面的内容，包含了 method, url 和 summary
+	Group       string               `yaml:"group,omitempty"`
+	Tags        []string             `yaml:"tags,omitempty"`
+	Description openapi.Description  `yaml:"description,omitempty"`
+	Deprecated  bool                 `yaml:"deprecated,omitempty"`
+	OperationID string               `yaml:"operationId,omitempty" `
+	Queries     []string             `yaml:"queries,omitempty"`
+	Params      []string             `yaml:"params,omitempty"`
+	Headers     []string             `yaml:"header,omitempty"`
+	Request     *Request             `yaml:"request,omitempty"` // GET 此值可能为空
+	Responses   map[string]*Response `yaml:"responses"`
+}
+
+// Content 表示请求和返回的内容
+type Content struct {
+	Description openapi.Description           `yaml:"description,omitempty"`
+	Content     map[string]*openapi.MediaType `yaml:"content"`
 }
 
 // Request 表示请求内容
-type Request struct {
-	Schema   *openapi.Schema                 `yaml:"schema"`
-	Examples map[string]openapi.ExampleValue `yaml:"examples,omitempty"`
-}
+type Request Content
 
 // Response 表示返回的内容
 type Response struct {
-	Schema   *openapi.Schema                 `yaml:"schema"`
-	Examples map[string]openapi.ExampleValue `yaml:"examples,omitempty"`
+	Content
+	Headers map[string]string `json:"headers,omitempty" yaml:"headers,omitempty"`
 }
 
 func (doc *Doc) parseAPI(api *API) error {
@@ -56,11 +59,23 @@ func (doc *Doc) parseAPI(api *API) error {
 	}
 
 	o.RequestBody = &openapi.RequestBody{
-		// TODO
+		Description: api.Request.Description,
+		Content:     api.Request.Content,
 	}
 
-	o.Responses = make(map[string]*openapi.Response, 3)
-	// TODO
+	o.Responses = make(map[string]*openapi.Response, len(api.Responses))
+	for status, resp := range api.Responses {
+		r := &openapi.Response{
+			Description: resp.Description,
+			Content:     resp.Content.Content,
+			Headers:     make(map[string]*openapi.Header, len(resp.Headers)),
+		}
+		for k, v := range resp.Headers {
+			r.Headers[k] = &openapi.Header{Description: openapi.Description(v)}
+		}
+
+		o.Responses[status] = r
+	}
 
 	return nil
 }

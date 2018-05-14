@@ -55,6 +55,8 @@ type MediaType struct {
 }
 
 // Encoding 定义编码
+//
+// 对父对象中的 Schema 中的一些字段的特殊定义
 type Encoding struct {
 	Style
 	ContentType string             `json:"contentType,omitempty" yaml:"contentType,omitempty"`
