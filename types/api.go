@@ -81,7 +81,49 @@ func (doc *Doc) parseAPI(api *API) error {
 }
 
 func (api *API) parseParameter(o *openapi.Operation) error {
-	// TODO
+	l := len(api.Queries) + len(api.Params) + len(api.Headers)
+	o.Parameters = make([]*openapi.Parameter, 0, l)
+
+	// queries
+	for _, query := range api.Queries {
+		queries := strings.SplitN(query, " ", 4)
+		o.Parameters = append(o.Parameters, &openapi.Parameter{
+			Name:        queries[0],
+			IN:          openapi.ParameterINQuery,
+			Description: openapi.Description(queries[3]),
+			Schema: &openapi.Schema{
+				Type:    queries[1], // TODO 判断是否正确
+				Default: queries[2], // TODO 判断是否可以和类型匹配
+			},
+		})
+	}
+
+	// params
+	for _, param := range api.Params {
+		params := strings.SplitN(param, " ", 3)
+		o.Parameters = append(o.Parameters, &openapi.Parameter{
+			Name:        params[0],
+			IN:          openapi.ParameterINPath,
+			Description: openapi.Description(params[2]),
+			Schema: &openapi.Schema{
+				Type: params[1], // TODO 判断是否正确
+			},
+		})
+	}
+
+	// headers
+	for _, header := range api.Headers {
+		headers := strings.SplitN(header, " ", 2)
+		o.Parameters = append(o.Parameters, &openapi.Parameter{
+			Name:        headers[0],
+			IN:          openapi.ParameterINHeader,
+			Description: openapi.Description(headers[1]),
+			Schema: &openapi.Schema{
+				Type: openapi.TypeString,
+			},
+		})
+	}
+
 	return nil
 }
 
