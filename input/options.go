@@ -15,7 +15,7 @@ import (
 
 	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/types/openapi"
 )
 
 // Options 指定输入内容的相关信息。
@@ -32,21 +32,21 @@ type Options struct {
 }
 
 // Sanitize 检测 Options 变量是否符合要求
-func (opt *Options) Sanitize() *types.OptionsError {
+func (opt *Options) Sanitize() *openapi.Error {
 	if len(opt.Dir) == 0 {
-		return &types.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
+		return &openapi.Error{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return &types.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrDirNotExists)}
+		return &openapi.Error{Field: "dir", Message: locale.Sprintf(locale.ErrDirNotExists)}
 	}
 
 	if len(opt.Lang) == 0 {
-		return &types.OptionsError{Field: "lang", Message: locale.Sprintf(locale.ErrRequired)}
+		return &openapi.Error{Field: "lang", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if !langIsSupported(opt.Lang) {
-		return &types.OptionsError{Field: "lang", Message: locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang)}
+		return &openapi.Error{Field: "lang", Message: locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang)}
 	}
 
 	if len(opt.Encoding) == 0 {

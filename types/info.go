@@ -22,7 +22,7 @@ type Info struct {
 	ExternalDocs *openapi.ExternalDocumentation `yaml:"externalDocs,omitempty"`
 
 	// openapi.Info 元素内容
-	Title          string              `yaml:"title"`
+	Title          string              // 从 @apidoc 中获取
 	Description    openapi.Description `yaml:"description,omitempty"`
 	TermsOfService string              `json:"termsOfService,omitempty"`
 	Contact        *openapi.Contact    `yaml:"contact,omitempty"`

@@ -11,6 +11,7 @@
 package input
 
 import (
+	"bytes"
 	"errors"
 	"os"
 	"path/filepath"
@@ -18,10 +19,10 @@ import (
 	"time"
 
 	"github.com/caixw/apidoc/input/encoding"
-	"github.com/caixw/apidoc/input/syntax"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // 需要解析的最小代码块，小于此值，将不作解析
@@ -29,9 +30,11 @@ import (
 const miniSize = len(vars.API) + 1
 
 // Parse 分析源代码，获取相应的文档内容。
-func Parse(options ...*Options) (*types.Doc, time.Duration) {
+func Parse(options ...*Options) (*types.Docs, time.Duration) {
 	start := time.Now()
-	docs := types.NewDoc()
+	docs := &types.Docs{
+		Docs: make(map[string]*types.Doc, 5),
+	}
 
 	wg := &sync.WaitGroup{}
 	for _, o := range options {
@@ -45,14 +48,10 @@ func Parse(options ...*Options) (*types.Doc, time.Duration) {
 	}
 	wg.Wait()
 
-	if len(docs.Title) == 0 {
-		docs.Title = vars.DefaultTitle
-	}
-
 	return docs, time.Now().Sub(start)
 }
 
-func parse(docs *types.Doc, o *Options) error {
+func parse(docs *types.Docs, o *Options) error {
 	blocks, found := langs[o.Lang]
 	if !found {
 		return errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang))
@@ -82,7 +81,7 @@ func Encodings() []string {
 }
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。
-func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
+func parseFile(docs *types.Docs, path string, blocks []blocker, o *Options) {
 	data, err := encoding.Transform(path, o.Encoding)
 	if err != nil {
 		if o.ErrorLog != nil {
@@ -112,7 +111,7 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 		ln := l.lineNumber() + o.StartLineNumber // 记录当前的行号，顺便调整起始行号
 		rs, ok := block.EndFunc(l)
 		if !ok {
-			syntax.OutputError(o.ErrorLog, path, ln, locale.ErrNotFoundEndFlag)
+			// syntax.OutputError(o.ErrorLog, path, ln, locale.ErrNotFoundEndFlag)
 			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 		}
 
@@ -123,18 +122,51 @@ func parseFile(docs *types.Doc, path string, blocks []blocker, o *Options) {
 
 		wg.Add(1)
 		go func(rs []rune, ln int) {
-			i := &syntax.Input{
+			/*i := &syntax.Input{
 				File:  path,
 				Line:  ln,
 				Data:  rs,
 				Error: o.ErrorLog,
 				Warn:  o.WarnLog,
 			}
-			syntax.Parse(i, docs)
+			syntax.Parse(i, docs)*/
+			parseData([]byte(string(rs)), docs) // TODO 减少转换
 
 			wg.Done()
 		}(rs, ln)
 	} // end for
+}
+
+func parseData(data []byte, d *types.Docs) error {
+	data = bytes.TrimLeft(data, " ")
+
+	if bytes.HasPrefix([]byte(vars.API), data) {
+		index := bytes.IndexByte(data, '\n')
+		line := data[:index]
+		data = data[index+1:]
+		api := &types.API{}
+		if err := yaml.Unmarshal(data, api); err != nil {
+			return err
+		}
+
+		api.API = string(line)
+		return d.NewAPI(api)
+	}
+
+	if bytes.HasPrefix([]byte(vars.APIDoc), data) {
+		index := bytes.IndexByte(data, '\n')
+		line := data[:index]
+		data = data[index+1:]
+		info := &types.Info{}
+		if err := yaml.Unmarshal(data, info); err != nil {
+			return err
+		}
+
+		info.Title = string(line)
+		return d.NewInfo(info)
+	}
+
+	return nil
 }
 
 // 按 Options 中的规则查找所有符合条件的文件列表。

@@ -13,13 +13,11 @@ import (
 	"github.com/issue9/assert"
 )
 
-var _ types.Sanitizer = &Options{}
-
 func TestParse(t *testing.T) {
 	a := assert.New(t)
 
 	testParse(a, "go")
-	testParse(a, "groovy")
+	/*testParse(a, "groovy")
 	testParse(a, "java")
 	testParse(a, "javascript")
 	testParse(a, "pascal")
@@ -28,7 +26,7 @@ func TestParse(t *testing.T) {
 	testParse(a, "python")
 	testParse(a, "ruby")
 	testParse(a, "rust")
-	testParse(a, "swift")
+	testParse(a, "swift")*/
 }
 
 func testParse(a *assert.Assertion, lang string) {

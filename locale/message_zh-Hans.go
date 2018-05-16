@@ -4,8 +4,6 @@
 
 package locale
 
-import "github.com/caixw/apidoc/vars"
-
 func init() {
 	locales["zh-Hans"] = map[string]string{
 		SyntaxError:  "在[%v:%v]出现语法错误[%v]",
@@ -49,10 +47,8 @@ func init() {
 		ErrNotFoundSupportedLang: "该目录下没有支持的语言文件",
 		ErrUnknownTag:            "不认识的标签：%v",
 		ErrDuplicateTag:          "重复的标签：%v",
-		ErrSuccessNotEmpty:       vars.APISuccess + " 不能为空",
 		ErrTagArgTooMuch:         "标签：%v 指定了太多的参数",
 		ErrTagArgNotEnough:       "标签：%v 参数不够",
-		ErrSecondArgMustURL:      vars.APILicense + " 第二个参数必须为 URL",
 		ErrUnsupportedEncoding:   "不支持的编码方式：%v",
 
 		// logs

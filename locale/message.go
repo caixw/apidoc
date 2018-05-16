@@ -4,8 +4,6 @@
 
 package locale
 
-import "github.com/caixw/apidoc/vars"
-
 // 各个语种的语言对照表，通过相应文件的 init() 作初始化这样
 // 在删除文件是，就自动删除相应的语言文件，不需要手修改代码。
 var locales = map[string]map[string]string{}
@@ -53,10 +51,8 @@ const (
 	ErrNotFoundSupportedLang = "该目录下没有支持的语言文件"
 	ErrUnknownTag            = "不认识的标签：%v"
 	ErrDuplicateTag          = "重复的标签：%v"
-	ErrSuccessNotEmpty       = vars.APISuccess + " 不能为空"
 	ErrTagArgTooMuch         = "标签：%v 指定了太多的参数"
 	ErrTagArgNotEnough       = "标签：%v 参数不够"
-	ErrSecondArgMustURL      = vars.APILicense + " 第二个参数必须为 URL"
 	ErrUnsupportedEncoding   = "不支持的编码方式：%v"
 
 	// logs

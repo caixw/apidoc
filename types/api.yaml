@@ -6,7 +6,7 @@
 # 以下定义了每个接口定义需要的内容
 
 @api GET /users/{id}/logs 获取用户的日志
-group: [g1,g2] # 所在的分组
+group: g1 # 所在的分组
 tags: [t1,t2]
 deprecated: false
 description: |markdown
@@ -23,7 +23,32 @@ headers:
   - content-type desc
   - authorization auth
 request:
-
-response:
+  description: request body
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          username:
+            type: string
+            description: 登录账号
+          password:
+            type: string
+            description: 密码
+responses:
   default:
-  200:
+    description:
+    headers:
+      header1: header1
+      header2: header2
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            token:
+              type: string
+              description: 登录账号
+            password:
+              type: string
+              description: 密码

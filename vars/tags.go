@@ -6,19 +6,6 @@ package vars
 
 // 所有标签的定义
 const (
-	API        = "@api"
-	APIDoc     = "@apidoc"
-	APILicense = "@apiLicense"
-	APIVersion = "@apiVersion"
-	APIParam   = "@apiParam"
-	APIQuery   = "@apiQuery"
-	APIHeader  = "@apiHeader"
-	APISuccess = "@apiSuccess"
-	APIError   = "@apiError"
-	APIRequest = "@apiRequest"
-	APIBaseURL = "@apiBaseURL"
-	APIGroup   = "@apiGroup"
-	APIIgnore  = "@apiIgnore"
-	APIContent = "@apiContent"
-	APIExample = "@apiExample"
+	API    = "@api"
+	APIDoc = "@apidoc"
 )

@@ -6,8 +6,6 @@ package openapi
 
 import (
 	"strings"
-
-	"github.com/issue9/is"
 )
 
 // 去掉 URL 中的 {} 模板参数。使其符合 is.URL 的判断规则
@@ -30,8 +28,8 @@ type ServerVariable struct {
 // Sanitize 数据检测
 func (srv *Server) Sanitize() *Error {
 	url := urlreplace.Replace(srv.URL)
-	if !is.URL(url) {
-		return newError("url", "格式不正确")
+	if url == "" { // 可以是 / 未必是一个 URL
+		return newError("url", "不能为空")
 	}
 
 	for key, val := range srv.Variables {
