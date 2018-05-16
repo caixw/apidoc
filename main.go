@@ -15,6 +15,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strings"
+	"time"
 
 	"github.com/issue9/logs/writers"
 	"github.com/issue9/term/colors"
@@ -24,6 +25,7 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
+	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
 )
 
@@ -125,15 +127,18 @@ func run(wd string) {
 		return
 	}
 
-	docs, elapsed := input.Parse(cfg.Inputs...)
-
-	cfg.Output.Elapsed = elapsed
+	start := time.Now()
+	docs, err := types.Parse(cfg.Inputs...)
+	if err != nil {
+		erro.Println(err)
+	}
+	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err := output.Render(docs, cfg.Output); err != nil {
 		erro.Println(err)
 		return
 	}
 
-	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, elapsed))
+	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, cfg.Output.Elapsed))
 }
 
 func usage() {

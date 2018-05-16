@@ -25,6 +25,7 @@ import "net/http"
 //             description: 密码
 func login(w http.ResponseWriter, r *http.Request) {
 	println("/**********", "login")
+	// TODO
 }
 
 // 123
@@ -49,4 +50,5 @@ request:
 */
 func logout(w http.ResponseWriter, r *http.Request) {
 	println("logout", "**********/")
+	/*/* TODO */*/
 }

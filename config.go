@@ -14,18 +14,23 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
-	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/types/openapi"
 )
 
-// 项目的配置内容，分别引用到了 input.Options 和 output.Options。
-//
-// 所有可能改变输出的表现形式的，应该添加此配置中；
-// 而如果只是改变输出内容的，应该直接以标签的形式出现在代码中，
-// 比如文档的版本号、标题等，都是直接使用 @apidoc 来指定的。
+// 项目的配置内容
 type config struct {
-	Version string           `yaml:"version"` // 产生此配置文件的程序版本号
-	Inputs  []*input.Options `yaml:"inputs"`  // 输入的配置项，可以指定多个项目
-	Output  *output.Options  `yaml:"output"`
+	// 产生此配置文件的程序版本号。
+	//
+	// 程序会用此来判断程序的兼容性。
+	Version string `yaml:"version"`
+
+	// 输入的配置项，可以指定多个项目
+	//
+	// 多语言项目，可能需要用到多个输入面。
+	// 但是输出内容依然会被集中到 Output 一个字段中。
+	Inputs []*input.Options `yaml:"inputs"`
+
+	Output *output.Options `yaml:"output"`
 }
 
 // 加载 path 所指的文件内容到 *config 实例。
@@ -49,15 +54,15 @@ func loadConfig(path string) (*config, error) {
 
 func (cfg *config) sanitize() error {
 	if !version.SemVerValid(cfg.Version) {
-		return &types.OptionsError{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
+		return &openapi.Error{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return &types.OptionsError{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
+		return &openapi.Error{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	if cfg.Output == nil {
-		return &types.OptionsError{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
+		return &openapi.Error{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	for i, opt := range cfg.Inputs {

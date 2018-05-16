@@ -3,7 +3,3 @@
 // license that can be found in the LICENSE file.
 
 package output
-
-import "github.com/caixw/apidoc/types"
-
-var _ types.Sanitizer = &Options{}

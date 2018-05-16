@@ -6,16 +6,17 @@
 package output
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/output/static"
-	"github.com/caixw/apidoc/types"
-	"github.com/caixw/apidoc/vars"
-
 	"github.com/issue9/utils"
+	yaml "gopkg.in/yaml.v2"
+
+	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/types/openapi"
+	"github.com/caixw/apidoc/vars"
 )
 
 // Options 指定了渲染输出的相关设置项。
@@ -24,13 +25,13 @@ type Options struct {
 	Groups  []string      `yaml:"groups,omitempty"` // 仅输出这些组，为空表示输出所有
 	Elapsed time.Duration `yaml:"-"`                // 编译用时
 
-	dataDir string // json 数据保存的目录
+	dataDir string // 数据保存的目录
 }
 
 // Sanitize 对 Options 作一些初始化操作。
-func (o *Options) Sanitize() *types.OptionsError {
+func (o *Options) Sanitize() *openapi.Error {
 	if len(o.Dir) == 0 {
-		return &types.OptionsError{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
+		return &openapi.Error{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
 	}
 
 	return nil
@@ -52,7 +53,7 @@ func (o *Options) groupIsEnable(group string) bool {
 }
 
 // Render 渲染 docs 的内容，具体的渲染参数由 o 指定。
-func Render(docs *types.Doc, o *Options) error {
+func Render(docs map[string]*openapi.OpenAPI, o *Options) error {
 	// 文档目录下的文件名可能改变，先清除目录下的所有文件。
 	if err := os.RemoveAll(o.Dir); err != nil {
 		return err
@@ -71,9 +72,17 @@ func Render(docs *types.Doc, o *Options) error {
 		}
 	}
 
-	if err := static.Output(o.Dir); err != nil {
-		return err
+	for name, doc := range docs {
+		path := filepath.Join(o.dataDir, name)
+		data, err := yaml.Marshal(doc)
+		if err != nil {
+			return err
+		}
+
+		if err = ioutil.WriteFile(path, data, os.ModePerm); err != nil {
+			return err
+		}
 	}
 
-	return render(docs, o)
+	return nil
 }

@@ -5,8 +5,12 @@
 package types
 
 import (
+	"bytes"
 	"sync"
 
+	yaml "gopkg.in/yaml.v2"
+
+	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/types/openapi"
 	"github.com/caixw/apidoc/vars"
 )
@@ -53,4 +57,61 @@ func (docs *Docs) getDoc(group string) *Doc {
 	}
 
 	return doc
+}
+
+// Parse 获取文档内容
+func Parse(o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
+	docs := &Docs{
+		Docs: make(map[string]*Doc, 10),
+	}
+
+	c, err := input.Parse(o...)
+	if err != nil {
+		return nil, err
+	}
+
+	for block := range c {
+		if err = parseData(block.Data, docs); err != nil {
+			return nil, err
+		}
+	}
+
+	ret := make(map[string]*openapi.OpenAPI, len(docs.Docs))
+	for name, doc := range docs.Docs {
+		ret[name] = doc.OpenAPI
+	}
+
+	return ret, nil
+}
+
+func parseData(data []byte, d *Docs) error {
+	data = bytes.TrimLeft(data, " ")
+
+	if bytes.HasPrefix([]byte(vars.API), data) {
+		index := bytes.IndexByte(data, '\n')
+		line := data[:index]
+		data = data[index+1:]
+		api := &API{}
+		if err := yaml.Unmarshal(data, api); err != nil {
+			return err
+		}
+
+		api.API = string(line)
+		return d.NewAPI(api)
+	}
+
+	if bytes.HasPrefix([]byte(vars.APIDoc), data) {
+		index := bytes.IndexByte(data, '\n')
+		line := data[:index]
+		data = data[index+1:]
+		info := &Info{}
+		if err := yaml.Unmarshal(data, info); err != nil {
+			return err
+		}
+
+		info.Title = string(line)
+		return d.NewInfo(info)
+	}
+
+	return nil
 }

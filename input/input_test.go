@@ -5,12 +5,58 @@
 package input
 
 import (
+	"bytes"
 	"path/filepath"
 	"testing"
 
-	"github.com/caixw/apidoc/input/encoding"
-	"github.com/caixw/apidoc/types"
 	"github.com/issue9/assert"
+)
+
+var (
+	api1 = []byte(` @api POST /users/login 登录
+ group users
+ tags: [t1,t2]
+
+ request:
+   description: request body
+   content:
+     application/json:
+       schema:
+         type: object
+         properties:
+           username:
+             type: string
+             description: 登录账号
+           password:
+             type: string
+  	         description: 密码`)
+
+	api2 = []byte(` @api DELETE /users/login 注销登录
+ group users
+ tags: [t1,t2]
+
+ request:
+   description: request body
+   content:
+     application/json:
+       schema:
+         type: object
+         properties:
+           username:
+             type: string
+             description: 登录账号
+           password:
+             type: string
+   	         description: 密码`)
+
+	doc = []byte(` @apidoc title of api
+ version: 2.9
+ license:
+   name: MIT
+   url: https://opensources.org/licenses/MIT
+ description:>
+   line1
+   line2`)
 )
 
 func TestParse(t *testing.T) {
@@ -37,73 +83,14 @@ func testParse(a *assert.Assertion, lang string) {
 	}
 	a.NotError(o.Sanitize()) // 初始化扩展名信息
 
-	docs, elapsed := Parse(o)
-	a.True(elapsed > 0).
-		Equal(len(docs.Apis), 2)
+	channel, err := Parse(o)
+	a.NotError(err).NotNil(channel)
 
-		// doc.xx
-	a.Equal(docs.Title, "title of api").
-		Equal(docs.Version, "2.9").
-		Equal(docs.BaseURL, "https://api.caixw.io").
-		Equal(docs.LicenseName, "MIT").
-		Equal(docs.LicenseURL, "https://opensources.org/licenses/MIT").
-		Equal(docs.Content, "\n line1\n line2\n")
-
-	// test1.xx
-	api0 := docs.Apis[0]
-	api1 := docs.Apis[1]
-	a.Equal(api0.URL, "/users/login").
-		Equal(api1.URL, "/users/login").
-		Equal(api0.Group, "users").
-		Equal(api1.Group, "users")
-}
-
-func TestParseFile(t *testing.T) {
-	a := assert.New(t)
-
-	testParseFile(a, "go", "./testdata/go/test1.go")
-	testParseFile(a, "groovy", "./testdata/groovy/test1.groovy")
-	testParseFile(a, "java", "./testdata/java/test1.java")
-	testParseFile(a, "javascript", "./testdata/javascript/test1.js")
-	testParseFile(a, "pascal", "./testdata/pascal/test1.pas")
-	testParseFile(a, "perl", "./testdata/perl/test1.pl")
-	testParseFile(a, "php", "./testdata/php/test1.php")
-	testParseFile(a, "python", "./testdata/python/test1.py")
-	testParseFile(a, "ruby", "./testdata/ruby/test1.rb")
-	testParseFile(a, "rust", "./testdata/rust/test1.rs")
-	testParseFile(a, "swift", "./testdata/swift/test1.swift")
-}
-
-func testParseFile(a *assert.Assertion, lang, path string) {
-	docs := types.NewDoc()
-	a.NotNil(docs)
-
-	b, found := langs[lang]
-	if !found {
-		a.TB().Error("不支持该语言")
-	}
-
-	parseFile(docs, path, b, &Options{StartLineNumber: 1, Encoding: encoding.DefaultEncoding})
-	a.Equal(2, len(docs.Apis))
-
-	api0 := docs.Apis[0]
-	api1 := docs.Apis[1]
-
-	a.TB().Log(api0.Success.Examples[0])
-	a.TB().Log(api1.Success.Examples[0])
-
-	a.Equal(api0.URL, "/users/login").
-		Equal(api1.URL, "/users/login").
-		Equal(api0.Group, "users").
-		Equal(api1.Group, "users")
-
-	if api0.Method == "POST" {
-		a.Equal(api1.Method, "DELETE").
-			Equal(1, len(api1.Request.Headers))
-	} else {
-		a.Equal(api0.Method, "DELETE").
-			Equal(api1.Method, "POST").
-			Equal(1, len(api0.Request.Headers))
+	for b := range channel {
+		eq := bytes.Equal(b.Data, api1) ||
+			bytes.Equal(b.Data, api2) ||
+			bytes.Equal(b.Data, doc)
+		a.True(eq, "返回的内容为：%s", string(b.Data))
 	}
 }
 

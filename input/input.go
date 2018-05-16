@@ -16,72 +16,69 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
-	"time"
 
 	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/types"
 	"github.com/caixw/apidoc/vars"
-	yaml "gopkg.in/yaml.v2"
 )
+
+// Block 解析出来的注释块
+type Block struct {
+	File string
+	Line int
+	Data []byte
+}
 
 // 需要解析的最小代码块，小于此值，将不作解析
 // 即其长度必须大于 @api 这四个字符串的长度
 const miniSize = len(vars.API) + 1
 
 // Parse 分析源代码，获取相应的文档内容。
-func Parse(options ...*Options) (*types.Docs, time.Duration) {
-	start := time.Now()
-	docs := &types.Docs{
-		Docs: make(map[string]*types.Doc, 5),
-	}
+//
+// 当所有的代码块已经放入 Block 之后，Block 会被关闭。
+func Parse(o ...*Options) (chan Block, error) {
+	data := make(chan Block, 500)
 
-	wg := &sync.WaitGroup{}
-	for _, o := range options {
-		wg.Add(1)
-		go func(o *Options) {
-			if err := parse(docs, o); err != nil {
-				o.ErrorLog.Println(err)
-			}
-			wg.Done()
-		}(o)
-	}
-	wg.Wait()
+	go func() {
+		wg := &sync.WaitGroup{}
+		for _, opt := range o {
+			parse(data, wg, opt)
+		}
+		wg.Wait()
 
-	return docs, time.Now().Sub(start)
+		close(data)
+	}()
+
+	return data, nil
 }
 
-func parse(docs *types.Docs, o *Options) error {
+func parse(data chan Block, wg *sync.WaitGroup, o *Options) {
 	blocks, found := langs[o.Lang]
 	if !found {
-		return errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang))
+		o.ErrorLog.Println(errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang)))
+		return
 	}
 
 	paths, err := recursivePath(o)
 	if err != nil {
-		return errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang))
+		e := errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang))
+		o.ErrorLog.Println(e)
+		return
 	}
 
-	wg := sync.WaitGroup{}
-	defer wg.Wait()
 	for _, path := range paths {
 		wg.Add(1)
 		go func(path string) {
-			parseFile(docs, path, blocks, o)
+			parseFile(data, path, blocks, o)
 			wg.Done()
 		}(path)
 	}
-
-	return nil
-}
-
-// Encodings 返回支持的编码方式
-func Encodings() []string {
-	return encoding.Encodings()
 }
 
 // 分析 path 指向的文件，并将内容写入到 docs 中。
-func parseFile(docs *types.Docs, path string, blocks []blocker, o *Options) {
+//
+// NOTE: parseFile 内部不能有 go 协程处理代码。
+func parseFile(channel chan Block, path string, blocks []blocker, o *Options) {
 	data, err := encoding.Transform(path, o.Encoding)
 	if err != nil {
 		if o.ErrorLog != nil {
@@ -92,9 +89,6 @@ func parseFile(docs *types.Docs, path string, blocks []blocker, o *Options) {
 
 	l := &lexer{data: data, blocks: blocks}
 	var block blocker
-
-	wg := sync.WaitGroup{}
-	defer wg.Wait()
 
 	for {
 		if l.atEOF() {
@@ -116,57 +110,27 @@ func parseFile(docs *types.Docs, path string, blocks []blocker, o *Options) {
 		}
 
 		block = nil
-		if len(rs) < miniSize {
+		d := []byte(string(rs)) // TODO 减少转换
+		if len(d) < miniSize {
 			continue
 		}
 
-		wg.Add(1)
-		go func(rs []rune, ln int) {
-			/*i := &syntax.Input{
-				File:  path,
-				Line:  ln,
-				Data:  rs,
-				Error: o.ErrorLog,
-				Warn:  o.WarnLog,
-			}
-			syntax.Parse(i, docs)*/
-			parseData([]byte(string(rs)), docs) // TODO 减少转换
+		d = bytes.TrimLeft(d, " ")
+		if !bytes.HasPrefix(d, []byte(vars.API)) && !bytes.HasPrefix(d, []byte(vars.APIDoc)) {
+			continue
+		}
 
-			wg.Done()
-		}(rs, ln)
+		channel <- Block{
+			File: path,
+			Line: ln,
+			Data: d,
+		}
 	} // end for
 }
 
-func parseData(data []byte, d *types.Docs) error {
-	data = bytes.TrimLeft(data, " ")
-
-	if bytes.HasPrefix([]byte(vars.API), data) {
-		index := bytes.IndexByte(data, '\n')
-		line := data[:index]
-		data = data[index+1:]
-		api := &types.API{}
-		if err := yaml.Unmarshal(data, api); err != nil {
-			return err
-		}
-
-		api.API = string(line)
-		return d.NewAPI(api)
-	}
-
-	if bytes.HasPrefix([]byte(vars.APIDoc), data) {
-		index := bytes.IndexByte(data, '\n')
-		line := data[:index]
-		data = data[index+1:]
-		info := &types.Info{}
-		if err := yaml.Unmarshal(data, info); err != nil {
-			return err
-		}
-
-		info.Title = string(line)
-		return d.NewInfo(info)
-	}
-
-	return nil
+// Encodings 返回支持的编码方式
+func Encodings() []string {
+	return encoding.Encodings()
 }
 
 // 按 Options 中的规则查找所有符合条件的文件列表。

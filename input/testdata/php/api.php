@@ -1,10 +1,9 @@
+<?php
 // Copyright 2016 by caixw, All rights reserved.
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package testdata
-
-import "net/http"
+namespace \testdata;
 
 // @api POST /users/login 登录
 // group users
@@ -23,8 +22,9 @@ import "net/http"
 //           password:
 //             type: string
 //             description: 密码
-func login(w http.ResponseWriter, r *http.Request) {
-	println("/**********", "login")
+function login(ResponseWriter $w, Request $r) {
+    echo '/******login';
+	// TODO
 }
 
 // 123
@@ -47,6 +47,7 @@ request:
             type: string
             description: 密码
 */
-func logout(w http.ResponseWriter, r *http.Request) {
-	println("logout", "**********/")
+function logout(ResponseWriter $w, Request $r) {
+    echo 'logout*********/';
+	// TODO
 }

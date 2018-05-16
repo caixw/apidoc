@@ -2,9 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package testdata
-
-import "net/http"
+"use strict"
 
 // @api POST /users/login 登录
 // group users
@@ -23,8 +21,11 @@ import "net/http"
 //           password:
 //             type: string
 //             description: 密码
-func login(w http.ResponseWriter, r *http.Request) {
-	println("/**********", "login")
+function login(w, r) {
+	println("/********** login");
+	println(/login/.test('login'));
+	println(`/******`);
+	// TODO
 }
 
 // 123
@@ -47,6 +48,10 @@ request:
             type: string
             description: 密码
 */
-func logout(w http.ResponseWriter, r *http.Request) {
-	println("logout", "**********/")
+function logout(w, r) {
+    println('logout **********/')
+    let x = 5
+    println(`xx${x}xx
+    ****/`)
+	// TODO
 }
