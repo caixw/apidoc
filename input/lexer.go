@@ -24,18 +24,6 @@ func (l *lexer) atEOF() bool {
 	return l.pos >= len(l.data)
 }
 
-// 获取当前的字符，并将指针指向下一个字符。
-func (l *lexer) next() byte {
-	if l.pos >= len(l.data) {
-		return 0
-	}
-
-	b := l.data[l.pos]
-	l.pos++
-
-	return b
-}
-
 // 接下来的 n 个字符是否匹配指定的字符串，
 // 若匹配，则将指定移向该字符串这后，否则不作任何操作。
 func (l *lexer) match(word string) bool {

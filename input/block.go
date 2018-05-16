@@ -68,11 +68,11 @@ LOOP:
 		case l.atEOF():
 			break LOOP
 		case (len(b.Escape) > 0) && l.match(b.Escape):
-			l.next()
+			l.pos++
 		case l.match(b.End):
 			return nil, true
 		default:
-			l.next()
+			l.pos++
 		}
 	} // end for
 	return nil, false
@@ -94,7 +94,9 @@ func (b *block) endSComments(l *lexer) ([]byte, bool) {
 	ret := make([]byte, 0, 1000)
 	for {
 		for { // 读取一行的内容到 ret 变量中
-			r := l.next()
+			r := l.data[l.pos]
+			l.pos++
+
 			ret = append(ret, r)
 
 			if l.atEOF() || r == '\n' {
@@ -130,7 +132,8 @@ LOOP:
 			lines = append(lines, filterSymbols(line, b.Begin))
 			break LOOP
 		default:
-			r := l.next()
+			r := l.data[l.pos]
+			l.pos++
 			line = append(line, r)
 			if r == '\n' {
 				lines = append(lines, filterSymbols(line, b.Begin))

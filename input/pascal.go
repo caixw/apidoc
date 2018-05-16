@@ -34,7 +34,7 @@ LOOP:
 		case l.match(b.symbol): // 结束
 			return nil, true
 		default:
-			l.next()
+			l.pos++
 		}
 	} // end for
 	return nil, false

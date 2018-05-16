@@ -54,7 +54,8 @@ LOOP:
 			line = append(line, b.beginRunes...)
 			continue LOOP
 		default:
-			r := l.next()
+			r := l.data[l.pos]
+			l.pos++
 			line = append(line, r)
 			if r == '\n' {
 				lines = append(lines, filterSymbols(line, b.begin))

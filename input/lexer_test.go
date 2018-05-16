@@ -25,25 +25,6 @@ func TestLexer_lineNumber(t *testing.T) {
 	a.Equal(l.lineNumber(), 4)
 }
 
-func TestLexer_next(t *testing.T) {
-	a := assert.New(t)
-
-	l := &lexer{
-		data: []byte("ab\ncd"),
-	}
-
-	a.Equal('a', l.next())
-	a.Equal('b', l.next())
-	a.Equal('\n', l.next())
-	a.Equal('c', l.next())
-	a.False(l.atEOF())
-	a.Equal('d', l.next())
-	a.True(l.atEOF())
-	a.Equal(0, l.next())
-	a.Equal(0, l.next())
-	a.True(l.atEOF())
-}
-
 func TestLexer_match(t *testing.T) {
 	a := assert.New(t)
 
