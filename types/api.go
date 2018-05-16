@@ -21,9 +21,9 @@ type API struct {
 	Description openapi.Description  `yaml:"description,omitempty"`
 	Deprecated  bool                 `yaml:"deprecated,omitempty"`
 	OperationID string               `yaml:"operationId,omitempty" `
-	Queries     []string             `yaml:"queries,omitempty"`
-	Params      []string             `yaml:"params,omitempty"`
-	Headers     []string             `yaml:"header,omitempty"`
+	Queries     map[string]string    `yaml:"queries,omitempty"`
+	Params      map[string]string    `yaml:"params,omitempty"`
+	Headers     map[string]string    `yaml:"header,omitempty"`
 	Request     *Request             `yaml:"request,omitempty"` // GET 此值可能为空
 	Responses   map[string]*Response `yaml:"responses"`
 }
@@ -85,39 +85,38 @@ func (api *API) parseParameter(o *openapi.Operation) error {
 	o.Parameters = make([]*openapi.Parameter, 0, l)
 
 	// queries
-	for _, query := range api.Queries {
-		queries := strings.SplitN(query, " ", 4)
+	for key, query := range api.Queries {
+		queries := strings.SplitN(query, " ", 3)
 		o.Parameters = append(o.Parameters, &openapi.Parameter{
-			Name:        queries[0],
+			Name:        key,
 			IN:          openapi.ParameterINQuery,
-			Description: openapi.Description(queries[3]),
+			Description: openapi.Description(queries[2]),
 			Schema: &openapi.Schema{
-				Type:    queries[1], // TODO 判断是否正确
-				Default: queries[2], // TODO 判断是否可以和类型匹配
+				Type:    queries[0], // TODO 判断是否正确
+				Default: queries[1], // TODO 判断是否可以和类型匹配
 			},
 		})
 	}
 
 	// params
-	for _, param := range api.Params {
-		params := strings.SplitN(param, " ", 3)
+	for key, param := range api.Params {
+		params := strings.SplitN(param, " ", 2)
 		o.Parameters = append(o.Parameters, &openapi.Parameter{
-			Name:        params[0],
+			Name:        key,
 			IN:          openapi.ParameterINPath,
-			Description: openapi.Description(params[2]),
+			Description: openapi.Description(params[1]),
 			Schema: &openapi.Schema{
-				Type: params[1], // TODO 判断是否正确
+				Type: params[0], // TODO 判断是否正确
 			},
 		})
 	}
 
 	// headers
-	for _, header := range api.Headers {
-		headers := strings.SplitN(header, " ", 2)
+	for key, desc := range api.Headers {
 		o.Parameters = append(o.Parameters, &openapi.Parameter{
-			Name:        headers[0],
+			Name:        key,
 			IN:          openapi.ParameterINHeader,
-			Description: openapi.Description(headers[1]),
+			Description: openapi.Description(desc),
 			Schema: &openapi.Schema{
 				Type: openapi.TypeString,
 			},

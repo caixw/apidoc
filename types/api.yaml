@@ -14,14 +14,14 @@ description: |markdown
   == markdown
 operationID: getuserid
 queries:
-  - page int default desc
-  - size int default desc markdown
-  - state array [normal,lock] [normal,lock,delete] 状态码
+  page: int default desc
+  size: int default desc markdown
+  state: array [normal,lock] [normal,lock,delete] 状态码
 params:
-  - id int desc markdown
+  id: int desc markdown
 headers:
-  - content-type desc
-  - authorization auth
+  content-type: desc
+  authorization: auth
 request:
   description: request body
   content:
