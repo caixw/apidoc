@@ -8,8 +8,8 @@ package input
 type swiftNestMCommentBlock struct {
 	begin      string
 	end        string
-	beginRunes []rune
-	endRunes   []rune
+	beginRunes []byte
+	endRunes   []byte
 	level      int8
 }
 
@@ -17,8 +17,8 @@ func newSwiftNestMCommentBlock(begin, end string) blocker {
 	return &swiftNestMCommentBlock{
 		begin:      begin,
 		end:        end,
-		beginRunes: []rune(begin),
-		endRunes:   []rune(end),
+		beginRunes: []byte(begin),
+		endRunes:   []byte(end),
 	}
 }
 
@@ -31,9 +31,9 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *lexer) bool {
 	return false
 }
 
-func (b *swiftNestMCommentBlock) EndFunc(l *lexer) ([]rune, bool) {
-	lines := make([][]rune, 0, 20)
-	line := make([]rune, 0, 100)
+func (b *swiftNestMCommentBlock) EndFunc(l *lexer) ([]byte, bool) {
+	lines := make([][]byte, 0, 20)
+	line := make([]byte, 0, 100)
 
 LOOP:
 	for {
@@ -58,12 +58,12 @@ LOOP:
 			line = append(line, r)
 			if r == '\n' {
 				lines = append(lines, filterSymbols(line, b.begin))
-				line = make([]rune, 0, 100)
+				line = make([]byte, 0, 100)
 			}
 		}
 	}
 
-	ret := make([]rune, 0, 1000)
+	ret := make([]byte, 0, 1000)
 	for _, v := range lines {
 		ret = append(ret, v...)
 	}

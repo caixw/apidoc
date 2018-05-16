@@ -26,15 +26,16 @@ func (l *lexer) atEOF() bool {
 }
 
 // 获取当前的字符，并将指针指向下一个字符。
-func (l *lexer) next() rune {
-	r, w := utf8.DecodeRune(l.data[l.pos:])
-	l.pos += w
-
-	if r == utf8.RuneError && w == 0 { // EOF
+func (l *lexer) next() byte {
+	if l.pos >= len(l.data) {
 		l.isAtEOF = true
+		return 0
 	}
 
-	return r
+	b := l.data[l.pos]
+	l.pos++
+
+	return b
 }
 
 // 接下来的 n 个字符是否匹配指定的字符串，

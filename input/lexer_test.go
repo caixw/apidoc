@@ -6,7 +6,6 @@ package input
 
 import (
 	"testing"
-	"unicode/utf8"
 
 	"github.com/issue9/assert"
 )
@@ -40,8 +39,8 @@ func TestLexer_next(t *testing.T) {
 	a.False(l.atEOF())
 	a.Equal('d', l.next())
 	a.True(l.atEOF())
-	a.Equal(utf8.RuneError, l.next())
-	a.Equal(utf8.RuneError, l.next())
+	a.Equal(0, l.next())
+	a.Equal(0, l.next())
 	a.True(l.atEOF())
 }
 

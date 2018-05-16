@@ -25,7 +25,7 @@ func TestBlock_BeginFunc_EndFunc(t *testing.T) {
 	a.True(bSComment.BeginFunc(l))
 	a.False(bMComment.BeginFunc(l))
 	ret, ok := bSComment.EndFunc(l)
-	a.True(ok).Equal(ret, []rune(" scomment1\n scomment2"))
+	a.True(ok).Equal(string(ret), string(" scomment1\n scomment2"))
 	ret, ok = bMComment.EndFunc(l)
 	a.False(ok).Equal(len(ret), 0)
 }
@@ -137,12 +137,12 @@ func TestFilterSymbols(t *testing.T) {
 	a := assert.New(t)
 
 	eq := func(charset, v1, v2 string) {
-		s1 := string(filterSymbols([]rune(v1), charset))
+		s1 := string(filterSymbols([]byte(v1), charset))
 		a.Equal(s1, v2)
 	}
 
 	neq := func(charset, v1, v2 string) {
-		s1 := string(filterSymbols([]rune(v1), charset))
+		s1 := string(filterSymbols([]byte(v1), charset))
 		a.NotEqual(s1, v2)
 	}
 

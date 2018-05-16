@@ -103,27 +103,26 @@ func parseFile(channel chan Block, path string, blocks []blocker, o *Options) {
 		}
 
 		ln := l.lineNumber() + o.StartLineNumber // 记录当前的行号，顺便调整起始行号
-		rs, ok := block.EndFunc(l)
+		bs, ok := block.EndFunc(l)
 		if !ok {
 			// syntax.OutputError(o.ErrorLog, path, ln, locale.ErrNotFoundEndFlag)
 			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 		}
 
 		block = nil
-		d := []byte(string(rs)) // TODO 减少转换
-		if len(d) < miniSize {
+		if len(bs) < miniSize {
 			continue
 		}
 
-		d = bytes.TrimLeft(d, " ")
-		if !bytes.HasPrefix(d, []byte(vars.API)) && !bytes.HasPrefix(d, []byte(vars.APIDoc)) {
+		bs = bytes.TrimLeft(bs, " ")
+		if !bytes.HasPrefix(bs, []byte(vars.API)) && !bytes.HasPrefix(bs, []byte(vars.APIDoc)) {
 			continue
 		}
 
 		channel <- Block{
 			File: path,
 			Line: ln,
-			Data: d,
+			Data: bs,
 		}
 	} // end for
 }
