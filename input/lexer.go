@@ -11,10 +11,9 @@ import (
 
 // lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
 type lexer struct {
-	blocks  []blocker
-	data    []byte
-	pos     int
-	isAtEOF bool
+	blocks []blocker
+	data   []byte
+	pos    int
 
 	ln    int // 上次记录的行号
 	lnPos int // 上次记录行号时所在的位置
@@ -22,13 +21,12 @@ type lexer struct {
 
 // 是否已经在文件末尾。
 func (l *lexer) atEOF() bool {
-	return l.isAtEOF || l.pos >= len(l.data)
+	return l.pos >= len(l.data)
 }
 
 // 获取当前的字符，并将指针指向下一个字符。
 func (l *lexer) next() byte {
 	if l.pos >= len(l.data) {
-		l.isAtEOF = true
 		return 0
 	}
 
@@ -84,6 +82,6 @@ func (l *lexer) block() blocker {
 			}
 		}
 
-		l.next()
+		l.pos++
 	}
 }
