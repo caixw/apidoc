@@ -4,10 +4,7 @@
 
 package input
 
-import (
-	"bytes"
-	"unicode/utf8"
-)
+import "bytes"
 
 // lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
 type lexer struct {
@@ -31,19 +28,12 @@ func (l *lexer) match(word string) bool {
 		return false
 	}
 
-	width := 0
-	for _, r := range word {
-		rr, w := utf8.DecodeRune(l.data[l.pos:])
-		if rr != r {
-			l.pos -= width
-			return false
-		}
-
-		l.pos += w
-		width += w
+	if bytes.HasPrefix(l.data[l.pos:], []byte(word)) {
+		l.pos += len(word)
+		return true
 	}
 
-	return true
+	return false
 }
 
 var newLine = []byte("\n")

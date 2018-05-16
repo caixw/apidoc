@@ -7,7 +7,6 @@ package input
 import (
 	"strings"
 	"unicode"
-	"unicode/utf8"
 
 	"github.com/caixw/apidoc/locale"
 )
@@ -83,11 +82,15 @@ func (b *block) endSComments(l *lexer) ([]byte, bool) {
 	// 跳过除换行符以外的所有空白字符。
 	skipSpace := func() {
 		for {
-			r, w := utf8.DecodeRune(l.data[l.pos:])
-			if !unicode.IsSpace(r) || r == '\n' {
-				break
+			if l.atEOF() {
+				return
 			}
-			l.pos += w
+
+			r := l.data[l.pos]
+			if !unicode.IsSpace(rune(r)) || r == '\n' {
+				return
+			}
+			l.pos++
 		}
 	} // end skipSpace
 
