@@ -60,12 +60,13 @@ func (b *block) EndFunc(l *lexer) ([]byte, bool) {
 // 从 l 的当前位置开始往后查找，直到找到 b 中定义的 end 字符串，
 // 将 l 中的指针移到该位置。
 // 正常找到结束符的返回 true，否则返回 false。
+//
+// 第一个返回参数无用，仅是为了统一函数签名
 func (b *block) endString(l *lexer) ([]byte, bool) {
-LOOP:
 	for {
 		switch {
 		case l.atEOF():
-			break LOOP
+			return nil, false
 		case (len(b.Escape) > 0) && l.match(b.Escape):
 			l.pos++
 		case l.match(b.End):
@@ -74,7 +75,6 @@ LOOP:
 			l.pos++
 		}
 	} // end for
-	return nil, false
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
