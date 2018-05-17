@@ -22,23 +22,23 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	ret, ok := b.EndFunc(l)
 	a.True(ok).
-		Equal(string(ret), " *123*123*"). // 返回内容
-		True(l.atEOF())                   // 到达末尾
+		Equal(ret, [][]byte{[]byte(" *123*123*")}). // 返回内容
+		True(l.atEOF())                             // 到达末尾
 
 	// 嵌套注释
 	l = &lexer{data: []byte(`/*0/*1/*2*/*/*/`)}
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(ret), "0/*1/*2*/*/"). // 返回内容
-		True(l.atEOF())                    // 到达末尾
+		Equal(ret, [][]byte{[]byte("0/*1/*2*/*/")}). // 返回内容
+		True(l.atEOF())                              // 到达末尾
 
 		// 多出 end 匹配项
 	l = &lexer{data: []byte(`/*0/*1/*2*/*/*/*/`)}
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(ret), "0/*1/*2*/*/"). // 返回内容
+		Equal(ret, [][]byte{[]byte("0/*1/*2*/*/")}). // 返回内容
 		Equal(string(l.data[l.pos:]), "*/")
 
 	// 缺少 end 匹配项

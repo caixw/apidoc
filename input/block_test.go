@@ -25,7 +25,7 @@ func TestBlock_BeginFunc_EndFunc(t *testing.T) {
 	a.True(bSComment.BeginFunc(l))
 	a.False(bMComment.BeginFunc(l))
 	ret, ok := bSComment.EndFunc(l)
-	a.True(ok).Equal(string(ret), string(" scomment1\n scomment2"))
+	a.True(ok).Equal(ret, [][]byte{[]byte(" scomment1\n"), []byte(" scomment2")})
 	ret, ok = bMComment.EndFunc(l)
 	a.False(ok).Equal(len(ret), 0)
 }
@@ -73,28 +73,28 @@ func TestBlock_endSComment(t *testing.T) {
 		data: []byte("comment1\n"),
 	}
 	rs, err := b.endSComments(l)
-	a.NotError(err).Equal(string(rs), "comment1\n")
+	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1\n")})
 
 	// 没有换行符，则自动取到结束符。
 	l = &lexer{
 		data: []byte("comment1"),
 	}
 	rs, err = b.endSComments(l)
-	a.NotError(err).Equal(string(rs), "comment1")
+	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1")})
 
 	// 多行连续的单行注释。
 	l = &lexer{
 		data: []byte("comment1\n//comment2\n //comment3"),
 	}
 	rs, err = b.endSComments(l)
-	a.NotError(err).Equal(string(rs), "comment1\ncomment2\ncomment3")
+	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1\n"), []byte("comment2\n"), []byte("comment3")})
 
 	// 多行不连续的单行注释。
 	l = &lexer{
 		data: []byte("comment1\n // comment2\n\n //comment3\n"),
 	}
 	rs, err = b.endSComments(l)
-	a.NotError(err).Equal(string(rs), "comment1\n comment2\n")
+	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1\n"), []byte(" comment2\n")})
 }
 
 func TestBlock_endMComment(t *testing.T) {
@@ -109,21 +109,21 @@ func TestBlock_endMComment(t *testing.T) {
 		data: []byte("comment1\n*/"),
 	}
 	rs, found := b.endMComments(l)
-	a.True(found).Equal(string(rs), "comment1\n")
+	a.True(found).Equal(rs, [][]byte{[]byte("comment1\n")})
 
 	// 多个注释结束符
 	l = &lexer{
 		data: []byte("comment1\ncomment2*/*/"),
 	}
 	rs, found = b.endMComments(l)
-	a.True(found).Equal(string(rs), "comment1\ncomment2")
+	a.True(found).Equal(rs, [][]byte{[]byte("comment1\n"), []byte("comment2")})
 
 	// 空格开头
 	l = &lexer{
 		data: []byte("\ncomment1\ncomment2*/*/"),
 	}
 	rs, found = b.endMComments(l)
-	a.True(found).Equal(string(rs), "\ncomment1\ncomment2")
+	a.True(found).Equal(rs, [][]byte{[]byte("\n"), []byte("comment1\n"), []byte("comment2")})
 
 	// 没有注释结束符
 	l = &lexer{

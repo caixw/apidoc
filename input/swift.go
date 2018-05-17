@@ -31,7 +31,7 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *lexer) bool {
 	return false
 }
 
-func (b *swiftNestMCommentBlock) EndFunc(l *lexer) ([]byte, bool) {
+func (b *swiftNestMCommentBlock) EndFunc(l *lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 	line := make([]byte, 0, 100)
 
@@ -64,9 +64,5 @@ LOOP:
 		}
 	}
 
-	ret := make([]byte, 0, 1000)
-	for _, v := range lines {
-		ret = append(ret, v...)
-	}
-	return ret, true
+	return lines, true
 }

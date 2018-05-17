@@ -26,8 +26,12 @@ type blocker interface {
 	// 确定 l 的当前位置是否匹配 blocker 的起始位置。
 	BeginFunc(l *lexer) bool
 
-	// 确定 l 的当前位置是否匹配 blocker 的结束位置，若匹配返回中间的字符串。
-	EndFunc(l *lexer) ([]byte, bool)
+	// 确定 l 的当前位置是否匹配 blocker 的结束位置，若匹配则返回中间的字符串。
+	// 返回内容以行为单位进行分割。
+	//
+	// 如果不使用返回的内容，可以返回空值。
+	// 比如字符串，只需要返回 true，以确保找到了结束位置，但是内容可以直接返回 nil。
+	EndFunc(l *lexer) ([][]byte, bool)
 }
 
 // block 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
@@ -44,7 +48,7 @@ func (b *block) BeginFunc(l *lexer) bool {
 	return l.match(b.Begin)
 }
 
-func (b *block) EndFunc(l *lexer) ([]byte, bool) {
+func (b *block) EndFunc(l *lexer) ([][]byte, bool) {
 	switch b.Type {
 	case blockTypeString:
 		return b.endString(l)
@@ -62,7 +66,7 @@ func (b *block) EndFunc(l *lexer) ([]byte, bool) {
 // 正常找到结束符的返回 true，否则返回 false。
 //
 // 第一个返回参数无用，仅是为了统一函数签名
-func (b *block) endString(l *lexer) ([]byte, bool) {
+func (b *block) endString(l *lexer) ([][]byte, bool) {
 	for {
 		switch {
 		case l.atEOF():
@@ -78,7 +82,10 @@ func (b *block) endString(l *lexer) ([]byte, bool) {
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-func (b *block) endSComments(l *lexer) ([]byte, bool) {
+func (b *block) endSComments(l *lexer) ([][]byte, bool) {
+	lines := make([][]byte, 0, 20)
+	line := make([]byte, 0, 100)
+
 	// 跳过除换行符以外的所有空白字符。
 	skipSpace := func() {
 		for {
@@ -94,35 +101,41 @@ func (b *block) endSComments(l *lexer) ([]byte, bool) {
 		}
 	} // end skipSpace
 
-	ret := make([]byte, 0, 1000)
+LOOP:
 	for {
 		for { // 读取一行的内容到 ret 变量中
 			r := l.data[l.pos]
+			line = append(line, r)
 			l.pos++
 
-			ret = append(ret, r)
+			if l.atEOF() {
+				lines = append(lines, line)
+				break LOOP
+			}
 
-			if l.atEOF() || r == '\n' {
+			if r == '\n' {
+				lines = append(lines, filterSymbols(line, b.Begin))
+				line = make([]byte, 0, 100)
 				break
 			}
 		}
 
-		skipSpace()            // 去掉新行的前导空格，若是存在的话。
+		skipSpace()
 		if !l.match(b.Begin) { // 不是接连着的注释块了，结束当前的匹配
 			break
 		}
 	}
 
-	if len(ret) > 0 { // 最后一个换行符返还给 lexer
+	if len(lines) > 0 { // 最后一个换行符返还给 lexer
 		l.pos--
 	}
 
-	return ret, true
+	return lines, true
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *block) endMComments(l *lexer) ([]byte, bool) {
+func (b *block) endMComments(l *lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 	line := make([]byte, 0, 100)
 
@@ -132,7 +145,9 @@ LOOP:
 		case l.atEOF():
 			return nil, false
 		case l.match(b.End):
-			lines = append(lines, filterSymbols(line, b.Begin))
+			if len(line) > 0 {
+				lines = append(lines, filterSymbols(line, b.Begin))
+			}
 			break LOOP
 		default:
 			r := l.data[l.pos]
@@ -145,11 +160,7 @@ LOOP:
 		}
 	}
 
-	ret := make([]byte, 0, 1000)
-	for _, v := range lines {
-		ret = append(ret, v...)
-	}
-	return ret, true
+	return lines, true
 }
 
 // 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。
@@ -173,4 +184,29 @@ func filterSymbols(line []byte, charset string) []byte {
 	}
 
 	return line
+}
+
+// 合并多行为一个 []byte 结构，并去掉前导空格
+func mergeLines(lines [][]byte) []byte {
+	min := 0
+	size := 0
+	for _, line := range lines {
+		size += len(line)
+
+		for index, b := range line {
+			if !unicode.IsSpace(rune(b)) {
+				if min > index {
+					min = index
+				}
+				break
+			}
+		}
+	}
+
+	ret := make([]byte, 0, size)
+	for _, line := range lines {
+		ret = append(ret, line[min:]...)
+	}
+
+	return ret
 }

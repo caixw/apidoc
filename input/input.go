@@ -29,10 +29,6 @@ type Block struct {
 	Data []byte
 }
 
-// 需要解析的最小代码块，小于此值，将不作解析
-// 即其长度必须大于 @api 这四个字符串的长度
-const miniSize = len(vars.API) + 1
-
 // Parse 分析源代码，获取相应的文档内容。
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
@@ -103,18 +99,15 @@ func parseFile(channel chan Block, path string, blocks []blocker, o *Options) {
 		}
 
 		ln := l.lineNumber() + o.StartLineNumber // 记录当前的行号，顺便调整起始行号
-		bs, ok := block.EndFunc(l)
+		lines, ok := block.EndFunc(l)
 		if !ok {
 			// syntax.OutputError(o.ErrorLog, path, ln, locale.ErrNotFoundEndFlag)
 			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 		}
 
 		block = nil
-		if len(bs) < miniSize {
-			continue
-		}
 
-		bs = bytes.TrimLeft(bs, " ")
+		bs := mergeLines(lines)
 		if !bytes.HasPrefix(bs, []byte(vars.API)) && !bytes.HasPrefix(bs, []byte(vars.APIDoc)) {
 			continue
 		}

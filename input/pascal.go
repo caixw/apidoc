@@ -23,7 +23,7 @@ func (b *pascalStringBlock) BeginFunc(l *lexer) bool {
 	return l.match(b.symbol)
 }
 
-func (b *pascalStringBlock) EndFunc(l *lexer) ([]byte, bool) {
+func (b *pascalStringBlock) EndFunc(l *lexer) ([][]byte, bool) {
 LOOP:
 	for {
 		switch {

@@ -77,7 +77,7 @@ mcomment2
 	b := l.block() // scomment1
 	a.Equal(b.(*block).Type, blockTypeSComment)
 	rs, err := b.EndFunc(l)
-	a.NotError(err).Equal(string(rs), " scomment1\n scomment2\n")
+	a.NotError(err).Equal(rs, [][]byte{[]byte(" scomment1\n"), []byte(" scomment2\n")})
 
 	b = l.block() // string1
 	a.Equal(b.(*block).Type, blockTypeString)
@@ -92,17 +92,17 @@ mcomment2
 	b = l.block()
 	a.Equal(b.(*block).Type, blockTypeMComment) // mcomment1
 	rs, err = b.EndFunc(l)
-	a.NotError(err).Equal(string(rs), "\nmcomment1\nmcomment2\n")
+	a.NotError(err).Equal(rs, [][]byte{[]byte("\n"), []byte("mcomment1\n"), []byte("mcomment2\n")})
 
 	/* 测试一段单行注释后紧跟 \n=pod 形式的多行注释，是否会出错 */
 
 	b = l.block() // scomment3,scomment4
 	a.Equal(b.(*block).Type, blockTypeSComment)
 	rs, err = b.EndFunc(l)
-	a.NotError(err).Equal(string(rs), " scomment3\n scomment4\n")
+	a.NotError(err).Equal(rs, [][]byte{[]byte(" scomment3\n"), []byte(" scomment4\n")})
 
 	b = l.block() // mcomment3,mcomment4
 	a.Equal(b.(*block).Type, blockTypeMComment)
 	rs, err = b.EndFunc(l)
-	a.NotError(err).Equal(string(rs), "\n mcomment3\n mcomment4")
+	a.NotError(err).Equal(rs, [][]byte{[]byte("\n"), []byte(" mcomment3\n"), []byte(" mcomment4")})
 }
