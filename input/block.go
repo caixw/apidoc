@@ -84,23 +84,21 @@ func (b *block) endString(l *lexer) ([][]byte, bool) {
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
 func (b *block) endSComments(l *lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
-	line := make([]byte, 0, 100)
 
 LOOP:
 	for {
-		for { // 读取一行的内容到 ret 变量中
+		start := l.pos // 当前行的起始位置
+		for {          // 读取一行的内容
 			r := l.data[l.pos]
-			line = append(line, r)
 			l.pos++
 
 			if l.atEOF() {
-				lines = append(lines, line)
+				lines = append(lines, l.data[start:l.pos])
 				break LOOP
 			}
 
 			if r == '\n' {
-				lines = append(lines, filterSymbols(line, b.Begin))
-				line = make([]byte, 0, 100)
+				lines = append(lines, filterSymbols(l.data[start:l.pos], b.Begin))
 				break
 			}
 		}
@@ -122,30 +120,26 @@ LOOP:
 // 会对每一行应用 filterSymbols 规则。
 func (b *block) endMComments(l *lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
-	line := make([]byte, 0, 100)
+	start := l.pos
 
-LOOP:
 	for {
 		switch {
-		case l.atEOF():
+		case l.atEOF(): // 没有找到结束符号，直接到达文件末尾
 			return nil, false
 		case l.match(b.End):
-			if len(line) > 0 {
-				lines = append(lines, filterSymbols(line, b.Begin))
+			if pos := l.pos - len(b.End); pos > start {
+				lines = append(lines, filterSymbols(l.data[start:pos], b.Begin))
 			}
-			break LOOP
+			return lines, true
 		default:
 			r := l.data[l.pos]
 			l.pos++
-			line = append(line, r)
 			if r == '\n' {
-				lines = append(lines, filterSymbols(line, b.Begin))
-				line = make([]byte, 0, 100)
+				lines = append(lines, filterSymbols(l.data[start:l.pos], b.Begin))
+				start = l.pos
 			}
 		}
-	}
-
-	return lines, true
+	} // end for
 }
 
 // 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。
