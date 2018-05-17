@@ -79,6 +79,7 @@ var langs = map[string][]blocker{
 	// python
 	"python": {
 		&block{Type: blockTypeMComment, Begin: `"""`, End: `"""`},
+		&block{Type: blockTypeMComment, Begin: "'''", End: `'''`},
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 		&block{Type: blockTypeSComment, Begin: `#`},
 	},
