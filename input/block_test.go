@@ -89,6 +89,13 @@ func TestBlock_endSComment(t *testing.T) {
 	rs, err = b.endSComments(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1\n"), []byte("comment2\n"), []byte("comment3")})
 
+	// 多行连续的单行注释，中间有空白行。
+	l = &lexer{
+		data: []byte("comment1\n//\n//comment2\n //comment3"),
+	}
+	rs, err = b.endSComments(l)
+	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1\n"), []byte("\n"), []byte("comment2\n"), []byte("comment3")})
+
 	// 多行不连续的单行注释。
 	l = &lexer{
 		data: []byte("comment1\n // comment2\n\n //comment3\n"),
@@ -146,11 +153,11 @@ func TestFilterSymbols(t *testing.T) {
 		a.NotEqual(s1, v2)
 	}
 
+	eq("/*", "* ", "")
 	eq("/*", "* line", "line")
 	eq("/*", "*   line", "  line")
 	eq("/*", "*\tline", "line")
 	eq("/*", "* \tline", "\tline")
-	eq("/*", "*\nline", "line")
 
 	eq("/*", "/ line", "line")
 	eq("/*", "/   line", "  line")
@@ -158,9 +165,8 @@ func TestFilterSymbols(t *testing.T) {
 	eq("/*", "  * line", "line")
 	eq("/*", "  *  line", " line")
 	eq("/*", "\t*  line", " line")
-	eq("/*", "\t* \nline", "\nline")
-	eq("/*", "\t*\n line", " line")
 
+	neq("/*", "*\nline", "line")
 	// 包含多个符号
 	neq("/*", "// line", "line")
 	neq("/*", "**   line", "  line")

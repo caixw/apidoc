@@ -28,8 +28,7 @@ sub login()
 
 # 123
 # 123
-=pod
-@api DELETE /users/login 注销登录
+=pod @api DELETE /users/login 注销登录
 group users
 tags: [t1,t2]
 

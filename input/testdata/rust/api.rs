@@ -33,19 +33,19 @@ mod std{
     tags: [t1,t2]
 
     request:
-    description: request body
-    content:
+      description: request body
+      content:
         application/json:
-        schema:
+          schema:
             type: object
             properties:
-            username:
+              username:
                 type: string
                 description: 登录账号
-            password:
+              password:
                 type: string
                 description: 密码
-    */
+*/
     fn logout(w: http::ResponseWriter, r: &http::Request) {
         println("logout  *******/");
         // TODO

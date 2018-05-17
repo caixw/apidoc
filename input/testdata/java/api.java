@@ -22,7 +22,7 @@ public class test1{
     //             description: 登录账号
     //           password:
     //             type: string
-    //             description: 密码 
+    //             description: 密码
     public void login() {
         System.out.println("/********** login");
         // TODO
@@ -35,19 +35,19 @@ public class test1{
     tags: [t1,t2]
 
     request:
-    description: request body
-    content:
+      description: request body
+      content:
         application/json:
-        schema:
+          schema:
             type: object
             properties:
-            username:
+              username:
                 type: string
                 description: 登录账号
-            password:
+              password:
                 type: string
                 description: 密码
-    */
+*/
     public void logout() {
         System.out.println("logout **********/");
         // TODO

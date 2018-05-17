@@ -5,11 +5,12 @@ Use of this source code is governed by a MIT
 license that can be found in the LICENSE file.}
 
 
-{@apidoc title of api
- @apiVersion 2.9
- @apiBaseURL https://api.caixw.io
- @apiLicense MIT https://opensources.org/licenses/MIT
- @apiContent
- line1
- line2
+{ @apidoc title of api
+ version: 2.9
+ license:
+   name: MIT
+   url: https://opensources.org/licenses/MIT
+ description:>
+   line1
+   line2
 }

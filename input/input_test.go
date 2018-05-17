@@ -13,57 +13,60 @@ import (
 )
 
 var (
-	api1 = []byte(` @api POST /users/login 登录
- group users
- tags: [t1,t2]
+	api1 = []byte(`@api POST /users/login 登录
+group users
+tags: [t1,t2]
 
- request:
-   description: request body
-   content:
-     application/json:
-       schema:
-         type: object
-         properties:
-           username:
-             type: string
-             description: 登录账号
-           password:
-             type: string
-  	         description: 密码`)
+request:
+  description: request body
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          username:
+            type: string
+            description: 登录账号
+          password:
+            type: string
+            description: 密码
+`)
 
-	api2 = []byte(` @api DELETE /users/login 注销登录
- group users
- tags: [t1,t2]
+	api2 = []byte(`@api DELETE /users/login 注销登录
+group users
+tags: [t1,t2]
 
- request:
-   description: request body
-   content:
-     application/json:
-       schema:
-         type: object
-         properties:
-           username:
-             type: string
-             description: 登录账号
-           password:
-             type: string
-   	         description: 密码`)
+request:
+  description: request body
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          username:
+            type: string
+            description: 登录账号
+          password:
+            type: string
+            description: 密码
+`)
 
-	doc = []byte(` @apidoc title of api
- version: 2.9
- license:
-   name: MIT
-   url: https://opensources.org/licenses/MIT
- description:>
-   line1
-   line2`)
+	doc = []byte(`@apidoc title of api
+version: 2.9
+license:
+  name: MIT
+  url: https://opensources.org/licenses/MIT
+description:>
+  line1
+  line2
+`)
 )
 
 func TestParse(t *testing.T) {
 	a := assert.New(t)
 
 	testParse(a, "go")
-	/*testParse(a, "groovy")
+	testParse(a, "groovy")
 	testParse(a, "java")
 	testParse(a, "javascript")
 	testParse(a, "pascal")
@@ -72,7 +75,7 @@ func TestParse(t *testing.T) {
 	testParse(a, "python")
 	testParse(a, "ruby")
 	testParse(a, "rust")
-	testParse(a, "swift")*/
+	testParse(a, "swift")
 }
 
 func testParse(a *assert.Assertion, lang string) {
@@ -90,7 +93,7 @@ func testParse(a *assert.Assertion, lang string) {
 		eq := bytes.Equal(b.Data, api1) ||
 			bytes.Equal(b.Data, api2) ||
 			bytes.Equal(b.Data, doc)
-		a.True(eq, "返回的内容为：%s", string(b.Data))
+		a.True(eq, "lang(%s)：%s,%s,%d,%d", lang, string(b.Data), string(api1), len(b.Data), len(api1))
 	}
 }
 
@@ -137,4 +140,41 @@ func TestRecursivePath(t *testing.T) {
 		filepath.Join("testdir", "testdir2", "testfile.1"),
 		filepath.Join("testdir", "testfile.1"),
 	})
+}
+
+func TestMergeLines(t *testing.T) {
+	a := assert.New(t)
+
+	lines := [][]byte{
+		[]byte("   l1\n"),
+		[]byte("  l2\n"),
+		[]byte("   l3"),
+	}
+	a.Equal(string(mergeLines(lines)), `l1
+l2
+ l3`)
+
+	// 包含空格行
+	lines = [][]byte{
+		[]byte("   l1\n"),
+		[]byte("    \n"),
+		[]byte("  l2\n"),
+		[]byte("   l3"),
+	}
+	a.Equal(string(mergeLines(lines)), `l1
+    
+l2
+ l3`)
+
+	// 包含空行
+	lines = [][]byte{
+		[]byte("   l1\n"),
+		[]byte("\n"),
+		[]byte("  l2\n"),
+		[]byte("   l3"),
+	}
+	a.Equal(string(mergeLines(lines)), `l1
+
+l2
+ l3`)
 }

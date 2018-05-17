@@ -6,7 +6,8 @@ program testdata;
 }
 
 
-(* @api POST /users/login 登录
+(* 
+ * @api POST /users/login 登录
  * group users
  * tags: [t1,t2]
  *
@@ -33,7 +34,7 @@ end
 { 123
  123
 }
-(* @api DELETE /users/login 注销登录
+{ @api DELETE /users/login 注销登录
 group users
 tags: [t1,t2]
 
@@ -50,7 +51,7 @@ request:
           password:
             type: string
             description: 密码
-*)
+}
 procedure logout();
 begin
 	println("logout""""**********)")

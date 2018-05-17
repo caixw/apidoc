@@ -29,8 +29,7 @@ end
 
 # 123
 # 123
-=begin
-@api DELETE /users/login 注销登录
+=begin @api DELETE /users/login 注销登录
 group users
 tags: [t1,t2]
 

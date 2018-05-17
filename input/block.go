@@ -167,7 +167,7 @@ LOOP:
 // symbol 为 charset 中的任意字符。
 func filterSymbols(line []byte, charset string) []byte {
 	for k, v := range line {
-		if unicode.IsSpace(rune(v)) { // 跳过行首的空格
+		if unicode.IsSpace(rune(v)) && v != '\n' { // 跳过行首的空格，但不能换行
 			continue
 		}
 
@@ -178,35 +178,13 @@ func filterSymbols(line []byte, charset string) []byte {
 
 		// 若下个字符正好是是空格
 		if len(line) > k+1 && unicode.IsSpace(rune(line[k+1])) {
+			if line[k+1] == '\n' {
+				return []byte{'\n'}
+			}
 			return line[k+2:]
 		}
 		return line
 	}
 
 	return line
-}
-
-// 合并多行为一个 []byte 结构，并去掉前导空格
-func mergeLines(lines [][]byte) []byte {
-	min := 0
-	size := 0
-	for _, line := range lines {
-		size += len(line)
-
-		for index, b := range line {
-			if !unicode.IsSpace(rune(b)) {
-				if min > index {
-					min = index
-				}
-				break
-			}
-		}
-	}
-
-	ret := make([]byte, 0, size)
-	for _, line := range lines {
-		ret = append(ret, line[min:]...)
-	}
-
-	return ret
 }

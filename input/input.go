@@ -13,9 +13,11 @@ package input
 import (
 	"bytes"
 	"errors"
+	"math"
 	"os"
 	"path/filepath"
 	"sync"
+	"unicode"
 
 	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/locale"
@@ -155,4 +157,65 @@ func recursivePath(o *Options) ([]string, error) {
 	}
 
 	return paths, nil
+}
+
+// 合并多行为一个 []byte 结构，并去掉前导空格
+func mergeLines(lines [][]byte) []byte {
+	if len(lines) == 0 {
+		return nil
+	}
+
+	// 去掉第一行的所有空格
+	for index, b := range lines[0] {
+		if !unicode.IsSpace(rune(b)) {
+			lines[0] = lines[0][index:]
+			break
+		}
+	}
+
+	if len(lines) == 1 {
+		return lines[0]
+	}
+
+	min := math.MaxInt32
+	size := 0
+	for _, line := range lines[1:] {
+		size += len(line)
+
+		if isSpaceLine(line) {
+			continue
+		}
+
+		for index, b := range line {
+			if !unicode.IsSpace(rune(b)) {
+				if min > index {
+					min = index
+				}
+				break
+			}
+		}
+	}
+
+	ret := make([]byte, 0, size+len(lines[0]))
+	ret = append(ret, lines[0]...)
+	for _, line := range lines[1:] {
+		if isSpaceLine(line) {
+			ret = append(ret, line...)
+		} else {
+			ret = append(ret, line[min:]...)
+		}
+	}
+
+	return ret
+}
+
+// 是否为空白行
+func isSpaceLine(line []byte) bool {
+	for _, b := range line {
+		if !unicode.IsSpace(rune(b)) {
+			return false
+		}
+	}
+
+	return true
 }
