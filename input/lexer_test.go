@@ -106,3 +106,29 @@ mcomment2
 	rs, err = b.EndFunc(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("\n"), []byte(" mcomment3\n"), []byte(" mcomment4")})
 }
+
+func TestLexer_skipSpace(t *testing.T) {
+	a := assert.New(t)
+	l := &lexer{data: []byte("  0 \n  1 ")}
+
+	l.skipSpace()
+	a.Equal(l.data[l.pos], "0")
+
+	// 无法跳过换行符
+	l.pos++
+	l.skipSpace()
+	l.skipSpace()
+	l.skipSpace()
+	l.skipSpace()
+	l.skipSpace()
+	a.Equal(l.data[l.pos], "\n")
+
+	l.pos++
+	l.skipSpace()
+	a.Equal(l.data[l.pos], "1")
+
+	l.pos++
+	l.skipSpace()
+	l.skipSpace()
+	a.Equal(l.pos, len(l.data))
+}

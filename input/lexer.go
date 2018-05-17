@@ -4,7 +4,10 @@
 
 package input
 
-import "bytes"
+import (
+	"bytes"
+	"unicode"
+)
 
 // lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
 type lexer struct {
@@ -60,6 +63,21 @@ func (l *lexer) block() blocker {
 			}
 		}
 
+		l.pos++
+	}
+}
+
+// 跳过除换行符以外的所有空白字符。
+func (l *lexer) skipSpace() {
+	for {
+		if l.atEOF() {
+			return
+		}
+
+		r := l.data[l.pos]
+		if !unicode.IsSpace(rune(r)) || r == '\n' {
+			return
+		}
 		l.pos++
 	}
 }

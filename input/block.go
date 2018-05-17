@@ -86,21 +86,6 @@ func (b *block) endSComments(l *lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 	line := make([]byte, 0, 100)
 
-	// 跳过除换行符以外的所有空白字符。
-	skipSpace := func() {
-		for {
-			if l.atEOF() {
-				return
-			}
-
-			r := l.data[l.pos]
-			if !unicode.IsSpace(rune(r)) || r == '\n' {
-				return
-			}
-			l.pos++
-		}
-	} // end skipSpace
-
 LOOP:
 	for {
 		for { // 读取一行的内容到 ret 变量中
@@ -120,7 +105,7 @@ LOOP:
 			}
 		}
 
-		skipSpace()
+		l.skipSpace()
 		if !l.match(b.Begin) { // 不是接连着的注释块了，结束当前的匹配
 			break
 		}
