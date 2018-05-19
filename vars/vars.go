@@ -25,7 +25,7 @@ const (
 	DefaultTitle = "APIDOC"
 
 	// 默认的分组名称，在不指定分组名称的时候，系统会给其加到此分组中。
-	DefaultGroupName = "index"
+	DefaultGroupName = "openapi"
 
 	// 默认的语言，目前仅能保证简体中文是最新的。
 	// 需要保证存在于 locale.locales 中，否则运行时会报错。
@@ -34,18 +34,6 @@ const (
 	// 两个性能文件的名称
 	PprofCPU = "cpu"
 	PprofMem = "mem"
-
-	// 生成的 JSON 数据存放的目录
-	JSONDataDirName = "data"
-
-	// JSON 生成的 JSON 文件，缩进量
-	JSONIndent = 2
-
-	// 页面信息的文件名
-	PageFileName = "page"
-
-	// 组文件的前缀，有前缀，不会与现有文件重名
-	GroupFilePrefix = "group_"
 
 	// 控制台的颜色
 	InfoColor = colors.Green

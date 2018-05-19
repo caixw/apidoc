@@ -16,16 +16,13 @@ import (
 
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/openapi"
-	"github.com/caixw/apidoc/vars"
 )
 
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
 	Dir     string        `yaml:"dir"`              // 文档的保存目录
 	Groups  []string      `yaml:"groups,omitempty"` // 仅输出这些组，为空表示输出所有
-	Elapsed time.Duration `yaml:"-"`                // 编译用时
-
-	dataDir string // 数据保存的目录
+	Elapsed time.Duration `yaml:"-"`                // TODO 添加到 openapi 的扩展字段中
 }
 
 // Sanitize 对 Options 作一些初始化操作。
@@ -65,24 +62,33 @@ func Render(docs map[string]*openapi.OpenAPI, o *Options) error {
 		}
 	}
 
-	o.dataDir = filepath.Join(o.Dir, vars.JSONDataDirName)
-	if !utils.FileExists(o.dataDir) {
-		if err := os.MkdirAll(o.dataDir, os.ModePerm); err != nil {
+	// 未指定输出组，则输出所有内容。
+	if len(o.Groups) == 0 {
+		for name, doc := range docs {
+			render(filepath.Join(o.Dir, name), doc)
+		}
+
+		return nil
+	}
+
+	for _, group := range o.Groups {
+		doc, found := docs[group]
+		if !found {
+			return &openapi.Error{Field: "group", Message: locale.Sprintf(locale.ErrGroupNotExists)}
+		}
+
+		if err := render(filepath.Join(o.Dir, group), doc); err != nil {
 			return err
 		}
 	}
-
-	for name, doc := range docs {
-		path := filepath.Join(o.dataDir, name)
-		data, err := yaml.Marshal(doc)
-		if err != nil {
-			return err
-		}
-
-		if err = ioutil.WriteFile(path, data, os.ModePerm); err != nil {
-			return err
-		}
-	}
-
 	return nil
+}
+
+func render(path string, doc *openapi.OpenAPI) error {
+	data, err := yaml.Marshal(doc)
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(path, data, os.ModePerm)
 }

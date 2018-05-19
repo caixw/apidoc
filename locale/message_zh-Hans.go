@@ -40,7 +40,6 @@ func init() {
 		ErrRequired:              "不能为空",
 		ErrInvalidFormat:         "格式不正确",
 		ErrDirNotExists:          "目录不存在",
-		ErrMkdirError:            "创建目录时发生以下错误：%v",
 		ErrInvalidBlockType:      "无效的 block.Type 值：%v",
 		ErrUnsupportedInputLang:  "无效的输入语言：%v",
 		ErrNotFoundEndFlag:       "找不到结束符号",
@@ -51,6 +50,7 @@ func init() {
 		ErrTagArgNotEnough:       "标签：%v 参数不够",
 		ErrUnsupportedEncoding:   "不支持的编码方式：%v",
 		ErrDirIsEmpty:            "目录下没有需要解析的文件",
+		ErrGroupNotExists:        "分组 %s 不存在",
 
 		// logs
 		InfoPrefix:  "[信息] ",
