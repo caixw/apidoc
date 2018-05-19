@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package types 一些公用类型的定义
-package types
+package parser
 
 import (
 	"errors"
@@ -13,8 +12,7 @@ import (
 	"github.com/caixw/apidoc/openapi"
 )
 
-// API 文档内容
-type API struct {
+type api struct {
 	API         string               // @api 后面的内容，包含了 method, url 和 summary
 	Group       string               `yaml:"group,omitempty"`
 	Tags        []string             `yaml:"tags,omitempty"`
@@ -24,26 +22,24 @@ type API struct {
 	Queries     map[string]string    `yaml:"queries,omitempty"`
 	Params      map[string]string    `yaml:"params,omitempty"`
 	Headers     map[string]string    `yaml:"header,omitempty"`
-	Request     *Request             `yaml:"request,omitempty"` // GET 此值可能为空
-	Responses   map[string]*Response `yaml:"responses"`
+	Request     *request             `yaml:"request,omitempty"` // GET 此值可能为空
+	Responses   map[string]*response `yaml:"responses"`
 }
 
-// Content 表示请求和返回的内容
-type Content struct {
+// 表示请求和返回的内容
+type content struct {
 	Description openapi.Description           `yaml:"description,omitempty"`
 	Content     map[string]*openapi.MediaType `yaml:"content"`
 }
 
-// Request 表示请求内容
-type Request Content
+type request content
 
-// Response 表示返回的内容
-type Response struct {
-	Content
+type response struct {
+	content
 	Headers map[string]string `json:"headers,omitempty" yaml:"headers,omitempty"`
 }
 
-func (doc *Doc) parseAPI(api *API) error {
+func (doc *doc) parseAPI(api *api) error {
 	o, err := doc.getOperation(api)
 	if err != nil {
 		return err
@@ -67,7 +63,7 @@ func (doc *Doc) parseAPI(api *API) error {
 	for status, resp := range api.Responses {
 		r := &openapi.Response{
 			Description: resp.Description,
-			Content:     resp.Content.Content,
+			Content:     resp.content.Content,
 			Headers:     make(map[string]*openapi.Header, len(resp.Headers)),
 		}
 		for k, v := range resp.Headers {
@@ -80,7 +76,7 @@ func (doc *Doc) parseAPI(api *API) error {
 	return nil
 }
 
-func (api *API) parseParameter(o *openapi.Operation) error {
+func (api *api) parseParameter(o *openapi.Operation) error {
 	l := len(api.Queries) + len(api.Params) + len(api.Headers)
 	o.Parameters = make([]*openapi.Parameter, 0, l)
 
@@ -126,7 +122,7 @@ func (api *API) parseParameter(o *openapi.Operation) error {
 	return nil
 }
 
-func (doc *Doc) getOperation(api *API) (*openapi.Operation, error) {
+func (doc *doc) getOperation(api *api) (*openapi.Operation, error) {
 	doc.locker.Lock()
 	defer doc.locker.Unlock()
 

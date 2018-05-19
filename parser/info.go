@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package types
+package parser
 
 import (
 	"errors"
@@ -30,7 +30,7 @@ type Info struct {
 	Version        string              `yaml:"version"`
 }
 
-func (doc *Doc) parseInfo(info *Info) error {
+func (doc *doc) parseInfo(info *Info) error {
 	doc.locker.Lock()
 	defer doc.locker.Unlock()
 

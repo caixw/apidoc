@@ -20,9 +20,6 @@ import (
 
 // Options 指定输入内容的相关信息。
 type Options struct {
-	ErrorLog *log.Logger `yaml:"-"` // 错误输出通道
-	WarnLog  *log.Logger `yaml:"-"` // 警告输出通道
-
 	StartLineNumber int      `yaml:"startLineNumber,omitempty"` // 代码的超始行号，默认为 0
 	Lang            string   `yaml:"lang"`                      // 输入的目标语言
 	Dir             string   `yaml:"dir"`                       // 源代码目录
@@ -30,8 +27,9 @@ type Options struct {
 	Recursive       bool     `yaml:"recursive"`                 // 是否查找 Dir 的子目录
 	Encoding        string   `yaml:"encoding,omitempty"`        // 文件的编码
 
-	blocks []blocker
-	paths  []string
+	ErrorLog *log.Logger `yaml:"-"` // 错误输出通道
+	blocks   []blocker
+	paths    []string
 }
 
 // Sanitize 检测 Options 变量是否符合要求

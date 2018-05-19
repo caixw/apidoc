@@ -74,7 +74,6 @@ func (cfg *config) sanitize() error {
 
 		// 指定语法检测输出通道
 		opt.ErrorLog = erro
-		opt.WarnLog = warn
 	}
 
 	if err := cfg.Output.Sanitize(); err != nil {

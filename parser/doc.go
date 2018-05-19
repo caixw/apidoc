@@ -2,11 +2,15 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package types
+// Package parser 解析被 input 分离出来的自定义代码块到 openapi 格式。
+package parser
 
 import (
 	"bytes"
+	"log"
 	"sync"
+
+	"github.com/caixw/apidoc/locale"
 
 	yaml "gopkg.in/yaml.v2"
 
@@ -15,86 +19,92 @@ import (
 	"github.com/caixw/apidoc/vars"
 )
 
-// Doc 表示单个文档
-type Doc struct {
+// 表示单个文档
+type doc struct {
 	OpenAPI *openapi.OpenAPI
 	locker  sync.Mutex
 }
 
-// Docs 表示单个完整的文档实例
-type Docs struct {
+type parser struct {
 	// 按 group 进行分组的文档列表，
 	// 每一个文档都是一个完整的 openapi 文档。
-	Docs   map[string]*Doc
+	docs   map[string]*doc
 	locker sync.Mutex
 }
 
-// NewAPI 添加一上新的 API 文档
-func (docs *Docs) NewAPI(api *API) error {
+// 添加一上新的 API 文档
+func (docs *parser) newAPI(api *api) error {
 	return docs.getDoc(api.Group).parseAPI(api)
 }
 
-// NewInfo 添加新的文档信息
-func (docs *Docs) NewInfo(info *Info) error {
+// 添加新的文档信息
+func (docs *parser) newInfo(info *Info) error {
 	return docs.getDoc(info.Group).parseInfo(info)
 }
 
 // 获取指定组名的文档，group 为空，则会采用默认值组名。
-func (docs *Docs) getDoc(group string) *Doc {
+func (docs *parser) getDoc(group string) *doc {
 	if group == "" {
 		group = vars.DefaultGroupName
 	}
 
 	docs.locker.Lock()
 	defer docs.locker.Unlock()
-	doc, found := docs.Docs[group]
+	d, found := docs.docs[group]
 
 	if !found {
-		doc = &Doc{
+		d = &doc{
 			OpenAPI: &openapi.OpenAPI{},
 		}
-		docs.Docs[group] = doc
+		docs.docs[group] = d
 	}
 
-	return doc
+	return d
 }
 
 // Parse 获取文档内容
-func Parse(o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
-	docs := &Docs{
-		Docs: make(map[string]*Doc, 10),
+func Parse(err *log.Logger, o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
+	p := &parser{
+		docs: make(map[string]*doc, 10),
 	}
 
 	c := input.Parse(o...)
 
+	wg := sync.WaitGroup{}
 	for block := range c {
-		if err := parseData(block.Data, docs); err != nil {
-			return nil, err
-		}
+		wg.Add(1)
+		go func(b input.Block) {
+			defer wg.Done()
+			if err := p.parse(b.Data); err != nil {
+				log.Println(locale.Sprintf(locale.SyntaxError, b.File, b.Line, err.Error()))
+				return
+			}
+		}(block)
 	}
+	wg.Wait()
 
-	ret := make(map[string]*openapi.OpenAPI, len(docs.Docs))
-	for name, doc := range docs.Docs {
+	ret := make(map[string]*openapi.OpenAPI, len(p.docs))
+	for name, doc := range p.docs {
 		ret[name] = doc.OpenAPI
 	}
 
 	return ret, nil
 }
 
-func parseData(data []byte, d *Docs) error {
+func (docs *parser) parse(data []byte) error {
 	data = bytes.TrimLeft(data, " ")
 
 	if bytes.HasPrefix([]byte(vars.API), data) {
 		index := bytes.IndexByte(data, '\n')
 		line := data[:index]
 		data = data[index+1:]
-		api := &API{}
-		if err := yaml.Unmarshal(data, api); err != nil {
+		a := &api{}
+		if err := yaml.Unmarshal(data, a); err != nil {
 			return err
 		}
 
-		api.API = string(line)
-		return d.NewAPI(api)
+		a.API = string(line)
+		return docs.newAPI(a)
 	}
 
 	if bytes.HasPrefix([]byte(vars.APIDoc), data) {
@@ -107,7 +117,7 @@ func parseData(data []byte, d *Docs) error {
 		}
 
 		info.Title = string(line)
-		return d.NewInfo(info)
+		return docs.newInfo(info)
 	}
 
 	return nil

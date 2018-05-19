@@ -25,7 +25,7 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
-	"github.com/caixw/apidoc/types"
+	"github.com/caixw/apidoc/parser"
 	"github.com/caixw/apidoc/vars"
 )
 
@@ -128,7 +128,8 @@ func run(wd string) {
 	}
 
 	start := time.Now()
-	docs, err := types.Parse(cfg.Inputs...)
+	// 语法错误属于警告信息
+	docs, err := parser.Parse(warn, cfg.Inputs...)
 	if err != nil {
 		erro.Println(err)
 	}
