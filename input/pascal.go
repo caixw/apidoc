@@ -28,7 +28,7 @@ LOOP:
 	for {
 		switch {
 		case l.atEOF():
-			break LOOP
+			return nil, false
 		case l.match(b.escape): // 转义
 			continue LOOP
 		case l.match(b.symbol): // 结束
@@ -37,5 +37,4 @@ LOOP:
 			l.pos++
 		}
 	} // end for
-	return nil, false
 }

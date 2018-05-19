@@ -161,6 +161,8 @@ func recursivePath(o *Options) ([]string, error) {
 
 // 合并多行为一个 []byte 结构，并去掉前导空格
 func mergeLines(lines [][]byte) []byte {
+	lines = trimSpaceLine(lines)
+
 	if len(lines) == 0 {
 		return nil
 	}
@@ -218,4 +220,25 @@ func isSpaceLine(line []byte) bool {
 	}
 
 	return true
+}
+
+// 去掉首尾的空行
+func trimSpaceLine(lines [][]byte) [][]byte {
+	// 去掉开头空行
+	for index, line := range lines {
+		if !isSpaceLine(line) {
+			lines = lines[index:]
+			break
+		}
+	}
+
+	// 去掉尾部的空行
+	for i := len(lines) - 1; i >= 0; i-- {
+		if !isSpaceLine(lines[i]) {
+			lines = lines[:i+1]
+			break
+		}
+	}
+
+	return lines
 }
