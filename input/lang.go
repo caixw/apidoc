@@ -157,9 +157,7 @@ func Languages() []string {
 		ret = append(ret, l)
 	}
 
-	sort.SliceStable(ret, func(i, j int) bool {
-		return ret[i] > ret[j]
-	})
+	sort.Strings(ret)
 
 	return ret
 }

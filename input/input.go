@@ -17,6 +17,7 @@ import (
 	"unicode"
 
 	"github.com/caixw/apidoc/input/encoding"
+	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/vars"
 )
 
@@ -86,7 +87,7 @@ func parseFile(channel chan Block, path string, o *Options) {
 		ln := l.lineNumber() + o.StartLineNumber // 记录当前的行号，顺便调整起始行号
 		lines, ok := block.EndFunc(l)
 		if !ok {
-			// syntax.OutputError(o.ErrorLog, path, ln, locale.ErrNotFoundEndFlag)
+			o.ErrorLog.Println(locale.Sprintf(locale.ErrNotFoundEndFlag))
 			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 		}
 
