@@ -16,9 +16,6 @@ func TestServer_Sanitize(t *testing.T) {
 	srv := &Server{}
 	a.Error(srv.Sanitize())
 
-	srv.URL = "invalid url"
-	a.Error(srv.Sanitize())
-
 	srv.URL = "https://example.com/{tpl1}/{tpl2}/path3"
 	a.NotError(srv.Sanitize())
 
