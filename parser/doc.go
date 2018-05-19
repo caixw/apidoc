@@ -10,11 +10,10 @@ import (
 	"log"
 	"sync"
 
-	"github.com/caixw/apidoc/locale"
-
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/openapi"
 	"github.com/caixw/apidoc/vars"
 )
@@ -63,12 +62,12 @@ func (docs *parser) getDoc(group string) *doc {
 }
 
 // Parse 获取文档内容
-func Parse(err *log.Logger, o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
+func Parse(errlog *log.Logger, syntaxlog *log.Logger, o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
 	p := &parser{
 		docs: make(map[string]*doc, 10),
 	}
 
-	c := input.Parse(o...)
+	c := input.Parse(errlog, o...)
 
 	wg := sync.WaitGroup{}
 	for block := range c {
@@ -76,7 +75,7 @@ func Parse(err *log.Logger, o ...*input.Options) (map[string]*openapi.OpenAPI, e
 		go func(b input.Block) {
 			defer wg.Done()
 			if err := p.parse(b.Data); err != nil {
-				log.Println(locale.Sprintf(locale.SyntaxError, b.File, b.Line, err.Error()))
+				syntaxlog.Println(locale.Sprintf(locale.SyntaxError, b.File, b.Line, err.Error()))
 				return
 			}
 		}(block)

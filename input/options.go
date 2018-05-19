@@ -6,7 +6,6 @@ package input
 
 import (
 	"errors"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -27,9 +26,8 @@ type Options struct {
 	Recursive       bool     `yaml:"recursive"`                 // 是否查找 Dir 的子目录
 	Encoding        string   `yaml:"encoding,omitempty"`        // 文件的编码
 
-	ErrorLog *log.Logger `yaml:"-"` // 错误输出通道
-	blocks   []blocker
-	paths    []string
+	blocks []blocker
+	paths  []string
 }
 
 // Sanitize 检测 Options 变量是否符合要求

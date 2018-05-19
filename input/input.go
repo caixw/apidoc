@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package input 用于处理文件输入，过滤代码，生成数据。
+// Package input 用于处理输入的文件，从代码中提取基本的注释内容。
 //
 // 多行注释和单行注释在处理上会有一定区别：
 //  - 单行注释，风格相同且相邻的注释会被合并成一个注释块；
@@ -12,6 +12,7 @@ package input
 
 import (
 	"bytes"
+	"log"
 	"math"
 	"sync"
 	"unicode"
@@ -31,13 +32,15 @@ type Block struct {
 // Parse 分析源代码，获取相应的文档内容。
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
-func Parse(o ...*Options) chan Block {
+//
+// errlog 表示错误内容输出通道，若不需要，则使用 nil 代替。
+func Parse(errlog *log.Logger, o ...*Options) chan Block {
 	data := make(chan Block, 500)
 
 	go func() {
 		wg := &sync.WaitGroup{}
 		for _, opt := range o {
-			parse(data, wg, opt)
+			parse(data, errlog, wg, opt)
 		}
 		wg.Wait()
 
@@ -47,11 +50,11 @@ func Parse(o ...*Options) chan Block {
 	return data
 }
 
-func parse(data chan Block, wg *sync.WaitGroup, o *Options) {
+func parse(data chan Block, errlog *log.Logger, wg *sync.WaitGroup, o *Options) {
 	for _, path := range o.paths {
 		wg.Add(1)
 		go func(path string) {
-			parseFile(data, path, o)
+			parseFile(data, errlog, path, o)
 			wg.Done()
 		}(path)
 	}
@@ -60,11 +63,11 @@ func parse(data chan Block, wg *sync.WaitGroup, o *Options) {
 // 分析 path 指向的文件，并将内容写入到 docs 中。
 //
 // NOTE: parseFile 内部不能有 go 协程处理代码。
-func parseFile(channel chan Block, path string, o *Options) {
+func parseFile(channel chan Block, errlog *log.Logger, path string, o *Options) {
 	data, err := encoding.Transform(path, o.Encoding)
 	if err != nil {
-		if o.ErrorLog != nil {
-			o.ErrorLog.Println(err)
+		if errlog != nil {
+			errlog.Println(err)
 		}
 		return
 	}
@@ -87,7 +90,7 @@ func parseFile(channel chan Block, path string, o *Options) {
 		ln := l.lineNumber() + o.StartLineNumber // 记录当前的行号，顺便调整起始行号
 		lines, ok := block.EndFunc(l)
 		if !ok {
-			o.ErrorLog.Println(locale.Sprintf(locale.ErrNotFoundEndFlag))
+			errlog.Println(locale.Sprintf(locale.ErrNotFoundEndFlag))
 			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 		}
 

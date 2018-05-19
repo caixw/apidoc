@@ -85,7 +85,7 @@ func testParse(a *assert.Assertion, lang string) {
 	}
 	a.NotError(o.Sanitize()) // 初始化扩展名信息
 
-	channel := Parse(o)
+	channel := Parse(nil, o)
 	a.NotNil(channel)
 
 	for b := range channel {

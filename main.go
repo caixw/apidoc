@@ -129,7 +129,7 @@ func run(wd string) {
 
 	start := time.Now()
 	// 语法错误属于警告信息
-	docs, err := parser.Parse(warn, cfg.Inputs...)
+	docs, err := parser.Parse(erro, warn, cfg.Inputs...)
 	if err != nil {
 		erro.Println(err)
 	}

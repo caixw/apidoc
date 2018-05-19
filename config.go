@@ -71,9 +71,6 @@ func (cfg *config) sanitize() error {
 			err.Field = "inputs[" + index + "]." + err.Field
 			return err
 		}
-
-		// 指定语法检测输出通道
-		opt.ErrorLog = erro
 	}
 
 	if err := cfg.Output.Sanitize(); err != nil {
