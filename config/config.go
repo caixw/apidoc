@@ -2,10 +2,13 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package main
+// Package config 配置文件
+package config
 
 import (
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/issue9/version"
@@ -15,10 +18,11 @@ import (
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/openapi"
 	"github.com/caixw/apidoc/output"
+	"github.com/caixw/apidoc/vars"
 )
 
-// 项目的配置内容
-type config struct {
+// Config 项目的配置内容
+type Config struct {
 	// 产生此配置文件的程序版本号。
 	//
 	// 程序会用此来判断程序的兼容性。
@@ -33,14 +37,14 @@ type config struct {
 	Output *output.Options `yaml:"output"`
 }
 
-// 加载 path 所指的文件内容到 *config 实例。
-func loadConfig(path string) (*config, error) {
+// Load 加载 path 所指的文件内容到 *config 实例。
+func Load(path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg := &config{}
+	cfg := &Config{}
 	if err = yaml.Unmarshal(data, cfg); err != nil {
 		return nil, err
 	}
@@ -52,9 +56,18 @@ func loadConfig(path string) (*config, error) {
 	return cfg, nil
 }
 
-func (cfg *config) sanitize() error {
+func (cfg *Config) sanitize() error {
 	if !version.SemVerValid(cfg.Version) {
 		return &openapi.Error{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
+	}
+
+	// 比较版本号兼容问题
+	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
+	if err != nil {
+		return &openapi.Error{Field: "version", Message: err.Error()}
+	}
+	if !compatible {
+		return &openapi.Error{Field: "version", Message: locale.Sprintf(locale.VersionInCompatible)}
 	}
 
 	if len(cfg.Inputs) == 0 {
@@ -79,4 +92,30 @@ func (cfg *config) sanitize() error {
 	}
 
 	return nil
+}
+
+// Generate 根据 wd 所在目录的内容生成一个配置文件，并写入到 path  中
+//
+// wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
+// path 表示生成的配置文件存放的路径。
+func Generate(wd, path string) error {
+	o, err := input.Detect(wd, true)
+	if err != nil {
+		return err
+	}
+
+	cfg := &Config{
+		Version: vars.Version(),
+		Inputs:  []*input.Options{o},
+		Output: &output.Options{
+			Dir: filepath.Join(o.Dir, "doc"),
+		},
+	}
+
+	data, err := yaml.Marshal(cfg)
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(path, data, os.ModePerm)
 }

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package main
+package config
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -13,12 +14,26 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/openapi"
 	"github.com/caixw/apidoc/output"
+	"github.com/caixw/apidoc/vars"
 )
+
+func TestConfig_Generate_Load(t *testing.T) {
+	a := assert.New(t)
+
+	path, err := filepath.Abs("./.apidoc.yaml")
+	a.NotError(err).NotEmpty(path)
+
+	a.NotError(Generate("./..", path))
+	cfg, err := Load(path)
+	a.NotError(err).NotNil(cfg)
+
+	a.Equal(cfg.Version, vars.Version())
+}
 
 func TestConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	conf := &config{}
+	conf := &Config{}
 	err := conf.sanitize()
 	a.Error(err)
 	a.Equal(err.(*openapi.Error).Field, "version")

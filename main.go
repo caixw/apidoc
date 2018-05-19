@@ -19,9 +19,8 @@ import (
 
 	"github.com/issue9/logs/writers"
 	"github.com/issue9/term/colors"
-	"github.com/issue9/version"
-	yaml "gopkg.in/yaml.v2"
 
+	"github.com/caixw/apidoc/config"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
@@ -110,25 +109,13 @@ func main() {
 
 // 真正的程序入口，main 主要是作参数的处理。
 func run(wd string) {
-	cfg, err := loadConfig(filepath.Join(wd, vars.ConfigFilename))
+	cfg, err := config.Load(filepath.Join(wd, vars.ConfigFilename))
 	if err != nil {
 		erro.Println(err)
-		return
-	}
-
-	// 比较版本号兼容问题
-	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
-	if err != nil {
-		erro.Println(err)
-		return
-	}
-	if !compatible {
-		erro.Println(locale.Sprintf(locale.VersionInCompatible))
 		return
 	}
 
 	start := time.Now()
-	// 语法错误属于警告信息
 	docs, err := parser.Parse(erro, warn, cfg.Inputs...)
 	if err != nil {
 		erro.Println(err)
@@ -152,28 +139,8 @@ func usage() {
 
 // 根据 wd 所在目录的内容生成一个配置文件，并写入到 wd 目录下的 .apidoc.yaml 中
 func genConfigFile(wd string) {
-	o, err := input.Detect(wd, true)
-	if err != nil {
-		erro.Println(err)
-		return
-	}
-
-	cfg := &config{
-		Version: vars.Version(),
-		Inputs:  []*input.Options{o},
-		Output: &output.Options{
-			Dir: filepath.Join(o.Dir, "doc"),
-		},
-	}
-
-	data, err := yaml.Marshal(cfg)
-	if err != nil {
-		erro.Println(err)
-		return
-	}
-
 	path := filepath.Join(wd, vars.ConfigFilename)
-	if err = ioutil.WriteFile(path, data, os.ModePerm); err != nil {
+	if err := config.Generate(wd, path); err != nil {
 		erro.Println(err)
 		return
 	}
