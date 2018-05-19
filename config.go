@@ -13,8 +13,8 @@ import (
 
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/openapi"
 	"github.com/caixw/apidoc/output"
-	"github.com/caixw/apidoc/types/openapi"
 )
 
 // 项目的配置内容

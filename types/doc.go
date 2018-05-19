@@ -11,7 +11,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/input"
-	"github.com/caixw/apidoc/types/openapi"
+	"github.com/caixw/apidoc/openapi"
 	"github.com/caixw/apidoc/vars"
 )
 

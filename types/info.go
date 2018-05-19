@@ -7,7 +7,7 @@ package types
 import (
 	"errors"
 
-	"github.com/caixw/apidoc/types/openapi"
+	"github.com/caixw/apidoc/openapi"
 )
 
 // Info 文档的信息

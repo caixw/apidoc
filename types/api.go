@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/caixw/apidoc/types/openapi"
+	"github.com/caixw/apidoc/openapi"
 )
 
 // API 文档内容

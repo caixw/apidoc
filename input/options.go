@@ -15,7 +15,7 @@ import (
 
 	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/types/openapi"
+	"github.com/caixw/apidoc/openapi"
 )
 
 // Options 指定输入内容的相关信息。

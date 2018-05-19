@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package input 用于处理文件输入，过滤代码，生成 types.Doc 数据。
+// Package input 用于处理文件输入，过滤代码，生成数据。
 //
 // 多行注释和单行注释在处理上会有一定区别：
 //  - 单行注释，风格相同且相邻的注释会被合并成一个注释块；
