@@ -21,9 +21,6 @@ const (
 	// 配置文件名称。
 	ConfigFilename = ".apidoc.yaml"
 
-	// 默认的文档标题
-	DefaultTitle = "APIDOC"
-
 	// 默认的分组名称，在不指定分组名称的时候，系统会给其加到此分组中。
 	DefaultGroupName = "openapi"
 
@@ -39,4 +36,10 @@ const (
 	InfoColor = colors.Green
 	WarnColor = colors.Cyan
 	ErroColor = colors.Red
+)
+
+// 所有标签的定义
+const (
+	API    = "@api"
+	APIDoc = "@apidoc"
 )

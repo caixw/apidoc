@@ -18,6 +18,11 @@ import (
 	"github.com/caixw/apidoc/vars"
 )
 
+var (
+	apiPrefix    = []byte(vars.API)
+	apiDocPrefix = []byte(vars.APIDoc)
+)
+
 // 表示单个文档
 type doc struct {
 	OpenAPI *openapi.OpenAPI
@@ -93,7 +98,7 @@ func Parse(errlog *log.Logger, syntaxlog *log.Logger, o ...*input.Options) (map[
 func (docs *parser) parse(data []byte) error {
 	data = bytes.TrimLeft(data, " ")
 
-	if bytes.HasPrefix([]byte(vars.API), data) {
+	if bytes.HasPrefix(apiPrefix, data) {
 		index := bytes.IndexByte(data, '\n')
 		line := data[:index]
 		data = data[index+1:]
@@ -106,7 +111,7 @@ func (docs *parser) parse(data []byte) error {
 		return docs.newAPI(a)
 	}
 
-	if bytes.HasPrefix([]byte(vars.APIDoc), data) {
+	if bytes.HasPrefix(apiDocPrefix, data) {
 		index := bytes.IndexByte(data, '\n')
 		line := data[:index]
 		data = data[index+1:]

@@ -25,7 +25,6 @@ func TestConsts(t *testing.T) {
 	a.True(is.URL(RepoURL))
 	a.True(is.URL(OfficialURL))
 	a.True(len(ConfigFilename) > 0).True(strings.IndexAny(ConfigFilename, "/\\") < 0)
-	a.True(len(DefaultTitle) > 0)
 	a.True(len(DefaultGroupName) > 0).True(strings.IndexAny(DefaultGroupName, "/\\") < 0)
 
 	tag, err := language.Parse(DefaultLocale)

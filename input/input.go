@@ -22,6 +22,11 @@ import (
 	"github.com/caixw/apidoc/vars"
 )
 
+var (
+	apiPrefix    = []byte(vars.API)
+	apiDocPrefix = []byte(vars.APIDoc)
+)
+
 // Block 解析出来的注释块
 type Block struct {
 	File string
@@ -97,7 +102,7 @@ func parseFile(channel chan Block, errlog *log.Logger, path string, o *Options) 
 		block = nil
 
 		bs := mergeLines(lines)
-		if !bytes.HasPrefix(bs, []byte(vars.API)) && !bytes.HasPrefix(bs, []byte(vars.APIDoc)) {
+		if !bytes.HasPrefix(bs, apiPrefix) && !bytes.HasPrefix(bs, apiDocPrefix) {
 			continue
 		}
 
