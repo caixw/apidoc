@@ -6,7 +6,6 @@
 package locale
 
 import (
-	"errors"
 	"io"
 
 	"golang.org/x/text/language"
@@ -31,10 +30,14 @@ func Init() error {
 func getTag() (language.Tag, error) {
 	found := false
 	for id, messages := range locales { // 保证 locales 已经初始化，即要在 init() 函数之后调用
-		tag := language.MustParse(id)
+		tag, err := language.Parse(id)
+		if err != nil {
+			return language.Und, err
+		}
+
 		for key, val := range messages {
 			if err := message.SetString(tag, key, val); err != nil {
-				panic(err)
+				return language.Und, err
 			}
 		}
 
@@ -44,7 +47,7 @@ func getTag() (language.Tag, error) {
 	}
 
 	if !found {
-		return language.Und, errors.New("vars.DefaultLocale 的值并不存在")
+		panic("vars.DefaultLocale 的值并不存在") // 这算是代码级别的错误，直接 panic
 	}
 
 	tag, err := syslocale.Get()
