@@ -12,15 +12,11 @@ package input
 
 import (
 	"bytes"
-	"errors"
 	"math"
-	"os"
-	"path/filepath"
 	"sync"
 	"unicode"
 
 	"github.com/caixw/apidoc/input/encoding"
-	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/vars"
 )
 
@@ -34,7 +30,7 @@ type Block struct {
 // Parse 分析源代码，获取相应的文档内容。
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
-func Parse(o ...*Options) (chan Block, error) {
+func Parse(o ...*Options) chan Block {
 	data := make(chan Block, 500)
 
 	go func() {
@@ -47,27 +43,14 @@ func Parse(o ...*Options) (chan Block, error) {
 		close(data)
 	}()
 
-	return data, nil
+	return data
 }
 
 func parse(data chan Block, wg *sync.WaitGroup, o *Options) {
-	blocks, found := langs[o.Lang]
-	if !found {
-		o.ErrorLog.Println(errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang)))
-		return
-	}
-
-	paths, err := recursivePath(o)
-	if err != nil {
-		e := errors.New(locale.Sprintf(locale.ErrUnsupportedInputLang, o.Lang))
-		o.ErrorLog.Println(e)
-		return
-	}
-
-	for _, path := range paths {
+	for _, path := range o.paths {
 		wg.Add(1)
 		go func(path string) {
-			parseFile(data, path, blocks, o)
+			parseFile(data, path, o)
 			wg.Done()
 		}(path)
 	}
@@ -76,7 +59,7 @@ func parse(data chan Block, wg *sync.WaitGroup, o *Options) {
 // 分析 path 指向的文件，并将内容写入到 docs 中。
 //
 // NOTE: parseFile 内部不能有 go 协程处理代码。
-func parseFile(channel chan Block, path string, blocks []blocker, o *Options) {
+func parseFile(channel chan Block, path string, o *Options) {
 	data, err := encoding.Transform(path, o.Encoding)
 	if err != nil {
 		if o.ErrorLog != nil {
@@ -85,7 +68,7 @@ func parseFile(channel chan Block, path string, blocks []blocker, o *Options) {
 		return
 	}
 
-	l := &lexer{data: data, blocks: blocks}
+	l := &lexer{data: data, blocks: o.blocks}
 	var block blocker
 
 	for {
@@ -125,38 +108,6 @@ func parseFile(channel chan Block, path string, blocks []blocker, o *Options) {
 // Encodings 返回支持的编码方式
 func Encodings() []string {
 	return encoding.Encodings()
-}
-
-// 按 Options 中的规则查找所有符合条件的文件列表。
-func recursivePath(o *Options) ([]string, error) {
-	paths := []string{}
-
-	extIsEnabled := func(ext string) bool {
-		for _, v := range o.Exts {
-			if ext == v {
-				return true
-			}
-		}
-		return false
-	}
-
-	walk := func(path string, fi os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if fi.IsDir() && !o.Recursive && path != o.Dir {
-			return filepath.SkipDir
-		} else if extIsEnabled(filepath.Ext(path)) {
-			paths = append(paths, path)
-		}
-		return nil
-	}
-
-	if err := filepath.Walk(o.Dir, walk); err != nil {
-		return nil, err
-	}
-
-	return paths, nil
 }
 
 // 合并多行为一个 []byte 结构，并去掉前导空格

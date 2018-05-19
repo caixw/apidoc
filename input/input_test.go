@@ -6,7 +6,6 @@ package input
 
 import (
 	"bytes"
-	"path/filepath"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -86,8 +85,8 @@ func testParse(a *assert.Assertion, lang string) {
 	}
 	a.NotError(o.Sanitize()) // 初始化扩展名信息
 
-	channel, err := Parse(o)
-	a.NotError(err).NotNil(channel)
+	channel := Parse(o)
+	a.NotNil(channel)
 
 	for b := range channel {
 		eq := bytes.Equal(b.Data, api1) ||
@@ -95,51 +94,6 @@ func testParse(a *assert.Assertion, lang string) {
 			bytes.Equal(b.Data, doc)
 		a.True(eq, "lang(%s)：%s,%s,%d,%d", lang, string(b.Data), string(api1), len(b.Data), len(api1))
 	}
-}
-
-func TestRecursivePath(t *testing.T) {
-	a := assert.New(t)
-
-	opt := &Options{Dir: "./testdir", Recursive: false, Exts: []string{".c", ".h"}}
-	paths, err := recursivePath(opt)
-	a.NotError(err)
-	a.Contains(paths, []string{
-		filepath.Join("testdir", "testfile.c"),
-		filepath.Join("testdir", "testfile.h"),
-	})
-
-	opt.Dir = "./testdir"
-	opt.Recursive = true
-	opt.Exts = []string{".1", ".2"}
-	paths, err = recursivePath(opt)
-	a.NotError(err)
-	a.Contains(paths, []string{
-		filepath.Join("testdir", "testdir1", "testfile.1"),
-		filepath.Join("testdir", "testdir1", "testfile.2"),
-		filepath.Join("testdir", "testdir2", "testfile.1"),
-		filepath.Join("testdir", "testfile.1"),
-	})
-
-	opt.Dir = "./testdir/testdir1"
-	opt.Recursive = true
-	opt.Exts = []string{".1", ".2"}
-	paths, err = recursivePath(opt)
-	a.NotError(err)
-	a.Contains(paths, []string{
-		filepath.Join("testdir", "testdir1", "testfile.1"),
-		filepath.Join("testdir", "testdir1", "testfile.2"),
-	})
-
-	opt.Dir = "./testdir"
-	opt.Recursive = true
-	opt.Exts = []string{".1"}
-	paths, err = recursivePath(opt)
-	a.NotError(err)
-	a.Contains(paths, []string{
-		filepath.Join("testdir", "testdir1", "testfile.1"),
-		filepath.Join("testdir", "testdir2", "testfile.1"),
-		filepath.Join("testdir", "testfile.1"),
-	})
 }
 
 func TestMergeLines(t *testing.T) {

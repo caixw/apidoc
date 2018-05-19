@@ -65,13 +65,10 @@ func Parse(o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
 		Docs: make(map[string]*Doc, 10),
 	}
 
-	c, err := input.Parse(o...)
-	if err != nil {
-		return nil, err
-	}
+	c := input.Parse(o...)
 
 	for block := range c {
-		if err = parseData(block.Data, docs); err != nil {
+		if err := parseData(block.Data, docs); err != nil {
 			return nil, err
 		}
 	}

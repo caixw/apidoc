@@ -50,6 +50,7 @@ func init() {
 		ErrTagArgTooMuch:         "標簽：%v 指定了太多的參數",
 		ErrTagArgNotEnough:       "標簽：%v 參數不夠",
 		ErrUnsupportedEncoding:   "不支持的編碼方式：%v",
+		ErrDirIsEmpty:            "目錄下沒有需要解析的文件",
 
 		// logs
 		InfoPrefix:  "[信息] ",

@@ -29,6 +29,9 @@ type Options struct {
 	Exts            []string `yaml:"exts,omitempty"`            // 需要扫描的文件扩展名，若未指定，则使用默认值
 	Recursive       bool     `yaml:"recursive"`                 // 是否查找 Dir 的子目录
 	Encoding        string   `yaml:"encoding,omitempty"`        // 文件的编码
+
+	blocks []blocker
+	paths  []string
 }
 
 // Sanitize 检测 Options 变量是否符合要求
@@ -44,6 +47,11 @@ func (opt *Options) Sanitize() *openapi.Error {
 	if len(opt.Lang) == 0 {
 		return &openapi.Error{Field: "lang", Message: locale.Sprintf(locale.ErrRequired)}
 	}
+	blocks, found := langs[opt.Lang]
+	if !found {
+		return &openapi.Error{Field: "lang", Message: locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang)}
+	}
+	opt.blocks = blocks
 
 	if !langIsSupported(opt.Lang) {
 		return &openapi.Error{Field: "lang", Message: locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang)}
@@ -69,6 +77,15 @@ func (opt *Options) Sanitize() *openapi.Error {
 	} else {
 		opt.Exts = langExts[opt.Lang]
 	}
+
+	paths, err := recursivePath(opt)
+	if err != nil {
+		return &openapi.Error{Field: "dir", Message: err.Error()}
+	}
+	if len(paths) == 0 {
+		return &openapi.Error{Field: "dir", Message: locale.Sprintf(locale.ErrDirIsEmpty)}
+	}
+	opt.paths = paths
 
 	return nil
 }
@@ -152,4 +169,36 @@ func detectExts(dir string, recursive bool) (map[string]int, error) {
 	}
 
 	return exts, nil
+}
+
+// 按 Options 中的规则查找所有符合条件的文件列表。
+func recursivePath(o *Options) ([]string, error) {
+	paths := []string{}
+
+	extIsEnabled := func(ext string) bool {
+		for _, v := range o.Exts {
+			if ext == v {
+				return true
+			}
+		}
+		return false
+	}
+
+	walk := func(path string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if fi.IsDir() && !o.Recursive && path != o.Dir {
+			return filepath.SkipDir
+		} else if extIsEnabled(filepath.Ext(path)) {
+			paths = append(paths, path)
+		}
+		return nil
+	}
+
+	if err := filepath.Walk(o.Dir, walk); err != nil {
+		return nil, err
+	}
+
+	return paths, nil
 }
