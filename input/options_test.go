@@ -9,7 +9,11 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/config/conferr"
 )
+
+var _ conferr.Sanitizer = &Options{}
 
 func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)

@@ -10,8 +10,6 @@ var locales = map[string]map[string]string{}
 
 // 各个语言需要翻译的所有字符串
 const (
-	OptionsError = "配置文件[%v]中配置项[%v]错误[%v]"
-
 	// 与 flag 包相关的处理
 	FlagUsage = `%v 是一个 RESTful API 文档生成工具。
 
@@ -57,6 +55,7 @@ const (
 	ErrInvalidValue          = "无效的值"
 	ErrInvalidOpenapi        = "openapi 内容错误：字段：%s；错误内容：%s"
 	ErrSyntax                = "在[%s:%d]出现语法错误[%s]"
+	ErrConfig                = "配置文件[%s]中配置项[%s]错误[%s]"
 
 	// logs
 	InfoPrefix  = "[INFO] "

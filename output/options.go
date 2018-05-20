@@ -12,8 +12,8 @@ import (
 	"github.com/issue9/utils"
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/caixw/apidoc/config/conferr"
 	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/openapi"
 )
 
 const (
@@ -48,20 +48,20 @@ type Options struct {
 }
 
 // Sanitize 对 Options 作一些初始化操作。
-func (o *Options) Sanitize() *openapi.Error {
+func (o *Options) Sanitize() *conferr.Error {
 	if len(o.Dir) == 0 {
-		return &openapi.Error{Field: "dir", Message: locale.Sprintf(locale.ErrRequired)}
+		return conferr.New("dir", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if o.Clean {
 		if err := os.RemoveAll(o.Dir); err != nil {
-			return &openapi.Error{Field: "dir", Message: err.Error()}
+			return conferr.New("dir", err.Error())
 		}
 	}
 
 	if !utils.FileExists(o.Dir) {
 		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
-			return &openapi.Error{Field: "dir", Message: err.Error()}
+			return conferr.New("dir", err.Error())
 		}
 	}
 
@@ -75,7 +75,7 @@ func (o *Options) Sanitize() *openapi.Error {
 	case typeYAML:
 		o.marshal = yaml.Marshal
 	default:
-		return &openapi.Error{Field: "type", Message: locale.Sprintf(locale.ErrInvalidValue)}
+		return conferr.New("type", locale.Sprintf(locale.ErrInvalidValue))
 	}
 
 	return nil

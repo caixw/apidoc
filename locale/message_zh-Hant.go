@@ -6,8 +6,6 @@ package locale
 
 func init() {
 	locales["zh-Hant"] = map[string]string{
-		OptionsError: "配置文件[%v]中配置項[%v]錯誤[%v]",
-
 		// 與 flag 包相關的處理
 		FlagUsage: `%v 是壹個 RESTful API 文檔生成工具。
 
@@ -53,6 +51,7 @@ func init() {
 		ErrInvalidValue:          "無效的值",
 		ErrInvalidOpenapi:        "openapi 內容錯誤：字段：%s；錯誤內容：%s",
 		ErrSyntax:                "在[%s:%d]出現語法錯誤[%s]",
+		ErrConfig:                "配置文件[%s]中配置項[%s]錯誤[%s]",
 
 		// logs
 		InfoPrefix:  "[信息] ",

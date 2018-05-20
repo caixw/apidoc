@@ -10,7 +10,11 @@ import (
 
 	"github.com/issue9/assert"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/caixw/apidoc/config/conferr"
 )
+
+var _ conferr.Sanitizer = &Options{}
 
 func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)

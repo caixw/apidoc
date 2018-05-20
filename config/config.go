@@ -14,9 +14,9 @@ import (
 	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/caixw/apidoc/config/conferr"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/openapi"
 	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/vars"
 )
@@ -58,24 +58,24 @@ func Load(path string) (*Config, error) {
 
 func (cfg *Config) sanitize() error {
 	if !version.SemVerValid(cfg.Version) {
-		return &openapi.Error{Field: "version", Message: locale.Sprintf(locale.ErrInvalidFormat)}
+		return conferr.New("version", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
 	if err != nil {
-		return &openapi.Error{Field: "version", Message: err.Error()}
+		return conferr.New("version", err.Error())
 	}
 	if !compatible {
-		return &openapi.Error{Field: "version", Message: locale.Sprintf(locale.VersionInCompatible)}
+		return conferr.New("version", locale.Sprintf(locale.VersionInCompatible))
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return &openapi.Error{Field: "inputs", Message: locale.Sprintf(locale.ErrRequired)}
+		return conferr.New("inputs", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if cfg.Output == nil {
-		return &openapi.Error{Field: "output", Message: locale.Sprintf(locale.ErrRequired)}
+		return conferr.New("output", locale.Sprintf(locale.ErrRequired))
 	}
 
 	for i, opt := range cfg.Inputs {
