@@ -37,30 +37,30 @@ type parser struct {
 }
 
 // 添加一上新的 API 文档
-func (docs *parser) newAPI(api *api) error {
-	return docs.getDoc(api.Group).parseAPI(api)
+func (p *parser) newAPI(api *api) error {
+	return p.getDoc(api.Group).parseAPI(api)
 }
 
 // 添加新的文档信息
-func (docs *parser) newInfo(info *Info) error {
-	return docs.getDoc(info.Group).parseInfo(info)
+func (p *parser) newInfo(info *Info) error {
+	return p.getDoc(info.Group).parseInfo(info)
 }
 
 // 获取指定组名的文档，group 为空，则会采用默认值组名。
-func (docs *parser) getDoc(group string) *doc {
+func (p *parser) getDoc(group string) *doc {
 	if group == "" {
 		group = vars.DefaultGroupName
 	}
 
-	docs.locker.Lock()
-	defer docs.locker.Unlock()
-	d, found := docs.docs[group]
+	p.locker.Lock()
+	defer p.locker.Unlock()
+	d, found := p.docs[group]
 
 	if !found {
 		d = &doc{
 			OpenAPI: &openapi.OpenAPI{},
 		}
-		docs.docs[group] = d
+		p.docs[group] = d
 	}
 
 	return d
@@ -95,7 +95,7 @@ func Parse(errlog *log.Logger, syntaxlog *log.Logger, o ...*input.Options) (map[
 	return ret, nil
 }
 
-func (docs *parser) parse(data []byte) error {
+func (p *parser) parse(data []byte) error {
 	data = bytes.TrimLeft(data, " ")
 
 	if bytes.HasPrefix(apiPrefix, data) {
@@ -108,7 +108,7 @@ func (docs *parser) parse(data []byte) error {
 		}
 
 		a.API = string(line)
-		return docs.newAPI(a)
+		return p.newAPI(a)
 	}
 
 	if bytes.HasPrefix(apiDocPrefix, data) {
@@ -121,7 +121,7 @@ func (docs *parser) parse(data []byte) error {
 		}
 
 		info.Title = string(line)
-		return docs.newInfo(info)
+		return p.newInfo(info)
 	}
 
 	return nil

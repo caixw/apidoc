@@ -104,11 +104,10 @@ func main() {
 		}
 	}
 
-	run(*wd)
+	parse(*wd)
 }
 
-// 真正的程序入口，main 主要是作参数的处理。
-func run(wd string) {
+func parse(wd string) {
 	cfg, err := config.Load(filepath.Join(wd, vars.ConfigFilename))
 	if err != nil {
 		erro.Println(err)

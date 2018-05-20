@@ -50,9 +50,11 @@ go get github.com/caixw/apidoc
 
 支持多种本地化语言，默认情况下会根据当前系统所使用的语言进行调整。若需要手动指定，
 windows 可以设置一个 `LANG` 环境变量指定，*nix 系统可以使用以下命令：
+
 ```shell
 LANG=lang apidoc
 ```
+
 将其中的 lang 设置为你需要的语言。
 
 
@@ -66,14 +68,17 @@ LANG=lang apidoc
 locale.Init()
 
 // 分析文档内容
-inputOptions := &input.Options{
-    ErrorLog: log.New(...),
-}
-docs, elapsed := input.Parse(inputOptions)
+inputOptions := &input.Options{}
+
+err := log.NewLogger()
+warn := log.NewLogger()
+
+now := time.Now()
+docs, err := parser.Parse(err, warn, inputOptions)
 
 // 输出内容
 outputOptions := &output.Options{...}
-outputOptions.Elapsed = elapsed
+outputOptions.Elapsed = now.Sub(time.Now())
 if err = output.Render(docs, outputOptions); err != nil {
     panic(err)
 }
