@@ -4,6 +4,8 @@
 
 package openapi
 
+import "github.com/caixw/apidoc/locale"
+
 // Parameter.IN 的可选值
 const (
 	ParameterINPath   = "path"
@@ -42,7 +44,7 @@ func (p *Parameter) Sanitize() *Error {
 	switch p.IN {
 	case ParameterINcookie, ParameterINHeader, ParameterINPath, ParameterINQuery:
 	default:
-		return newError("in", "无效的值")
+		return newError("in", locale.Sprintf(locale.ErrInvalidValue))
 	}
 
 	// TODO 其它字段检测
@@ -57,11 +59,11 @@ func (h *Header) Sanitize() *Error {
 	}
 
 	if h.IN != "" {
-		return newError("in", "只能为空")
+		return newError("in", locale.Sprintf(locale.ErrMustEmpty))
 	}
 
 	if h.Name != "" {
-		return newError("name", "只能为空")
+		return newError("name", locale.Sprintf(locale.ErrMustEmpty))
 	}
 
 	return nil

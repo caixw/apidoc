@@ -6,6 +6,8 @@ package openapi
 
 import (
 	"strings"
+
+	"github.com/caixw/apidoc/locale"
 )
 
 // 去掉 URL 中的 {} 模板参数。使其符合 is.URL 的判断规则
@@ -29,7 +31,7 @@ type ServerVariable struct {
 func (srv *Server) Sanitize() *Error {
 	url := urlreplace.Replace(srv.URL)
 	if url == "" { // 可以是 / 未必是一个 URL
-		return newError("url", "不能为空")
+		return newError("url", locale.Sprintf(locale.ErrRequired))
 	}
 
 	for key, val := range srv.Variables {
@@ -40,7 +42,7 @@ func (srv *Server) Sanitize() *Error {
 
 		k := "{" + key + "}"
 		if strings.Index(srv.URL, k) < 0 {
-			return newError("variables["+key+"]", "不存在于 URL 中")
+			return newError("variables["+key+"]", locale.Sprintf(locale.ErrInvalidValue))
 		}
 	}
 
@@ -50,7 +52,7 @@ func (srv *Server) Sanitize() *Error {
 // Sanitize 数据检测
 func (v *ServerVariable) Sanitize() *Error {
 	if v.Default == "" {
-		return newError("default", "不能为空")
+		return newError("default", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if len(v.Enum) == 0 {
@@ -66,7 +68,7 @@ func (v *ServerVariable) Sanitize() *Error {
 	}
 
 	if !found {
-		return newError("default", "无效的默认值")
+		return newError("default", locale.Sprintf(locale.ErrInvalidValue))
 	}
 
 	return nil

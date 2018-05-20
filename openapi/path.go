@@ -4,6 +4,8 @@
 
 package openapi
 
+import "github.com/caixw/apidoc/locale"
+
 // PathItem 每一条路径的详细描述信息
 type PathItem struct {
 	Ref         string       `json:"ref,omitempty" yaml:"ref,omitempty"`
@@ -81,7 +83,7 @@ type Response struct {
 // Sanitize 数据检测
 func (req *RequestBody) Sanitize() *Error {
 	if len(req.Content) == 0 {
-		return newError("content", "不能为空")
+		return newError("content", locale.Sprintf(locale.ErrRequired))
 	}
 
 	for key, mt := range req.Content {
@@ -97,7 +99,7 @@ func (req *RequestBody) Sanitize() *Error {
 // Sanitize 数据检测
 func (resp *Response) Sanitize() *Error {
 	if resp.Description == "" {
-		return newError("description", "不能为空")
+		return newError("description", locale.Sprintf(locale.ErrRequired))
 	}
 
 	for key, header := range resp.Headers {

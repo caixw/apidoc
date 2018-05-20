@@ -7,6 +7,8 @@ package openapi
 import (
 	"github.com/issue9/is"
 	"github.com/issue9/version"
+
+	"github.com/caixw/apidoc/locale"
 )
 
 // Info 接口文档的基本信息
@@ -35,15 +37,15 @@ type License struct {
 // Sanitize 数据检测
 func (info *Info) Sanitize() *Error {
 	if info.Title == "" {
-		return newError("title", "不能为空")
+		return newError("title", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if !version.SemVerValid(info.Version) {
-		return newError("version", "无效的格式，必须符合 semver 规范")
+		return newError("version", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	if info.TermsOfService != "" && !is.URL(info.TermsOfService) {
-		return newError("termsOfService", "无效的格式")
+		return newError("termsOfService", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	if info.Contact != nil {
@@ -66,7 +68,7 @@ func (info *Info) Sanitize() *Error {
 // Sanitize 数据检测
 func (l *License) Sanitize() *Error {
 	if l.URL != "" && !is.URL(l.URL) {
-		return newError("url", "无效的格式")
+		return newError("url", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	return nil
@@ -75,11 +77,11 @@ func (l *License) Sanitize() *Error {
 // Sanitize 数据检测
 func (c *Contact) Sanitize() *Error {
 	if c.URL != "" && !is.URL(c.URL) {
-		return newError("url", "无效的格式")
+		return newError("url", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	if c.Email != "" && !is.Email(c.Email) {
-		return newError("email", "无效的格式")
+		return newError("email", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	return nil

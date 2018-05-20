@@ -38,6 +38,7 @@ func init() {
 
 		// 错误信息，可能在地方用到
 		ErrRequired:              "不能为空",
+		ErrMustEmpty:             "只能为空",
 		ErrInvalidFormat:         "格式不正确",
 		ErrDirNotExists:          "目录不存在",
 		ErrInvalidBlockType:      "无效的 block.Type 值：%v",
@@ -51,6 +52,7 @@ func init() {
 		ErrUnsupportedEncoding:   "不支持的编码方式：%v",
 		ErrDirIsEmpty:            "目录下没有需要解析的文件",
 		ErrInvalidValue:          "无效的值",
+		ErrInvalidOpenapi:        "openapi 内容错误：字段：%s；错误内容：%s",
 
 		// logs
 		InfoPrefix:  "[信息] ",

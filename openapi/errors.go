@@ -4,10 +4,7 @@
 
 package openapi
 
-import (
-	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/vars"
-)
+import "github.com/caixw/apidoc/locale"
 
 // Error 错误接口
 type Error struct {
@@ -16,7 +13,7 @@ type Error struct {
 }
 
 func (err *Error) Error() string {
-	return locale.Sprintf(locale.OptionsError, vars.ConfigFilename, err.Field, err.Message)
+	return locale.Sprintf(locale.ErrInvalidOpenapi, err.Field, err.Message)
 }
 
 // Sanitizer 数据验证接口

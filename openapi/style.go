@@ -4,6 +4,8 @@
 
 package openapi
 
+import "github.com/caixw/apidoc/locale"
+
 // Style.Style 的可选值
 const (
 	StyleMatrix         = "matrix"
@@ -29,7 +31,7 @@ func (style *Style) Sanitize() *Error {
 	switch style.Style {
 	case StyleMatrix, StyleLabel, StyleForm, StyleSimple, StyleSpaceDelimited, StylePipeDelimited, StyleDeepObject:
 	default:
-		return newError("style", "无效的值")
+		return newError("style", locale.Sprintf(locale.ErrInvalidValue))
 	}
 
 	return nil

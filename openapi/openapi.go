@@ -12,6 +12,8 @@ import (
 
 	"github.com/issue9/is"
 	"github.com/issue9/version"
+
+	"github.com/caixw/apidoc/locale"
 )
 
 // TODO 扩展字段未加
@@ -93,11 +95,11 @@ func (oa *OpenAPI) Sanitize() *Error {
 	}
 
 	if !version.SemVerValid(oa.OpenAPI) {
-		return newError("openapi", "无效的格式，必须是 semver 格式")
+		return newError("openapi", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	if oa.Info == nil {
-		return newError("info", "不能为空")
+		return newError("info", locale.Sprintf(locale.ErrRequired))
 	}
 	if err := oa.Info.Sanitize(); err != nil {
 		err.Field = "info." + err.Field
@@ -119,7 +121,7 @@ func (oa *OpenAPI) Sanitize() *Error {
 	}
 
 	if len(oa.Paths) == 0 {
-		return newError("paths", "不能为空")
+		return newError("paths", locale.Sprintf(locale.ErrRequired))
 	}
 	// TODO 验证 paths
 
@@ -216,7 +218,7 @@ func (l *Link) Sanitize() *Error {
 // Sanitize 数据检测
 func (tag *Tag) Sanitize() *Error {
 	if tag.Name == "" {
-		return newError("name", "不能为空")
+		return newError("name", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	if tag.ExternalDocs != nil {
