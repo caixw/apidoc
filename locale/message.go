@@ -54,7 +54,7 @@ const (
 	ErrTagArgNotEnough       = "标签：%v 参数不够"
 	ErrUnsupportedEncoding   = "不支持的编码方式：%v"
 	ErrDirIsEmpty            = "目录下没有需要解析的文件"
-	ErrGroupNotExists        = "分组 %s 不存在"
+	ErrInvalidValue          = "无效的值"
 
 	// logs
 	InfoPrefix  = "[INFO] "

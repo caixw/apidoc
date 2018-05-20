@@ -50,7 +50,7 @@ func init() {
 		ErrTagArgNotEnough:       "標簽：%v 參數不夠",
 		ErrUnsupportedEncoding:   "不支持的編碼方式：%v",
 		ErrDirIsEmpty:            "目錄下沒有需要解析的文件",
-		ErrGroupNotExists:        "分組 %s 不存在",
+		ErrInvalidValue:          "無效的值",
 
 		// logs
 		InfoPrefix:  "[信息] ",
