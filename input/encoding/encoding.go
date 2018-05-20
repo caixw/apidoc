@@ -7,7 +7,6 @@ package encoding
 
 import (
 	"bytes"
-	"errors"
 	"io/ioutil"
 	"sort"
 	"strings"
@@ -61,7 +60,7 @@ func Transform(path, encoding string) ([]byte, error) {
 
 	enc, found := encodings[strings.ToLower(encoding)]
 	if !found {
-		return nil, errors.New(locale.Sprintf(locale.ErrUnsupportedEncoding, encoding))
+		return nil, locale.Errorf(locale.ErrUnsupportedEncoding, encoding)
 	}
 
 	if enc == nil {

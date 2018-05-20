@@ -5,7 +5,6 @@
 package input
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -109,7 +108,7 @@ func Detect(dir string, recursive bool) (*Options, error) {
 	}
 
 	if len(exts) == 0 {
-		return nil, errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
+		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
 	}
 
 	ext := ""
@@ -121,12 +120,12 @@ func Detect(dir string, recursive bool) (*Options, error) {
 		}
 	}
 	if len(ext) == 0 {
-		return nil, errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
+		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
 	}
 
 	lang := getLangByExt(ext)
 	if len(lang) == 0 {
-		return nil, errors.New(locale.Sprintf(locale.ErrNotFoundSupportedLang))
+		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
 	}
 
 	return &Options{

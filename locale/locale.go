@@ -6,6 +6,7 @@
 package locale
 
 import (
+	"errors"
 	"io"
 
 	"golang.org/x/text/language"
@@ -106,4 +107,9 @@ func Fprintln(w io.Writer, v ...interface{}) (int, error) {
 // Fprintf 类似 fmt.Fprintf，与特定的语言绑定。
 func Fprintf(w io.Writer, key message.Reference, v ...interface{}) (int, error) {
 	return localePrinter.Fprintf(w, key, v...)
+}
+
+// Errorf 构造一个当前语言环境的错误接口
+func Errorf(key message.Reference, v ...interface{}) error {
+	return errors.New(Sprintf(key, v...))
 }

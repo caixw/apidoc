@@ -15,6 +15,16 @@ const (
 	TypePassword = "password"
 )
 
+// IsWellDataType 是否为一个正常的数据类型
+func IsWellDataType(typ string) bool {
+	switch typ {
+	case TypeInt, TypeLong, TypeFloat, TypeDouble, TypeString, TypeBool, TypePassword:
+		return true
+	default:
+		return false
+	}
+}
+
 // Schema 定义了输出和输出的数据类型
 type Schema struct {
 	Type        string      `json:"type,omitempty" yaml:"type,omitempty"`
