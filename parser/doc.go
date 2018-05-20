@@ -80,7 +80,7 @@ func Parse(errlog *log.Logger, syntaxlog *log.Logger, o ...*input.Options) (map[
 		go func(b input.Block) {
 			defer wg.Done()
 			if err := p.parse(b.Data); err != nil {
-				syntaxlog.Println(locale.Sprintf(locale.SyntaxError, b.File, b.Line, err.Error()))
+				syntaxlog.Println(locale.Sprintf(locale.ErrSyntax, b.File, b.Line, err.Error()))
 				return
 			}
 		}(block)

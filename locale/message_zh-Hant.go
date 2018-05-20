@@ -6,7 +6,6 @@ package locale
 
 func init() {
 	locales["zh-Hant"] = map[string]string{
-		SyntaxError:  "在[%v:%v]出現語法錯誤[%v]",
 		OptionsError: "配置文件[%v]中配置項[%v]錯誤[%v]",
 
 		// 與 flag 包相關的處理
@@ -53,6 +52,7 @@ func init() {
 		ErrDirIsEmpty:            "目錄下沒有需要解析的文件",
 		ErrInvalidValue:          "無效的值",
 		ErrInvalidOpenapi:        "openapi 內容錯誤：字段：%s；錯誤內容：%s",
+		ErrSyntax:                "在[%s:%d]出現語法錯誤[%s]",
 
 		// logs
 		InfoPrefix:  "[信息] ",
