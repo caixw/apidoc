@@ -119,6 +119,19 @@ func parse(wd string) {
 	if err != nil {
 		erro.Println(err)
 	}
+
+	hasError := false
+	for name, doc := range docs {
+		if err := doc.Sanitize(); err != nil {
+			err.Field = "[" + name + "]." + err.Field
+			erro.Println(err)
+			hasError = true
+		}
+	}
+	if hasError {
+		return
+	}
+
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err := output.Render(docs, cfg.Output); err != nil {
 		erro.Println(err)

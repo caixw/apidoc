@@ -36,16 +36,6 @@ type parser struct {
 	locker sync.Mutex
 }
 
-// 添加一上新的 API 文档
-func (p *parser) newAPI(api *api) error {
-	return p.getDoc(api.Group).parseAPI(api)
-}
-
-// 添加新的文档信息
-func (p *parser) newInfo(info *Info) error {
-	return p.getDoc(info.Group).parseInfo(info)
-}
-
 // 获取指定组名的文档，group 为空，则会采用默认值组名。
 func (p *parser) getDoc(group string) *doc {
 	if group == "" {
@@ -108,7 +98,7 @@ func (p *parser) parse(data []byte) error {
 		}
 
 		a.API = string(line)
-		return p.newAPI(a)
+		return p.getDoc(a.Group).parseAPI(a)
 	}
 
 	if bytes.HasPrefix(apiDocPrefix, data) {
@@ -121,7 +111,7 @@ func (p *parser) parse(data []byte) error {
 		}
 
 		info.Title = string(line)
-		return p.newInfo(info)
+		return p.getDoc(info.Group).parseInfo(info)
 	}
 
 	return nil
