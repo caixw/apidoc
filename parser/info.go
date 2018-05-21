@@ -5,8 +5,7 @@
 package parser
 
 import (
-	"errors"
-
+	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/openapi"
 )
 
@@ -35,7 +34,7 @@ func (doc *doc) parseInfo(info *Info) error {
 	defer doc.locker.Unlock()
 
 	if doc.OpenAPI.Info != nil {
-		return errors.New("已经存在相关的文档信息")
+		return locale.Errorf(locale.ErrApidocExists)
 	}
 
 	doc.OpenAPI.Servers = info.Servers

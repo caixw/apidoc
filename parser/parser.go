@@ -7,6 +7,7 @@ package parser
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"sync"
 
@@ -53,11 +54,13 @@ func (p *parser) getDoc(group string) *doc {
 		p.docs[group] = d
 	}
 
+	fmt.Println("====", p.docs)
+
 	return d
 }
 
 // Parse 获取文档内容
-func Parse(errlog *log.Logger, syntaxlog *log.Logger, o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
+func Parse(errlog, syntaxlog *log.Logger, o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
 	p := &parser{
 		docs: make(map[string]*doc, 10),
 	}
@@ -86,9 +89,7 @@ func Parse(errlog *log.Logger, syntaxlog *log.Logger, o ...*input.Options) (map[
 }
 
 func (p *parser) parse(data []byte) error {
-	data = bytes.TrimLeft(data, " ")
-
-	if bytes.HasPrefix(apiPrefix, data) {
+	if bytes.HasPrefix(data, apiPrefix) {
 		index := bytes.IndexByte(data, '\n')
 		line := data[:index]
 		data = data[index+1:]
@@ -101,7 +102,7 @@ func (p *parser) parse(data []byte) error {
 		return p.getDoc(a.Group).parseAPI(a)
 	}
 
-	if bytes.HasPrefix(apiDocPrefix, data) {
+	if bytes.HasPrefix(data, apiDocPrefix) {
 		index := bytes.IndexByte(data, '\n')
 		line := data[:index]
 		data = data[index+1:]

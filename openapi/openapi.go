@@ -18,8 +18,8 @@ import (
 
 // TODO 扩展字段未加
 
-// openapi 最新的版本号
-const latestVersion = "3.0.1"
+// LatestVersion openapi 最新的版本号
+const LatestVersion = "3.0.1"
 
 // Description 表示描述类型
 // 可以采用 MD 格式
@@ -91,7 +91,7 @@ type ExampleValue string
 // Sanitize 数据检测
 func (oa *OpenAPI) Sanitize() *Error {
 	if oa.OpenAPI == "" {
-		oa.OpenAPI = latestVersion
+		oa.OpenAPI = LatestVersion
 	}
 
 	if !version.SemVerValid(oa.OpenAPI) {

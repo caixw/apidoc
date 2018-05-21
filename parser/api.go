@@ -5,10 +5,10 @@
 package parser
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
+	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/openapi"
 )
 
@@ -22,7 +22,7 @@ type api struct {
 	Queries     map[string]string    `yaml:"queries,omitempty"`
 	Params      map[string]string    `yaml:"params,omitempty"`
 	Headers     map[string]string    `yaml:"header,omitempty"`
-	Request     *request             `yaml:"request,omitempty"` // GET 此值可能为空
+	Request     *request             `yaml:"request,omitempty"`
 	Responses   map[string]*response `yaml:"responses"`
 }
 
@@ -90,6 +90,7 @@ func (api *api) parseParameter(o *openapi.Operation) error {
 			Schema: &openapi.Schema{
 				Type:    queries[0], // TODO 判断是否正确
 				Default: queries[1], // TODO 判断是否可以和类型匹配
+				// TODO enum
 			},
 		})
 	}
@@ -132,7 +133,7 @@ func (doc *doc) getOperation(api *api) (*openapi.Operation, error) {
 
 	strs := strings.SplitN(api.API, " ", 3)
 	if len(strs) != 3 {
-		return nil, errors.New("缺少参数")
+		return nil, locale.Errorf(locale.ErrAPIMissingParam)
 	}
 
 	path, found := doc.OpenAPI.Paths[strs[1]]
@@ -144,53 +145,53 @@ func (doc *doc) getOperation(api *api) (*openapi.Operation, error) {
 	switch strings.ToUpper(strs[0]) {
 	case http.MethodGet:
 		if path.Get != nil {
-			return nil, errors.New("已经存在一个相同的 Get 路由")
+			return nil, locale.Errorf(locale.ErrMethodExists)
 		}
 		path.Get = &openapi.Operation{}
 		return path.Get, nil
 	case http.MethodDelete:
 		if path.Delete != nil {
-			return nil, errors.New("已经存在一个相同的 Delete 路由")
+			return nil, locale.Errorf(locale.ErrMethodExists)
 		}
 		path.Delete = &openapi.Operation{}
 		return path.Delete, nil
 	case http.MethodPost:
 		if path.Post != nil {
-			return nil, errors.New("已经存在一个相同的 Post 路由")
+			return nil, locale.Errorf(locale.ErrMethodExists)
 		}
 		path.Post = &openapi.Operation{}
 		return path.Post, nil
 	case http.MethodPut:
 		if path.Put != nil {
-			return nil, errors.New("已经存在一个相同的 Put 路由")
+			return nil, locale.Errorf(locale.ErrMethodExists)
 		}
 		path.Put = &openapi.Operation{}
 		return path.Put, nil
 	case http.MethodPatch:
 		if path.Patch != nil {
-			return nil, errors.New("已经存在一个相同的 Patch 路由")
+			return nil, locale.Errorf(locale.ErrMethodExists)
 		}
 		path.Patch = &openapi.Operation{}
 		return path.Patch, nil
 	case http.MethodOptions:
 		if path.Options != nil {
-			return nil, errors.New("已经存在一个相同的 Options 路由")
+			return nil, locale.Errorf(locale.ErrMethodExists)
 		}
 		path.Options = &openapi.Operation{}
 		return path.Options, nil
 	case http.MethodHead:
 		if path.Head != nil {
-			return nil, errors.New("已经存在一个相同的 Head 路由")
+			return nil, locale.Errorf(locale.ErrMethodExists)
 		}
 		path.Head = &openapi.Operation{}
 		return path.Head, nil
 	case http.MethodTrace:
 		if path.Trace != nil {
-			return nil, errors.New("已经存在一个相同的 Trace 路由")
+			return nil, locale.Errorf(locale.ErrMethodExists)
 		}
 		path.Trace = &openapi.Operation{}
 		return path.Trace, nil
+	default:
+		return nil, locale.Errorf(locale.ErrInvalidMethod)
 	}
-
-	return nil, errors.New("无效的请法语方法")
 }

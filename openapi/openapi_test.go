@@ -14,7 +14,7 @@ import (
 func TestLatestVersion(t *testing.T) {
 	a := assert.New(t)
 
-	a.True(version.SemVerValid(latestVersion))
+	a.True(version.SemVerValid(LatestVersion))
 }
 
 func TestOpenAPI_Sanitize(t *testing.T) {
@@ -29,5 +29,5 @@ func TestOpenAPI_Sanitize(t *testing.T) {
 		},
 	}
 	a.NotError(oa.Sanitize())
-	a.Equal(oa.OpenAPI, latestVersion)
+	a.Equal(oa.OpenAPI, LatestVersion)
 }
