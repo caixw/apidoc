@@ -30,21 +30,21 @@ markdown desc line2
    @apigroup xxx
  @apitags t1,t2`)
 
-	tag := l.tag()
-	a.NotNil(tag)
+	tag, eof := l.tag()
+	a.NotNil(tag).False(eof)
 	a.Equal(tag.ln, 0).
 		Equal(string(tag.data), `@api get /path desc
 markdown desc line1
 markdown desc line2
 `)
 
-	tag = l.tag()
-	a.NotNil(tag)
+	tag, eof = l.tag()
+	a.NotNil(tag).False(eof)
 	a.Equal(tag.ln, 3).
 		Equal(string(tag.data), "@apigroup xxx\n")
 
-	tag = l.tag()
-	a.NotNil(tag)
+	tag, eof = l.tag()
+	a.NotNil(tag).True(eof)
 	a.Equal(tag.ln, 4).
 		Equal(string(tag.data), "@apitags t1,t2")
 }

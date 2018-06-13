@@ -35,7 +35,7 @@ func (l *lexer) atEOF() bool {
 	return l.pos >= len(l.data.Data)
 }
 
-func (l *lexer) tag() *tag {
+func (l *lexer) tag() (t *tag, eof bool) {
 	newLine := false
 	start := l.pos
 	end := l.pos
@@ -44,7 +44,7 @@ func (l *lexer) tag() *tag {
 LOOP:
 	for ; ; l.pos++ {
 		if l.atEOF() {
-			return &tag{data: l.data.Data[start:l.pos], ln: ln}
+			return &tag{data: l.data.Data[start:l.pos], ln: ln}, true
 		}
 
 		b := l.data.Data[l.pos]
@@ -56,7 +56,7 @@ LOOP:
 		case newLine && unicode.IsSpace(rune(b)): // 跳过行首空白字符
 			continue LOOP
 		case newLine && b == '@':
-			return &tag{data: l.data.Data[start:end], ln: ln}
+			return &tag{data: l.data.Data[start:end], ln: ln}, false
 		default:
 			newLine = false
 		}
