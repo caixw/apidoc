@@ -61,10 +61,6 @@ LOOP:
 }
 
 func (t *tag) split(size int) [][]byte {
-	if size == 1 {
-		return [][]byte{t.data}
-	}
-
 	ret := make([][]byte, 0, size)
 	start := 0
 	pos := 0
