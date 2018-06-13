@@ -22,6 +22,33 @@ func newTagString(data string) *tag {
 	}
 }
 
+func TestLexer_tag(t *testing.T) {
+	a := assert.New(t)
+	l := newLexerString(`@api get /path desc
+markdown desc line1
+markdown desc line2
+   @apigroup xxx
+ @apitags t1,t2`)
+
+	tag := l.tag()
+	a.NotNil(tag)
+	a.Equal(tag.ln, 0).
+		Equal(string(tag.data), `@api get /path desc
+markdown desc line1
+markdown desc line2
+`)
+
+	tag = l.tag()
+	a.NotNil(tag)
+	a.Equal(tag.ln, 3).
+		Equal(string(tag.data), "@apigroup xxx\n")
+
+	tag = l.tag()
+	a.NotNil(tag)
+	a.Equal(tag.ln, 4).
+		Equal(string(tag.data), "@apitags t1,t2")
+}
+
 func TestTag_split(t *testing.T) {
 	a := assert.New(t)
 

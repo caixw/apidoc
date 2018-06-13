@@ -38,11 +38,13 @@ func (l *lexer) atEOF() bool {
 func (l *lexer) tag() *tag {
 	newLine := false
 	start := l.pos
+	end := l.pos
+	ln := l.ln
 
 LOOP:
 	for ; ; l.pos++ {
 		if l.atEOF() {
-			return &tag{data: l.data.Data[start:l.pos], ln: l.ln}
+			return &tag{data: l.data.Data[start:l.pos], ln: ln}
 		}
 
 		b := l.data.Data[l.pos]
@@ -50,10 +52,11 @@ LOOP:
 		case b == '\n':
 			l.ln++
 			newLine = true
+			end = l.pos + 1 // 包含当前的换行符
 		case newLine && unicode.IsSpace(rune(b)): // 跳过行首空白字符
 			continue LOOP
 		case newLine && b == '@':
-			return &tag{data: l.data.Data[start:l.pos], ln: l.ln}
+			return &tag{data: l.data.Data[start:end], ln: ln}
 		default:
 			newLine = false
 		}
