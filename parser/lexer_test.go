@@ -49,6 +49,9 @@ markdown desc line2
 	a.Equal(tag.ln, 4).
 		Equal(string(tag.data), "t1,t2").
 		Equal(tag.name, "@apitags")
+
+	tag, eof = l.tag()
+	a.Nil(tag).True(eof)
 }
 
 func TestSplit(t *testing.T) {

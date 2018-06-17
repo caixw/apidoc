@@ -62,7 +62,11 @@ func (l *lexer) tag() (t *tag, eof bool) {
 LOOP:
 	for ; ; l.pos++ {
 		if l.atEOF() {
-			return newTag(l.data.File, ln, l.data.Data[start:l.pos]), true
+			data := l.data.Data[start:l.pos]
+			if len(data) == 0 {
+				return nil, true
+			}
+			return newTag(l.data.File, ln, data), true
 		}
 
 		b := l.data.Data[l.pos]

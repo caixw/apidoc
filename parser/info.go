@@ -22,7 +22,6 @@ import (
 // @tag t2 desc
 // @license name url
 // @contact name url
-// @contact name email
 // @version v1
 // @terms url
 // @server name url
@@ -35,7 +34,7 @@ type info struct {
 	group       string
 	tags        []*openapi.Tag
 	license     *openapi.License
-	contracts   []*openapi.Contact
+	contract    *openapi.Contact
 	version     string
 	terms       string
 	servers     []*openapi.Server
@@ -146,13 +145,32 @@ func (p *parser) parseAPIDoc(l *lexer) error {
 		}
 	}
 
-	// TODO p.getDoc(i.group).
+	return p.fromInfo(i)
+}
+
+func (p *parser) fromInfo(i *info) error {
+	doc := p.getDoc(i.group)
+	doc.locker.Lock()
+	defer doc.locker.Unlock()
+
+	doc.OpenAPI.Tags = i.tags
+	doc.OpenAPI.Servers = i.servers
+	doc.OpenAPI.ExternalDocs = i.externaldoc
+	doc.OpenAPI.Info = &openapi.Info{
+		Title:          i.title,
+		License:        i.license,
+		Contact:        i.contract,
+		Version:        i.version,
+		TermsOfService: i.terms,
+		Description:    i.description,
+	}
+
 	return nil
 }
 
 func (i *info) parseContract(tag *tag) error {
-	if i.contracts == nil {
-		i.contracts = make([]*openapi.Contact, 0, 10)
+	if i.contract != nil {
+		return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiContract"))
 	}
 
 	data := split(tag.data, 3)
@@ -161,13 +179,13 @@ func (i *info) parseContract(tag *tag) error {
 		return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiContract"))
 	}
 
-	c := &openapi.Contact{Name: string(data[0])}
+	i.contract = &openapi.Contact{Name: string(data[0])}
 	v := string(data[1])
 	switch checkContractType(v) {
 	case 1:
-		c.URL = v
+		i.contract.URL = v
 	case 2:
-		c.Email = v
+		i.contract.Email = v
 	case 3:
 		return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiContract"))
 	}
@@ -176,15 +194,14 @@ func (i *info) parseContract(tag *tag) error {
 		v := string(data[2])
 		switch checkContractType(v) {
 		case 1:
-			c.URL = v
+			i.contract.URL = v
 		case 2:
-			c.Email = v
+			i.contract.Email = v
 		case 3:
 			return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiContract"))
 		}
 	}
 
-	i.contracts = append(i.contracts, c)
 	return nil
 }
 
