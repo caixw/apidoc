@@ -6,9 +6,8 @@ package parser
 
 import (
 	"bytes"
+	"net/http"
 	"strings"
-
-	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/openapi"
@@ -19,7 +18,6 @@ import (
 // @api GET /users/{id}/logs 获取用户信息
 // @group g1
 // @tags t1,t2
-// @version 1.0
 // @deprecated desc
 // @query page int default desc
 // @query size int default desc
@@ -48,7 +46,7 @@ import (
 //
 // @request application/yaml object
 //
-// @response 200 application/json array
+// @response 200 application/json array.object
 // @apiheader string xxx
 // @param id int desc
 // @param name string desc
@@ -70,7 +68,6 @@ type api struct {
 	description string
 	group       string
 	tags        []string
-	version     string
 	deprecated  bool
 	params      []*openapi.Parameter // 包含 query 和 param
 
@@ -112,6 +109,70 @@ func (p *parser) parseAPI(l *lexer) error {
 			return tag.syntaxError(locale.ErrInvalidTag, string(tag.name))
 		}
 	}
+
+	return p.fromAPI(obj, l.data.File, l.data.Line)
+}
+
+func (p *parser) fromAPI(api *api, file string, line int) error {
+	doc := p.getDoc(api.group)
+	doc.locker.Lock()
+	defer doc.locker.Unlock()
+
+	path := doc.OpenAPI.Paths[api.path]
+	if path == nil {
+		path = &openapi.PathItem{}
+		doc.OpenAPI.Paths[api.path] = path
+	}
+
+	op := &openapi.Operation{}
+	switch strings.ToUpper(api.method) {
+	case http.MethodGet:
+		if path.Get != nil {
+			return &syntaxError{File: file, Line: line, MessageKey: locale.ErrMethodExists}
+		}
+		path.Get = op
+	case http.MethodPost:
+		if path.Post != nil {
+			return &syntaxError{File: file, Line: line, MessageKey: locale.ErrMethodExists}
+		}
+		path.Post = op
+	case http.MethodPut:
+		if path.Put != nil {
+			return &syntaxError{File: file, Line: line, MessageKey: locale.ErrMethodExists}
+		}
+		path.Put = op
+	case http.MethodPatch:
+		if path.Patch != nil {
+			return &syntaxError{File: file, Line: line, MessageKey: locale.ErrMethodExists}
+		}
+		path.Patch = op
+	case http.MethodDelete:
+		if path.Delete != nil {
+			return &syntaxError{File: file, Line: line, MessageKey: locale.ErrMethodExists}
+		}
+		path.Delete = op
+	case http.MethodOptions:
+		if path.Options != nil {
+			return &syntaxError{File: file, Line: line, MessageKey: locale.ErrMethodExists}
+		}
+		path.Options = op
+	case http.MethodTrace:
+		if path.Trace != nil {
+			return &syntaxError{File: file, Line: line, MessageKey: locale.ErrMethodExists}
+		}
+		path.Trace = op
+	default:
+		return &syntaxError{File: file, Line: line, MessageKey: locale.ErrInvalidMethod}
+	}
+
+	op.Tags = api.tags
+	op.Summary = api.summary
+	op.Responses = api.responses
+	op.RequestBody = api.request
+	op.Parameters = api.params
+	op.Deprecated = api.deprecated
+	op.Description = openapi.Description(api.description)
+
 	return nil
 }
 
@@ -248,15 +309,6 @@ func (obj *api) parseAPI(l *lexer) error {
 				obj.tags = append(obj.tags, string(data[start:index]))
 				data = tag.data[index+1:]
 			}
-		case "@apiversion":
-			if obj.version != "" {
-				return tag.syntaxError(locale.ErrDuplicateTag, "@apiVersion")
-			}
-			obj.version = string(tag.data)
-
-			if !version.SemVerValid(obj.version) {
-				return tag.syntaxError(locale.ErrInvalidFormat, "@apiVersion")
-			}
 		case "@apideprecated":
 			// TODO 输出警告信息
 			obj.deprecated = true
@@ -264,7 +316,7 @@ func (obj *api) parseAPI(l *lexer) error {
 			if obj.params == nil {
 				obj.params = make([]*openapi.Parameter, 0, 10)
 			}
-			// TODO 复杂类型的检测 @apiquery state string.array.enum default desc
+
 			params := split(tag.data, 4)
 			if len(params) != 4 {
 				return tag.syntaxError(locale.ErrTagArgNotEnough, "@apiQuery")
