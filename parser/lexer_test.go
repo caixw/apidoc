@@ -33,40 +33,42 @@ markdown desc line2
 	tag, eof := l.tag()
 	a.NotNil(tag).False(eof)
 	a.Equal(tag.ln, 0).
-		Equal(string(tag.data), `@api get /path desc
+		Equal(string(tag.data), `get /path desc
 markdown desc line1
 markdown desc line2
-`)
+`).Equal(tag.name, "@api")
 
 	tag, eof = l.tag()
 	a.NotNil(tag).False(eof)
 	a.Equal(tag.ln, 3).
-		Equal(string(tag.data), "@apigroup xxx\n")
+		Equal(string(tag.data), "xxx\n").
+		Equal(tag.name, "@apigroup")
 
 	tag, eof = l.tag()
 	a.NotNil(tag).True(eof)
 	a.Equal(tag.ln, 4).
-		Equal(string(tag.data), "@apitags t1,t2")
+		Equal(string(tag.data), "t1,t2").
+		Equal(tag.name, "@apitags")
 }
 
-func TestTag_split(t *testing.T) {
+func TestSplit(t *testing.T) {
 	a := assert.New(t)
 
-	tag := newTagString("@tag s1\ts2  \n  s3")
+	tag := []byte("@tag s1\ts2  \n  s3")
 
-	bs := tag.split(1)
+	bs := split(tag, 1)
 	a.Equal(bs, [][]byte{[]byte("@tag s1\ts2  \n  s3")})
 
-	bs = tag.split(2)
+	bs = split(tag, 2)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1\ts2  \n  s3")})
 
-	bs = tag.split(3)
+	bs = split(tag, 3)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2  \n  s3")})
 
-	bs = tag.split(4)
+	bs = split(tag, 4)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2"), []byte("s3")})
 
 	// 不够
-	bs = tag.split(5)
+	bs = split(tag, 5)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2"), []byte("s3")})
 }

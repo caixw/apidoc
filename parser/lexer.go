@@ -19,8 +19,10 @@ type lexer struct {
 
 // 表示一个标签的内容
 type tag struct {
+	file string
 	ln   int // 当前 tag 在文件中的起始行号
 	data []byte
+	name []byte // 标签名称
 }
 
 // 声明一个新的 lexer 实例。
@@ -29,6 +31,22 @@ func newLexer(block input.Block) *lexer {
 		data: block,
 		ln:   block.Line,
 	}
+}
+
+func newTag(file string, line int, data []byte) *tag {
+	strs := split(data, 2)
+
+	tag := &tag{
+		file: file,
+		ln:   line,
+		name: strs[0],
+	}
+
+	if len(strs) == 2 {
+		tag.data = strs[1]
+	}
+
+	return tag
 }
 
 func (l *lexer) atEOF() bool {
@@ -44,7 +62,7 @@ func (l *lexer) tag() (t *tag, eof bool) {
 LOOP:
 	for ; ; l.pos++ {
 		if l.atEOF() {
-			return &tag{data: l.data.Data[start:l.pos], ln: ln}, true
+			return newTag(l.data.File, ln, l.data.Data[start:l.pos]), true
 		}
 
 		b := l.data.Data[l.pos]
@@ -56,14 +74,18 @@ LOOP:
 		case newLine && unicode.IsSpace(rune(b)): // 跳过行首空白字符
 			continue LOOP
 		case newLine && b == '@':
-			return &tag{data: l.data.Data[start:end], ln: ln}, false
+			return newTag(l.data.File, ln, l.data.Data[start:end]), false
 		default:
 			newLine = false
 		}
 	}
 }
 
-func (t *tag) split(size int) [][]byte {
+func (t *tag) syntaxError(message string) error {
+	return syntaxError(message, t.file, t.ln)
+}
+
+func split(data []byte, size int) [][]byte {
 	ret := make([][]byte, 0, size)
 	start := 0
 	pos := 0
@@ -71,18 +93,18 @@ func (t *tag) split(size int) [][]byte {
 
 	for ; ; pos++ {
 		switch {
-		case pos >= len(t.data): // EOF
-			return append(ret, t.data[start:])
-		case unicode.IsSpace(rune(t.data[pos])):
+		case pos >= len(data): // EOF
+			return append(ret, data[start:])
+		case unicode.IsSpace(rune(data[pos])):
 			if !isspace {
-				ret = append(ret, t.data[start:pos])
+				ret = append(ret, data[start:pos])
 				start = pos
 				isspace = true
 			}
 		default:
 			if isspace {
 				if len(ret) >= size-1 {
-					return append(ret, t.data[pos:])
+					return append(ret, data[pos:])
 				}
 
 				start = pos

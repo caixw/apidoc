@@ -7,11 +7,8 @@ package parser
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"sync"
-
-	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
@@ -38,6 +35,7 @@ type parser struct {
 }
 
 // 获取指定组名的文档，group 为空，则会采用默认值组名。
+// 不存在则创建一个新的 doc 实例
 func (p *parser) getDoc(group string) *doc {
 	if group == "" {
 		group = vars.DefaultGroupName
@@ -49,12 +47,12 @@ func (p *parser) getDoc(group string) *doc {
 
 	if !found {
 		d = &doc{
-			OpenAPI: &openapi.OpenAPI{},
+			OpenAPI: &openapi.OpenAPI{
+				Info: &openapi.Info{},
+			},
 		}
 		p.docs[group] = d
 	}
-
-	fmt.Println("====", p.docs)
 
 	return d
 }
@@ -72,8 +70,8 @@ func Parse(errlog, syntaxlog *log.Logger, o ...*input.Options) (map[string]*open
 		wg.Add(1)
 		go func(b input.Block) {
 			defer wg.Done()
-			if err := p.parse(b.Data); err != nil {
-				syntaxlog.Println(locale.Sprintf(locale.ErrSyntax, b.File, b.Line, err.Error()))
+			if err := p.parseBlock(b); err != nil {
+				syntaxlog.Println(err)
 				return
 			}
 		}(block)
@@ -88,32 +86,19 @@ func Parse(errlog, syntaxlog *log.Logger, o ...*input.Options) (map[string]*open
 	return ret, nil
 }
 
-func (p *parser) parse(data []byte) error {
-	if bytes.HasPrefix(data, apiPrefix) {
-		index := bytes.IndexByte(data, '\n')
-		line := data[:index]
-		data = data[index+1:]
-		a := &api{}
-		if err := yaml.Unmarshal(data, a); err != nil {
-			return err
-		}
+func (p *parser) parseBlock(block input.Block) error {
+	l := newLexer(block)
 
-		a.API = string(line)
-		return p.getDoc(a.Group).parseAPI(a)
-	}
-
-	if bytes.HasPrefix(data, apiDocPrefix) {
-		index := bytes.IndexByte(data, '\n')
-		line := data[:index]
-		data = data[index+1:]
-		info := &Info{}
-		if err := yaml.Unmarshal(data, info); err != nil {
-			return err
-		}
-
-		info.Title = string(line)
-		return p.getDoc(info.Group).parseInfo(info)
+	switch {
+	case bytes.HasPrefix(block.Data, []byte("@api ")):
+		return p.parseAPI(l)
+	case bytes.HasPrefix(block.Data, []byte("@apidoc ")):
+		return p.parseAPIDoc(l)
 	}
 
 	return nil
+}
+
+func syntaxError(message, file string, line int) error {
+	return locale.Errorf(locale.ErrSyntax, file, line, message)
 }

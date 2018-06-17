@@ -4,194 +4,61 @@
 
 package parser
 
-import (
-	"net/http"
-	"strings"
+import "bytes"
 
-	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/openapi"
-)
+// @api 的格式如下：
+//
+// @api GET /users/{id}/logs 获取用户信息
+// @group g1
+// @tag t1,t2
+// @version 1.0
+// @deprecated desc
+// @query page int default desc
+// @query size int default desc
+// @query state array.string [normal,lock] 状态码
+// @param id int desc
+// @param id int desc
+//
+// @request application/json {object}
+// @header name desc
+// @header name desc
+// @param count int optional desc
+// @param list array must desc
+// @param list.id int optional desc
+// @param list.name int must desc
+// @param list.groups array.string optional desc {normal:正常,left:离职}
+// @example
+// {
+//  count: 5,
+//  list: [
+//    {id:1, name: 'name1', 'group': [1,2]},
+//    {id:2, name: 'name2', 'group': [1,2]}
+//  ]
+// }
+//
+// @request application/yaml {object}
+//
+// @response 200 application/json {array}
+// @apiheader string xxx
+// @param id int desc
+// @param name string desc
+// @param group object desc
+// @param group.id int desc
+//
+// @response 404 application/json {object}
+// @apiheader string xxx
+// @param code int desc
+// @param message string desc
+// @param detail array.object desc
+// @param detail.id string desc
+// @param detail.message string desc
 
-type api struct {
-	API         string               // @api 后面的内容，包含了 method, url 和 summary
-	Group       string               `yaml:"group,omitempty"`
-	Tags        []string             `yaml:"tags,omitempty"`
-	Description openapi.Description  `yaml:"description,omitempty"`
-	Deprecated  bool                 `yaml:"deprecated,omitempty"`
-	OperationID string               `yaml:"operationId,omitempty" `
-	Queries     map[string]string    `yaml:"queries,omitempty"`
-	Params      map[string]string    `yaml:"params,omitempty"`
-	Headers     map[string]string    `yaml:"header,omitempty"`
-	Request     *request             `yaml:"request,omitempty"`
-	Responses   map[string]*response `yaml:"responses"`
-}
-
-// 表示请求和返回的内容
-type content struct {
-	Description openapi.Description           `yaml:"description,omitempty"`
-	Content     map[string]*openapi.MediaType `yaml:"content"`
-}
-
-type request content
-
-type response struct {
-	content
-	Headers map[string]string `json:"headers,omitempty" yaml:"headers,omitempty"`
-}
-
-func (doc *doc) parseAPI(api *api) error {
-	o, err := doc.getOperation(api)
-	if err != nil {
-		return err
-	}
-
-	o.Tags = api.Tags
-	o.Description = api.Description
-	o.Deprecated = api.Deprecated
-	o.OperationID = api.OperationID
-
-	if err := api.parseParameter(o); err != nil {
-		return err
-	}
-
-	o.RequestBody = &openapi.RequestBody{
-		Description: api.Request.Description,
-		Content:     api.Request.Content,
-	}
-
-	o.Responses = make(map[string]*openapi.Response, len(api.Responses))
-	for status, resp := range api.Responses {
-		r := &openapi.Response{
-			Description: resp.Description,
-			Content:     resp.content.Content,
-			Headers:     make(map[string]*openapi.Header, len(resp.Headers)),
+func (p *parser) parseAPI(l *lexer) error {
+	for tag, eof := l.tag(); !eof; tag, eof = l.tag() {
+		switch string(bytes.ToLower(tag.name)) {
+		case "@api":
+			// TODO
 		}
-		for k, v := range resp.Headers {
-			r.Headers[k] = &openapi.Header{Description: openapi.Description(v)}
-		}
-
-		o.Responses[status] = r
 	}
-
 	return nil
-}
-
-func (api *api) parseParameter(o *openapi.Operation) error {
-	l := len(api.Queries) + len(api.Params) + len(api.Headers)
-	o.Parameters = make([]*openapi.Parameter, 0, l)
-
-	// queries
-	for key, query := range api.Queries {
-		queries := strings.SplitN(query, " ", 3)
-		o.Parameters = append(o.Parameters, &openapi.Parameter{
-			Name:        key,
-			IN:          openapi.ParameterINQuery,
-			Description: openapi.Description(queries[2]),
-			Schema: &openapi.Schema{
-				Type:    queries[0], // TODO 判断是否正确
-				Default: queries[1], // TODO 判断是否可以和类型匹配
-				// TODO enum
-			},
-		})
-	}
-
-	// params
-	for key, param := range api.Params {
-		params := strings.SplitN(param, " ", 2)
-		o.Parameters = append(o.Parameters, &openapi.Parameter{
-			Name:        key,
-			IN:          openapi.ParameterINPath,
-			Description: openapi.Description(params[1]),
-			Schema: &openapi.Schema{
-				Type: params[0], // TODO 判断是否正确
-			},
-		})
-	}
-
-	// headers
-	for key, desc := range api.Headers {
-		o.Parameters = append(o.Parameters, &openapi.Parameter{
-			Name:        key,
-			IN:          openapi.ParameterINHeader,
-			Description: openapi.Description(desc),
-			Schema: &openapi.Schema{
-				Type: openapi.TypeString,
-			},
-		})
-	}
-
-	return nil
-}
-
-func (doc *doc) getOperation(api *api) (*openapi.Operation, error) {
-	doc.locker.Lock()
-	defer doc.locker.Unlock()
-
-	if doc.OpenAPI.Paths == nil {
-		doc.OpenAPI.Paths = make(map[string]*openapi.PathItem, 10)
-	}
-
-	strs := strings.SplitN(api.API, " ", 3)
-	if len(strs) != 3 {
-		return nil, locale.Errorf(locale.ErrAPIMissingParam)
-	}
-
-	path, found := doc.OpenAPI.Paths[strs[1]]
-	if !found {
-		path = &openapi.PathItem{}
-		doc.OpenAPI.Paths[strs[1]] = path
-	}
-
-	switch strings.ToUpper(strs[0]) {
-	case http.MethodGet:
-		if path.Get != nil {
-			return nil, locale.Errorf(locale.ErrMethodExists)
-		}
-		path.Get = &openapi.Operation{}
-		return path.Get, nil
-	case http.MethodDelete:
-		if path.Delete != nil {
-			return nil, locale.Errorf(locale.ErrMethodExists)
-		}
-		path.Delete = &openapi.Operation{}
-		return path.Delete, nil
-	case http.MethodPost:
-		if path.Post != nil {
-			return nil, locale.Errorf(locale.ErrMethodExists)
-		}
-		path.Post = &openapi.Operation{}
-		return path.Post, nil
-	case http.MethodPut:
-		if path.Put != nil {
-			return nil, locale.Errorf(locale.ErrMethodExists)
-		}
-		path.Put = &openapi.Operation{}
-		return path.Put, nil
-	case http.MethodPatch:
-		if path.Patch != nil {
-			return nil, locale.Errorf(locale.ErrMethodExists)
-		}
-		path.Patch = &openapi.Operation{}
-		return path.Patch, nil
-	case http.MethodOptions:
-		if path.Options != nil {
-			return nil, locale.Errorf(locale.ErrMethodExists)
-		}
-		path.Options = &openapi.Operation{}
-		return path.Options, nil
-	case http.MethodHead:
-		if path.Head != nil {
-			return nil, locale.Errorf(locale.ErrMethodExists)
-		}
-		path.Head = &openapi.Operation{}
-		return path.Head, nil
-	case http.MethodTrace:
-		if path.Trace != nil {
-			return nil, locale.Errorf(locale.ErrMethodExists)
-		}
-		path.Trace = &openapi.Operation{}
-		return path.Trace, nil
-	default:
-		return nil, locale.Errorf(locale.ErrInvalidMethod)
-	}
 }
