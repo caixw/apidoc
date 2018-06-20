@@ -101,7 +101,8 @@ func (p *parser) parseAPI(l *lexer) error {
 			if len(data) != 2 {
 				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiRequest"))
 			}
-			if err := obj.parseRequest(l, string(data[0]), string(data[1])); err != nil {
+
+			if err := obj.parseRequest(l, tag); err != nil {
 				return err
 			}
 		case "@apiresponse":
@@ -113,28 +114,80 @@ func (p *parser) parseAPI(l *lexer) error {
 	return nil
 }
 
-func (obj *api) parseRequest(l *lexer, mimetype, typ string) error {
-	obj.request = &openapi.RequestBody{
-		Content: map[string]*openapi.MediaType{
-			mimetype: &openapi.MediaType{
-				Schema: &openapi.Schema{
-					Type: typ,
-				},
-			},
+func (obj *api) parseRequest(l *lexer, tag *tag) error {
+	data := split(tag.data, 2)
+	if len(data) != 2 {
+		return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiRequest"))
+	}
+
+	if obj.request == nil {
+		obj.request = &openapi.RequestBody{
+			Content: make(map[string]*openapi.MediaType, 3),
+		}
+	}
+
+	var typ, subtype string
+	index := bytes.IndexByte(data[1], ',')
+	if index > 0 {
+		t1 := data[1][:index]
+		subtype = string(data[1][index+1:])
+		typ = string(t1)
+
+		if typ != "array" {
+			return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiRequest"))
+		}
+	}
+
+	mimetype := string(data[0])
+	obj.request.Content[mimetype] = &openapi.MediaType{
+		Schema: &openapi.Schema{
+			Type: typ,
 		},
+	}
+
+	schema := obj.request.Content[mimetype].Schema
+
+	if subtype != "" {
+		schema.Items.Type = subtype
 	}
 
 	for tag, eof := l.tag(); !eof; tag, eof = l.tag() {
 		switch string(bytes.ToLower(tag.name)) {
 		case "@apiheader":
-			// TODO
+			if obj.params == nil {
+				obj.params = make([]*openapi.Parameter, 0, 10)
+			}
+
+			params := split(tag.data, 4)
+			if len(params) != 4 {
+				return tag.syntaxError(locale.Sprintf(locale.ErrTagArgNotEnough, "@apiHeader"))
+			}
+
+			obj.params = append(obj.params, &openapi.Parameter{
+				Name:            string(params[0]),
+				IN:              openapi.ParameterINHeader,
+				Description:     openapi.Description(params[3]),
+				Required:        false,
+				AllowEmptyValue: true,
+			})
+		case "@apiexample":
+			obj.request.Content[mimetype].Example = openapi.ExampleValue(string(tag.data))
 		case "@apiparam":
-			// TODO
+			if err := setType(schema, tag); err != nil {
+				return err
+			}
 		default:
-			// TODO 这里不是出错，而是将当前的 tag 回退，并返回上一层。
+			l.backup(tag)
+			return nil
 		}
 	}
 
+	return nil
+}
+
+// @param list.groups array.string optional desc markdown desc
+func setType(schema *openapi.Schema, tag *tag) error {
+	// TODO
 	return nil
 }
 
@@ -218,7 +271,8 @@ func (obj *api) parseAPI(l *lexer) error {
 				},
 			})
 		default:
-			// TODO 这里不是出错，而是将当前的 tag 回退，并返回上一层。
+			l.backup(tag)
+			return nil
 		}
 	}
 	return nil

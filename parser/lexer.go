@@ -12,9 +12,10 @@ import (
 
 // 简单的词法分析
 type lexer struct {
-	data input.Block
-	pos  int // 当前指针位置
-	ln   int // 当前位置所在的行号
+	data      input.Block
+	pos       int  // 当前指针位置
+	ln        int  // 当前位置所在的行号
+	backupTag *tag // 回退的标签内容
 }
 
 // 表示一个标签的内容
@@ -53,7 +54,17 @@ func (l *lexer) atEOF() bool {
 	return l.pos >= len(l.data.Data)
 }
 
+func (l *lexer) backup(t *tag) {
+	l.backupTag = t
+}
+
 func (l *lexer) tag() (t *tag, eof bool) {
+	if l.backupTag != nil {
+		t = l.backupTag
+		l.backupTag = nil
+		return t, l.atEOF()
+	}
+
 	newLine := false
 	start := l.pos
 	end := l.pos
