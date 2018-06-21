@@ -26,15 +26,15 @@ import (
 // @query state array.string [normal,lock] 状态码
 // @param id int desc
 // @param id int desc
+// @header name desc
+// @header name desc
 //
-// @request application/json {object}
-// @header name desc
-// @header name desc
+// @request application/json object
 // @param count int optional desc
 // @param list array must desc
 // @param list.id int optional desc
 // @param list.name int must desc
-// @param list.groups array.string optional desc {normal:正常,left:离职}
+// @param list.groups array.string.enum{normal:xx,locked:xx} optional desc markdown
 // @example
 // {
 //  count: 5,
@@ -44,16 +44,16 @@ import (
 //  ]
 // }
 //
-// @request application/yaml {object}
+// @request application/yaml object
 //
-// @response 200 application/json {array}
+// @response 200 application/json array
 // @apiheader string xxx
 // @param id int desc
 // @param name string desc
 // @param group object desc
 // @param group.id int desc
 //
-// @response 404 application/json {object}
+// @response 404 application/json object
 // @apiheader string xxx
 // @param code int desc
 // @param message string desc
@@ -153,23 +153,6 @@ func (obj *api) parseRequest(l *lexer, tag *tag) error {
 
 	for tag, eof := l.tag(); !eof; tag, eof = l.tag() {
 		switch string(bytes.ToLower(tag.name)) {
-		case "@apiheader":
-			if obj.params == nil {
-				obj.params = make([]*openapi.Parameter, 0, 10)
-			}
-
-			params := split(tag.data, 4)
-			if len(params) != 4 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrTagArgNotEnough, "@apiHeader"))
-			}
-
-			obj.params = append(obj.params, &openapi.Parameter{
-				Name:            string(params[0]),
-				IN:              openapi.ParameterINHeader,
-				Description:     openapi.Description(params[3]),
-				Required:        false,
-				AllowEmptyValue: true,
-			})
 		case "@apiexample":
 			obj.request.Content[mimetype].Example = openapi.ExampleValue(string(tag.data))
 		case "@apiparam":
@@ -185,9 +168,27 @@ func (obj *api) parseRequest(l *lexer, tag *tag) error {
 	return nil
 }
 
-// @param list.groups array.string optional desc markdown desc
+// @param list.groups array.string.enum{normal:xx,locked:xx} optional desc markdown desc
 func setType(schema *openapi.Schema, tag *tag) error {
-	// TODO
+	data := split(tag.data, 4)
+
+	var typ, subtype string
+	index := bytes.IndexByte(data[1], ',')
+	if index > 0 {
+		t1 := data[1][:index]
+		subtype = string(data[1][index+1:])
+		typ = string(t1)
+
+		if typ != "array" {
+			return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiRequest"))
+		}
+	}
+
+	names := bytes.Split(data[0], []byte{'.'})
+	for _, name := range names {
+		//schema.Properties.
+	}
+
 	return nil
 }
 
@@ -269,6 +270,23 @@ func (obj *api) parseAPI(l *lexer) error {
 					Type:    string(params[1]), // TODO 检测类型是否符合 openapi 要求
 					Default: string(params[2]),
 				},
+			})
+		case "@apiheader":
+			if obj.params == nil {
+				obj.params = make([]*openapi.Parameter, 0, 10)
+			}
+
+			params := split(tag.data, 4)
+			if len(params) != 4 {
+				return tag.syntaxError(locale.Sprintf(locale.ErrTagArgNotEnough, "@apiHeader"))
+			}
+
+			obj.params = append(obj.params, &openapi.Parameter{
+				Name:            string(params[0]),
+				IN:              openapi.ParameterINHeader,
+				Description:     openapi.Description(params[3]),
+				Required:        false,
+				AllowEmptyValue: true,
 			})
 		default:
 			l.backup(tag)
