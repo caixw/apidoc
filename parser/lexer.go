@@ -8,6 +8,7 @@ import (
 	"unicode"
 
 	"github.com/caixw/apidoc/input"
+	"golang.org/x/text/message"
 )
 
 // 简单的词法分析
@@ -96,8 +97,12 @@ LOOP:
 	}
 }
 
-func (t *tag) syntaxError(message string) error {
-	return syntaxError(message, t.file, t.ln)
+func (t *tag) syntaxError(key message.Reference, vals ...interface{}) error {
+	return newError(t.file, t.ln, key, vals...)
+}
+
+func (t *tag) syntaxWarn(key message.Reference, vals ...interface{}) error {
+	return newWarn(t.file, t.ln, key, vals...)
 }
 
 func split(data []byte, size int) [][]byte {

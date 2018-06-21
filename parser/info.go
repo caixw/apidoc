@@ -48,21 +48,21 @@ func (p *parser) parseAPIDoc(l *lexer) error {
 		switch string(bytes.ToLower(tag.name)) {
 		case "@apidoc":
 			if len(tag.data) == 0 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrTagArgNotEnough, "@apidoc"))
+				return tag.syntaxError(locale.ErrTagArgNotEnough, "@apidoc")
 			}
 			if i.title != "" {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apidoc"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apidoc")
 			}
 			i.title = string(tag.data)
 		case "@apigroup":
 			if i.group != "" {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiGroup"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apiGroup")
 			}
 			i.group = string(tag.data)
 		case "@apitag":
 			data := split(tag.data, 2)
 			if len(data) != 2 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiTag"))
+				return tag.syntaxError(locale.ErrInvalidFormat, "@apiTag")
 			}
 			if i.tags == nil {
 				i.tags = make([]*openapi.Tag, 0, 10)
@@ -73,15 +73,15 @@ func (p *parser) parseAPIDoc(l *lexer) error {
 			})
 		case "@apilicense":
 			if i.license != nil {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiLicense"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apiLicense")
 			}
 
 			data := split(tag.data, 2)
 			if len(data) != 2 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiLicense"))
+				return tag.syntaxError(locale.ErrInvalidFormat, "@apiLicense")
 			}
 			if !is.URL(data[1]) {
-				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiLicense"))
+				return tag.syntaxError(locale.ErrInvalidFormat, "@apiLicense")
 			}
 			i.license = &openapi.License{
 				Name: string(data[0]),
@@ -93,22 +93,22 @@ func (p *parser) parseAPIDoc(l *lexer) error {
 			}
 		case "@apiversion":
 			if i.version != "" {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiVersion"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apiVersion")
 			}
 			i.version = string(tag.data)
 
 			if !version.SemVerValid(i.version) {
-				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiVersion"))
+				return tag.syntaxError(locale.ErrInvalidFormat, "@apiVersion")
 			}
 		case "@apiterms":
 			if i.terms != "" {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiTerms"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apiTerms")
 			}
 			i.terms = string(tag.data)
 		case "@apiservers":
 			data := split(tag.data, 2)
 			if len(data) != 2 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiServer"))
+				return tag.syntaxError(locale.ErrInvalidFormat, "@apiServer")
 			}
 			if i.servers == nil {
 				i.servers = make([]*openapi.Server, 0, 10)
@@ -119,21 +119,21 @@ func (p *parser) parseAPIDoc(l *lexer) error {
 			})
 		case "@apidescription":
 			if i.description == "" {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiDescription"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apiDescription")
 			}
 			i.description = openapi.Description(tag.data)
 		case "@apiexternaldoc":
 			if i.externaldoc != nil {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiExternalDoc"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apiExternalDoc")
 			}
 
 			data := split(tag.data, 2)
 			if len(data) != 2 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiExternalDoc"))
+				return tag.syntaxError(locale.ErrInvalidFormat, "@apiExternalDoc")
 			}
 
 			if !is.URL(data[0]) {
-				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiExternalDoc"))
+				return tag.syntaxError(locale.ErrInvalidFormat, "@apiExternalDoc")
 			}
 
 			i.externaldoc = &openapi.ExternalDocumentation{
@@ -141,7 +141,7 @@ func (p *parser) parseAPIDoc(l *lexer) error {
 				Description: openapi.Description(data[1]),
 			}
 		default:
-			return tag.syntaxError(locale.Sprintf(locale.ErrInvalidTag, string(tag.name)))
+			return tag.syntaxError(locale.ErrInvalidTag, string(tag.name))
 		}
 	}
 
@@ -170,13 +170,13 @@ func (p *parser) fromInfo(i *info) error {
 
 func (i *info) parseContract(tag *tag) error {
 	if i.contract != nil {
-		return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiContract"))
+		return tag.syntaxError(locale.ErrDuplicateTag, "@apiContract")
 	}
 
 	data := split(tag.data, 3)
 
 	if len(data) < 2 || len(data) > 3 {
-		return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiContract"))
+		return tag.syntaxError(locale.ErrInvalidFormat, "@apiContract")
 	}
 
 	i.contract = &openapi.Contact{Name: string(data[0])}
@@ -187,7 +187,7 @@ func (i *info) parseContract(tag *tag) error {
 	case 2:
 		i.contract.Email = v
 	case 3:
-		return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiContract"))
+		return tag.syntaxError(locale.ErrInvalidFormat, "@apiContract")
 	}
 
 	if len(data) == 3 {
@@ -198,7 +198,7 @@ func (i *info) parseContract(tag *tag) error {
 		case 2:
 			i.contract.Email = v
 		case 3:
-			return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiContract"))
+			return tag.syntaxError(locale.ErrInvalidFormat, "@apiContract")
 		}
 	}
 

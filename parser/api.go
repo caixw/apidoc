@@ -34,13 +34,13 @@ import (
 // @param list array must desc
 // @param list.id int optional desc
 // @param list.name int must desc
-// @param list.groups array.string.enum{normal:xx,locked:xx} optional desc markdown
+// @param list.groups array.string.enum optional desc markdown enum{normal:xx,locked:xx}
 // @example
 // {
 //  count: 5,
 //  list: [
-//    {id:1, name: 'name1', 'group': [1,2]},
-//    {id:2, name: 'name2', 'group': [1,2]}
+//    {id:1, name: 'name1', 'groups': [1,2]},
+//    {id:2, name: 'name2', 'groups': [1,2]}
 //  ]
 // }
 //
@@ -82,11 +82,11 @@ func (p *parser) parseAPI(l *lexer) error {
 		switch string(bytes.ToLower(tag.name)) {
 		case "@api":
 			if obj.method != "" || obj.path != "" || obj.summary != "" {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@api"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@api")
 			}
 			data := split(tag.data, 3)
 			if len(data) != 3 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrTagArgNotEnough, "@api"))
+				return tag.syntaxError(locale.ErrTagArgNotEnough, "@api")
 			}
 
 			obj.method = strings.ToUpper(string(data[0])) // TODO 验证请求方法
@@ -99,7 +99,7 @@ func (p *parser) parseAPI(l *lexer) error {
 		case "@apirequest":
 			data := split(tag.data, 2)
 			if len(data) != 2 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiRequest"))
+				return tag.syntaxError(locale.ErrInvalidFormat, "@apiRequest")
 			}
 
 			if err := obj.parseRequest(l, tag); err != nil {
@@ -108,7 +108,7 @@ func (p *parser) parseAPI(l *lexer) error {
 		case "@apiresponse":
 			// TODO
 		default:
-			return tag.syntaxError(locale.Sprintf(locale.ErrInvalidTag, string(tag.name)))
+			return tag.syntaxError(locale.ErrInvalidTag, string(tag.name))
 		}
 	}
 	return nil
@@ -117,7 +117,7 @@ func (p *parser) parseAPI(l *lexer) error {
 func (obj *api) parseRequest(l *lexer, tag *tag) error {
 	data := split(tag.data, 2)
 	if len(data) != 2 {
-		return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiRequest"))
+		return tag.syntaxError(locale.ErrInvalidFormat, "@apiRequest")
 	}
 
 	if obj.request == nil {
@@ -134,7 +134,7 @@ func (obj *api) parseRequest(l *lexer, tag *tag) error {
 		typ = string(t1)
 
 		if typ != "array" {
-			return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiRequest"))
+			return tag.syntaxError(locale.ErrInvalidFormat, "@apiRequest")
 		}
 	}
 
@@ -156,37 +156,11 @@ func (obj *api) parseRequest(l *lexer, tag *tag) error {
 		case "@apiexample":
 			obj.request.Content[mimetype].Example = openapi.ExampleValue(string(tag.data))
 		case "@apiparam":
-			if err := setType(schema, tag); err != nil {
-				return err
-			}
+			// TODO
 		default:
 			l.backup(tag)
 			return nil
 		}
-	}
-
-	return nil
-}
-
-// @param list.groups array.string.enum{normal:xx,locked:xx} optional desc markdown desc
-func setType(schema *openapi.Schema, tag *tag) error {
-	data := split(tag.data, 4)
-
-	var typ, subtype string
-	index := bytes.IndexByte(data[1], ',')
-	if index > 0 {
-		t1 := data[1][:index]
-		subtype = string(data[1][index+1:])
-		typ = string(t1)
-
-		if typ != "array" {
-			return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiRequest"))
-		}
-	}
-
-	names := bytes.Split(data[0], []byte{'.'})
-	for _, name := range names {
-		//schema.Properties.
 	}
 
 	return nil
@@ -197,12 +171,12 @@ func (obj *api) parseAPI(l *lexer) error {
 		switch string(bytes.ToLower(tag.name)) {
 		case "@apigroup":
 			if obj.group != "" {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiGroup"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apiGroup")
 			}
 			obj.group = string(tag.data)
 		case "@apitags":
 			if len(obj.tags) > 0 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiTags"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apiTags")
 			}
 
 			data := tag.data
@@ -220,12 +194,12 @@ func (obj *api) parseAPI(l *lexer) error {
 			}
 		case "@apiversion":
 			if obj.version != "" {
-				return tag.syntaxError(locale.Sprintf(locale.ErrDuplicateTag, "@apiVersion"))
+				return tag.syntaxError(locale.ErrDuplicateTag, "@apiVersion")
 			}
 			obj.version = string(tag.data)
 
 			if !version.SemVerValid(obj.version) {
-				return tag.syntaxError(locale.Sprintf(locale.ErrInvalidFormat, "@apiVersion"))
+				return tag.syntaxError(locale.ErrInvalidFormat, "@apiVersion")
 			}
 		case "@apideprecated":
 			// TODO 输出警告信息
@@ -234,10 +208,10 @@ func (obj *api) parseAPI(l *lexer) error {
 			if obj.params == nil {
 				obj.params = make([]*openapi.Parameter, 0, 10)
 			}
-
+			// TODO 复杂类型的检测 @apiquery state string.array.enum default desc
 			params := split(tag.data, 4)
 			if len(params) != 4 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrTagArgNotEnough, "@apiQuery"))
+				return tag.syntaxError(locale.ErrTagArgNotEnough, "@apiQuery")
 			}
 
 			obj.params = append(obj.params, &openapi.Parameter{
@@ -258,7 +232,7 @@ func (obj *api) parseAPI(l *lexer) error {
 
 			params := split(tag.data, 4)
 			if len(params) != 4 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrTagArgNotEnough, "@apiParam"))
+				return tag.syntaxError(locale.ErrTagArgNotEnough, "@apiParam")
 			}
 
 			obj.params = append(obj.params, &openapi.Parameter{
@@ -278,7 +252,7 @@ func (obj *api) parseAPI(l *lexer) error {
 
 			params := split(tag.data, 4)
 			if len(params) != 4 {
-				return tag.syntaxError(locale.Sprintf(locale.ErrTagArgNotEnough, "@apiHeader"))
+				return tag.syntaxError(locale.ErrTagArgNotEnough, "@apiHeader")
 			}
 
 			obj.params = append(obj.params, &openapi.Parameter{

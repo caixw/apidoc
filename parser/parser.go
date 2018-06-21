@@ -11,7 +11,6 @@ import (
 	"sync"
 
 	"github.com/caixw/apidoc/input"
-	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/openapi"
 	"github.com/caixw/apidoc/vars"
 )
@@ -97,8 +96,4 @@ func (p *parser) parseBlock(block input.Block) error {
 	}
 
 	return nil
-}
-
-func syntaxError(message, file string, line int) error {
-	return locale.Errorf(locale.ErrSyntax, file, line, message)
 }
