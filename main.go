@@ -115,7 +115,7 @@ func parse(wd string) {
 	}
 
 	start := time.Now()
-	docs, err := parser.Parse(erro, warn, cfg.Inputs...)
+	docs, err := parser.Parse(erro, cfg.Inputs...)
 	if err != nil {
 		erro.Println(err)
 	}

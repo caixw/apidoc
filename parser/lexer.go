@@ -98,11 +98,7 @@ LOOP:
 }
 
 func (t *tag) syntaxError(key message.Reference, vals ...interface{}) error {
-	return newError(t.file, t.ln, key, vals...)
-}
-
-func (t *tag) syntaxWarn(key message.Reference, vals ...interface{}) error {
-	return newWarn(t.file, t.ln, key, vals...)
+	return newSyntaxError(t.file, t.ln, key, vals...)
 }
 
 func split(data []byte, size int) [][]byte {

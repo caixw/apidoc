@@ -13,26 +13,10 @@ import (
 
 var _ error = &syntaxError{}
 
-func TestNewWarn(t *testing.T) {
+func TestNewSyntaxError(t *testing.T) {
 	a := assert.New(t)
 
-	err := newWarn("file.go", 1, locale.ErrDirIsEmpty)
+	err := newSyntaxError("file.go", 1, locale.ErrDirIsEmpty)
 	a.Error(err)
 	a.Contains(err.Error(), "file.go")
-
-	synErr, ok := err.(*syntaxError)
-	a.True(ok)
-	a.Equal(synErr.Type, typeWarn)
-}
-
-func TestNewError(t *testing.T) {
-	a := assert.New(t)
-
-	err := newError("file.go", 1, locale.ErrDirIsEmpty)
-	a.Error(err)
-	a.Contains(err.Error(), "file.go")
-
-	synErr, ok := err.(*syntaxError)
-	a.True(ok)
-	a.Equal(synErr.Type, typeError)
 }

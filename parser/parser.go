@@ -57,7 +57,8 @@ func (p *parser) getDoc(group string) *doc {
 }
 
 // Parse 获取文档内容
-func Parse(errlog, syntaxlog *log.Logger, o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
+func Parse(errlog *log.Logger, o ...*input.Options) (map[string]*openapi.OpenAPI, error) {
+
 	p := &parser{
 		docs: make(map[string]*doc, 10),
 	}
@@ -70,7 +71,7 @@ func Parse(errlog, syntaxlog *log.Logger, o ...*input.Options) (map[string]*open
 		go func(b input.Block) {
 			defer wg.Done()
 			if err := p.parseBlock(b); err != nil {
-				syntaxlog.Println(err)
+				errlog.Println(err)
 				return
 			}
 		}(block)
