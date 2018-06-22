@@ -27,13 +27,13 @@ func IsWellDataType(typ string) bool {
 
 // Schema 定义了输出和输出的数据类型
 type Schema struct {
-	Type        string      `json:"type,omitempty" yaml:"type,omitempty"`
-	Items       *Schema     `json:"items,omitempty" yaml:"items,omitempty"`
-	Properties  *Schema     `json:"properties,omitempty" yaml:"properties,omitempty"`
-	Default     interface{} `json:"default,omitempty" yaml:"default,omitempty"`
-	Description Description `json:"description,omitempty" yaml:"description,omitempty"`
-	Enum        []string    `json:"enum,omitempty" yaml:"enum,omitempty"`
-	Required    bool        `json:"required,omitempty" yaml:"required,omitempty"`
+	Type        string             `json:"type,omitempty" yaml:"type,omitempty"`
+	Items       *Schema            `json:"items,omitempty" yaml:"items,omitempty"`
+	Properties  map[string]*Schema `json:"properties,omitempty" yaml:"properties,omitempty"`
+	Default     interface{}        `json:"default,omitempty" yaml:"default,omitempty"`
+	Description Description        `json:"description,omitempty" yaml:"description,omitempty"`
+	Enum        []string           `json:"enum,omitempty" yaml:"enum,omitempty"`
+	Required    []string           `json:"required,omitempty" yaml:"required,omitempty"`
 
 	// NOTE: 仅声明了部分使用到的变量
 

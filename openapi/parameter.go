@@ -14,7 +14,7 @@ const (
 	ParameterINcookie = "cookie"
 )
 
-// Header 即 Parameter 的别名，但 Name 字段必须存在。
+// Header 即 Parameter 的别名，但 Name 字段必须不能存在。
 type Header Parameter
 
 // Parameter 参数信息
