@@ -15,11 +15,11 @@ func TestBuildSchema(t *testing.T) {
 	a := assert.New(t)
 
 	schema := &openapi.Schema{}
-	a.NotError(buildSchema(schema, "", "object", "optional", "desc"))
+	a.NotError(buildSchema(schema, nil, []byte("object"), []byte("optional"), []byte("desc")))
 	a.Equal(schema.Type, "object")
 
 	schema = &openapi.Schema{}
-	a.NotError(buildSchema(schema, "array.list", "array.object", "required", "desc"))
+	a.NotError(buildSchema(schema, []byte("array.list"), []byte("array.object"), []byte("required"), []byte("desc")))
 	a.Equal(schema.Properties["array"].Type, "array")
 	a.Equal(schema.Properties["array"].Items.Type, "object")
 }

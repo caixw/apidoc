@@ -129,7 +129,7 @@ func (obj *api) parseRequest(l *lexer, tag *tag) error {
 	obj.request.Content[mimetype] = &openapi.MediaType{}
 	schema := obj.request.Content[mimetype].Schema
 
-	if serr := buildSchema(schema, "", string(data[1]), "", ""); serr != nil {
+	if serr := buildSchema(schema, nil, data[1], nil, nil); serr != nil {
 		serr.File = tag.file
 		serr.Line = tag.ln
 		return serr
@@ -145,7 +145,7 @@ func (obj *api) parseRequest(l *lexer, tag *tag) error {
 				return tag.syntaxError(locale.ErrInvalidFormat, "@apiParam")
 			}
 
-			if serr := buildSchema(schema, string(data[0]), string(data[1]), string(data[2]), string(data[3])); serr != nil {
+			if serr := buildSchema(schema, data[0], data[1], data[2], data[3]); serr != nil {
 				serr.File = tag.file
 				serr.Line = tag.ln
 				return serr
@@ -176,7 +176,7 @@ func (obj *api) parseResponse(l *lexer, tag *tag) error {
 	}
 	schema := obj.responses[status].Content[mimetype].Schema
 
-	if serr := buildSchema(schema, "", string(data[1]), "", ""); serr != nil {
+	if serr := buildSchema(schema, nil, data[1], nil, nil); serr != nil {
 		serr.File = tag.file
 		serr.Line = tag.ln
 		return serr
@@ -206,7 +206,7 @@ func (obj *api) parseResponse(l *lexer, tag *tag) error {
 				return tag.syntaxError(locale.ErrInvalidFormat, "@apiParam")
 			}
 
-			if serr := buildSchema(schema, string(data[0]), string(data[1]), string(data[2]), string(data[3])); serr != nil {
+			if serr := buildSchema(schema, data[0], data[1], data[2], data[3]); serr != nil {
 				serr.File = tag.file
 				serr.Line = tag.ln
 				return serr
@@ -223,37 +223,37 @@ func (obj *api) parseResponse(l *lexer, tag *tag) error {
 // @param list.groups array.string optional desc markdown
 //  * xx: xxxxx
 //  * xx: xxxxx
-func buildSchema(schema *openapi.Schema, name, typ, optional, desc string) *syntaxError {
-	types := strings.SplitN(typ, ".", 2)
+func buildSchema(schema *openapi.Schema, name, typ, optional, desc []byte) *syntaxError {
+	types := bytes.SplitN(typ, []byte{'.'}, 2)
 	if len(types) == 0 {
 		return &syntaxError{MessageKey: locale.ErrInvalidFormat}
 	}
 
-	if name == "" {
-		schema.Type = types[0]
+	if name == nil {
+		schema.Type = string(types[0])
 		schema.Description = openapi.Description(desc)
-		if types[0] == "array" {
+		if schema.Type == "array" {
 			if len(types) == 1 { // 必须要有子类型
 				return &syntaxError{MessageKey: locale.ErrInvalidFormat}
 			}
 
-			schema.Items = &openapi.Schema{Type: types[1]}
+			schema.Items = &openapi.Schema{Type: string(types[1])}
 		}
 		return nil
 	}
 
 	s := schema
-	names := strings.Split(name, ".")
+	names := bytes.Split(name, []byte{'.'})
 	last := names[len(names)-1]
 	for _, name := range names[:len(names)-1] {
 		if s.Properties == nil {
 			s.Properties = make(map[string]*openapi.Schema, 2)
 		}
 
-		ss := s.Properties[name]
+		ss := s.Properties[string(name)]
 		if ss == nil {
 			ss = &openapi.Schema{}
-			s.Properties[name] = ss
+			s.Properties[string(name)] = ss
 		}
 		s = ss
 	}
@@ -261,16 +261,16 @@ func buildSchema(schema *openapi.Schema, name, typ, optional, desc string) *synt
 	if s.Properties == nil {
 		s.Properties = make(map[string]*openapi.Schema, 2)
 	}
-	s.Properties[last] = &openapi.Schema{
-		Type:        types[0],
+	s.Properties[string(last)] = &openapi.Schema{
+		Type:        string(types[0]),
 		Description: openapi.Description(desc),
 	}
-	if types[0] == "array" {
+	if string(types[0]) == "array" {
 		if len(types) == 1 { // 必须要有子类型
 			return &syntaxError{MessageKey: locale.ErrInvalidFormat}
 		}
 
-		s.Properties[last].Items = &openapi.Schema{Type: types[1]}
+		s.Properties[string(last)].Items = &openapi.Schema{Type: string(types[1])}
 	}
 
 	return nil
