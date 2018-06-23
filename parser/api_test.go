@@ -23,3 +23,11 @@ func TestBuildSchema(t *testing.T) {
 	a.Equal(schema.Properties["array"].Type, "array")
 	a.Equal(schema.Properties["array"].Items.Type, "object")
 }
+
+func TestIsRequired(t *testing.T) {
+	a := assert.New(t)
+
+	a.True(isRequired("required"))
+	a.False(isRequired("optional"))
+	a.False(isRequired(""))
+}

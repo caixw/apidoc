@@ -224,20 +224,16 @@ func (obj *api) parseResponse(l *lexer, tag *tag) error {
 //  * xx: xxxxx
 //  * xx: xxxxx
 func buildSchema(schema *openapi.Schema, name, typ, optional, desc []byte) *syntaxError {
-	types := bytes.SplitN(typ, []byte{'.'}, 2)
-	if len(types) == 0 {
-		return &syntaxError{MessageKey: locale.ErrInvalidFormat}
+	type0, type1, err := parseType(typ)
+	if err != nil {
+		return err
 	}
 
 	if name == nil {
-		schema.Type = string(types[0])
+		schema.Type = type0
 		schema.Description = openapi.Description(desc)
 		if schema.Type == "array" {
-			if len(types) == 1 { // 必须要有子类型
-				return &syntaxError{MessageKey: locale.ErrInvalidFormat}
-			}
-
-			schema.Items = &openapi.Schema{Type: string(types[1])}
+			schema.Items = &openapi.Schema{Type: type1}
 		}
 		return nil
 	}
@@ -262,18 +258,34 @@ func buildSchema(schema *openapi.Schema, name, typ, optional, desc []byte) *synt
 		s.Properties = make(map[string]*openapi.Schema, 2)
 	}
 	s.Properties[string(last)] = &openapi.Schema{
-		Type:        string(types[0]),
+		Type:        type0,
 		Description: openapi.Description(desc),
 	}
-	if string(types[0]) == "array" {
-		if len(types) == 1 { // 必须要有子类型
-			return &syntaxError{MessageKey: locale.ErrInvalidFormat}
-		}
-
-		s.Properties[string(last)].Items = &openapi.Schema{Type: string(types[1])}
+	if type0 == "array" {
+		s.Properties[string(last)].Items = &openapi.Schema{Type: type1}
 	}
 
 	return nil
+}
+
+var typeSeqarator = []byte{'.'}
+
+func parseType(typ []byte) (t1, t2 string, err *syntaxError) {
+	types := bytes.SplitN(typ, typeSeqarator, 2)
+	if len(types) == 0 {
+		return "", "", &syntaxError{MessageKey: locale.ErrInvalidFormat}
+	}
+
+	type0 := string(types[0])
+	if type0 != "array" {
+		return type0, "", nil
+	}
+
+	if len(types) == 1 {
+		return "", "", &syntaxError{MessageKey: locale.ErrInvalidFormat}
+	}
+
+	return type0, string(types[1]), nil
 }
 
 func isRequired(optional string) bool {
@@ -287,7 +299,7 @@ func isRequired(optional string) bool {
 	}
 }
 
-func getEnum(desc string) []string {
+func getEnum(desc []byte) []string {
 	// TODO
 	return nil
 }
