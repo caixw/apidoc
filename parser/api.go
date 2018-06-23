@@ -78,6 +78,8 @@ type api struct {
 	responses map[string]*openapi.Response
 }
 
+var seqaratorDot = []byte{'.'}
+
 func (p *parser) parseAPI(l *lexer) error {
 	obj := &api{}
 	for tag, eof := l.tag(); !eof; tag, eof = l.tag() {
@@ -217,90 +219,6 @@ func (obj *api) parseResponse(l *lexer, tag *tag) error {
 		}
 	}
 
-	return nil
-}
-
-// @param list.groups array.string optional desc markdown
-//  * xx: xxxxx
-//  * xx: xxxxx
-func buildSchema(schema *openapi.Schema, name, typ, optional, desc []byte) *syntaxError {
-	type0, type1, err := parseType(typ)
-	if err != nil {
-		return err
-	}
-
-	if name == nil {
-		schema.Type = type0
-		schema.Description = openapi.Description(desc)
-		if schema.Type == "array" {
-			schema.Items = &openapi.Schema{Type: type1}
-		}
-		return nil
-	}
-
-	s := schema
-	names := bytes.Split(name, []byte{'.'})
-	last := names[len(names)-1]
-	for _, name := range names[:len(names)-1] {
-		if s.Properties == nil {
-			s.Properties = make(map[string]*openapi.Schema, 2)
-		}
-
-		ss := s.Properties[string(name)]
-		if ss == nil {
-			ss = &openapi.Schema{}
-			s.Properties[string(name)] = ss
-		}
-		s = ss
-	}
-
-	if s.Properties == nil {
-		s.Properties = make(map[string]*openapi.Schema, 2)
-	}
-	s.Properties[string(last)] = &openapi.Schema{
-		Type:        type0,
-		Description: openapi.Description(desc),
-	}
-	if type0 == "array" {
-		s.Properties[string(last)].Items = &openapi.Schema{Type: type1}
-	}
-
-	return nil
-}
-
-var typeSeqarator = []byte{'.'}
-
-func parseType(typ []byte) (t1, t2 string, err *syntaxError) {
-	types := bytes.SplitN(typ, typeSeqarator, 2)
-	if len(types) == 0 {
-		return "", "", &syntaxError{MessageKey: locale.ErrInvalidFormat}
-	}
-
-	type0 := string(types[0])
-	if type0 != "array" {
-		return type0, "", nil
-	}
-
-	if len(types) == 1 {
-		return "", "", &syntaxError{MessageKey: locale.ErrInvalidFormat}
-	}
-
-	return type0, string(types[1]), nil
-}
-
-func isRequired(optional string) bool {
-	switch optional {
-	case "required":
-		return true
-	case "optional":
-		return false
-	default:
-		return false
-	}
-}
-
-func getEnum(desc []byte) []string {
-	// TODO
 	return nil
 }
 
