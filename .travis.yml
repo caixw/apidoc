@@ -6,6 +6,7 @@ os:
 
 go:
   - tip
+  - 1.11
   - "1.10"
 
 install:
@@ -19,6 +20,6 @@ install:
   - go get gopkg.in/yaml.v2
   - go get golang.org/x/text
 
-script: go test -v -coverprofile=coverage.txt -covermode=atomic $(go list ./...| grep -v /vendor/)
+script: GO111MODULE=on go test -v -coverprofile=coverage.txt -covermode=atomic $(go list ./...)
 
 after_success: bash <(curl -s https://codecov.io/bash)
