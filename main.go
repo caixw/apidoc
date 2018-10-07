@@ -24,8 +24,8 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
-	"github.com/caixw/apidoc/parser"
 	"github.com/caixw/apidoc/vars"
+	"github.com/caixw/apidoc/docs"
 )
 
 // 日志信息输出
@@ -115,22 +115,11 @@ func parse(wd string) {
 	}
 
 	start := time.Now()
-	docs, err := parser.Parse(erro, cfg.Inputs...)
+	docs, err := docs.Parse(erro, cfg.Inputs...)
 	if err != nil {
 		erro.Println(err)
 	}
 
-	hasError := false
-	for name, doc := range docs {
-		if err := doc.Sanitize(); err != nil {
-			err.Field = "[" + name + "]." + err.Field
-			erro.Println(err)
-			hasError = true
-		}
-	}
-	if hasError {
-		return
-	}
 
 	cfg.Output.Elapsed = time.Now().Sub(start)
 	if err := output.Render(docs, cfg.Output); err != nil {

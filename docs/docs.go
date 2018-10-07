@@ -5,87 +5,74 @@
 // Package docs 表示最终解析出来的文档结果。
 package docs
 
-// Docs 文档集合
-type Docs struct {
-	Docs    map[string]*Doc // 文档集，键名为分组名称
-	Version string          // 当前的程序版本
+import (
+	"bytes"
+	"log"
+	"sync"
+
+	"github.com/caixw/apidoc/docs/syntax"
+	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/vars"
+)
+
+var (
+	apiPrefix    = []byte("@api ")
+	apiDocPrefix = []byte("@apidoc ")
+)
+
+// Parse 获取文档内容
+func Parse(errlog *log.Logger, o ...*input.Options) (*Docs, error) {
+	docs := &Docs{
+		Docs:    make(map[string]*Doc, 10),
+		Version: vars.Version(),
+	}
+
+	c := input.Parse(errlog, o...)
+
+	wg := sync.WaitGroup{}
+	for block := range c {
+		wg.Add(1)
+		go func(b input.Block) {
+			defer wg.Done()
+			if err := docs.parseBlock(b); err != nil {
+				errlog.Println(err)
+				return
+			}
+		}(block)
+	}
+	wg.Wait()
+
+	return docs, nil
 }
 
-// Doc 文档
-type Doc struct {
-	Title   string   `yaml:"title" json:"title"`
-	BaseURL string   `yaml:"baseURL" json:"baseURL"`
-	Content Markdown `yaml:"content,omitempty" json:"content,omitempty"`
-	Contact *Contact `yaml:"contact,omitempty" json:"contact,omitempty"`
-	License *Link    `yaml:"license,omitempty" json:"license,omitempty" ` // 版本信息
-	Version string   `yaml:"version,omitempty" json:"version,omitempty"`  // 文档的版本
-	Tags    []*Tag   `yaml:"tags,omitempty" json:"tags,omitempty"`        // 所有的标签
-	Apis    []*API   `yaml:"apis" json:"apis"`
+// 获取指定组名的文档，group 为空，则会采用默认值组名。
+// 不存在则创建一个新的 doc 实例
+func (docs *Docs) getDoc(group string) *Doc {
+	if group == "" {
+		group = vars.DefaultGroupName
+	}
+
+	docs.locker.Lock()
+	defer docs.locker.Unlock()
+	doc, found := docs.Docs[group]
+
+	if !found {
+		doc = &Doc{}
+		docs.Docs[group] = doc
+	}
+
+	return doc
 }
 
-// Markdown 表示可以使用 markdown 文档
-type Markdown string
+func (docs *Docs) parseBlock(block input.Block) error {
+	l := syntax.NewLexer(block)
 
-// Tag 标签内容
-type Tag struct {
-	Name        string   `yaml:"name" json:"name"`                                   // 字面名称，需要唯一
-	Description Markdown `yaml:"description,omitempty" json:"description,omitempty"` // 具体描述
-}
+	switch {
+	case bytes.HasPrefix(block.Data, apiPrefix):
+		return docs.parseAPI(l)
+	case bytes.HasPrefix(block.Data, apiDocPrefix):
+		return docs.parseAPIDoc(l)
+	}
 
-// Contact 描述联系方式
-type Contact struct {
-	Name  string `yaml:"name" json:"name"`
-	URL   string `yaml:"url" json:"url"`
-	Email string `yaml:"email,omitempty" json:"email,omitempty"`
-}
-
-// Link 表示一个链接
-type Link struct {
-	Text string `yaml:"text" json:"text"`
-	URL  string `yaml:"url" json:"url"`
-}
-
-// API 表示单个 API 文档
-type API struct {
-	Method      string      `yaml:"method" json:"method"`
-	Path        string      `yaml:"path" json:"path"`
-	Summary     string      `yaml:"summary" json:"summary"`
-	Description Markdown    `yaml:"description,omitempty" json:"description,omitempty"`
-	Tags        []*Tag      `yaml:"tags,omitempty" json:"tags,omitempty"`
-	Queries     []*Param    `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
-	Params      []*Param    `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
-	Request     *Request    `yaml:"request,omitempty" json:"request,omitempty"` // 若是 GET，则使用此描述请求的具体数据
-	Responses   []*Response `yaml:"responses" json:"responses"`
-	Deprecated  string      `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
-}
-
-// Request 表示用户请求所表示的数据。
-type Request struct {
-	Headers  map[string]string `yaml:"headers,omitempty" json:"headers,omitempty"`
-	Type     *Schema           `yaml:"type" json:"type"`
-	Examples []*Example        `yaml:"examples,omitempty" json:"examples,omitempty"`
-}
-
-// Response 表示一次请求或是返回的数据。
-type Response struct {
-	Status   string            `yaml:"status" json:"status"`
-	Summary  string            `yaml:"summary,omitempty" json:"summary,omitempty"`
-	Headers  map[string]string `yaml:"headers,omitempty" json:"headers,omitempty"`
-	Type     *Schema           `yaml:"type" json:"type"`
-	Examples []*Example        `yaml:"examples,omitempty" json:"examples,omitempty"`
-}
-
-// Param 简单参数的描述，比如查询参数等
-type Param struct {
-	Name     string  `yaml:"name" json:"name"`                             // 参数名称
-	Type     *Schema `yaml:"type" json:"type"`                             // 类型
-	Summary  string  `yaml:"summary" json:"summary"`                       // 参数介绍
-	Optional bool    `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否可以为空
-}
-
-// Example 示例
-type Example struct {
-	Summary     string   `yaml:"summary,omitempty" json:"summary,omitempty"`
-	Description Markdown `yaml:"description,omitempty" json:"description,omitempty"`
-	Value       string   `yaml:"value" json:"value"` // 示例内容
+	return nil
 }

@@ -10,12 +10,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/caixw/apidoc/openapi"
+	"github.com/caixw/apidoc/docs"
 )
 
 // Render 渲染 docs 的内容，具体的渲染参数由 o 指定。
-func Render(docs map[string]*openapi.OpenAPI, o *Options) error {
-	for name, doc := range docs {
+func Render(docs *docs.Docs, o *Options) error {
+	for name, doc := range docs.Docs {
 		if !o.contains(name) {
 			continue
 		}
