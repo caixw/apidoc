@@ -25,7 +25,7 @@ func TestOptions_Sanitize(t *testing.T) {
 	a.NotError(o.Sanitize())
 	a.Equal(o.marshal, yaml.Marshal)
 
-	o.Type = typeJSON
+	o.Type = typeApidocJSON
 	a.NotError(o.Sanitize())
 	a.Equal(o.marshal, json.Marshal)
 
@@ -33,7 +33,7 @@ func TestOptions_Sanitize(t *testing.T) {
 	a.Error(o.Sanitize())
 
 	// 会执行删除 testdir 操作
-	o.Type = typeJSON
+	o.Type = typeApidocJSON
 	o.Clean = true
 	a.NotError(o.Sanitize())
 }
