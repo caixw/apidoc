@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/docs/syntax"
-	"github.com/caixw/apidoc/locale"
 )
 
 // @api 的格式如下：
@@ -94,7 +93,7 @@ func (docs *Docs) parseAPI(l *syntax.Lexer) error {
 				return err
 			}
 		default:
-			return tag.Error(locale.ErrInvalidTag, string(tag.Name))
+			return tag.ErrInvalidTag()
 		}
 	}
 
@@ -109,11 +108,11 @@ func (docs *Docs) parseAPI(l *syntax.Lexer) error {
 // 分析 @api 以及子标签
 func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 	if api.Method != "" || api.Path != "" || api.Summary != "" {
-		return tag.Error(locale.ErrDuplicateTag, "@api")
+		return tag.ErrDuplicateTag()
 	}
 	data := tag.Split(3)
 	if len(data) != 3 {
-		return tag.Error(locale.ErrTagArgNotEnough, "@api")
+		return tag.ErrInvalidFormat()
 	}
 
 	api.Method = strings.ToUpper(string(data[0])) // TODO 验证请求方法
@@ -124,12 +123,12 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 		switch string(bytes.ToLower(tag.Name)) {
 		case "@apigroup":
 			if api.group != "" {
-				return tag.Error(locale.ErrDuplicateTag, "@apiGroup")
+				return tag.ErrDuplicateTag()
 			}
 			api.group = string(tag.Data)
 		case "@apitags":
 			if len(api.Tags) > 0 {
-				return tag.Error(locale.ErrDuplicateTag, "@apiTags")
+				return tag.ErrDuplicateTag()
 			}
 
 			data := tag.Data
@@ -154,7 +153,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 
 			params := tag.Split(4)
 			if len(params) != 4 {
-				return tag.Error(locale.ErrTagArgNotEnough, "@apiQuery")
+				return tag.ErrInvalidFormat()
 			}
 
 			api.Queries = append(api.Queries, &Param{
@@ -173,7 +172,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 
 			params := tag.Split(4)
 			if len(params) != 4 {
-				return tag.Error(locale.ErrTagArgNotEnough, "@apiParam")
+				return tag.ErrInvalidFormat()
 			}
 
 			api.Params = append(api.Params, &Param{
@@ -196,7 +195,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 	data := tag.Split(3)
 	if len(data) != 2 {
-		return tag.Error(locale.ErrInvalidFormat, "@apiRequest")
+		return tag.ErrInvalidFormat()
 	}
 
 	if api.Requests == nil {
@@ -229,7 +228,7 @@ func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 		case "@apiparam":
 			params := tag.Split(4)
 			if len(params) != 4 {
-				return tag.Error(locale.ErrTagArgNotEnough, "@apiParam")
+				return tag.ErrInvalidFormat()
 			}
 
 			if err := buildSchema(schema, data[0], data[1], data[2], data[3]); err != nil {
@@ -249,7 +248,7 @@ func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
 	data := tag.Split(3)
 	if len(data) != 3 {
-		return tag.Error(locale.ErrInvalidFormat, "@apiResponse")
+		return tag.ErrInvalidFormat()
 	}
 
 	if api.Responses == nil {
@@ -279,7 +278,7 @@ func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
 		case "@apiparam":
 			data := tag.Split(4)
 			if len(data) != 4 {
-				return tag.Error(locale.ErrInvalidFormat, "@apiParam")
+				return tag.ErrInvalidFormat()
 			}
 
 			if serr := buildSchema(schema, data[0], data[1], data[2], data[3]); serr != nil {

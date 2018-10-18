@@ -48,8 +48,6 @@ const (
 	ErrNotFoundSupportedLang = "该目录下没有支持的语言文件"
 	ErrUnknownTag            = "不认识的标签：%v"
 	ErrDuplicateTag          = "重复的标签：%v"
-	ErrTagArgTooMuch         = "标签：%v 指定了太多的参数"
-	ErrTagArgNotEnough       = "标签：%v 参数不够"
 	ErrUnsupportedEncoding   = "不支持的编码方式：%v"
 	ErrDirIsEmpty            = "目录下没有需要解析的文件"
 	ErrInvalidValue          = "无效的值"

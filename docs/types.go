@@ -84,7 +84,7 @@ type Example struct {
 func (body *Body) parseExample(tag *syntax.Tag) error {
 	data := tag.Split(3)
 	if len(data) != 3 {
-		return tag.Error(locale.ErrTagArgNotEnough, "@apiParam")
+		return tag.ErrInvalidFormat()
 	}
 
 	if body.Examples == nil {
@@ -103,7 +103,7 @@ func (body *Body) parseExample(tag *syntax.Tag) error {
 func (body *Body) parseHeader(tag *syntax.Tag) error {
 	data := tag.Split(3)
 	if len(data) != 3 {
-		return tag.Error(locale.ErrInvalidFormat, "@apiHeader")
+		return tag.ErrInvalidFormat()
 	}
 
 	// TODO 采用 optional 和 required 更加易懂

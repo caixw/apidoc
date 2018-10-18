@@ -12,7 +12,6 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/docs/syntax"
-	"github.com/caixw/apidoc/locale"
 )
 
 // @apidoc 的格式下如：
@@ -52,10 +51,10 @@ func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
 		switch string(bytes.ToLower(tag.Name)) {
 		case "@apidoc":
 			if len(tag.Data) == 0 {
-				return tag.Error(locale.ErrTagArgNotEnough, "@apidoc")
+				return tag.ErrInvalidFormat()
 			}
 			if doc.Title != "" {
-				return tag.Error(locale.ErrDuplicateTag, "@apidoc")
+				return tag.ErrDuplicateTag()
 			}
 			doc.Title = string(tag.Data)
 		case "@apitag":
@@ -72,24 +71,24 @@ func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
 			}
 		case "@apiversion":
 			if doc.Version != "" {
-				return tag.Error(locale.ErrDuplicateTag, "@apiVersion")
+				return tag.ErrDuplicateTag()
 			}
 			doc.Version = string(tag.Data)
 
 			if !version.SemVerValid(doc.Version) {
-				return tag.Error(locale.ErrInvalidFormat, "@apiVersion")
+				return tag.ErrInvalidFormat()
 			}
 		case "@apibaseurl":
 			doc.BaseURL = string(tag.Data)
 		case "@apicontent":
 			if doc.Content == "" {
-				return tag.Error(locale.ErrDuplicateTag, "@apiContent")
+				return tag.ErrDuplicateTag()
 			}
 			doc.Content = Markdown(tag.Data)
 		case "@apiresponse":
 			// TODO
 		default:
-			return tag.Error(locale.ErrInvalidTag, string(tag.Name))
+			return tag.ErrInvalidTag()
 		}
 	}
 
@@ -99,7 +98,7 @@ func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
 func (doc *Doc) parseTag(tag *syntax.Tag) error {
 	data := tag.Split(2)
 	if len(data) != 2 {
-		return tag.Error(locale.ErrInvalidFormat, "@apiTag")
+		return tag.ErrInvalidFormat()
 	}
 
 	if doc.Tags == nil {
@@ -116,15 +115,15 @@ func (doc *Doc) parseTag(tag *syntax.Tag) error {
 
 func (doc *Doc) parseLicense(tag *syntax.Tag) error {
 	if doc.License != nil {
-		return tag.Error(locale.ErrDuplicateTag, "@apiLicense")
+		return tag.ErrDuplicateTag()
 	}
 
 	data := tag.Split(2)
 	if len(data) != 2 {
-		return tag.Error(locale.ErrInvalidFormat, "@apiLicense")
+		return tag.ErrInvalidFormat()
 	}
 	if !is.URL(data[1]) {
-		return tag.Error(locale.ErrInvalidFormat, "@apiLicense")
+		return tag.ErrInvalidFormat()
 	}
 	doc.License = &Link{
 		Text: string(data[0]),
@@ -136,13 +135,13 @@ func (doc *Doc) parseLicense(tag *syntax.Tag) error {
 
 func (doc *Doc) parseContract(tag *syntax.Tag) error {
 	if doc.Contact != nil {
-		return tag.Error(locale.ErrDuplicateTag, "@apiContract")
+		return tag.ErrDuplicateTag()
 	}
 
 	data := tag.Split(3)
 
 	if len(data) < 2 || len(data) > 3 {
-		return tag.Error(locale.ErrInvalidFormat, "@apiContract")
+		return tag.ErrInvalidFormat()
 	}
 
 	doc.Contact = &Contact{Name: string(data[0])}
@@ -153,7 +152,7 @@ func (doc *Doc) parseContract(tag *syntax.Tag) error {
 	case 2:
 		doc.Contact.Email = v
 	case 3:
-		return tag.Error(locale.ErrInvalidFormat, "@apiContract")
+		return tag.ErrInvalidFormat()
 	}
 
 	if len(data) == 3 {
@@ -164,7 +163,7 @@ func (doc *Doc) parseContract(tag *syntax.Tag) error {
 		case 2:
 			doc.Contact.Email = v
 		case 3:
-			return tag.Error(locale.ErrInvalidFormat, "@apiContract")
+			return tag.ErrInvalidFormat()
 		}
 	}
 

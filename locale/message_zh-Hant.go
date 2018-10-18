@@ -44,8 +44,6 @@ func init() {
 		ErrNotFoundSupportedLang: "該目錄下沒有支持的語言文件",
 		ErrUnknownTag:            "不認識的標簽：%v",
 		ErrDuplicateTag:          "重復的標簽：%v",
-		ErrTagArgTooMuch:         "標簽：%v 指定了太多的參數",
-		ErrTagArgNotEnough:       "標簽：%v 參數不夠",
 		ErrUnsupportedEncoding:   "不支持的編碼方式：%v",
 		ErrDirIsEmpty:            "目錄下沒有需要解析的文件",
 		ErrInvalidValue:          "無效的值",
