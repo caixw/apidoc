@@ -16,8 +16,8 @@ func Enum() ([]string, error) {
 	return nil, nil
 }
 
-// Split 分隔成指定大小的字符串数组
-func Split(data []byte, size int) [][]byte {
+// 分隔成指定大小的字符串数组
+func split(data []byte, size int) [][]byte {
 	ret := make([][]byte, 0, size)
 	start := 0
 	pos := 0

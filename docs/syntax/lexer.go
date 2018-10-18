@@ -35,7 +35,7 @@ func NewLexer(block input.Block) *Lexer {
 }
 
 func newTag(file string, line int, data []byte) *Tag {
-	strs := Split(data, 2)
+	strs := split(data, 2)
 
 	tag := &Tag{
 		File: file,
@@ -97,4 +97,10 @@ LOOP:
 			newLine = false
 		}
 	}
+}
+
+// Split 将 tag.Data 以空隔分成 num 个数组。
+// 如果不够数量，则返回实际数量的元素。
+func (tag *Tag) Split(num int) [][]byte {
+	return split(tag.Data, num)
 }

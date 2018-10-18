@@ -96,7 +96,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 	if api.Method != "" || api.Path != "" || api.Summary != "" {
 		return tag.Error(locale.ErrDuplicateTag, "@api")
 	}
-	data := syntax.Split(tag.Data, 3)
+	data := tag.Split(3)
 	if len(data) != 3 {
 		return tag.Error(locale.ErrTagArgNotEnough, "@api")
 	}
@@ -137,7 +137,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 				api.Params = make([]*Param, 0, 10)
 			}
 
-			params := syntax.Split(tag.Data, 4)
+			params := tag.Split(4)
 			if len(params) != 4 {
 				return tag.Error(locale.ErrTagArgNotEnough, "@apiQuery")
 			}
@@ -156,7 +156,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 				api.Params = make([]*Param, 0, 10)
 			}
 
-			params := syntax.Split(tag.Data, 4)
+			params := tag.Split(4)
 			if len(params) != 4 {
 				return tag.Error(locale.ErrTagArgNotEnough, "@apiParam")
 			}
@@ -175,7 +175,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 				api.Params = make([]*Param, 0, 10)
 			}
 
-			params := syntax.Split(tag.Data, 4)
+			params := tag.Split(4)
 			if len(params) != 4 {
 				return tag.Error(locale.ErrTagArgNotEnough, "@apiHeader")
 			}
@@ -194,7 +194,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 }
 
 func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
-	data := syntax.Split(tag.Data, 3)
+	data := tag.Split(3)
 	if len(data) != 2 {
 		return tag.Error(locale.ErrInvalidFormat, "@apiRequest")
 	}
@@ -222,14 +222,14 @@ func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 			if req.Examples == nil {
 				req.Examples = make([]*Example, 0, 3)
 			}
-			data := syntax.Split(tag.Data, 3)
+			data := tag.Split(3)
 			req.Examples = append(req.Examples, &Example{
 				Mimetype: string(data[0]),
 				Summary:  string(data[1]),
 				Value:    string(data[2]),
 			})
 		case "@apiparam":
-			params := syntax.Split(tag.Data, 4)
+			params := tag.Split(4)
 			if len(params) != 4 {
 				return tag.Error(locale.ErrTagArgNotEnough, "@apiParam")
 			}
@@ -249,7 +249,7 @@ func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 }
 
 func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
-	data := syntax.Split(tag.Data, 3)
+	data := tag.Split(3)
 	if len(data) != 3 {
 		return tag.Error(locale.ErrInvalidFormat, "@apiResponse")
 	}
@@ -274,7 +274,7 @@ func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
 			if resp.Examples == nil {
 				resp.Examples = make([]*Example, 0, 3)
 			}
-			data := syntax.Split(tag.Data, 3)
+			data := tag.Split(3)
 			resp.Examples = append(resp.Examples, &Example{
 				Mimetype: string(data[0]),
 				Summary:  string(data[1]),
@@ -282,7 +282,7 @@ func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
 			})
 
 		case "@apiheader":
-			data := syntax.Split(tag.Data, 3)
+			data := tag.Split(3)
 			if len(data) != 2 {
 				return tag.Error(locale.ErrInvalidFormat, "@apiHeader")
 			}
@@ -306,7 +306,7 @@ func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
 			}
 			resp.Headers = append(resp.Headers, header)
 		case "@apiparam":
-			data := syntax.Split(tag.Data, 4)
+			data := tag.Split(4)
 			if len(data) != 4 {
 				return tag.Error(locale.ErrInvalidFormat, "@apiParam")
 			}

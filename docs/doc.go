@@ -41,7 +41,7 @@ func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
 			}
 			doc.Title = string(tag.Data)
 		case "@apitag":
-			data := syntax.Split(tag.Data, 2)
+			data := tag.Split(2)
 			if len(data) != 2 {
 				return tag.Error(locale.ErrInvalidFormat, "@apiTag")
 			}
@@ -57,7 +57,7 @@ func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
 				return tag.Error(locale.ErrDuplicateTag, "@apiLicense")
 			}
 
-			data := syntax.Split(tag.Data, 2)
+			data := tag.Split(2)
 			if len(data) != 2 {
 				return tag.Error(locale.ErrInvalidFormat, "@apiLicense")
 			}
@@ -101,7 +101,7 @@ func (doc *Doc) parseContract(tag *syntax.Tag) error {
 		return tag.Error(locale.ErrDuplicateTag, "@apiContract")
 	}
 
-	data := syntax.Split(tag.Data, 3)
+	data := tag.Split(3)
 
 	if len(data) < 2 || len(data) > 3 {
 		return tag.Error(locale.ErrInvalidFormat, "@apiContract")

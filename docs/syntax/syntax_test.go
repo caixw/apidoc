@@ -15,19 +15,19 @@ func TestSplit(t *testing.T) {
 
 	tag := []byte("@tag s1\ts2  \n  s3")
 
-	bs := Split(tag, 1)
+	bs := split(tag, 1)
 	a.Equal(bs, [][]byte{[]byte("@tag s1\ts2  \n  s3")})
 
-	bs = Split(tag, 2)
+	bs = split(tag, 2)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1\ts2  \n  s3")})
 
-	bs = Split(tag, 3)
+	bs = split(tag, 3)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2  \n  s3")})
 
-	bs = Split(tag, 4)
+	bs = split(tag, 4)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2"), []byte("s3")})
 
 	// 不够
-	bs = Split(tag, 5)
+	bs = split(tag, 5)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2"), []byte("s3")})
 }
