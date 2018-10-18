@@ -6,7 +6,6 @@ package docs
 
 import (
 	"bytes"
-	"strconv"
 	"strings"
 
 	"github.com/caixw/apidoc/docs/syntax"
@@ -24,10 +23,10 @@ import (
 // @query state array.string [normal,lock] 状态码
 // @param id int desc
 // @param id int desc
-// @header name desc
-// @header name desc
 //
 // @request object * 通用的请求主体
+// @header name desc optional
+// @header name desc optional
 // @param count int optional desc
 // @param list array must desc
 // @param list.id int optional desc
@@ -60,6 +59,22 @@ import (
 // @param detail array.object desc
 // @param detail.id string desc
 // @param detail.message string desc
+
+// API 表示单个 API 文档
+type API struct {
+	Method      string      `yaml:"method" json:"method"`
+	Path        string      `yaml:"path" json:"path"`
+	Summary     string      `yaml:"summary" json:"summary"`
+	Description Markdown    `yaml:"description,omitempty" json:"description,omitempty"`
+	Tags        []string    `yaml:"tags,omitempty" json:"tags,omitempty"`
+	Queries     []*Param    `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
+	Params      []*Param    `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
+	Requests    []*Request  `yaml:"requests,omitempty" json:"requests,omitempty"`
+	Responses   []*Response `yaml:"responses" json:"responses"`
+	Deprecated  string      `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
+
+	group string
+}
 
 func (docs *Docs) parseAPI(l *syntax.Lexer) error {
 	api := &API{}
@@ -170,21 +185,6 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 					Default: string(params[2]),
 				},
 			})
-		case "@apiheader":
-			if api.Params == nil {
-				api.Params = make([]*Param, 0, 10)
-			}
-
-			params := tag.Split(4)
-			if len(params) != 4 {
-				return tag.Error(locale.ErrTagArgNotEnough, "@apiHeader")
-			}
-
-			api.headers = append(api.headers, &Header{
-				Name:     string(params[0]),
-				Summary:  string(params[3]),
-				Optional: true, // TODO
-			})
 		default:
 			l.Backup(tag)
 			return nil
@@ -219,15 +219,13 @@ func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
 		switch string(bytes.ToLower(tag.Name)) {
 		case "@apiexample":
-			if req.Examples == nil {
-				req.Examples = make([]*Example, 0, 3)
+			if err := req.parseExample(tag); err != nil {
+				return err
 			}
-			data := tag.Split(3)
-			req.Examples = append(req.Examples, &Example{
-				Mimetype: string(data[0]),
-				Summary:  string(data[1]),
-				Value:    string(data[2]),
-			})
+		case "@apiheader":
+			if err := req.parseHeader(tag); err != nil {
+				return err
+			}
 		case "@apiparam":
 			params := tag.Split(4)
 			if len(params) != 4 {
@@ -271,40 +269,13 @@ func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
 		switch string(bytes.ToLower(tag.Name)) {
 		case "@apiexample":
-			if resp.Examples == nil {
-				resp.Examples = make([]*Example, 0, 3)
+			if err := resp.parseExample(tag); err != nil {
+				return err
 			}
-			data := tag.Split(3)
-			resp.Examples = append(resp.Examples, &Example{
-				Mimetype: string(data[0]),
-				Summary:  string(data[1]),
-				Value:    string(data[2]),
-			})
-
 		case "@apiheader":
-			data := tag.Split(3)
-			if len(data) != 2 {
-				return tag.Error(locale.ErrInvalidFormat, "@apiHeader")
+			if err := resp.parseHeader(tag); err != nil {
+				return err
 			}
-
-			if resp.Headers == nil {
-				resp.Headers = make([]*Header, 0, 3)
-			}
-			optional, err := strconv.ParseBool(string(data[2]))
-			if err != nil {
-				return &syntax.Error{
-					File:        tag.File,
-					Line:        tag.Line,
-					MessageKey:  locale.ErrInvalidFormat,
-					MessageArgs: []interface{}{"@apiHeader"},
-				}
-			}
-			header := &Header{
-				Name:     string(data[0]),
-				Summary:  string(data[1]),
-				Optional: optional,
-			}
-			resp.Headers = append(resp.Headers, header)
 		case "@apiparam":
 			data := tag.Split(4)
 			if len(data) != 4 {

@@ -5,9 +5,7 @@
 // Package syntax 提供简易的词法分析工具
 package syntax
 
-import (
-	"unicode"
-)
+import "unicode"
 
 // Enum 分析枚举内容
 func Enum() ([]string, error) {

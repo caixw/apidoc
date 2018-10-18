@@ -4,31 +4,19 @@
 
 package docs
 
-import "sync"
+import (
+	"strconv"
+	"sync"
+
+	"github.com/caixw/apidoc/docs/syntax"
+	"github.com/caixw/apidoc/locale"
+)
 
 // Docs 文档集合
 type Docs struct {
 	Version string          // 当前的程序版本
 	Docs    map[string]*Doc // 文档集，键名为分组名称
 	locker  sync.Mutex
-}
-
-// Doc 文档
-type Doc struct {
-	Title   string   `yaml:"title" json:"title"`
-	BaseURL string   `yaml:"baseURL" json:"baseURL"`
-	Content Markdown `yaml:"content,omitempty" json:"content,omitempty"`
-	Contact *Contact `yaml:"contact,omitempty" json:"contact,omitempty"`
-	License *Link    `yaml:"license,omitempty" json:"license,omitempty" ` // 版本信息
-	Version string   `yaml:"version,omitempty" json:"version,omitempty"`  // 文档的版本
-	Tags    []*Tag   `yaml:"tags,omitempty" json:"tags,omitempty"`        // 所有的标签
-
-	// 所有接口都有可能返回的内容。
-	// 比如一些错误内容的返回，可以在此处定义。
-	Responses []*Response `yaml:"responses,omitempty" json:"responses,omitempty"`
-
-	Apis   []*API `yaml:"apis" json:"apis"`
-	locker sync.Mutex
 }
 
 // Markdown 表示可以使用 markdown 文档
@@ -51,23 +39,6 @@ type Contact struct {
 type Link struct {
 	Text string `yaml:"text" json:"text"`
 	URL  string `yaml:"url" json:"url"`
-}
-
-// API 表示单个 API 文档
-type API struct {
-	Method      string      `yaml:"method" json:"method"`
-	Path        string      `yaml:"path" json:"path"`
-	Summary     string      `yaml:"summary" json:"summary"`
-	Description Markdown    `yaml:"description,omitempty" json:"description,omitempty"`
-	Tags        []string    `yaml:"tags,omitempty" json:"tags,omitempty"`
-	Queries     []*Param    `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
-	Params      []*Param    `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
-	Requests    []*Request  `yaml:"requests,omitempty" json:"requests,omitempty"`
-	Responses   []*Response `yaml:"responses" json:"responses"`
-	Deprecated  string      `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
-
-	group   string
-	headers []*Header
 }
 
 // Request 表示用户请求所表示的数据。
@@ -108,4 +79,54 @@ type Example struct {
 	Mimetype string `yaml:"mimetype" json:"mimetype"`
 	Summary  string `yaml:"summary,omitempty" json:"summary,omitempty"`
 	Value    string `yaml:"value" json:"value"` // 示例内容
+}
+
+func (body *Body) parseExample(tag *syntax.Tag) error {
+	data := tag.Split(3)
+	if len(data) != 3 {
+		return tag.Error(locale.ErrTagArgNotEnough, "@apiParam")
+	}
+
+	if body.Examples == nil {
+		body.Examples = make([]*Example, 0, 3)
+	}
+
+	body.Examples = append(body.Examples, &Example{
+		Mimetype: string(data[0]),
+		Summary:  string(data[1]),
+		Value:    string(data[2]),
+	})
+
+	return nil
+}
+
+func (body *Body) parseHeader(tag *syntax.Tag) error {
+	data := tag.Split(3)
+	if len(data) != 3 {
+		return tag.Error(locale.ErrInvalidFormat, "@apiHeader")
+	}
+
+	// TODO 采用 optional 和 required 更加易懂
+	// 直接调用 schema.go 中的 isRequired?
+	optional, err := strconv.ParseBool(string(data[2]))
+	if err != nil {
+		return &syntax.Error{
+			File:        tag.File,
+			Line:        tag.Line,
+			MessageKey:  locale.ErrInvalidFormat,
+			MessageArgs: []interface{}{"@apiHeader"},
+		}
+	}
+
+	if body.Headers == nil {
+		body.Headers = make([]*Header, 0, 3)
+	}
+
+	body.Headers = append(body.Headers, &Header{
+		Name:     string(data[0]),
+		Summary:  string(data[1]),
+		Optional: optional,
+	})
+
+	return nil
 }

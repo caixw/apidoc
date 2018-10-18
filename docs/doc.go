@@ -6,6 +6,7 @@ package docs
 
 import (
 	"bytes"
+	"sync"
 
 	"github.com/issue9/is"
 	"github.com/issue9/version"
@@ -18,15 +19,32 @@ import (
 //
 // @apidoc title of doc
 // @apibaseurl xxxx
-// @tag t1 desc
-// @tag t2 desc
-// @license name url
-// @contact name url
-// @version v1
-// @external name url
+// @apitag t1 desc
+// @apitag t2 desc
+// @apilicense name url
+// @apicontact name url
+// @apiversion v1
 // @apicontent description markdown
 //
 // @apiresponse 404 xxx // 全局的返回内容定义
+
+// Doc 文档
+type Doc struct {
+	Title   string   `yaml:"title" json:"title"`
+	BaseURL string   `yaml:"baseURL" json:"baseURL"`
+	Content Markdown `yaml:"content,omitempty" json:"content,omitempty"`
+	Contact *Contact `yaml:"contact,omitempty" json:"contact,omitempty"`
+	License *Link    `yaml:"license,omitempty" json:"license,omitempty" ` // 版本信息
+	Version string   `yaml:"version,omitempty" json:"version,omitempty"`  // 文档的版本
+	Tags    []*Tag   `yaml:"tags,omitempty" json:"tags,omitempty"`        // 所有的标签
+
+	// 所有接口都有可能返回的内容。
+	// 比如一些错误内容的返回，可以在此处定义。
+	Responses []*Response `yaml:"responses,omitempty" json:"responses,omitempty"`
+
+	Apis   []*API `yaml:"apis" json:"apis"`
+	locker sync.Mutex
+}
 
 func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
 	doc := &Doc{}
@@ -41,32 +59,12 @@ func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
 			}
 			doc.Title = string(tag.Data)
 		case "@apitag":
-			data := tag.Split(2)
-			if len(data) != 2 {
-				return tag.Error(locale.ErrInvalidFormat, "@apiTag")
+			if err := doc.parseTag(tag); err != nil {
+				return err
 			}
-			if doc.Tags == nil {
-				doc.Tags = make([]*Tag, 0, 10)
-			}
-			doc.Tags = append(doc.Tags, &Tag{
-				Name:        string(data[0]),
-				Description: Markdown(data[1]),
-			})
 		case "@apilicense":
-			if doc.License != nil {
-				return tag.Error(locale.ErrDuplicateTag, "@apiLicense")
-			}
-
-			data := tag.Split(2)
-			if len(data) != 2 {
-				return tag.Error(locale.ErrInvalidFormat, "@apiLicense")
-			}
-			if !is.URL(data[1]) {
-				return tag.Error(locale.ErrInvalidFormat, "@apiLicense")
-			}
-			doc.License = &Link{
-				Text: string(data[0]),
-				URL:  string(data[1]),
+			if err := doc.parseLicense(tag); err != nil {
+				return err
 			}
 		case "@apicontract":
 			if err := doc.parseContract(tag); err != nil {
@@ -83,14 +81,54 @@ func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
 			}
 		case "@apibaseurl":
 			doc.BaseURL = string(tag.Data)
-		case "@apidescription":
+		case "@apicontent":
 			if doc.Content == "" {
-				return tag.Error(locale.ErrDuplicateTag, "@apiDescription")
+				return tag.Error(locale.ErrDuplicateTag, "@apiContent")
 			}
 			doc.Content = Markdown(tag.Data)
+		case "@apiresponse":
+			// TODO
 		default:
 			return tag.Error(locale.ErrInvalidTag, string(tag.Name))
 		}
+	}
+
+	return nil
+}
+
+func (doc *Doc) parseTag(tag *syntax.Tag) error {
+	data := tag.Split(2)
+	if len(data) != 2 {
+		return tag.Error(locale.ErrInvalidFormat, "@apiTag")
+	}
+
+	if doc.Tags == nil {
+		doc.Tags = make([]*Tag, 0, 5)
+	}
+
+	doc.Tags = append(doc.Tags, &Tag{
+		Name:        string(data[0]),
+		Description: Markdown(data[1]),
+	})
+
+	return nil
+}
+
+func (doc *Doc) parseLicense(tag *syntax.Tag) error {
+	if doc.License != nil {
+		return tag.Error(locale.ErrDuplicateTag, "@apiLicense")
+	}
+
+	data := tag.Split(2)
+	if len(data) != 2 {
+		return tag.Error(locale.ErrInvalidFormat, "@apiLicense")
+	}
+	if !is.URL(data[1]) {
+		return tag.Error(locale.ErrInvalidFormat, "@apiLicense")
+	}
+	doc.License = &Link{
+		Text: string(data[0]),
+		URL:  string(data[1]),
 	}
 
 	return nil
