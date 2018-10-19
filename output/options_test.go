@@ -23,11 +23,11 @@ func TestOptions_Sanitize(t *testing.T) {
 
 	o.Dir = "./testdir"
 	a.NotError(o.Sanitize())
-	a.Equal(o.marshal, yaml.Marshal)
-
-	o.Type = typeApidocJSON
-	a.NotError(o.Sanitize())
 	a.Equal(o.marshal, json.Marshal)
+
+	o.Type = typeApidocYAML
+	a.NotError(o.Sanitize())
+	a.Equal(o.marshal, yaml.Marshal)
 
 	o.Type = "unknown"
 	a.Error(o.Sanitize())
