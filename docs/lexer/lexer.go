@@ -23,7 +23,7 @@ type Tag struct {
 	File string
 	Line int // 当前 tag 在文件中的起始行号
 	Data []byte
-	Name []byte // 标签名称
+	Name string // 标签名称
 }
 
 // New 声明一个新的 Lexer 实例。
@@ -40,7 +40,7 @@ func newTag(file string, line int, data []byte) *Tag {
 	tag := &Tag{
 		File: file,
 		Line: line,
-		Name: strs[0],
+		Name: string(strs[0]),
 	}
 
 	if len(strs) == 2 {

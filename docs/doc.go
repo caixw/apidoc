@@ -5,7 +5,7 @@
 package docs
 
 import (
-	"bytes"
+	"strings"
 	"sync"
 
 	"github.com/issue9/is"
@@ -48,7 +48,7 @@ type Doc struct {
 func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 	doc := &Doc{}
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
-		switch string(bytes.ToLower(tag.Name)) {
+		switch strings.ToLower(tag.Name) {
 		case "@apidoc":
 			if len(tag.Data) == 0 {
 				return tag.ErrInvalidFormat()
@@ -65,8 +65,8 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 			if err := doc.parseLicense(tag); err != nil {
 				return err
 			}
-		case "@apicontract":
-			if err := doc.parseContract(tag); err != nil {
+		case "@apicontact":
+			if err := doc.parseContact(tag); err != nil {
 				return err
 			}
 		case "@apiversion":
@@ -133,7 +133,7 @@ func (doc *Doc) parseLicense(tag *lexer.Tag) error {
 	return nil
 }
 
-func (doc *Doc) parseContract(tag *lexer.Tag) error {
+func (doc *Doc) parseContact(tag *lexer.Tag) error {
 	if doc.Contact != nil {
 		return tag.ErrDuplicateTag()
 	}

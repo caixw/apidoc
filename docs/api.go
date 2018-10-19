@@ -79,7 +79,7 @@ func (docs *Docs) parseAPI(l *lexer.Lexer) error {
 	api := &API{}
 
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
-		switch string(bytes.ToLower(tag.Name)) {
+		switch strings.ToLower(tag.Name) {
 		case "@api":
 			if err := api.parseAPI(l, tag); err != nil {
 				return err
@@ -120,7 +120,7 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 	api.Summary = string(data[2])
 
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
-		switch string(bytes.ToLower(tag.Name)) {
+		switch strings.ToLower(tag.Name) {
 		case "@apigroup":
 			if api.group != "" {
 				return tag.ErrDuplicateTag()
@@ -213,7 +213,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 	}
 
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
-		switch string(bytes.ToLower(tag.Name)) {
+		switch strings.ToLower(tag.Name) {
 		case "@apiexample":
 			if err := req.parseExample(tag); err != nil {
 				return err
@@ -262,7 +262,7 @@ func (api *API) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 	api.Responses = append(api.Responses, resp)
 
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
-		switch string(bytes.ToLower(tag.Name)) {
+		switch strings.ToLower(tag.Name) {
 		case "@apiexample":
 			if err := resp.parseExample(tag); err != nil {
 				return err
