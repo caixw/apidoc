@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/caixw/apidoc/docs/syntax"
+	"github.com/caixw/apidoc/docs/lexer"
 )
 
 // @api 的格式如下：
@@ -75,7 +75,7 @@ type API struct {
 	group string
 }
 
-func (docs *Docs) parseAPI(l *syntax.Lexer) error {
+func (docs *Docs) parseAPI(l *lexer.Lexer) error {
 	api := &API{}
 
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
@@ -106,7 +106,7 @@ func (docs *Docs) parseAPI(l *syntax.Lexer) error {
 }
 
 // 分析 @api 以及子标签
-func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
+func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 	if api.Method != "" || api.Path != "" || api.Summary != "" {
 		return tag.ErrDuplicateTag()
 	}
@@ -192,7 +192,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 	return nil
 }
 
-func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
+func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 	data := tag.Split(3)
 	if len(data) != 3 {
 		return tag.ErrInvalidFormat()
@@ -240,7 +240,7 @@ func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 	return nil
 }
 
-func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
+func (api *API) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 	data := tag.Split(3)
 	if len(data) != 3 {
 		return tag.ErrInvalidFormat()

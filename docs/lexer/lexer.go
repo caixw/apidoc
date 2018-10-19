@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package syntax
+package lexer
 
 import (
 	"unicode"
@@ -26,8 +26,8 @@ type Tag struct {
 	Name []byte // 标签名称
 }
 
-// NewLexer 声明一个新的 Lexer 实例。
-func NewLexer(block input.Block) *Lexer {
+// New 声明一个新的 Lexer 实例。
+func New(block input.Block) *Lexer {
 	return &Lexer{
 		data: block,
 		ln:   block.Line,
@@ -103,4 +103,34 @@ LOOP:
 // 如果不够数量，则返回实际数量的元素。
 func (tag *Tag) Split(num int) [][]byte {
 	return split(tag.Data, num)
+}
+
+// 分隔成指定大小的字符串数组
+func split(data []byte, size int) [][]byte {
+	ret := make([][]byte, 0, size)
+	start := 0
+	pos := 0
+	isspace := true // 前一个字符是否为空白字符
+
+	for ; ; pos++ {
+		switch {
+		case pos >= len(data): // EOF
+			return append(ret, data[start:])
+		case unicode.IsSpace(rune(data[pos])):
+			if !isspace {
+				ret = append(ret, data[start:pos])
+				start = pos
+				isspace = true
+			}
+		default:
+			if isspace {
+				if len(ret) >= size-1 {
+					return append(ret, data[pos:])
+				}
+
+				start = pos
+				isspace = false
+			}
+		}
+	}
 }

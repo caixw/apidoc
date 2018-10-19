@@ -10,7 +10,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/caixw/apidoc/docs/syntax"
+	"github.com/caixw/apidoc/docs/lexer"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/vars"
 )
@@ -65,7 +65,7 @@ func (docs *Docs) getDoc(group string) *Doc {
 }
 
 func (docs *Docs) parseBlock(block input.Block) error {
-	l := syntax.NewLexer(block)
+	l := lexer.New(block)
 
 	switch {
 	case bytes.HasPrefix(block.Data, apiPrefix):

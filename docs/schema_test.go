@@ -9,12 +9,12 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/docs/syntax"
+	"github.com/caixw/apidoc/docs/lexer"
 )
 
 func TestBuildSchema(t *testing.T) {
 	a := assert.New(t)
-	tag := &syntax.Tag{}
+	tag := &lexer.Tag{}
 
 	schema := &Schema{}
 	a.NotError(buildSchema(tag, schema, nil, []byte("object"), []byte("required"), []byte("desc")))

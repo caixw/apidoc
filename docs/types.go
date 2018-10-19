@@ -7,7 +7,7 @@ package docs
 import (
 	"sync"
 
-	"github.com/caixw/apidoc/docs/syntax"
+	"github.com/caixw/apidoc/docs/lexer"
 )
 
 // Docs 文档集合
@@ -78,7 +78,7 @@ type Example struct {
 	Value    string `yaml:"value" json:"value"` // 示例内容
 }
 
-func (body *Body) parseExample(tag *syntax.Tag) error {
+func (body *Body) parseExample(tag *lexer.Tag) error {
 	data := tag.Split(3)
 	if len(data) != 3 {
 		return tag.ErrInvalidFormat()
@@ -97,7 +97,7 @@ func (body *Body) parseExample(tag *syntax.Tag) error {
 	return nil
 }
 
-func (body *Body) parseHeader(tag *syntax.Tag) error {
+func (body *Body) parseHeader(tag *lexer.Tag) error {
 	data := tag.Split(3)
 	if len(data) != 3 {
 		return tag.ErrInvalidFormat()

@@ -11,7 +11,7 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/docs/syntax"
+	"github.com/caixw/apidoc/docs/lexer"
 )
 
 // @apidoc 的格式下如：
@@ -45,7 +45,7 @@ type Doc struct {
 	locker sync.Mutex
 }
 
-func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
+func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 	doc := &Doc{}
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
 		switch string(bytes.ToLower(tag.Name)) {
@@ -95,7 +95,7 @@ func (docs *Docs) parseAPIDoc(l *syntax.Lexer) error {
 	return nil
 }
 
-func (doc *Doc) parseTag(tag *syntax.Tag) error {
+func (doc *Doc) parseTag(tag *lexer.Tag) error {
 	data := tag.Split(2)
 	if len(data) != 2 {
 		return tag.ErrInvalidFormat()
@@ -113,7 +113,7 @@ func (doc *Doc) parseTag(tag *syntax.Tag) error {
 	return nil
 }
 
-func (doc *Doc) parseLicense(tag *syntax.Tag) error {
+func (doc *Doc) parseLicense(tag *lexer.Tag) error {
 	if doc.License != nil {
 		return tag.ErrDuplicateTag()
 	}
@@ -133,7 +133,7 @@ func (doc *Doc) parseLicense(tag *syntax.Tag) error {
 	return nil
 }
 
-func (doc *Doc) parseContract(tag *syntax.Tag) error {
+func (doc *Doc) parseContract(tag *lexer.Tag) error {
 	if doc.Contact != nil {
 		return tag.ErrDuplicateTag()
 	}

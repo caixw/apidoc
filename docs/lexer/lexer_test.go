@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package syntax
+package lexer
 
 import (
 	"testing"
@@ -13,7 +13,7 @@ import (
 )
 
 func newLexerString(data string) *Lexer {
-	return NewLexer(input.Block{Data: []byte(data)})
+	return New(input.Block{Data: []byte(data)})
 }
 
 func newTagString(data string) *Tag {
@@ -52,4 +52,26 @@ markdown desc line2
 
 	tag, eof = l.Tag()
 	a.Nil(tag).True(eof)
+}
+
+func TestSplit(t *testing.T) {
+	a := assert.New(t)
+
+	tag := []byte("@tag s1\ts2  \n  s3")
+
+	bs := split(tag, 1)
+	a.Equal(bs, [][]byte{[]byte("@tag s1\ts2  \n  s3")})
+
+	bs = split(tag, 2)
+	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1\ts2  \n  s3")})
+
+	bs = split(tag, 3)
+	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2  \n  s3")})
+
+	bs = split(tag, 4)
+	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2"), []byte("s3")})
+
+	// 不够
+	bs = split(tag, 5)
+	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2"), []byte("s3")})
 }

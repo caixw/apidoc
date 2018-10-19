@@ -7,7 +7,7 @@ package docs
 import (
 	"bytes"
 
-	"github.com/caixw/apidoc/docs/syntax"
+	"github.com/caixw/apidoc/docs/lexer"
 )
 
 // Schema.Type 的值枚举
@@ -89,7 +89,7 @@ var seqaratorDot = []byte{'.'}
 //  - optional 表示可选，默认为零值
 //  - optional.xx 表示可选，默认值为 xx
 //  - required 表示必须
-func buildSchema(tag *syntax.Tag, schema *Schema, name, typ, optional, desc []byte) error {
+func buildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byte) error {
 	type0, type1, err := parseType(tag, typ)
 	if err != nil {
 		return err
@@ -134,7 +134,7 @@ func buildSchema(tag *syntax.Tag, schema *Schema, name, typ, optional, desc []by
 // 分析类型的内容。值可以有以下格式：
 //  - type 单一类型
 //  - type.subtype 集合类型，subtype 表示集全元素的类型，一般用于数组。
-func parseType(tag *syntax.Tag, typ []byte) (t1, t2 string, err error) {
+func parseType(tag *lexer.Tag, typ []byte) (t1, t2 string, err error) {
 	types := bytes.SplitN(typ, seqaratorDot, 2)
 	if len(types) == 0 {
 		return "", "", tag.ErrInvalidFormat()
