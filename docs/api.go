@@ -33,7 +33,7 @@ import (
 // @param list.groups array.string optional.xxxx desc markdown enum:
 //  * xx: xxxxx
 //  * xx: xxxxx
-// @example application/json default
+// @example application/json summary
 // {
 //  count: 5,
 //  list: [
@@ -44,7 +44,7 @@ import (
 //
 // @request object application/xml 特定的请求主体
 //
-// @response 200 array.object 通用的返回内容定义
+// @response 200 array.object * 通用的返回内容定义
 // @apiheader string xxx
 // @param id int desc
 // @param name string desc
@@ -194,7 +194,7 @@ func (api *API) parseAPI(l *syntax.Lexer, tag *syntax.Tag) error {
 
 func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 	data := tag.Split(3)
-	if len(data) != 2 {
+	if len(data) != 3 {
 		return tag.ErrInvalidFormat()
 	}
 
@@ -204,16 +204,13 @@ func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 
 	req := &Request{
 		Mimetype: string(data[1]),
+		Type:     &Schema{},
 	}
 	api.Requests = append(api.Requests, req)
 
-	schema := &Schema{}
-	if serr := buildSchema(schema, nil, data[1], nil, nil); serr != nil {
-		serr.File = tag.File
-		serr.Line = tag.Line
-		return serr
+	if err := buildSchema(tag, req.Type, nil, data[1], nil, data[2]); err != nil {
+		return err
 	}
-	req.Type = schema
 
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
 		switch string(bytes.ToLower(tag.Name)) {
@@ -231,9 +228,7 @@ func (api *API) parseRequest(l *syntax.Lexer, tag *syntax.Tag) error {
 				return tag.ErrInvalidFormat()
 			}
 
-			if err := buildSchema(schema, data[0], data[1], data[2], data[3]); err != nil {
-				err.File = tag.File
-				err.Line = tag.Line
+			if err := buildSchema(tag, req.Type, data[0], data[1], data[2], data[3]); err != nil {
 				return err
 			}
 		default:
@@ -256,13 +251,14 @@ func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
 	}
 
 	schema := &Schema{}
-	if serr := buildSchema(schema, nil, data[1], nil, nil); serr != nil {
-		serr.File = tag.File
-		serr.Line = tag.Line
-		return serr
+	if err := buildSchema(tag, schema, nil, data[1], nil, data[2]); err != nil {
+		return err
 	}
-	resp := &Response{}
-	resp.Mimetype = string(data[1])
+	resp := &Response{
+		Body: Body{
+			Mimetype: string(data[1]),
+		},
+	}
 	api.Responses = append(api.Responses, resp)
 
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
@@ -281,10 +277,8 @@ func (api *API) parseResponse(l *syntax.Lexer, tag *syntax.Tag) error {
 				return tag.ErrInvalidFormat()
 			}
 
-			if serr := buildSchema(schema, data[0], data[1], data[2], data[3]); serr != nil {
-				serr.File = tag.File
-				serr.Line = tag.Line
-				return serr
+			if err := buildSchema(tag, schema, data[0], data[1], data[2], data[3]); err != nil {
+				return err
 			}
 		default:
 			l.Backup(tag)

@@ -7,13 +7,6 @@ package syntax
 
 import "unicode"
 
-// Enum 分析枚举内容
-func Enum() ([]string, error) {
-	// TODO
-
-	return nil, nil
-}
-
 // 分隔成指定大小的字符串数组
 func split(data []byte, size int) [][]byte {
 	ret := make([][]byte, 0, size)

@@ -5,11 +5,9 @@
 package docs
 
 import (
-	"strconv"
 	"sync"
 
 	"github.com/caixw/apidoc/docs/syntax"
-	"github.com/caixw/apidoc/locale"
 )
 
 // Docs 文档集合
@@ -52,7 +50,6 @@ type Response struct {
 
 // Body 表示请求和返回的共有内容
 type Body struct {
-	Summary  string     `yaml:"summary,omitempty" json:"summary,omitempty"`
 	Mimetype string     `yaml:"mimetype,omitempty" json:"mimetype,omitempty"`
 	Headers  []*Header  `yaml:"headers,omitempty" json:"headers,omitempty"`
 	Type     *Schema    `yaml:"type" json:"type"`
@@ -106,18 +103,6 @@ func (body *Body) parseHeader(tag *syntax.Tag) error {
 		return tag.ErrInvalidFormat()
 	}
 
-	// TODO 采用 optional 和 required 更加易懂
-	// 直接调用 schema.go 中的 isRequired?
-	optional, err := strconv.ParseBool(string(data[2]))
-	if err != nil {
-		return &syntax.Error{
-			File:        tag.File,
-			Line:        tag.Line,
-			MessageKey:  locale.ErrInvalidFormat,
-			MessageArgs: []interface{}{"@apiHeader"},
-		}
-	}
-
 	if body.Headers == nil {
 		body.Headers = make([]*Header, 0, 3)
 	}
@@ -125,7 +110,7 @@ func (body *Body) parseHeader(tag *syntax.Tag) error {
 	body.Headers = append(body.Headers, &Header{
 		Name:     string(data[0]),
 		Summary:  string(data[1]),
-		Optional: optional,
+		Optional: isRequired(string(data[2])),
 	})
 
 	return nil

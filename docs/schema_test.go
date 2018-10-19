@@ -8,17 +8,20 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/docs/syntax"
 )
 
 func TestBuildSchema(t *testing.T) {
 	a := assert.New(t)
+	tag := &syntax.Tag{}
 
 	schema := &Schema{}
-	a.NotError(buildSchema(schema, nil, []byte("object"), []byte("required"), []byte("desc")))
+	a.NotError(buildSchema(tag, schema, nil, []byte("object"), []byte("required"), []byte("desc")))
 	a.Equal(schema.Type, "object")
 
 	schema = &Schema{}
-	a.NotError(buildSchema(schema, []byte("array"), []byte("array.object"), []byte("required"), []byte("desc")))
+	a.NotError(buildSchema(tag, schema, []byte("array"), []byte("array.object"), []byte("required"), []byte("desc")))
 	arr := schema.Properties["array"]
 	a.NotNil(arr)
 	a.Equal(arr.Type, "array")
@@ -27,7 +30,7 @@ func TestBuildSchema(t *testing.T) {
 		Equal(schema.Required[0], "array")
 
 	schema = &Schema{}
-	a.NotError(buildSchema(schema, []byte("obj.array"), []byte("array.object"), []byte("required"), []byte("desc")))
+	a.NotError(buildSchema(tag, schema, []byte("obj.array"), []byte("array.object"), []byte("required"), []byte("desc")))
 	obj := schema.Properties["obj"]
 	a.NotNil(obj)
 	arr = obj.Properties["array"]

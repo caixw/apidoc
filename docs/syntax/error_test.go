@@ -11,7 +11,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-var _ error = &Error{}
+var _ error = &syntaxError{}
 
 func TestNewError(t *testing.T) {
 	a := assert.New(t)
