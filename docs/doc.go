@@ -151,7 +151,7 @@ func (doc *Doc) parseContact(tag *lexer.Tag) error {
 		doc.Contact.URL = v
 	case 2:
 		doc.Contact.Email = v
-	case 3:
+	default:
 		return tag.ErrInvalidFormat()
 	}
 
@@ -162,7 +162,7 @@ func (doc *Doc) parseContact(tag *lexer.Tag) error {
 			doc.Contact.URL = v
 		case 2:
 			doc.Contact.Email = v
-		case 3:
+		default:
 			return tag.ErrInvalidFormat()
 		}
 	}

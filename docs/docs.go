@@ -6,18 +6,12 @@
 package docs
 
 import (
-	"bytes"
 	"log"
 	"sync"
 
 	"github.com/caixw/apidoc/docs/lexer"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/vars"
-)
-
-var (
-	apiPrefix    = []byte("@api ")
-	apiDocPrefix = []byte("@apidoc ")
 )
 
 // Parse 获取文档内容
@@ -67,11 +61,14 @@ func (docs *Docs) getDoc(group string) *Doc {
 func (docs *Docs) parseBlock(block input.Block) error {
 	l := lexer.New(block)
 
-	switch {
-	case bytes.HasPrefix(block.Data, apiPrefix):
-		return docs.parseAPI(l)
-	case bytes.HasPrefix(block.Data, apiDocPrefix):
-		return docs.parseAPIDoc(l)
+	tag, _ := l.Tag()
+	l.Backup(tag)
+
+	switch tag.Name {
+	case "api":
+		return docs.parseAPI(lexer.New(block))
+	case "apidoc":
+		return docs.parseAPIDoc(lexer.New(block))
 	}
 
 	return nil
