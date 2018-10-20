@@ -5,6 +5,7 @@
 package docs
 
 import (
+	"strings"
 	"sync"
 
 	"github.com/caixw/apidoc/docs/lexer"
@@ -114,4 +115,48 @@ func (body *Body) parseHeader(tag *lexer.Tag) error {
 	})
 
 	return nil
+}
+
+func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
+	data := tag.Split(3)
+	if len(data) != 3 {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	schema := &Schema{}
+	if err := buildSchema(tag, schema, nil, data[1], nil, data[2]); err != nil {
+		return nil, err
+	}
+	resp := &Response{
+		Body: Body{
+			Mimetype: string(data[1]),
+		},
+	}
+
+	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
+		switch strings.ToLower(tag.Name) {
+		case "@apiexample":
+			if err := resp.parseExample(tag); err != nil {
+				return nil, err
+			}
+		case "@apiheader":
+			if err := resp.parseHeader(tag); err != nil {
+				return nil, err
+			}
+		case "@apiparam":
+			data := tag.Split(4)
+			if len(data) != 4 {
+				return nil, tag.ErrInvalidFormat()
+			}
+
+			if err := buildSchema(tag, schema, data[0], data[1], data[2], data[3]); err != nil {
+				return nil, err
+			}
+		default:
+			l.Backup(tag)
+			return resp, nil
+		}
+	}
+
+	return resp, nil
 }

@@ -53,7 +53,7 @@ func init() {
 		ErrApidocExists:          "相同組名的 @apidoc 標簽已經存在",
 		ErrInvalidMethod:         "無效的請求方法",
 		ErrMethodExists:          "該請求方法已經存在",
-		ErrInvalidTag:            "無效的標簽",
+		ErrInvalidTag:            "無效的標簽 %s",
 
 		// logs
 		InfoPrefix:  "[信息] ",

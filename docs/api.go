@@ -11,54 +11,6 @@ import (
 	"github.com/caixw/apidoc/docs/lexer"
 )
 
-// @api 的格式如下：
-//
-// @api GET /users/{id}/logs 获取用户信息
-// @group g1
-// @tags t1,t2
-// @deprecated desc
-// @query page int default desc
-// @query size int default desc
-// @query state array.string [normal,lock] 状态码
-// @param id int desc
-// @param id int desc
-//
-// @request object * 通用的请求主体
-// @header name desc optional
-// @header name desc optional
-// @param count int optional desc
-// @param list array must desc
-// @param list.id int optional desc
-// @param list.name int must desc
-// @param list.groups array.string optional.xxxx desc markdown enum:
-//  * xx: xxxxx
-//  * xx: xxxxx
-// @example application/json summary
-// {
-//  count: 5,
-//  list: [
-//    {id:1, name: 'name1', 'groups': [1,2]},
-//    {id:2, name: 'name2', 'groups': [1,2]}
-//  ]
-// }
-//
-// @request object application/xml 特定的请求主体
-//
-// @response 200 array.object * 通用的返回内容定义
-// @apiheader string xxx
-// @param id int desc
-// @param name string desc
-// @param group object desc
-// @param group.id int desc
-//
-// @response 404 object application/json
-// @apiheader string xxx
-// @param code int desc
-// @param message string desc
-// @param detail array.object desc
-// @param detail.id string desc
-// @param detail.message string desc
-
 // API 表示单个 API 文档
 type API struct {
 	Method      string      `yaml:"method" json:"method"`
@@ -105,22 +57,24 @@ func (docs *Docs) parseAPI(l *lexer.Lexer) error {
 	return nil
 }
 
+var separatorTag = []byte{','}
+
 // 分析 @api 以及子标签
 func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
-	if api.Method != "" || api.Path != "" || api.Summary != "" {
-		return tag.ErrDuplicateTag()
-	}
-	data := tag.Split(3)
-	if len(data) != 3 {
-		return tag.ErrInvalidFormat()
-	}
-
-	api.Method = strings.ToUpper(string(data[0])) // TODO 验证请求方法
-	api.Path = string(data[1])
-	api.Summary = string(data[2])
-
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
 		switch strings.ToLower(tag.Name) {
+		case "@api":
+			if api.Method != "" || api.Path != "" || api.Summary != "" {
+				return tag.ErrDuplicateTag()
+			}
+			data := tag.Split(3)
+			if len(data) != 3 {
+				return tag.ErrInvalidFormat()
+			}
+
+			api.Method = strings.ToUpper(string(data[0])) // TODO 验证请求方法
+			api.Path = string(data[1])
+			api.Summary = string(data[2])
 		case "@apigroup":
 			if api.group != "" {
 				return tag.ErrDuplicateTag()
@@ -131,18 +85,10 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 				return tag.ErrDuplicateTag()
 			}
 
-			data := tag.Data
-			start := 0
-			for {
-				index := bytes.IndexByte(tag.Data, ',')
-
-				if index <= 0 {
-					api.Tags = append(api.Tags, string(data[start:]))
-					break
-				}
-
-				api.Tags = append(api.Tags, string(data[start:index]))
-				data = tag.Data[index+1:]
+			tags := bytes.Split(tag.Data, separatorTag)
+			api.Tags = make([]string, 0, len(tags))
+			for _, tag := range tags {
+				api.Tags = append(api.Tags, string(tag))
 			}
 		case "@apideprecated":
 			api.Deprecated = string(tag.Data)
@@ -228,7 +174,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 				return tag.ErrInvalidFormat()
 			}
 
-			if err := buildSchema(tag, req.Type, data[0], data[1], data[2], data[3]); err != nil {
+			if err := buildSchema(tag, req.Type, params[0], params[1], params[2], params[3]); err != nil {
 				return err
 			}
 		default:
@@ -241,50 +187,15 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 }
 
 func (api *API) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
-	data := tag.Split(3)
-	if len(data) != 3 {
-		return tag.ErrInvalidFormat()
-	}
-
 	if api.Responses == nil {
 		api.Responses = make([]*Response, 10)
 	}
 
-	schema := &Schema{}
-	if err := buildSchema(tag, schema, nil, data[1], nil, data[2]); err != nil {
+	resp, err := newResponse(l, tag)
+	if err != nil {
 		return err
 	}
-	resp := &Response{
-		Body: Body{
-			Mimetype: string(data[1]),
-		},
-	}
 	api.Responses = append(api.Responses, resp)
-
-	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
-		switch strings.ToLower(tag.Name) {
-		case "@apiexample":
-			if err := resp.parseExample(tag); err != nil {
-				return err
-			}
-		case "@apiheader":
-			if err := resp.parseHeader(tag); err != nil {
-				return err
-			}
-		case "@apiparam":
-			data := tag.Split(4)
-			if len(data) != 4 {
-				return tag.ErrInvalidFormat()
-			}
-
-			if err := buildSchema(tag, schema, data[0], data[1], data[2], data[3]); err != nil {
-				return err
-			}
-		default:
-			l.Backup(tag)
-			return nil
-		}
-	}
 
 	return nil
 }

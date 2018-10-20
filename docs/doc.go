@@ -14,19 +14,6 @@ import (
 	"github.com/caixw/apidoc/docs/lexer"
 )
 
-// @apidoc 的格式下如：
-//
-// @apidoc title of doc
-// @apibaseurl xxxx
-// @apitag t1 desc
-// @apitag t2 desc
-// @apilicense name url
-// @apicontact name url
-// @apiversion v1
-// @apicontent description markdown
-//
-// @apiresponse 404 xxx // 全局的返回内容定义
-
 // Doc 文档
 type Doc struct {
 	Title   string   `yaml:"title" json:"title"`
@@ -43,6 +30,8 @@ type Doc struct {
 
 	Apis   []*API `yaml:"apis" json:"apis"`
 	locker sync.Mutex
+
+	group string
 }
 
 func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
@@ -57,6 +46,11 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 				return tag.ErrDuplicateTag()
 			}
 			doc.Title = string(tag.Data)
+		case "@apigroup":
+			if doc.group != "" {
+				return tag.ErrDuplicateTag()
+			}
+			doc.group = string(tag.Data)
 		case "@apitag":
 			if err := doc.parseTag(tag); err != nil {
 				return err
@@ -86,11 +80,38 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 			}
 			doc.Content = Markdown(tag.Data)
 		case "@apiresponse":
-			// TODO
+			if err := doc.parseResponse(l, tag); err != nil {
+				return err
+			}
 		default:
 			return tag.ErrInvalidTag()
 		}
 	}
+
+	// 复制内容到 docs 中
+	doc1 := docs.getDoc(doc.group)
+	doc1.Title = doc.Title
+	doc1.BaseURL = doc.BaseURL
+	doc1.Content = doc.Content
+	doc1.Contact = doc.Contact
+	doc1.License = doc.License
+	doc1.Version = doc.Version
+	doc1.Tags = doc.Tags
+	doc1.Responses = doc.Responses
+
+	return nil
+}
+
+func (doc *Doc) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
+	if doc.Responses == nil {
+		doc.Responses = make([]*Response, 10)
+	}
+
+	resp, err := newResponse(l, tag)
+	if err != nil {
+		return err
+	}
+	doc.Responses = append(doc.Responses, resp)
 
 	return nil
 }

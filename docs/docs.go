@@ -7,6 +7,7 @@ package docs
 
 import (
 	"log"
+	"strings"
 	"sync"
 
 	"github.com/caixw/apidoc/docs/lexer"
@@ -64,10 +65,10 @@ func (docs *Docs) parseBlock(block input.Block) error {
 	tag, _ := l.Tag()
 	l.Backup(tag)
 
-	switch tag.Name {
-	case "api":
+	switch strings.ToLower(tag.Name) {
+	case "@api":
 		return docs.parseAPI(lexer.New(block))
-	case "apidoc":
+	case "@apidoc":
 		return docs.parseAPIDoc(lexer.New(block))
 	}
 

@@ -53,7 +53,7 @@ func init() {
 		ErrApidocExists:          "相同组名的 @apidoc 标签已经存在",
 		ErrInvalidMethod:         "无效的请求方法",
 		ErrMethodExists:          "该请求方法已经存在",
-		ErrInvalidTag:            "无效的标签",
+		ErrInvalidTag:            "无效的标签 %s",
 
 		// logs
 		InfoPrefix:  "[信息] ",
