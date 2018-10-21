@@ -47,6 +47,12 @@ func newTag(file string, line int, data []byte) *Tag {
 		tag.Data = strs[1]
 	}
 
+	// 去掉最后的换行符
+	lastIndex := len(tag.Data) - 1
+	if tag.Data[lastIndex] == '\n' {
+		tag.Data = tag.Data[:lastIndex]
+	}
+
 	return tag
 }
 
@@ -131,6 +137,6 @@ func split(data []byte, size int) [][]byte {
 				start = pos
 				isspace = false
 			}
-		}
-	}
+		} // end switch
+	} // end for
 }

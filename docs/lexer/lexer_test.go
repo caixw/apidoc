@@ -35,13 +35,12 @@ markdown desc line2
 	a.Equal(tag.Line, 0).
 		Equal(string(tag.Data), `get /path desc
 markdown desc line1
-markdown desc line2
-`).Equal(tag.Name, "@api")
+markdown desc line2`).Equal(tag.Name, "@api")
 
 	tag, eof = l.Tag()
 	a.NotNil(tag).False(eof)
 	a.Equal(tag.Line, 3).
-		Equal(string(tag.Data), "xxx\n").
+		Equal(string(tag.Data), "xxx").
 		Equal(tag.Name, "@apigroup")
 
 	tag, eof = l.Tag()

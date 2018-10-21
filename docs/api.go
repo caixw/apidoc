@@ -49,10 +49,7 @@ func (docs *Docs) parseAPI(l *lexer.Lexer) error {
 		}
 	}
 
-	doc := docs.getDoc(api.group)
-	doc.locker.Lock()
-	defer doc.locker.Unlock()
-	doc.Apis = append(doc.Apis, api)
+	docs.getDoc(api.group).append(api)
 
 	return nil
 }

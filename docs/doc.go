@@ -102,6 +102,13 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 	return nil
 }
 
+// 添加一个 API 实例
+func (doc *Doc) append(api *API) {
+	doc.locker.Lock()
+	doc.Apis = append(doc.Apis, api)
+	doc.locker.Unlock()
+}
+
 func (doc *Doc) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 	if doc.Responses == nil {
 		doc.Responses = make([]*Response, 10)
