@@ -65,23 +65,17 @@ LANG=lang apidoc
 
 ```go
 // 初始本地化内容
-locale.Init()
+apidoc.InitLocale()
 
 // 分析文档内容
-inputOptions := &input.Options{}
 
-err := log.NewLogger()
-warn := log.NewLogger()
-
-now := time.Now()
-docs, err := parser.Parse(err, warn, inputOptions)
-
-// 输出内容
-outputOptions := &output.Options{...}
-outputOptions.Elapsed = now.Sub(time.Now())
-if err = output.Render(docs, outputOptions); err != nil {
-    panic(err)
+erro := log.NewLogger()
+output := &output.Options{...}
+inputs := []*input.Options{
+    &input.Options{},
 }
+
+apidoc.Parse(erro, output, inputs...)
 ```
 
 
