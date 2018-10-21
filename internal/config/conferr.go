@@ -6,7 +6,7 @@
 package config
 
 import (
-	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/vars"
 )
 

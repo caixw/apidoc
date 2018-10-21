@@ -12,7 +12,7 @@ import (
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/locale/syslocale"
+	"github.com/caixw/apidoc/internal/locale/syslocale"
 	"github.com/caixw/apidoc/vars"
 )
 

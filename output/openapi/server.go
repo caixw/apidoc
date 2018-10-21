@@ -7,7 +7,7 @@ package openapi
 import (
 	"strings"
 
-	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 // 去掉 URL 中的 {} 模板参数。使其符合 is.URL 的判断规则

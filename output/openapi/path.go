@@ -4,7 +4,7 @@
 
 package openapi
 
-import "github.com/caixw/apidoc/locale"
+import "github.com/caixw/apidoc/internal/locale"
 
 // PathItem 每一条路径的详细描述信息
 type PathItem struct {

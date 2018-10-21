@@ -4,7 +4,7 @@
 
 package openapi
 
-import "github.com/caixw/apidoc/locale"
+import "github.com/caixw/apidoc/internal/locale"
 
 // Error 错误接口
 type Error struct {

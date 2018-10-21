@@ -8,7 +8,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 // 用于描述 block.Type 的值。

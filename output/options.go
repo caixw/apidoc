@@ -12,7 +12,7 @@ import (
 
 	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/docs"
-	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 type marshaler func(v *docs.Docs) ([]byte, error)

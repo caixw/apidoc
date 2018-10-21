@@ -17,7 +17,7 @@ import (
 	"unicode"
 
 	"github.com/caixw/apidoc/input/encoding"
-	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 // Block 解析出来的注释块

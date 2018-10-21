@@ -7,7 +7,7 @@ package lexer
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/internal/locale"
 	"github.com/issue9/assert"
 )
 

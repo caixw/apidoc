@@ -16,7 +16,7 @@ import (
 	"golang.org/x/text/encoding/traditionalchinese"
 	"golang.org/x/text/transform"
 
-	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 // DefaultEncoding 默认的编码名称，只能是 utf-8。

@@ -4,7 +4,7 @@
 
 package openapi
 
-import "github.com/caixw/apidoc/locale"
+import "github.com/caixw/apidoc/internal/locale"
 
 // Parameter.IN 的可选值
 const (

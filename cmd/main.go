@@ -21,7 +21,7 @@ import (
 	"github.com/issue9/term/colors"
 
 	"github.com/caixw/apidoc/input"
-	"github.com/caixw/apidoc/locale"
+	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/vars"
 	"github.com/caixw/apidoc/docs"
