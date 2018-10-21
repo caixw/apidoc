@@ -15,10 +15,20 @@ import (
 	"github.com/caixw/apidoc/vars"
 )
 
+// Docs 文档集合
+type Docs struct {
+	Version string // 当前的程序版本
+
+	// map 是无序的，每次生成的文档，即使没有变化，
+	// 也有可能因为排序问题，导致输出的内容发生改变。
+	Docs   []*Doc
+	locker sync.Mutex
+}
+
 // Parse 获取文档内容
 func Parse(errlog *log.Logger, o ...*input.Options) (*Docs, error) {
 	docs := &Docs{
-		Docs:    make(map[string]*Doc, 10),
+		Docs:    make([]*Doc, 0, 10),
 		Version: vars.Version(),
 	}
 
@@ -49,12 +59,15 @@ func (docs *Docs) getDoc(group string) *Doc {
 
 	docs.locker.Lock()
 	defer docs.locker.Unlock()
-	doc, found := docs.Docs[group]
 
-	if !found {
-		doc = &Doc{}
-		docs.Docs[group] = doc
+	for _, doc := range docs.Docs {
+		if doc.Group == group {
+			return doc
+		}
 	}
+
+	doc := &Doc{Group: group}
+	docs.Docs = append(docs.Docs, doc)
 
 	return doc
 }

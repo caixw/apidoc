@@ -6,17 +6,9 @@ package docs
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/caixw/apidoc/docs/lexer"
 )
-
-// Docs 文档集合
-type Docs struct {
-	Version string          // 当前的程序版本
-	Docs    map[string]*Doc // 文档集，键名为分组名称
-	locker  sync.Mutex
-}
 
 // Markdown 表示可以使用 markdown 文档
 type Markdown string

@@ -18,6 +18,7 @@ import (
 type Doc struct {
 	Title   string   `yaml:"title" json:"title"`
 	BaseURL string   `yaml:"baseURL" json:"baseURL"`
+	Group   string   `yaml:"group,omitempty" json:"group,omitempty"`
 	Content Markdown `yaml:"content,omitempty" json:"content,omitempty"`
 	Contact *Contact `yaml:"contact,omitempty" json:"contact,omitempty"`
 	License *Link    `yaml:"license,omitempty" json:"license,omitempty" ` // 版本信息
@@ -30,8 +31,6 @@ type Doc struct {
 
 	Apis   []*API `yaml:"apis" json:"apis"`
 	locker sync.Mutex
-
-	group string
 }
 
 func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
@@ -47,10 +46,10 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 			}
 			doc.Title = string(tag.Data)
 		case "@apigroup":
-			if doc.group != "" {
+			if doc.Group != "" {
 				return tag.ErrDuplicateTag()
 			}
-			doc.group = string(tag.Data)
+			doc.Group = string(tag.Data)
 		case "@apitag":
 			if err := doc.parseTag(tag); err != nil {
 				return err
@@ -89,7 +88,7 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 	}
 
 	// 复制内容到 docs 中
-	doc1 := docs.getDoc(doc.group)
+	doc1 := docs.getDoc(doc.Group)
 	doc1.Title = doc.Title
 	doc1.BaseURL = doc.BaseURL
 	doc1.Content = doc.Content
