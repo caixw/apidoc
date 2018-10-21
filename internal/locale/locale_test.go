@@ -7,26 +7,18 @@ package locale
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/vars"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+
 	"github.com/issue9/assert"
 )
 
-func TestInit(t *testing.T) {
+func TestInitLocales(t *testing.T) {
 	a := assert.New(t)
 
-	a.NotError(Init())
+	a.NotError(initLocales())
 	a.True(len(locales) > 0)
-}
 
-func TestVarsDefaultLocale(t *testing.T) {
-	a := assert.New(t)
-
-	found := false
-	for name := range locales {
-		if name == vars.DefaultLocale {
-			found = true
-			break
-		}
-	}
-	a.True(found)
+	p := message.NewPrinter(language.MustParse("zh-Hans"))
+	a.Equal(p.Sprintf(FlagHUsage), locales["zh-Hans"][FlagHUsage])
 }

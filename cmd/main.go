@@ -19,7 +19,9 @@ import (
 
 	"github.com/issue9/logs/writers"
 	"github.com/issue9/term/colors"
+	"golang.org/x/text/language"
 
+	"github.com/caixw/apidoc"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/output"
@@ -36,7 +38,7 @@ var (
 
 // 确保第一时间初始化本地化信息
 func init() {
-	if err := locale.Init(); err != nil {
+	if err := apidoc.InitLocale(language.Und); err != nil {
 		warn.Println(err)
 		return
 	}

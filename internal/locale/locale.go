@@ -13,50 +13,45 @@ import (
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/internal/locale/syslocale"
-	"github.com/caixw/apidoc/vars"
 )
 
 // 保证有个初始化的值，部分包的测试功能依赖此变量
-var localePrinter = message.NewPrinter(language.MustParse(vars.DefaultLocale))
+var localePrinter = message.NewPrinter(language.MustParse("zh-Hans"))
 
 // Init 初始化 locale 包并。
 // 无论是否返回错误信息，都会初始一种语言作为其交互语言。
-func Init() error {
-	tag, err := getTag()
-	localePrinter = NewPrinter(tag)
+func Init(tag language.Tag) (err error) {
+	if err = initLocales(); err != nil {
+		return err
+	}
 
-	return err
+	// 未设置语言，则采用系统语言
+	if tag == language.Und {
+		tag, err = syslocale.Get()
+		if err != nil {
+			return err
+		}
+	}
+
+	localePrinter = NewPrinter(tag)
+	return nil
 }
 
-func getTag() (language.Tag, error) {
-	found := false
-	for id, messages := range locales { // 保证 locales 已经初始化，即要在 init() 函数之后调用
+func initLocales() error {
+	for id, messages := range locales {
 		tag, err := language.Parse(id)
 		if err != nil {
-			return language.Und, err
+			return err
 		}
 
 		for key, val := range messages {
 			if err := message.SetString(tag, key, val); err != nil {
-				return language.Und, err
+				return err
 			}
 		}
-
-		if id == vars.DefaultLocale {
-			found = true
-		}
 	}
 
-	if !found {
-		panic("vars.DefaultLocale 的值并不存在") // 这算是代码级别的错误，直接 panic
-	}
-
-	tag, err := syslocale.Get()
-	if err != nil {
-		// 此条必定成功，因为与 vars.DefaultLocale 相同的值已经在上面的 for 特环中执行过。
-		return language.MustParse(vars.DefaultLocale), err
-	}
-	return tag, nil
+	return nil
 }
 
 // NewPrinter 根据 tag 生成一个新的语言输出环境
