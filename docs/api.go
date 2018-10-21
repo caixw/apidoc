@@ -185,7 +185,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 
 func (api *API) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 	if api.Responses == nil {
-		api.Responses = make([]*Response, 10)
+		api.Responses = make([]*Response, 0, 10)
 	}
 
 	resp, err := newResponse(l, tag)

@@ -75,7 +75,7 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 		case "@apibaseurl":
 			doc.BaseURL = string(tag.Data)
 		case "@apicontent":
-			if doc.Content == "" {
+			if doc.Content != "" {
 				return tag.ErrDuplicateTag()
 			}
 			doc.Content = Markdown(tag.Data)

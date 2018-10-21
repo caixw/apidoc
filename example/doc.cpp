@@ -9,7 +9,7 @@
 // @apitag t2 desc
 // @apilicense name http://example.com
 // @apicontact name http://example.com
-// @apiversion v1
+// @apiversion 0.1.0
 // @apicontent description markdown
 //
 // @apiresponse 404 xxx // 全局的返回内容定义

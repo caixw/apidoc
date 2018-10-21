@@ -110,8 +110,8 @@ func (body *Body) parseHeader(tag *lexer.Tag) error {
 
 	body.Headers = append(body.Headers, &Header{
 		Name:     string(data[0]),
-		Summary:  string(data[1]),
-		Optional: isRequired(string(data[2])),
+		Summary:  string(data[2]),
+		Optional: isRequired(string(data[1])),
 	})
 
 	return nil
