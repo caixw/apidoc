@@ -50,13 +50,9 @@ func Parse(errlog *log.Logger, o ...*input.Options) (*Docs, error) {
 	return docs, nil
 }
 
-// 获取指定组名的文档，group 为空，则会采用默认值组名。
+// 获取指定组名的文档，group 为空，则返回默认组。
 // 不存在则创建一个新的 doc 实例
 func (docs *Docs) getDoc(group string) *Doc {
-	if group == "" {
-		group = vars.DefaultGroupName
-	}
-
 	docs.locker.Lock()
 	defer docs.locker.Unlock()
 

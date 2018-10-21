@@ -21,9 +21,6 @@ const (
 	// 配置文件名称。
 	ConfigFilename = ".apidoc.yaml"
 
-	// 默认的分组名称，在不指定分组名称的时候，系统会给其加到此分组中。
-	DefaultGroupName = "openapi"
-
 	// 默认的语言，目前仅能保证简体中文是最新的。
 	// 需要保证存在于 locale.locales 中，否则运行时会报错。
 	DefaultLocale = "zh-Hans"
