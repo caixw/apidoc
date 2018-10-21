@@ -5,37 +5,35 @@
 package output
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/issue9/assert"
-	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/config/conferr"
 )
 
 var _ conferr.Sanitizer = &Options{}
 
+var (
+	_ marshaler = apidocJSONMarshal
+	_ marshaler = apidocYAMLMarshal
+)
+
 func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)
 	o := &Options{}
 	a.Error(o.Sanitize())
 
-	o.Dir = "./testdir"
+	o.Path = "./testdir/apidoc.json"
 	a.NotError(o.Sanitize())
-	a.Equal(o.marshal, json.Marshal)
+	a.Equal(o.marshal, marshaler(apidocJSONMarshal))
 
 	o.Type = typeApidocYAML
 	a.NotError(o.Sanitize())
-	a.Equal(o.marshal, yaml.Marshal)
+	a.Equal(o.marshal, marshaler(apidocYAMLMarshal))
 
 	o.Type = "unknown"
 	a.Error(o.Sanitize())
-
-	// 会执行删除 testdir 操作
-	o.Type = typeApidocJSON
-	o.Clean = true
-	a.NotError(o.Sanitize())
 }
 
 func TestOptions_contains(t *testing.T) {

@@ -6,15 +6,16 @@ package output
 
 import (
 	"encoding/json"
-	"os"
 	"time"
 
-	"github.com/issue9/utils"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/config/conferr"
+	"github.com/caixw/apidoc/docs"
 	"github.com/caixw/apidoc/locale"
 )
+
+type marshaler func(v *docs.Docs) ([]byte, error)
 
 const (
 	typeApidocJSON  = "apidoc+json"
@@ -26,14 +27,8 @@ const (
 
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
-	// 文档的保存目录
-	Dir string `yaml:"dir"`
-
-	// 是否对 Dir 作清理操作
-	//
-	// 如果为 true，则每次都会清空 Dir 目录下的所有内容；
-	// 否则为覆盖同名文件的操作，默认为 false。
-	Clean bool `yaml:"clean,omitempty"`
+	// 文档的保存路径，包含目录和文件名，若为空，则为当前目录下的
+	Path string `yaml:"path,omitempty"`
 
 	// 仅输出这些组，为空表示输出所有
 	//
@@ -43,26 +38,14 @@ type Options struct {
 	// 输出类型
 	Type string `yaml:"type,omitempty"`
 
-	Elapsed time.Duration                       `yaml:"-"`
-	marshal func(v interface{}) ([]byte, error) // 根据 type 决定转换的函数
+	Elapsed time.Duration `yaml:"-"`
+	marshal marshaler     // 根据 type 决定转换的函数
 }
 
 // Sanitize 对 Options 作一些初始化操作。
 func (o *Options) Sanitize() *conferr.Error {
-	if len(o.Dir) == 0 {
-		return conferr.New("dir", locale.Sprintf(locale.ErrRequired))
-	}
-
-	if o.Clean {
-		if err := os.RemoveAll(o.Dir); err != nil {
-			return conferr.New("dir", err.Error())
-		}
-	}
-
-	if !utils.FileExists(o.Dir) {
-		if err := os.MkdirAll(o.Dir, os.ModePerm); err != nil {
-			return conferr.New("dir", err.Error())
-		}
+	if o.Path == "" {
+		return conferr.New("path", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if o.Type == "" {
@@ -71,9 +54,15 @@ func (o *Options) Sanitize() *conferr.Error {
 
 	switch o.Type {
 	case typeApidocJSON:
-		o.marshal = json.Marshal
+		o.marshal = apidocJSONMarshal
 	case typeApidocYAML:
-		o.marshal = yaml.Marshal
+		o.marshal = apidocYAMLMarshal
+	case typeOpenapiJSON:
+		// TODO
+	case typeOpenapiYAML:
+		// TODO
+	case typeRamlJSON:
+		// TODO
 	default:
 		return conferr.New("type", locale.Sprintf(locale.ErrInvalidValue))
 	}
@@ -94,4 +83,12 @@ func (o *Options) contains(group string) bool {
 	}
 
 	return false
+}
+
+func apidocJSONMarshal(v *docs.Docs) ([]byte, error) {
+	return json.Marshal(v)
+}
+
+func apidocYAMLMarshal(v *docs.Docs) ([]byte, error) {
+	return yaml.Marshal(v)
 }

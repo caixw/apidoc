@@ -17,11 +17,9 @@ import (
 
 // Docs 文档集合
 type Docs struct {
-	Version string // 当前的程序版本
+	Version string `yaml:"version" json:"version"` // 当前的程序版本
 
-	// map 是无序的，每次生成的文档，即使没有变化，
-	// 也有可能因为排序问题，导致输出的内容发生改变。
-	Docs   []*Doc
+	Docs   []*Doc `yaml:"docs" json:"docs"`
 	locker sync.Mutex
 }
 

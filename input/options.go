@@ -18,7 +18,7 @@ import (
 
 // Options 指定输入内容的相关信息。
 type Options struct {
-	StartLineNumber int      `yaml:"startLineNumber,omitempty"` // 代码的超始行号，默认为 0
+	StartLineNumber int      `yaml:"startLineNumber,omitempty"` // 代码的超始行号，提示错误信息时用到，默认为 0
 	Lang            string   `yaml:"lang"`                      // 输入的目标语言
 	Dir             string   `yaml:"dir"`                       // 源代码目录
 	Exts            []string `yaml:"exts,omitempty"`            // 需要扫描的文件扩展名，若未指定，则使用默认值

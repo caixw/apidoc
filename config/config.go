@@ -108,7 +108,7 @@ func Generate(wd, path string) error {
 		Version: vars.Version(),
 		Inputs:  []*input.Options{o},
 		Output: &output.Options{
-			Dir: filepath.Join(o.Dir, "doc"),
+			Path: filepath.Join(o.Dir, "apidoc.json"),
 		},
 	}
 

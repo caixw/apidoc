@@ -127,7 +127,7 @@ func parse(wd string) {
 		return
 	}
 
-	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Dir, cfg.Output.Elapsed))
+	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Path, cfg.Output.Elapsed))
 }
 
 func usage() {
