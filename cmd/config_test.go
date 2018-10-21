@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package config
+package main
 
 import (
 	"path/filepath"
@@ -17,14 +17,14 @@ import (
 	"github.com/caixw/apidoc/vars"
 )
 
-func TestConfig_Generate_Load(t *testing.T) {
+func TestConfig_generateConfig_loadConfig(t *testing.T) {
 	a := assert.New(t)
 
 	path, err := filepath.Abs("./.apidoc.yaml")
 	a.NotError(err).NotEmpty(path)
 
-	a.NotError(Generate("./..", path))
-	cfg, err := Load(path)
+	a.NotError(generateConfig("./..", path))
+	cfg, err := loadConfig(path)
 	a.NotError(err).NotNil(cfg)
 
 	a.Equal(cfg.Version, vars.Version())

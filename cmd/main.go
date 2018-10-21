@@ -20,7 +20,6 @@ import (
 	"github.com/issue9/logs/writers"
 	"github.com/issue9/term/colors"
 
-	"github.com/caixw/apidoc/config"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
@@ -108,7 +107,7 @@ func main() {
 }
 
 func parse(wd string) {
-	cfg, err := config.Load(filepath.Join(wd, vars.ConfigFilename))
+	cfg, err := loadConfig(filepath.Join(wd, vars.ConfigFilename))
 	if err != nil {
 		erro.Println(err)
 		return
@@ -141,7 +140,7 @@ func usage() {
 // 根据 wd 所在目录的内容生成一个配置文件，并写入到 wd 目录下的 .apidoc.yaml 中
 func genConfigFile(wd string) {
 	path := filepath.Join(wd, vars.ConfigFilename)
-	if err := config.Generate(wd, path); err != nil {
+	if err := generateConfig(wd, path); err != nil {
 		erro.Println(err)
 		return
 	}

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package config 配置文件
-package config
+package main
 
 import (
 	"io/ioutil"
@@ -37,8 +36,8 @@ type Config struct {
 	Output *output.Options `yaml:"output"`
 }
 
-// Load 加载 path 所指的文件内容到 *config 实例。
-func Load(path string) (*Config, error) {
+// 加载 path 所指的文件内容到 *config 实例。
+func loadConfig(path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -94,11 +93,11 @@ func (cfg *Config) sanitize() error {
 	return nil
 }
 
-// Generate 根据 wd 所在目录的内容生成一个配置文件，并写入到 path  中
+// 根据 wd 所在目录的内容生成一个配置文件，并写入到 path  中
 //
 // wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
 // path 表示生成的配置文件存放的路径。
-func Generate(wd, path string) error {
+func generateConfig(wd, path string) error {
 	o, err := input.Detect(wd, true)
 	if err != nil {
 		return err
