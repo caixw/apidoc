@@ -15,7 +15,6 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strings"
-	"time"
 
 	"github.com/issue9/logs/writers"
 	"github.com/issue9/term/colors"
@@ -24,9 +23,7 @@ import (
 	"github.com/caixw/apidoc"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/internal/vars"
-	"github.com/caixw/apidoc/docs"
 )
 
 // 日志信息输出
@@ -115,17 +112,8 @@ func parse(wd string) {
 		return
 	}
 
-	start := time.Now()
-	docs, err := docs.Parse(erro, cfg.Inputs...)
-	if err != nil {
+	if err =apidoc.Parse(erro,cfg.Output,cfg.Inputs...);err!=nil{
 		erro.Println(err)
-	}
-
-
-	cfg.Output.Elapsed = time.Now().Sub(start)
-	if err := output.Render(docs, cfg.Output); err != nil {
-		erro.Println(err)
-		return
 	}
 
 	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Path, cfg.Output.Elapsed))
