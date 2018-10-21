@@ -22,7 +22,7 @@ func (err *Error) Error() string {
 
 // Sanitizer 数据验证接口
 type Sanitizer interface {
-	Sanitize() *Error
+	Sanitize() error
 }
 
 // New 声明一个新的错误对象

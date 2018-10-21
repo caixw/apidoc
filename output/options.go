@@ -10,8 +10,8 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/docs"
+	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/internal/locale"
 )
 
@@ -53,7 +53,7 @@ type Options struct {
 }
 
 // Sanitize 对 Options 作一些初始化操作。
-func (o *Options) Sanitize() *config.Error {
+func (o *Options) Sanitize() error {
 	// TODO 改用默认值
 	if o.Path == "" {
 		return config.New("path", locale.Sprintf(locale.ErrRequired))

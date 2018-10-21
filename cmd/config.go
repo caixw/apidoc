@@ -13,11 +13,11 @@ import (
 	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/internal/vars"
+	"github.com/caixw/apidoc/output"
 )
 
 // Config 项目的配置内容
@@ -79,14 +79,18 @@ func (cfg *Config) sanitize() error {
 
 	for i, opt := range cfg.Inputs {
 		if err := opt.Sanitize(); err != nil {
-			index := strconv.Itoa(i)
-			err.Field = "inputs[" + index + "]." + err.Field
+			if cerr, ok := err.(*config.Error); ok {
+				index := strconv.Itoa(i)
+				cerr.Field = "inputs[" + index + "]." + cerr.Field
+			}
 			return err
 		}
 	}
 
 	if err := cfg.Output.Sanitize(); err != nil {
-		err.Field = "outputs." + err.Field
+		if cerr, ok := err.(*config.Error); ok {
+			cerr.Field = "outputs." + cerr.Field
+		}
 		return err
 	}
 

@@ -11,8 +11,8 @@ import (
 
 	"github.com/issue9/utils"
 
-	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/input/encoding"
+	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/internal/locale"
 )
 
@@ -29,7 +29,7 @@ type Options struct {
 }
 
 // Sanitize 检测 Options 变量是否符合要求
-func (opt *Options) Sanitize() *config.Error {
+func (opt *Options) Sanitize() error {
 	if len(opt.Dir) == 0 {
 		return config.New("dir", locale.Sprintf(locale.ErrRequired))
 	}
@@ -128,10 +128,10 @@ func Detect(dir string, recursive bool) (*Options, error) {
 	}
 
 	return &Options{
-		Lang:            lang,
-		Dir:             dir,
-		Exts:            langExts[lang],
-		Recursive:       recursive,
+		Lang:      lang,
+		Dir:       dir,
+		Exts:      langExts[lang],
+		Recursive: recursive,
 	}, nil
 }
 
