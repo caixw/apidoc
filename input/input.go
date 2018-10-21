@@ -92,7 +92,7 @@ func parseFile(channel chan Block, errlog *log.Logger, path string, o *Options) 
 			}
 		}
 
-		ln := l.lineNumber() + o.StartLineNumber // 记录当前的行号，顺便调整起始行号
+		ln := l.lineNumber() + 1 // 记录当前的行号，1 表示从 1 开始记数
 		lines, ok := block.EndFunc(l)
 		if !ok {
 			errlog.Println(locale.Sprintf(locale.ErrNotFoundEndFlag))
