@@ -25,6 +25,16 @@ const (
 	typeRamlJSON    = "raml+json"
 )
 
+var (
+	filenames = map[string]string{
+		typeApidocJSON:  "apidoc.json",
+		typeApidocYAML:  "apidoc.yaml",
+		typeOpenapiJSON: "openapi.json",
+		typeOpenapiYAML: "openapi.yaml",
+		typeRamlJSON:    "raml.json",
+	}
+)
+
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
 	// 文档的保存路径，包含目录和文件名，若为空，则为当前目录下的
@@ -44,6 +54,7 @@ type Options struct {
 
 // Sanitize 对 Options 作一些初始化操作。
 func (o *Options) Sanitize() *conferr.Error {
+	// TODO 改用默认值
 	if o.Path == "" {
 		return conferr.New("path", locale.Sprintf(locale.ErrRequired))
 	}

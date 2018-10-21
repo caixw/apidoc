@@ -7,7 +7,7 @@
 set wd=%~dp0\..
 
 :: 程序所在的目录
-set mainPath=github.com\caixw\apidoc
+set mainPath=github.com\caixw\apidoc\cmd
 
 :: 需要修改变量的名名，若为 main，则指接使用 main，而不是全地址
 set varsPath=%mainPath%\vars

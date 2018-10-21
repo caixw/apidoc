@@ -4,7 +4,7 @@
 # license that can be found in the LICENSE file.
 
 # 指定工作目录
-wd=$(dirname $0)/..
+wd=$(dirname $0)/../cmd
 
 # 指定编译日期
 date=`date -u '+%Y%m%d'`
@@ -18,4 +18,4 @@ path=github.com/caixw/apidoc/vars
 cd ${wd}
 
 echo '开始编译'
-go build -ldflags "-X ${path}.buildDate=${date} -X ${path}.commitHash=${hash}" -v
+go build -o ./apidoc -ldflags "-X ${path}.buildDate=${date} -X ${path}.commitHash=${hash}" -v
