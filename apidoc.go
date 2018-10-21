@@ -8,6 +8,7 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/internal/locale"
+	"github.com/caixw/apidoc/internal/vars"
 )
 
 // InitLocale 初始化语言环境
@@ -15,4 +16,9 @@ import (
 // NOTE: 必须保证在第一时间调用。
 func InitLocale(tag language.Tag) error {
 	return locale.Init(tag)
+}
+
+// Version 获取版本号
+func Version() string {
+	return vars.Version()
 }

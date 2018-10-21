@@ -7,7 +7,7 @@ package config
 
 import (
 	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/vars"
+	"github.com/caixw/apidoc/internal/vars"
 )
 
 // Error 错误接口

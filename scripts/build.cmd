@@ -4,13 +4,13 @@
 
 
 :: 代码的主目录，变量赋值时，等号两边不能有空格。
-set wd=%~dp0\..
+set wd=%~dp0\..\cmd
 
 :: 程序所在的目录
-set mainPath=github.com\caixw\apidoc\cmd
+set mainPath=github.com\caixw\apidoc
 
 :: 需要修改变量的名名，若为 main，则指接使用 main，而不是全地址
-set varsPath=%mainPath%\vars
+set varsPath=%mainPath%\internal\vars
 
 :: 当前日期，格式为 YYYYMMDD
 set builddate=%date:~0,4%%date:~5,2%%date:~8,2% 
