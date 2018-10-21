@@ -91,7 +91,8 @@ func testParse(a *assert.Assertion, lang string) {
 	for b := range channel {
 		eq := bytes.Equal(b.Data, api1) ||
 			bytes.Equal(b.Data, api2) ||
-			bytes.Equal(b.Data, doc)
+			bytes.Equal(b.Data, doc) ||
+			(!bytes.HasPrefix(b.Data, []byte("@api ")) && !bytes.HasPrefix(b.Data, []byte("@apidoc ")))
 		a.True(eq, "lang(%s)：%s,%s,%d,%d", lang, string(b.Data), string(api1), len(b.Data), len(api1))
 	}
 }

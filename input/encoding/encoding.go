@@ -25,6 +25,8 @@ import (
 const DefaultEncoding = "utf8"
 
 // 编码名称与解码器的关联。若解码器为空，表示不需要解码。
+//
+// TODO: 采用 htmlindex 支持大部分的编码方式？
 var encodings = map[string]encoding.Encoding{
 	DefaultEncoding: nil,
 	"utf-8":         nil,
