@@ -10,7 +10,7 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/config/conferr"
+	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/docs"
 	"github.com/caixw/apidoc/locale"
 )
@@ -53,10 +53,10 @@ type Options struct {
 }
 
 // Sanitize 对 Options 作一些初始化操作。
-func (o *Options) Sanitize() *conferr.Error {
+func (o *Options) Sanitize() *config.Error {
 	// TODO 改用默认值
 	if o.Path == "" {
-		return conferr.New("path", locale.Sprintf(locale.ErrRequired))
+		return config.New("path", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if o.Type == "" {
@@ -75,7 +75,7 @@ func (o *Options) Sanitize() *conferr.Error {
 	case typeRamlJSON:
 		// TODO
 	default:
-		return conferr.New("type", locale.Sprintf(locale.ErrInvalidValue))
+		return config.New("type", locale.Sprintf(locale.ErrInvalidValue))
 	}
 
 	return nil

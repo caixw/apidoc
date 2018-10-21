@@ -2,6 +2,6 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package conferr
+package config
 
 var _ error = New("field", "message")

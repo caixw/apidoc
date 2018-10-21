@@ -13,7 +13,7 @@ import (
 	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/config/conferr"
+	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/locale"
 	"github.com/caixw/apidoc/output"
@@ -57,24 +57,24 @@ func loadConfig(path string) (*Config, error) {
 
 func (cfg *Config) sanitize() error {
 	if !version.SemVerValid(cfg.Version) {
-		return conferr.New("version", locale.Sprintf(locale.ErrInvalidFormat))
+		return config.New("version", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
 	if err != nil {
-		return conferr.New("version", err.Error())
+		return config.New("version", err.Error())
 	}
 	if !compatible {
-		return conferr.New("version", locale.Sprintf(locale.VersionInCompatible))
+		return config.New("version", locale.Sprintf(locale.VersionInCompatible))
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return conferr.New("inputs", locale.Sprintf(locale.ErrRequired))
+		return config.New("inputs", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if cfg.Output == nil {
-		return conferr.New("output", locale.Sprintf(locale.ErrRequired))
+		return config.New("output", locale.Sprintf(locale.ErrRequired))
 	}
 
 	for i, opt := range cfg.Inputs {

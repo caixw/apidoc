@@ -9,10 +9,10 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/config/conferr"
+	"github.com/caixw/apidoc/internal/config"
 )
 
-var _ conferr.Sanitizer = &Options{}
+var _ config.Sanitizer = &Options{}
 
 var (
 	_ marshaler = apidocJSONMarshal

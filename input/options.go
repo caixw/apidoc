@@ -11,7 +11,7 @@ import (
 
 	"github.com/issue9/utils"
 
-	"github.com/caixw/apidoc/config/conferr"
+	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/locale"
 )
@@ -29,26 +29,26 @@ type Options struct {
 }
 
 // Sanitize 检测 Options 变量是否符合要求
-func (opt *Options) Sanitize() *conferr.Error {
+func (opt *Options) Sanitize() *config.Error {
 	if len(opt.Dir) == 0 {
-		return conferr.New("dir", locale.Sprintf(locale.ErrRequired))
+		return config.New("dir", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return conferr.New("dir", locale.Sprintf(locale.ErrDirNotExists))
+		return config.New("dir", locale.Sprintf(locale.ErrDirNotExists))
 	}
 
 	if len(opt.Lang) == 0 {
-		return conferr.New("lang", locale.Sprintf(locale.ErrRequired))
+		return config.New("lang", locale.Sprintf(locale.ErrRequired))
 	}
 	blocks, found := langs[opt.Lang]
 	if !found {
-		return conferr.New("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
+		return config.New("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
 	}
 	opt.blocks = blocks
 
 	if !langIsSupported(opt.Lang) {
-		return conferr.New("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
+		return config.New("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
 	}
 
 	if len(opt.Encoding) == 0 {
@@ -74,10 +74,10 @@ func (opt *Options) Sanitize() *conferr.Error {
 
 	paths, err := recursivePath(opt)
 	if err != nil {
-		return conferr.New("dir", err.Error())
+		return config.New("dir", err.Error())
 	}
 	if len(paths) == 0 {
-		return conferr.New("dir", locale.Sprintf(locale.ErrDirIsEmpty))
+		return config.New("dir", locale.Sprintf(locale.ErrDirIsEmpty))
 	}
 	opt.paths = paths
 

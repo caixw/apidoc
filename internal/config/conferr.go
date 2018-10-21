@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package conferr 配置文件的错误处理内容
-package conferr
+// Package config 配置文件的错误处理内容
+package config
 
 import (
 	"github.com/caixw/apidoc/locale"

@@ -11,8 +11,8 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/config/conferr"
 	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/output"
 	"github.com/caixw/apidoc/vars"
 )
@@ -36,25 +36,25 @@ func TestConfig_sanitize(t *testing.T) {
 	conf := &Config{}
 	err := conf.sanitize()
 	a.Error(err)
-	a.Equal(err.(*conferr.Error).Field, "version")
+	a.Equal(err.(*config.Error).Field, "version")
 
 	// 版本号错误
 	conf.Version = "4.0"
 	err = conf.sanitize()
 	a.Error(err)
-	a.Equal(err.(*conferr.Error).Field, "version")
+	a.Equal(err.(*config.Error).Field, "version")
 
 	// 未声明 inputs
 	conf.Version = "4.0.1"
 	err = conf.sanitize()
 	a.Error(err)
-	a.Equal(err.(*conferr.Error).Field, "inputs")
+	a.Equal(err.(*config.Error).Field, "inputs")
 
 	// 未声明 output
 	conf.Inputs = []*input.Options{{}}
 	err = conf.sanitize()
 	a.Error(err)
-	a.Equal(err.(*conferr.Error).Field, "output")
+	a.Equal(err.(*config.Error).Field, "output")
 
 	// 查看错误提示格式是否正确
 	conf.Output = &output.Options{}
@@ -63,5 +63,5 @@ func TestConfig_sanitize(t *testing.T) {
 	})
 	err = conf.sanitize()
 	a.Error(err)
-	a.True(strings.HasPrefix(err.(*conferr.Error).Field, "inputs[0]"))
+	a.True(strings.HasPrefix(err.(*config.Error).Field, "inputs[0]"))
 }
