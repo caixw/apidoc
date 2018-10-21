@@ -34,9 +34,3 @@ const (
 	WarnColor = colors.Cyan
 	ErroColor = colors.Red
 )
-
-// 所有标签的定义
-const (
-	API    = "@api"
-	APIDoc = "@apidoc"
-)

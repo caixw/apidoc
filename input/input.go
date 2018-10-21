@@ -11,7 +11,6 @@
 package input
 
 import (
-	"bytes"
 	"log"
 	"math"
 	"sync"
@@ -19,12 +18,6 @@ import (
 
 	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/locale"
-	"github.com/caixw/apidoc/vars"
-)
-
-var (
-	apiPrefix    = []byte(vars.API)
-	apiDocPrefix = []byte(vars.APIDoc)
 )
 
 // Block 解析出来的注释块
@@ -101,15 +94,10 @@ func parseFile(channel chan Block, errlog *log.Logger, path string, o *Options) 
 
 		block = nil
 
-		bs := mergeLines(lines)
-		if !bytes.HasPrefix(bs, apiPrefix) && !bytes.HasPrefix(bs, apiDocPrefix) {
-			continue
-		}
-
 		channel <- Block{
 			File: path,
 			Line: ln,
-			Data: bs,
+			Data: mergeLines(lines),
 		}
 	} // end for
 }
