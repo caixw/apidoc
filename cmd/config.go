@@ -11,17 +11,26 @@ import (
 	"strconv"
 
 	"github.com/issue9/version"
+	"golang.org/x/text/message"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/input"
-	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/internal/locale"
+	"github.com/caixw/apidoc/internal/options"
 	"github.com/caixw/apidoc/internal/vars"
 	"github.com/caixw/apidoc/output"
 )
 
-// Config 项目的配置内容
-type Config struct {
+// 配置文件名称。
+const configFilename = ".apidoc.yaml"
+
+type configError struct {
+	options.FieldError
+	File string
+}
+
+// 项目的配置内容
+type config struct {
 	// 产生此配置文件的程序版本号。
 	//
 	// 程序会用此来判断程序的兼容性。
@@ -36,14 +45,31 @@ type Config struct {
 	Output *output.Options `yaml:"output"`
 }
 
+func (err *configError) Error() string {
+	msg := locale.Sprintf(err.MessageKey, err.MessageArgs...)
+	return locale.Sprintf(locale.ErrConfig, err.File, err.Field, msg)
+}
+
+func newConfigError(field string, key message.Reference, args ...interface{}) error {
+	err := options.NewFieldError(field, key, args)
+	return newConfigFieldError(err)
+}
+
+func newConfigFieldError(err *options.FieldError) error {
+	return &configError{
+		File:       configFilename,
+		FieldError: *err,
+	}
+}
+
 // 加载 path 所指的文件内容到 *config 实例。
-func loadConfig(path string) (*Config, error) {
+func loadConfig(path string) (*config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg := &Config{}
+	cfg := &config{}
 	if err = yaml.Unmarshal(data, cfg); err != nil {
 		return nil, err
 	}
@@ -55,41 +81,43 @@ func loadConfig(path string) (*Config, error) {
 	return cfg, nil
 }
 
-func (cfg *Config) sanitize() error {
+func (cfg *config) sanitize() error {
 	if !version.SemVerValid(cfg.Version) {
-		return config.New("version", locale.Sprintf(locale.ErrInvalidFormat))
+		return newConfigError("version", locale.Sprintf(locale.ErrInvalidFormat))
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
 	if err != nil {
-		return config.New("version", err.Error())
+		return newConfigError("version", err.Error())
 	}
 	if !compatible {
-		return config.New("version", locale.Sprintf(locale.VersionInCompatible))
+		return newConfigError("version", locale.Sprintf(locale.VersionInCompatible))
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return config.New("inputs", locale.Sprintf(locale.ErrRequired))
+		return newConfigError("inputs", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if cfg.Output == nil {
-		return config.New("output", locale.Sprintf(locale.ErrRequired))
+		return newConfigError("output", locale.Sprintf(locale.ErrRequired))
 	}
 
 	for i, opt := range cfg.Inputs {
 		if err := opt.Sanitize(); err != nil {
-			if cerr, ok := err.(*config.Error); ok {
+			if cerr, ok := err.(*options.FieldError); ok {
 				index := strconv.Itoa(i)
 				cerr.Field = "inputs[" + index + "]." + cerr.Field
+				err = newConfigFieldError(cerr)
 			}
 			return err
 		}
 	}
 
 	if err := cfg.Output.Sanitize(); err != nil {
-		if cerr, ok := err.(*config.Error); ok {
+		if cerr, ok := err.(*options.FieldError); ok {
 			cerr.Field = "outputs." + cerr.Field
+			err = newConfigFieldError(cerr)
 		}
 		return err
 	}
@@ -107,7 +135,7 @@ func generateConfig(wd, path string) error {
 		return err
 	}
 
-	cfg := &Config{
+	cfg := &config{
 		Version: vars.Version(),
 		Inputs:  []*input.Options{o},
 		Output: &output.Options{

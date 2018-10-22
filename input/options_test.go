@@ -10,10 +10,10 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/internal/config"
+	"github.com/caixw/apidoc/internal/options"
 )
 
-var _ config.Sanitizer = &Options{}
+var _ options.Sanitizer = &Options{}
 
 func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)

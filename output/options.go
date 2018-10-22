@@ -11,8 +11,8 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/docs"
-	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/internal/locale"
+	"github.com/caixw/apidoc/internal/options"
 )
 
 type marshaler func(v *docs.Docs) ([]byte, error)
@@ -56,7 +56,7 @@ type Options struct {
 func (o *Options) Sanitize() error {
 	// TODO 改用默认值
 	if o.Path == "" {
-		return config.New("path", locale.Sprintf(locale.ErrRequired))
+		return options.NewFieldError("path", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if o.Type == "" {
@@ -75,7 +75,7 @@ func (o *Options) Sanitize() error {
 	case typeRamlJSON:
 		// TODO
 	default:
-		return config.New("type", locale.Sprintf(locale.ErrInvalidValue))
+		return options.NewFieldError("type", locale.Sprintf(locale.ErrInvalidValue))
 	}
 
 	return nil

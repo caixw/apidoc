@@ -106,7 +106,7 @@ func main() {
 }
 
 func parse(wd string) {
-	cfg, err := loadConfig(filepath.Join(wd, vars.ConfigFilename))
+	cfg, err := loadConfig(filepath.Join(wd, configFilename))
 	if err != nil {
 		erro.Println(err)
 		return
@@ -129,7 +129,7 @@ func usage() {
 
 // 根据 wd 所在目录的内容生成一个配置文件，并写入到 wd 目录下的 .apidoc.yaml 中
 func genConfigFile(wd string) {
-	path := filepath.Join(wd, vars.ConfigFilename)
+	path := filepath.Join(wd, configFilename)
 	if err := generateConfig(wd, path); err != nil {
 		erro.Println(err)
 		return

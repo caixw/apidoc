@@ -5,8 +5,9 @@
 package lexer
 
 import (
-	"github.com/caixw/apidoc/internal/locale"
 	"golang.org/x/text/message"
+
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 // 语法错误类型

@@ -13,8 +13,8 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
 
-	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/internal/locale"
+	"github.com/caixw/apidoc/internal/options"
 )
 
 // Options 指定输入内容的相关信息。
@@ -33,24 +33,24 @@ type Options struct {
 // Sanitize 检测 Options 变量是否符合要求
 func (opt *Options) Sanitize() error {
 	if len(opt.Dir) == 0 {
-		return config.New("dir", locale.Sprintf(locale.ErrRequired))
+		return options.NewFieldError("dir", locale.Sprintf(locale.ErrRequired))
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return config.New("dir", locale.Sprintf(locale.ErrDirNotExists))
+		return options.NewFieldError("dir", locale.Sprintf(locale.ErrDirNotExists))
 	}
 
 	if len(opt.Lang) == 0 {
-		return config.New("lang", locale.Sprintf(locale.ErrRequired))
+		return options.NewFieldError("lang", locale.Sprintf(locale.ErrRequired))
 	}
 	blocks, found := langs[opt.Lang]
 	if !found {
-		return config.New("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
+		return options.NewFieldError("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
 	}
 	opt.blocks = blocks
 
 	if !langIsSupported(opt.Lang) {
-		return config.New("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
+		return options.NewFieldError("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
 	}
 
 	if len(opt.Exts) > 0 {
@@ -73,10 +73,10 @@ func (opt *Options) Sanitize() error {
 	// 生成 paths
 	paths, err := recursivePath(opt)
 	if err != nil {
-		return config.New("dir", err.Error())
+		return options.NewFieldError("dir", err.Error())
 	}
 	if len(paths) == 0 {
-		return config.New("dir", locale.Sprintf(locale.ErrDirIsEmpty))
+		return options.NewFieldError("dir", locale.Sprintf(locale.ErrDirIsEmpty))
 	}
 	opt.paths = paths
 

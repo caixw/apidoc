@@ -18,9 +18,6 @@ const (
 	// 官网
 	OfficialURL = "http://apidoc.tools"
 
-	// 配置文件名称。
-	ConfigFilename = ".apidoc.yaml"
-
 	// 两个性能文件的名称
 	PprofCPU = "cpu"
 	PprofMem = "mem"

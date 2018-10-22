@@ -5,7 +5,6 @@
 package vars
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -19,5 +18,4 @@ func TestConsts(t *testing.T) {
 	a.True(len(Name) > 0)
 	a.True(is.URL(RepoURL))
 	a.True(is.URL(OfficialURL))
-	a.True(len(ConfigFilename) > 0).True(strings.IndexAny(ConfigFilename, "/\\") < 0)
 }

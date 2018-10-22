@@ -54,6 +54,7 @@ const (
 	ErrInvalidOpenapi        = "openapi 内容错误：字段：%s；错误内容：%s"
 	ErrSyntax                = "在[%s:%d]出现语法错误[%s]"
 	ErrConfig                = "配置文件[%s]中配置项[%s]错误[%s]"
+	ErrOptions               = "配置项[%s]错误[%s]"
 	ErrApidocExists          = "相同组名的 @apidoc 标签已经存在"
 	ErrInvalidMethod         = "无效的请求方法"
 	ErrMethodExists          = "该请求方法已经存在"

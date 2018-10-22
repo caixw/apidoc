@@ -50,6 +50,7 @@ func init() {
 		ErrInvalidOpenapi:        "openapi 內容錯誤：字段：%s；錯誤內容：%s",
 		ErrSyntax:                "在[%s:%d]出現語法錯誤[%s]",
 		ErrConfig:                "配置文件[%s]中配置項[%s]錯誤[%s]",
+		ErrOptions:               "配置項[%s]錯誤[%s]",
 		ErrApidocExists:          "相同組名的 @apidoc 標簽已經存在",
 		ErrInvalidMethod:         "無效的請求方法",
 		ErrMethodExists:          "該請求方法已經存在",
