@@ -10,8 +10,9 @@ import (
 	"strings"
 
 	"github.com/issue9/utils"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/ianaindex"
 
-	"github.com/caixw/apidoc/input/encoding"
 	"github.com/caixw/apidoc/internal/config"
 	"github.com/caixw/apidoc/internal/locale"
 )
@@ -22,10 +23,11 @@ type Options struct {
 	Dir       string   `yaml:"dir"`                // 源代码目录
 	Exts      []string `yaml:"exts,omitempty"`     // 需要扫描的文件扩展名，若未指定，则使用默认值
 	Recursive bool     `yaml:"recursive"`          // 是否查找 Dir 的子目录
-	Encoding  string   `yaml:"encoding,omitempty"` // 文件的编码
+	Encoding  string   `yaml:"encoding,omitempty"` // 文件的编码，为空表示 utf-8
 
-	blocks []blocker
-	paths  []string
+	blocks   []blocker         // 根据 Lang 生成
+	paths    []string          // 根据 Dir 和 Recursive 生成
+	encoding encoding.Encoding // 根据 Encoding 生成
 }
 
 // Sanitize 检测 Options 变量是否符合要求
@@ -51,10 +53,6 @@ func (opt *Options) Sanitize() error {
 		return config.New("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
 	}
 
-	if len(opt.Encoding) == 0 {
-		opt.Encoding = encoding.DefaultEncoding
-	}
-
 	if len(opt.Exts) > 0 {
 		exts := make([]string, 0, len(opt.Exts))
 		for _, ext := range opt.Exts {
@@ -72,6 +70,7 @@ func (opt *Options) Sanitize() error {
 		opt.Exts = langExts[opt.Lang]
 	}
 
+	// 生成 paths
 	paths, err := recursivePath(opt)
 	if err != nil {
 		return config.New("dir", err.Error())
@@ -80,6 +79,14 @@ func (opt *Options) Sanitize() error {
 		return config.New("dir", locale.Sprintf(locale.ErrDirIsEmpty))
 	}
 	opt.paths = paths
+
+	// 生成 encoding
+	if opt.Encoding != "" {
+		opt.encoding, err = ianaindex.IANA.Encoding(opt.Encoding)
+		if err != nil {
+			return locale.Errorf(locale.ErrUnsupportedEncoding, opt.Encoding)
+		}
+	}
 
 	return nil
 }

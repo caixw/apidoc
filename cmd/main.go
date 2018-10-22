@@ -67,7 +67,7 @@ func main() {
 		locale.Printf(locale.FlagSupportedLanguages, input.Languages())
 		return
 	case *encodings:
-		locale.Printf(locale.FlagSupportedEncodings, input.Encodings())
+		locale.Printf(locale.FlagSupportedEncodings)
 		return
 	case *g:
 		genConfigFile(*wd)

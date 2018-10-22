@@ -11,12 +11,16 @@
 package input
 
 import (
+	"bytes"
+	"io/ioutil"
 	"log"
 	"math"
 	"sync"
 	"unicode"
 
-	"github.com/caixw/apidoc/input/encoding"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/transform"
+
 	"github.com/caixw/apidoc/internal/locale"
 )
 
@@ -62,7 +66,7 @@ func parse(data chan Block, errlog *log.Logger, wg *sync.WaitGroup, o *Options) 
 //
 // NOTE: parseFile 内部不能有 go 协程处理代码。
 func parseFile(channel chan Block, errlog *log.Logger, path string, o *Options) {
-	data, err := encoding.Transform(path, o.Encoding)
+	data, err := readFile(path, o.encoding)
 	if err != nil {
 		if errlog != nil {
 			errlog.Println(err)
@@ -102,9 +106,19 @@ func parseFile(channel chan Block, errlog *log.Logger, path string, o *Options) 
 	} // end for
 }
 
-// Encodings 返回支持的编码方式
-func Encodings() []string {
-	return encoding.Encodings()
+// 以指定的编码方式读取内容。
+func readFile(path string, encoding encoding.Encoding) ([]byte, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if encoding == nil {
+		return data, nil
+	}
+
+	reader := transform.NewReader(bytes.NewReader(data), encoding.NewDecoder())
+	return ioutil.ReadAll(reader)
 }
 
 // 合并多行为一个 []byte 结构，并去掉前导空格

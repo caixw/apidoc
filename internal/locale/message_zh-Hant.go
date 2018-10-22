@@ -25,7 +25,7 @@ func init() {
 		FlagVersionBuildWith:    "%v %v build with %v\n",
 		FlagVersionCommitHash:   "commit hash %v\n",
 		FlagSupportedLanguages:  "目前支持以下語言 %v\n",
-		FlagSupportedEncodings:  "目前支持以下編碼 %v\n",
+		FlagSupportedEncodings:  "目前支持以下編碼 https://www.iana.org/assignments/character-sets/character-sets.xhtml\n",
 		FlagConfigWritedSuccess: "配置內容成功寫入 %v",
 		FlagPprofWritedSuccess:  "pprof 的相關數據已經寫入到 %v",
 		FlagInvalidPprrof:       "無效的 pprof 參數",

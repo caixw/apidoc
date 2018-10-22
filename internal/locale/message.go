@@ -29,7 +29,7 @@ const (
 	FlagVersionBuildWith    = "%v %v build with %v\n"
 	FlagVersionCommitHash   = "commit hash %v\n"
 	FlagSupportedLanguages  = "目前支持以下语言 %v\n"
-	FlagSupportedEncodings  = "目前支持以下编码 %v\n"
+	FlagSupportedEncodings  = "目前支持以下编码 https://www.iana.org/assignments/character-sets/character-sets.xhtml\n"
 	FlagConfigWritedSuccess = "配置内容成功写入 %v"
 	FlagPprofWritedSuccess  = "pprof 的相关数据已经写入到 %v"
 	FlagInvalidPprrof       = "无效的 pprof 参数"
