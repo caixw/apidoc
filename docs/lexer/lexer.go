@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// Package lexer 简单的词法分解工具
 package lexer
 
 import (

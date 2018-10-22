@@ -8,12 +8,8 @@ package main
 import (
 	"bytes"
 	"flag"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"runtime"
-	"runtime/pprof"
-	"strings"
 
 	"golang.org/x/text/language"
 
@@ -21,12 +17,6 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/vars"
-)
-
-// 两个性能文件的名称
-const (
-	pprofCPU = "cpu"
-	pprofMem = "mem"
 )
 
 // 确保第一时间初始化本地化信息
@@ -46,7 +36,6 @@ func main() {
 	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
 	languages := flag.Bool("languages", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	encodings := flag.Bool("encodings", false, locale.Sprintf(locale.FlagEncodingsUsage))
-	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage, pprofCPU, pprofMem))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -66,34 +55,6 @@ func main() {
 	case *g:
 		genConfigFile(*wd)
 		return
-	}
-
-	if len(*pprofType) > 0 {
-		buf := new(bytes.Buffer)
-		defer func() { // 在程序结束时，将内容写入到文件
-			profile := filepath.Join(*wd, *pprofType+".prof")
-			if err := ioutil.WriteFile(profile, buf.Bytes(), os.ModePerm); err != nil {
-				erro.Println(err)
-			}
-		}()
-
-		switch strings.ToLower(*pprofType) {
-		case pprofMem:
-			defer func() {
-				if err := pprof.Lookup("heap").WriteTo(buf, 1); err != nil {
-					erro.Println(err)
-				}
-			}()
-		case pprofCPU:
-			if err := pprof.StartCPUProfile(buf); err != nil {
-				erro.Println(err)
-			}
-
-			defer pprof.StopCPUProfile()
-		default:
-			erro.Println(locale.Sprintf(locale.FlagInvalidPprrof))
-			return
-		}
 	}
 
 	parse(*wd)
