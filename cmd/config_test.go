@@ -38,13 +38,13 @@ func TestConfig_sanitize(t *testing.T) {
 	a.Equal(err.(*configError).Field, "version")
 
 	// 版本号错误
-	conf.Version = "4.0"
+	conf.Version = "5.0"
 	err = conf.sanitize()
 	a.Error(err)
 	a.Equal(err.(*configError).Field, "version")
 
 	// 未声明 inputs
-	conf.Version = "4.0.1"
+	conf.Version = "5.0.1"
 	err = conf.sanitize()
 	a.Error(err)
 	a.Equal(err.(*configError).Field, "inputs")

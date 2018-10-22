@@ -14,5 +14,5 @@ const (
 	RepoURL = "https://github.com/caixw/apidoc"
 
 	// 官网
-	OfficialURL = "http://apidoc.tools"
+	OfficialURL = "https://apidoc.tools"
 )
