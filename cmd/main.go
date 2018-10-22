@@ -9,15 +9,12 @@ import (
 	"bytes"
 	"flag"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"runtime/pprof"
 	"strings"
 
-	"github.com/issue9/logs/writers"
-	"github.com/issue9/term/colors"
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc"
@@ -26,11 +23,10 @@ import (
 	"github.com/caixw/apidoc/internal/vars"
 )
 
-// 日志信息输出
-var (
-	info = newLog(os.Stdout, vars.InfoColor, "[INFO] ")
-	warn = newLog(os.Stderr, vars.WarnColor, "[WARN] ")
-	erro = newLog(os.Stderr, vars.ErroColor, "[ERRO] ")
+// 两个性能文件的名称
+const (
+	pprofCPU = "cpu"
+	pprofMem = "mem"
 )
 
 // 确保第一时间初始化本地化信息
@@ -40,9 +36,7 @@ func init() {
 		return
 	}
 
-	info.SetPrefix(locale.Sprintf(locale.InfoPrefix))
-	warn.SetPrefix(locale.Sprintf(locale.WarnPrefix))
-	erro.SetPrefix(locale.Sprintf(locale.ErrorPrefix))
+	initLogsLocale()
 }
 
 func main() {
@@ -52,7 +46,7 @@ func main() {
 	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
 	languages := flag.Bool("languages", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	encodings := flag.Bool("encodings", false, locale.Sprintf(locale.FlagEncodingsUsage))
-	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage, vars.PprofCPU, vars.PprofMem))
+	pprofType := flag.String("pprof", "", locale.Sprintf(locale.FlagPprofUsage, pprofCPU, pprofMem))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -84,13 +78,13 @@ func main() {
 		}()
 
 		switch strings.ToLower(*pprofType) {
-		case vars.PprofMem:
+		case pprofMem:
 			defer func() {
 				if err := pprof.Lookup("heap").WriteTo(buf, 1); err != nil {
 					erro.Println(err)
 				}
 			}()
-		case vars.PprofCPU:
+		case pprofCPU:
 			if err := pprof.StartCPUProfile(buf); err != nil {
 				erro.Println(err)
 			}
@@ -112,7 +106,7 @@ func parse(wd string) {
 		return
 	}
 
-	if err =apidoc.Parse(erro,cfg.Output,cfg.Inputs...);err!=nil{
+	if err = apidoc.Parse(erro, cfg.Output, cfg.Inputs...); err != nil {
 		erro.Println(err)
 	}
 
@@ -141,8 +135,4 @@ func genConfigFile(wd string) {
 func printVersion() {
 	locale.Printf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version())
 	locale.Printf(locale.FlagVersionCommitHash, vars.CommitHash())
-}
-
-func newLog(out *os.File, color colors.Color, prefix string) *log.Logger {
-	return log.New(writers.NewConsole(out, color, colors.Default), prefix, 0)
 }
