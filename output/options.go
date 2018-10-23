@@ -13,25 +13,27 @@ import (
 	"github.com/caixw/apidoc/docs"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/options"
+	"github.com/caixw/apidoc/output/openapi"
 )
 
 type marshaler func(v *docs.Docs) ([]byte, error)
 
+// 文档类型定义
 const (
-	typeApidocJSON  = "apidoc+json"
-	typeApidocYAML  = "apidoc+yaml"
-	typeOpenapiJSON = "openapi+json"
-	typeOpenapiYAML = "openapi+yaml"
-	typeRamlJSON    = "raml+json"
+	ApidocJSON  = "apidoc+json"
+	ApidocYAML  = "apidoc+yaml"
+	OpenapiJSON = "openapi+json"
+	OpenapiYAML = "openapi+yaml"
+	RamlJSON    = "raml+json"
 )
 
 var (
 	filenames = map[string]string{
-		typeApidocJSON:  "apidoc.json",
-		typeApidocYAML:  "apidoc.yaml",
-		typeOpenapiJSON: "openapi.json",
-		typeOpenapiYAML: "openapi.yaml",
-		typeRamlJSON:    "raml.json",
+		ApidocJSON:  "apidoc.json",
+		ApidocYAML:  "apidoc.yaml",
+		OpenapiJSON: "openapi.json",
+		OpenapiYAML: "openapi.yaml",
+		RamlJSON:    "raml.json",
 	}
 )
 
@@ -60,19 +62,19 @@ func (o *Options) Sanitize() error {
 	}
 
 	if o.Type == "" {
-		o.Type = typeApidocJSON
+		o.Type = ApidocJSON
 	}
 
 	switch o.Type {
-	case typeApidocJSON:
+	case ApidocJSON:
 		o.marshal = apidocJSONMarshal
-	case typeApidocYAML:
+	case ApidocYAML:
 		o.marshal = apidocYAMLMarshal
-	case typeOpenapiJSON:
-		// TODO
-	case typeOpenapiYAML:
-		// TODO
-	case typeRamlJSON:
+	case OpenapiJSON:
+		o.marshal = openapi.JSON
+	case OpenapiYAML:
+		o.marshal = openapi.YAML
+	case RamlJSON:
 		// TODO
 	default:
 		return options.NewFieldError("type", locale.Sprintf(locale.ErrInvalidValue))

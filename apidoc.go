@@ -35,7 +35,7 @@ func Version() string {
 
 // Do 分析输入信息，并最终输出到指定的文件。
 //
-// erro 用于输出语法日志错误内容；
+// erro 用于输出语法错误内容；
 // output 输出设置项；
 // input 输入设置项。
 func Do(erro *log.Logger, output *o.Options, input ...*i.Options) error {
@@ -56,7 +56,7 @@ func Do(erro *log.Logger, output *o.Options, input ...*i.Options) error {
 
 // Parse 分析输入信息，并获取 docs.Docs 实例。
 //
-// erro 用于输出语法日志错误内容；
+// erro 用于输出语法错误内容；
 // input 输入设置项。
 func Parse(erro *log.Logger, input ...*i.Options) (*docs.Docs, error) {
 	if len(input) == 0 {

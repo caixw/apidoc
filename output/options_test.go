@@ -28,7 +28,7 @@ func TestOptions_Sanitize(t *testing.T) {
 	a.NotError(o.Sanitize())
 	a.Equal(o.marshal, marshaler(apidocJSONMarshal))
 
-	o.Type = typeApidocYAML
+	o.Type = ApidocYAML
 	a.NotError(o.Sanitize())
 	a.Equal(o.marshal, marshaler(apidocYAMLMarshal))
 

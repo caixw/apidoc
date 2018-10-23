@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/apidoc/internal/locale"
 )
 
-// Parse 分析 path 指向的文件，并返回数据
+// Parse 分析 data 中的内容，并以行号作为键名，代码块作为键值返回
 func Parse(errlog *log.Logger, data []byte, blocks []Blocker) map[int][]byte {
 	l := &lexer{data: data, blocks: blocks}
 	var block Blocker
