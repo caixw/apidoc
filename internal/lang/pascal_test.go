@@ -18,14 +18,14 @@ func TestPascalStringBlock(t *testing.T) {
 	b := newPascalStringBlock('"')
 	a.NotNil(b)
 
-	l := &Lexer{data: []byte(`"123""123"`)}
+	l := &lexer{data: []byte(`"123""123"`)}
 	a.True(b.BeginFunc(l))
 	ret, ok := b.EndFunc(l)
 	a.True(ok).
 		Equal(len(ret), 0). // 不返回内容
-		True(l.AtEOF())     // 到达末尾
+		True(l.atEOF())     // 到达末尾
 
-	l = &Lexer{data: []byte(`"123"""123"`)}
+	l = &lexer{data: []byte(`"123"""123"`)}
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).

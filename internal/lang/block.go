@@ -24,14 +24,14 @@ const (
 // 通过 EndFunc 查找结束位置，并返回所有的块内容。
 type Blocker interface {
 	// 确定 l 的当前位置是否匹配 blocker 的起始位置。
-	BeginFunc(l *Lexer) bool
+	BeginFunc(l *lexer) bool
 
 	// 确定 l 的当前位置是否匹配 blocker 的结束位置，若匹配则返回中间的字符串。
 	// 返回内容以行为单位进行分割。
 	//
 	// 如果不使用返回的内容，可以返回空值。
 	// 比如字符串，只需要返回 true，以确保找到了结束位置，但是内容可以直接返回 nil。
-	EndFunc(l *Lexer) ([][]byte, bool)
+	EndFunc(l *lexer) ([][]byte, bool)
 }
 
 // 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
@@ -45,12 +45,12 @@ type block struct {
 }
 
 // BeginFunc 实现 Blocker.BeginFunc
-func (b *block) BeginFunc(l *Lexer) bool {
-	return l.Match(b.Begin)
+func (b *block) BeginFunc(l *lexer) bool {
+	return l.match(b.Begin)
 }
 
 // EndFunc 实现 Blocker.EndFunc
-func (b *block) EndFunc(l *Lexer) ([][]byte, bool) {
+func (b *block) EndFunc(l *lexer) ([][]byte, bool) {
 	switch b.Type {
 	case blockTypeString:
 		return b.endString(l)
@@ -68,14 +68,14 @@ func (b *block) EndFunc(l *Lexer) ([][]byte, bool) {
 // 正常找到结束符的返回 true，否则返回 false。
 //
 // 第一个返回参数无用，仅是为了统一函数签名
-func (b *block) endString(l *Lexer) ([][]byte, bool) {
+func (b *block) endString(l *lexer) ([][]byte, bool) {
 	for {
 		switch {
-		case l.AtEOF():
+		case l.atEOF():
 			return nil, false
-		case (len(b.Escape) > 0) && l.Match(b.Escape):
+		case (len(b.Escape) > 0) && l.match(b.Escape):
 			l.pos++
-		case l.Match(b.End):
+		case l.match(b.End):
 			return nil, true
 		default:
 			l.pos++
@@ -84,7 +84,7 @@ func (b *block) endString(l *Lexer) ([][]byte, bool) {
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-func (b *block) endSComments(l *Lexer) ([][]byte, bool) {
+func (b *block) endSComments(l *lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 
 LOOP:
@@ -94,7 +94,7 @@ LOOP:
 			r := l.data[l.pos]
 			l.pos++
 
-			if l.AtEOF() {
+			if l.atEOF() {
 				lines = append(lines, l.data[start:l.pos])
 				break LOOP
 			}
@@ -105,13 +105,13 @@ LOOP:
 			}
 		}
 
-		l.SkipSpace()
-		if !l.Match(b.Begin) { // 不是接连着的注释块了，结束当前的匹配
+		l.skipSpace()
+		if !l.match(b.Begin) { // 不是接连着的注释块了，结束当前的匹配
 			break
 		}
 	}
 
-	if len(lines) > 0 { // 最后一个换行符返还给 Lexer
+	if len(lines) > 0 { // 最后一个换行符返还给 lexer
 		l.pos--
 	}
 
@@ -120,15 +120,15 @@ LOOP:
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *block) endMComments(l *Lexer) ([][]byte, bool) {
+func (b *block) endMComments(l *lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 	start := l.pos
 
 	for {
 		switch {
-		case l.AtEOF(): // 没有找到结束符号，直接到达文件末尾
+		case l.atEOF(): // 没有找到结束符号，直接到达文件末尾
 			return nil, false
-		case l.Match(b.End):
+		case l.match(b.End):
 			if pos := l.pos - len(b.End); pos > start {
 				lines = append(lines, filterSymbols(l.data[start:pos], b.Begin))
 			}

@@ -18,23 +18,23 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	b := newSwiftNestMCommentBlock("/*", "*/")
 	a.NotNil(b)
 
-	l := &Lexer{data: []byte(`/* *123*123**/`)}
+	l := &lexer{data: []byte(`/* *123*123**/`)}
 	a.True(b.BeginFunc(l))
 	ret, ok := b.EndFunc(l)
 	a.True(ok).
 		Equal(ret, [][]byte{[]byte(" *123*123*")}). // 返回内容
-		True(l.AtEOF())                             // 到达末尾
+		True(l.atEOF())                             // 到达末尾
 
 	// 嵌套注释
-	l = &Lexer{data: []byte(`/*0/*1/*2*/*/*/`)}
+	l = &lexer{data: []byte(`/*0/*1/*2*/*/*/`)}
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
 		Equal(ret, [][]byte{[]byte("0/*1/*2*/*/")}). // 返回内容
-		True(l.AtEOF())                              // 到达末尾
+		True(l.atEOF())                              // 到达末尾
 
 		// 多出 end 匹配项
-	l = &Lexer{data: []byte(`/*0/*1/*2*/*/*/*/`)}
+	l = &lexer{data: []byte(`/*0/*1/*2*/*/*/*/`)}
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
@@ -42,10 +42,10 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 		Equal(string(l.data[l.pos:]), "*/")
 
 	// 缺少 end 匹配项
-	l = &Lexer{data: []byte(`/*0/*1/*2*/*/`)}
+	l = &lexer{data: []byte(`/*0/*1/*2*/*/`)}
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.False(ok).
 		Equal(len(ret), 0).
-		True(l.AtEOF()) // 到达末尾
+		True(l.atEOF()) // 到达末尾
 }

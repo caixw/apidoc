@@ -14,18 +14,18 @@ import (
 
 // Parse 分析 path 指向的文件，并返回数据
 func Parse(errlog *log.Logger, data []byte, blocks []Blocker) map[int][]byte {
-	l := &Lexer{data: data, Blocks: blocks}
+	l := &lexer{data: data, blocks: blocks}
 	var block Blocker
 
 	ret := map[int][]byte{}
 
 	for {
-		if l.AtEOF() {
+		if l.atEOF() {
 			return ret
 		}
 
 		if block == nil {
-			block = l.Block()
+			block = l.block()
 			if block == nil { // 没有匹配的 block 了
 				return ret
 			}
