@@ -31,6 +31,8 @@ type Blocker interface {
 	//
 	// 如果不使用返回的内容，可以返回空值。
 	// 比如字符串，只需要返回 true，以确保找到了结束位置，但是内容可以直接返回 nil。
+	//
+	// 如果在到达文件末尾都没有找到结束符，则应该返回 nil, false
 	EndFunc(l *lexer) ([][]byte, bool)
 }
 

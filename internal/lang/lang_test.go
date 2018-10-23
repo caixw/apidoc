@@ -24,6 +24,9 @@ func TestLangs(t *testing.T) {
 		return true
 	}
 
+	// Langs() 返回的应该和 langs 有相同的长度
+	a.Equal(len(Langs()), len(langs))
+
 	for index, lang := range langs {
 		a.NotEmpty(lang.Name, "语言名称不能为空，在 %d", index)
 		a.True(isLower(lang.Name), "名称非小写 %s", lang.Name)
@@ -48,4 +51,35 @@ func TestLangs(t *testing.T) {
 				True(isLower(ext), "非小写的扩展名 %s 在 %s", ext, lang.Name)
 		}
 	}
+}
+
+func TestGet(t *testing.T) {
+	a := assert.New(t)
+
+	l := Get("go")
+	a.NotNil(l).
+		Equal(l.Name, "go").
+		Equal(l.Exts, []string{".go"})
+
+	// 不比较大小写
+	l = Get("Go")
+	a.Nil(l)
+}
+
+func TestGetByExt(t *testing.T) {
+	a := assert.New(t)
+
+	l := GetByExt(".go")
+	a.NotNil(l).Equal(l.Name, "go")
+
+	l = GetByExt(".cxx")
+	a.NotNil(l).Equal(l.Name, "c++")
+
+	// 不存在，不以 . 开头
+	l = GetByExt("go")
+	a.Nil(l)
+
+	// 不存在
+	l = GetByExt(".not-exists")
+	a.Nil(l)
 }

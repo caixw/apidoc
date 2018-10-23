@@ -18,7 +18,8 @@ import (
 // 保证有个初始化的值，部分包的测试功能依赖此变量
 var localePrinter = message.NewPrinter(language.MustParse("zh-Hans"))
 
-// Init 初始化 locale 包并。
+// Init 初始化 locale 包。
+//
 // 无论是否返回错误信息，都会初始一种语言作为其交互语言。
 func Init(tag language.Tag) (err error) {
 	if err = initLocales(); err != nil {
