@@ -22,6 +22,8 @@ import (
 // InitLocale 初始化语言环境
 //
 // NOTE: 必须保证在第一时间调用。
+//
+// 如果 tag 的值为 language.Und，则表示采用系统语言
 func InitLocale(tag language.Tag) error {
 	return locale.Init(tag)
 }

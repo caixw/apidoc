@@ -60,9 +60,9 @@ func parse(data chan Block, errlog *log.Logger, wg *sync.WaitGroup, o *Options) 
 	}
 }
 
-// 分析 path 指向的文件，并将内容写入到 docs 中。
+// 分析 path 指向的文件。
 //
-// NOTE: parseFile 内部不能有 go 协程处理代码。
+// NOTE: parseFile 内部不能有协程处理代码。
 func parseFile(channel chan Block, errlog *log.Logger, path string, o *Options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
