@@ -13,7 +13,7 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/docs"
-	"github.com/caixw/apidoc/input"
+	i "github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/vars"
 	o "github.com/caixw/apidoc/output"
@@ -33,36 +33,46 @@ func Version() string {
 	return vars.Version()
 }
 
-// Parse 分析代码并输出
+// Do 分析输入信息，并最终输出到指定的文件。
 //
 // erro 用于输出语法日志错误内容；
 // output 输出设置项；
 // input 输入设置项。
-func Parse(erro *log.Logger, output *o.Options, input ...*input.Options) error {
-	if len(input) == 0 {
-		return errors.New("参数 input 不能为空")
-	}
-
+func Do(erro *log.Logger, output *o.Options, input ...*i.Options) error {
 	if output == nil {
 		return errors.New("参数 output 不能为空")
 	}
-
-	for _, opt := range input {
-		if err := opt.Sanitize(); err != nil {
-			return err
-		}
-	}
-
 	if err := output.Sanitize(); err != nil {
 		return err
 	}
 
-	start := time.Now()
-	docs, err := docs.Parse(erro, input...)
+	docs, err := Parse(erro, input...)
 	if err != nil {
 		return err
 	}
 
-	output.Elapsed = time.Now().Sub(start)
 	return o.Render(docs, output)
+}
+
+// Parse 分析输入信息，并获取 docs.Docs 实例。
+//
+// erro 用于输出语法日志错误内容；
+// input 输入设置项。
+func Parse(erro *log.Logger, input ...*i.Options) (*docs.Docs, error) {
+	if len(input) == 0 {
+		return nil, errors.New("参数 input 不能为空")
+	}
+
+	for _, opt := range input {
+		if err := opt.Sanitize(); err != nil {
+			return nil, err
+		}
+	}
+
+	start := time.Now()
+	block := i.Parse(erro, input...)
+	docs := docs.Parse(erro, block)
+	docs.Elapsed = time.Now().Sub(start)
+
+	return docs, nil
 }

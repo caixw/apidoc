@@ -67,7 +67,7 @@ func parse(wd string) {
 		return
 	}
 
-	if err = apidoc.Parse(erro, cfg.Output, cfg.Inputs...); err != nil {
+	if err = apidoc.Do(erro, cfg.Output, cfg.Inputs...); err != nil {
 		erro.Println(err)
 	}
 

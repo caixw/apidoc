@@ -9,6 +9,7 @@ import (
 	"log"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/caixw/apidoc/docs/lexer"
 	"github.com/caixw/apidoc/input"
@@ -17,23 +18,22 @@ import (
 
 // Docs 文档集合
 type Docs struct {
-	Version string `yaml:"version" json:"version"` // 当前的程序版本
+	Version string        `yaml:"version" json:"version"` // 当前的程序版本
+	Elapsed time.Duration `yaml:"elapsed" json:"elapsed"` // 文档解析用时
 
 	Docs   []*Doc `yaml:"docs" json:"docs"`
 	locker sync.Mutex
 }
 
-// Parse 获取文档内容
-func Parse(errlog *log.Logger, o ...*input.Options) (*Docs, error) {
+// Parse 分析从 block 中获取的代码块。并填充到 Docs 中
+func Parse(errlog *log.Logger, block chan input.Block) *Docs {
 	docs := &Docs{
 		Docs:    make([]*Doc, 0, 10),
 		Version: vars.Version(),
 	}
 
-	c := input.Parse(errlog, o...)
-
 	wg := sync.WaitGroup{}
-	for block := range c {
+	for blk := range block {
 		wg.Add(1)
 		go func(b input.Block) {
 			defer wg.Done()
@@ -41,11 +41,11 @@ func Parse(errlog *log.Logger, o ...*input.Options) (*Docs, error) {
 				errlog.Println(err)
 				return
 			}
-		}(block)
+		}(blk)
 	}
 	wg.Wait()
 
-	return docs, nil
+	return docs
 }
 
 // 获取指定组名的文档，group 为空，则返回默认组。
