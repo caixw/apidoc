@@ -14,14 +14,12 @@ import (
 	"bytes"
 	"io/ioutil"
 	"log"
-	"math"
 	"sync"
-	"unicode"
 
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
-	"github.com/caixw/apidoc/internal/locale"
+	"github.com/caixw/apidoc/internal/lang"
 )
 
 // Block 解析出来的注释块
@@ -74,36 +72,14 @@ func parseFile(channel chan Block, errlog *log.Logger, path string, o *Options) 
 		return
 	}
 
-	l := &lexer{data: data, blocks: o.blocks}
-	var block blocker
-
-	for {
-		if l.atEOF() {
-			return
-		}
-
-		if block == nil {
-			block = l.block()
-			if block == nil { // 没有匹配的 block 了
-				return
-			}
-		}
-
-		ln := l.lineNumber() + 1 // 记录当前的行号，1 表示从 1 开始记数
-		lines, ok := block.EndFunc(l)
-		if !ok {
-			errlog.Println(locale.Sprintf(locale.ErrNotFoundEndFlag))
-			return // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
-		}
-
-		block = nil
-
+	ret := lang.Parse(errlog, data, o.blocks)
+	for line, data := range ret {
 		channel <- Block{
 			File: path,
-			Line: ln,
-			Data: mergeLines(lines),
+			Line: line,
+			Data: data,
 		}
-	} // end for
+	}
 }
 
 // 以指定的编码方式读取内容。
@@ -119,88 +95,4 @@ func readFile(path string, encoding encoding.Encoding) ([]byte, error) {
 
 	reader := transform.NewReader(bytes.NewReader(data), encoding.NewDecoder())
 	return ioutil.ReadAll(reader)
-}
-
-// 合并多行为一个 []byte 结构，并去掉前导空格
-func mergeLines(lines [][]byte) []byte {
-	lines = trimSpaceLine(lines)
-
-	if len(lines) == 0 {
-		return nil
-	}
-
-	// 去掉第一行的所有空格
-	for index, b := range lines[0] {
-		if !unicode.IsSpace(rune(b)) {
-			lines[0] = lines[0][index:]
-			break
-		}
-	}
-
-	if len(lines) == 1 {
-		return lines[0]
-	}
-
-	min := math.MaxInt32
-	size := 0
-	for _, line := range lines[1:] {
-		size += len(line)
-
-		if isSpaceLine(line) {
-			continue
-		}
-
-		for index, b := range line {
-			if !unicode.IsSpace(rune(b)) {
-				if min > index {
-					min = index
-				}
-				break
-			}
-		}
-	}
-
-	ret := make([]byte, 0, size+len(lines[0]))
-	ret = append(ret, lines[0]...)
-	for _, line := range lines[1:] {
-		if isSpaceLine(line) {
-			ret = append(ret, line...)
-		} else {
-			ret = append(ret, line[min:]...)
-		}
-	}
-
-	return ret
-}
-
-// 是否为空白行
-func isSpaceLine(line []byte) bool {
-	for _, b := range line {
-		if !unicode.IsSpace(rune(b)) {
-			return false
-		}
-	}
-
-	return true
-}
-
-// 去掉首尾的空行
-func trimSpaceLine(lines [][]byte) [][]byte {
-	// 去掉开头空行
-	for index, line := range lines {
-		if !isSpaceLine(line) {
-			lines = lines[index:]
-			break
-		}
-	}
-
-	// 去掉尾部的空行
-	for i := len(lines) - 1; i >= 0; i-- {
-		if !isSpaceLine(lines[i]) {
-			lines = lines[:i+1]
-			break
-		}
-	}
-
-	return lines
 }

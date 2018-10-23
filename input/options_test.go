@@ -5,6 +5,7 @@
 package input
 
 import (
+	"github.com/caixw/apidoc/internal/lang"
 	"path/filepath"
 	"testing"
 
@@ -26,9 +27,10 @@ func TestOptions_Sanitize(t *testing.T) {
 	a.Error(o.Sanitize())
 
 	// 未指定扩展名，则使用系统默认的
+	language := lang.Get("go")
 	o.Lang = "go"
 	a.NotError(o.Sanitize())
-	a.Equal(o.Exts, langExts["go"])
+	a.Equal(o.Exts, language.Exts)
 
 	// 指定了 Exts，自动调整扩展名样式。
 	o.Lang = "go"

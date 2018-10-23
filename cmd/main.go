@@ -14,7 +14,7 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc"
-	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/lang"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/vars"
 )
@@ -47,7 +47,7 @@ func main() {
 		printVersion()
 		return
 	case *languages:
-		locale.Printf(locale.FlagSupportedLanguages, input.Languages())
+		locale.Printf(locale.FlagSupportedLanguages, lang.Langs())
 		return
 	case *encodings:
 		locale.Printf(locale.FlagSupportedEncodings)

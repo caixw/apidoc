@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package input
+package lang
 
 // swift 嵌套风格的块注释。会忽略掉内嵌的注释块。
 type swiftNestMCommentBlock struct {
@@ -13,7 +13,7 @@ type swiftNestMCommentBlock struct {
 	level      int8
 }
 
-func newSwiftNestMCommentBlock(begin, end string) blocker {
+func newSwiftNestMCommentBlock(begin, end string) Blocker {
 	return &swiftNestMCommentBlock{
 		begin:      begin,
 		end:        end,
@@ -22,8 +22,8 @@ func newSwiftNestMCommentBlock(begin, end string) blocker {
 	}
 }
 
-func (b *swiftNestMCommentBlock) BeginFunc(l *lexer) bool {
-	if l.match(b.begin) {
+func (b *swiftNestMCommentBlock) BeginFunc(l *Lexer) bool {
+	if l.Match(b.begin) {
 		b.level++
 		return true
 	}
@@ -31,16 +31,16 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *lexer) bool {
 	return false
 }
 
-func (b *swiftNestMCommentBlock) EndFunc(l *lexer) ([][]byte, bool) {
+func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 	line := make([]byte, 0, 100)
 
 LOOP:
 	for {
 		switch {
-		case l.atEOF():
+		case l.AtEOF():
 			return nil, false
-		case l.match(b.end):
+		case l.Match(b.end):
 			b.level--
 			if b.level == 0 {
 				lines = append(lines, filterSymbols(line, b.begin))
@@ -49,7 +49,7 @@ LOOP:
 
 			line = append(line, b.endRunes...)
 			continue LOOP
-		case l.match(b.begin):
+		case l.Match(b.begin):
 			b.level++
 			line = append(line, b.beginRunes...)
 			continue LOOP

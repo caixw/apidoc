@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package input
+package lang
 
 import (
 	"testing"
@@ -10,15 +10,15 @@ import (
 	"github.com/issue9/assert"
 )
 
-var _ blocker = &block{}
+var _ Blocker = &Block{}
 
 func TestBlock_BeginFunc_EndFunc(t *testing.T) {
 	a := assert.New(t)
-	bStr := &block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: "\\"}
-	bSComment := &block{Type: blockTypeSComment, Begin: "//"}
-	bMComment := &block{Type: blockTypeMComment, Begin: "/*", End: "*/"}
+	bStr := &Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: "\\"}
+	bSComment := &Block{Type: BlockTypeSComment, Begin: "//"}
+	bMComment := &Block{Type: BlockTypeMComment, Begin: "/*", End: "*/"}
 
-	l := &lexer{
+	l := &Lexer{
 		data: []byte("// scomment1\n// scomment2"),
 	}
 	a.False(bStr.BeginFunc(l))
@@ -32,21 +32,21 @@ func TestBlock_BeginFunc_EndFunc(t *testing.T) {
 
 func TestBlock_endString(t *testing.T) {
 	a := assert.New(t)
-	b := &block{
-		Type:   blockTypeString,
+	b := &Block{
+		Type:   BlockTypeString,
 		Begin:  `"`,
 		End:    `"`,
 		Escape: "\\",
 	}
 
-	l := &lexer{
+	l := &Lexer{
 		data: []byte(`text"`),
 	}
 	rs, ok := b.endString(l)
 	a.True(ok).Nil(rs)
 
 	// 带转义字符
-	l = &lexer{
+	l = &Lexer{
 		data: []byte(`te\"xt"`),
 	}
 	rs, ok = b.endString(l)
@@ -55,7 +55,7 @@ func TestBlock_endString(t *testing.T) {
 		Equal(l.pos, len(l.data))
 
 	// 找不到匹配字符串
-	l = &lexer{
+	l = &Lexer{
 		data: []byte("text"),
 	}
 	rs, ok = b.endString(l)
@@ -64,40 +64,40 @@ func TestBlock_endString(t *testing.T) {
 
 func TestBlock_endSComment(t *testing.T) {
 	a := assert.New(t)
-	b := &block{
-		Type:  blockTypeSComment,
+	b := &Block{
+		Type:  BlockTypeSComment,
 		Begin: `//`,
 	}
 
-	l := &lexer{
+	l := &Lexer{
 		data: []byte("comment1\n"),
 	}
 	rs, err := b.endSComments(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1\n")})
 
 	// 没有换行符，则自动取到结束符。
-	l = &lexer{
+	l = &Lexer{
 		data: []byte("comment1"),
 	}
 	rs, err = b.endSComments(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1")})
 
 	// 多行连续的单行注释。
-	l = &lexer{
+	l = &Lexer{
 		data: []byte("comment1\n//comment2\n //comment3"),
 	}
 	rs, err = b.endSComments(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1\n"), []byte("comment2\n"), []byte("comment3")})
 
 	// 多行连续的单行注释，中间有空白行。
-	l = &lexer{
+	l = &Lexer{
 		data: []byte("comment1\n//\n//comment2\n //comment3"),
 	}
 	rs, err = b.endSComments(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("comment1\n"), []byte("\n"), []byte("comment2\n"), []byte("comment3")})
 
 	// 多行不连续的单行注释。
-	l = &lexer{
+	l = &Lexer{
 		data: []byte("comment1\n // comment2\n\n //comment3\n"),
 	}
 	rs, err = b.endSComments(l)
@@ -106,34 +106,34 @@ func TestBlock_endSComment(t *testing.T) {
 
 func TestBlock_endMComment(t *testing.T) {
 	a := assert.New(t)
-	b := &block{
-		Type:  blockTypeSComment,
+	b := &Block{
+		Type:  BlockTypeSComment,
 		Begin: "/*",
 		End:   "*/",
 	}
 
-	l := &lexer{
+	l := &Lexer{
 		data: []byte("comment1\n*/"),
 	}
 	rs, found := b.endMComments(l)
 	a.True(found).Equal(rs, [][]byte{[]byte("comment1\n")})
 
 	// 多个注释结束符
-	l = &lexer{
+	l = &Lexer{
 		data: []byte("comment1\ncomment2*/*/"),
 	}
 	rs, found = b.endMComments(l)
 	a.True(found).Equal(rs, [][]byte{[]byte("comment1\n"), []byte("comment2")})
 
 	// 空格开头
-	l = &lexer{
+	l = &Lexer{
 		data: []byte("\ncomment1\ncomment2*/*/"),
 	}
 	rs, found = b.endMComments(l)
 	a.True(found).Equal(rs, [][]byte{[]byte("\n"), []byte("comment1\n"), []byte("comment2")})
 
 	// 没有注释结束符
-	l = &lexer{
+	l = &Lexer{
 		data: []byte("comment1"),
 	}
 	rs, found = b.endMComments(l)

@@ -13,6 +13,7 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
 
+	"github.com/caixw/apidoc/internal/lang"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/options"
 )
@@ -25,7 +26,7 @@ type Options struct {
 	Recursive bool     `yaml:"recursive"`          // 是否查找 Dir 的子目录
 	Encoding  string   `yaml:"encoding,omitempty"` // 文件的编码，为空表示 utf-8
 
-	blocks   []blocker         // 根据 Lang 生成
+	blocks   []lang.Blocker    // 根据 Lang 生成
 	paths    []string          // 根据 Dir 和 Recursive 生成
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
@@ -43,15 +44,12 @@ func (opt *Options) Sanitize() error {
 	if len(opt.Lang) == 0 {
 		return options.NewFieldError("lang", locale.Sprintf(locale.ErrRequired))
 	}
-	blocks, found := langs[opt.Lang]
-	if !found {
-		return options.NewFieldError("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
-	}
-	opt.blocks = blocks
 
-	if !langIsSupported(opt.Lang) {
+	language := lang.Get(opt.Lang)
+	if language == nil {
 		return options.NewFieldError("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
 	}
+	opt.blocks = language.Blocks
 
 	if len(opt.Exts) > 0 {
 		exts := make([]string, 0, len(opt.Exts))
@@ -67,7 +65,7 @@ func (opt *Options) Sanitize() error {
 		}
 		opt.Exts = exts
 	} else {
-		opt.Exts = langExts[opt.Lang]
+		opt.Exts = language.Exts
 	}
 
 	// 生成 paths
@@ -107,8 +105,8 @@ func Detect(dir string, recursive bool) (*Options, error) {
 
 	// 删除不支持的扩展名
 	for ext := range exts {
-		lang := getLangByExt(ext)
-		if len(lang) <= 0 {
+		language := lang.GetByExt(ext)
+		if language == nil {
 			delete(exts, ext)
 		}
 	}
@@ -129,15 +127,15 @@ func Detect(dir string, recursive bool) (*Options, error) {
 		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
 	}
 
-	lang := getLangByExt(ext)
-	if len(lang) == 0 {
+	language := lang.GetByExt(ext)
+	if language == nil {
 		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
 	}
 
 	return &Options{
-		Lang:      lang,
+		Lang:      language.Name,
 		Dir:       dir,
-		Exts:      langExts[lang],
+		Exts:      language.Exts,
 		Recursive: recursive,
 	}, nil
 }
