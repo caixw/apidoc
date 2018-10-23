@@ -29,8 +29,8 @@ var langs = []*Language{
 		Name: "erlang",
 		Exts: []string{".erl", ".hrl"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeSComment, Begin: `%`},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeSComment, Begin: `%`},
 		},
 	},
 
@@ -38,10 +38,10 @@ var langs = []*Language{
 		Name: "go",
 		Exts: []string{".go"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeString, Begin: "`", End: "`"},
-			&Block{Type: BlockTypeSComment, Begin: `//`},
-			&Block{Type: BlockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeString, Begin: "`", End: "`"},
+			&block{Type: blockTypeSComment, Begin: `//`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 		},
 	},
 
@@ -49,11 +49,11 @@ var langs = []*Language{
 		Name: "groovy",
 		Exts: []string{".groovy"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeString, Begin: "'", End: "'", Escape: `\`},
-			&Block{Type: BlockTypeString, Begin: "'''", End: "'''", Escape: `\`},
-			&Block{Type: BlockTypeSComment, Begin: `//`},
-			&Block{Type: BlockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+			&block{Type: blockTypeString, Begin: "'''", End: "'''", Escape: `\`},
+			&block{Type: blockTypeSComment, Begin: `//`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 		},
 	},
 
@@ -67,13 +67,13 @@ var langs = []*Language{
 		Name: "javascript",
 		Exts: []string{".js"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeString, Begin: "'", End: "'", Escape: `\`},
-			&Block{Type: BlockTypeString, Begin: "`", End: "`", Escape: `\`},
-			&Block{Type: BlockTypeSComment, Begin: `//`},
-			&Block{Type: BlockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+			&block{Type: blockTypeString, Begin: "`", End: "`", Escape: `\`},
+			&block{Type: blockTypeSComment, Begin: `//`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 			// NOTE: js 中若出现 /*abc/.test() 应该是先优先注释的。放最后，优先匹配 // 和 /*
-			&Block{Type: BlockTypeString, Begin: "/", End: "/", Escape: `\`}, // 正则表达式
+			&block{Type: blockTypeString, Begin: "/", End: "/", Escape: `\`}, // 正则表达式
 		},
 	},
 
@@ -83,8 +83,8 @@ var langs = []*Language{
 		Blocks: []Blocker{
 			newPascalStringBlock('\''),
 			newPascalStringBlock('"'),
-			&Block{Type: BlockTypeMComment, Begin: "{", End: "}"},
-			&Block{Type: BlockTypeMComment, Begin: "(*", End: "*)"},
+			&block{Type: blockTypeMComment, Begin: "{", End: "}"},
+			&block{Type: blockTypeMComment, Begin: "(*", End: "*)"},
 		},
 	},
 
@@ -92,10 +92,10 @@ var langs = []*Language{
 		Name: "perl",
 		Exts: []string{".perl", ".prl", ".pl"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeString, Begin: "'", End: "'", Escape: `\`},
-			&Block{Type: BlockTypeSComment, Begin: `#`},
-			&Block{Type: BlockTypeMComment, Begin: "\n=pod\n", End: "\n=cut\n"},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+			&block{Type: blockTypeSComment, Begin: `#`},
+			&block{Type: blockTypeMComment, Begin: "\n=pod\n", End: "\n=cut\n"},
 		},
 	},
 
@@ -103,11 +103,11 @@ var langs = []*Language{
 		Name: "php",
 		Exts: []string{".php"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeString, Begin: "'", End: "'", Escape: `\`},
-			&Block{Type: BlockTypeSComment, Begin: `//`},
-			&Block{Type: BlockTypeSComment, Begin: `#`},
-			&Block{Type: BlockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+			&block{Type: blockTypeSComment, Begin: `//`},
+			&block{Type: blockTypeSComment, Begin: `#`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 		},
 	},
 
@@ -115,10 +115,10 @@ var langs = []*Language{
 		Name: "python",
 		Exts: []string{".py"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeMComment, Begin: `"""`, End: `"""`},
-			&Block{Type: BlockTypeMComment, Begin: "'''", End: `'''`},
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeSComment, Begin: `#`},
+			&block{Type: blockTypeMComment, Begin: `"""`, End: `"""`},
+			&block{Type: blockTypeMComment, Begin: "'''", End: `'''`},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeSComment, Begin: `#`},
 		},
 	},
 
@@ -126,10 +126,10 @@ var langs = []*Language{
 		Name: "ruby",
 		Exts: []string{".rb"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeString, Begin: "'", End: "'", Escape: `\`},
-			&Block{Type: BlockTypeSComment, Begin: `#`},
-			&Block{Type: BlockTypeMComment, Begin: "\n=begin\n", End: "\n=end\n"},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+			&block{Type: blockTypeSComment, Begin: `#`},
+			&block{Type: blockTypeMComment, Begin: "\n=begin\n", End: "\n=end\n"},
 		},
 	},
 
@@ -137,10 +137,10 @@ var langs = []*Language{
 		Name: "rust",
 		Exts: []string{".rs"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeSComment, Begin: `///`}, // 需要在 // 之前定义
-			&Block{Type: BlockTypeSComment, Begin: `//`},
-			&Block{Type: BlockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeSComment, Begin: `///`}, // 需要在 // 之前定义
+			&block{Type: blockTypeSComment, Begin: `//`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 		},
 	},
 
@@ -154,17 +154,17 @@ var langs = []*Language{
 		Name: "swift",
 		Exts: []string{".swift"},
 		Blocks: []Blocker{
-			&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&Block{Type: BlockTypeSComment, Begin: `//`},
+			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeSComment, Begin: `//`},
 			newSwiftNestMCommentBlock("/*", "*/"),
 		},
 	},
 }
 
 var cStyle = []Blocker{
-	&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-	&Block{Type: BlockTypeSComment, Begin: `//`},
-	&Block{Type: BlockTypeMComment, Begin: `/*`, End: `*/`},
+	&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+	&block{Type: blockTypeSComment, Begin: `//`},
+	&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 }
 
 // Language 语言模块的定义

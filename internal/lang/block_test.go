@@ -10,13 +10,13 @@ import (
 	"github.com/issue9/assert"
 )
 
-var _ Blocker = &Block{}
+var _ Blocker = &block{}
 
 func TestBlock_BeginFunc_EndFunc(t *testing.T) {
 	a := assert.New(t)
-	bStr := &Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: "\\"}
-	bSComment := &Block{Type: BlockTypeSComment, Begin: "//"}
-	bMComment := &Block{Type: BlockTypeMComment, Begin: "/*", End: "*/"}
+	bStr := &block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: "\\"}
+	bSComment := &block{Type: blockTypeSComment, Begin: "//"}
+	bMComment := &block{Type: blockTypeMComment, Begin: "/*", End: "*/"}
 
 	l := &Lexer{
 		data: []byte("// scomment1\n// scomment2"),
@@ -32,8 +32,8 @@ func TestBlock_BeginFunc_EndFunc(t *testing.T) {
 
 func TestBlock_endString(t *testing.T) {
 	a := assert.New(t)
-	b := &Block{
-		Type:   BlockTypeString,
+	b := &block{
+		Type:   blockTypeString,
 		Begin:  `"`,
 		End:    `"`,
 		Escape: "\\",
@@ -64,8 +64,8 @@ func TestBlock_endString(t *testing.T) {
 
 func TestBlock_endSComment(t *testing.T) {
 	a := assert.New(t)
-	b := &Block{
-		Type:  BlockTypeSComment,
+	b := &block{
+		Type:  blockTypeSComment,
 		Begin: `//`,
 	}
 
@@ -106,8 +106,8 @@ func TestBlock_endSComment(t *testing.T) {
 
 func TestBlock_endMComment(t *testing.T) {
 	a := assert.New(t)
-	b := &Block{
-		Type:  BlockTypeSComment,
+	b := &block{
+		Type:  blockTypeSComment,
 		Begin: "/*",
 		End:   "*/",
 	}

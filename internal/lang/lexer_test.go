@@ -47,10 +47,10 @@ func TestLexer_Block(t *testing.T) {
 	a := assert.New(t)
 
 	blocks := []Blocker{
-		&Block{Type: BlockTypeSComment, Begin: "//"},
-		&Block{Type: BlockTypeMComment, Begin: "/*", End: "*/"},
-		&Block{Type: BlockTypeMComment, Begin: "\n=pod", End: "\n=cut"},
-		&Block{Type: BlockTypeString, Begin: `"`, End: `"`, Escape: "\\"},
+		&block{Type: blockTypeSComment, Begin: "//"},
+		&block{Type: blockTypeMComment, Begin: "/*", End: "*/"},
+		&block{Type: blockTypeMComment, Begin: "\n=pod", End: "\n=cut"},
+		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: "\\"},
 	}
 
 	l := &Lexer{
@@ -75,34 +75,34 @@ mcomment2
 	}
 
 	b := l.Block() // scomment1
-	a.Equal(b.(*Block).Type, BlockTypeSComment)
+	a.Equal(b.(*block).Type, blockTypeSComment)
 	rs, err := b.EndFunc(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte(" scomment1\n"), []byte(" scomment2\n")})
 
 	b = l.Block() // string1
-	a.Equal(b.(*Block).Type, BlockTypeString)
+	a.Equal(b.(*block).Type, blockTypeString)
 	_, err = b.EndFunc(l)
 	a.NotError(err)
 
 	b = l.Block() // string2
-	a.Equal(b.(*Block).Type, BlockTypeString)
+	a.Equal(b.(*block).Type, blockTypeString)
 	_, err = b.EndFunc(l)
 	a.NotError(err)
 
 	b = l.Block()
-	a.Equal(b.(*Block).Type, BlockTypeMComment) // mcomment1
+	a.Equal(b.(*block).Type, blockTypeMComment) // mcomment1
 	rs, err = b.EndFunc(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("\n"), []byte("mcomment1\n"), []byte("mcomment2\n")})
 
 	/* 测试一段单行注释后紧跟 \n=pod 形式的多行注释，是否会出错 */
 
 	b = l.Block() // scomment3,scomment4
-	a.Equal(b.(*Block).Type, BlockTypeSComment)
+	a.Equal(b.(*block).Type, blockTypeSComment)
 	rs, err = b.EndFunc(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte(" scomment3\n"), []byte(" scomment4\n")})
 
 	b = l.Block() // mcomment3,mcomment4
-	a.Equal(b.(*Block).Type, BlockTypeMComment)
+	a.Equal(b.(*block).Type, blockTypeMComment)
 	rs, err = b.EndFunc(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("\n"), []byte(" mcomment3\n"), []byte(" mcomment4")})
 }

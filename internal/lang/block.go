@@ -13,10 +13,10 @@ import (
 
 // 用于描述 block.Type 的值。
 const (
-	BlockTypeNone     int8 = iota
-	BlockTypeString        // 字符串，将被忽略。
-	BlockTypeSComment      // 单行注释
-	BlockTypeMComment      // 多行注释
+	blockTypeNone     int8 = iota
+	blockTypeString        // 字符串，将被忽略。
+	blockTypeSComment      // 单行注释
+	blockTypeMComment      // 多行注释
 )
 
 // Blocker 接口定义了解析代码块的所有操作。
@@ -34,10 +34,10 @@ type Blocker interface {
 	EndFunc(l *Lexer) ([][]byte, bool)
 }
 
-// Block 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
+// 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
 //
-// Block 作为 Blocker 的默认实现，能适应大部分语言的定义。
-type Block struct {
+// block 作为 Blocker 的默认实现，能适应大部分语言的定义。
+type block struct {
 	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释
 	Begin  string // 块的起始字符串
 	End    string // 块的结束字符串，单行注释不用定义此值
@@ -45,18 +45,18 @@ type Block struct {
 }
 
 // BeginFunc 实现 Blocker.BeginFunc
-func (b *Block) BeginFunc(l *Lexer) bool {
+func (b *block) BeginFunc(l *Lexer) bool {
 	return l.Match(b.Begin)
 }
 
 // EndFunc 实现 Blocker.EndFunc
-func (b *Block) EndFunc(l *Lexer) ([][]byte, bool) {
+func (b *block) EndFunc(l *Lexer) ([][]byte, bool) {
 	switch b.Type {
-	case BlockTypeString:
+	case blockTypeString:
 		return b.endString(l)
-	case BlockTypeMComment:
+	case blockTypeMComment:
 		return b.endMComments(l)
-	case BlockTypeSComment:
+	case blockTypeSComment:
 		return b.endSComments(l)
 	default:
 		panic(locale.Sprintf(locale.ErrInvalidBlockType, b.Type))
@@ -68,7 +68,7 @@ func (b *Block) EndFunc(l *Lexer) ([][]byte, bool) {
 // 正常找到结束符的返回 true，否则返回 false。
 //
 // 第一个返回参数无用，仅是为了统一函数签名
-func (b *Block) endString(l *Lexer) ([][]byte, bool) {
+func (b *block) endString(l *Lexer) ([][]byte, bool) {
 	for {
 		switch {
 		case l.AtEOF():
@@ -84,7 +84,7 @@ func (b *Block) endString(l *Lexer) ([][]byte, bool) {
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-func (b *Block) endSComments(l *Lexer) ([][]byte, bool) {
+func (b *block) endSComments(l *Lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 
 LOOP:
@@ -120,7 +120,7 @@ LOOP:
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *Block) endMComments(l *Lexer) ([][]byte, bool) {
+func (b *block) endMComments(l *Lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 	start := l.pos
 

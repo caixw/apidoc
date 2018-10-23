@@ -32,11 +32,11 @@ func TestLangs(t *testing.T) {
 		a.NotEmpty(lang.Blocks, "blocks 不能为空，在 %s", lang.Name)
 
 		for index, blk := range lang.Blocks {
-			b, ok := blk.(*Block)
+			b, ok := blk.(*block)
 			if !ok {
 				continue
 			}
-			v := (b.Type == BlockTypeString || b.Type == BlockTypeMComment || b.Type == BlockTypeSComment)
+			v := (b.Type == blockTypeString || b.Type == blockTypeMComment || b.Type == blockTypeSComment)
 			a.True(v, "langs[%v].[%v].Type 值为非法值", lang.Name, index)
 		}
 
