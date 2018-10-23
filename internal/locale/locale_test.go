@@ -7,11 +7,30 @@ package locale
 import (
 	"testing"
 
+	"github.com/issue9/assert"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 
-	"github.com/issue9/assert"
+	"github.com/caixw/apidoc/internal/locale/syslocale"
 )
+
+func TestInit(t *testing.T) {
+	a := assert.New(t)
+
+	tag := language.MustParse("zh-Hans")
+	a.NotError(Init(tag))
+	a.Equal(localeTag, tag)
+
+	tag = language.MustParse("zh-Hant")
+	a.NotError(Init(tag))
+	a.Equal(localeTag, tag)
+
+	// 设置为系统语言
+	systag, err := syslocale.Get()
+	a.NotError(err)
+	a.NotError(Init(language.Und))
+	a.Equal(systag, localeTag)
+}
 
 func TestInitLocales(t *testing.T) {
 	a := assert.New(t)
@@ -20,5 +39,5 @@ func TestInitLocales(t *testing.T) {
 	a.True(len(locales) > 0)
 
 	p := message.NewPrinter(language.MustParse("zh-Hans"))
-	a.Equal(p.Sprintf(FlagHUsage), locales["zh-Hans"][FlagHUsage])
+	a.Equal(p.Sprintf(FlagHUsage), locales[language.MustParse("zh-Hans")][FlagHUsage])
 }

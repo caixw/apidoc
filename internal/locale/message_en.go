@@ -4,6 +4,10 @@
 
 package locale
 
+import (
+	"golang.org/x/text/language"
+)
+
 func init() {
-	locales["en"] = map[string]string{}
+	locales[language.MustParse("en")] = map[string]string{}
 }

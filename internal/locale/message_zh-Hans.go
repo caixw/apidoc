@@ -4,8 +4,12 @@
 
 package locale
 
+import (
+	"golang.org/x/text/language"
+)
+
 func init() {
-	locales["zh-Hans"] = map[string]string{
+	locales[language.MustParse("zh-Hans")] = map[string]string{
 		// 与 flag 包相关的处理
 		FlagUsage: `%v 是一个 RESTful API 文档生成工具。
 

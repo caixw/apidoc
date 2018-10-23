@@ -10,13 +10,20 @@ import (
 	"io"
 
 	"golang.org/x/text/language"
+	"golang.org/x/text/language/display"
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/internal/locale/syslocale"
 )
 
-// 保证有个初始化的值，部分包的测试功能依赖此变量
-var localePrinter = message.NewPrinter(language.MustParse("zh-Hans"))
+var (
+	// 当前使用的语言标签
+	//
+	// 保证有个初始化的值，部分包的测试功能依赖此变量
+	localeTag     = language.MustParse("zh-Hans")
+	localePrinter = message.NewPrinter(localeTag)
+	displayNames  map[language.Tag]string
+)
 
 // Init 初始化 locale 包。
 //
@@ -35,21 +42,25 @@ func Init(tag language.Tag) (err error) {
 	}
 
 	localePrinter = NewPrinter(tag)
+	localeTag = tag
 	return nil
 }
 
-func initLocales() error {
-	for id, messages := range locales {
-		tag, err := language.Parse(id)
-		if err != nil {
-			return err
-		}
+// DisplayNames 所有支持语言的列表
+func DisplayNames() map[language.Tag]string {
+	return displayNames
+}
 
+func initLocales() error {
+	displayNames = make(map[language.Tag]string, len(locales))
+
+	for tag, messages := range locales {
 		for key, val := range messages {
 			if err := message.SetString(tag, key, val); err != nil {
 				return err
 			}
 		}
+		displayNames[tag] = display.Self.Name(tag)
 	}
 
 	return nil
