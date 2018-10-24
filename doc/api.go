@@ -2,13 +2,13 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package docs
+package doc
 
 import (
 	"bytes"
 	"strings"
 
-	"github.com/caixw/apidoc/docs/lexer"
+	"github.com/caixw/apidoc/doc/lexer"
 )
 
 // API 表示单个 API 文档
@@ -23,11 +23,10 @@ type API struct {
 	Requests    []*Request  `yaml:"requests,omitempty" json:"requests,omitempty"`
 	Responses   []*Response `yaml:"responses" json:"responses"`
 	Deprecated  string      `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
-
-	group string
+	Server      string      `yaml:"server" json:"server"`
 }
 
-func (docs *Docs) parseAPI(l *lexer.Lexer) error {
+func (doc *Doc) parseAPI(l *lexer.Lexer) error {
 	api := &API{}
 
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
@@ -49,7 +48,7 @@ func (docs *Docs) parseAPI(l *lexer.Lexer) error {
 		}
 	}
 
-	docs.getDoc(api.group).append(api)
+	doc.append(api)
 
 	return nil
 }
@@ -72,11 +71,11 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 			api.Method = strings.ToUpper(string(data[0])) // TODO 验证请求方法
 			api.Path = string(data[1])
 			api.Summary = string(data[2])
-		case "@apigroup":
-			if api.group != "" {
+		case "@apiserver":
+			if api.Server != "" {
 				return tag.ErrDuplicateTag()
 			}
-			api.group = string(tag.Data)
+			api.Server = string(tag.Data)
 		case "@apitags":
 			if len(api.Tags) > 0 {
 				return tag.ErrDuplicateTag()

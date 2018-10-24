@@ -10,13 +10,13 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/docs"
+	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/options"
 	"github.com/caixw/apidoc/output/openapi"
 )
 
-type marshaler func(v *docs.Docs) ([]byte, error)
+type marshaler func(v *doc.Doc) ([]byte, error)
 
 // 文档类型定义
 const (
@@ -31,11 +31,6 @@ const (
 type Options struct {
 	// 文档的保存路径，包含目录和文件名，若为空，则为当前目录下的
 	Path string `yaml:"path,omitempty"`
-
-	// 仅输出这些组，为空表示输出所有
-	//
-	// 若指定的组名实际上不存在，则不会有任何影响。
-	Groups []string `yaml:"groups,omitempty"`
 
 	// 输出类型
 	Type string `yaml:"type,omitempty"`
@@ -73,25 +68,10 @@ func (o *Options) Sanitize() error {
 	return nil
 }
 
-// 指定的组名是否包含在输出列表里。
-func (o *Options) contains(group string) bool {
-	if len(o.Groups) == 0 {
-		return true
-	}
-
-	for _, g := range o.Groups {
-		if g == group {
-			return true
-		}
-	}
-
-	return false
-}
-
-func apidocJSONMarshal(v *docs.Docs) ([]byte, error) {
+func apidocJSONMarshal(v *doc.Doc) ([]byte, error) {
 	return json.Marshal(v)
 }
 
-func apidocYAMLMarshal(v *docs.Docs) ([]byte, error) {
+func apidocYAMLMarshal(v *doc.Doc) ([]byte, error) {
 	return yaml.Marshal(v)
 }

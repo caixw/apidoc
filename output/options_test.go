@@ -35,15 +35,3 @@ func TestOptions_Sanitize(t *testing.T) {
 	o.Type = "unknown"
 	a.Error(o.Sanitize())
 }
-
-func TestOptions_contains(t *testing.T) {
-	a := assert.New(t)
-
-	o := &Options{}
-	a.True(o.contains("not exists"))
-
-	o.Groups = []string{"g1", "g2"}
-	a.True(o.contains("g1")).
-		True(o.contains("g2")).
-		False(o.contains("not exists"))
-}

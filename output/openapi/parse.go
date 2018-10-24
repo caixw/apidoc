@@ -9,17 +9,17 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/docs"
+	"github.com/caixw/apidoc/doc"
 )
 
-func parse(docs *docs.Docs) (*OpenAPI, error) {
+func parse(doc *doc.Doc) (*OpenAPI, error) {
 	panic("该功能未实现")
 	return nil, nil
 }
 
 // JSON 输出 JSON 格式数据
-func JSON(docs *docs.Docs) ([]byte, error) {
-	openapi, err := parse(docs)
+func JSON(doc *doc.Doc) ([]byte, error) {
+	openapi, err := parse(doc)
 	if err != nil {
 		return nil, err
 	}
@@ -28,8 +28,8 @@ func JSON(docs *docs.Docs) ([]byte, error) {
 }
 
 // YAML 输出 YAML 格式数据
-func YAML(docs *docs.Docs) ([]byte, error) {
-	openapi, err := parse(docs)
+func YAML(doc *doc.Doc) ([]byte, error) {
+	openapi, err := parse(doc)
 	if err != nil {
 		return nil, err
 	}

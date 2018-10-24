@@ -2,12 +2,12 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package docs
+package doc
 
 import (
 	"strings"
 
-	"github.com/caixw/apidoc/docs/lexer"
+	"github.com/caixw/apidoc/doc/lexer"
 )
 
 // Markdown 表示可以使用 markdown 文档
@@ -16,6 +16,13 @@ type Markdown string
 // Tag 标签内容
 type Tag struct {
 	Name        string   `yaml:"name" json:"name"`                                   // 字面名称，需要唯一
+	Description Markdown `yaml:"description,omitempty" json:"description,omitempty"` // 具体描述
+}
+
+// Server 服务信息
+type Server struct {
+	Name        string   `yaml:"name" json:"name"` // 字面名称，需要唯一
+	URL         string   `yaml:"url" json:"url"`
 	Description Markdown `yaml:"description,omitempty" json:"description,omitempty"` // 具体描述
 }
 

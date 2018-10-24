@@ -2,28 +2,36 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package docs
+// Package doc 表示最终解析出来的文档结果。
+package doc
 
 import (
+	"log"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/docs/lexer"
+	"github.com/caixw/apidoc/doc/lexer"
+	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/vars"
 )
 
 // Doc 文档
 type Doc struct {
-	Title   string   `yaml:"title" json:"title"`
-	BaseURL string   `yaml:"baseURL" json:"baseURL"`
-	Group   string   `yaml:"group,omitempty" json:"group,omitempty"`
-	Content Markdown `yaml:"content,omitempty" json:"content,omitempty"`
-	Contact *Contact `yaml:"contact,omitempty" json:"contact,omitempty"`
-	License *Link    `yaml:"license,omitempty" json:"license,omitempty" ` // 版本信息
-	Version string   `yaml:"version,omitempty" json:"version,omitempty"`  // 文档的版本
-	Tags    []*Tag   `yaml:"tags,omitempty" json:"tags,omitempty"`        // 所有的标签
+	// 以下字段不对应具体的标签
+	APIDoc  string        `yaml:"apidoc" json:"apidoc"`   // 当前的程序版本
+	Elapsed time.Duration `yaml:"elapsed" json:"elapsed"` // 文档解析用时
+
+	Title   string    `yaml:"title" json:"title"`
+	Content Markdown  `yaml:"content,omitempty" json:"content,omitempty"`
+	Contact *Contact  `yaml:"contact,omitempty" json:"contact,omitempty"`
+	License *Link     `yaml:"license,omitempty" json:"license,omitempty" ` // 版本信息
+	Version string    `yaml:"version,omitempty" json:"version,omitempty"`  // 文档的版本
+	Tags    []*Tag    `yaml:"tags,omitempty" json:"tags,omitempty"`        // 所有的标签
+	Servers []*Server `yaml:"servers,omitempty" json:"servers,omitempty"`
 
 	// 所有接口都有可能返回的内容。
 	// 比如一些错误内容的返回，可以在此处定义。
@@ -33,8 +41,45 @@ type Doc struct {
 	locker sync.Mutex
 }
 
-func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
-	doc := &Doc{}
+// Parse 分析从 block 中获取的代码块。并填充到 Docs 中
+func Parse(errlog *log.Logger, block chan input.Block) *Doc {
+	doc := &Doc{
+		APIDoc: vars.Version(),
+	}
+
+	wg := sync.WaitGroup{}
+	for blk := range block {
+		wg.Add(1)
+		go func(b input.Block) {
+			defer wg.Done()
+			if err := doc.parseBlock(b); err != nil {
+				errlog.Println(err)
+				return
+			}
+		}(blk)
+	}
+	wg.Wait()
+
+	return doc
+}
+
+func (doc *Doc) parseBlock(block input.Block) error {
+	l := lexer.New(block)
+
+	tag, _ := l.Tag()
+	l.Backup(tag)
+
+	switch strings.ToLower(tag.Name) {
+	case "@api":
+		return doc.parseAPI(lexer.New(block))
+	case "@apidoc":
+		return doc.parseAPIDoc(lexer.New(block))
+	}
+
+	return nil
+}
+
+func (doc *Doc) parseAPIDoc(l *lexer.Lexer) error {
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
 		switch strings.ToLower(tag.Name) {
 		case "@apidoc":
@@ -45,17 +90,16 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 				return tag.ErrDuplicateTag()
 			}
 			doc.Title = string(tag.Data)
-		case "@apigroup":
-			if doc.Group != "" {
-				return tag.ErrDuplicateTag()
-			}
-			doc.Group = string(tag.Data)
 		case "@apitag":
 			if err := doc.parseTag(tag); err != nil {
 				return err
 			}
 		case "@apilicense":
 			if err := doc.parseLicense(tag); err != nil {
+				return err
+			}
+		case "@apiserver":
+			if err := doc.parseServer(tag); err != nil {
 				return err
 			}
 		case "@apicontact":
@@ -71,8 +115,6 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 			if !version.SemVerValid(doc.Version) {
 				return tag.ErrInvalidFormat()
 			}
-		case "@apibaseurl":
-			doc.BaseURL = string(tag.Data)
 		case "@apicontent":
 			if doc.Content != "" {
 				return tag.ErrDuplicateTag()
@@ -86,17 +128,6 @@ func (docs *Docs) parseAPIDoc(l *lexer.Lexer) error {
 			return tag.ErrInvalidTag()
 		}
 	}
-
-	// 复制内容到 docs 中
-	doc1 := docs.getDoc(doc.Group)
-	doc1.Title = doc.Title
-	doc1.BaseURL = doc.BaseURL
-	doc1.Content = doc.Content
-	doc1.Contact = doc.Contact
-	doc1.License = doc.License
-	doc1.Version = doc.Version
-	doc1.Tags = doc.Tags
-	doc1.Responses = doc.Responses
 
 	return nil
 }
@@ -122,6 +153,8 @@ func (doc *Doc) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析 @apiTag 标签，可以是以下格式
+//  @apiTag admin description
 func (doc *Doc) parseTag(tag *lexer.Tag) error {
 	data := tag.Split(2)
 	if len(data) != 2 {
@@ -136,6 +169,31 @@ func (doc *Doc) parseTag(tag *lexer.Tag) error {
 		Name:        string(data[0]),
 		Description: Markdown(data[1]),
 	})
+
+	return nil
+}
+
+// 解析 @apiServer 标签，可以是以下格式
+//  @apiserver admin https://api1.example.com description
+//  @apiserver admin https://api1.example.com
+func (doc *Doc) parseServer(tag *lexer.Tag) error {
+	data := tag.Split(3)
+	if len(data) < 2 { // 描述为可选字段
+		return tag.ErrInvalidFormat()
+	}
+
+	if doc.Servers == nil {
+		doc.Servers = make([]*Server, 0, 5)
+	}
+
+	srv := &Server{
+		Name: string(data[0]),
+		URL:  string(data[1]),
+	}
+	if len(data) == 3 {
+		srv.Description = Markdown(data[2])
+	}
+	doc.Servers = append(doc.Servers, srv)
 
 	return nil
 }

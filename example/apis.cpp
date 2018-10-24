@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 
 // @api GET /users/{id}/logs 获取用户信息
-// @apigroup g1
 // @apitags t1,t2
+// @apiserver s1
 // @apideprecated desc
 // @apiquery page int default desc
 // @apiquery size int default desc

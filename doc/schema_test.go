@@ -2,14 +2,14 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package docs
+package doc
 
 import (
 	"testing"
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/docs/lexer"
+	"github.com/caixw/apidoc/doc/lexer"
 )
 
 func TestBuildSchema(t *testing.T) {

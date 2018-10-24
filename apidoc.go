@@ -12,7 +12,7 @@ import (
 
 	"golang.org/x/text/language"
 
-	"github.com/caixw/apidoc/docs"
+	"github.com/caixw/apidoc/doc"
 	i "github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/vars"
@@ -46,19 +46,19 @@ func Do(erro *log.Logger, output *o.Options, input ...*i.Options) error {
 		return err
 	}
 
-	docs, err := Parse(erro, input...)
+	doc, err := Parse(erro, input...)
 	if err != nil {
 		return err
 	}
 
-	return o.Render(docs, output)
+	return o.Render(doc, output)
 }
 
-// Parse 分析输入信息，并获取 docs.Docs 实例。
+// Parse 分析输入信息，并获取 doc.Doc 实例。
 //
 // erro 用于输出语法错误内容；
 // input 输入设置项。
-func Parse(erro *log.Logger, input ...*i.Options) (*docs.Docs, error) {
+func Parse(erro *log.Logger, input ...*i.Options) (*doc.Doc, error) {
 	if len(input) == 0 {
 		return nil, errors.New("参数 input 不能为空")
 	}
@@ -71,8 +71,8 @@ func Parse(erro *log.Logger, input ...*i.Options) (*docs.Docs, error) {
 
 	start := time.Now()
 	block := i.Parse(erro, input...)
-	docs := docs.Parse(erro, block)
-	docs.Elapsed = time.Now().Sub(start)
+	doc := doc.Parse(erro, block)
+	doc.Elapsed = time.Now().Sub(start)
 
-	return docs, nil
+	return doc, nil
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package docs
+package doc
 
 import (
 	"bufio"
@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"unicode"
 
-	"github.com/caixw/apidoc/docs/lexer"
+	"github.com/caixw/apidoc/doc/lexer"
 )
 
 // Schema.Type 的值枚举
