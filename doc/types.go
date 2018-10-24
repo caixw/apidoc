@@ -67,10 +67,11 @@ type Header struct {
 
 // Param 简单参数的描述，比如查询参数等
 type Param struct {
-	Name     string  `yaml:"name" json:"name"`                             // 参数名称
-	Type     *Schema `yaml:"type" json:"type"`                             // 类型
-	Summary  string  `yaml:"summary" json:"summary"`                       // 参数介绍
-	Optional bool    `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否可以为空
+	Name     string      `yaml:"name" json:"name"`                             // 参数名称
+	Type     string      `yaml:"type" json:"type"`                             // 类型
+	Summary  string      `yaml:"summary" json:"summary"`                       // 参数介绍
+	Optional bool        `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否可以为空
+	Default  interface{} `yaml:"default,omitempty" json:"default,omitempty"`   // 默认值
 }
 
 // Example 示例
@@ -124,7 +125,7 @@ func (body *Body) parseHeader(tag *lexer.Tag) error {
 	body.Headers = append(body.Headers, &Header{
 		Name:     string(data[0]),
 		Summary:  string(data[2]),
-		Optional: isOptional(string(data[1])),
+		Optional: isOptional(data[1]),
 	})
 
 	return nil
@@ -189,6 +190,29 @@ func newLink(tag *lexer.Tag) (*Link, error) {
 	return &Link{
 		Text: string(data[0]),
 		URL:  string(data[1]),
+	}, nil
+}
+
+// 解析参数标签，格式如下：
+// 用于路径参数和查义参数，request 和 request 中的不在此解析
+//  @tag name type.subtype optional.defaultValue markdown desc
+func newParam(tag *lexer.Tag) (*Param, error) {
+	data := tag.Words(4)
+	if len(data) != 4 {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	opt, def, err := parseOptional(string(data[1]), data[2])
+	if err != nil {
+		return nil, err
+	}
+
+	return &Param{
+		Name:     string(data[0]),
+		Summary:  string(data[3]),
+		Type:     string(data[1]),
+		Default:  def,
+		Optional: opt,
 	}, nil
 }
 

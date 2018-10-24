@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"bytes"
 	"strconv"
-	"strings"
 	"unicode"
 
 	"github.com/caixw/apidoc/doc/lexer"
@@ -121,11 +120,18 @@ func buildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byt
 
 	schema.Type = type0
 	schema.Description = Markdown(desc)
-	if type0 == "array" {
+	if type0 == Array {
 		schema.Items = &Schema{Type: type1}
 	}
 
-	if p != nil && !isOptional(string(optional)) {
+	opt, def, err := parseOptional(type0, optional)
+	if err != nil {
+		return err
+	}
+	if def != nil {
+		schema.Default = def
+	}
+	if p != nil && !opt {
 		if p.Required == nil {
 			p.Required = make([]string, 0, 10)
 		}
@@ -153,7 +159,7 @@ func parseType(tag *lexer.Tag, typ []byte) (t1, t2 string, err error) {
 	}
 
 	type0 := string(types[0])
-	if type0 != "array" {
+	if type0 != Array {
 		return type0, "", nil
 	}
 
@@ -164,8 +170,29 @@ func parseType(tag *lexer.Tag, typ []byte) (t1, t2 string, err error) {
 	return type0, string(types[1]), nil
 }
 
-func isOptional(optional string) bool {
-	return strings.ToLower(optional) != "required"
+// 分析可选类型，格式如下
+//  optional
+//  required
+//  optional.defaultvalue
+func parseOptional(typ string, optional []byte) (bool, interface{}, error) {
+	index := bytes.IndexByte(optional, '.')
+	if index < 0 {
+		return isOptional(optional), nil, nil
+	}
+
+	opt := isOptional(optional[:index])
+	fn := getConvertFunc(typ)
+	val, err := fn(string(optional[index+1:]))
+	if err != nil {
+		return false, nil, err
+	}
+	return opt, val, nil
+}
+
+var requiredBytes = []byte("required")
+
+func isOptional(optional []byte) bool {
+	return !bytes.Equal(bytes.ToLower(optional), requiredBytes)
 }
 
 // 分析枚举内容
@@ -210,20 +237,7 @@ LOOP:
 }
 
 func convertEnumType(enum []string, typ string) ([]interface{}, error) {
-	fn := func(v string) (interface{}, error) { return v, nil }
-
-	switch typ {
-	case Number, Integer:
-		fn = func(v string) (interface{}, error) {
-			return strconv.ParseInt(v, 10, 64)
-		}
-	case Bool:
-		fn = func(v string) (interface{}, error) {
-			return strconv.ParseBool(v)
-		}
-	default:
-		// 其它的都采用默认值
-	}
+	fn := getConvertFunc(typ)
 
 	ret := make([]interface{}, 0, len(enum))
 	for _, elem := range enum {
@@ -236,3 +250,31 @@ func convertEnumType(enum []string, typ string) ([]interface{}, error) {
 
 	return ret, nil
 }
+
+type convertFunc func(val string) (interface{}, error)
+
+func getConvertFunc(typ string) convertFunc {
+	fn, found := converters[typ]
+	if !found {
+		return stringConvert
+	}
+	return fn
+}
+
+var (
+	numberConvert = func(v string) (interface{}, error) {
+		return strconv.ParseInt(v, 10, 64)
+	}
+	stringConvert = func(v string) (interface{}, error) {
+		return v, nil
+	}
+	boolConvert = func(v string) (interface{}, error) {
+		return strconv.ParseBool(v)
+	}
+	converters = map[string]convertFunc{
+		Number:  numberConvert,
+		Integer: numberConvert,
+		String:  stringConvert,
+		Bool:    boolConvert,
+	}
+)

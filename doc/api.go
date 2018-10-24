@@ -93,39 +93,21 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 				api.Params = make([]*Param, 0, 10)
 			}
 
-			params := tag.Words(4)
-			if len(params) != 4 {
-				return tag.ErrInvalidFormat()
+			p, err := newParam(tag)
+			if err != nil {
+				return err
 			}
-
-			api.Queries = append(api.Queries, &Param{
-				Name:     string(params[0]),
-				Summary:  string(params[3]),
-				Optional: true, // TODO
-				Type: &Schema{
-					Type:    string(params[1]),
-					Default: string(params[2]),
-				},
-			})
+			api.Queries = append(api.Queries, p)
 		case "@apiparam":
 			if api.Params == nil {
 				api.Params = make([]*Param, 0, 10)
 			}
 
-			params := tag.Words(4)
-			if len(params) != 4 {
-				return tag.ErrInvalidFormat()
+			p, err := newParam(tag)
+			if err != nil {
+				return err
 			}
-
-			api.Params = append(api.Params, &Param{
-				Name:     string(params[0]),
-				Summary:  string(params[3]),
-				Optional: true,
-				Type: &Schema{
-					Type:    string(params[1]),
-					Default: string(params[2]),
-				},
-			})
+			api.Params = append(api.Params, p)
 		default:
 			l.Backup(tag)
 			return nil

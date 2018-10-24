@@ -17,20 +17,20 @@ func TestBuildSchema(t *testing.T) {
 	tag := &lexer.Tag{}
 
 	schema := &Schema{}
-	a.NotError(buildSchema(tag, schema, nil, []byte("object"), []byte("required"), []byte("desc")))
+	a.NotError(buildSchema(tag, schema, nil, []byte("object"), requiredBytes, []byte("desc")))
 	a.Equal(schema.Type, "object")
 
 	schema = &Schema{}
 	a.NotError(buildSchema(tag, schema, []byte("array"), []byte("array.object"), []byte("required"), []byte("desc")))
 	arr := schema.Properties["array"]
 	a.NotNil(arr)
-	a.Equal(arr.Type, "array")
-	a.Equal(arr.Items.Type, "object")
+	a.Equal(arr.Type, Array)
+	a.Equal(arr.Items.Type, Object)
 	a.Equal(len(schema.Required), 1).
 		Equal(schema.Required[0], "array")
 
 	schema = &Schema{}
-	a.NotError(buildSchema(tag, schema, []byte("obj.array"), []byte("array.object"), []byte("required"), []byte("desc")))
+	a.NotError(buildSchema(tag, schema, []byte("obj.array"), []byte("array.object"), requiredBytes, []byte("desc")))
 	obj := schema.Properties["obj"]
 	a.NotNil(obj)
 	arr = obj.Properties["array"]
@@ -45,9 +45,9 @@ func TestBuildSchema(t *testing.T) {
 func TestIsOptional(t *testing.T) {
 	a := assert.New(t)
 
-	a.False(isOptional("required"))
-	a.True(isOptional("optional"))
-	a.True(isOptional(""))
+	a.False(isOptional(requiredBytes))
+	a.True(isOptional([]byte("optional")))
+	a.True(isOptional([]byte("")))
 }
 
 func TestEnum(t *testing.T) {
