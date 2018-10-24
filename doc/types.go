@@ -87,26 +87,32 @@ type Example struct {
 //      "name": "name",
 //  }
 func (body *Body) parseExample(tag *lexer.Tag) error {
-	data := tag.Split(3)
-	if len(data) != 3 {
+	lines := tag.Lines(2)
+	if len(lines) != 2 {
 		return tag.ErrInvalidFormat()
 	}
+
+	words := lexer.SplitWords(lines[0], 2)
 
 	if body.Examples == nil {
 		body.Examples = make([]*Example, 0, 3)
 	}
 
-	body.Examples = append(body.Examples, &Example{
-		Mimetype: string(data[0]),
-		Summary:  string(data[1]),
-		Value:    string(data[2]),
-	})
+	example := &Example{
+		Mimetype: string(words[0]),
+		Value:    string(lines[1]),
+	}
+	if len(words) == 2 { // 如果存在简介
+		example.Summary = string(words[1])
+	}
+
+	body.Examples = append(body.Examples, example)
 
 	return nil
 }
 
 func (body *Body) parseHeader(tag *lexer.Tag) error {
-	data := tag.Split(3)
+	data := tag.Words(3)
 	if len(data) != 3 {
 		return tag.ErrInvalidFormat()
 	}
@@ -118,14 +124,14 @@ func (body *Body) parseHeader(tag *lexer.Tag) error {
 	body.Headers = append(body.Headers, &Header{
 		Name:     string(data[0]),
 		Summary:  string(data[2]),
-		Optional: isRequired(string(data[1])),
+		Optional: isOptional(string(data[1])),
 	})
 
 	return nil
 }
 
 func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
-	data := tag.Split(3)
+	data := tag.Words(3)
 	if len(data) != 3 {
 		return nil, tag.ErrInvalidFormat()
 	}
@@ -151,7 +157,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 				return nil, err
 			}
 		case "@apiparam":
-			data := tag.Split(4)
+			data := tag.Words(4)
 			if len(data) != 4 {
 				return nil, tag.ErrInvalidFormat()
 			}
@@ -168,13 +174,31 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 	return resp, nil
 }
 
+// 解析链接元素，格式如下：
+//  @tag text https://example.com
+func newLink(tag *lexer.Tag) (*Link, error) {
+	data := tag.Words(2)
+	if len(data) != 2 {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	if !is.URL(data[1]) {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	return &Link{
+		Text: string(data[0]),
+		URL:  string(data[1]),
+	}, nil
+}
+
 // 解析联系人标签内容，格式可以是：
 //  @apicontact name xx@example.com https://example.com
 //  @apicontact name https://example.com xx@example.com
 //  @apicontact name xx@example.com
 //  @apicontact name https://example.com
 func newContact(tag *lexer.Tag) (*Contact, error) {
-	data := tag.Split(3)
+	data := tag.Words(3)
 
 	if len(data) < 2 {
 		return nil, tag.ErrInvalidFormat()

@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/issue9/is"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/doc/lexer"
@@ -160,7 +159,7 @@ func (doc *Doc) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 // 解析 @apiTag 标签，可以是以下格式
 //  @apiTag admin description
 func (doc *Doc) parseTag(tag *lexer.Tag) error {
-	data := tag.Split(2)
+	data := tag.Words(2)
 	if len(data) != 2 {
 		return tag.ErrInvalidFormat()
 	}
@@ -181,7 +180,7 @@ func (doc *Doc) parseTag(tag *lexer.Tag) error {
 //  @apiserver admin https://api1.example.com description
 //  @apiserver admin https://api1.example.com
 func (doc *Doc) parseServer(tag *lexer.Tag) error {
-	data := tag.Split(3)
+	data := tag.Words(3)
 	if len(data) < 2 { // 描述为可选字段
 		return tag.ErrInvalidFormat()
 	}
@@ -202,22 +201,11 @@ func (doc *Doc) parseServer(tag *lexer.Tag) error {
 	return nil
 }
 
-func (doc *Doc) parseLicense(tag *lexer.Tag) error {
+func (doc *Doc) parseLicense(tag *lexer.Tag) (err error) {
 	if doc.License != nil {
 		return tag.ErrDuplicateTag()
 	}
 
-	data := tag.Split(2)
-	if len(data) != 2 {
-		return tag.ErrInvalidFormat()
-	}
-	if !is.URL(data[1]) {
-		return tag.ErrInvalidFormat()
-	}
-	doc.License = &Link{
-		Text: string(data[0]),
-		URL:  string(data[1]),
-	}
-
-	return nil
+	doc.License, err = newLink(tag)
+	return err
 }

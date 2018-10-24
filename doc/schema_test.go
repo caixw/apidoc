@@ -42,12 +42,12 @@ func TestBuildSchema(t *testing.T) {
 
 }
 
-func TestIsRequired(t *testing.T) {
+func TestIsOptional(t *testing.T) {
 	a := assert.New(t)
 
-	a.True(isRequired("required"))
-	a.False(isRequired("optional"))
-	a.False(isRequired(""))
+	a.False(isOptional("required"))
+	a.True(isOptional("optional"))
+	a.True(isOptional(""))
 }
 
 func TestEnum(t *testing.T) {

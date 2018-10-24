@@ -60,7 +60,7 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 	if api.Method != "" || api.Path != "" || api.Summary != "" {
 		return tag.ErrDuplicateTag()
 	}
-	data := tag.Split(3)
+	data := tag.Words(3)
 	if len(data) != 3 {
 		return tag.ErrInvalidFormat()
 	}
@@ -93,7 +93,7 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 				api.Params = make([]*Param, 0, 10)
 			}
 
-			params := tag.Split(4)
+			params := tag.Words(4)
 			if len(params) != 4 {
 				return tag.ErrInvalidFormat()
 			}
@@ -112,7 +112,7 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 				api.Params = make([]*Param, 0, 10)
 			}
 
-			params := tag.Split(4)
+			params := tag.Words(4)
 			if len(params) != 4 {
 				return tag.ErrInvalidFormat()
 			}
@@ -135,7 +135,7 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 }
 
 func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
-	data := tag.Split(3)
+	data := tag.Words(3)
 	if len(data) != 3 {
 		return tag.ErrInvalidFormat()
 	}
@@ -165,7 +165,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 				return err
 			}
 		case "@apiparam":
-			params := tag.Split(4)
+			params := tag.Words(4)
 			if len(params) != 4 {
 				return tag.ErrInvalidFormat()
 			}

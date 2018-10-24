@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"bytes"
 	"strconv"
+	"strings"
 	"unicode"
 
 	"github.com/caixw/apidoc/doc/lexer"
@@ -124,7 +125,7 @@ func buildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byt
 		schema.Items = &Schema{Type: type1}
 	}
 
-	if p != nil && isRequired(string(optional)) {
+	if p != nil && !isOptional(string(optional)) {
 		if p.Required == nil {
 			p.Required = make([]string, 0, 10)
 		}
@@ -163,15 +164,8 @@ func parseType(tag *lexer.Tag, typ []byte) (t1, t2 string, err error) {
 	return type0, string(types[1]), nil
 }
 
-func isRequired(optional string) bool {
-	switch optional {
-	case "required":
-		return true
-	case "optional":
-		return false
-	default:
-		return false
-	}
+func isOptional(optional string) bool {
+	return strings.ToLower(optional) != "required"
 }
 
 // 分析枚举内容

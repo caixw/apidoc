@@ -36,7 +36,7 @@ func New(block input.Block) *Lexer {
 }
 
 func newTag(file string, line int, data []byte) *Tag {
-	strs := split(data, 2)
+	strs := SplitWords(data, 2)
 
 	tag := &Tag{
 		File: file,
@@ -106,37 +106,55 @@ LOOP:
 	}
 }
 
-// Split 将 tag.Data 以空隔分成 num 个数组。
+// Words 将 tag.Data 以空隔分成 num 个数组。
+//
 // 如果不够数量，则返回实际数量的元素。
-func (tag *Tag) Split(num int) [][]byte {
-	return split(tag.Data, num)
+func (tag *Tag) Words(num int) [][]byte {
+	return SplitWords(tag.Data, num)
 }
 
-// 分隔成指定大小的字符串数组
-func split(data []byte, size int) [][]byte {
+// Lines 分成指定的行并返回
+//
+// 如果不够数量，则返回实际数量的元素。
+func (tag *Tag) Lines(num int) [][]byte {
+	return splitLines(tag.Data, num)
+}
+
+// SplitWords 将 data 以空隔分成 num 个数组。
+//
+// 如果不够数量，则返回实际数量的元素。
+func SplitWords(data []byte, size int) [][]byte {
+	return splitFunc(data, size, func(b byte) bool { return unicode.IsSpace(rune(b)) })
+}
+
+func splitLines(data []byte, size int) [][]byte {
+	return splitFunc(data, size, func(b byte) bool { return b == '\n' })
+}
+
+func splitFunc(data []byte, size int, fn func(b byte) bool) [][]byte {
 	ret := make([][]byte, 0, size)
 	start := 0
 	pos := 0
-	isspace := true // 前一个字符是否为空白字符
+	issperator := true // 前一个字符是否为分隔符
 
 	for ; ; pos++ {
 		switch {
 		case pos >= len(data): // EOF
 			return append(ret, data[start:])
-		case unicode.IsSpace(rune(data[pos])):
-			if !isspace {
+		case fn(data[pos]):
+			if !issperator {
 				ret = append(ret, data[start:pos])
 				start = pos
-				isspace = true
+				issperator = true
 			}
 		default:
-			if isspace {
+			if issperator {
 				if len(ret) >= size-1 {
 					return append(ret, data[pos:])
 				}
 
 				start = pos
-				isspace = false
+				issperator = false
 			}
 		} // end switch
 	} // end for

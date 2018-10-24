@@ -53,24 +53,40 @@ markdown desc line2`).Equal(tag.Name, "@api")
 	a.Nil(tag).True(eof)
 }
 
-func TestSplit(t *testing.T) {
+func TestSplitWords(t *testing.T) {
 	a := assert.New(t)
 
 	tag := []byte("@tag s1\ts2  \n  s3")
 
-	bs := split(tag, 1)
+	bs := SplitWords(tag, 1)
 	a.Equal(bs, [][]byte{[]byte("@tag s1\ts2  \n  s3")})
 
-	bs = split(tag, 2)
+	bs = SplitWords(tag, 2)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1\ts2  \n  s3")})
 
-	bs = split(tag, 3)
+	bs = SplitWords(tag, 3)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2  \n  s3")})
 
-	bs = split(tag, 4)
+	bs = SplitWords(tag, 4)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2"), []byte("s3")})
 
 	// 不够
-	bs = split(tag, 5)
+	bs = SplitWords(tag, 5)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2"), []byte("s3")})
+}
+
+func TestSplitLines(t *testing.T) {
+	a := assert.New(t)
+
+	tag := []byte("@tag s1\ts2  \n  s3")
+
+	bs := splitLines(tag, 1)
+	a.Equal(bs, [][]byte{[]byte("@tag s1\ts2  \n  s3")})
+
+	bs = splitLines(tag, 2)
+	a.Equal(bs, [][]byte{[]byte("@tag s1\ts2  "), []byte("  s3")})
+
+	// 不够
+	bs = splitLines(tag, 3)
+	a.Equal(bs, [][]byte{[]byte("@tag s1\ts2  "), []byte("  s3")})
 }

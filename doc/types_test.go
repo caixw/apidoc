@@ -12,6 +12,59 @@ import (
 	"github.com/caixw/apidoc/doc/lexer"
 )
 
+func TestBody_parseExample(t *testing.T) {
+	a := assert.New(t)
+	body := &Body{}
+
+	a.NotError(body.parseExample(&lexer.Tag{Data: []byte(`application/json summary text
+{
+	"id": 1,
+	"name": "name"
+}`)}))
+	e := body.Examples[0]
+	a.Equal(e.Mimetype, "application/json").
+		Equal(e.Summary, "summary text").
+		Equal(e.Value, `{
+	"id": 1,
+	"name": "name"
+}`)
+}
+
+func TestBody_parseHeader(t *testing.T) {
+	a := assert.New(t)
+	body := &Body{}
+
+	a.NotError(body.parseHeader(&lexer.Tag{Data: []byte(`content-type required json 或是 xml`)}))
+	h := body.Headers[0]
+	a.Equal(h.Summary, "json 或是 xml").
+		Equal(h.Name, "content-type").
+		False(h.Optional)
+
+	a.NotError(body.parseHeader(&lexer.Tag{Data: []byte(`ETag optional etag`)}))
+	h = body.Headers[1]
+	a.Equal(h.Summary, "etag").
+		Equal(h.Name, "ETag").
+		True(h.Optional)
+}
+
+func TestNewLink(t *testing.T) {
+	a := assert.New(t)
+
+	// 格式不够长
+	l, err := newLink(&lexer.Tag{Data: []byte("text")})
+	a.Error(err).Nil(l)
+
+	// 格式不正确
+	l, err = newLink(&lexer.Tag{Data: []byte("text https://")})
+	a.Error(err).Nil(l)
+
+	l, err = newLink(&lexer.Tag{Data: []byte("text  https://example.com")})
+	a.NotError(err).
+		NotNil(l).
+		Equal(l.Text, "text").
+		Equal(l.URL, "https://example.com")
+}
+
 func TestNewContact(t *testing.T) {
 	a := assert.New(t)
 
