@@ -57,20 +57,20 @@ var separatorTag = []byte{','}
 
 // 分析 @api 以及子标签
 func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
+	if api.Method != "" || api.Path != "" || api.Summary != "" {
+		return tag.ErrDuplicateTag()
+	}
+	data := tag.Split(3)
+	if len(data) != 3 {
+		return tag.ErrInvalidFormat()
+	}
+
+	api.Method = strings.ToUpper(string(data[0])) // TODO 验证请求方法
+	api.Path = string(data[1])
+	api.Summary = string(data[2])
+
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
 		switch strings.ToLower(tag.Name) {
-		case "@api":
-			if api.Method != "" || api.Path != "" || api.Summary != "" {
-				return tag.ErrDuplicateTag()
-			}
-			data := tag.Split(3)
-			if len(data) != 3 {
-				return tag.ErrInvalidFormat()
-			}
-
-			api.Method = strings.ToUpper(string(data[0])) // TODO 验证请求方法
-			api.Path = string(data[1])
-			api.Summary = string(data[2])
 		case "@apiserver":
 			if api.Server != "" {
 				return tag.ErrDuplicateTag()
