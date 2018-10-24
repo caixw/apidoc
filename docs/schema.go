@@ -5,7 +5,10 @@
 package docs
 
 import (
+	"bufio"
 	"bytes"
+	"strconv"
+	"unicode"
 
 	"github.com/caixw/apidoc/docs/lexer"
 )
@@ -128,6 +131,14 @@ func buildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byt
 		p.Required = append(p.Required, string(last))
 	}
 
+	enums := enum(desc)
+	if len(enums) > 0 {
+		schema.Enum, err = convertEnumType(enums, schema.Type)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -164,8 +175,70 @@ func isRequired(optional string) bool {
 }
 
 // 分析枚举内容
-func enum() ([]string, error) {
-	// TODO
+//
+// 支持类似的的格式：
+//  - s1 xxxx
+//  - s2 xx
+//  * s3 xxxx
+// 将返回 s1,s2,s3
+func enum(data []byte) []string {
+	enum := make([]string, 0, 5)
 
-	return nil, nil
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	scanner.Split(bufio.ScanLines)
+
+LOOP:
+	for scanner.Scan() {
+		line := scanner.Bytes()
+		line = bytes.TrimSpace(line)
+
+		// 过滤非 - 和 * 开头的行
+		if (len(line) == 0) || (line[0] != '*' && line[0] != '-') {
+			continue
+		}
+
+		// 去掉 * - 和空格
+		line = bytes.TrimLeftFunc(line, func(r rune) bool {
+			return r == '-' || r == '*' || unicode.IsSpace(r)
+		})
+
+		// 拿到首单词
+		str := string(line)
+		for index, c := range str {
+			if unicode.IsSpace(c) {
+				enum = append(enum, str[:index])
+				continue LOOP
+			}
+		}
+	}
+
+	return enum
+}
+
+func convertEnumType(enum []string, typ string) ([]interface{}, error) {
+	fn := func(v string) (interface{}, error) { return v, nil }
+
+	switch typ {
+	case Number, Integer:
+		fn = func(v string) (interface{}, error) {
+			return strconv.ParseInt(v, 10, 64)
+		}
+	case Bool:
+		fn = func(v string) (interface{}, error) {
+			return strconv.ParseBool(v)
+		}
+	default:
+		// 其它的都采用默认值
+	}
+
+	ret := make([]interface{}, 0, len(enum))
+	for _, elem := range enum {
+		v, err := fn(elem)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, v)
+	}
+
+	return ret, nil
 }
