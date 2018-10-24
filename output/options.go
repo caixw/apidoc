@@ -27,16 +27,6 @@ const (
 	RamlJSON    = "raml+json"
 )
 
-var (
-	filenames = map[string]string{
-		ApidocJSON:  "apidoc.json",
-		ApidocYAML:  "apidoc.yaml",
-		OpenapiJSON: "openapi.json",
-		OpenapiYAML: "openapi.yaml",
-		RamlJSON:    "raml.json",
-	}
-)
-
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
 	// 文档的保存路径，包含目录和文件名，若为空，则为当前目录下的
