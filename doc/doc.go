@@ -41,7 +41,7 @@ type Doc struct {
 	locker sync.Mutex
 }
 
-// Parse 分析从 block 中获取的代码块。并填充到 Docs 中
+// Parse 分析从 block 中获取的代码块。并填充到 Doc 中
 func Parse(errlog *log.Logger, block chan input.Block) *Doc {
 	doc := &Doc{
 		APIDoc: vars.Version(),
@@ -79,7 +79,7 @@ func (doc *Doc) parseBlock(block input.Block) error {
 	return nil
 }
 
-func (doc *Doc) parseAPIDoc(l *lexer.Lexer) error {
+func (doc *Doc) parseAPIDoc(l *lexer.Lexer) (err error) {
 	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
 		switch strings.ToLower(tag.Name) {
 		case "@apidoc":
@@ -91,19 +91,23 @@ func (doc *Doc) parseAPIDoc(l *lexer.Lexer) error {
 			}
 			doc.Title = string(tag.Data)
 		case "@apitag":
-			if err := doc.parseTag(tag); err != nil {
+			if err = doc.parseTag(tag); err != nil {
 				return err
 			}
 		case "@apilicense":
-			if err := doc.parseLicense(tag); err != nil {
+			if err = doc.parseLicense(tag); err != nil {
 				return err
 			}
 		case "@apiserver":
-			if err := doc.parseServer(tag); err != nil {
+			if err = doc.parseServer(tag); err != nil {
 				return err
 			}
 		case "@apicontact":
-			if err := doc.parseContact(tag); err != nil {
+			if doc.Contact != nil {
+				return tag.ErrDuplicateTag()
+			}
+
+			if doc.Contact, err = newContact(tag); err != nil {
 				return err
 			}
 		case "@apiversion":
@@ -216,52 +220,4 @@ func (doc *Doc) parseLicense(tag *lexer.Tag) error {
 	}
 
 	return nil
-}
-
-func (doc *Doc) parseContact(tag *lexer.Tag) error {
-	if doc.Contact != nil {
-		return tag.ErrDuplicateTag()
-	}
-
-	data := tag.Split(3)
-
-	if len(data) < 2 || len(data) > 3 {
-		return tag.ErrInvalidFormat()
-	}
-
-	doc.Contact = &Contact{Name: string(data[0])}
-	v := string(data[1])
-	switch checkContractType(v) {
-	case 1:
-		doc.Contact.URL = v
-	case 2:
-		doc.Contact.Email = v
-	default:
-		return tag.ErrInvalidFormat()
-	}
-
-	if len(data) == 3 {
-		v := string(data[2])
-		switch checkContractType(v) {
-		case 1:
-			doc.Contact.URL = v
-		case 2:
-			doc.Contact.Email = v
-		default:
-			return tag.ErrInvalidFormat()
-		}
-	}
-
-	return nil
-}
-
-func checkContractType(v string) int8 {
-	switch {
-	case is.URL(v):
-		return 1
-	case is.Email(v):
-		return 2
-	default:
-		return 0
-	}
 }

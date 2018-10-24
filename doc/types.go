@@ -7,6 +7,8 @@ package doc
 import (
 	"strings"
 
+	"github.com/issue9/is"
+
 	"github.com/caixw/apidoc/doc/lexer"
 )
 
@@ -78,6 +80,12 @@ type Example struct {
 	Value    string `yaml:"value" json:"value"` // 示例内容
 }
 
+// 解析示例代码，格式如下：
+//  @apiExample application/json
+//  {
+//      "id": 1,
+//      "name": "name",
+//  }
 func (body *Body) parseExample(tag *lexer.Tag) error {
 	data := tag.Split(3)
 	if len(data) != 3 {
@@ -158,4 +166,53 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 	}
 
 	return resp, nil
+}
+
+// 解析联系人标签内容，格式可以是：
+//  @apicontact name xx@example.com https://example.com
+//  @apicontact name https://example.com xx@example.com
+//  @apicontact name xx@example.com
+//  @apicontact name https://example.com
+func newContact(tag *lexer.Tag) (*Contact, error) {
+	data := tag.Split(3)
+
+	if len(data) < 2 {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	contact := &Contact{Name: string(data[0])}
+	v := string(data[1])
+	switch checkContactType(v) {
+	case 1:
+		contact.URL = v
+	case 2:
+		contact.Email = v
+	default:
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	if len(data) == 3 {
+		v := string(data[2])
+		switch checkContactType(v) {
+		case 1:
+			contact.URL = v
+		case 2:
+			contact.Email = v
+		default:
+			return nil, tag.ErrInvalidFormat()
+		}
+	}
+
+	return contact, nil
+}
+
+func checkContactType(v string) int8 {
+	switch {
+	case is.Email(v): // Email 也属于一种 URL
+		return 2
+	case is.URL(v):
+		return 1
+	default:
+		return 0
+	}
 }
