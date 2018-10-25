@@ -201,21 +201,16 @@ func newParam(tag *lexer.Tag) (*Param, error) {
 		return nil, tag.ErrInvalidFormat()
 	}
 
-	opt, def, err := parseOptional(string(data[1]), data[2])
-	if err != nil {
+	schema := &Schema{}
+	if err := buildSchema(tag, schema, nil, data[1], data[2], nil); err != nil {
 		return nil, err
-	}
-
-	schema := &Schema{
-		Type:    string(data[1]),
-		Default: def,
 	}
 
 	return &Param{
 		Name:     string(data[0]),
 		Summary:  string(data[3]),
 		Type:     schema,
-		Optional: opt,
+		Optional: schema.Default == nil,
 	}, nil
 }
 

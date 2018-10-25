@@ -79,18 +79,21 @@ type Schema struct {
 var seqaratorDot = []byte{'.'}
 
 // 用于将一条语名解析成 Schema 对象，语句可能是以下格式：
-// @param list.groups array.string optional.locked desc markdown
+// @param list.groups array.string [locked,deleted] desc markdown
 //  * xx: xxxxx
 //  * xx: xxxxx
 //
 //
 // name 表示变量的名称。若为空，表示是顶层的对象。
+// 若子元素，则需要多层嵌套，比如：
+//  list.user.id
 //
-// typ 表示类型中的内容，比如 array, object, array.string
+// typ 表示类型中的内容，比如：
+//  array, object, array.string
 //
 // optional 表示可选参数中的描述内容，有以下三种方式：
 //  - optional 表示可选，默认为零值
-//  - optional.xx 表示可选，默认值为 xx
+//  - xx 表示可选，默认值为 xx
 //  - required 表示必须
 func buildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byte) error {
 	type0, type1, err := parseType(tag, typ)
@@ -128,14 +131,14 @@ func buildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byt
 	if err != nil {
 		return err
 	}
-	if def != nil {
-		schema.Default = def
-	}
+
 	if p != nil && !opt {
 		if p.Required == nil {
 			p.Required = make([]string, 0, 10)
 		}
 		p.Required = append(p.Required, string(last))
+	} else {
+		schema.Default = def
 	}
 
 	enums := parseEnum(desc)
