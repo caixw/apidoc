@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package doc
+package schema
 
 import (
 	"testing"
@@ -17,11 +17,11 @@ func TestBuildSchema(t *testing.T) {
 	tag := &lexer.Tag{}
 
 	schema := &Schema{}
-	a.NotError(buildSchema(tag, schema, nil, []byte("object"), requiredBytes, []byte("desc")))
+	a.NotError(BuildSchema(tag, schema, nil, []byte("object"), requiredBytes, []byte("desc")))
 	a.Equal(schema.Type, "object")
 
 	schema = &Schema{}
-	a.NotError(buildSchema(tag, schema, []byte("array"), []byte("array.object"), []byte("required"), []byte("desc")))
+	a.NotError(BuildSchema(tag, schema, []byte("array"), []byte("array.object"), []byte("required"), []byte("desc")))
 	arr := schema.Properties["array"]
 	a.NotNil(arr)
 	a.Equal(arr.Type, Array)
@@ -30,7 +30,7 @@ func TestBuildSchema(t *testing.T) {
 		Equal(schema.Required[0], "array")
 
 	schema = &Schema{}
-	a.NotError(buildSchema(tag, schema, []byte("obj.array"), []byte("array.object"), requiredBytes, []byte("desc")))
+	a.NotError(BuildSchema(tag, schema, []byte("obj.array"), []byte("array.object"), requiredBytes, []byte("desc")))
 	obj := schema.Properties["obj"]
 	a.NotNil(obj)
 	arr = obj.Properties["array"]

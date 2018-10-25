@@ -2,7 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package doc
+// Package schema 定义 JSON Schema 的相关操作
+package schema
 
 import (
 	"bufio"
@@ -70,7 +71,7 @@ type Schema struct {
 	Ref         string             `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 
 	Title       string      `json:"title,omitempty" yaml:"title,omitempty"`
-	Description Markdown    `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string      `json:"description,omitempty" yaml:"description,omitempty"`
 	Default     interface{} `json:"default,omitempty" yaml:"default,omitempty"`
 	ReadOnly    bool        `json:"readOnly,omitempty" yaml:"readOnly,omitempty"`
 	WriteOnly   bool        `json:"writeOnly,omitempty" yaml:"writeOnly,omitempty"`
@@ -78,7 +79,7 @@ type Schema struct {
 
 var seqaratorDot = []byte{'.'}
 
-// 用于将一条语名解析成 Schema 对象，语句可能是以下格式：
+// BuildSchema 用于将一条语名解析成 Schema 对象，语句可能是以下格式：
 // @param list.groups array.string [locked,deleted] desc markdown
 //  * xx: xxxxx
 //  * xx: xxxxx
@@ -95,7 +96,7 @@ var seqaratorDot = []byte{'.'}
 //  - optional 表示可选，默认为零值
 //  - xx 表示可选，默认值为 xx
 //  - required 表示必须
-func buildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byte) error {
+func BuildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byte) error {
 	type0, type1, err := parseType(tag, typ)
 	if err != nil {
 		return err
@@ -122,7 +123,7 @@ func buildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byt
 	}
 
 	schema.Type = type0
-	schema.Description = Markdown(desc)
+	schema.Description = string(desc)
 	if type0 == Array {
 		schema.Items = &Schema{Type: type1}
 	}

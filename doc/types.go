@@ -5,11 +5,13 @@
 package doc
 
 import (
+	"bytes"
 	"strings"
 
 	"github.com/issue9/is"
 
 	"github.com/caixw/apidoc/doc/lexer"
+	"github.com/caixw/apidoc/doc/schema"
 )
 
 // Markdown 表示可以使用 markdown 文档
@@ -52,10 +54,10 @@ type Response struct {
 
 // Body 表示请求和返回的共有内容
 type Body struct {
-	Mimetype string     `yaml:"mimetype,omitempty" json:"mimetype,omitempty"`
-	Headers  []*Header  `yaml:"headers,omitempty" json:"headers,omitempty"`
-	Type     *Schema    `yaml:"type" json:"type"`
-	Examples []*Example `yaml:"examples,omitempty" json:"examples,omitempty"`
+	Mimetype string         `yaml:"mimetype,omitempty" json:"mimetype,omitempty"`
+	Headers  []*Header      `yaml:"headers,omitempty" json:"headers,omitempty"`
+	Type     *schema.Schema `yaml:"type" json:"type"`
+	Examples []*Example     `yaml:"examples,omitempty" json:"examples,omitempty"`
 }
 
 // Header 报头
@@ -67,10 +69,10 @@ type Header struct {
 
 // Param 简单参数的描述，比如查询参数等
 type Param struct {
-	Name     string  `yaml:"name" json:"name"`                             // 参数名称
-	Type     *Schema `yaml:"type" json:"type"`                             // 类型
-	Summary  string  `yaml:"summary" json:"summary"`                       // 参数介绍
-	Optional bool    `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
+	Name     string         `yaml:"name" json:"name"`                             // 参数名称
+	Type     *schema.Schema `yaml:"type" json:"type"`                             // 类型
+	Summary  string         `yaml:"summary" json:"summary"`                       // 参数介绍
+	Optional bool           `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
 }
 
 // Example 示例
@@ -130,14 +132,20 @@ func (body *Body) parseHeader(tag *lexer.Tag) error {
 	return nil
 }
 
+var requiredBytes = []byte("required")
+
+func isOptional(data []byte) bool {
+	return bytes.Equal(data, requiredBytes)
+}
+
 func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 	data := tag.Words(3)
 	if len(data) != 3 {
 		return nil, tag.ErrInvalidFormat()
 	}
 
-	schema := &Schema{}
-	if err := buildSchema(tag, schema, nil, data[1], nil, data[2]); err != nil {
+	s := &schema.Schema{}
+	if err := schema.BuildSchema(tag, s, nil, data[1], nil, data[2]); err != nil {
 		return nil, err
 	}
 	resp := &Response{
@@ -162,7 +170,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 				return nil, tag.ErrInvalidFormat()
 			}
 
-			if err := buildSchema(tag, schema, data[0], data[1], data[2], data[3]); err != nil {
+			if err := schema.BuildSchema(tag, s, data[0], data[1], data[2], data[3]); err != nil {
 				return nil, err
 			}
 		default:
@@ -201,16 +209,16 @@ func newParam(tag *lexer.Tag) (*Param, error) {
 		return nil, tag.ErrInvalidFormat()
 	}
 
-	schema := &Schema{}
-	if err := buildSchema(tag, schema, nil, data[1], data[2], nil); err != nil {
+	s := &schema.Schema{}
+	if err := schema.BuildSchema(tag, s, nil, data[1], data[2], nil); err != nil {
 		return nil, err
 	}
 
 	return &Param{
 		Name:     string(data[0]),
 		Summary:  string(data[3]),
-		Type:     schema,
-		Optional: schema.Default == nil,
+		Type:     s,
+		Optional: s.Default == nil,
 	}, nil
 }
 

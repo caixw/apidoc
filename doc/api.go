@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/doc/lexer"
+	"github.com/caixw/apidoc/doc/schema"
 )
 
 // API 表示单个 API 文档
@@ -128,11 +129,11 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 
 	req := &Request{
 		Mimetype: string(data[1]),
-		Type:     &Schema{},
+		Type:     &schema.Schema{},
 	}
 	api.Requests = append(api.Requests, req)
 
-	if err := buildSchema(tag, req.Type, nil, data[1], nil, data[2]); err != nil {
+	if err := schema.BuildSchema(tag, req.Type, nil, data[1], nil, data[2]); err != nil {
 		return err
 	}
 
@@ -152,7 +153,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 				return tag.ErrInvalidFormat()
 			}
 
-			if err := buildSchema(tag, req.Type, params[0], params[1], params[2], params[3]); err != nil {
+			if err := schema.BuildSchema(tag, req.Type, params[0], params[1], params[2], params[3]); err != nil {
 				return err
 			}
 		default:
