@@ -138,7 +138,7 @@ func buildSchema(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byt
 		p.Required = append(p.Required, string(last))
 	}
 
-	enums := enum(desc)
+	enums := parseEnum(desc)
 	if len(enums) > 0 {
 		schema.Enum, err = convertEnumType(enums, schema.Type)
 		if err != nil {
@@ -202,7 +202,7 @@ func isOptional(optional []byte) bool {
 //  - s2 xx
 //  * s3 xxxx
 // 将返回 s1,s2,s3
-func enum(data []byte) []string {
+func parseEnum(data []byte) []string {
 	enum := make([]string, 0, 5)
 
 	scanner := bufio.NewScanner(bytes.NewReader(data))
@@ -251,8 +251,6 @@ func convertEnumType(enum []string, typ string) ([]interface{}, error) {
 	return ret, nil
 }
 
-type convertFunc func(val string) (interface{}, error)
-
 func getConvertFunc(typ string) convertFunc {
 	fn, found := converters[typ]
 	if !found {
@@ -260,6 +258,9 @@ func getConvertFunc(typ string) convertFunc {
 	}
 	return fn
 }
+
+// 类型转换函数定义
+type convertFunc func(val string) (interface{}, error)
 
 var (
 	numberConvert = func(v string) (interface{}, error) {
@@ -270,6 +271,10 @@ var (
 	}
 	boolConvert = func(v string) (interface{}, error) {
 		return strconv.ParseBool(v)
+	}
+	arrayConvert = func(v string) (interface{}, error) {
+		// TODO
+		return nil, nil
 	}
 	converters = map[string]convertFunc{
 		Number:  numberConvert,

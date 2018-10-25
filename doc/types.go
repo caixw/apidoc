@@ -67,11 +67,10 @@ type Header struct {
 
 // Param 简单参数的描述，比如查询参数等
 type Param struct {
-	Name     string      `yaml:"name" json:"name"`                             // 参数名称
-	Type     string      `yaml:"type" json:"type"`                             // 类型
-	Summary  string      `yaml:"summary" json:"summary"`                       // 参数介绍
-	Optional bool        `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否可以为空
-	Default  interface{} `yaml:"default,omitempty" json:"default,omitempty"`   // 默认值
+	Name     string  `yaml:"name" json:"name"`                             // 参数名称
+	Type     *Schema `yaml:"type" json:"type"`                             // 类型
+	Summary  string  `yaml:"summary" json:"summary"`                       // 参数介绍
+	Optional bool    `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
 }
 
 // Example 示例
@@ -207,11 +206,15 @@ func newParam(tag *lexer.Tag) (*Param, error) {
 		return nil, err
 	}
 
+	schema := &Schema{
+		Type:    string(data[1]),
+		Default: def,
+	}
+
 	return &Param{
 		Name:     string(data[0]),
 		Summary:  string(data[3]),
-		Type:     string(data[1]),
-		Default:  def,
+		Type:     schema,
 		Optional: opt,
 	}, nil
 }

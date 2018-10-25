@@ -50,10 +50,10 @@ func TestIsOptional(t *testing.T) {
 	a.True(isOptional([]byte("")))
 }
 
-func TestEnum(t *testing.T) {
+func TestParseEnum(t *testing.T) {
 	a := assert.New(t)
 
-	enums := enum([]byte(`xx
+	enums := parseEnum([]byte(`xx
 	- state1 状态 1 描述
 	- s2 状态 2 描述
 	* s3 状态 3 描述
