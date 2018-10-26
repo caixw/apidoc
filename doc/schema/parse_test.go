@@ -18,6 +18,11 @@ func TestParseOptional(t *testing.T) {
 		Equal(def, "1").
 		True(opt)
 
+	opt, def, err = parseOptional(String, "", []byte("optional"))
+	a.NotError(err).
+		Nil(def).
+		True(opt)
+
 	opt, def, err = parseOptional(Number, "", []byte("optional.1"))
 	a.NotError(err).
 		Equal(def, 1).

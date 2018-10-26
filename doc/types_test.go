@@ -10,6 +10,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/doc/lexer"
+	"github.com/caixw/apidoc/doc/schema"
 )
 
 func TestBody_parseExample(t *testing.T) {
@@ -45,6 +46,34 @@ func TestBody_parseHeader(t *testing.T) {
 	a.Equal(h.Summary, "etag").
 		Equal(h.Name, "ETag").
 		True(h.Optional)
+}
+
+func TestNewParam(t *testing.T) {
+	a := assert.New(t)
+
+	p, err := newParam(&lexer.Tag{Data: []byte("name string required  名称")})
+	a.NotError(err).
+		NotNil(p).
+		Equal(p.Name, "name").
+		Equal(p.Type.Type, schema.String).
+		False(p.Optional).
+		Equal(p.Summary, "名称")
+
+	p, err = newParam(&lexer.Tag{Data: []byte("name string optional.v1  名称")})
+	a.NotError(err).
+		NotNil(p).
+		Equal(p.Name, "name").
+		Equal(p.Type.Type, schema.String).
+		True(p.Optional).
+		Equal(p.Summary, "名称")
+
+	p, err = newParam(&lexer.Tag{Data: []byte("name string optional  名称")})
+	a.NotError(err).
+		NotNil(p).
+		Equal(p.Name, "name").
+		Equal(p.Type.Type, schema.String).
+		True(p.Optional).
+		Equal(p.Summary, "名称")
 }
 
 func TestNewLink(t *testing.T) {

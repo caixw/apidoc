@@ -218,7 +218,7 @@ func newParam(tag *lexer.Tag) (*Param, error) {
 		Name:     string(data[0]),
 		Summary:  string(data[3]),
 		Type:     s,
-		Optional: s.Default == nil,
+		Optional: s.Default != nil,
 	}, nil
 }
 
