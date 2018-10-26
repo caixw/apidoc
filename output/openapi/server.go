@@ -7,6 +7,7 @@ package openapi
 import (
 	"strings"
 
+	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/internal/locale"
 )
 
@@ -25,6 +26,13 @@ type ServerVariable struct {
 	Enum        []string    `json:"enum,omitempty" yaml:"enum,omitempty"`
 	Default     string      `json:"default" yaml:"default"`
 	Description Description `json:"description,omitempty" yaml:"description,omitempty"`
+}
+
+func newServer(srv *doc.Server) *Server {
+	return &Server{
+		URL:         srv.URL,
+		Description: srv.Description,
+	}
 }
 
 // Sanitize 数据检测

@@ -13,8 +13,30 @@ import (
 )
 
 func parse(doc *doc.Doc) (*OpenAPI, error) {
-	panic("该功能未实现")
-	return nil, nil
+	openapi := &OpenAPI{
+		OpenAPI: doc.APIDoc,
+		Info: &Info{
+			Title:       doc.Title,
+			Description: doc.Content,
+			Contact:     newContact(doc.Contact),
+			License:     newLicense(doc.License),
+			Version:     doc.Version,
+		},
+		Servers: make([]*Server, 0, len(doc.Servers)),
+		Tags:    make([]*Tag, 0, len(doc.Tags)),
+
+		// TODO Paths
+	}
+
+	for _, srv := range doc.Servers {
+		openapi.Servers = append(openapi.Servers, newServer(srv))
+	}
+
+	for _, tag := range doc.Tags {
+		openapi.Tags = append(openapi.Tags, newTag(tag))
+	}
+
+	return openapi, nil
 }
 
 // JSON 输出 JSON 格式数据

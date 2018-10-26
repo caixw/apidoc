@@ -5,6 +5,7 @@
 package openapi
 
 import (
+	"github.com/caixw/apidoc/doc"
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
@@ -72,6 +73,21 @@ func (l *License) Sanitize() *Error {
 	}
 
 	return nil
+}
+
+func newLicense(l *doc.Link) *License {
+	return &License{
+		Name: l.Text,
+		URL:  l.URL,
+	}
+}
+
+func newContact(c *doc.Contact) *Contact {
+	return &Contact{
+		Name:  c.Name,
+		URL:   c.URL,
+		Email: c.Email,
+	}
 }
 
 // Sanitize 数据检测
