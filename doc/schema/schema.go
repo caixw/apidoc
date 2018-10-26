@@ -139,13 +139,6 @@ func Build(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byte) err
 		schema.Default = def
 	}
 
-	enums := parseEnum(desc)
-	if len(enums) > 0 {
-		schema.Enum, err = convertEnumType(enums, schema.Type)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	schema.Enum, err = parseEnum(schema.Type, desc)
+	return err
 }

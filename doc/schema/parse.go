@@ -105,12 +105,14 @@ LOOP:
 
 // 分析枚举内容
 //
+// type 表示希望最终返回的类型。
+//
 // 支持类似的的格式：
 //  - s1 xxxx
 //  - s2 xx
 //  * s3 xxxx
 // 将返回 s1,s2,s3
-func parseEnum(data []byte) []string {
+func parseEnum(typ string, data []byte) ([]interface{}, error) {
 	enum := make([]string, 0, 5)
 
 	scanner := bufio.NewScanner(bytes.NewReader(data))
@@ -141,7 +143,7 @@ LOOP:
 		}
 	}
 
-	return enum
+	return convertEnumType(enum, typ)
 }
 
 func convertEnumType(enum []string, typ string) ([]interface{}, error) {
