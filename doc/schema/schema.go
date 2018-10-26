@@ -76,7 +76,7 @@ type Schema struct {
 
 var seqaratorDot = []byte{'.'}
 
-// Build 用于将一条语名添加到 Schema 对象，作为其字段，语句可能是以下格式：
+// Build 用于将一条语名添加到 Schema 对象，作为其子元素，语句可能是以下格式：
 // @param list.groups array.string [locked,deleted] desc markdown
 //  * xx: xxxxx
 //  * xx: xxxxx
