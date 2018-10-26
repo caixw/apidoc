@@ -133,7 +133,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 	}
 	api.Requests = append(api.Requests, req)
 
-	if err := schema.Build(tag, req.Type, nil, data[1], nil, data[2]); err != nil {
+	if err := req.Type.Build(tag, nil, data[1], nil, data[2]); err != nil {
 		return err
 	}
 
@@ -153,7 +153,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 				return tag.ErrInvalidFormat()
 			}
 
-			if err := schema.Build(tag, req.Type, params[0], params[1], params[2], params[3]); err != nil {
+			if err := req.Type.Build(tag, params[0], params[1], params[2], params[3]); err != nil {
 				return err
 			}
 		default:

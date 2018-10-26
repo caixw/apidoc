@@ -145,7 +145,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 	}
 
 	s := &schema.Schema{}
-	if err := schema.Build(tag, s, nil, data[1], nil, data[2]); err != nil {
+	if err := s.Build(tag, nil, data[1], nil, data[2]); err != nil {
 		return nil, err
 	}
 	resp := &Response{
@@ -170,7 +170,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 				return nil, tag.ErrInvalidFormat()
 			}
 
-			if err := schema.Build(tag, s, data[0], data[1], data[2], data[3]); err != nil {
+			if err := s.Build(tag, data[0], data[1], data[2], data[3]); err != nil {
 				return nil, err
 			}
 		default:
@@ -210,7 +210,7 @@ func newParam(tag *lexer.Tag) (*Param, error) {
 	}
 
 	s := &schema.Schema{}
-	if err := schema.Build(tag, s, nil, data[1], data[2], nil); err != nil {
+	if err := s.Build(tag, nil, data[1], data[2], nil); err != nil {
 		return nil, err
 	}
 

@@ -93,7 +93,7 @@ var seqaratorDot = []byte{'.'}
 //  - optional 表示可选，默认为零值
 //  - xx 表示可选，默认值为 xx
 //  - required 表示必须
-func Build(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byte) error {
+func (schema *Schema) Build(tag *lexer.Tag, name, typ, optional, desc []byte) error {
 	type0, type1, err := parseType(tag, typ)
 	if err != nil {
 		return err
