@@ -38,18 +38,35 @@ func parseType(tag *lexer.Tag, typ []byte) (t1, t2 string, err error) {
 //  optional
 //  required
 //  optional.defaultvalue
-func parseOptional(typ string, optional []byte) (bool, interface{}, error) {
+func parseOptional(typ, subtype string, optional []byte) (opt bool, val interface{}, err error) {
 	index := bytes.IndexByte(optional, '.')
 	if index < 0 {
 		return isOptional(optional), nil, nil
 	}
 
-	opt := isOptional(optional[:index])
-	fn := getConvertFunc(typ)
-	val, err := fn(string(optional[index+1:]))
-	if err != nil {
-		return false, nil, err
+	opt = isOptional(optional[:index])
+
+	optional = optional[index+1:]
+	if typ == Array {
+		fn := getConvertFunc(subtype)
+		data := parseArray(optional)
+		vals := make([]interface{}, 0, len(data))
+		for _, item := range data {
+			v, err := fn(string(item))
+			if err != nil {
+				return false, nil, err
+			}
+			vals = append(vals, v)
+		}
+		val = vals
+	} else {
+		fn := getConvertFunc(typ)
+		val, err = fn(string(optional))
+		if err != nil {
+			return false, nil, err
+		}
 	}
+
 	return opt, val, nil
 }
 
@@ -57,6 +74,33 @@ var requiredBytes = []byte("required")
 
 func isOptional(optional []byte) bool {
 	return !bytes.Equal(bytes.ToLower(optional), requiredBytes)
+}
+
+// 解析数组
+//  "[a1,a2,a3]" ==> {"a1","a2","a3"}
+func parseArray(optional []byte) [][]byte {
+	optional = bytes.TrimFunc(optional, func(r rune) bool {
+		return r == '[' || r == ']'
+	})
+
+	ret := make([][]byte, 0, bytes.Count(optional, []byte{','}))
+LOOP:
+	for {
+		index := bytes.IndexByte(optional, ',')
+		switch {
+		case index < 0:
+			ret = append(ret, bytes.TrimSpace(optional))
+			break LOOP
+		case index > 0:
+			ret = append(ret, bytes.TrimSpace(optional[:index]))
+			optional = optional[index+1:]
+		case index == 0:
+			ret = append(ret, []byte{})
+			optional = optional[1:]
+		}
+	}
+
+	return ret
 }
 
 // 分析枚举内容
@@ -135,10 +179,6 @@ var (
 	}
 	boolConvert = func(v string) (interface{}, error) {
 		return strconv.ParseBool(v)
-	}
-	arrayConvert = func(v string) (interface{}, error) {
-		// TODO
-		return nil, nil
 	}
 	converters = map[string]convertFunc{
 		Number:  numberConvert,

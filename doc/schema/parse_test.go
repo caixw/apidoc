@@ -10,12 +10,65 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestParseOptional(t *testing.T) {
+	a := assert.New(t)
+
+	opt, def, err := parseOptional(String, "", []byte("optional.1"))
+	a.NotError(err).
+		Equal(def, "1").
+		True(opt)
+
+	opt, def, err = parseOptional(Number, "", []byte("optional.1"))
+	a.NotError(err).
+		Equal(def, 1).
+		True(opt)
+
+	opt, def, err = parseOptional(Bool, "", []byte("optional.true"))
+	a.NotError(err).
+		Equal(def, true).
+		True(opt)
+
+	opt, def, err = parseOptional(Array, Number, []byte("optional.[1,2]"))
+	a.NotError(err).
+		Equal(def, []int{1, 2}).
+		True(opt)
+
+	opt, def, err = parseOptional(Array, String, []byte("optional.[1,2]"))
+	a.NotError(err).
+		Equal(def, []string{"1", "2"}).
+		True(opt)
+
+	opt, def, err = parseOptional(Array, String, []byte("required.[1,2]"))
+	a.NotError(err).
+		Equal(def, []string{"1", "2"}).
+		False(opt)
+}
+
 func TestIsOptional(t *testing.T) {
 	a := assert.New(t)
 
 	a.False(isOptional(requiredBytes))
 	a.True(isOptional([]byte("optional")))
 	a.True(isOptional([]byte("")))
+}
+
+func TestParseArray(t *testing.T) {
+	a := assert.New(t)
+
+	vals := parseArray([]byte("[a1,a2,a3]"))
+	a.Equal(vals, [][]byte{[]byte("a1"), []byte("a2"), []byte("a3")})
+
+	vals = parseArray([]byte("a1,a2,a3"))
+	a.Equal(vals, [][]byte{[]byte("a1"), []byte("a2"), []byte("a3")})
+
+	vals = parseArray([]byte("[a1,a2,a3,]"))
+	a.Equal(vals, [][]byte{[]byte("a1"), []byte("a2"), []byte("a3"), []byte("")})
+
+	vals = parseArray([]byte("[a1,,a2,a3,  ,]"))
+	a.Equal(vals, [][]byte{[]byte("a1"), []byte(""), []byte("a2"), []byte("a3"), []byte(""), []byte("")})
+
+	vals = parseArray([]byte("[a1,a2,  a3  ]"))
+	a.Equal(vals, [][]byte{[]byte("a1"), []byte("a2"), []byte("a3")})
 }
 
 func TestParseEnum(t *testing.T) {

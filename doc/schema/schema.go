@@ -125,7 +125,7 @@ func Build(tag *lexer.Tag, schema *Schema, name, typ, optional, desc []byte) err
 		schema.Items = &Schema{Type: type1}
 	}
 
-	opt, def, err := parseOptional(type0, optional)
+	opt, def, err := parseOptional(type0, type1, optional)
 	if err != nil {
 		return err
 	}
