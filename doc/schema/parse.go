@@ -35,13 +35,23 @@ func parseType(tag *lexer.Tag, typ []byte) (t1, t2 string, err error) {
 }
 
 // 分析可选类型，格式如下
-//  optional
-//  required
-//  optional.defaultvalue
+//  optional   // 默认值为零值
+//  required   // 必填
+//  optional.defaultvalue // 选填，默认值为 defaultvalue
 func parseOptional(typ, subtype string, optional []byte) (opt bool, val interface{}, err error) {
 	index := bytes.IndexByte(optional, '.')
 	if index < 0 {
-		return isOptional(optional), nil, nil
+		switch typ {
+		case Array:
+			val = []interface{}{}
+		case Number, Integer:
+			val = 0
+		case String:
+			val = ""
+		case Bool:
+			val = false
+		}
+		return isOptional(optional), val, nil
 	}
 
 	opt = isOptional(optional[:index])
@@ -61,8 +71,7 @@ func parseOptional(typ, subtype string, optional []byte) (opt bool, val interfac
 		val = vals
 	} else {
 		fn := getConvertFunc(typ)
-		val, err = fn(string(optional))
-		if err != nil {
+		if val, err = fn(string(optional)); err != nil {
 			return false, nil, err
 		}
 	}
@@ -78,6 +87,7 @@ func isOptional(optional []byte) bool {
 
 // 解析数组
 //  "[a1,a2,a3]" ==> {"a1","a2","a3"}
+//  "a1" ==> {"a1"}
 func parseArray(optional []byte) [][]byte {
 	optional = bytes.TrimFunc(optional, func(r rune) bool {
 		return r == '[' || r == ']'

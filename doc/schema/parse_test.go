@@ -18,9 +18,23 @@ func TestParseOptional(t *testing.T) {
 		Equal(def, "1").
 		True(opt)
 
+	// 默认值为 ""
 	opt, def, err = parseOptional(String, "", []byte("optional"))
 	a.NotError(err).
-		Nil(def).
+		Equal(def, "").
+		True(opt)
+
+	// 默认值为 0
+	opt, def, err = parseOptional(Number, "", []byte("optional"))
+	a.NotError(err).
+		Equal(def, 0).
+		True(opt)
+
+	// 默认值为空数组
+	opt, def, err = parseOptional(Array, String, []byte("optional"))
+	a.NotError(err).
+		NotNil(def).
+		Empty(def).
 		True(opt)
 
 	opt, def, err = parseOptional(Number, "", []byte("optional.1"))
@@ -74,6 +88,12 @@ func TestParseArray(t *testing.T) {
 
 	vals = parseArray([]byte("[a1,a2,  a3  ]"))
 	a.Equal(vals, [][]byte{[]byte("a1"), []byte("a2"), []byte("a3")})
+
+	vals = parseArray([]byte("[a1]"))
+	a.Equal(vals, [][]byte{[]byte("a1")})
+
+	vals = parseArray([]byte("a1"))
+	a.Equal(vals, [][]byte{[]byte("a1")})
 }
 
 func TestParseEnum(t *testing.T) {

@@ -21,7 +21,7 @@ func TestBuild(t *testing.T) {
 	a.Equal(schema.Type, "object")
 
 	schema = &Schema{}
-	a.NotError(schema.Build(tag, []byte("array"), []byte("array.object"), []byte("required"), []byte("desc")))
+	a.NotError(schema.Build(tag, []byte("array"), []byte("array.object"), requiredBytes, []byte("desc")))
 	arr := schema.Properties["array"]
 	a.NotNil(arr)
 	a.Equal(arr.Type, Array)
@@ -40,4 +40,21 @@ func TestBuild(t *testing.T) {
 	a.Equal(len(obj.Required), 1).
 		Equal(obj.Required[0], "array")
 
+	// 可选的参数
+	schema = &Schema{}
+	a.NotError(schema.Build(tag, []byte("array"), []byte("array.object"), []byte("optional"), []byte("desc")))
+	arr = schema.Properties["array"]
+	a.NotNil(arr)
+	a.Equal(arr.Type, Array)
+	a.Equal(arr.Items.Type, Object)
+	a.Equal(len(schema.Required), 0)
+	a.Empty(arr.Default)
+
+	schema = &Schema{}
+	a.NotError(schema.Build(tag, []byte("string"), []byte("string"), []byte("optional"), []byte("desc")))
+	str := schema.Properties["string"]
+	a.NotNil(str)
+	a.Equal(str.Type, String)
+	a.Equal(len(schema.Required), 0).
+		Equal(str.Default, "")
 }

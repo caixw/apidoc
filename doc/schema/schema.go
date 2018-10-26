@@ -76,7 +76,7 @@ type Schema struct {
 
 var seqaratorDot = []byte{'.'}
 
-// Build 用于将一条语名解析成 Schema 对象，语句可能是以下格式：
+// Build 用于将一条语名添加到 Schema 对象，作为其字段，语句可能是以下格式：
 // @param list.groups array.string [locked,deleted] desc markdown
 //  * xx: xxxxx
 //  * xx: xxxxx
@@ -130,11 +130,13 @@ func (schema *Schema) Build(tag *lexer.Tag, name, typ, optional, desc []byte) er
 		return err
 	}
 
-	if p != nil && !opt {
-		if p.Required == nil {
-			p.Required = make([]string, 0, 10)
+	if !opt {
+		if p != nil {
+			if p.Required == nil {
+				p.Required = make([]string, 0, 10)
+			}
+			p.Required = append(p.Required, string(last))
 		}
-		p.Required = append(p.Required, string(last))
 	} else {
 		schema.Default = def
 	}
