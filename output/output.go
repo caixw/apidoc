@@ -13,10 +13,34 @@ import (
 )
 
 // Render 渲染 doc 的内容，具体的渲染参数由 o 指定。
-func Render(doc *doc.Doc, o *Options) error {
-	data, err := o.marshal(doc)
+func Render(d *doc.Doc, o *Options) error {
+	filterDoc(d, o)
+
+	data, err := o.marshal(d)
 	if err != nil {
 		return err
 	}
 	return ioutil.WriteFile(o.Path, data, os.ModePerm)
+}
+
+func filterDoc(d *doc.Doc, o *Options) {
+	if len(o.Tags) == 0 {
+		return
+	}
+
+	tags := make([]*doc.Tag, 0, len(o.Tags))
+	for _, tag := range d.Tags {
+		if o.contains(tag.Name) {
+			tags = append(tags, tag)
+		}
+	}
+	d.Tags = tags
+
+	apis := make([]*doc.API, 0, len(d.Apis))
+	for _, api := range d.Apis {
+		if o.contains(api.Tags...) {
+			apis = append(apis, api)
+		}
+	}
+	d.Apis = apis
 }

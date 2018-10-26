@@ -35,8 +35,26 @@ type Options struct {
 	// 输出类型
 	Type string `yaml:"type,omitempty"`
 
+	// 只输出该标签的文档，若为空，则表示所有。
+	Tags []string `yaml:"tags,omitempty"`
+
 	Elapsed time.Duration `yaml:"-"`
 	marshal marshaler     // 根据 type 决定转换的函数
+}
+
+func (o *Options) contains(tags ...string) bool {
+	if len(o.Tags) == 0 {
+		return true
+	}
+
+	for _, t := range o.Tags {
+		for _, tag := range tags {
+			if tag == t {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // Sanitize 对 Options 作一些初始化操作。
