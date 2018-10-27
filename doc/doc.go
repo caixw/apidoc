@@ -165,13 +165,6 @@ func (doc *Doc) parseAPIDoc(l *lexer.Lexer) (err error) {
 	return nil
 }
 
-// 添加一个 API 实例
-func (doc *Doc) append(api *API) {
-	doc.locker.Lock()
-	doc.Apis = append(doc.Apis, api)
-	doc.locker.Unlock()
-}
-
 func (doc *Doc) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 	if doc.Responses == nil {
 		doc.Responses = make([]*Response, 10)
@@ -231,6 +224,8 @@ func (doc *Doc) parseServer(tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析版本信息，格式如下：
+//  @apilicense MIT https://opensources.org/licenses/MIT
 func (doc *Doc) parseLicense(tag *lexer.Tag) (err error) {
 	if doc.License != nil {
 		return tag.ErrDuplicateTag()

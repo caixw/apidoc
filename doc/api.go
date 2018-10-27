@@ -62,6 +62,12 @@ func (doc *Doc) parseAPI(l *lexer.Lexer) error {
 	return nil
 }
 
+func (doc *Doc) append(api *API) {
+	doc.locker.Lock()
+	doc.Apis = append(doc.Apis, api)
+	doc.locker.Unlock()
+}
+
 var separatorTag = []byte{','}
 
 // 分析 @api 以及子标签

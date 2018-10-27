@@ -10,6 +10,35 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestDoc_parseServer(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	a.NotError(d.parseServer(newTag("admin https://admin.api.example.com admin api")))
+	a.Equal(len(d.Servers), 1)
+	srv := d.Servers[0]
+	a.Equal(srv.Name, "admin").
+		Equal(srv.URL, "https://admin.api.example.com").
+		Equal(srv.Description, "admin api")
+
+	a.NotError(d.parseServer(newTag("client https://client.api.example.com client api")))
+	a.Equal(len(d.Servers), 2)
+	srv = d.Servers[1]
+	a.Equal(srv.Name, "client").
+		Equal(srv.URL, "https://client.api.example.com").
+		Equal(srv.Description, "client api")
+}
+
+func TestDoc_parseLicense(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	a.NotError(d.parseLicense(newTag("MIT https://opensources.org/licenses/MIT")))
+	a.NotNil(d.License).
+		Equal(d.License.Text, "MIT").
+		Equal(d.License.URL, "https://opensources.org/licenses/MIT")
+}
+
 func TestNewLink(t *testing.T) {
 	a := assert.New(t)
 
