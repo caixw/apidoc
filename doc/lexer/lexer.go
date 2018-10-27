@@ -87,7 +87,7 @@ LOOP:
 			if len(data) == 0 {
 				return nil, true
 			}
-			return newTag(l.data.File, ln, data), true
+			return newTag(l.data.File, ln, data), false
 		}
 
 		b := l.data.Data[l.pos]

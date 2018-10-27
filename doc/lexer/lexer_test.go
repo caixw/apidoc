@@ -30,6 +30,7 @@ markdown desc line2
    @apigroup xxx
  @apitags t1,t2`)
 
+	// @api
 	tag, eof := l.Tag()
 	a.NotNil(tag).False(eof)
 	a.Equal(tag.Line, 0).
@@ -37,18 +38,25 @@ markdown desc line2
 markdown desc line1
 markdown desc line2`).Equal(tag.Name, "@api")
 
+	// @apigroup
 	tag, eof = l.Tag()
 	a.NotNil(tag).False(eof)
 	a.Equal(tag.Line, 3).
 		Equal(string(tag.Data), "xxx").
 		Equal(tag.Name, "@apigroup")
 
+	// @apitags
 	tag, eof = l.Tag()
-	a.NotNil(tag).True(eof)
+	a.NotNil(tag).False(eof)
 	a.Equal(tag.Line, 4).
 		Equal(string(tag.Data), "t1,t2").
 		Equal(tag.Name, "@apitags")
 
+	// 没有标签了
+	tag, eof = l.Tag()
+	a.Nil(tag).True(eof)
+
+	// 没有标签了，多次调用，结果是一样的
 	tag, eof = l.Tag()
 	a.Nil(tag).True(eof)
 }
