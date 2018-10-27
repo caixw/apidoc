@@ -5,6 +5,7 @@
 package schema
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -67,6 +68,7 @@ func TestIsOptional(t *testing.T) {
 	a := assert.New(t)
 
 	a.False(isOptional(requiredBytes))
+	a.False(isOptional(bytes.ToUpper(requiredBytes)))
 	a.True(isOptional([]byte("optional")))
 	a.True(isOptional([]byte("")))
 }

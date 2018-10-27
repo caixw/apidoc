@@ -5,6 +5,7 @@
 package doc
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -28,6 +29,9 @@ func TestBody_parseExample(t *testing.T) {
 	"id": 1,
 	"name": "name"
 }`)
+
+	// 长度不够
+	a.Error(body.parseExample(&lexer.Tag{Data: []byte("application/json")}))
 }
 
 func TestBody_parseHeader(t *testing.T) {
@@ -45,4 +49,16 @@ func TestBody_parseHeader(t *testing.T) {
 	a.Equal(h.Summary, "etag").
 		Equal(h.Name, "ETag").
 		True(h.Optional)
+
+	// 长度不够
+	a.Error(body.parseHeader(&lexer.Tag{Data: []byte("ETag")}))
+}
+
+func TestIsOptional(t *testing.T) {
+	a := assert.New(t)
+
+	a.False(isOptional(requiredBytes))
+	a.False(isOptional(bytes.ToUpper(requiredBytes)))
+	a.True(isOptional([]byte("optional")))
+	a.True(isOptional([]byte("Optional")))
 }

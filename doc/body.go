@@ -96,7 +96,7 @@ func (body *Body) parseHeader(tag *lexer.Tag) error {
 var requiredBytes = []byte("required")
 
 func isOptional(data []byte) bool {
-	return !bytes.Equal(data, requiredBytes)
+	return !bytes.Equal(bytes.ToLower(data), requiredBytes)
 }
 
 func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
@@ -112,6 +112,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 	resp := &Response{
 		Body: Body{
 			Mimetype: string(data[1]),
+			Type:     s,
 		},
 	}
 
@@ -131,7 +132,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 				return nil, tag.ErrInvalidFormat()
 			}
 
-			if err := s.Build(tag, data[0], data[1], data[2], data[3]); err != nil {
+			if err := resp.Type.Build(tag, data[0], data[1], data[2], data[3]); err != nil {
 				return nil, err
 			}
 		default:
