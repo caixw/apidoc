@@ -37,6 +37,7 @@ func TestInitLocales(t *testing.T) {
 
 	a.NotError(initLocales())
 	a.True(len(locales) > 0)
+	a.Equal(len(locales), len(displayNames))
 
 	p := message.NewPrinter(language.MustParse("zh-Hans"))
 	a.Equal(p.Sprintf(FlagHUsage), locales[language.MustParse("zh-Hans")][FlagHUsage])

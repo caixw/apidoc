@@ -9,15 +9,13 @@ package vars
 const mainVersion = "5.0.0"
 
 var (
-	version    string
+	version    = mainVersion
 	buildDate  string
 	commitHash string
 )
 
 func init() {
-	if len(buildDate) == 0 {
-		version = mainVersion
-	} else {
+	if buildDate != "" {
 		version = mainVersion + "+" + buildDate
 	}
 }

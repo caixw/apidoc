@@ -5,12 +5,13 @@
 package input
 
 import (
-	"github.com/caixw/apidoc/internal/lang"
 	"path/filepath"
 	"testing"
 
 	"github.com/issue9/assert"
+	"golang.org/x/text/encoding/simplifiedchinese"
 
+	"github.com/caixw/apidoc/internal/lang"
 	"github.com/caixw/apidoc/internal/options"
 )
 
@@ -19,10 +20,15 @@ var _ options.Sanitizer = &Options{}
 func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	o := &Options{Dir: "not exists"}
+	o := &Options{}
+	a.Error(o.Sanitize())
+
+	o.Dir = "not exists"
 	a.Error(o.Sanitize())
 
 	o.Dir = "./"
+	a.Error(o.Sanitize())
+
 	o.Lang = "not exists"
 	a.Error(o.Sanitize())
 
@@ -37,6 +43,15 @@ func TestOptions_Sanitize(t *testing.T) {
 	o.Exts = []string{"go", ".g2"}
 	a.NotError(o.Sanitize())
 	a.Equal(o.Exts, []string{".go", ".g2"})
+
+	// 特定的编码
+	o.Encoding = "GBK"
+	a.NotError(o.Sanitize())
+	a.Equal(o.encoding, simplifiedchinese.GBK)
+
+	// 不存在的编码
+	o.Encoding = "not-exists---"
+	a.Error(o.Sanitize())
 }
 
 func TestDetectExts(t *testing.T) {
