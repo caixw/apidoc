@@ -31,34 +31,34 @@ markdown desc line2
  @apitags t1,t2`)
 
 	// @api
-	tag, eof := l.Tag()
-	a.NotNil(tag).False(eof)
+	tag := l.Tag()
+	a.NotNil(tag)
 	a.Equal(tag.Line, 0).
 		Equal(string(tag.Data), `get /path desc
 markdown desc line1
 markdown desc line2`).Equal(tag.Name, "@api")
 
 	// @apigroup
-	tag, eof = l.Tag()
-	a.NotNil(tag).False(eof)
+	tag = l.Tag()
+	a.NotNil(tag)
 	a.Equal(tag.Line, 3).
 		Equal(string(tag.Data), "xxx").
 		Equal(tag.Name, "@apigroup")
 
 	// @apitags
-	tag, eof = l.Tag()
-	a.NotNil(tag).False(eof)
+	tag = l.Tag()
+	a.NotNil(tag)
 	a.Equal(tag.Line, 4).
 		Equal(string(tag.Data), "t1,t2").
 		Equal(tag.Name, "@apitags")
 
 	// 没有标签了
-	tag, eof = l.Tag()
-	a.Nil(tag).True(eof)
+	tag = l.Tag()
+	a.Nil(tag)
 
 	// 没有标签了，多次调用，结果是一样的
-	tag, eof = l.Tag()
-	a.Nil(tag).True(eof)
+	tag = l.Tag()
+	a.Nil(tag)
 }
 
 func TestSplitWords(t *testing.T) {

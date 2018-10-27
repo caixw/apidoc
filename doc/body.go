@@ -130,7 +130,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 		},
 	}
 
-	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
+	for tag := l.Tag(); tag != nil; tag = l.Tag() {
 		switch strings.ToLower(tag.Name) {
 		case "@apiexample":
 			if err := resp.parseExample(tag); err != nil {

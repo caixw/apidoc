@@ -38,7 +38,7 @@ type Param struct {
 func (doc *Doc) parseAPI(l *lexer.Lexer) error {
 	api := &API{}
 
-	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
+	for tag := l.Tag(); tag != nil; tag = l.Tag() {
 		switch strings.ToLower(tag.Name) {
 		case "@api":
 			if err := api.parseAPI(l, tag); err != nil {
@@ -78,7 +78,7 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 	api.Path = string(data[1])
 	api.Summary = string(data[2])
 
-	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
+	for tag := l.Tag(); tag != nil; tag = l.Tag() {
 		switch strings.ToLower(tag.Name) {
 		case "@apiserver":
 			if api.Server != "" {
@@ -145,7 +145,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 		return err
 	}
 
-	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
+	for tag := l.Tag(); tag != nil; tag = l.Tag() {
 		switch strings.ToLower(tag.Name) {
 		case "@apiexample":
 			if err := req.parseExample(tag); err != nil {

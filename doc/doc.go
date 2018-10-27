@@ -95,7 +95,7 @@ func Parse(errlog *log.Logger, block chan input.Block) *Doc {
 func (doc *Doc) parseBlock(block input.Block) error {
 	l := lexer.New(block)
 
-	tag, _ := l.Tag()
+	tag := l.Tag()
 	l.Backup(tag)
 
 	switch strings.ToLower(tag.Name) {
@@ -109,7 +109,7 @@ func (doc *Doc) parseBlock(block input.Block) error {
 }
 
 func (doc *Doc) parseAPIDoc(l *lexer.Lexer) (err error) {
-	for tag, eof := l.Tag(); !eof; tag, eof = l.Tag() {
+	for tag := l.Tag(); tag != nil; tag = l.Tag() {
 		switch strings.ToLower(tag.Name) {
 		case "@apidoc":
 			if len(tag.Data) == 0 {

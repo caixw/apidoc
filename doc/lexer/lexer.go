@@ -66,13 +66,14 @@ func (l *Lexer) Backup(t *Tag) {
 	l.backupTag = t
 }
 
-// Tag 返回下一个标签
-// eof 表示是否已经是结尾处。
-func (l *Lexer) Tag() (t *Tag, eof bool) {
+// Tag 返回下一个标签。
+//
+// 若返回 nil 表示已经在结尾处。
+func (l *Lexer) Tag() (t *Tag) {
 	if l.backupTag != nil {
 		t = l.backupTag
 		l.backupTag = nil
-		return t, l.atEOF()
+		return t
 	}
 
 	newLine := false
@@ -85,9 +86,9 @@ LOOP:
 		if l.atEOF() {
 			data := l.data.Data[start:l.pos]
 			if len(data) == 0 {
-				return nil, true
+				return nil
 			}
-			return newTag(l.data.File, ln, data), false
+			return newTag(l.data.File, ln, data)
 		}
 
 		b := l.data.Data[l.pos]
@@ -99,7 +100,7 @@ LOOP:
 		case newLine && unicode.IsSpace(rune(b)): // 跳过行首空白字符
 			continue LOOP
 		case newLine && b == '@':
-			return newTag(l.data.File, ln, l.data.Data[start:end]), false
+			return newTag(l.data.File, ln, l.data.Data[start:end])
 		default:
 			newLine = false
 		}

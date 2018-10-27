@@ -74,7 +74,8 @@ func TestNewResponse(t *testing.T) {
 		"id": 1,
 		"name": "name",
 		"nickname": "nickname"
-	}`)
+	}
+	@apiUnknown xxx`)
 	tag := newTag(`200 array.object * 通用的返回内容定义`)
 
 	resp, err := newResponse(l, tag)
