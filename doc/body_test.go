@@ -9,6 +9,8 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/doc/schema"
 )
 
 func TestBody_parseExample(t *testing.T) {
@@ -59,4 +61,30 @@ func TestIsOptional(t *testing.T) {
 	a.False(isOptional(bytes.ToUpper(requiredBytes)))
 	a.True(isOptional([]byte("optional")))
 	a.True(isOptional([]byte("Optional")))
+}
+
+func TestNewResponse(t *testing.T) {
+	a := assert.New(t)
+	l := newLexer(`@apiHeader content-type optional 指定内容类型
+	@apiParam id int required 唯一 ID
+	@apiParam name string required 名称
+	@apiParam nickname string optional 昵称
+	@apiExample json 默认返回示例
+	{
+		"id": 1,
+		"name": "name",
+		"nickname": "nickname"
+	}`)
+	tag := newTag(`200 array.object * 通用的返回内容定义`)
+
+	resp, err := newResponse(l, tag)
+	a.NotError(err).NotNil(resp)
+	a.Equal(resp.Status, 200).
+		Equal(resp.Mimetype, "*")
+	a.Equal(len(resp.Headers), 1).
+		Equal(resp.Headers[0].Name, "content-type").
+		Equal(resp.Headers[0].Summary, "指定内容类型").
+		True(resp.Headers[0].Optional)
+	a.NotNil(resp.Type).
+		Equal(resp.Type.Type, schema.Array)
 }

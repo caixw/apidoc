@@ -6,6 +6,7 @@ package doc
 
 import (
 	"bytes"
+	"strconv"
 	"strings"
 
 	"github.com/caixw/apidoc/doc/lexer"
@@ -18,7 +19,7 @@ type Request = Body
 // Response 表示一次请求或是返回的数据。
 type Response struct {
 	Body
-	Status string `yaml:"status" json:"status"`
+	Status int `yaml:"status" json:"status"`
 }
 
 // Body 表示请求和返回的共有内容
@@ -99,19 +100,32 @@ func isOptional(data []byte) bool {
 	return !bytes.Equal(bytes.ToLower(data), requiredBytes)
 }
 
+// 解析 @apiResponse 及子标签，格式如下：
+//  @apiresponse 200 array.object * 通用的返回内容定义
+//  @apiheader string required desc
+//  @apiparam id int reqiured desc
+//  @apiparam name string reqiured desc
+//  @apiparam group object reqiured desc
+//  @apiparam group.id int reqiured desc
 func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
-	data := tag.Words(3)
-	if len(data) != 3 {
+	data := tag.Words(4)
+	if len(data) != 4 {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	status, err := strconv.Atoi(string(data[0]))
+	if err != nil {
 		return nil, tag.ErrInvalidFormat()
 	}
 
 	s := &schema.Schema{}
-	if err := s.Build(tag, nil, data[1], nil, data[2]); err != nil {
+	if err := s.Build(tag, nil, data[1], nil, data[3]); err != nil {
 		return nil, err
 	}
 	resp := &Response{
+		Status: status,
 		Body: Body{
-			Mimetype: string(data[1]),
+			Mimetype: string(data[2]),
 			Type:     s,
 		},
 	}
