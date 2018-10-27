@@ -9,14 +9,13 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/doc/lexer"
 	"github.com/caixw/apidoc/doc/schema"
 )
 
 func TestNewParam(t *testing.T) {
 	a := assert.New(t)
 
-	p, err := newParam(&lexer.Tag{Data: []byte("name string required  名称")})
+	p, err := newParam(newTag("name string required  名称"))
 	a.NotError(err).
 		NotNil(p).
 		Equal(p.Name, "name").
@@ -24,7 +23,7 @@ func TestNewParam(t *testing.T) {
 		False(p.Optional).
 		Equal(p.Summary, "名称")
 
-	p, err = newParam(&lexer.Tag{Data: []byte("name string optional.v1  名称")})
+	p, err = newParam(newTag("name string optional.v1  名称"))
 	a.NotError(err).
 		NotNil(p).
 		Equal(p.Name, "name").
@@ -32,7 +31,7 @@ func TestNewParam(t *testing.T) {
 		True(p.Optional).
 		Equal(p.Summary, "名称")
 
-	p, err = newParam(&lexer.Tag{Data: []byte("name string optional  名称")})
+	p, err = newParam(newTag("name string optional  名称"))
 	a.NotError(err).
 		NotNil(p).
 		Equal(p.Name, "name").

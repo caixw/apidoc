@@ -9,19 +9,17 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-
-	"github.com/caixw/apidoc/doc/lexer"
 )
 
 func TestBody_parseExample(t *testing.T) {
 	a := assert.New(t)
 	body := &Body{}
 
-	a.NotError(body.parseExample(&lexer.Tag{Data: []byte(`application/json summary text
+	a.NotError(body.parseExample(newTag(`application/json summary text
 {
 	"id": 1,
 	"name": "name"
-}`)}))
+}`)))
 	e := body.Examples[0]
 	a.Equal(e.Mimetype, "application/json").
 		Equal(e.Summary, "summary text").
@@ -31,27 +29,27 @@ func TestBody_parseExample(t *testing.T) {
 }`)
 
 	// 长度不够
-	a.Error(body.parseExample(&lexer.Tag{Data: []byte("application/json")}))
+	a.Error(body.parseExample(newTag("application/json")))
 }
 
 func TestBody_parseHeader(t *testing.T) {
 	a := assert.New(t)
 	body := &Body{}
 
-	a.NotError(body.parseHeader(&lexer.Tag{Data: []byte(`content-type required json 或是 xml`)}))
+	a.NotError(body.parseHeader(newTag(`content-type required json 或是 xml`)))
 	h := body.Headers[0]
 	a.Equal(h.Summary, "json 或是 xml").
 		Equal(h.Name, "content-type").
 		False(h.Optional)
 
-	a.NotError(body.parseHeader(&lexer.Tag{Data: []byte(`ETag optional etag`)}))
+	a.NotError(body.parseHeader(newTag(`ETag optional etag`)))
 	h = body.Headers[1]
 	a.Equal(h.Summary, "etag").
 		Equal(h.Name, "ETag").
 		True(h.Optional)
 
 	// 长度不够
-	a.Error(body.parseHeader(&lexer.Tag{Data: []byte("ETag")}))
+	a.Error(body.parseHeader(newTag("ETag")))
 }
 
 func TestIsOptional(t *testing.T) {
