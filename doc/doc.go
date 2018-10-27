@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/issue9/is"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/doc/lexer"
@@ -38,6 +39,35 @@ type Doc struct {
 
 	Apis   []*API `yaml:"apis" json:"apis"`
 	locker sync.Mutex
+}
+
+// Markdown 表示可以使用 markdown 文档
+type Markdown string
+
+// Tag 标签内容
+type Tag struct {
+	Name        string   `yaml:"name" json:"name"`                                   // 字面名称，需要唯一
+	Description Markdown `yaml:"description,omitempty" json:"description,omitempty"` // 具体描述
+}
+
+// Server 服务信息
+type Server struct {
+	Name        string   `yaml:"name" json:"name"` // 字面名称，需要唯一
+	URL         string   `yaml:"url" json:"url"`
+	Description Markdown `yaml:"description,omitempty" json:"description,omitempty"` // 具体描述
+}
+
+// Contact 描述联系方式
+type Contact struct {
+	Name  string `yaml:"name" json:"name"`
+	URL   string `yaml:"url" json:"url"`
+	Email string `yaml:"email,omitempty" json:"email,omitempty"`
+}
+
+// Link 表示一个链接
+type Link struct {
+	Text string `yaml:"text" json:"text"`
+	URL  string `yaml:"url" json:"url"`
 }
 
 // Parse 分析从 block 中获取的代码块。并填充到 Doc 中
@@ -208,4 +238,71 @@ func (doc *Doc) parseLicense(tag *lexer.Tag) (err error) {
 
 	doc.License, err = newLink(tag)
 	return err
+}
+
+// 解析链接元素，格式如下：
+//  @tag text https://example.com
+func newLink(tag *lexer.Tag) (*Link, error) {
+	data := tag.Words(2)
+	if len(data) != 2 {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	if !is.URL(data[1]) {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	return &Link{
+		Text: string(data[0]),
+		URL:  string(data[1]),
+	}, nil
+}
+
+// 解析联系人标签内容，格式可以是：
+//  @apicontact name xx@example.com https://example.com
+//  @apicontact name https://example.com xx@example.com
+//  @apicontact name xx@example.com
+//  @apicontact name https://example.com
+func newContact(tag *lexer.Tag) (*Contact, error) {
+	data := tag.Words(3)
+
+	if len(data) < 2 {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	contact := &Contact{Name: string(data[0])}
+	v := string(data[1])
+	switch checkContactType(v) {
+	case 1:
+		contact.URL = v
+	case 2:
+		contact.Email = v
+	default:
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	if len(data) == 3 {
+		v := string(data[2])
+		switch checkContactType(v) {
+		case 1:
+			contact.URL = v
+		case 2:
+			contact.Email = v
+		default:
+			return nil, tag.ErrInvalidFormat()
+		}
+	}
+
+	return contact, nil
+}
+
+func checkContactType(v string) int8 {
+	switch {
+	case is.Email(v): // Email 也属于一种 URL
+		return 2
+	case is.URL(v):
+		return 1
+	default:
+		return 0
+	}
 }

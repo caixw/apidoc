@@ -27,6 +27,14 @@ type API struct {
 	Server      string      `yaml:"server" json:"server"`
 }
 
+// Param 简单参数的描述，比如查询参数等
+type Param struct {
+	Name     string         `yaml:"name" json:"name"`                             // 参数名称
+	Type     *schema.Schema `yaml:"type" json:"type"`                             // 类型
+	Summary  string         `yaml:"summary" json:"summary"`                       // 参数介绍
+	Optional bool           `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
+}
+
 func (doc *Doc) parseAPI(l *lexer.Lexer) error {
 	api := &API{}
 
@@ -177,4 +185,26 @@ func (api *API) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 	api.Responses = append(api.Responses, resp)
 
 	return nil
+}
+
+// 解析参数标签，格式如下：
+// 用于路径参数和查义参数，request 和 request 中的不在此解析
+//  @tag name type.subtype optional.defaultValue markdown desc
+func newParam(tag *lexer.Tag) (*Param, error) {
+	data := tag.Words(4)
+	if len(data) != 4 {
+		return nil, tag.ErrInvalidFormat()
+	}
+
+	s := &schema.Schema{}
+	if err := s.Build(tag, nil, data[1], data[2], nil); err != nil {
+		return nil, err
+	}
+
+	return &Param{
+		Name:     string(data[0]),
+		Summary:  string(data[3]),
+		Type:     s,
+		Optional: s.Default != nil,
+	}, nil
 }
