@@ -12,4 +12,4 @@
 // @apiversion 0.1.0
 // @apicontent description markdown
 //
-// @apiresponse 404 xxx // 全局的返回内容定义
+// @apiresponse 404 object application/json 全局的返回内容定义
