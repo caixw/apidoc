@@ -40,6 +40,7 @@ var langs = []*Language{
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: "`", End: "`"},
+			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
 			&block{Type: blockTypeSComment, Begin: `//`},
 			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 		},
@@ -138,7 +139,8 @@ var langs = []*Language{
 		Exts: []string{".rs"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeSComment, Begin: `///`}, // 需要在 // 之前定义
+			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
+			&block{Type: blockTypeSComment, Begin: `///`},       // 需要在 // 之前定义
 			&block{Type: blockTypeSComment, Begin: `//`},
 			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 		},
@@ -155,6 +157,7 @@ var langs = []*Language{
 		Exts: []string{".swift"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
 			&block{Type: blockTypeSComment, Begin: `//`},
 			newSwiftNestMCommentBlock("/*", "*/"),
 		},
@@ -163,6 +166,7 @@ var langs = []*Language{
 
 var cStyle = []Blocker{
 	&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+	&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
 	&block{Type: blockTypeSComment, Begin: `//`},
 	&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
 }
