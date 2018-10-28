@@ -22,6 +22,10 @@ type Response struct {
 	Status int `yaml:"status" json:"status"`
 }
 
+type responses struct {
+	Responses []*Response `yaml:"responses,omitempty" json:"responses,omitempty"`
+}
+
 // Body 表示请求和返回的共有内容
 type Body struct {
 	Mimetype string         `yaml:"mimetype,omitempty" json:"mimetype,omitempty"`
@@ -75,6 +79,12 @@ func (body *Body) parseExample(tag *lexer.Tag) error {
 	return nil
 }
 
+var requiredBytes = []byte("required")
+
+func isOptional(data []byte) bool {
+	return !bytes.Equal(bytes.ToLower(data), requiredBytes)
+}
+
 func (body *Body) parseHeader(tag *lexer.Tag) error {
 	data := tag.Words(3)
 	if len(data) != 3 {
@@ -103,10 +113,18 @@ func (body *Body) parseParam(tag *lexer.Tag) error {
 	return body.Type.Build(tag, data[0], data[1], data[2], data[3])
 }
 
-var requiredBytes = []byte("required")
+func (resps *responses) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
+	if resps.Responses == nil {
+		resps.Responses = make([]*Response, 0, 3)
+	}
 
-func isOptional(data []byte) bool {
-	return !bytes.Equal(bytes.ToLower(data), requiredBytes)
+	resp, err := newResponse(l, tag)
+	if err != nil {
+		return err
+	}
+	resps.Responses = append(resps.Responses, resp)
+
+	return nil
 }
 
 // 解析 @apiResponse 及子标签，格式如下：

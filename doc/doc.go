@@ -32,9 +32,7 @@ type Doc struct {
 	Tags    []*Tag    `yaml:"tags,omitempty" json:"tags,omitempty"`        // 所有的标签
 	Servers []*Server `yaml:"servers,omitempty" json:"servers,omitempty"`
 
-	// 所有接口都有可能返回的内容。
-	// 比如一些错误内容的返回，可以在此处定义。
-	Responses []*Response `yaml:"responses,omitempty" json:"responses,omitempty"`
+	responses
 
 	Apis   []*API `yaml:"apis" json:"apis"`
 	locker sync.Mutex
@@ -192,20 +190,6 @@ func (doc *Doc) parseContact(l *lexer.Lexer, tag *lexer.Tag) (err error) {
 
 	doc.Contact, err = newContact(tag)
 	return err
-}
-
-func (doc *Doc) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
-	if doc.Responses == nil {
-		doc.Responses = make([]*Response, 0, 3)
-	}
-
-	resp, err := newResponse(l, tag)
-	if err != nil {
-		return err
-	}
-	doc.Responses = append(doc.Responses, resp)
-
-	return nil
 }
 
 // 解析 @apiTag 标签，可以是以下格式

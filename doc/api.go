@@ -14,17 +14,17 @@ import (
 
 // API 表示单个 API 文档
 type API struct {
-	Method      string      `yaml:"method" json:"method"`
-	Path        string      `yaml:"path" json:"path"`
-	Summary     string      `yaml:"summary" json:"summary"`
-	Description Markdown    `yaml:"description,omitempty" json:"description,omitempty"`
-	Tags        []string    `yaml:"tags,omitempty" json:"tags,omitempty"`
-	Queries     []*Param    `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
-	Params      []*Param    `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
-	Requests    []*Request  `yaml:"requests,omitempty" json:"requests,omitempty"`
-	Responses   []*Response `yaml:"responses" json:"responses"`
-	Deprecated  string      `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
-	Server      string      `yaml:"server" json:"server"`
+	responses
+	Method      string     `yaml:"method" json:"method"`
+	Path        string     `yaml:"path" json:"path"`
+	Summary     string     `yaml:"summary" json:"summary"`
+	Description Markdown   `yaml:"description,omitempty" json:"description,omitempty"`
+	Tags        []string   `yaml:"tags,omitempty" json:"tags,omitempty"`
+	Queries     []*Param   `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
+	Params      []*Param   `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
+	Requests    []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
+	Deprecated  string     `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
+	Server      string     `yaml:"server" json:"server"`
 }
 
 // Param 简单参数的描述，比如查询参数等
@@ -203,20 +203,6 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 			return err
 		}
 	}
-
-	return nil
-}
-
-func (api *API) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
-	if api.Responses == nil {
-		api.Responses = make([]*Response, 0, 3)
-	}
-
-	resp, err := newResponse(l, tag)
-	if err != nil {
-		return err
-	}
-	api.Responses = append(api.Responses, resp)
 
 	return nil
 }
