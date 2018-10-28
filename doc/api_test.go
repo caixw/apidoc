@@ -12,6 +12,40 @@ import (
 	"github.com/caixw/apidoc/doc/schema"
 )
 
+func TestDoc_parseAPI(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	l := newLexer(`@api get /path xxxx
+	@apiRequest object application/json summary
+	@apiheader content-type required mimetype value
+	@apiresponse 200 object application/json summary`)
+	a.NotError(d.parseAPI(l))
+
+	l = newLexer(`@api get /path xxxx
+	@apiNotExists object application/json summary
+	@apiheader content-type required mimetype value
+	@apiresponse 200 object application/json summary`)
+	a.Error(d.parseAPI(l))
+}
+
+func TestAPI_parseAPI(t *testing.T) {
+	a := assert.New(t)
+	api := &API{}
+
+	l := newLexer(`@api get /path xxxx
+	@apirequest xxx`)
+	tag := l.Tag()
+	a.NotError(api.parseAPI(l, tag))
+	a.Equal(api.Method, "GET")
+
+	api = &API{}
+	l = newLexer(`@apinotexists get /path xxxx
+	@apirequest xxx`)
+	tag = l.Tag()
+	a.NotError(api.parseAPI(l, tag))
+}
+
 func TestAPI_parseapi(t *testing.T) {
 	a := assert.New(t)
 	api := &API{}
