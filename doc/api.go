@@ -126,8 +126,6 @@ func (api *API) parseServer(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
-var separatorTag = []byte{','}
-
 // 解析 @apiTags 标签，格式如下：
 //  @apiTags t1,t2
 func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) error {
@@ -139,10 +137,10 @@ func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) error {
 		return tag.ErrInvalidFormat()
 	}
 
-	tags := bytes.Split(tag.Data, separatorTag)
+	tags := bytes.FieldsFunc(tag.Data, func(r rune) bool { return r == ',' })
 	api.Tags = make([]string, 0, len(tags))
 	for _, tag := range tags {
-		api.Tags = append(api.Tags, string(tag))
+		api.Tags = append(api.Tags, string(bytes.TrimSpace(tag)))
 	}
 
 	return nil

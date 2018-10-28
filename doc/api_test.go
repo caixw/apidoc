@@ -83,7 +83,7 @@ func TestAPI_parseTags(t *testing.T) {
 	// 不能为空
 	a.Error(api.parseTags(nil, newTag("")))
 
-	a.NotError(api.parseTags(nil, newTag("t1,t2")))
+	a.NotError(api.parseTags(nil, newTag("t1, t2")))
 	a.Equal(api.Tags, []string{"t1", "t2"})
 
 	// 不能多次调用
