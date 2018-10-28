@@ -207,6 +207,9 @@ func (doc *Doc) parseServer(tag *lexer.Tag) error {
 	if len(data) < 2 { // 描述为可选字段
 		return tag.ErrInvalidFormat()
 	}
+	if !is.URL(data[1]) {
+		return tag.ErrInvalidFormat()
+	}
 
 	if doc.Servers == nil {
 		doc.Servers = make([]*Server, 0, 5)

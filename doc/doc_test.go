@@ -10,6 +10,20 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestDoc_parseTag(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	a.NotError(d.parseTag(newTag("tag1 标签 1 的描述内容")))
+	a.Equal(len(d.Tags), 1)
+	tag := d.Tags[0]
+	a.Equal(tag.Name, "tag1").
+		Equal(tag.Description, "标签 1 的描述内容")
+
+	// 格式错误
+	a.Error(d.parseTag(newTag("tag1")))
+}
+
 func TestDoc_parseServer(t *testing.T) {
 	a := assert.New(t)
 	d := &Doc{}
@@ -27,6 +41,9 @@ func TestDoc_parseServer(t *testing.T) {
 	a.Equal(srv.Name, "client").
 		Equal(srv.URL, "https://client.api.example.com").
 		Equal(srv.Description, "client api")
+
+	a.Error(d.parseServer(newTag("client")))
+	a.Error(d.parseServer(newTag("client https://url")))
 }
 
 func TestDoc_parseLicense(t *testing.T) {
@@ -37,6 +54,9 @@ func TestDoc_parseLicense(t *testing.T) {
 	a.NotNil(d.License).
 		Equal(d.License.Text, "MIT").
 		Equal(d.License.URL, "https://opensources.org/licenses/MIT")
+
+	// d.License 已经存在，再次添加会出错。
+	a.Error(d.parseLicense(newTag("MIT https://opensources.org/licenses/MIT")))
 }
 
 func TestNewLink(t *testing.T) {
