@@ -8,7 +8,111 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/doc/schema"
+	"github.com/caixw/apidoc/input"
 )
+
+func TestDoc_parseBlock(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	a.NotError(d.parseBlock(input.Block{Data: []byte("@api GET /path summary")}))
+	a.NotError(d.parseBlock(input.Block{Data: []byte("@apidoc title")}))
+	// 任意其它内容
+	a.NotError(d.parseBlock(input.Block{Data: []byte("xxxxx")}))
+}
+
+func TestDoc_parseapidoc(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	// 不能为空
+	a.Error(d.parseapidoc(nil, newTag("")))
+
+	// 正常
+	a.NotError(d.parseapidoc(nil, newTag("title of doc")))
+	a.Equal(d.Title, "title of doc")
+
+	// 不能多次调用
+	a.Error(d.parseapidoc(nil, newTag("xxx")))
+}
+
+func TestDoc_parseContent(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	// 不能为空
+	a.Error(d.parseContent(nil, newTag("")))
+
+	// 正常
+	a.NotError(d.parseContent(nil, newTag("xxx\nyyy\nzzz")))
+	a.Equal(d.Content, Markdown("xxx\nyyy\nzzz"))
+
+	// 不能多次调用
+	a.Error(d.parseContent(nil, newTag("xxx")))
+}
+
+func TestDoc_parseVersion(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	// 不能为空
+	a.Error(d.parseVersion(nil, newTag("")))
+
+	// 正常
+	a.NotError(d.parseVersion(nil, newTag("3.2.1")))
+
+	// 不能多次调用
+	a.Error(d.parseVersion(nil, newTag("3.2.1")))
+}
+
+func TestDoc_parseContact(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	a.NotError(d.parseContact(nil, newTag("name name@example.com https://example.com")))
+
+	// 不能重复调用
+	a.Error(d.parseContact(nil, newTag("name name@example.com https://example.com")))
+}
+
+func TestDoc_parseResponse(t *testing.T) {
+	a := assert.New(t)
+	d := &Doc{}
+
+	l := newLexer(`@apiHeader content-type optional 指定内容类型
+	@apiParam id int required 唯一 ID
+	@apiParam name string required 名称
+	@apiParam nickname string optional 昵称
+	@apiExample json 默认返回示例
+	{
+		"id": 1,
+		"name": "name",
+		"nickname": "nickname"
+	}
+	@apiUnknown xxx`)
+	tag := newTag(`200 array.object * 通用的返回内容定义`)
+
+	a.NotError(d.parseResponse(l, tag)).
+		Equal(len(d.Responses), 1)
+	resp := d.Responses[0]
+	a.Equal(resp.Status, 200).
+		Equal(resp.Mimetype, "*")
+	a.Equal(len(resp.Headers), 1).
+		Equal(resp.Headers[0].Name, "content-type").
+		Equal(resp.Headers[0].Summary, "指定内容类型").
+		True(resp.Headers[0].Optional)
+	a.NotNil(resp.Type).
+		Equal(resp.Type.Type, schema.Array)
+
+	// 可以添加多次。
+	a.NotError(d.parseResponse(l, tag)).
+		Equal(len(d.Responses), 2)
+	resp = d.Responses[0]
+	a.Equal(resp.Status, 200).
+		Equal(resp.Mimetype, "*")
+}
 
 func TestDoc_parseTag(t *testing.T) {
 	a := assert.New(t)
@@ -49,6 +153,12 @@ func TestDoc_parseServer(t *testing.T) {
 func TestDoc_parseLicense(t *testing.T) {
 	a := assert.New(t)
 	d := &Doc{}
+
+	// 长度不够
+	a.Error(d.parseLicense(nil, newTag("MIT")))
+
+	// 非 URL
+	a.Error(d.parseLicense(nil, newTag("MIT https://")))
 
 	a.NotError(d.parseLicense(nil, newTag("MIT https://opensources.org/licenses/MIT")))
 	a.NotNil(d.License).

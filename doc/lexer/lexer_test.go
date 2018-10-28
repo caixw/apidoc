@@ -36,7 +36,8 @@ markdown desc line2
 	a.Equal(tag.Line, 0).
 		Equal(string(tag.Data), `get /path desc
 markdown desc line1
-markdown desc line2`).Equal(tag.Name, "@api")
+markdown desc line2`). // 最后的换行符会被去掉
+		Equal(tag.Name, "@api")
 
 	// @apigroup
 	tag = l.Tag()
@@ -59,6 +60,21 @@ markdown desc line2`).Equal(tag.Name, "@api")
 	// 没有标签了，多次调用，结果是一样的
 	tag = l.Tag()
 	a.Nil(tag)
+
+	l = newLexerString("@api")
+	tag = l.Tag()
+	a.Equal(tag.Name, "@api").
+		Empty(tag.Data)
+}
+
+func TestLexer_Backup(t *testing.T) {
+	a := assert.New(t)
+	l := &Lexer{}
+
+	tag := &Tag{Name: "@api"}
+	l.Backup(tag)
+	a.Equal(l.Tag(), tag)
+	a.Nil(l.Tag())
 }
 
 func TestSplitWords(t *testing.T) {

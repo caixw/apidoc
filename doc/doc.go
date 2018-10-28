@@ -102,9 +102,9 @@ func (doc *Doc) parseBlock(block input.Block) error {
 		return doc.parseAPI(lexer.New(block))
 	case "@apidoc":
 		return doc.parseAPIDoc(lexer.New(block))
+	default:
+		return nil
 	}
-
-	return nil
 }
 
 type apiDocParser func(*Doc, *lexer.Lexer, *lexer.Tag) error
@@ -136,6 +136,8 @@ func (doc *Doc) parseAPIDoc(l *lexer.Lexer) error {
 	return nil
 }
 
+// 解析 @apidoc 标签，格式如下：
+//  @apidoc title of document
 func (doc *Doc) parseapidoc(l *lexer.Lexer, tag *lexer.Tag) error {
 	if doc.Title != "" {
 		return tag.ErrDuplicateTag()
@@ -149,6 +151,8 @@ func (doc *Doc) parseapidoc(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析 @apiContent 标签，格式如下：
+//  @apicontent xxxx
 func (doc *Doc) parseContent(l *lexer.Lexer, tag *lexer.Tag) error {
 	if doc.Content != "" {
 		return tag.ErrDuplicateTag()
@@ -162,6 +166,8 @@ func (doc *Doc) parseContent(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析 @apiVersion 标签，格式如下：
+//  @apiVersion 3.2.1
 func (doc *Doc) parseVersion(l *lexer.Lexer, tag *lexer.Tag) error {
 	if doc.Version != "" {
 		return tag.ErrDuplicateTag()
@@ -175,6 +181,10 @@ func (doc *Doc) parseVersion(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析 @apiContact 标签，格式如下：
+//  @apiContact name name@example.com https://example.com
+//  @apiContact name https://example.com
+//  @apiContact name name@example.com
 func (doc *Doc) parseContact(l *lexer.Lexer, tag *lexer.Tag) (err error) {
 	if doc.Contact != nil {
 		return tag.ErrDuplicateTag()
@@ -186,7 +196,7 @@ func (doc *Doc) parseContact(l *lexer.Lexer, tag *lexer.Tag) (err error) {
 
 func (doc *Doc) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 	if doc.Responses == nil {
-		doc.Responses = make([]*Response, 10)
+		doc.Responses = make([]*Response, 0, 3)
 	}
 
 	resp, err := newResponse(l, tag)

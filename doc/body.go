@@ -139,6 +139,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 		},
 	}
 
+LOOP:
 	for tag := l.Tag(); tag != nil; tag = l.Tag() {
 		fn := resp.parseExample
 		switch strings.ToLower(tag.Name) {
@@ -150,7 +151,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 			fn = resp.parseParam
 		default:
 			l.Backup(tag)
-			return resp, nil
+			break LOOP
 		}
 
 		if err := fn(tag); err != nil {

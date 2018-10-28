@@ -46,12 +46,12 @@ func newTag(file string, line int, data []byte) *Tag {
 
 	if len(strs) == 2 {
 		tag.Data = strs[1]
-	}
 
-	// 去掉最后的换行符
-	lastIndex := len(tag.Data) - 1
-	if tag.Data[lastIndex] == '\n' {
-		tag.Data = tag.Data[:lastIndex]
+		// 去掉最后的换行符
+		lastIndex := len(tag.Data) - 1
+		if tag.Data[lastIndex] == '\n' {
+			tag.Data = tag.Data[:lastIndex]
+		}
 	}
 
 	return tag
