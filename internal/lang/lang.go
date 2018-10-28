@@ -106,6 +106,7 @@ var langs = []*Language{
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+			newPHPDocBlock(),
 			&block{Type: blockTypeSComment, Begin: `//`},
 			&block{Type: blockTypeSComment, Begin: `#`},
 			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},

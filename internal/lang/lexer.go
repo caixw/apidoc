@@ -50,7 +50,7 @@ func (l *lexer) lineNumber() int {
 	return l.ln
 }
 
-// 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 blocker 。
+// 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 Blocker 。
 func (l *lexer) block() Blocker {
 	for {
 		if l.atEOF() {
