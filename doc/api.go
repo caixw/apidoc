@@ -6,6 +6,7 @@ package doc
 
 import (
 	"bytes"
+	"sort"
 	"strings"
 
 	"github.com/caixw/apidoc/doc/lexer"
@@ -143,6 +144,13 @@ func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) error {
 		api.Tags = append(api.Tags, string(bytes.TrimSpace(tag)))
 	}
 
+	sort.Strings(api.Tags)
+	for i := 1; i < len(api.Tags); i++ {
+		if api.Tags[i] == api.Tags[i-1] {
+			return tag.ErrInvalidFormat() // 重复的名称
+		}
+	}
+
 	return nil
 }
 
@@ -172,8 +180,23 @@ func (api *API) parseQuery(l *lexer.Lexer, tag *lexer.Tag) error {
 	if err != nil {
 		return err
 	}
+
+	if api.queryExists(p.Name) {
+		return tag.ErrDuplicateTag()
+	}
+
 	api.Queries = append(api.Queries, p)
 	return nil
+}
+
+func (api *API) queryExists(name string) bool {
+	for _, q := range api.Queries {
+		if q.Name == name {
+			return true
+		}
+	}
+
+	return false
 }
 
 // 解析 @apiParam 标签，格式如下：
@@ -187,9 +210,24 @@ func (api *API) parseParam(l *lexer.Lexer, tag *lexer.Tag) error {
 	if err != nil {
 		return err
 	}
+
+	if api.paramExists(p.Name) {
+		return tag.ErrDuplicateTag()
+	}
+
 	api.Params = append(api.Params, p)
 
 	return nil
+}
+
+func (api *API) paramExists(name string) bool {
+	for _, p := range api.Params {
+		if p.Name == name {
+			return true
+		}
+	}
+
+	return false
 }
 
 // 解析 @apiRequest 及其子标签，格式如下：

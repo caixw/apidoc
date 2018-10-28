@@ -88,6 +88,9 @@ func TestDoc_parseTag(t *testing.T) {
 
 	// 格式错误
 	a.Error(d.parseTag(nil, newTag("tag1")))
+
+	// 重复的标签名
+	a.Error(d.parseTag(nil, newTag("tag1 desc")))
 }
 
 func TestDoc_parseServer(t *testing.T) {
@@ -108,8 +111,14 @@ func TestDoc_parseServer(t *testing.T) {
 		Equal(srv.URL, "https://client.api.example.com").
 		Equal(srv.Description, "client api")
 
+	// 少内容
 	a.Error(d.parseServer(nil, newTag("client")))
+
+	// 格式不正确
 	a.Error(d.parseServer(nil, newTag("client https://url")))
+
+	// 重复的内容
+	a.Error(d.parseServer(nil, newTag("client https://example.com desc")))
 }
 
 func TestDoc_parseLicense(t *testing.T) {

@@ -88,6 +88,10 @@ func TestAPI_parseTags(t *testing.T) {
 
 	// 不能多次调用
 	a.Error(api.parseTags(nil, newTag("t1,t2")))
+
+	// 两次同名
+	api = &API{}
+	a.Error(api.parseTags(nil, newTag("t1,t1")))
 }
 
 func TestAPI_parseDeperecated(t *testing.T) {
@@ -117,13 +121,16 @@ func TestAPI_parseQuery(t *testing.T) {
 		False(q.Optional).
 		Equal(q.Summary, "名称")
 
-	a.NotError(api.parseQuery(nil, newTag("name string optional.v1  名称")))
+	a.NotError(api.parseQuery(nil, newTag("name1 string optional.v1  名称")))
 	a.Equal(len(api.Queries), 2)
 	q = api.Queries[1]
-	a.Equal(q.Name, "name").
+	a.Equal(q.Name, "name1").
 		Equal(q.Type.Type, schema.String).
 		True(q.Optional).
 		Equal(q.Summary, "名称")
+
+	// 同名参数
+	a.Error(api.parseQuery(nil, newTag("name string optional.v1  名称")))
 }
 
 func TestAPI_parseParam(t *testing.T) {
@@ -138,13 +145,16 @@ func TestAPI_parseParam(t *testing.T) {
 		False(p.Optional).
 		Equal(p.Summary, "名称")
 
-	a.NotError(api.parseParam(nil, newTag("name string optional.v1  名称")))
+	a.NotError(api.parseParam(nil, newTag("name1 string optional.v1  名称")))
 	a.Equal(len(api.Params), 2)
 	p = api.Params[1]
-	a.Equal(p.Name, "name").
+	a.Equal(p.Name, "name1").
 		Equal(p.Type.Type, schema.String).
 		True(p.Optional).
 		Equal(p.Summary, "名称")
+
+	// 同名参数
+	a.Error(api.parseParam(nil, newTag("name string optional.v1  名称")))
 }
 
 func TestAPI_parseResponse(t *testing.T) {

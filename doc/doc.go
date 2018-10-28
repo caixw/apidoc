@@ -192,6 +192,16 @@ func (doc *Doc) parseContact(l *lexer.Lexer, tag *lexer.Tag) (err error) {
 	return err
 }
 
+func (doc *Doc) tagExists(tag string) bool {
+	for _, t := range doc.Tags {
+		if t.Name == tag {
+			return true
+		}
+	}
+
+	return false
+}
+
 // 解析 @apiTag 标签，可以是以下格式
 //  @apiTag admin description
 func (doc *Doc) parseTag(l *lexer.Lexer, tag *lexer.Tag) error {
@@ -204,12 +214,27 @@ func (doc *Doc) parseTag(l *lexer.Lexer, tag *lexer.Tag) error {
 		doc.Tags = make([]*Tag, 0, 5)
 	}
 
+	name := string(data[0])
+	if doc.tagExists(name) {
+		return tag.ErrDuplicateTag()
+	}
+
 	doc.Tags = append(doc.Tags, &Tag{
-		Name:        string(data[0]),
+		Name:        string(name),
 		Description: Markdown(data[1]),
 	})
 
 	return nil
+}
+
+func (doc *Doc) serverExists(name string) bool {
+	for _, srv := range doc.Servers {
+		if srv.Name == name {
+			return true
+		}
+	}
+
+	return false
 }
 
 // 解析 @apiServer 标签，可以是以下格式
@@ -228,8 +253,13 @@ func (doc *Doc) parseServer(l *lexer.Lexer, tag *lexer.Tag) error {
 		doc.Servers = make([]*Server, 0, 5)
 	}
 
+	name := string(data[0])
+	if doc.serverExists(name) {
+		return tag.ErrDuplicateTag()
+	}
+
 	srv := &Server{
-		Name: string(data[0]),
+		Name: name,
 		URL:  string(data[1]),
 	}
 	if len(data) == 3 {
