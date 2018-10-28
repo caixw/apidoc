@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/issue9/is"
-	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/doc/lexer"
 	"github.com/caixw/apidoc/input"
@@ -144,10 +143,6 @@ func (doc *Doc) parseAPIDoc(l *lexer.Lexer) (err error) {
 				return tag.ErrDuplicateTag()
 			}
 			doc.Version = string(tag.Data)
-
-			if !version.SemVerValid(doc.Version) {
-				return tag.ErrInvalidFormat()
-			}
 		case "@apicontent":
 			if doc.Content != "" {
 				return tag.ErrDuplicateTag()

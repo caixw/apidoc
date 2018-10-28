@@ -38,4 +38,8 @@ func TestNewParam(t *testing.T) {
 		Equal(p.Type.Type, schema.String).
 		True(p.Optional).
 		Equal(p.Summary, "名称")
+
+	// 参数不够
+	p, err = newParam(newTag("name "))
+	a.Error(err).Nil(p)
 }
