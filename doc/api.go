@@ -37,9 +37,9 @@ type Param struct {
 
 func (doc *Doc) parseAPI(l *lexer.Lexer) error {
 	api := &API{}
-	var parse func(*lexer.Lexer, *lexer.Tag) error
 
 	for tag := l.Tag(); tag != nil; tag = l.Tag() {
+		parse := api.parseAPI
 		switch strings.ToLower(tag.Name) {
 		case "@api":
 			parse = api.parseAPI
@@ -56,15 +56,11 @@ func (doc *Doc) parseAPI(l *lexer.Lexer) error {
 		}
 	}
 
-	doc.append(api)
-
-	return nil
-}
-
-func (doc *Doc) append(api *API) {
 	doc.locker.Lock()
 	doc.Apis = append(doc.Apis, api)
 	doc.locker.Unlock()
+
+	return nil
 }
 
 type apiParser func(*API, *lexer.Lexer, *lexer.Tag) error
@@ -190,27 +186,21 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 	}
 
 	for tag := l.Tag(); tag != nil; tag = l.Tag() {
+		fn := req.parseExample
 		switch strings.ToLower(tag.Name) {
 		case "@apiexample":
-			if err := req.parseExample(tag); err != nil {
-				return err
-			}
+			fn = req.parseExample
 		case "@apiheader":
-			if err := req.parseHeader(tag); err != nil {
-				return err
-			}
+			fn = req.parseHeader
 		case "@apiparam":
-			params := tag.Words(4)
-			if len(params) != 4 {
-				return tag.ErrInvalidFormat()
-			}
-
-			if err := req.Type.Build(tag, params[0], params[1], params[2], params[3]); err != nil {
-				return err
-			}
+			fn = req.parseParam
 		default:
 			l.Backup(tag)
 			return nil
+		}
+
+		if err := fn(tag); err != nil {
+			return err
 		}
 	}
 

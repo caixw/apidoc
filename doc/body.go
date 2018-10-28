@@ -94,6 +94,15 @@ func (body *Body) parseHeader(tag *lexer.Tag) error {
 	return nil
 }
 
+func (body *Body) parseParam(tag *lexer.Tag) error {
+	data := tag.Words(4)
+	if len(data) != 4 {
+		return tag.ErrInvalidFormat()
+	}
+
+	return body.Type.Build(tag, data[0], data[1], data[2], data[3])
+}
+
 var requiredBytes = []byte("required")
 
 func isOptional(data []byte) bool {
@@ -131,27 +140,21 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 	}
 
 	for tag := l.Tag(); tag != nil; tag = l.Tag() {
+		fn := resp.parseExample
 		switch strings.ToLower(tag.Name) {
 		case "@apiexample":
-			if err := resp.parseExample(tag); err != nil {
-				return nil, err
-			}
+			fn = resp.parseExample
 		case "@apiheader":
-			if err := resp.parseHeader(tag); err != nil {
-				return nil, err
-			}
+			fn = resp.parseHeader
 		case "@apiparam":
-			data := tag.Words(4)
-			if len(data) != 4 {
-				return nil, tag.ErrInvalidFormat()
-			}
-
-			if err := resp.Type.Build(tag, data[0], data[1], data[2], data[3]); err != nil {
-				return nil, err
-			}
+			fn = resp.parseParam
 		default:
 			l.Backup(tag)
 			return resp, nil
+		}
+
+		if err := fn(tag); err != nil {
+			return nil, err
 		}
 	}
 
