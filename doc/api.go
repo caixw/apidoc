@@ -93,6 +93,8 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析 @api 标签，格式如下：
+//  @api GET /path summary
 func (api *API) parseapi(l *lexer.Lexer, tag *lexer.Tag) error {
 	if api.Method != "" || api.Path != "" || api.Summary != "" {
 		return tag.ErrDuplicateTag()
@@ -109,19 +111,32 @@ func (api *API) parseapi(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析 @apiServer 标签，格式如下：
+//  @apiServer s1
 func (api *API) parseServer(l *lexer.Lexer, tag *lexer.Tag) error {
 	if api.Server != "" {
 		return tag.ErrDuplicateTag()
 	}
+
+	if len(tag.Data) == 0 {
+		return tag.ErrInvalidFormat()
+	}
+
 	api.Server = string(tag.Data)
 	return nil
 }
 
 var separatorTag = []byte{','}
 
+// 解析 @apiTags 标签，格式如下：
+//  @apiTags t1,t2
 func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) error {
 	if len(api.Tags) > 0 {
 		return tag.ErrDuplicateTag()
+	}
+
+	if len(tag.Data) == 0 {
+		return tag.ErrInvalidFormat()
 	}
 
 	tags := bytes.Split(tag.Data, separatorTag)
@@ -133,14 +148,26 @@ func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析  @apiDeprecated 标签，格式如下：
+//  @apiDeprecated description
 func (api *API) parseDeprecated(l *lexer.Lexer, tag *lexer.Tag) error {
+	if api.Deprecated != "" {
+		return tag.ErrDuplicateTag()
+	}
+
+	if len(tag.Data) == 0 {
+		return tag.ErrInvalidFormat()
+	}
+
 	api.Deprecated = string(tag.Data)
 	return nil
 }
 
+// 解析 @apiQuery 标签，格式如下：
+//  @apiQuery name type.subtype optional.defaultValue markdown desc
 func (api *API) parseQuery(l *lexer.Lexer, tag *lexer.Tag) error {
-	if api.Params == nil {
-		api.Params = make([]*Param, 0, 10)
+	if api.Queries == nil {
+		api.Queries = make([]*Param, 0, 10)
 	}
 
 	p, err := newParam(tag)
@@ -151,9 +178,11 @@ func (api *API) parseQuery(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析 @apiParam 标签，格式如下：
+//  @apiParam name type.subtype optional.defaultValue markdown desc
 func (api *API) parseParam(l *lexer.Lexer, tag *lexer.Tag) error {
 	if api.Params == nil {
-		api.Params = make([]*Param, 0, 10)
+		api.Params = make([]*Param, 0, 3)
 	}
 
 	p, err := newParam(tag)
@@ -165,6 +194,25 @@ func (api *API) parseParam(l *lexer.Lexer, tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析 @apiRequest 及其子标签，格式如下：
+//  @apirequest object * 通用的请求主体
+//  @apiheader name optional desc
+//  @apiheader name optional desc
+//  @apiparam count int optional desc
+//  @apiparam list array.string optional desc
+//  @apiparam list.id int optional desc
+//  @apiparam list.name int reqiured desc
+//  @apiparam list.groups array.string optional.xxxx desc markdown enum:
+//   * xx: xxxxx
+//   * xx: xxxxx
+//  @apiexample application/json summary
+//  {
+//   count: 5,
+//   list: [
+//     {id:1, name: 'name1', 'groups': [1,2]},
+//     {id:2, name: 'name2', 'groups': [1,2]}
+//   ]
+//  }
 func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 	data := tag.Words(3)
 	if len(data) != 3 {
@@ -181,10 +229,11 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 	}
 	api.Requests = append(api.Requests, req)
 
-	if err := req.Type.Build(tag, nil, data[1], nil, data[2]); err != nil {
+	if err := req.Type.Build(tag, nil, data[0], nil, data[2]); err != nil {
 		return err
 	}
 
+LOOP:
 	for tag := l.Tag(); tag != nil; tag = l.Tag() {
 		fn := req.parseExample
 		switch strings.ToLower(tag.Name) {
@@ -196,7 +245,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 			fn = req.parseParam
 		default:
 			l.Backup(tag)
-			return nil
+			break LOOP
 		}
 
 		if err := fn(tag); err != nil {
@@ -208,7 +257,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 }
 
 // 解析参数标签，格式如下：
-// 用于路径参数和查义参数，request 和 request 中的不在此解析
+// 用于路径参数和查义参数，request 和 response 中的不在此解析
 //  @tag name type.subtype optional.defaultValue markdown desc
 func newParam(tag *lexer.Tag) (*Param, error) {
 	data := tag.Words(4)

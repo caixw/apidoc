@@ -22,6 +22,8 @@ type Response struct {
 	Status int `yaml:"status" json:"status"`
 }
 
+// API 和 Doc 都有这个属性，且都需要 parseResponse 方法。
+// 抽象为一个嵌套对象使用。
 type responses struct {
 	Responses []*Response `yaml:"responses,omitempty" json:"responses,omitempty"`
 }
@@ -85,6 +87,8 @@ func isOptional(data []byte) bool {
 	return !bytes.Equal(bytes.ToLower(data), requiredBytes)
 }
 
+// 解析 @apiHeader 标签，格式如下：
+//  @apiheader content-type required desc
 func (body *Body) parseHeader(tag *lexer.Tag) error {
 	data := tag.Words(3)
 	if len(data) != 3 {
@@ -104,6 +108,8 @@ func (body *Body) parseHeader(tag *lexer.Tag) error {
 	return nil
 }
 
+// 解析 @apiparam 标签，格式如下：
+//  @apiparam group object reqiured desc
 func (body *Body) parseParam(tag *lexer.Tag) error {
 	data := tag.Words(4)
 	if len(data) != 4 {
@@ -129,7 +135,7 @@ func (resps *responses) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 
 // 解析 @apiResponse 及子标签，格式如下：
 //  @apiresponse 200 array.object * 通用的返回内容定义
-//  @apiheader string required desc
+//  @apiheader content-type required desc
 //  @apiparam id int reqiured desc
 //  @apiparam name string reqiured desc
 //  @apiparam group object reqiured desc
