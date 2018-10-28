@@ -40,7 +40,7 @@
 // @apiparam group object reqiured desc
 // @apiparam group.id int reqiured desc
 //
-// @apiresponse 404 object application/json
+// @apiresponse 404 object application/json 错误的返回内容
 // @apiheader string required desc38G
 // @apiparam code int reqiured desc
 // @apiparam message string reqiured desc

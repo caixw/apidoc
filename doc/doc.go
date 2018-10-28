@@ -107,57 +107,81 @@ func (doc *Doc) parseBlock(block input.Block) error {
 	return nil
 }
 
-func (doc *Doc) parseAPIDoc(l *lexer.Lexer) (err error) {
-	for tag := l.Tag(); tag != nil; tag = l.Tag() {
-		switch strings.ToLower(tag.Name) {
-		case "@apidoc":
-			if len(tag.Data) == 0 {
-				return tag.ErrInvalidFormat()
-			}
-			if doc.Title != "" {
-				return tag.ErrDuplicateTag()
-			}
-			doc.Title = string(tag.Data)
-		case "@apitag":
-			if err = doc.parseTag(tag); err != nil {
-				return err
-			}
-		case "@apilicense":
-			if err = doc.parseLicense(tag); err != nil {
-				return err
-			}
-		case "@apiserver":
-			if err = doc.parseServer(tag); err != nil {
-				return err
-			}
-		case "@apicontact":
-			if doc.Contact != nil {
-				return tag.ErrDuplicateTag()
-			}
+type apiDocParser func(*Doc, *lexer.Lexer, *lexer.Tag) error
 
-			if doc.Contact, err = newContact(tag); err != nil {
-				return err
-			}
-		case "@apiversion":
-			if doc.Version != "" {
-				return tag.ErrDuplicateTag()
-			}
-			doc.Version = string(tag.Data)
-		case "@apicontent":
-			if doc.Content != "" {
-				return tag.ErrDuplicateTag()
-			}
-			doc.Content = Markdown(tag.Data)
-		case "@apiresponse":
-			if err := doc.parseResponse(l, tag); err != nil {
-				return err
-			}
-		default:
+// 定义了 @apidoc 子标签及其本身的的解析函数列表。
+var apiDocParsers = map[string]apiDocParser{
+	"@apidoc":      (*Doc).parseapidoc,
+	"@apitag":      (*Doc).parseTag,
+	"@apilicense":  (*Doc).parseLicense,
+	"@apiserver":   (*Doc).parseServer,
+	"@apicontact":  (*Doc).parseContact,
+	"@apiversion":  (*Doc).parseVersion,
+	"@apicontent":  (*Doc).parseContent,
+	"@apiresponse": (*Doc).parseResponse,
+}
+
+func (doc *Doc) parseAPIDoc(l *lexer.Lexer) error {
+	for tag := l.Tag(); tag != nil; tag = l.Tag() {
+		fn, found := apiDocParsers[strings.ToLower(tag.Name)]
+		if !found {
 			return tag.ErrInvalidTag()
+		}
+
+		if err := fn(doc, l, tag); err != nil {
+			return err
 		}
 	}
 
 	return nil
+}
+
+func (doc *Doc) parseapidoc(l *lexer.Lexer, tag *lexer.Tag) error {
+	if doc.Title != "" {
+		return tag.ErrDuplicateTag()
+	}
+
+	if len(tag.Data) == 0 {
+		return tag.ErrInvalidFormat()
+	}
+
+	doc.Title = string(tag.Data)
+	return nil
+}
+
+func (doc *Doc) parseContent(l *lexer.Lexer, tag *lexer.Tag) error {
+	if doc.Content != "" {
+		return tag.ErrDuplicateTag()
+	}
+
+	if len(tag.Data) == 0 {
+		return tag.ErrInvalidFormat()
+	}
+
+	doc.Content = Markdown(tag.Data)
+	return nil
+}
+
+func (doc *Doc) parseVersion(l *lexer.Lexer, tag *lexer.Tag) error {
+	if doc.Version != "" {
+		return tag.ErrDuplicateTag()
+	}
+
+	if len(tag.Data) == 0 {
+		return tag.ErrInvalidFormat()
+	}
+
+	doc.Version = string(tag.Data)
+	return nil
+}
+
+func (doc *Doc) parseContact(l *lexer.Lexer, tag *lexer.Tag) (err error) {
+	if doc.Contact != nil {
+		return tag.ErrDuplicateTag()
+	}
+
+	doc.Contact, err = newContact(tag)
+	return err
 }
 
 func (doc *Doc) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
@@ -176,7 +200,7 @@ func (doc *Doc) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 
 // 解析 @apiTag 标签，可以是以下格式
 //  @apiTag admin description
-func (doc *Doc) parseTag(tag *lexer.Tag) error {
+func (doc *Doc) parseTag(l *lexer.Lexer, tag *lexer.Tag) error {
 	data := tag.Words(2)
 	if len(data) != 2 {
 		return tag.ErrInvalidFormat()
@@ -197,7 +221,7 @@ func (doc *Doc) parseTag(tag *lexer.Tag) error {
 // 解析 @apiServer 标签，可以是以下格式
 //  @apiserver admin https://api1.example.com description
 //  @apiserver admin https://api1.example.com
-func (doc *Doc) parseServer(tag *lexer.Tag) error {
+func (doc *Doc) parseServer(l *lexer.Lexer, tag *lexer.Tag) error {
 	data := tag.Words(3)
 	if len(data) < 2 { // 描述为可选字段
 		return tag.ErrInvalidFormat()
@@ -224,31 +248,25 @@ func (doc *Doc) parseServer(tag *lexer.Tag) error {
 
 // 解析版本信息，格式如下：
 //  @apilicense MIT https://opensources.org/licenses/MIT
-func (doc *Doc) parseLicense(tag *lexer.Tag) (err error) {
+func (doc *Doc) parseLicense(l *lexer.Lexer, tag *lexer.Tag) error {
 	if doc.License != nil {
 		return tag.ErrDuplicateTag()
 	}
 
-	doc.License, err = newLink(tag)
-	return err
-}
-
-// 解析链接元素，格式如下：
-//  @tag text https://example.com
-func newLink(tag *lexer.Tag) (*Link, error) {
 	data := tag.Words(2)
 	if len(data) != 2 {
-		return nil, tag.ErrInvalidFormat()
+		return tag.ErrInvalidFormat()
 	}
 
 	if !is.URL(data[1]) {
-		return nil, tag.ErrInvalidFormat()
+		return tag.ErrInvalidFormat()
 	}
 
-	return &Link{
+	doc.License = &Link{
 		Text: string(data[0]),
 		URL:  string(data[1]),
-	}, nil
+	}
+	return nil
 }
 
 // 解析联系人标签内容，格式可以是：

@@ -36,3 +36,5 @@ apidoc
 .apidoc.yaml
 .apidoc.yml
 /.vscode
+apidoc.json
+apidoc.yaml

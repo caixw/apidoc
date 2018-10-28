@@ -37,23 +37,22 @@ type Param struct {
 
 func (doc *Doc) parseAPI(l *lexer.Lexer) error {
 	api := &API{}
+	var parse func(*lexer.Lexer, *lexer.Tag) error
 
 	for tag := l.Tag(); tag != nil; tag = l.Tag() {
 		switch strings.ToLower(tag.Name) {
 		case "@api":
-			if err := api.parseAPI(l, tag); err != nil {
-				return err
-			}
+			parse = api.parseAPI
 		case "@apirequest":
-			if err := api.parseRequest(l, tag); err != nil {
-				return err
-			}
+			parse = api.parseRequest
 		case "@apiresponse":
-			if err := api.parseResponse(l, tag); err != nil {
-				return err
-			}
+			parse = api.parseResponse
 		default:
 			return tag.ErrInvalidTag()
+		}
+
+		if err := parse(l, tag); err != nil {
+			return err
 		}
 	}
 
@@ -68,10 +67,37 @@ func (doc *Doc) append(api *API) {
 	doc.locker.Unlock()
 }
 
-var separatorTag = []byte{','}
+type apiParser func(*API, *lexer.Lexer, *lexer.Tag) error
+
+var apiParsers = map[string]apiParser{
+	"@api":           (*API).parseapi,
+	"@apiserver":     (*API).parseServer,
+	"@apitags":       (*API).parseTags,
+	"@apideprecated": (*API).parseDeprecated,
+	"@apiquery":      (*API).parseQuery,
+	"@apiparam":      (*API).parseParam,
+}
 
 // 分析 @api 以及子标签
 func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
+	l.Backup(tag) // 进来时，第一个肯定是 @api 标签，退回该标签，统一让 for 处理。
+
+	for tag := l.Tag(); tag != nil; tag = l.Tag() {
+		fn, found := apiParsers[strings.ToLower(tag.Name)]
+		if !found {
+			l.Backup(tag)
+			return nil
+		}
+
+		if err := fn(api, l, tag); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (api *API) parseapi(l *lexer.Lexer, tag *lexer.Tag) error {
 	if api.Method != "" || api.Path != "" || api.Summary != "" {
 		return tag.ErrDuplicateTag()
 	}
@@ -84,50 +110,62 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 	api.Path = string(data[1])
 	api.Summary = string(data[2])
 
-	for tag := l.Tag(); tag != nil; tag = l.Tag() {
-		switch strings.ToLower(tag.Name) {
-		case "@apiserver":
-			if api.Server != "" {
-				return tag.ErrDuplicateTag()
-			}
-			api.Server = string(tag.Data)
-		case "@apitags":
-			if len(api.Tags) > 0 {
-				return tag.ErrDuplicateTag()
-			}
+	return nil
+}
 
-			tags := bytes.Split(tag.Data, separatorTag)
-			api.Tags = make([]string, 0, len(tags))
-			for _, tag := range tags {
-				api.Tags = append(api.Tags, string(tag))
-			}
-		case "@apideprecated":
-			api.Deprecated = string(tag.Data)
-		case "@apiquery":
-			if api.Params == nil {
-				api.Params = make([]*Param, 0, 10)
-			}
-
-			p, err := newParam(tag)
-			if err != nil {
-				return err
-			}
-			api.Queries = append(api.Queries, p)
-		case "@apiparam":
-			if api.Params == nil {
-				api.Params = make([]*Param, 0, 10)
-			}
-
-			p, err := newParam(tag)
-			if err != nil {
-				return err
-			}
-			api.Params = append(api.Params, p)
-		default:
-			l.Backup(tag)
-			return nil
-		}
+func (api *API) parseServer(l *lexer.Lexer, tag *lexer.Tag) error {
+	if api.Server != "" {
+		return tag.ErrDuplicateTag()
 	}
+	api.Server = string(tag.Data)
+	return nil
+}
+
+var separatorTag = []byte{','}
+
+func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) error {
+	if len(api.Tags) > 0 {
+		return tag.ErrDuplicateTag()
+	}
+
+	tags := bytes.Split(tag.Data, separatorTag)
+	api.Tags = make([]string, 0, len(tags))
+	for _, tag := range tags {
+		api.Tags = append(api.Tags, string(tag))
+	}
+
+	return nil
+}
+
+func (api *API) parseDeprecated(l *lexer.Lexer, tag *lexer.Tag) error {
+	api.Deprecated = string(tag.Data)
+	return nil
+}
+
+func (api *API) parseQuery(l *lexer.Lexer, tag *lexer.Tag) error {
+	if api.Params == nil {
+		api.Params = make([]*Param, 0, 10)
+	}
+
+	p, err := newParam(tag)
+	if err != nil {
+		return err
+	}
+	api.Queries = append(api.Queries, p)
+	return nil
+}
+
+func (api *API) parseParam(l *lexer.Lexer, tag *lexer.Tag) error {
+	if api.Params == nil {
+		api.Params = make([]*Param, 0, 10)
+	}
+
+	p, err := newParam(tag)
+	if err != nil {
+		return err
+	}
+	api.Params = append(api.Params, p)
+
 	return nil
 }
 
