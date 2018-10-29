@@ -12,6 +12,34 @@ import (
 	"github.com/caixw/apidoc/doc/schema"
 )
 
+func TestAPI_genPathParams(t *testing.T) {
+	a := assert.New(t)
+	tag := newTag("")
+
+	api := &API{Path: "/path"}
+	a.NotError(api.genPathParams(tag))
+
+	api = &API{Path: "/path/{id}"}
+	a.NotError(api.genPathParams(tag))
+	a.Equal(api.pathParams, []string{"id"})
+
+	api = &API{Path: "/path/{id}/{name}"}
+	a.NotError(api.genPathParams(tag))
+	a.Equal(api.pathParams, []string{"id", "name"})
+
+	// 缺少 }
+	api = &API{Path: "/path/{id"}
+	a.Error(api.genPathParams(tag))
+
+	// 缺少 {
+	api = &API{Path: "/path/id}"}
+	a.Error(api.genPathParams(tag))
+
+	// 嵌套
+	api = &API{Path: "/path/{{id}"}
+	a.Error(api.genPathParams(tag))
+}
+
 func TestDoc_parseAPI(t *testing.T) {
 	a := assert.New(t)
 	d := &Doc{}

@@ -28,7 +28,7 @@ func InitLocale(tag language.Tag) error {
 	return locale.Init(tag)
 }
 
-// Version 获取版本号
+// Version 获取当前程序的版本号
 func Version() string {
 	return vars.Version()
 }

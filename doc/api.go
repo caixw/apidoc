@@ -26,6 +26,9 @@ type API struct {
 	Requests    []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
 	Deprecated  string     `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
 	Server      string     `yaml:"server" json:"server"`
+
+	// 路径参数名称的集合
+	pathParams []string
 }
 
 // Param 简单参数的描述，比如查询参数等
@@ -109,6 +112,38 @@ func (api *API) parseapi(l *lexer.Lexer, tag *lexer.Tag) error {
 	api.Path = string(data[1])
 	api.Summary = string(data[2])
 
+	return api.genPathParams(tag)
+}
+
+func (api *API) genPathParams(tag *lexer.Tag) error {
+	names := make([]string, 0, len(api.Params))
+
+	state := '}'
+	index := 0
+	for i, b := range api.Path {
+		switch b {
+		case '{':
+			if state != '}' {
+				return tag.ErrInvalidFormat()
+			}
+
+			state = '{'
+			index = i
+		case '}':
+			if state != '{' {
+				return tag.ErrInvalidFormat()
+			}
+			names = append(names, api.Path[index+1:i])
+			state = '}'
+		}
+	} // end for
+
+	// 缺少 } 结束符号
+	if state == '{' {
+		return tag.ErrInvalidFormat()
+	}
+
+	api.pathParams = names
 	return nil
 }
 
@@ -291,6 +326,12 @@ LOOP:
 
 	return nil
 }
+
+// 检测内容是否都是有效的
+/*
+func (api *API) check() error {
+
+}*/
 
 // 解析参数标签，格式如下：
 // 用于路径参数和查义参数，request 和 response 中的不在此解析
