@@ -4,14 +4,18 @@
 
 package openapi
 
+import (
+	"github.com/caixw/apidoc/doc/schema"
+)
+
 // Schema.Type 需要的一些预定义数据类型
 const (
-	TypeInt      = "integer"
+	TypeInt      = schema.Integer
 	TypeLong     = "long"
 	TypeFloat    = "float"
 	TypeDouble   = "double"
-	TypeString   = "string"
-	TypeBool     = "boolean"
+	TypeString   = schema.String
+	TypeBool     = schema.Bool
 	TypePassword = "password"
 )
 
@@ -27,26 +31,12 @@ func IsWellDataType(typ string) bool {
 
 // Schema 定义了输出和输出的数据类型
 type Schema struct {
-	Type        string             `json:"type,omitempty" yaml:"type,omitempty"`
-	Items       *Schema            `json:"items,omitempty" yaml:"items,omitempty"`
-	Properties  map[string]*Schema `json:"properties,omitempty" yaml:"properties,omitempty"`
-	Default     interface{}        `json:"default,omitempty" yaml:"default,omitempty"`
-	Description Description        `json:"description,omitempty" yaml:"description,omitempty"`
-	Enum        []string           `json:"enum,omitempty" yaml:"enum,omitempty"`
-	Required    []string           `json:"required,omitempty" yaml:"required,omitempty"`
-
-	// NOTE: 仅声明了部分使用到的变量
-
-	Nullable      bool                   `json:"nullable,omitempty" yaml:"nullable,omitempty"`
+	*schema.Schema
 	Discriminator *Discriminator         `json:"discriminator,omitempty" yaml:"discriminator,omitempty"`
-	ReadOnly      bool                   `json:"readOnly,omitempty" yaml:"readOnly,omitempty"`
-	WriteOnly     bool                   `json:"writeOnly,omitempty" yaml:"writeOnly,omitempty"`
 	XML           *XML                   `json:"xml,omitempty" yaml:"xml,omitempty"`
 	ExternalDocs  *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
 	Example       ExampleValue           `json:"example,omitempty" yaml:"example,omitempty"`
 	Deprecated    bool                   `json:"deprecated,omitempty" yaml:"deprecated,omitempty"`
-
-	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
 // XML 将 Schema 转换为 XML 的相关声明

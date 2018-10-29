@@ -8,6 +8,7 @@
 package openapi
 
 import (
+	"github.com/caixw/apidoc/doc"
 	"strconv"
 
 	"github.com/issue9/is"
@@ -23,7 +24,7 @@ const LatestVersion = "3.0.1"
 
 // Description 表示描述类型
 // 可以采用 MD 格式
-type Description string
+type Description = doc.Markdown
 
 // OpenAPI openAPI 的根对象
 type OpenAPI struct {
@@ -87,6 +88,13 @@ type Example struct {
 
 // ExampleValue 表示示例的内容类型。
 type ExampleValue string
+
+func newTag(tag *doc.Tag) *Tag {
+	return &Tag{
+		Name:        tag.Name,
+		Description: tag.Description,
+	}
+}
 
 // Sanitize 数据检测
 func (oa *OpenAPI) Sanitize() *Error {
