@@ -28,6 +28,7 @@ type API struct {
 	Server      string     `yaml:"server" json:"server"`
 
 	// 路径参数名称的集合
+	// TODO 比较与 Params 中的数据。
 	pathParams []string
 }
 
