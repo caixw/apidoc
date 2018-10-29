@@ -97,6 +97,10 @@ func TestSplitWords(t *testing.T) {
 	// 不够
 	bs = SplitWords(tag, 5)
 	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2"), []byte("s3")})
+
+	tag = []byte("@tag s1 s2  ")
+	bs = SplitWords(tag, 4)
+	a.Equal(bs, [][]byte{[]byte("@tag"), []byte("s1"), []byte("s2")})
 }
 
 func TestSplitLines(t *testing.T) {

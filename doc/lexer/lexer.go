@@ -141,7 +141,10 @@ func splitFunc(data []byte, size int, fn func(b byte) bool) [][]byte {
 	for ; ; pos++ {
 		switch {
 		case pos >= len(data): // EOF
-			return append(ret, data[start:])
+			if !issperator { // 如果依然为 true，说明剩余的都是分隔符，不返回内容
+				ret = append(ret, data[start:])
+			}
+			return ret
 		case fn(data[pos]):
 			if !issperator {
 				ret = append(ret, data[start:pos])

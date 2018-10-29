@@ -142,7 +142,7 @@ func (resps *responses) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 //  @apiparam group.id int reqiured desc
 func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 	data := tag.Words(4)
-	if len(data) != 4 {
+	if len(data) < 3 {
 		return nil, tag.ErrInvalidFormat()
 	}
 
@@ -151,8 +151,13 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 		return nil, tag.ErrInvalidFormat()
 	}
 
+	var desc []byte
+	if len(data) == 4 {
+		desc = data[3]
+	}
+
 	s := &schema.Schema{}
-	if err := s.Build(tag, nil, data[1], nil, data[3]); err != nil {
+	if err := s.Build(tag, nil, data[1], nil, desc); err != nil {
 		return nil, err
 	}
 	resp := &Response{

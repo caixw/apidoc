@@ -287,12 +287,17 @@ func (api *API) paramExists(name string) bool {
 //  }
 func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 	data := tag.Words(3)
-	if len(data) != 3 {
+	if len(data) < 2 {
 		return tag.ErrInvalidFormat()
 	}
 
 	if api.Requests == nil {
 		api.Requests = make([]*Request, 0, 3)
+	}
+
+	var desc []byte
+	if len(data) == 3 {
+		desc = data[2]
 	}
 
 	req := &Request{
@@ -301,7 +306,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) error {
 	}
 	api.Requests = append(api.Requests, req)
 
-	if err := req.Type.Build(tag, nil, data[0], nil, data[2]); err != nil {
+	if err := req.Type.Build(tag, nil, data[0], nil, desc); err != nil {
 		return err
 	}
 

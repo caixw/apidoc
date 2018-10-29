@@ -216,8 +216,16 @@ func TestAPI_parseResponse(t *testing.T) {
 	// 可以添加多次。
 	a.NotError(api.parseRequest(l, tag)).
 		Equal(len(api.Requests), 2)
-	req = api.Requests[0]
+	req = api.Requests[1]
 	a.Equal(req.Mimetype, "*")
+
+	// 可选的描述内容
+	tag = newTag(`array.object application/json `)
+	a.NotError(api.parseRequest(l, tag)).
+		Equal(len(api.Requests), 3)
+	req = api.Requests[2]
+	a.Equal(req.Mimetype, "application/json").
+		Empty(req.Type.Description)
 
 	// @apiRequest 格式错误
 	a.Error(api.parseRequest(l, newTag("xxxx")))

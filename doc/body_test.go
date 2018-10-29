@@ -111,7 +111,8 @@ func TestResponses_parseResponse(t *testing.T) {
 		Equal(len(d.Responses), 1)
 	resp := d.Responses[0]
 	a.Equal(resp.Status, 200).
-		Equal(resp.Mimetype, "*")
+		Equal(resp.Mimetype, "*").
+		Equal(resp.Type.Description, "通用的返回内容定义")
 	a.Equal(len(resp.Headers), 1).
 		Equal(resp.Headers[0].Name, "content-type").
 		Equal(resp.Headers[0].Summary, "指定内容类型").
@@ -122,7 +123,16 @@ func TestResponses_parseResponse(t *testing.T) {
 	// 可以添加多次。
 	a.NotError(d.parseResponse(l, tag)).
 		Equal(len(d.Responses), 2)
-	resp = d.Responses[0]
+	resp = d.Responses[1]
 	a.Equal(resp.Status, 200).
 		Equal(resp.Mimetype, "*")
+
+	// 忽略可选参数
+	tag = newTag(`200 array.object * `)
+	a.NotError(d.parseResponse(l, tag)).
+		Equal(len(d.Responses), 3)
+	resp = d.Responses[2]
+	a.Equal(resp.Status, 200).
+		Equal(resp.Mimetype, "*").
+		Empty(resp.Type.Description)
 }
