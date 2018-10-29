@@ -12,4 +12,13 @@
 # description:>
 #   line1
 #   line2
-
+function test() {
+    echo <<<EOF
+    123
+    /**
+     * 123
+     * 456
+     **/
+    456
+EOF;
+}

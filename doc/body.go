@@ -81,11 +81,6 @@ func (body *Body) parseExample(tag *lexer.Tag) error {
 	return nil
 }
 
-// 去掉示例代码中共有的前导空格
-func (exp *Example) filterSpace() {
-	// TODO
-}
-
 var requiredBytes = []byte("required")
 
 func isOptional(data []byte) bool {
