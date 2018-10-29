@@ -6,6 +6,7 @@ package openapi
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 
 	yaml "gopkg.in/yaml.v2"
@@ -85,10 +86,11 @@ func parsePaths(openapi *OpenAPI, doc *doc.Doc) *Error {
 
 		operation.Responses = make(map[string]*Response, len(api.Responses))
 		for _, resp := range api.Responses {
-			r, found := operation.Responses[resp.Status]
+			status := strconv.Itoa(resp.Status)
+			r, found := operation.Responses[status]
 			if !found {
 				r = &Response{}
-				operation.Responses[resp.Status] = r
+				operation.Responses[status] = r
 			}
 
 			if r.Headers == nil {
