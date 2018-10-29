@@ -34,15 +34,15 @@ func newError(file string, line int, msg message.Reference, vals ...interface{})
 
 // ErrInvalidFormat 返回格式无效的错误信息
 func (t *Tag) ErrInvalidFormat() error {
-	return newError(t.File, t.Line, locale.ErrInvalidFormat, string(t.Name))
+	return newError(t.File, t.Line, locale.ErrInvalidFormat, t.Name)
 }
 
 // ErrDuplicateTag 返回标签重复的错误信息
 func (t *Tag) ErrDuplicateTag() error {
-	return newError(t.File, t.Line, locale.ErrDuplicateTag, string(t.Name))
+	return newError(t.File, t.Line, locale.ErrDuplicateTag, t.Name)
 }
 
 // ErrInvalidTag 返回无效的标签错误
 func (t *Tag) ErrInvalidTag() error {
-	return newError(t.File, t.Line, locale.ErrInvalidTag, string(t.Name))
+	return newError(t.File, t.Line, locale.ErrInvalidTag, t.Name)
 }
