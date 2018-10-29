@@ -6,7 +6,6 @@ package output
 
 import (
 	"encoding/json"
-	"time"
 
 	yaml "gopkg.in/yaml.v2"
 
@@ -38,8 +37,7 @@ type Options struct {
 	// 只输出该标签的文档，若为空，则表示所有。
 	Tags []string `yaml:"tags,omitempty"`
 
-	Elapsed time.Duration `yaml:"-"`
-	marshal marshaler     // 根据 type 决定转换的函数
+	marshal marshaler // 根据 type 决定转换的函数
 }
 
 func (o *Options) contains(tags ...string) bool {
