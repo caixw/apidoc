@@ -7,11 +7,12 @@ package output
 import (
 	"encoding/json"
 
+	"golang.org/x/text/message"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/internal/options"
 	"github.com/caixw/apidoc/output/openapi"
 )
 
@@ -40,6 +41,14 @@ type Options struct {
 	marshal marshaler // 根据 type 决定转换的函数
 }
 
+func newError(field string, key message.Reference, args ...interface{}) *errors.Error {
+	return &errors.Error{
+		Field:       field,
+		MessageKey:  key,
+		MessageArgs: args,
+	}
+}
+
 func (o *Options) contains(tags ...string) bool {
 	if len(o.Tags) == 0 {
 		return true
@@ -59,7 +68,7 @@ func (o *Options) contains(tags ...string) bool {
 func (o *Options) Sanitize() error {
 	// TODO 改用默认值
 	if o.Path == "" {
-		return options.NewFieldError("path", locale.Sprintf(locale.ErrRequired))
+		return newError("path", locale.ErrRequired)
 	}
 
 	if o.Type == "" {
@@ -78,7 +87,7 @@ func (o *Options) Sanitize() error {
 	case RamlJSON:
 		// TODO
 	default:
-		return options.NewFieldError("type", locale.Sprintf(locale.ErrInvalidValue))
+		return newError("type", locale.ErrInvalidValue)
 	}
 
 	return nil

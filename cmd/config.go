@@ -15,19 +15,14 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/internal/options"
 	"github.com/caixw/apidoc/internal/vars"
 	"github.com/caixw/apidoc/output"
 )
 
 // 配置文件名称。
 const configFilename = ".apidoc.yaml"
-
-type configError struct {
-	options.FieldError
-	File string
-}
 
 // 项目的配置内容
 type config struct {
@@ -45,20 +40,12 @@ type config struct {
 	Output *output.Options `yaml:"output"`
 }
 
-func (err *configError) Error() string {
-	msg := locale.Sprintf(err.MessageKey, err.MessageArgs...)
-	return locale.Sprintf(locale.ErrConfig, err.File, err.Field, msg)
-}
-
 func newConfigError(field string, key message.Reference, args ...interface{}) error {
-	err := options.NewFieldError(field, key, args)
-	return newConfigFieldError(err)
-}
-
-func newConfigFieldError(err *options.FieldError) error {
-	return &configError{
-		File:       configFilename,
-		FieldError: *err,
+	return &errors.Error{
+		Field:       field,
+		File:        configFilename,
+		MessageKey:  key,
+		MessageArgs: args,
 	}
 }
 
@@ -105,19 +92,17 @@ func (cfg *config) sanitize() error {
 
 	for i, opt := range cfg.Inputs {
 		if err := opt.Sanitize(); err != nil {
-			if cerr, ok := err.(*options.FieldError); ok {
+			if cerr, ok := err.(*errors.Error); ok {
 				index := strconv.Itoa(i)
 				cerr.Field = "inputs[" + index + "]." + cerr.Field
-				err = newConfigFieldError(cerr)
 			}
 			return err
 		}
 	}
 
 	if err := cfg.Output.Sanitize(); err != nil {
-		if cerr, ok := err.(*options.FieldError); ok {
+		if cerr, ok := err.(*errors.Error); ok {
 			cerr.Field = "outputs." + cerr.Field
-			err = newConfigFieldError(cerr)
 		}
 		return err
 	}

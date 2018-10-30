@@ -7,26 +7,15 @@ package lexer
 import (
 	"golang.org/x/text/message"
 
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
 )
 
-// 语法错误类型
-type syntaxError struct {
-	File        string
-	Line        int
-	MessageKey  message.Reference
-	MessageArgs []interface{}
-}
-
-func (err *syntaxError) Error() string {
-	msg := locale.Sprintf(err.MessageKey, err.MessageArgs...)
-	return locale.Sprintf(locale.ErrSyntax, err.File, err.Line, msg)
-}
-
-func newError(file string, line int, msg message.Reference, vals ...interface{}) error {
-	return &syntaxError{
+func newError(file, tag string, line int, msg message.Reference, vals ...interface{}) error {
+	return &errors.Error{
 		File:        file,
 		Line:        line,
+		Field:       tag,
 		MessageKey:  msg,
 		MessageArgs: vals,
 	}
@@ -34,15 +23,15 @@ func newError(file string, line int, msg message.Reference, vals ...interface{})
 
 // ErrInvalidFormat 返回格式无效的错误信息
 func (t *Tag) ErrInvalidFormat() error {
-	return newError(t.File, t.Line, locale.ErrInvalidFormat, t.Name)
+	return newError(t.File, t.Name, t.Line, locale.ErrInvalidFormat)
 }
 
 // ErrDuplicateTag 返回标签重复的错误信息
 func (t *Tag) ErrDuplicateTag() error {
-	return newError(t.File, t.Line, locale.ErrDuplicateTag, t.Name)
+	return newError(t.File, t.Name, t.Line, locale.ErrDuplicateTag)
 }
 
 // ErrInvalidTag 返回无效的标签错误
 func (t *Tag) ErrInvalidTag() error {
-	return newError(t.File, t.Line, locale.ErrInvalidTag, t.Name)
+	return newError(t.File, t.Name, t.Line, locale.ErrInvalidTag)
 }

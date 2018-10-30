@@ -67,11 +67,13 @@ func parse(wd string) {
 		return
 	}
 
-	if err = apidoc.Do(erro, cfg.Output, cfg.Inputs...); err != nil {
+	doc, err := apidoc.Parse(erro, cfg.Inputs...)
+	if err != nil {
 		erro.Println(err)
+		return
 	}
 
-	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Path, cfg.Output.Elapsed))
+	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Path, doc.Elapsed))
 }
 
 func usage() {

@@ -25,5 +25,6 @@ type Error struct {
 
 func (err *Error) Error() string {
 	msg := locale.Sprintf(err.MessageKey, err.MessageArgs...)
-	return locale.Sprintf(locale.ErrSyntax, err.File, err.Line, msg)
+	// ErrMessage = "错误信息 %s 位次于 %s:%d 的 %s",
+	return locale.Sprintf(locale.ErrMessage, msg, err.File, err.Line, err.Field)
 }

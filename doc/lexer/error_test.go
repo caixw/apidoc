@@ -7,16 +7,15 @@ package lexer
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/internal/locale"
 	"github.com/issue9/assert"
-)
 
-var _ error = &syntaxError{}
+	"github.com/caixw/apidoc/internal/locale"
+)
 
 func TestNewError(t *testing.T) {
 	a := assert.New(t)
 
-	err := newError("file.go", 1, locale.ErrDirIsEmpty)
+	err := newError("file.go", "@api", 1, locale.ErrDirIsEmpty)
 	a.Error(err)
 	a.Contains(err.Error(), "file.go")
 }

@@ -12,10 +12,11 @@ import (
 	"github.com/issue9/utils"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
+	"golang.org/x/text/message"
 
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/lang"
 	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/internal/options"
 )
 
 // Options 指定输入内容的相关信息。
@@ -31,23 +32,31 @@ type Options struct {
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
 
+func newError(field string, key message.Reference, args ...interface{}) *errors.Error {
+	return &errors.Error{
+		Field:       field,
+		MessageKey:  key,
+		MessageArgs: args,
+	}
+}
+
 // Sanitize 检测 Options 变量是否符合要求
 func (opt *Options) Sanitize() error {
 	if len(opt.Dir) == 0 {
-		return options.NewFieldError("dir", locale.Sprintf(locale.ErrRequired))
+		return newError("dir", locale.ErrRequired)
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return options.NewFieldError("dir", locale.Sprintf(locale.ErrDirNotExists))
+		return newError("dir", locale.ErrDirNotExists)
 	}
 
 	if len(opt.Lang) == 0 {
-		return options.NewFieldError("lang", locale.Sprintf(locale.ErrRequired))
+		return newError("dir", locale.ErrRequired)
 	}
 
 	language := lang.Get(opt.Lang)
 	if language == nil {
-		return options.NewFieldError("lang", locale.Sprintf(locale.ErrUnsupportedInputLang, opt.Lang))
+		return newError("dir", locale.ErrUnsupportedInputLang, opt.Lang)
 	}
 	opt.blocks = language.Blocks
 
@@ -71,10 +80,10 @@ func (opt *Options) Sanitize() error {
 	// 生成 paths
 	paths, err := recursivePath(opt)
 	if err != nil {
-		return options.NewFieldError("dir", err.Error())
+		return newError("dir", err.Error())
 	}
 	if len(paths) == 0 {
-		return options.NewFieldError("dir", locale.Sprintf(locale.ErrDirIsEmpty))
+		return newError("dir", locale.ErrDirIsEmpty)
 	}
 	opt.paths = paths
 
