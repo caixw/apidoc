@@ -12,32 +12,36 @@ import (
 	"github.com/caixw/apidoc/doc/schema"
 )
 
-func TestAPI_genPathParams(t *testing.T) {
+func TestAPI_getPathParams(t *testing.T) {
 	a := assert.New(t)
-	tag := newTag("")
 
 	api := &API{Path: "/path"}
-	a.NotError(api.genPathParams(tag))
+	a.NotError(api.getPathParams())
 
 	api = &API{Path: "/path/{id}"}
-	a.NotError(api.genPathParams(tag))
-	a.Equal(api.pathParams, []string{"id"})
+	names, err := api.getPathParams()
+	a.NotError(err).
+		Equal(names, map[string]bool{"id": true})
 
 	api = &API{Path: "/path/{id}/{name}"}
-	a.NotError(api.genPathParams(tag))
-	a.Equal(api.pathParams, []string{"id", "name"})
+	names, err = api.getPathParams()
+	a.NotError(err).
+		Equal(names, map[string]bool{"id": true, "name": true})
 
 	// 缺少 }
 	api = &API{Path: "/path/{id"}
-	a.Error(api.genPathParams(tag))
+	names, err = api.getPathParams()
+	a.Error(err).Nil(names)
 
 	// 缺少 {
 	api = &API{Path: "/path/id}"}
-	a.Error(api.genPathParams(tag))
+	names, err = api.getPathParams()
+	a.Error(err).Nil(names)
 
 	// 嵌套
 	api = &API{Path: "/path/{{id}"}
-	a.Error(api.genPathParams(tag))
+	names, err = api.getPathParams()
+	a.Error(err).Nil(names)
 }
 
 func TestDoc_parseAPI(t *testing.T) {

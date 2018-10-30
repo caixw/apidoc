@@ -11,6 +11,8 @@ import (
 
 	"github.com/caixw/apidoc/doc/lexer"
 	"github.com/caixw/apidoc/doc/schema"
+	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 // API 表示单个 API 文档
@@ -30,10 +32,6 @@ type API struct {
 	// 记录起始位置，方便错误定位
 	file string
 	line int
-
-	// 路径参数名称的集合
-	// TODO 比较与 Params 中的数据。
-	pathParams []string
 }
 
 // Param 简单参数的描述，比如查询参数等
@@ -83,6 +81,57 @@ var apiParsers = map[string]apiParser{
 	"@apiparam":      (*API).parseParam,
 }
 
+// 检测内容是否正确
+func (api *API) check() error {
+	names, err := api.getPathParams()
+	if err != nil {
+		return err
+	}
+
+	if len(names) != len(api.Params) {
+		return api.errInvalidFormat("@api") // TODO 专门的错误提示，地址参数与实际参数对不上
+	}
+
+	for _, p := range api.Params {
+		if !names[p.Name] {
+			return api.errInvalidFormat("@api") // TODO 专门的错误提示，地址参数与实际参数对不上
+		}
+	}
+
+	return nil
+}
+
+func (api *API) getPathParams() (map[string]bool, error) {
+	names := make(map[string]bool, len(api.Params))
+
+	state := '}'
+	index := 0
+	for i, b := range api.Path {
+		switch b {
+		case '{':
+			if state != '}' {
+				return nil, api.errInvalidFormat("@api")
+			}
+
+			state = '{'
+			index = i
+		case '}':
+			if state != '{' {
+				return nil, api.errInvalidFormat("@api")
+			}
+			names[api.Path[index+1:i]] = true
+			state = '}'
+		}
+	} // end for
+
+	// 缺少 } 结束符号
+	if state == '{' {
+		return nil, api.errInvalidFormat("@api")
+	}
+
+	return names, nil
+}
+
 // 分析 @api 以及子标签
 func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) error {
 	l.Backup(tag) // 进来时，第一个肯定是 @api 标签，退回该标签，统一让 for 处理。
@@ -119,39 +168,16 @@ func (api *API) parseapi(l *lexer.Lexer, tag *lexer.Tag) error {
 	api.file = tag.File
 	api.line = tag.Line
 
-	return api.genPathParams(tag)
+	return nil
 }
 
-func (api *API) genPathParams(tag *lexer.Tag) error {
-	names := make([]string, 0, len(api.Params))
-
-	state := '}'
-	index := 0
-	for i, b := range api.Path {
-		switch b {
-		case '{':
-			if state != '}' {
-				return tag.ErrInvalidFormat()
-			}
-
-			state = '{'
-			index = i
-		case '}':
-			if state != '{' {
-				return tag.ErrInvalidFormat()
-			}
-			names = append(names, api.Path[index+1:i])
-			state = '}'
-		}
-	} // end for
-
-	// 缺少 } 结束符号
-	if state == '{' {
-		return tag.ErrInvalidFormat()
+func (api *API) errInvalidFormat(tag string) error {
+	return &errors.Error{
+		File:       api.file,
+		Line:       api.line,
+		Field:      tag,
+		MessageKey: locale.ErrInvalidFormat,
 	}
-
-	api.pathParams = names
-	return nil
 }
 
 // 解析 @apiServers 标签，格式如下：

@@ -86,7 +86,33 @@ func Parse(errlog *log.Logger, block chan input.Block) *Doc {
 	}
 	wg.Wait()
 
+	if err := doc.check(); err != nil {
+		errlog.Println(err)
+	}
+
 	return doc
+}
+
+func (doc *Doc) check() error {
+	for _, api := range doc.Apis {
+		if err := api.check(); err != nil {
+			return err
+		}
+
+		for _, tag := range api.Tags {
+			if !doc.tagExists(tag) {
+				return api.errInvalidFormat("@apiTags") // TODO 专门的错误信息
+			}
+		}
+
+		for _, srv := range api.Servers {
+			if !doc.serverExists(srv) {
+				return api.errInvalidFormat("@apiServers") // TODO 专门的错误信息
+			}
+		}
+	}
+
+	return nil
 }
 
 func (doc *Doc) parseBlock(block input.Block) error {
