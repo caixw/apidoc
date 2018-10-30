@@ -11,11 +11,11 @@ import (
 	"github.com/issue9/assert"
 	"golang.org/x/text/encoding/simplifiedchinese"
 
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/lang"
-	"github.com/caixw/apidoc/internal/options"
 )
 
-var _ options.Sanitizer = &Options{}
+var _ errors.Sanitizer = &Options{}
 
 func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)

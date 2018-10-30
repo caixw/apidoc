@@ -9,11 +9,11 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/internal/options"
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/output/openapi"
 )
 
-var _ options.Sanitizer = &Options{}
+var _ errors.Sanitizer = &Options{}
 
 var (
 	_ marshaler = apidocJSONMarshal

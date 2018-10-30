@@ -11,6 +11,11 @@ import (
 	"github.com/caixw/apidoc/internal/locale"
 )
 
+// Sanitizer 数据验证接口
+type Sanitizer interface {
+	Sanitize() error
+}
+
 // Error 错误信息
 type Error struct {
 	File  string
