@@ -81,10 +81,15 @@ func TestAPI_parseapi(t *testing.T) {
 	// 缺少参数
 	a.Error(api.parseapi(nil, newTag("get /path")))
 
-	a.NotError(api.parseapi(nil, newTag("get /path summary content")))
+	tag := newTag("get /path summary content")
+	tag.File = "file.go"
+	tag.Line = 111
+	a.NotError(api.parseapi(nil, tag))
 	a.Equal(api.Method, "GET").
 		Equal(api.Path, "/path").
-		Equal(api.Summary, "summary content")
+		Equal(api.Summary, "summary content").
+		Equal(api.file, "file.go").
+		Equal(api.line, 111)
 
 	// 多次调用
 	a.Error(api.parseapi(nil, newTag("get /path summary content")))

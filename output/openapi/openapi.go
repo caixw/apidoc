@@ -8,12 +8,12 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/doc"
 	"strconv"
 
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
+	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/internal/locale"
 )
 

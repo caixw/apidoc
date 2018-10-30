@@ -27,6 +27,10 @@ type API struct {
 	Deprecated  string     `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
 	Servers     []string   `yaml:"servers" json:"servers"`
 
+	// 记录起始位置，方便错误定位
+	file string
+	line int
+
 	// 路径参数名称的集合
 	// TODO 比较与 Params 中的数据。
 	pathParams []string
@@ -112,6 +116,8 @@ func (api *API) parseapi(l *lexer.Lexer, tag *lexer.Tag) error {
 	api.Method = strings.ToUpper(string(data[0])) // TODO 验证请求方法
 	api.Path = string(data[1])
 	api.Summary = string(data[2])
+	api.file = tag.File
+	api.line = tag.Line
 
 	return api.genPathParams(tag)
 }
