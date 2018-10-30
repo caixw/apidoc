@@ -150,7 +150,7 @@ func (api *API) genPathParams(tag *lexer.Tag) error {
 
 // 解析 @apiServers 标签，格式如下：
 //  @apiServers s1,s2
-func (api *API) parseServers(l *lexer.Lexer, tag *lexer.Tag) error {
+func (api *API) parseServers(l *lexer.Lexer, tag *lexer.Tag) (err error) {
 	if len(api.Servers) > 0 {
 		return tag.ErrDuplicateTag()
 	}
@@ -159,17 +159,8 @@ func (api *API) parseServers(l *lexer.Lexer, tag *lexer.Tag) error {
 		return tag.ErrInvalidFormat()
 	}
 
-	srvs := bytes.FieldsFunc(tag.Data, func(r rune) bool { return r == ',' })
-	api.Servers = make([]string, 0, len(srvs))
-	for _, srv := range srvs {
-		api.Servers = append(api.Servers, string(bytes.TrimSpace(srv)))
-	}
-
-	sort.Strings(api.Servers)
-	for i := 1; i < len(api.Servers); i++ {
-		if api.Servers[i] == api.Servers[i-1] {
-			return tag.ErrInvalidFormat() // 重复的名称
-		}
+	if api.Servers, err = splitToArray(tag); err != nil {
+		return err
 	}
 
 	return nil
@@ -177,7 +168,7 @@ func (api *API) parseServers(l *lexer.Lexer, tag *lexer.Tag) error {
 
 // 解析 @apiTags 标签，格式如下：
 //  @apiTags t1,t2
-func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) error {
+func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) (err error) {
 	if len(api.Tags) > 0 {
 		return tag.ErrDuplicateTag()
 	}
@@ -186,20 +177,29 @@ func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) error {
 		return tag.ErrInvalidFormat()
 	}
 
-	tags := bytes.FieldsFunc(tag.Data, func(r rune) bool { return r == ',' })
-	api.Tags = make([]string, 0, len(tags))
-	for _, tag := range tags {
-		api.Tags = append(api.Tags, string(bytes.TrimSpace(tag)))
-	}
-
-	sort.Strings(api.Tags)
-	for i := 1; i < len(api.Tags); i++ {
-		if api.Tags[i] == api.Tags[i-1] {
-			return tag.ErrInvalidFormat() // 重复的名称
-		}
+	if api.Tags, err = splitToArray(tag); err != nil {
+		return err
 	}
 
 	return nil
+}
+
+func splitToArray(tag *lexer.Tag) ([]string, error) {
+	items := bytes.FieldsFunc(tag.Data, func(r rune) bool { return r == ',' })
+	ret := make([]string, 0, len(items))
+
+	for _, item := range items {
+		ret = append(ret, string(bytes.TrimSpace(item)))
+	}
+
+	sort.Strings(ret)
+	for i := 1; i < len(ret); i++ {
+		if ret[i] == ret[i-1] {
+			return nil, tag.ErrInvalidFormat() // 重复的名称
+		}
+	}
+
+	return ret, nil
 }
 
 // 解析  @apiDeprecated 标签，格式如下：
