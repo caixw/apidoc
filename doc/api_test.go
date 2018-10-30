@@ -95,13 +95,13 @@ func TestAPI_parseServer(t *testing.T) {
 	api := &API{}
 
 	// 不能为空
-	a.Error(api.parseServer(nil, newTag("")))
+	a.Error(api.parseServers(nil, newTag("")))
 
-	a.NotError(api.parseServer(nil, newTag("server1")))
-	a.Equal(api.Server, "server1")
+	a.NotError(api.parseServers(nil, newTag("server1, server2")))
+	a.Equal(api.Servers, []string{"server1", "server2"})
 
 	// 不能多次调用
-	a.Error(api.parseServer(nil, newTag("s1")))
+	a.Error(api.parseServers(nil, newTag("s1")))
 }
 
 func TestAPI_parseTags(t *testing.T) {

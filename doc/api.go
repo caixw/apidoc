@@ -25,7 +25,7 @@ type API struct {
 	Params      []*Param   `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
 	Requests    []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
 	Deprecated  string     `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
-	Server      string     `yaml:"server" json:"server"`
+	Servers     []string   `yaml:"servers" json:"servers"`
 
 	// 路径参数名称的集合
 	// TODO 比较与 Params 中的数据。
@@ -72,7 +72,7 @@ type apiParser func(*API, *lexer.Lexer, *lexer.Tag) error
 
 var apiParsers = map[string]apiParser{
 	"@api":           (*API).parseapi,
-	"@apiserver":     (*API).parseServer,
+	"@apiservers":    (*API).parseServers,
 	"@apitags":       (*API).parseTags,
 	"@apideprecated": (*API).parseDeprecated,
 	"@apiquery":      (*API).parseQuery,
@@ -148,10 +148,10 @@ func (api *API) genPathParams(tag *lexer.Tag) error {
 	return nil
 }
 
-// 解析 @apiServer 标签，格式如下：
-//  @apiServer s1
-func (api *API) parseServer(l *lexer.Lexer, tag *lexer.Tag) error {
-	if api.Server != "" {
+// 解析 @apiServers 标签，格式如下：
+//  @apiServers s1,s2
+func (api *API) parseServers(l *lexer.Lexer, tag *lexer.Tag) error {
+	if len(api.Servers) > 0 {
 		return tag.ErrDuplicateTag()
 	}
 
@@ -159,7 +159,19 @@ func (api *API) parseServer(l *lexer.Lexer, tag *lexer.Tag) error {
 		return tag.ErrInvalidFormat()
 	}
 
-	api.Server = string(tag.Data)
+	srvs := bytes.FieldsFunc(tag.Data, func(r rune) bool { return r == ',' })
+	api.Servers = make([]string, 0, len(srvs))
+	for _, srv := range srvs {
+		api.Servers = append(api.Servers, string(bytes.TrimSpace(srv)))
+	}
+
+	sort.Strings(api.Servers)
+	for i := 1; i < len(api.Servers); i++ {
+		if api.Servers[i] == api.Servers[i-1] {
+			return tag.ErrInvalidFormat() // 重复的名称
+		}
+	}
+
 	return nil
 }
 
