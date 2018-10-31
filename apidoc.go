@@ -15,8 +15,8 @@ import (
 	"github.com/caixw/apidoc/doc"
 	i "github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/locale"
+	o "github.com/caixw/apidoc/internal/output"
 	"github.com/caixw/apidoc/internal/vars"
-	o "github.com/caixw/apidoc/output"
 )
 
 // InitLocale 初始化语言环境

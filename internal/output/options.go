@@ -13,32 +13,16 @@ import (
 	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/output/openapi"
+	"github.com/caixw/apidoc/internal/output/openapi"
+	"github.com/caixw/apidoc/options"
 )
 
 type marshaler func(v *doc.Doc) ([]byte, error)
 
-// 文档类型定义
-const (
-	ApidocJSON  = "apidoc+json"
-	ApidocYAML  = "apidoc+yaml"
-	OpenapiJSON = "openapi+json"
-	OpenapiYAML = "openapi+yaml"
-	RamlJSON    = "raml+json"
-)
-
-// Options 指定了渲染输出的相关设置项。
+// Options 输出配置项
 type Options struct {
-	// 文档的保存路径，包含目录和文件名，若为空，则为当前目录下的
-	Path string `yaml:"path,omitempty"`
-
-	// 输出类型
-	Type string `yaml:"type,omitempty"`
-
-	// 只输出该标签的文档，若为空，则表示所有。
-	Tags []string `yaml:"tags,omitempty"`
-
-	marshal marshaler // 根据 type 决定转换的函数
+	options.Output
+	marshal marshaler
 }
 
 func newError(field string, key message.Reference, args ...interface{}) *errors.Error {
@@ -72,19 +56,19 @@ func (o *Options) Sanitize() error {
 	}
 
 	if o.Type == "" {
-		o.Type = ApidocJSON
+		o.Type = options.ApidocJSON
 	}
 
 	switch o.Type {
-	case ApidocJSON:
+	case options.ApidocJSON:
 		o.marshal = apidocJSONMarshal
-	case ApidocYAML:
+	case options.ApidocYAML:
 		o.marshal = apidocYAMLMarshal
-	case OpenapiJSON:
+	case options.OpenapiJSON:
 		o.marshal = openapi.JSON
-	case OpenapiYAML:
+	case options.OpenapiYAML:
 		o.marshal = openapi.YAML
-	case RamlJSON:
+	case options.RamlJSON:
 		// TODO
 	default:
 		return newError("type", locale.ErrInvalidValue)

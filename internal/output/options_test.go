@@ -10,7 +10,8 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/internal/errors"
-	"github.com/caixw/apidoc/output/openapi"
+	"github.com/caixw/apidoc/internal/output/openapi"
+	"github.com/caixw/apidoc/options"
 )
 
 var _ errors.Sanitizer = &Options{}
@@ -45,7 +46,7 @@ func TestOptions_Sanitize(t *testing.T) {
 	a.NotError(o.Sanitize())
 	a.Equal(o.marshal, marshaler(apidocJSONMarshal))
 
-	o.Type = ApidocYAML
+	o.Type = options.ApidocYAML
 	a.NotError(o.Sanitize())
 	a.Equal(o.marshal, marshaler(apidocYAMLMarshal))
 

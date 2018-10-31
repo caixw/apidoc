@@ -10,6 +10,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/options"
 )
 
 func getTestDoc() *doc.Doc {
@@ -32,7 +33,9 @@ func TestFilterDoc(t *testing.T) {
 
 	d = getTestDoc()
 	o = &Options{
-		Tags: []string{"t1"},
+		Output: options.Output{
+			Tags: []string{"t1"},
+		},
 	}
 	filterDoc(d, o)
 	a.Equal(1, len(d.Tags)).
@@ -40,7 +43,9 @@ func TestFilterDoc(t *testing.T) {
 
 	d = getTestDoc()
 	o = &Options{
-		Tags: []string{"t1", "t2"},
+		Output: options.Output{
+			Tags: []string{"t1", "t2"},
+		},
 	}
 	filterDoc(d, o)
 	a.Equal(2, len(d.Tags)).
@@ -48,7 +53,9 @@ func TestFilterDoc(t *testing.T) {
 
 	d = getTestDoc()
 	o = &Options{
-		Tags: []string{"tag1"},
+		Output: options.Output{
+			Tags: []string{"tag1"},
+		},
 	}
 	filterDoc(d, o)
 	a.Equal(0, len(d.Tags)).
@@ -56,7 +63,9 @@ func TestFilterDoc(t *testing.T) {
 
 	d = getTestDoc()
 	o = &Options{
-		Tags: []string{"not-exists"},
+		Output: options.Output{
+			Tags: []string{"not-exists"},
+		},
 	}
 	filterDoc(d, o)
 	a.Equal(0, len(d.Tags)).

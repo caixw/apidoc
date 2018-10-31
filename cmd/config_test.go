@@ -13,8 +13,8 @@ import (
 
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/internal/output"
 	"github.com/caixw/apidoc/internal/vars"
-	"github.com/caixw/apidoc/output"
 )
 
 func TestConfig_generateConfig_loadConfig(t *testing.T) {
