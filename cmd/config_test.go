@@ -15,6 +15,7 @@ import (
 	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/output"
 	"github.com/caixw/apidoc/internal/vars"
+	"github.com/caixw/apidoc/options"
 )
 
 func TestConfig_generateConfig_loadConfig(t *testing.T) {
@@ -59,7 +60,9 @@ func TestConfig_sanitize(t *testing.T) {
 	// 查看错误提示格式是否正确
 	conf.Output = &output.Options{}
 	conf.Inputs = append(conf.Inputs, &input.Options{
-		Lang: "123",
+		Input: options.Input{
+			Lang: "123",
+		},
 	})
 	err = conf.sanitize()
 	a.Error(err)

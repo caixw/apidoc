@@ -116,14 +116,14 @@ func (cfg *config) sanitize() error {
 // wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
 // path 表示生成的配置文件存放的路径。
 func generateConfig(wd, path string) error {
-	o, err := input.Detect(wd, true)
+	o, err := options.Detect(wd, true)
 	if err != nil {
 		return err
 	}
 
 	cfg := &config{
 		Version: vars.Version(),
-		Inputs:  []*input.Options{o},
+		Inputs:  []*input.Options{&input.Options{Input: *o}},
 		Output: &output.Options{
 			Output: options.Output{
 				Path: filepath.Join(o.Dir, "apidoc.json"),

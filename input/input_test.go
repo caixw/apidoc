@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/caixw/apidoc/options"
 	"github.com/issue9/assert"
 )
 
@@ -79,9 +80,11 @@ func TestParse(t *testing.T) {
 
 func testParse(a *assert.Assertion, lang string) {
 	o := &Options{
-		Lang:      lang,
-		Dir:       "./testdata/" + lang,
-		Recursive: true,
+		Input: options.Input{
+			Lang:      lang,
+			Dir:       "./testdata/" + lang,
+			Recursive: true,
+		},
 	}
 	a.NotError(o.Sanitize()) // 初始化扩展名信息
 

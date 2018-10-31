@@ -13,6 +13,7 @@ import (
 
 	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/lang"
+	"github.com/caixw/apidoc/options"
 )
 
 var _ errors.Sanitizer = &Options{}
@@ -54,32 +55,16 @@ func TestOptions_Sanitize(t *testing.T) {
 	a.Error(o.Sanitize())
 }
 
-func TestDetectExts(t *testing.T) {
-	a := assert.New(t)
-
-	files, err := detectExts("./testdir", false)
-	a.NotError(err)
-	a.Equal(len(files), 4)
-	a.Equal(files[".php"], 1).Equal(files[".c"], 1)
-
-	files, err = detectExts("./testdir", true)
-	a.NotError(err)
-	a.Equal(len(files), 5)
-	a.Equal(files[".php"], 1).Equal(files[".1"], 3)
-}
-
-func TestDetect(t *testing.T) {
-	a := assert.New(t)
-
-	o, err := Detect("./testdir", true)
-	a.NotError(err).NotEmpty(o)
-	a.NotContains(o.Exts, ".1") // .1 不存在于已定义的语言中
-}
-
 func TestRecursivePath(t *testing.T) {
 	a := assert.New(t)
 
-	opt := &Options{Dir: "./testdir", Recursive: false, Exts: []string{".c", ".h"}}
+	opt := &Options{
+		Input: options.Input{
+			Dir:       "./testdir",
+			Recursive: false,
+			Exts:      []string{".c", ".h"},
+		},
+	}
 	paths, err := recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
