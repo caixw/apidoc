@@ -17,6 +17,7 @@ import (
 	"github.com/caixw/apidoc/internal/locale"
 	o "github.com/caixw/apidoc/internal/output"
 	"github.com/caixw/apidoc/internal/vars"
+	"github.com/caixw/apidoc/options"
 )
 
 // InitLocale 初始化语言环境
@@ -38,12 +39,9 @@ func Version() string {
 // erro 用于输出语法错误内容；
 // output 输出设置项；
 // input 输入设置项。
-func Do(erro *log.Logger, output *o.Options, input ...*i.Options) error {
+func Do(erro *log.Logger, output *options.Output, input ...*i.Options) error {
 	if output == nil {
 		return errors.New("参数 output 不能为空")
-	}
-	if err := output.Sanitize(); err != nil {
-		return err
 	}
 
 	doc, err := Parse(erro, input...)

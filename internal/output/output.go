@@ -10,20 +10,26 @@ import (
 	"os"
 
 	"github.com/caixw/apidoc/doc"
+	opt "github.com/caixw/apidoc/options"
 )
 
 // Render 渲染 doc 的内容，具体的渲染参数由 o 指定。
-func Render(d *doc.Doc, o *Options) error {
-	filterDoc(d, o)
-
-	data, err := o.marshal(d)
+func Render(d *doc.Doc, o *opt.Output) error {
+	opt, err := buildOptions(o)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(o.Path, data, os.ModePerm)
+
+	filterDoc(d, opt)
+
+	data, err := opt.marshal(d)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(opt.Path, data, os.ModePerm)
 }
 
-func filterDoc(d *doc.Doc, o *Options) {
+func filterDoc(d *doc.Doc, o *options) {
 	if len(o.Tags) == 0 {
 		return
 	}

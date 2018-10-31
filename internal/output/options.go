@@ -14,14 +14,13 @@ import (
 	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/output/openapi"
-	"github.com/caixw/apidoc/options"
+	opt "github.com/caixw/apidoc/options"
 )
 
 type marshaler func(v *doc.Doc) ([]byte, error)
 
-// Options 输出配置项
-type Options struct {
-	options.Output
+type options struct {
+	opt.Output
 	marshal marshaler
 }
 
@@ -33,7 +32,7 @@ func newError(field string, key message.Reference, args ...interface{}) *errors.
 	}
 }
 
-func (o *Options) contains(tags ...string) bool {
+func (o *options) contains(tags ...string) bool {
 	if len(o.Tags) == 0 {
 		return true
 	}
@@ -48,33 +47,36 @@ func (o *Options) contains(tags ...string) bool {
 	return false
 }
 
-// Sanitize 对 Options 作一些初始化操作。
-func (o *Options) Sanitize() error {
+func buildOptions(o *opt.Output) (*options, error) {
 	// TODO 改用默认值
 	if o.Path == "" {
-		return newError("path", locale.ErrRequired)
+		return nil, newError("path", locale.ErrRequired)
 	}
 
 	if o.Type == "" {
-		o.Type = options.ApidocJSON
+		o.Type = opt.ApidocJSON
 	}
 
+	var marshal marshaler
 	switch o.Type {
-	case options.ApidocJSON:
-		o.marshal = apidocJSONMarshal
-	case options.ApidocYAML:
-		o.marshal = apidocYAMLMarshal
-	case options.OpenapiJSON:
-		o.marshal = openapi.JSON
-	case options.OpenapiYAML:
-		o.marshal = openapi.YAML
-	case options.RamlJSON:
+	case opt.ApidocJSON:
+		marshal = apidocJSONMarshal
+	case opt.ApidocYAML:
+		marshal = apidocYAMLMarshal
+	case opt.OpenapiJSON:
+		marshal = openapi.JSON
+	case opt.OpenapiYAML:
+		marshal = openapi.YAML
+	case opt.RamlJSON:
 		// TODO
 	default:
-		return newError("type", locale.ErrInvalidValue)
+		return nil, newError("type", locale.ErrInvalidValue)
 	}
 
-	return nil
+	return &options{
+		Output:  *o,
+		marshal: marshal,
+	}, nil
 }
 
 func apidocJSONMarshal(v *doc.Doc) ([]byte, error) {

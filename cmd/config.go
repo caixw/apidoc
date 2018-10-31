@@ -17,7 +17,6 @@ import (
 	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/internal/output"
 	"github.com/caixw/apidoc/internal/vars"
 	"github.com/caixw/apidoc/options"
 )
@@ -38,7 +37,7 @@ type config struct {
 	// 但是输出内容依然会被集中到 Output 一个字段中。
 	Inputs []*input.Options `yaml:"inputs"`
 
-	Output *output.Options `yaml:"output"`
+	Output *options.Output `yaml:"output"`
 }
 
 func newConfigError(field string, key message.Reference, args ...interface{}) error {
@@ -101,13 +100,6 @@ func (cfg *config) sanitize() error {
 		}
 	}
 
-	if err := cfg.Output.Sanitize(); err != nil {
-		if cerr, ok := err.(*errors.Error); ok {
-			cerr.Field = "outputs." + cerr.Field
-		}
-		return err
-	}
-
 	return nil
 }
 
@@ -124,10 +116,8 @@ func generateConfig(wd, path string) error {
 	cfg := &config{
 		Version: vars.Version(),
 		Inputs:  []*input.Options{&input.Options{Input: *o}},
-		Output: &output.Options{
-			Output: options.Output{
-				Path: filepath.Join(o.Dir, "apidoc.json"),
-			},
+		Output: &options.Output{
+			Path: filepath.Join(o.Dir, "apidoc.json"),
 		},
 	}
 

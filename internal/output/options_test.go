@@ -9,12 +9,9 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/output/openapi"
-	"github.com/caixw/apidoc/options"
+	opt "github.com/caixw/apidoc/options"
 )
-
-var _ errors.Sanitizer = &Options{}
 
 var (
 	_ marshaler = apidocJSONMarshal
@@ -27,7 +24,7 @@ var (
 func TestOptions_contains(t *testing.T) {
 	a := assert.New(t)
 
-	o := &Options{}
+	o := &options{}
 	a.True(o.contains("tag"))
 	a.True(o.contains(""))
 
@@ -37,19 +34,23 @@ func TestOptions_contains(t *testing.T) {
 	a.False(o.contains(""))
 }
 
-func TestOptions_Sanitize(t *testing.T) {
+func TestBuildOptions(t *testing.T) {
 	a := assert.New(t)
-	o := &Options{}
-	a.Error(o.Sanitize())
+	oo := &opt.Output{}
+	o, err := buildOptions(oo)
+	a.Error(err).Nil(o)
 
-	o.Path = "./testdir/apidoc.json"
-	a.NotError(o.Sanitize())
+	oo.Path = "./testdir/apidoc.json"
+	o, err = buildOptions(oo)
+	a.NotError(err).NotNil(o)
 	a.Equal(o.marshal, marshaler(apidocJSONMarshal))
 
-	o.Type = options.ApidocYAML
-	a.NotError(o.Sanitize())
+	oo.Type = opt.ApidocYAML
+	o, err = buildOptions(oo)
+	a.NotError(err).NotNil(o)
 	a.Equal(o.marshal, marshaler(apidocYAMLMarshal))
 
-	o.Type = "unknown"
-	a.Error(o.Sanitize())
+	oo.Type = "unknown"
+	o, err = buildOptions(oo)
+	a.Error(err).Nil(o)
 }

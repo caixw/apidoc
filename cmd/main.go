@@ -8,6 +8,7 @@ package main
 import (
 	"bytes"
 	"flag"
+	"github.com/caixw/apidoc/internal/errors"
 	"path/filepath"
 	"runtime"
 
@@ -16,6 +17,7 @@ import (
 	"github.com/caixw/apidoc"
 	"github.com/caixw/apidoc/internal/lang"
 	"github.com/caixw/apidoc/internal/locale"
+	"github.com/caixw/apidoc/internal/output"
 	"github.com/caixw/apidoc/internal/vars"
 )
 
@@ -71,6 +73,14 @@ func parse(wd string) {
 	if err != nil {
 		erro.Println(err)
 		return
+	}
+
+	if err = output.Render(doc, cfg.Output); err != nil {
+		if ferr, ok := err.(*errors.Error); ok {
+			ferr.File = configFilename
+			ferr.Field = "output." + ferr.Field
+		}
+		erro.Println(err)
 	}
 
 	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Path, doc.Elapsed))
