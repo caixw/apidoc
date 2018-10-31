@@ -5,10 +5,9 @@
 package lang
 
 import (
+	"fmt"
 	"strings"
 	"unicode"
-
-	"github.com/caixw/apidoc/internal/locale"
 )
 
 // 用于描述 block.Type 的值。
@@ -61,7 +60,7 @@ func (b *block) EndFunc(l *lexer) ([][]byte, bool) {
 	case blockTypeSComment:
 		return b.endSComments(l)
 	default:
-		panic(locale.Sprintf(locale.ErrInvalidBlockType, b.Type))
+		panic(fmt.Sprintf("无效的 blockType 值：%d", b.Type))
 	}
 }
 

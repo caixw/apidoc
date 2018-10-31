@@ -42,7 +42,6 @@ func init() {
 		ErrMustEmpty:             "只能为空",
 		ErrInvalidFormat:         "格式不正确",
 		ErrDirNotExists:          "目录不存在",
-		ErrInvalidBlockType:      "无效的 block.Type 值：%v",
 		ErrUnsupportedInputLang:  "无效的输入语言：%v",
 		ErrNotFoundEndFlag:       "找不到结束符号",
 		ErrNotFoundSupportedLang: "该目录下没有支持的语言文件",
