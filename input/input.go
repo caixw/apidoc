@@ -20,6 +20,7 @@ import (
 	"golang.org/x/text/transform"
 
 	"github.com/caixw/apidoc/internal/lang"
+	opt "github.com/caixw/apidoc/options"
 )
 
 // Block 解析出来的注释块
@@ -34,12 +35,22 @@ type Block struct {
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
 //
 // errlog 表示错误内容输出通道，若不需要，则使用 nil 代替。
-func Parse(errlog *log.Logger, o ...*Options) chan Block {
+func Parse(errlog *log.Logger, o ...*opt.Input) (chan Block, error) {
+	opts := make([]*options, 0, len(o))
+	for _, item := range o {
+		opt, err := buildOptions(item)
+		if err != nil {
+			return nil, err
+		}
+
+		opts = append(opts, opt)
+	}
+
 	data := make(chan Block, 500)
 
 	go func() {
 		wg := &sync.WaitGroup{}
-		for _, opt := range o {
+		for _, opt := range opts {
 			parse(data, errlog, wg, opt)
 		}
 		wg.Wait()
@@ -47,10 +58,10 @@ func Parse(errlog *log.Logger, o ...*Options) chan Block {
 		close(data)
 	}()
 
-	return data
+	return data, nil
 }
 
-func parse(data chan Block, errlog *log.Logger, wg *sync.WaitGroup, o *Options) {
+func parse(data chan Block, errlog *log.Logger, wg *sync.WaitGroup, o *options) {
 	for _, path := range o.paths {
 		wg.Add(1)
 		go func(path string) {
@@ -63,7 +74,7 @@ func parse(data chan Block, errlog *log.Logger, wg *sync.WaitGroup, o *Options) 
 // 分析 path 指向的文件。
 //
 // NOTE: parseFile 内部不能有协程处理代码。
-func parseFile(channel chan Block, errlog *log.Logger, path string, o *Options) {
+func parseFile(channel chan Block, errlog *log.Logger, path string, o *options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
 		if errlog != nil {

@@ -8,13 +8,13 @@ package main
 import (
 	"bytes"
 	"flag"
-	"github.com/caixw/apidoc/internal/errors"
 	"path/filepath"
 	"runtime"
 
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc"
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/lang"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/output"
@@ -71,6 +71,10 @@ func parse(wd string) {
 
 	doc, err := apidoc.Parse(erro, cfg.Inputs...)
 	if err != nil {
+		if ferr, ok := err.(*errors.Error); ok {
+			ferr.File = configFilename
+			ferr.Field = "inputs." + ferr.Field
+		}
 		erro.Println(err)
 		return
 	}

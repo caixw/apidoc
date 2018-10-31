@@ -11,59 +11,62 @@ import (
 	"github.com/issue9/assert"
 	"golang.org/x/text/encoding/simplifiedchinese"
 
-	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/lang"
-	"github.com/caixw/apidoc/options"
+	opt "github.com/caixw/apidoc/options"
 )
 
-var _ errors.Sanitizer = &Options{}
-
-func TestOptions_Sanitize(t *testing.T) {
+func TestBuildOptions(t *testing.T) {
 	a := assert.New(t)
 
-	o := &Options{}
-	a.Error(o.Sanitize())
+	o := &opt.Input{}
+	oo, err := buildOptions(o)
+	a.Error(err).Nil(oo)
 
 	o.Dir = "not exists"
-	a.Error(o.Sanitize())
+	oo, err = buildOptions(o)
+	a.Error(err).Nil(oo)
 
 	o.Dir = "./"
-	a.Error(o.Sanitize())
+	oo, err = buildOptions(o)
+	a.Error(err).Nil(oo)
 
 	o.Lang = "not exists"
-	a.Error(o.Sanitize())
+	oo, err = buildOptions(o)
+	a.Error(err).Nil(oo)
 
 	// 未指定扩展名，则使用系统默认的
 	language := lang.Get("go")
 	o.Lang = "go"
-	a.NotError(o.Sanitize())
-	a.Equal(o.Exts, language.Exts)
+	oo, err = buildOptions(o)
+	a.NotError(err).NotNil(oo)
+	a.Equal(oo.Exts, language.Exts)
 
 	// 指定了 Exts，自动调整扩展名样式。
 	o.Lang = "go"
 	o.Exts = []string{"go", ".g2"}
-	a.NotError(o.Sanitize())
-	a.Equal(o.Exts, []string{".go", ".g2"})
+	oo, err = buildOptions(o)
+	a.NotError(err).NotNil(oo)
+	a.Equal(oo.Exts, []string{".go", ".g2"})
 
 	// 特定的编码
 	o.Encoding = "GBK"
-	a.NotError(o.Sanitize())
-	a.Equal(o.encoding, simplifiedchinese.GBK)
+	oo, err = buildOptions(o)
+	a.NotError(err).NotNil(oo)
+	a.Equal(oo.encoding, simplifiedchinese.GBK)
 
 	// 不存在的编码
 	o.Encoding = "not-exists---"
-	a.Error(o.Sanitize())
+	oo, err = buildOptions(o)
+	a.Error(err).Nil(oo)
 }
 
 func TestRecursivePath(t *testing.T) {
 	a := assert.New(t)
 
-	opt := &Options{
-		Input: options.Input{
-			Dir:       "./testdir",
-			Recursive: false,
-			Exts:      []string{".c", ".h"},
-		},
+	opt := &opt.Input{
+		Dir:       "./testdir",
+		Recursive: false,
+		Exts:      []string{".c", ".h"},
 	}
 	paths, err := recursivePath(opt)
 	a.NotError(err)

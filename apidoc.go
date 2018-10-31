@@ -6,7 +6,6 @@
 package apidoc
 
 import (
-	"errors"
 	"log"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 
 	"github.com/caixw/apidoc/doc"
 	i "github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
 	o "github.com/caixw/apidoc/internal/output"
 	"github.com/caixw/apidoc/internal/vars"
@@ -39,9 +39,11 @@ func Version() string {
 // erro 用于输出语法错误内容；
 // output 输出设置项；
 // input 输入设置项。
-func Do(erro *log.Logger, output *options.Output, input ...*i.Options) error {
+func Do(erro *log.Logger, output *options.Output, input ...*options.Input) error {
 	if output == nil {
-		return errors.New("参数 output 不能为空")
+		return &errors.Error{
+			// TODO
+		}
 	}
 
 	doc, err := Parse(erro, input...)
@@ -56,19 +58,18 @@ func Do(erro *log.Logger, output *options.Output, input ...*i.Options) error {
 //
 // erro 用于输出语法错误内容；
 // input 输入设置项。
-func Parse(erro *log.Logger, input ...*i.Options) (*doc.Doc, error) {
+func Parse(erro *log.Logger, input ...*options.Input) (*doc.Doc, error) {
 	if len(input) == 0 {
-		return nil, errors.New("参数 input 不能为空")
-	}
-
-	for _, opt := range input {
-		if err := opt.Sanitize(); err != nil {
-			return nil, err
+		return nil, &errors.Error{
+			// TODO
 		}
 	}
 
 	start := time.Now()
-	block := i.Parse(erro, input...)
+	block, err := i.Parse(erro, input...)
+	if err != nil {
+		return nil, err
+	}
 	doc := doc.Parse(erro, block)
 	doc.Elapsed = time.Now().Sub(start)
 

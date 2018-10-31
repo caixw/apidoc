@@ -6,12 +6,10 @@ package main
 
 import (
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/vars"
 	"github.com/caixw/apidoc/options"
@@ -51,19 +49,8 @@ func TestConfig_sanitize(t *testing.T) {
 	a.Equal(err.(*errors.Error).Field, "inputs")
 
 	// 未声明 output
-	conf.Inputs = []*input.Options{{}}
+	conf.Inputs = []*options.Input{{}}
 	err = conf.sanitize()
 	a.Error(err)
 	a.Equal(err.(*errors.Error).Field, "output")
-
-	// 查看错误提示格式是否正确
-	conf.Output = &options.Output{}
-	conf.Inputs = append(conf.Inputs, &input.Options{
-		Input: options.Input{
-			Lang: "123",
-		},
-	})
-	err = conf.sanitize()
-	a.Error(err)
-	a.True(strings.HasPrefix(err.(*errors.Error).Field, "inputs[0]"))
 }

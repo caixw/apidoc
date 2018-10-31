@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/caixw/apidoc/options"
+	opt "github.com/caixw/apidoc/options"
 	"github.com/issue9/assert"
 )
 
@@ -79,17 +79,14 @@ func TestParse(t *testing.T) {
 }
 
 func testParse(a *assert.Assertion, lang string) {
-	o := &Options{
-		Input: options.Input{
-			Lang:      lang,
-			Dir:       "./testdata/" + lang,
-			Recursive: true,
-		},
+	o := &opt.Input{
+		Lang:      lang,
+		Dir:       "./testdata/" + lang,
+		Recursive: true,
 	}
-	a.NotError(o.Sanitize()) // 初始化扩展名信息
 
-	channel := Parse(nil, o)
-	a.NotNil(channel)
+	channel, err := Parse(nil, o)
+	a.NotError(err).NotNil(channel)
 
 	for b := range channel {
 		eq := bytes.Equal(b.Data, api1) ||

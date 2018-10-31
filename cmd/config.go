@@ -8,13 +8,11 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/issue9/version"
 	"golang.org/x/text/message"
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/vars"
@@ -35,7 +33,7 @@ type config struct {
 	//
 	// 多语言项目，可能需要用到多个输入面。
 	// 但是输出内容依然会被集中到 Output 一个字段中。
-	Inputs []*input.Options `yaml:"inputs"`
+	Inputs []*options.Input `yaml:"inputs"`
 
 	Output *options.Output `yaml:"output"`
 }
@@ -90,16 +88,6 @@ func (cfg *config) sanitize() error {
 		return newConfigError("output", locale.Sprintf(locale.ErrRequired))
 	}
 
-	for i, opt := range cfg.Inputs {
-		if err := opt.Sanitize(); err != nil {
-			if cerr, ok := err.(*errors.Error); ok {
-				index := strconv.Itoa(i)
-				cerr.Field = "inputs[" + index + "]." + cerr.Field
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -115,7 +103,7 @@ func generateConfig(wd, path string) error {
 
 	cfg := &config{
 		Version: vars.Version(),
-		Inputs:  []*input.Options{&input.Options{Input: *o}},
+		Inputs:  []*options.Input{o},
 		Output: &options.Output{
 			Path: filepath.Join(o.Dir, "apidoc.json"),
 		},
