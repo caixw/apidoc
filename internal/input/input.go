@@ -19,6 +19,7 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/lang"
 	opt "github.com/caixw/apidoc/options"
 )
@@ -83,7 +84,13 @@ func parseFile(channel chan Block, errlog *log.Logger, path string, o *options) 
 		return
 	}
 
-	ret := lang.Parse(errlog, data, o.blocks)
+	ret, err := lang.Parse(data, o.blocks)
+	if err != nil {
+		if serr, ok := err.(*errors.Error); ok {
+			serr.File = path
+		}
+		errlog.Println(err)
+	}
 	for line, data := range ret {
 		channel <- Block{
 			File: path,

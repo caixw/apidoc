@@ -5,17 +5,19 @@
 package lang
 
 import (
-	"log"
 	"math"
 	"unicode"
 
+	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
 )
 
 var minsize = len("@api ")
 
 // Parse 分析 data 中的内容，并以行号作为键名，代码块作为键值返回
-func Parse(errlog *log.Logger, data []byte, blocks []Blocker) map[int][]byte {
+//
+// 即使在出错的情况下，依然会返回数据内容。
+func Parse(data []byte, blocks []Blocker) (map[int][]byte, error) {
 	l := &lexer{data: data, blocks: blocks}
 	var block Blocker
 
@@ -23,24 +25,27 @@ func Parse(errlog *log.Logger, data []byte, blocks []Blocker) map[int][]byte {
 
 	for {
 		if l.atEOF() {
-			return ret
+			return ret, nil
 		}
 
 		if block == nil {
 			block = l.block()
 			if block == nil { // 没有匹配的 block 了
-				return ret
+				return ret, nil
 			}
 		}
 
 		ln := l.lineNumber() + 1 // 记录当前的行号，1 表示从 1 开始记数
 		lines, ok := block.EndFunc(l)
-		if !ok {
-			errlog.Println(locale.Sprintf(locale.ErrNotFoundEndFlag))
-			return ret // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
+		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
+			return ret, &errors.Error{
+				Line:        ln,
+				MessageKey:  locale.ErrNotFoundEndFlag,
+				MessageArgs: nil,
+			}
 		}
 
-		block = nil
+		block = nil // 重置 block
 
 		data := mergeLines(lines)
 		if len(data) > minsize {

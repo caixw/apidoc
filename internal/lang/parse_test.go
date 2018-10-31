@@ -5,15 +5,11 @@
 package lang
 
 import (
-	"io/ioutil"
-	"log"
 	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
 )
-
-var errlog = log.New(ioutil.Discard, "[ERROR]", 0)
 
 var (
 	code1 = `
@@ -35,22 +31,24 @@ printf("hello world!")
 func TestParse(t *testing.T) {
 	a := assert.New(t)
 
-	ret := Parse(errlog, nil, nil)
-	a.NotNil(ret).
+	ret, err := Parse(nil, nil)
+	a.NotError(err).NotNil(ret).
 		Equal(0, len(ret))
 
-	ret = Parse(errlog, nil, cStyle)
-	a.NotNil(ret).
+	ret, err = Parse(nil, cStyle)
+	a.NotError(err).NotNil(ret).
 		Equal(0, len(ret))
 
-	ret = Parse(errlog, []byte(code1), cStyle)
-	a.NotNil(ret).
+	ret, err = Parse([]byte(code1), cStyle)
+	a.NotError(err).NotNil(ret).
 		Equal(1, len(ret)). // 字符串直接被过滤，不再返回
 		True(strings.Contains(string(ret[4]), "注释代码"))
 
 	// 注释缺少结束符
-	ret = Parse(errlog, []byte(code2), cStyle)
-	a.NotNil(ret).
+	//
+	// 但依然会返回内容
+	ret, err = Parse([]byte(code2), cStyle)
+	a.Error(err).NotNil(ret).
 		Equal(0, len(ret))
 }
 
