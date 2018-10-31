@@ -12,6 +12,8 @@ import (
 	"github.com/caixw/apidoc/internal/locale"
 )
 
+var minsize = len("@api ")
+
 // Parse 分析 data 中的内容，并以行号作为键名，代码块作为键值返回
 func Parse(errlog *log.Logger, data []byte, blocks []Blocker) map[int][]byte {
 	l := &lexer{data: data, blocks: blocks}
@@ -40,7 +42,10 @@ func Parse(errlog *log.Logger, data []byte, blocks []Blocker) map[int][]byte {
 
 		block = nil
 
-		ret[ln] = mergeLines(lines)
+		data := mergeLines(lines)
+		if len(data) > minsize {
+			ret[ln] = data
+		}
 	} // end for
 }
 
