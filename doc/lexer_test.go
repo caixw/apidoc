@@ -6,7 +6,7 @@ package doc
 
 import (
 	"github.com/caixw/apidoc/doc/lexer"
-	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/input"
 )
 
 func newLexer(data string) *lexer.Lexer {

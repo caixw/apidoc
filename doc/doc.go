@@ -14,8 +14,10 @@ import (
 	"github.com/issue9/is"
 
 	"github.com/caixw/apidoc/doc/lexer"
-	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/errors"
+	i "github.com/caixw/apidoc/internal/input"
 	"github.com/caixw/apidoc/internal/vars"
+	"github.com/caixw/apidoc/options"
 )
 
 // Doc 文档
@@ -68,7 +70,19 @@ type Link struct {
 }
 
 // Parse 分析从 block 中获取的代码块。并填充到 Doc 中
-func Parse(errlog *log.Logger, block chan input.Block) *Doc {
+func Parse(errlog *log.Logger, input ...*options.Input) (*Doc, error) {
+	if len(input) == 0 {
+		return nil, &errors.Error{
+			// TODO
+		}
+	}
+
+	start := time.Now()
+	block, err := i.Parse(errlog, input...)
+	if err != nil {
+		return nil, err
+	}
+
 	doc := &Doc{
 		APIDoc: vars.Version(),
 	}
@@ -76,7 +90,7 @@ func Parse(errlog *log.Logger, block chan input.Block) *Doc {
 	wg := sync.WaitGroup{}
 	for blk := range block {
 		wg.Add(1)
-		go func(b input.Block) {
+		go func(b i.Block) {
 			defer wg.Done()
 			if err := doc.parseBlock(b); err != nil {
 				errlog.Println(err)
@@ -87,10 +101,12 @@ func Parse(errlog *log.Logger, block chan input.Block) *Doc {
 	wg.Wait()
 
 	if err := doc.check(); err != nil {
-		errlog.Println(err)
+		return nil, err
 	}
 
-	return doc
+	doc.Elapsed = time.Now().Sub(start)
+
+	return doc, nil
 }
 
 func (doc *Doc) check() error {
@@ -115,7 +131,7 @@ func (doc *Doc) check() error {
 	return nil
 }
 
-func (doc *Doc) parseBlock(block input.Block) error {
+func (doc *Doc) parseBlock(block i.Block) error {
 	l := lexer.New(block)
 
 	tag := l.Tag()

@@ -9,7 +9,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/input"
 )
 
 func newLexerString(data string) *Lexer {

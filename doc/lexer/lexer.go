@@ -8,7 +8,7 @@ package lexer
 import (
 	"unicode"
 
-	"github.com/caixw/apidoc/input"
+	"github.com/caixw/apidoc/internal/input"
 )
 
 // Lexer 简单的词法分析

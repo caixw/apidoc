@@ -14,6 +14,7 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc"
+	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/lang"
 	"github.com/caixw/apidoc/internal/locale"
@@ -69,7 +70,7 @@ func parse(wd string) {
 		return
 	}
 
-	doc, err := apidoc.Parse(erro, cfg.Inputs...)
+	doc, err := doc.Parse(erro, cfg.Inputs...)
 	if err != nil {
 		if ferr, ok := err.(*errors.Error); ok {
 			ferr.File = configFilename

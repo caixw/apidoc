@@ -7,12 +7,10 @@ package apidoc
 
 import (
 	"log"
-	"time"
 
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/doc"
-	i "github.com/caixw/apidoc/input"
 	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
 	o "github.com/caixw/apidoc/internal/output"
@@ -46,32 +44,10 @@ func Do(erro *log.Logger, output *options.Output, input ...*options.Input) error
 		}
 	}
 
-	doc, err := Parse(erro, input...)
+	doc, err := doc.Parse(erro, input...)
 	if err != nil {
 		return err
 	}
 
 	return o.Render(doc, output)
-}
-
-// Parse 分析输入信息，并获取 doc.Doc 实例。
-//
-// erro 用于输出语法错误内容；
-// input 输入设置项。
-func Parse(erro *log.Logger, input ...*options.Input) (*doc.Doc, error) {
-	if len(input) == 0 {
-		return nil, &errors.Error{
-			// TODO
-		}
-	}
-
-	start := time.Now()
-	block, err := i.Parse(erro, input...)
-	if err != nil {
-		return nil, err
-	}
-	doc := doc.Parse(erro, block)
-	doc.Elapsed = time.Now().Sub(start)
-
-	return doc, nil
 }
