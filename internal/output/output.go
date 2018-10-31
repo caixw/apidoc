@@ -10,11 +10,20 @@ import (
 	"os"
 
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/internal/locale"
 	opt "github.com/caixw/apidoc/options"
 )
 
 // Render 渲染 doc 的内容，具体的渲染参数由 o 指定。
 func Render(d *doc.Doc, o *opt.Output) error {
+	if o == nil {
+		return &errors.Error{
+			Field:      "output",
+			MessageKey: locale.ErrRequired,
+		}
+	}
+
 	opt, err := buildOptions(o)
 	if err != nil {
 		return err

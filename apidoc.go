@@ -11,7 +11,6 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/internal/errors"
 	"github.com/caixw/apidoc/internal/locale"
 	o "github.com/caixw/apidoc/internal/output"
 	"github.com/caixw/apidoc/internal/vars"
@@ -38,12 +37,6 @@ func Version() string {
 // output 输出设置项；
 // input 输入设置项。
 func Do(erro *log.Logger, output *options.Output, input ...*options.Input) error {
-	if output == nil {
-		return &errors.Error{
-			// TODO
-		}
-	}
-
 	doc, err := doc.Parse(erro, input...)
 	if err != nil {
 		return err
