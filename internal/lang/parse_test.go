@@ -45,15 +45,13 @@ func TestParse(t *testing.T) {
 
 	ret = Parse(errlog, []byte(code1), cStyle)
 	a.NotNil(ret).
-		Equal(2, len(ret)).
-		True(strings.Contains(string(ret[4]), "注释代码")).
-		Empty(ret[3]) // 字符串返回空值
+		Equal(1, len(ret)). // 字符串直接被过滤，不再返回
+		True(strings.Contains(string(ret[4]), "注释代码"))
 
 	// 注释缺少结束符
 	ret = Parse(errlog, []byte(code2), cStyle)
 	a.NotNil(ret).
-		Equal(1, len(ret)).
-		Empty(ret[3])
+		Equal(0, len(ret))
 }
 
 func TestMergeLines(t *testing.T) {
