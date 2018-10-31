@@ -43,7 +43,9 @@ LOOP:
 		case l.match(b.end):
 			b.level--
 			if b.level == 0 {
-				lines = append(lines, filterSymbols(line, b.begin))
+				if len(line) > 0 { // 如果 len(line) == 0 表示最后一行仅仅只有一个结束符
+					lines = append(lines, filterSymbols(line, b.begin))
+				}
 				break LOOP
 			}
 
