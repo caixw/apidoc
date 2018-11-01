@@ -6,6 +6,7 @@
 package doc
 
 import (
+	"context"
 	"log"
 	"strings"
 	"sync"
@@ -70,7 +71,7 @@ type Link struct {
 }
 
 // Parse 分析从 block 中获取的代码块。并填充到 Doc 中
-func Parse(errlog *log.Logger, input ...*options.Input) (*Doc, error) {
+func Parse(ctx context.Context, errlog *log.Logger, input ...*options.Input) (*Doc, error) {
 	if len(input) == 0 {
 		return nil, &errors.Error{
 			// TODO
@@ -78,7 +79,7 @@ func Parse(errlog *log.Logger, input ...*options.Input) (*Doc, error) {
 	}
 
 	start := time.Now()
-	block, err := i.Parse(errlog, input...)
+	block, err := i.Parse(ctx, errlog, input...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,14 +90,19 @@ func Parse(errlog *log.Logger, input ...*options.Input) (*Doc, error) {
 
 	wg := sync.WaitGroup{}
 	for blk := range block {
-		wg.Add(1)
-		go func(b i.Block) {
-			defer wg.Done()
-			if err := doc.parseBlock(b); err != nil {
-				errlog.Println(err)
-				return
-			}
-		}(blk)
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+			wg.Add(1)
+			go func(b i.Block) {
+				defer wg.Done()
+				if err := doc.parseBlock(b); err != nil {
+					errlog.Println(err)
+					return
+				}
+			}(blk)
+		}
 	}
 	wg.Wait()
 

@@ -12,6 +12,7 @@ package input
 
 import (
 	"bytes"
+	"context"
 	"io/ioutil"
 	"log"
 	"sync"
@@ -36,7 +37,7 @@ type Block struct {
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
 //
 // errlog 表示错误内容输出通道，若不需要，则使用 nil 代替。
-func Parse(errlog *log.Logger, o ...*opt.Input) (chan Block, error) {
+func Parse(ctx context.Context, errlog *log.Logger, o ...*opt.Input) (chan Block, error) {
 	opts := make([]*options, 0, len(o))
 	for _, item := range o {
 		opt, err := buildOptions(item)
@@ -52,7 +53,12 @@ func Parse(errlog *log.Logger, o ...*opt.Input) (chan Block, error) {
 	go func() {
 		wg := &sync.WaitGroup{}
 		for _, opt := range opts {
-			parse(data, errlog, wg, opt)
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				parse(data, errlog, wg, opt)
+			}
 		}
 		wg.Wait()
 

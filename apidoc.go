@@ -3,9 +3,10 @@
 // license that can be found in the LICENSE file.
 
 // Package apidoc RESTful API 文档生成工具。
-package apidoc
+package apidoc // import "github.com/caixw/apidoc"
 
 import (
+	"context"
 	"log"
 
 	"golang.org/x/text/language"
@@ -36,8 +37,8 @@ func Version() string {
 // erro 用于输出语法错误内容；
 // output 输出设置项；
 // input 输入设置项。
-func Do(erro *log.Logger, output *options.Output, input ...*options.Input) error {
-	doc, err := doc.Parse(erro, input...)
+func Do(ctx context.Context, erro *log.Logger, output *options.Output, input ...*options.Input) error {
+	doc, err := doc.Parse(ctx, erro, input...)
 	if err != nil {
 		return err
 	}

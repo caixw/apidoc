@@ -6,6 +6,7 @@ package input
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	opt "github.com/caixw/apidoc/options"
@@ -85,7 +86,7 @@ func testParse(a *assert.Assertion, lang string) {
 		Recursive: true,
 	}
 
-	channel, err := Parse(nil, o)
+	channel, err := Parse(context.Background(), nil, o)
 	a.NotError(err).NotNil(channel)
 
 	for b := range channel {

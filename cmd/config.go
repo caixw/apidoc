@@ -144,26 +144,33 @@ func (cfg *config) sanitize() error {
 	return nil
 }
 
-// 根据 wd 所在目录的内容生成一个配置文件，并写入到 path  中
-//
-// wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
-// path 表示生成的配置文件存放的路径。
-func generateConfig(wd, path string) error {
+func getConfig(wd string) (*config, error) {
 	inputs, err := options.Detect(wd, true)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if len(inputs) == 0 {
-		return locale.Errorf(locale.ErrNotFoundSupportedLang)
+		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
 	}
 
-	cfg := &config{
+	return &config{
 		Version: vars.Version(),
 		Inputs:  inputs,
 		Output: &options.Output{
 			Type: options.ApidocJSON,
 			Path: filepath.Join(wd, "apidoc.json"),
 		},
+	}, nil
+}
+
+// 根据 wd 所在目录的内容生成一个配置文件，并写入到 path  中
+//
+// wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
+// path 表示生成的配置文件存放的路径。
+func generateConfig(wd, path string) error {
+	cfg, err := getConfig(wd)
+	if err != nil {
+		return err
 	}
 
 	data, err := yaml.Marshal(cfg)
