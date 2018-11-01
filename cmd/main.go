@@ -64,7 +64,7 @@ func main() {
 }
 
 func parse(wd string) {
-	cfg, err := loadConfig(filepath.Join(wd, configFilename))
+	cfg, err := loadConfig(wd)
 	if err != nil {
 		erro.Println(err)
 		return

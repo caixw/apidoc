@@ -5,6 +5,8 @@
 package main
 
 import (
+	"os"
+	"os/user"
 	"path/filepath"
 	"testing"
 
@@ -15,14 +17,86 @@ import (
 	"github.com/caixw/apidoc/options"
 )
 
+func TestGetPath(t *testing.T) {
+	a := assert.New(t)
+	home, err := user.Current()
+	a.NotError(err).NotEmpty(home)
+	hd := home.HomeDir
+
+	wd, err := os.Getwd()
+	a.NotError(err).NotEmpty(wd)
+
+	// 指定 home，不依赖于 wd
+	path, err := getPath("~/path", "")
+	a.NotError(err).Equal(path, filepath.Join(hd, "/path"))
+
+	// 绝对路径
+	path, err = getPath("/path", "")
+	a.NotError(err).Equal(path, "/path")
+
+	path, err = getPath("path", "")
+	a.NotError(err).Equal(path, filepath.Join(wd, "/path"))
+
+	path, err = getPath("./path", "")
+	a.NotError(err).Equal(path, filepath.Join(wd, "/path"))
+
+	// 以下为 wd= /wd
+
+	// 指定 home，不依赖于 wd
+	path, err = getPath("~/path", "/wd")
+	a.NotError(err).Equal(path, filepath.Join(hd, "/path"))
+
+	// 绝对路径
+	path, err = getPath("/path", "/wd")
+	a.NotError(err).Equal(path, "/path")
+
+	path, err = getPath("path", "/wd")
+	a.NotError(err).Equal(path, "/wd/path")
+
+	path, err = getPath("./path", "/wd")
+	a.NotError(err).Equal(path, "/wd/path")
+
+	// 以下为 wd= ~/wd
+
+	// 指定 home，不依赖于 wd
+	path, err = getPath("~/path", "~/wd")
+	a.NotError(err).Equal(path, filepath.Join(hd, "/path"))
+
+	// 绝对路径
+	path, err = getPath("/path", "~/wd")
+	a.NotError(err).Equal(path, "/path")
+
+	path, err = getPath("path", "~/wd")
+	a.NotError(err).Equal(path, filepath.Join(hd, "/wd/path"))
+
+	path, err = getPath("./path", "~/wd")
+	a.NotError(err).Equal(path, filepath.Join(hd, "/wd/path"))
+
+	// 以下为 wd= ./wd
+
+	// 指定 home，不依赖于 wd
+	path, err = getPath("~/path", "./wd")
+	a.NotError(err).Equal(path, filepath.Join(hd, "/path"))
+
+	// 绝对路径
+	path, err = getPath("/path", "~/wd")
+	a.NotError(err).Equal(path, "/path")
+
+	path, err = getPath("path", "./wd")
+	a.NotError(err).Equal(path, filepath.Join(wd, "/wd/path"))
+
+	path, err = getPath("./path", "./wd")
+	a.NotError(err).Equal(path, filepath.Join(wd, "/wd/path"))
+}
+
 func TestConfig_generateConfig_loadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	path, err := filepath.Abs("./.apidoc.yaml")
-	a.NotError(err).NotEmpty(path)
+	wd, err := filepath.Abs("./")
+	a.NotError(err).NotEmpty(wd)
 
-	a.NotError(generateConfig("./..", path))
-	cfg, err := loadConfig(path)
+	a.NotError(generateConfig(wd, filepath.Join(wd, configFilename)))
+	cfg, err := loadConfig(wd)
 	a.NotError(err).NotNil(cfg)
 
 	a.Equal(cfg.Version, vars.Version())
