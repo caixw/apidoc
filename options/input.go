@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/internal/lang"
-	"github.com/caixw/apidoc/internal/locale"
 )
 
 // Input 指定输入内容的相关信息。
@@ -45,7 +44,7 @@ func Detect(dir string, recursive bool) (*Input, error) {
 	}
 
 	if len(exts) == 0 {
-		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
+		return nil, nil
 	}
 
 	ext := ""
@@ -57,12 +56,12 @@ func Detect(dir string, recursive bool) (*Input, error) {
 		}
 	}
 	if len(ext) == 0 {
-		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
+		return nil, nil
 	}
 
 	language := lang.GetByExt(ext)
 	if language == nil {
-		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
+		return nil, nil
 	}
 
 	return &Input{

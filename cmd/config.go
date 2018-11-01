@@ -153,6 +153,9 @@ func generateConfig(wd, path string) error {
 	if err != nil {
 		return err
 	}
+	if o == nil {
+		return locale.Errorf(locale.ErrNotFoundSupportedLang)
+	}
 
 	cfg := &config{
 		Version: vars.Version(),
