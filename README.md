@@ -9,19 +9,19 @@ apidoc 是一个简单的 RESTful API 文档生成工具，它从代码注释中
 目前支持支持以下语言：C#、C/C++、D、Erlang、Go、Groovy、Java、JavaScript、Pascal/Delphi、
 Perl、PHP、Python、Ruby、Rust、Scala 和 Swift。
 
-具体文档可参考：http://apidoc.tools
+具体文档可参考：https://apidoc.tools
 
 ```go
 /**
  * @api get /users 获取所有的用户信息
- * @apiGroup users
+ * @apiTags users
  * @apiQuery page int 显示第几页的内容
  * @apiQuery size int 每页显示的数量
  *
- * @apiSuccess 200 ok
- * @apiParam count int 符合条件的所有用户数量
- * @apiParam users array 用户列表。
- * @apiExample json
+ * @apiResponse 200 object application/json ok
+ * @apiParam count int required 符合条件的所有用户数量
+ * @apiParam users array.object required 用户列表。
+ * @apiExample application/json
  * {
  *     "count": 500,
  *     "users": [
@@ -29,7 +29,7 @@ Perl、PHP、Python、Ruby、Rust、Scala 和 Swift。
  *         {"id":2, "username": "admin2", "name": "管理员2"}
  *     ],
  * }
- * @apiExample xml
+ * @apiExample application/xml
  * <users count="500">
  *     <user id="1" username="admin1" name="管理员1" />
  *     <user id="2" username="admin2" name="管理员2" />
@@ -75,7 +75,7 @@ inputs := []*input.Options{
     &input.Options{},
 }
 
-apidoc.Parse(erro, output, inputs...)
+apidoc.Do(erro, output, inputs...)
 ```
 
 
