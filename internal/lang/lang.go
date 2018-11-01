@@ -5,6 +5,8 @@
 // Package lang 各类语言解析和管理。
 package lang
 
+import "fmt"
+
 // 所有支持的语言模型定义
 var langs = []*Language{
 	&Language{
@@ -194,8 +196,13 @@ func Get(name string) *Language {
 
 // GetByExt 根据扩展名获取语言定义信息
 //
+// ext 必须以 . 作为开头
 // 若不存在，则返回 nil
 func GetByExt(ext string) *Language {
+	if len(ext) == 0 || ext[0] != '.' {
+		panic(fmt.Sprintf("参数 ext 的值 [%s] 不能为空，且必须以 . 作为开头", ext))
+	}
+
 	for _, lang := range langs {
 		for _, e := range lang.Exts {
 			if e == ext {

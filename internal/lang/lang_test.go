@@ -75,11 +75,15 @@ func TestGetByExt(t *testing.T) {
 	l = GetByExt(".cxx")
 	a.NotNil(l).Equal(l.Name, "c++")
 
-	// 不存在，不以 . 开头
-	l = GetByExt("go")
-	a.Nil(l)
-
 	// 不存在
 	l = GetByExt(".not-exists")
 	a.Nil(l)
+
+	a.Panic(func() {
+		GetByExt("")
+	})
+
+	a.Panic(func() {
+		GetByExt("go")
+	})
 }

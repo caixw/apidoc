@@ -7,6 +7,7 @@ package options
 import (
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/caixw/apidoc/internal/lang"
@@ -24,7 +25,7 @@ type Input struct {
 // Detect 检测指定目录下的内容，并为其生成一个合适的 Input 实例。
 //
 // 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
-func Detect(dir string, recursive bool) (*Input, error) {
+func Detect(dir string, recursive bool) ([]*Input, error) {
 	dir, err := filepath.Abs(dir)
 	if err != nil {
 		return nil, err
@@ -35,41 +36,59 @@ func Detect(dir string, recursive bool) (*Input, error) {
 		return nil, err
 	}
 
-	// 删除不支持的扩展名
-	for ext := range exts {
-		language := lang.GetByExt(ext)
-		if language == nil {
-			delete(exts, ext)
+	langs := detectLanguage(exts)
+
+	inputs := make([]*Input, 0, len(langs))
+	for _, lang := range langs {
+		inputs = append(inputs, &Input{
+			Lang:      lang.Name,
+			Dir:       dir,
+			Exts:      lang.Exts,
+			Recursive: recursive,
+		})
+	}
+
+	return inputs, nil
+}
+
+type language struct {
+	lang.Language
+	count int
+}
+
+// 根据 exts 计算每个语言对应的文件数量，并按倒序返回
+//
+// exts 参数为从 detectExts 中获取的返回值
+func detectLanguage(exts map[string]int) []*language {
+	langs := make([]*language, 0, len(exts))
+
+	for ext, count := range exts {
+		l := lang.GetByExt(ext)
+		if l == nil {
+			continue
 		}
-	}
 
-	if len(exts) == 0 {
-		return nil, nil
-	}
-
-	ext := ""
-	cnt := 0
-	for k, v := range exts {
-		if v >= cnt {
-			ext = k
-			cnt = v
+		found := false
+		for _, item := range langs {
+			if item.Name == l.Name {
+				item.count += count
+				found = true
+				break
+			}
 		}
-	}
-	if len(ext) == 0 {
-		return nil, nil
-	}
+		if !found {
+			langs = append(langs, &language{
+				count:    count,
+				Language: *l,
+			})
+		}
+	} // end for
 
-	language := lang.GetByExt(ext)
-	if language == nil {
-		return nil, nil
-	}
+	sort.SliceStable(langs, func(i, j int) bool {
+		return langs[i].count > langs[j].count
+	})
 
-	return &Input{
-		Lang:      language.Name,
-		Dir:       dir,
-		Exts:      language.Exts,
-		Recursive: recursive,
-	}, nil
+	return langs
 }
 
 // 返回 dir 目录下文件类型及对应的文件数量的一个集合。
@@ -88,7 +107,9 @@ func detectExts(dir string, recursive bool) (map[string]int, error) {
 			}
 		} else {
 			ext := strings.ToLower(filepath.Ext(path))
-			exts[ext]++
+			if len(ext) > 0 {
+				exts[ext]++
+			}
 		}
 
 		return nil
