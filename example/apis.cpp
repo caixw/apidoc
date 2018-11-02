@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// @api GET /users/{id}/logs 获取用户信息
+// @api GET /users/{id}/logs/{lid} 获取用户日志信息
 // @apitags t1,t2
 // @apiservers s1,s2
 // @apideprecated desc
@@ -10,7 +10,7 @@
 // @apiquery size int default desc
 // @apiquery state array.string [normal,lock] 状态码
 // @apiparam id int required desc
-// @apiparam id int required desc
+// @apiparam lid int required desc
 //
 // @apirequest object * 通用的请求主体
 // @apiheader name desc optional

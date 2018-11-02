@@ -15,7 +15,6 @@ import (
 	"github.com/issue9/is"
 
 	"github.com/caixw/apidoc/doc/lexer"
-	"github.com/caixw/apidoc/internal/errors"
 	i "github.com/caixw/apidoc/internal/input"
 	"github.com/caixw/apidoc/internal/vars"
 	"github.com/caixw/apidoc/options"
@@ -71,15 +70,13 @@ type Link struct {
 }
 
 // Parse 分析从 block 中获取的代码块。并填充到 Doc 中
-func Parse(ctx context.Context, errlog *log.Logger, input ...*options.Input) (*Doc, error) {
-	if len(input) == 0 {
-		return nil, &errors.Error{
-			// TODO
-		}
-	}
-
+//
+// 语法错误或是与其相关的错误内容，由以下两个通道直接输出。
+// errlog 用于输出语法错误信息；
+// warnlog 用于输出语法警告信息。
+func Parse(ctx context.Context, errlog, warnlog *log.Logger, input ...*options.Input) (*Doc, error) {
 	start := time.Now()
-	block, err := i.Parse(ctx, errlog, input...)
+	block, err := i.Parse(ctx, errlog, warnlog, input...)
 	if err != nil {
 		return nil, err
 	}
@@ -106,8 +103,9 @@ func Parse(ctx context.Context, errlog *log.Logger, input ...*options.Input) (*D
 	}
 	wg.Wait()
 
+	// 语法错误，不返回给用户，仅输出内容。
 	if err := doc.check(); err != nil {
-		return nil, err
+		warnlog.Println(err)
 	}
 
 	doc.Elapsed = time.Now().Sub(start)

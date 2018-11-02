@@ -37,8 +37,8 @@ func Version() string {
 // erro 用于输出语法错误内容；
 // output 输出设置项；
 // input 输入设置项。
-func Do(ctx context.Context, erro *log.Logger, output *options.Output, input ...*options.Input) error {
-	doc, err := doc.Parse(ctx, erro, input...)
+func Do(ctx context.Context, erro, warnlog *log.Logger, output *options.Output, input ...*options.Input) error {
+	doc, err := doc.Parse(ctx, erro, warnlog, input...)
 	if err != nil {
 		return err
 	}

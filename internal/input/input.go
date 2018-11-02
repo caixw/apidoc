@@ -36,8 +36,16 @@ type Block struct {
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
 //
-// errlog 表示错误内容输出通道，若不需要，则使用 nil 代替。
-func Parse(ctx context.Context, errlog *log.Logger, o ...*opt.Input) (chan Block, error) {
+// 只有处理文本内容的错误信息会被输出到 errolog 和 warnlog，
+// 其中 errlog 用于错误信息，而 warnlog 表示的一些警告信息。
+// 普通错误依然通过返回值返回。
+func Parse(ctx context.Context, errlog, warnlog *log.Logger, o ...*opt.Input) (chan Block, error) {
+	if len(o) == 0 {
+		return nil, &errors.Error{
+			// TODO
+		}
+	}
+
 	opts := make([]*options, 0, len(o))
 	for _, item := range o {
 		opt, err := buildOptions(item)
@@ -57,7 +65,7 @@ func Parse(ctx context.Context, errlog *log.Logger, o ...*opt.Input) (chan Block
 			case <-ctx.Done():
 				return
 			default:
-				parse(data, errlog, wg, opt)
+				parse(data, errlog, warnlog, wg, opt)
 			}
 		}
 		wg.Wait()
@@ -68,11 +76,11 @@ func Parse(ctx context.Context, errlog *log.Logger, o ...*opt.Input) (chan Block
 	return data, nil
 }
 
-func parse(data chan Block, errlog *log.Logger, wg *sync.WaitGroup, o *options) {
+func parse(data chan Block, errlog, warnlog *log.Logger, wg *sync.WaitGroup, o *options) {
 	for _, path := range o.paths {
 		wg.Add(1)
 		go func(path string) {
-			parseFile(data, errlog, path, o)
+			parseFile(data, errlog, warnlog, path, o)
 			wg.Done()
 		}(path)
 	}
@@ -81,7 +89,7 @@ func parse(data chan Block, errlog *log.Logger, wg *sync.WaitGroup, o *options) 
 // 分析 path 指向的文件。
 //
 // NOTE: parseFile 内部不能有协程处理代码。
-func parseFile(channel chan Block, errlog *log.Logger, path string, o *options) {
+func parseFile(channel chan Block, errlog, warnlog *log.Logger, path string, o *options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
 		if errlog != nil {

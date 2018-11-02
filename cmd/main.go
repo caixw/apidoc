@@ -71,7 +71,7 @@ func parse(wd string) {
 		return
 	}
 
-	doc, err := doc.Parse(context.Background(), erro, cfg.Inputs...)
+	doc, err := doc.Parse(context.Background(), erro, warn, cfg.Inputs...)
 	if err != nil {
 		if ferr, ok := err.(*errors.Error); ok {
 			ferr.File = configFilename
