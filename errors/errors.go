@@ -35,14 +35,11 @@ type Error struct {
 	Field string
 }
 
-// Message 输出的错误信息。
-//
-// 仅是错误信息，但是不会包含行号等内容。
-func (err *Error) Message() string {
+func (err *LocaleError) Error() string {
 	return locale.Sprintf(err.MessageKey, err.MessageArgs...)
 }
 
 func (err *Error) Error() string {
-	// ErrMessage = "错误信息 %s 位次于 %s:%d 的 %s",
-	return locale.Sprintf(locale.ErrMessage, err.Message(), err.File, err.Line, err.Field)
+	msg := err.LocaleError.Error()
+	return locale.Sprintf(locale.ErrMessage, msg, err.File, err.Line, err.Field)
 }
