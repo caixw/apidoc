@@ -12,7 +12,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/vars"
 	"github.com/caixw/apidoc/options"
 )

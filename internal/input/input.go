@@ -20,7 +20,7 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
-	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/lang"
 	opt "github.com/caixw/apidoc/options"
 )

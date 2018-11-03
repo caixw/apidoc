@@ -11,7 +11,7 @@ import (
 
 	"github.com/caixw/apidoc/doc/lexer"
 	"github.com/caixw/apidoc/doc/schema"
-	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/locale"
 )
 

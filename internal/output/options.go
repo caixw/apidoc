@@ -11,7 +11,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/output/openapi"
 	opt "github.com/caixw/apidoc/options"

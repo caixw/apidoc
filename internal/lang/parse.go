@@ -8,7 +8,7 @@ import (
 	"math"
 	"unicode"
 
-	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/locale"
 )
 

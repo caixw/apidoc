@@ -10,7 +10,7 @@ import (
 	"os"
 
 	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/locale"
 	opt "github.com/caixw/apidoc/options"
 )

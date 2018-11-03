@@ -16,7 +16,7 @@ import (
 
 	"github.com/caixw/apidoc"
 	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/lang"
 	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/output"

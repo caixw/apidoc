@@ -7,7 +7,7 @@ package lexer
 import (
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/locale"
 )
 

@@ -13,7 +13,7 @@ import (
 	"golang.org/x/text/encoding/ianaindex"
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/internal/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/lang"
 	"github.com/caixw/apidoc/internal/locale"
 	opt "github.com/caixw/apidoc/options"
