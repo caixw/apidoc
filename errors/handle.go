@@ -15,7 +15,6 @@ type HandlerFunc func(err *Error)
 type Handler struct {
 	errors chan *Error
 	f      HandlerFunc
-	stop   chan struct{}
 }
 
 // NewHandler 声明新的 Handler 实例
@@ -30,9 +29,9 @@ func NewHandler(f HandlerFunc) *Handler {
 	return h
 }
 
-// Stop 停止处理
+// Stop 停止处理错误内容
 func (h *Handler) Stop() {
-	h.stop <- struct{}{}
+	close(h.errors)
 }
 
 // Error 输出一条错误信息
@@ -53,13 +52,8 @@ func (h *Handler) SyntaxWarn(err *Error) {
 }
 
 func (h *Handler) handle() {
-	for {
-		select {
-		case err := <-h.errors:
-			h.f(err)
-		case <-h.stop:
-			return
-		}
+	for err := range h.errors {
+		h.f(err)
 	}
 }
 

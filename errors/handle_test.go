@@ -31,4 +31,9 @@ func TestHandler(t *testing.T) {
 	time.Sleep(1 * time.Second) // 等待 channel 完成
 	a.Contains(erro.String(), "erro.go")
 	a.Contains(warn.String(), "warn.go")
+
+	h.Stop()
+	a.Panic(func() {
+		h.SyntaxError(&Error{File: "erro.go", MessageKey: locale.ErrRequired})
+	})
 }
