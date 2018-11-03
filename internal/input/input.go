@@ -65,7 +65,7 @@ func Parse(ctx context.Context, errlog, warnlog *log.Logger, o ...*opt.Input) (c
 			case <-ctx.Done():
 				return
 			default:
-				parse(data, errlog, warnlog, wg, opt)
+				parse(ctx, data, errlog, warnlog, wg, opt)
 			}
 		}
 		wg.Wait()
@@ -76,14 +76,19 @@ func Parse(ctx context.Context, errlog, warnlog *log.Logger, o ...*opt.Input) (c
 	return data, nil
 }
 
-func parse(data chan Block, errlog, warnlog *log.Logger, wg *sync.WaitGroup, o *options) {
+func parse(ctx context.Context, data chan Block, errlog, warnlog *log.Logger, wg *sync.WaitGroup, o *options) {
 	for _, path := range o.paths {
-		wg.Add(1)
-		go func(path string) {
-			parseFile(data, errlog, warnlog, path, o)
-			wg.Done()
-		}(path)
-	}
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			wg.Add(1)
+			go func(path string) {
+				parseFile(data, errlog, warnlog, path, o)
+				wg.Done()
+			}(path)
+		}
+	} // end for
 }
 
 // 分析 path 指向的文件。
