@@ -86,11 +86,17 @@ func Parse(ctx context.Context, errlog, warnlog *log.Logger, input ...*options.I
 	}
 
 	wg := sync.WaitGroup{}
-	for blk := range block {
+
+LOOP:
+	for {
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()
-		default:
+		case blk, ok := <-block:
+			if !ok {
+				break LOOP
+			}
+
 			wg.Add(1)
 			go func(b i.Block) {
 				defer wg.Done()
@@ -101,6 +107,7 @@ func Parse(ctx context.Context, errlog, warnlog *log.Logger, input ...*options.I
 			}(blk)
 		}
 	}
+
 	wg.Wait()
 
 	// 语法错误，不返回给用户，仅输出内容。
