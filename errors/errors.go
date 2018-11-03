@@ -11,8 +11,16 @@ import (
 	"github.com/caixw/apidoc/internal/locale"
 )
 
+// 错误分类
+const (
+	SyntaxError int8 = iota + 1
+	SyntaxWarn
+	Other
+)
+
 // Error 错误信息
 type Error struct {
+	Type  int8
 	File  string
 	Line  int
 	Field string
