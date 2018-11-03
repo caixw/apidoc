@@ -18,17 +18,21 @@ const (
 	Other
 )
 
-// Error 错误信息
-type Error struct {
-	Type  int8
-	File  string
-	Line  int
-	Field string
-
+// LocaleError 本地化的错误信息
+type LocaleError struct {
 	// 保存着错误内容的本地化信息。
 	// 仅在返回错误信息时，才会转换成本地化内容。
 	MessageKey  message.Reference
 	MessageArgs []interface{}
+}
+
+// Error 错误信息
+type Error struct {
+	LocaleError
+	Type  int8
+	File  string
+	Line  int
+	Field string
 }
 
 // Message 输出的错误信息。

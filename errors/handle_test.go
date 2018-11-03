@@ -25,8 +25,9 @@ func TestHandler(t *testing.T) {
 	h := NewHandler(NewHandlerFunc(errolog, warnlog))
 	a.NotError(h)
 
-	h.SyntaxError(&Error{File: "erro.go", MessageKey: locale.ErrRequired})
-	h.SyntaxWarn(&Error{File: "warn.go", MessageKey: locale.ErrRequired})
+	le := LocaleError{MessageKey: locale.ErrRequired}
+	h.SyntaxError(&Error{File: "erro.go", LocaleError: le})
+	h.SyntaxWarn(&Error{File: "warn.go", LocaleError: le})
 
 	time.Sleep(1 * time.Second) // 等待 channel 完成
 	a.Contains(erro.String(), "erro.go")
@@ -34,6 +35,6 @@ func TestHandler(t *testing.T) {
 
 	h.Stop()
 	a.Panic(func() {
-		h.SyntaxError(&Error{File: "erro.go", MessageKey: locale.ErrRequired})
+		h.SyntaxError(&Error{File: "erro.go", LocaleError: le})
 	})
 }
