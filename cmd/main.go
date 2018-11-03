@@ -71,7 +71,8 @@ func parse(wd string) {
 		return
 	}
 
-	doc, err := doc.Parse(context.Background(), erro, warn, cfg.Inputs...)
+	h := errors.NewHandler(errors.NewHandlerFunc(erro, warn))
+	doc, err := doc.Parse(context.Background(), h, cfg.Inputs...)
 	if err != nil {
 		if ferr, ok := err.(*errors.Error); ok {
 			ferr.File = configFilename

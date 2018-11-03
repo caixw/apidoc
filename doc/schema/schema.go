@@ -7,8 +7,6 @@ package schema
 
 import (
 	"bytes"
-
-	"github.com/caixw/apidoc/doc/lexer"
 )
 
 // Schema.Type 的值枚举
@@ -93,8 +91,8 @@ var seqaratorDot = []byte{'.'}
 //  - optional 表示可选，默认为零值
 //  - xx 表示可选，默认值为 xx
 //  - required 表示必须
-func (schema *Schema) Build(tag *lexer.Tag, name, typ, optional, desc []byte) error {
-	type0, type1, err := parseType(tag, typ)
+func (schema *Schema) Build(name, typ, optional, desc []byte) error {
+	type0, type1, err := parseType(typ)
 	if err != nil {
 		return err
 	}

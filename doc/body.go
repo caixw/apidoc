@@ -56,10 +56,11 @@ type Example struct {
 //      "id": 1,
 //      "name": "name",
 //  }
-func (body *Body) parseExample(tag *lexer.Tag) error {
+func (body *Body) parseExample(tag *lexer.Tag) {
 	lines := tag.Lines(2)
 	if len(lines) != 2 {
-		return tag.ErrInvalidFormat()
+		tag.ErrInvalidFormat()
+		return
 	}
 
 	words := lexer.SplitWords(lines[0], 2)
@@ -77,8 +78,6 @@ func (body *Body) parseExample(tag *lexer.Tag) error {
 	}
 
 	body.Examples = append(body.Examples, example)
-
-	return nil
 }
 
 var requiredBytes = []byte("required")
@@ -89,10 +88,11 @@ func isOptional(data []byte) bool {
 
 // 解析 @apiHeader 标签，格式如下：
 //  @apiheader content-type required desc
-func (body *Body) parseHeader(tag *lexer.Tag) error {
+func (body *Body) parseHeader(tag *lexer.Tag) {
 	data := tag.Words(3)
 	if len(data) != 3 {
-		return tag.ErrInvalidFormat()
+		tag.ErrInvalidFormat()
+		return
 	}
 
 	if body.Headers == nil {
@@ -104,33 +104,34 @@ func (body *Body) parseHeader(tag *lexer.Tag) error {
 		Summary:  string(data[2]),
 		Optional: isOptional(data[1]),
 	})
-
-	return nil
 }
 
 // 解析 @apiparam 标签，格式如下：
 //  @apiparam group object reqiured desc
-func (body *Body) parseParam(tag *lexer.Tag) error {
+func (body *Body) parseParam(tag *lexer.Tag) {
 	data := tag.Words(4)
 	if len(data) != 4 {
-		return tag.ErrInvalidFormat()
+		tag.ErrInvalidFormat()
+		return
 	}
 
-	return body.Type.Build(tag, data[0], data[1], data[2], data[3])
+	if err := body.Type.Build(data[0], data[1], data[2], data[3]); err != nil {
+		// TODO err
+		tag.ErrInvalidFormat()
+		return
+	}
 }
 
-func (resps *responses) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
+func (resps *responses) parseResponse(l *lexer.Lexer, tag *lexer.Tag) {
 	if resps.Responses == nil {
 		resps.Responses = make([]*Response, 0, 3)
 	}
 
-	resp, err := newResponse(l, tag)
-	if err != nil {
-		return err
+	resp, ok := newResponse(l, tag)
+	if !ok {
+		return
 	}
 	resps.Responses = append(resps.Responses, resp)
-
-	return nil
 }
 
 // 解析 @apiResponse 及子标签，格式如下：
@@ -140,15 +141,17 @@ func (resps *responses) parseResponse(l *lexer.Lexer, tag *lexer.Tag) error {
 //  @apiparam name string reqiured desc
 //  @apiparam group object reqiured desc
 //  @apiparam group.id int reqiured desc
-func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
+func newResponse(l *lexer.Lexer, tag *lexer.Tag) (resp *Response, ok bool) {
 	data := tag.Words(4)
 	if len(data) < 3 {
-		return nil, tag.ErrInvalidFormat()
+		tag.ErrInvalidFormat()
+		return nil, false
 	}
 
 	status, err := strconv.Atoi(string(data[0]))
 	if err != nil {
-		return nil, tag.ErrInvalidFormat()
+		tag.ErrInvalidFormat()
+		return nil, false
 	}
 
 	var desc []byte
@@ -157,10 +160,12 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (*Response, error) {
 	}
 
 	s := &schema.Schema{}
-	if err := s.Build(tag, nil, data[1], nil, desc); err != nil {
-		return nil, err
+	if err := s.Build(nil, data[1], nil, desc); err != nil {
+		// TODO err
+		tag.ErrInvalidFormat()
+		return nil, false
 	}
-	resp := &Response{
+	resp = &Response{
 		Status: status,
 		Body: Body{
 			Mimetype: string(data[2]),
@@ -183,10 +188,8 @@ LOOP:
 			break LOOP
 		}
 
-		if err := fn(tag); err != nil {
-			return nil, err
-		}
+		fn(tag)
 	}
 
-	return resp, nil
+	return resp, true
 }

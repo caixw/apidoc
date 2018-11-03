@@ -20,8 +20,6 @@ const (
 
 // LocaleError 本地化的错误信息
 type LocaleError struct {
-	// 保存着错误内容的本地化信息。
-	// 仅在返回错误信息时，才会转换成本地化内容。
 	MessageKey  message.Reference
 	MessageArgs []interface{}
 }
@@ -29,6 +27,8 @@ type LocaleError struct {
 // Error 错误信息
 type Error struct {
 	LocaleError
+	Message string
+
 	Type  int8
 	File  string
 	Line  int
@@ -40,6 +40,10 @@ func (err *LocaleError) Error() string {
 }
 
 func (err *Error) Error() string {
-	msg := err.LocaleError.Error()
+	msg := err.Message
+	if msg == "" {
+		msg = err.LocaleError.Error()
+	}
+
 	return locale.Sprintf(locale.ErrMessage, msg, err.File, err.Line, err.Field)
 }

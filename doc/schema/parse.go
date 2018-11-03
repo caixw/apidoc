@@ -10,16 +10,17 @@ import (
 	"strconv"
 	"unicode"
 
-	"github.com/caixw/apidoc/doc/lexer"
+	"github.com/caixw/apidoc/errors"
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 // 分析类型的内容。值可以有以下格式：
 //  - type 单一类型
 //  - type.subtype 集合类型，subtype 表示集全元素的类型，一般用于数组。
-func parseType(tag *lexer.Tag, typ []byte) (t1, t2 string, err error) {
+func parseType(typ []byte) (t1, t2 string, err error) {
 	types := bytes.SplitN(typ, seqaratorDot, 2)
 	if len(types) == 0 {
-		return "", "", tag.ErrInvalidFormat()
+		return "", "", &errors.LocaleError{MessageKey: locale.ErrInvalidFormat}
 	}
 
 	type0 := string(types[0])
@@ -28,7 +29,7 @@ func parseType(tag *lexer.Tag, typ []byte) (t1, t2 string, err error) {
 	}
 
 	if len(types) == 1 {
-		return "", "", tag.ErrInvalidFormat()
+		return "", "", &errors.LocaleError{MessageKey: locale.ErrInvalidFormat}
 	}
 
 	return type0, string(types[1]), nil

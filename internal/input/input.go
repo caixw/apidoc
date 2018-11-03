@@ -14,7 +14,6 @@ import (
 	"bytes"
 	"context"
 	"io/ioutil"
-	"log"
 	"sync"
 
 	"golang.org/x/text/encoding"
@@ -36,10 +35,8 @@ type Block struct {
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
 //
-// 只有处理文本内容的错误信息会被输出到 errolog 和 warnlog，
-// 其中 errlog 用于错误信息，而 warnlog 表示的一些警告信息。
-// 普通错误依然通过返回值返回。
-func Parse(ctx context.Context, errlog, warnlog *log.Logger, o ...*opt.Input) (chan Block, error) {
+// 所有与解析有关的错误均通过 h 输出。而其它错误，比如参数问题等，通过返回参数返回。
+func Parse(ctx context.Context, h *errors.Handler, o ...*opt.Input) (chan Block, error) {
 	if len(o) == 0 {
 		return nil, &errors.Error{
 			// TODO
@@ -65,7 +62,7 @@ func Parse(ctx context.Context, errlog, warnlog *log.Logger, o ...*opt.Input) (c
 			case <-ctx.Done():
 				return
 			default:
-				parse(ctx, data, errlog, warnlog, wg, opt)
+				parse(ctx, data, h, wg, opt)
 			}
 		}
 		wg.Wait()
@@ -76,7 +73,7 @@ func Parse(ctx context.Context, errlog, warnlog *log.Logger, o ...*opt.Input) (c
 	return data, nil
 }
 
-func parse(ctx context.Context, data chan Block, errlog, warnlog *log.Logger, wg *sync.WaitGroup, o *options) {
+func parse(ctx context.Context, data chan Block, h *errors.Handler, wg *sync.WaitGroup, o *options) {
 	for _, path := range o.paths {
 		select {
 		case <-ctx.Done():
@@ -84,7 +81,7 @@ func parse(ctx context.Context, data chan Block, errlog, warnlog *log.Logger, wg
 		default:
 			wg.Add(1)
 			go func(path string) {
-				parseFile(data, errlog, warnlog, path, o)
+				parseFile(data, h, path, o)
 				wg.Done()
 			}(path)
 		}
@@ -94,22 +91,14 @@ func parse(ctx context.Context, data chan Block, errlog, warnlog *log.Logger, wg
 // 分析 path 指向的文件。
 //
 // NOTE: parseFile 内部不能有协程处理代码。
-func parseFile(channel chan Block, errlog, warnlog *log.Logger, path string, o *options) {
+func parseFile(channel chan Block, h *errors.Handler, path string, o *options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
-		if errlog != nil {
-			errlog.Println(err)
-		}
+		h.SyntaxError(&errors.Error{File: path})
 		return
 	}
 
-	ret, err := lang.Parse(data, o.blocks)
-	if err != nil {
-		if serr, ok := err.(*errors.Error); ok {
-			serr.File = path
-		}
-		errlog.Println(err)
-	}
+	ret := lang.Parse(data, o.blocks, h)
 	for line, data := range ret {
 		channel <- Block{
 			File: path,

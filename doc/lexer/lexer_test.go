@@ -13,7 +13,7 @@ import (
 )
 
 func newLexerString(data string) *Lexer {
-	return New(input.Block{Data: []byte(data)})
+	return New(input.Block{Data: []byte(data)}, nil)
 }
 
 func newTagString(data string) *Tag {

@@ -47,10 +47,12 @@ type config struct {
 
 func newConfigError(field string, key message.Reference, args ...interface{}) error {
 	return &errors.Error{
-		Field:       field,
-		File:        configFilename,
-		MessageKey:  key,
-		MessageArgs: args,
+		Field: field,
+		File:  configFilename,
+		LocaleError: errors.LocaleError{
+			MessageKey:  key,
+			MessageArgs: args,
+		},
 	}
 }
 

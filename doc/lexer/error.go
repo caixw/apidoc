@@ -11,27 +11,37 @@ import (
 	"github.com/caixw/apidoc/internal/locale"
 )
 
-func newError(file, tag string, line int, msg message.Reference, vals ...interface{}) error {
+func newError(file, tag string, line int, msg message.Reference, vals ...interface{}) *errors.Error {
 	return &errors.Error{
-		File:        file,
-		Line:        line,
-		Field:       tag,
-		MessageKey:  msg,
-		MessageArgs: vals,
+		File:  file,
+		Line:  line,
+		Field: tag,
+		LocaleError: errors.LocaleError{
+			MessageKey:  msg,
+			MessageArgs: vals,
+		},
 	}
 }
 
-// ErrInvalidFormat 返回格式无效的错误信息
-func (t *Tag) ErrInvalidFormat() error {
-	return newError(t.File, t.Name, t.Line, locale.ErrInvalidFormat)
+func (l *Lexer) SyntaxError(err *errors.Error) {
+	l.h.SyntaxError(err)
 }
 
-// ErrDuplicateTag 返回标签重复的错误信息
-func (t *Tag) ErrDuplicateTag() error {
-	return newError(t.File, t.Name, t.Line, locale.ErrDuplicateTag)
+func (l *Lexer) SyntaxWarn(err *errors.Error) {
+	l.h.SyntaxWarn(err)
 }
 
-// ErrInvalidTag 返回无效的标签错误
-func (t *Tag) ErrInvalidTag() error {
-	return newError(t.File, t.Name, t.Line, locale.ErrInvalidTag)
+// ErrInvalidFormat 输出格式无效的错误信息
+func (t *Tag) ErrInvalidFormat() {
+	t.l.SyntaxError(newError(t.File, t.Name, t.Line, locale.ErrInvalidFormat))
+}
+
+// ErrDuplicateTag 输出标签重复的错误信息
+func (t *Tag) ErrDuplicateTag() {
+	t.l.SyntaxError(newError(t.File, t.Name, t.Line, locale.ErrDuplicateTag))
+}
+
+// ErrInvalidTag 输出无效的标签错误
+func (t *Tag) ErrInvalidTag() {
+	t.l.SyntaxError(newError(t.File, t.Name, t.Line, locale.ErrInvalidTag))
 }

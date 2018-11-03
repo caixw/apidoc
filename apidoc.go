@@ -7,11 +7,11 @@ package apidoc // import "github.com/caixw/apidoc"
 
 import (
 	"context"
-	"log"
 
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/locale"
 	o "github.com/caixw/apidoc/internal/output"
 	"github.com/caixw/apidoc/internal/vars"
@@ -37,8 +37,8 @@ func Version() string {
 // erro 用于输出语法错误内容；
 // output 输出设置项；
 // input 输入设置项。
-func Do(ctx context.Context, erro, warnlog *log.Logger, output *options.Output, input ...*options.Input) error {
-	doc, err := doc.Parse(ctx, erro, warnlog, input...)
+func Do(ctx context.Context, h *errors.Handler, output *options.Output, input ...*options.Input) error {
+	doc, err := doc.Parse(ctx, h, input...)
 	if err != nil {
 		return err
 	}

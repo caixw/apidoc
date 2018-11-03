@@ -26,9 +26,11 @@ type options struct {
 
 func newError(field string, key message.Reference, args ...interface{}) *errors.Error {
 	return &errors.Error{
-		Field:       field,
-		MessageKey:  key,
-		MessageArgs: args,
+		Field: field,
+		LocaleError: errors.LocaleError{
+			MessageKey:  key,
+			MessageArgs: args,
+		},
 	}
 }
 

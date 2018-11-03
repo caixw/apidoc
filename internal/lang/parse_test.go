@@ -31,24 +31,24 @@ printf("hello world!")
 func TestParse(t *testing.T) {
 	a := assert.New(t)
 
-	ret, err := Parse(nil, nil)
-	a.NotError(err).NotNil(ret).
+	ret := Parse(nil, nil, nil)
+	a.NotNil(ret).
 		Equal(0, len(ret))
 
-	ret, err = Parse(nil, cStyle)
-	a.NotError(err).NotNil(ret).
+	ret = Parse(nil, cStyle, nil)
+	a.NotNil(ret).
 		Equal(0, len(ret))
 
-	ret, err = Parse([]byte(code1), cStyle)
-	a.NotError(err).NotNil(ret).
+	ret = Parse([]byte(code1), cStyle, nil)
+	a.NotNil(ret).
 		Equal(1, len(ret)). // 字符串直接被过滤，不再返回
 		True(strings.Contains(string(ret[4]), "注释代码"))
 
 	// 注释缺少结束符
 	//
 	// 但依然会返回内容
-	ret, err = Parse([]byte(code2), cStyle)
-	a.Error(err).NotNil(ret).
+	ret = Parse([]byte(code2), cStyle, nil)
+	a.NotNil(ret).
 		Equal(0, len(ret))
 }
 

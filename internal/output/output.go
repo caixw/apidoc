@@ -19,8 +19,10 @@ import (
 func Render(d *doc.Doc, o *opt.Output) error {
 	if o == nil {
 		return &errors.Error{
-			Field:      "output",
-			MessageKey: locale.ErrRequired,
+			Field: "output",
+			LocaleError: errors.LocaleError{
+				MessageKey: locale.ErrRequired,
+			},
 		}
 	}
 

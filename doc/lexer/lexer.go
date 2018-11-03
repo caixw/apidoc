@@ -8,6 +8,7 @@ package lexer
 import (
 	"unicode"
 
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/input"
 )
 
@@ -17,6 +18,7 @@ type Lexer struct {
 	pos       int  // 当前指针位置
 	ln        int  // 当前位置所在的行号
 	backupTag *Tag // 回退的标签内容
+	h         *errors.Handler
 }
 
 // Tag 表示一个标签的内容
@@ -25,23 +27,26 @@ type Tag struct {
 	Line int // 当前 tag 在文件中的起始行号
 	Data []byte
 	Name string // 标签名称
+	l    *Lexer
 }
 
 // New 声明一个新的 Lexer 实例。
-func New(block input.Block) *Lexer {
+func New(block input.Block, h *errors.Handler) *Lexer {
 	return &Lexer{
 		data: block,
 		ln:   block.Line,
+		h:    h,
 	}
 }
 
-func newTag(file string, line int, data []byte) *Tag {
+func newTag(l *Lexer, file string, line int, data []byte) *Tag {
 	strs := SplitWords(data, 2)
 
 	tag := &Tag{
 		File: file,
 		Line: line,
 		Name: string(strs[0]),
+		l:    l,
 	}
 
 	if len(strs) == 2 {
@@ -88,7 +93,7 @@ LOOP:
 			if len(data) == 0 {
 				return nil
 			}
-			return newTag(l.data.File, ln, data)
+			return newTag(l, l.data.File, ln, data)
 		}
 
 		b := l.data.Data[l.pos]
@@ -100,7 +105,7 @@ LOOP:
 		case newLine && unicode.IsSpace(rune(b)): // 跳过行首空白字符
 			continue LOOP
 		case newLine && b == '@':
-			return newTag(l.data.File, ln, l.data.Data[start:end])
+			return newTag(l, l.data.File, ln, l.data.Data[start:end])
 		default:
 			newLine = false
 		}
