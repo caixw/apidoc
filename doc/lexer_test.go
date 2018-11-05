@@ -16,7 +16,7 @@ import (
 func newLexer(data string) *lexer.Lexer {
 	erro := log.New(ioutil.Discard, "[ERRO]", 0)
 	warn := log.New(ioutil.Discard, "[WARN]", 0)
-	h := errors.NewHandler(errors.NewHandlerFunc(erro, warn))
+	h := errors.NewHandler(errors.NewLogHandlerFunc(erro, warn))
 	return lexer.New(input.Block{Data: []byte(data)}, h)
 }
 

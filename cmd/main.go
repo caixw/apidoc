@@ -67,7 +67,7 @@ func parse(wd string) {
 		return
 	}
 
-	h := errors.NewHandler(errors.NewHandlerFunc(erro, warn))
+	h := errors.NewHandler(errors.NewLogHandlerFunc(erro, warn))
 	doc, err := doc.Parse(context.Background(), h, cfg.Inputs...)
 	if err != nil {
 		if ferr, ok := err.(*errors.Error); ok {

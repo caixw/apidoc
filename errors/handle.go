@@ -32,21 +32,16 @@ func (h *Handler) Stop() {
 	close(h.errors)
 }
 
-// Error 输出一条错误信息
-func (h *Handler) Error(err *Error) {
-	h.errors <- err
-}
-
 // SyntaxError 输出一条语法错误信息
 func (h *Handler) SyntaxError(err *Error) {
 	err.Type = SyntaxError
-	h.Error(err)
+	h.errors <- err
 }
 
 // SyntaxWarn 输出一条语法警告信息
 func (h *Handler) SyntaxWarn(err *Error) {
 	err.Type = SyntaxWarn
-	h.Error(err)
+	h.errors <- err
 }
 
 func (h *Handler) handle() {
@@ -55,10 +50,10 @@ func (h *Handler) handle() {
 	}
 }
 
-// NewHandlerFunc 初始 HandlerFunc 实例。
+// NewLogHandlerFunc 生成一个将错误信息输出到日志的 HandlerFunc
 //
 // 该实例仅仅是将语法错误和语法警告信息输出到指定的日志通道。
-func NewHandlerFunc(errolog, warnlog *log.Logger) HandlerFunc {
+func NewLogHandlerFunc(errolog, warnlog *log.Logger) HandlerFunc {
 	return func(err *Error) {
 		switch err.Type {
 		case SyntaxError:

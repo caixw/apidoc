@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/issue9/version"
-	"golang.org/x/text/message"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/errors"
@@ -34,9 +33,9 @@ type config struct {
 	// 输入的配置项，可以指定多个项目
 	//
 	// 多语言项目，可能需要用到多个输入面。
-	// 但是输出内容依然会被集中到 Output 一个字段中。
 	Inputs []*options.Input `yaml:"inputs"`
 
+	// 输出配置项。
 	Output *options.Output `yaml:"output"`
 
 	// 配置文件所在的目录。
@@ -45,18 +44,7 @@ type config struct {
 	wd string
 }
 
-func newConfigError(field string, key message.Reference, args ...interface{}) error {
-	return &errors.Error{
-		Field: field,
-		File:  configFilename,
-		LocaleError: errors.LocaleError{
-			MessageKey:  key,
-			MessageArgs: args,
-		},
-	}
-}
-
-// 处理 path，如果 path 是相对路径的，则将其依附于 wd
+// 处理 path，如果 path 是相对路径的，则将其设置为相对于 wd 的路径
 //
 // wd 表示工作目录；
 // path 表示需要处理的路径。
@@ -113,24 +101,24 @@ func loadConfig(wd string) (*config, error) {
 
 func (cfg *config) sanitize() error {
 	if !version.SemVerValid(cfg.Version) {
-		return newConfigError("version", locale.Sprintf(locale.ErrInvalidFormat))
+		return errors.New(configFilename, "version", 0, locale.ErrInvalidFormat)
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
 	if err != nil {
-		return newConfigError("version", err.Error())
+		return errors.WithError(err, configFilename, "version", 0, locale.VersionInCompatible)
 	}
 	if !compatible {
-		return newConfigError("version", locale.Sprintf(locale.VersionInCompatible))
+		return errors.New(configFilename, "version", 0, locale.VersionInCompatible)
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return newConfigError("inputs", locale.Sprintf(locale.ErrRequired))
+		return errors.New(configFilename, "inputs", 0, locale.ErrRequired)
 	}
 
 	if cfg.Output == nil {
-		return newConfigError("output", locale.Sprintf(locale.ErrRequired))
+		return errors.New(configFilename, "output", 0, locale.ErrRequired)
 	}
 
 	for _, input := range cfg.Inputs {
