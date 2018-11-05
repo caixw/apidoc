@@ -9,9 +9,11 @@ import (
 	"bytes"
 	"context"
 	"flag"
+	"os"
 	"path/filepath"
 	"runtime"
 
+	"github.com/issue9/term/colors"
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc"
@@ -23,14 +25,19 @@ import (
 	"github.com/caixw/apidoc/internal/vars"
 )
 
+// 控制台的输出颜色
+const (
+	infoColor = colors.Green
+	warnColor = colors.Cyan
+	erroColor = colors.Red
+)
+
 // 确保第一时间初始化本地化信息
 func init() {
 	if err := apidoc.InitLocale(language.Und); err != nil {
-		warn.Println(err)
+		printWarn(err)
 		return
 	}
-
-	initLogsLocale()
 }
 
 func main() {
@@ -63,18 +70,18 @@ func main() {
 func parse(wd string) {
 	cfg, err := loadConfig(wd)
 	if err != nil {
-		erro.Println(err)
+		printError(err)
 		return
 	}
 
-	h := errors.NewHandler(errors.NewLogHandlerFunc(erro, warn))
+	h := errors.NewHandler(newConsoleHandlerFunc())
 	doc, err := doc.Parse(context.Background(), h, cfg.Inputs...)
 	if err != nil {
 		if ferr, ok := err.(*errors.Error); ok {
 			ferr.File = configFilename
 			ferr.Field = "inputs." + ferr.Field
 		}
-		erro.Println(err)
+		printError(err)
 		return
 	}
 
@@ -83,10 +90,10 @@ func parse(wd string) {
 			ferr.File = configFilename
 			ferr.Field = "output." + ferr.Field
 		}
-		erro.Println(err)
+		printError(err)
 	}
 
-	info.Println(locale.Sprintf(locale.Complete, cfg.Output.Path, doc.Elapsed))
+	printInfo(locale.Sprintf(locale.Complete, cfg.Output.Path, doc.Elapsed))
 }
 
 func usage() {
@@ -101,14 +108,48 @@ func usage() {
 func genConfigFile(wd string) {
 	path := filepath.Join(wd, configFilename)
 	if err := generateConfig(wd, path); err != nil {
-		erro.Println(err)
+		printError(err)
 		return
 	}
 
-	info.Println(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
+	printInfo(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
 }
 
 func printVersion() {
 	locale.Printf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version())
 	locale.Printf(locale.FlagVersionCommitHash, vars.CommitHash())
+}
+
+func newConsoleHandlerFunc() errors.HandlerFunc {
+	return func(err *errors.Error) {
+		switch err.Type {
+		case errors.SyntaxError:
+			printError(err)
+		case errors.SyntaxWarn:
+			printWarn(err)
+		default:
+			printError(err)
+		}
+	}
+}
+
+func print(out *os.File, prefix string, color colors.Color, val interface{}) {
+	if out != os.Stderr && out != os.Stdout {
+		panic("无效的 out 参数")
+	}
+
+	colors.Fprint(out, color, colors.Default, prefix)
+	colors.Fprintln(out, colors.Default, colors.Default, val)
+}
+
+func printWarn(val interface{}) {
+	print(os.Stderr, locale.Sprintf(locale.WarnPrefix), warnColor, val)
+}
+
+func printError(val interface{}) {
+	print(os.Stderr, locale.Sprintf(locale.ErrorPrefix), erroColor, val)
+}
+
+func printInfo(val interface{}) {
+	print(os.Stderr, locale.Sprintf(locale.InfoPrefix), infoColor, val)
 }

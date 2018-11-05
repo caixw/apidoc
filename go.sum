@@ -1,11 +1,8 @@
-github.com/golang/text v0.3.0 h1:uI5zIUA9cg047ctlTptnVc0Ghjfurf2eZMFrod8R7v8=
 github.com/golang/text v0.3.0/go.mod h1:GUiq9pdJKRKKAZXiVgWFEvocYuREvC14NhI4OPgEjeE=
 github.com/issue9/assert v1.0.0 h1:NkLKrreEZgOdyl0aHlF8Yq2+Id7GsfEtU0rTK8nsN4E=
 github.com/issue9/assert v1.0.0/go.mod h1:KLwR3U/5rbCxqwAnV3aCr+dz07aoIyIfk2lefIVr2BA=
 github.com/issue9/is v1.0.0 h1:n8casRcc3UfDk0BavEKoZqOkDzyllU9F3raWz31ALXQ=
 github.com/issue9/is v1.0.0/go.mod h1:gD3qqH6utuY28lgGjK+aOPVu9mpb2t6UvZ7u5DCEaVk=
-github.com/issue9/logs v1.0.0 h1:UHJ/3D3krhlpTIqOE7UCkP6AKPbkdF7zdfwM18AaPTU=
-github.com/issue9/logs v1.0.0/go.mod h1:SklChUSYLlFY2a5v4bu0CM+kvJswuqR6QaWRH85DFNQ=
 github.com/issue9/term v1.0.0 h1:Gz7VoKwJJEC3ljAmCk82YyEia8prkXxdrzvkLujYamE=
 github.com/issue9/term v1.0.0/go.mod h1:NUstPS3ZNncPNM1mI5G6KZTd83SHmqjtciqKZTVFO1s=
 github.com/issue9/utils v1.0.0 h1:2LuHIPRufdIXK7AJ3QP7Qzxd0cMNNPY1izgFxj+d2EE=
