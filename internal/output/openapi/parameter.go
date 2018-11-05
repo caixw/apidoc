@@ -4,7 +4,10 @@
 
 package openapi
 
-import "github.com/caixw/apidoc/internal/locale"
+import (
+	"github.com/caixw/apidoc/errors"
+	"github.com/caixw/apidoc/internal/locale"
+)
 
 // Parameter.IN 的可选值
 const (
@@ -36,7 +39,7 @@ type Parameter struct {
 }
 
 // Sanitize 对数据进行验证
-func (p *Parameter) Sanitize() *Error {
+func (p *Parameter) Sanitize() *errors.Error {
 	if err := p.Style.Sanitize(); err != nil {
 		return err
 	}
@@ -44,7 +47,7 @@ func (p *Parameter) Sanitize() *Error {
 	switch p.IN {
 	case ParameterINcookie, ParameterINHeader, ParameterINPath, ParameterINQuery:
 	default:
-		return newError("in", locale.Sprintf(locale.ErrInvalidValue))
+		return errors.New("", "in", 0, locale.ErrInvalidValue)
 	}
 
 	// TODO 其它字段检测
@@ -53,17 +56,17 @@ func (p *Parameter) Sanitize() *Error {
 }
 
 // Sanitize 对数据进行验证
-func (h *Header) Sanitize() *Error {
+func (h *Header) Sanitize() *errors.Error {
 	if err := h.Style.Sanitize(); err != nil {
 		return err
 	}
 
 	if h.IN != "" {
-		return newError("in", locale.Sprintf(locale.ErrMustEmpty))
+		return errors.New("", "in", 0, locale.ErrMustEmpty)
 	}
 
 	if h.Name != "" {
-		return newError("name", locale.Sprintf(locale.ErrMustEmpty))
+		return errors.New("", "name", 0, locale.ErrMustEmpty)
 	}
 
 	return nil

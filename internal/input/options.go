@@ -11,7 +11,6 @@ import (
 	"github.com/issue9/utils"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
-	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/lang"
@@ -26,34 +25,24 @@ type options struct {
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
 
-func newError(field string, key message.Reference, args ...interface{}) *errors.Error {
-	return &errors.Error{
-		Field: field,
-		LocaleError: errors.LocaleError{
-			MessageKey:  key,
-			MessageArgs: args,
-		},
-	}
-}
-
-func buildOptions(opt *opt.Input) (*options, error) {
+func buildOptions(opt *opt.Input) (*options, *errors.Error) {
 	o := &options{}
 
 	if len(opt.Dir) == 0 {
-		return nil, newError("dir", locale.ErrRequired)
+		return nil, errors.New("", "dir", 0, locale.ErrRequired)
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return nil, newError("dir", locale.ErrDirNotExists)
+		return nil, errors.New("", "dir", 0, locale.ErrDirNotExists)
 	}
 
 	if len(opt.Lang) == 0 {
-		return nil, newError("dir", locale.ErrRequired)
+		return nil, errors.New("", "dir", 0, locale.ErrRequired)
 	}
 
 	language := lang.Get(opt.Lang)
 	if language == nil {
-		return nil, newError("dir", locale.ErrUnsupportedInputLang, opt.Lang)
+		return nil, errors.New("", "dir", 0, locale.ErrUnsupportedInputLang, opt.Lang)
 	}
 	o.blocks = language.Blocks
 
@@ -77,10 +66,10 @@ func buildOptions(opt *opt.Input) (*options, error) {
 	// 生成 paths
 	paths, err := recursivePath(opt)
 	if err != nil {
-		return nil, newError("dir", err.Error())
+		return nil, errors.New("", "dir", 0, err.Error())
 	}
 	if len(paths) == 0 {
-		return nil, newError("dir", locale.ErrDirIsEmpty)
+		return nil, errors.New("", "dir", 0, locale.ErrDirIsEmpty)
 	}
 	o.paths = paths
 
@@ -88,7 +77,7 @@ func buildOptions(opt *opt.Input) (*options, error) {
 	if opt.Encoding != "" {
 		o.encoding, err = ianaindex.IANA.Encoding(opt.Encoding)
 		if err != nil {
-			return nil, locale.Errorf(locale.ErrUnsupportedEncoding, opt.Encoding)
+			return nil, errors.WithError(err, "", "encoding", 0, locale.ErrUnsupportedEncoding)
 		}
 	}
 

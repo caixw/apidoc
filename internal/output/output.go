@@ -16,26 +16,22 @@ import (
 )
 
 // Render 渲染 doc 的内容，具体的渲染参数由 o 指定。
-func Render(d *doc.Doc, o *opt.Output) error {
-	if o == nil {
-		return &errors.Error{
-			Field: "output",
-			LocaleError: errors.LocaleError{
-				MessageKey: locale.ErrRequired,
-			},
-		}
+func Render(d *doc.Doc, output *opt.Output) error {
+	if output == nil {
+		return errors.New("", "output", 0, locale.ErrRequired)
 	}
 
-	opt, err := buildOptions(o)
+	opt, err := buildOptions(output)
 	if err != nil {
+		err.Field = "output." + err.Field
 		return err
 	}
 
 	filterDoc(d, opt)
 
-	data, err := opt.marshal(d)
-	if err != nil {
-		return err
+	data, serr := opt.marshal(d)
+	if serr != nil {
+		return serr
 	}
 	return ioutil.WriteFile(opt.Path, data, os.ModePerm)
 }

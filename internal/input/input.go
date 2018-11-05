@@ -14,6 +14,7 @@ import (
 	"bytes"
 	"context"
 	"io/ioutil"
+	"strconv"
 	"sync"
 
 	"golang.org/x/text/encoding"
@@ -21,6 +22,7 @@ import (
 
 	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/lang"
+	"github.com/caixw/apidoc/internal/locale"
 	opt "github.com/caixw/apidoc/options"
 )
 
@@ -36,22 +38,20 @@ type Block struct {
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
 //
 // 所有与解析有关的错误均通过 h 输出。而其它错误，比如参数问题等，通过返回参数返回。
-func Parse(ctx context.Context, h *errors.Handler, o ...*opt.Input) (chan Block, error) {
-	if len(o) == 0 {
-		return nil, &errors.Error{
-			// TODO
-		}
+func Parse(ctx context.Context, h *errors.Handler, inputs ...*opt.Input) (chan Block, error) {
+	if len(inputs) == 0 {
+		return nil, errors.New("", "inputs", 0, locale.ErrRequired)
 	}
 
-	opts := make([]*options, 0, len(o))
-	for _, item := range o {
+	opts := make([]*options, 0, len(inputs))
+	for index, item := range inputs {
+		field := "inputs[" + strconv.Itoa(index) + "]."
 		if item == nil {
-			return nil, &errors.Error{
-				// TODO
-			}
+			return nil, errors.New("", field, 0, locale.ErrRequired)
 		}
 		opt, err := buildOptions(item)
 		if err != nil {
+			err.Field = field + err.Field
 			return nil, err
 		}
 

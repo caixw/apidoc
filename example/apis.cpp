@@ -4,7 +4,7 @@
 
 // @api GET /users/{id}/logs/{lid} 获取用户日志信息
 // @apitags t1,t2
-// @apiservers s1,s2
+// @apiservers admin
 // @apideprecated desc
 // @apiquery page int default desc
 // @apiquery size int default desc

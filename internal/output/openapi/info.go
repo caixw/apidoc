@@ -5,10 +5,11 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/doc"
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
+	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/locale"
 )
 
@@ -36,17 +37,17 @@ type License struct {
 }
 
 // Sanitize 数据检测
-func (info *Info) Sanitize() *Error {
+func (info *Info) Sanitize() *errors.Error {
 	if info.Title == "" {
-		return newError("title", locale.Sprintf(locale.ErrRequired))
+		return errors.New("", "title", 0, locale.ErrRequired)
 	}
 
 	if !version.SemVerValid(info.Version) {
-		return newError("version", locale.Sprintf(locale.ErrInvalidFormat))
+		return errors.New("", "version", 0, locale.ErrInvalidFormat)
 	}
 
 	if info.TermsOfService != "" && !is.URL(info.TermsOfService) {
-		return newError("termsOfService", locale.Sprintf(locale.ErrInvalidFormat))
+		return errors.New("", "termsOfService", 0, locale.ErrInvalidFormat)
 	}
 
 	if info.Contact != nil {
@@ -67,9 +68,9 @@ func (info *Info) Sanitize() *Error {
 }
 
 // Sanitize 数据检测
-func (l *License) Sanitize() *Error {
+func (l *License) Sanitize() *errors.Error {
 	if l.URL != "" && !is.URL(l.URL) {
-		return newError("url", locale.Sprintf(locale.ErrInvalidFormat))
+		return errors.New("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil
@@ -91,13 +92,13 @@ func newContact(c *doc.Contact) *Contact {
 }
 
 // Sanitize 数据检测
-func (c *Contact) Sanitize() *Error {
+func (c *Contact) Sanitize() *errors.Error {
 	if c.URL != "" && !is.URL(c.URL) {
-		return newError("url", locale.Sprintf(locale.ErrInvalidFormat))
+		return errors.New("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	if c.Email != "" && !is.Email(c.Email) {
-		return newError("email", locale.Sprintf(locale.ErrInvalidFormat))
+		return errors.New("", "email", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil

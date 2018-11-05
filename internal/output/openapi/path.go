@@ -4,7 +4,10 @@
 
 package openapi
 
-import "github.com/caixw/apidoc/internal/locale"
+import (
+	"github.com/caixw/apidoc/errors"
+	"github.com/caixw/apidoc/internal/locale"
+)
 
 // PathItem 每一条路径的详细描述信息
 type PathItem struct {
@@ -81,9 +84,9 @@ type Response struct {
 }
 
 // Sanitize 数据检测
-func (req *RequestBody) Sanitize() *Error {
+func (req *RequestBody) Sanitize() *errors.Error {
 	if len(req.Content) == 0 {
-		return newError("content", locale.Sprintf(locale.ErrRequired))
+		return errors.New("", "content", 0, locale.ErrRequired)
 	}
 
 	for key, mt := range req.Content {
@@ -97,9 +100,9 @@ func (req *RequestBody) Sanitize() *Error {
 }
 
 // Sanitize 数据检测
-func (resp *Response) Sanitize() *Error {
+func (resp *Response) Sanitize() *errors.Error {
 	if resp.Description == "" {
-		return newError("description", locale.Sprintf(locale.ErrRequired))
+		return errors.New("", "description", 0, locale.ErrRequired)
 	}
 
 	for key, header := range resp.Headers {
@@ -127,7 +130,7 @@ func (resp *Response) Sanitize() *Error {
 }
 
 // Sanitize 数据检测
-func (mt *MediaType) Sanitize() *Error {
+func (mt *MediaType) Sanitize() *errors.Error {
 	if mt.Schema != nil {
 		if err := mt.Sanitize(); err != nil {
 			err.Field = "schema." + err.Field
@@ -145,7 +148,7 @@ func (mt *MediaType) Sanitize() *Error {
 }
 
 // Sanitize 数据检测
-func (en *Encoding) Sanitize() *Error {
+func (en *Encoding) Sanitize() *errors.Error {
 	if err := en.Style.Sanitize(); err != nil {
 		return err
 	}

@@ -47,7 +47,7 @@ func init() {
 		ErrNotFoundSupportedLang: "该目录下没有支持的语言文件",
 		ErrUnknownTag:            "不认识的标签",
 		ErrDuplicateTag:          "重复的标签",
-		ErrUnsupportedEncoding:   "不支持的编码方式：%v",
+		ErrUnsupportedEncoding:   "不支持的编码方式",
 		ErrDirIsEmpty:            "目录下没有需要解析的文件",
 		ErrInvalidValue:          "无效的值",
 		ErrInvalidOpenapi:        "openapi 内容错误：字段：%s；错误内容：%s",

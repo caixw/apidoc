@@ -14,6 +14,7 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/locale"
 )
 
@@ -97,17 +98,17 @@ func newTag(tag *doc.Tag) *Tag {
 }
 
 // Sanitize 数据检测
-func (oa *OpenAPI) Sanitize() *Error {
+func (oa *OpenAPI) Sanitize() *errors.Error {
 	if oa.OpenAPI == "" {
 		oa.OpenAPI = LatestVersion
 	}
 
 	if !version.SemVerValid(oa.OpenAPI) {
-		return newError("openapi", locale.Sprintf(locale.ErrInvalidFormat))
+		return errors.New("", "openapi", 0, locale.ErrInvalidFormat)
 	}
 
 	if oa.Info == nil {
-		return newError("info", locale.Sprintf(locale.ErrRequired))
+		return errors.New("", "info", 0, locale.ErrRequired)
 	}
 	if err := oa.Info.Sanitize(); err != nil {
 		err.Field = "info." + err.Field
@@ -129,7 +130,7 @@ func (oa *OpenAPI) Sanitize() *Error {
 	}
 
 	if len(oa.Paths) == 0 {
-		return newError("paths", locale.Sprintf(locale.ErrRequired))
+		return errors.New("", "paths", 0, locale.ErrRequired)
 	}
 	// TODO 验证 paths
 
@@ -158,7 +159,7 @@ func (oa *OpenAPI) Sanitize() *Error {
 }
 
 // Sanitize 数据检测
-func (c *Components) Sanitize() *Error {
+func (c *Components) Sanitize() *errors.Error {
 	for key, item := range c.Schemas {
 		if err := item.Sanitize(); err != nil {
 			err.Field = "schemas[" + key + "]." + err.Field
@@ -205,16 +206,16 @@ func (c *Components) Sanitize() *Error {
 }
 
 // Sanitize 数据检测
-func (ext *ExternalDocumentation) Sanitize() *Error {
+func (ext *ExternalDocumentation) Sanitize() *errors.Error {
 	if !is.URL(ext.URL) {
-		return newError("url", "格式不正确")
+		return errors.New("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil
 }
 
 // Sanitize 数据检测
-func (l *Link) Sanitize() *Error {
+func (l *Link) Sanitize() *errors.Error {
 	if err := l.Server.Sanitize(); err != nil {
 		err.Field = "server." + err.Field
 		return err
@@ -224,9 +225,9 @@ func (l *Link) Sanitize() *Error {
 }
 
 // Sanitize 数据检测
-func (tag *Tag) Sanitize() *Error {
+func (tag *Tag) Sanitize() *errors.Error {
 	if tag.Name == "" {
-		return newError("name", locale.Sprintf(locale.ErrInvalidFormat))
+		return errors.New("", "name", 0, locale.ErrInvalidFormat)
 	}
 
 	if tag.ExternalDocs != nil {

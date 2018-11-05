@@ -12,6 +12,8 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/doc"
+	"github.com/caixw/apidoc/errors"
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 func parse(doc *doc.Doc) (*OpenAPI, error) {
@@ -43,7 +45,7 @@ func parse(doc *doc.Doc) (*OpenAPI, error) {
 	return openapi, nil
 }
 
-func parsePaths(openapi *OpenAPI, doc *doc.Doc) *Error {
+func parsePaths(openapi *OpenAPI, doc *doc.Doc) *errors.Error {
 	for _, api := range doc.Apis {
 		p := openapi.Paths[api.Path]
 		if p == nil {
@@ -157,48 +159,48 @@ func setOperationParams(operation *Operation, api *doc.API) {
 	}
 }
 
-func setOperation(path *PathItem, method string) (*Operation, *Error) {
+func setOperation(path *PathItem, method string) (*Operation, *errors.Error) {
 	operation := &Operation{}
 
 	switch strings.ToUpper(method) {
 	case "GET":
 		if path.Get != nil {
-			return nil, &Error{Field: "Get", Message: "已经存在"}
+			return nil, errors.New("", "get", 0, locale.ErrDuplicateValue)
 		}
 		path.Get = operation
 	case "DELETE":
 		if path.Delete != nil {
-			return nil, &Error{Field: "Delete", Message: "已经存在"}
+			return nil, errors.New("", "delete", 0, locale.ErrDuplicateValue)
 		}
 		path.Delete = operation
 	case "POST":
 		if path.Post != nil {
-			return nil, &Error{Field: "Post", Message: "已经存在"}
+			return nil, errors.New("", "post", 0, locale.ErrDuplicateValue)
 		}
 		path.Post = operation
 	case "PUT":
 		if path.Put != nil {
-			return nil, &Error{Field: "Put", Message: "已经存在"}
+			return nil, errors.New("", "put", 0, locale.ErrDuplicateValue)
 		}
 		path.Put = operation
 	case "PATCH":
 		if path.Patch != nil {
-			return nil, &Error{Field: "Patch", Message: "已经存在"}
+			return nil, errors.New("", "patch", 0, locale.ErrDuplicateValue)
 		}
 		path.Patch = operation
 	case "OPTIONS":
 		if path.Options != nil {
-			return nil, &Error{Field: "Options", Message: "已经存在"}
+			return nil, errors.New("", "options", 0, locale.ErrDuplicateValue)
 		}
 		path.Options = operation
 	case "HEAD":
 		if path.Head != nil {
-			return nil, &Error{Field: "Head", Message: "已经存在"}
+			return nil, errors.New("", "head", 0, locale.ErrDuplicateValue)
 		}
 		path.Head = operation
 	case "TRACE":
 		if path.Trace != nil {
-			return nil, &Error{Field: "Trace", Message: "已经存在"}
+			return nil, errors.New("", "trace", 0, locale.ErrDuplicateValue)
 		}
 		path.Trace = operation
 	}

@@ -6,6 +6,7 @@ package openapi
 
 import (
 	"github.com/caixw/apidoc/doc/schema"
+	"github.com/caixw/apidoc/errors"
 )
 
 // Schema.Type 需要的一些预定义数据类型
@@ -57,7 +58,7 @@ type Discriminator struct {
 }
 
 // Sanitize 数据检测
-func (s *Schema) Sanitize() *Error {
+func (s *Schema) Sanitize() *errors.Error {
 	if s.ExternalDocs != nil {
 		if err := s.ExternalDocs.Sanitize(); err != nil {
 			err.Field = "externalDocs." + err.Field

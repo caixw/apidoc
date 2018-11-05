@@ -4,7 +4,10 @@
 
 package openapi
 
-import "github.com/caixw/apidoc/internal/locale"
+import (
+	"github.com/caixw/apidoc/errors"
+	"github.com/caixw/apidoc/internal/locale"
+)
 
 // Style.Style 的可选值
 const (
@@ -27,11 +30,11 @@ type Style struct {
 }
 
 // Sanitize 对数据进行验证
-func (style *Style) Sanitize() *Error {
+func (style *Style) Sanitize() *errors.Error {
 	switch style.Style {
 	case StyleMatrix, StyleLabel, StyleForm, StyleSimple, StyleSpaceDelimited, StylePipeDelimited, StyleDeepObject:
 	default:
-		return newError("style", locale.Sprintf(locale.ErrInvalidValue))
+		return errors.New("", "style", 0, locale.ErrInvalidValue)
 	}
 
 	return nil

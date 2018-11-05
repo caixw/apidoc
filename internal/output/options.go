@@ -7,7 +7,6 @@ package output
 import (
 	"encoding/json"
 
-	"golang.org/x/text/message"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/doc"
@@ -22,16 +21,6 @@ type marshaler func(v *doc.Doc) ([]byte, error)
 type options struct {
 	opt.Output
 	marshal marshaler
-}
-
-func newError(field string, key message.Reference, args ...interface{}) *errors.Error {
-	return &errors.Error{
-		Field: field,
-		LocaleError: errors.LocaleError{
-			MessageKey:  key,
-			MessageArgs: args,
-		},
-	}
 }
 
 func (o *options) contains(tags ...string) bool {
@@ -49,10 +38,9 @@ func (o *options) contains(tags ...string) bool {
 	return false
 }
 
-func buildOptions(o *opt.Output) (*options, error) {
-	// TODO 改用默认值
+func buildOptions(o *opt.Output) (*options, *errors.Error) {
 	if o.Path == "" {
-		return nil, newError("path", locale.ErrRequired)
+		return nil, errors.New("", "path", 0, locale.ErrRequired)
 	}
 
 	if o.Type == "" {
@@ -72,7 +60,7 @@ func buildOptions(o *opt.Output) (*options, error) {
 	case opt.RamlJSON:
 		// TODO
 	default:
-		return nil, newError("type", locale.ErrInvalidValue)
+		return nil, errors.New("", "type", 0, locale.ErrInvalidValue)
 	}
 
 	return &options{
