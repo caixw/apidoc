@@ -5,16 +5,21 @@
 package doc
 
 import (
+	"io/ioutil"
+	"log"
+
 	"github.com/caixw/apidoc/doc/lexer"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/input"
 )
 
 func newLexer(data string) *lexer.Lexer {
-	return lexer.New(input.Block{Data: []byte(data)})
+	erro := log.New(ioutil.Discard, "[ERRO]", 0)
+	warn := log.New(ioutil.Discard, "[WARN]", 0)
+	h := errors.NewHandler(errors.NewHandlerFunc(erro, warn))
+	return lexer.New(input.Block{Data: []byte(data)}, h)
 }
 
 func newTag(data string) *lexer.Tag {
-	return &lexer.Tag{
-		Data: []byte(data),
-	}
+	return newLexer(data).Tag()
 }

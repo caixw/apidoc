@@ -45,6 +45,11 @@ func Parse(ctx context.Context, h *errors.Handler, o ...*opt.Input) (chan Block,
 
 	opts := make([]*options, 0, len(o))
 	for _, item := range o {
+		if item == nil {
+			return nil, &errors.Error{
+				// TODO
+			}
+		}
 		opt, err := buildOptions(item)
 		if err != nil {
 			return nil, err

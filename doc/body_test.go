@@ -17,11 +17,12 @@ func TestBody_parseExample(t *testing.T) {
 	a := assert.New(t)
 	body := &Body{}
 
-	a.NotError(body.parseExample(newTag(`application/json summary text
+	tag := newTag(`@apiExample application/json summary text
 {
 	"id": 1,
 	"name": "name"
-}`)))
+}`)
+	body.parseExample(tag)
 	e := body.Examples[0]
 	a.Equal(e.Mimetype, "application/json").
 		Equal(e.Summary, "summary text").
@@ -31,27 +32,31 @@ func TestBody_parseExample(t *testing.T) {
 }`)
 
 	// 长度不够
-	a.Error(body.parseExample(newTag("application/json")))
+	tag = newTag("application/json")
+	body.parseExample(tag)
 }
 
 func TestBody_parseHeader(t *testing.T) {
 	a := assert.New(t)
 	body := &Body{}
 
-	a.NotError(body.parseHeader(newTag(`content-type required json 或是 xml`)))
+	tag := newTag(`@apiExample content-type required json 或是 xml`)
+	body.parseHeader(tag)
 	h := body.Headers[0]
 	a.Equal(h.Summary, "json 或是 xml").
 		Equal(h.Name, "content-type").
 		False(h.Optional)
 
-	a.NotError(body.parseHeader(newTag(`ETag optional etag`)))
+	tag = newTag(`@apiExample ETag optional etag`)
+	body.parseHeader(tag)
 	h = body.Headers[1]
 	a.Equal(h.Summary, "etag").
 		Equal(h.Name, "ETag").
 		True(h.Optional)
 
 	// 长度不够
-	a.Error(body.parseHeader(newTag("ETag")))
+	tag = newTag("ETag")
+	body.parseHeader(tag)
 }
 
 func TestIsOptional(t *testing.T) {
@@ -76,10 +81,10 @@ func TestNewResponse(t *testing.T) {
 		"nickname": "nickname"
 	}
 	@apiUnknown xxx`)
-	tag := newTag(`200 array.object * 通用的返回内容定义`)
+	tag := newTag(`@apiResponse 200 array.object * 通用的返回内容定义`)
 
-	resp, err := newResponse(l, tag)
-	a.NotError(err).NotNil(resp)
+	resp, ok := newResponse(l, tag)
+	a.True(ok).NotNil(resp)
 	a.Equal(resp.Status, 200).
 		Equal(resp.Mimetype, "*")
 	a.Equal(len(resp.Headers), 1).
@@ -105,10 +110,10 @@ func TestResponses_parseResponse(t *testing.T) {
 		"nickname": "nickname"
 	}
 	@apiUnknown xxx`)
-	tag := newTag(`200 array.object * 通用的返回内容定义`)
+	tag := newTag(`@apiResponse 200 array.object * 通用的返回内容定义`)
 
-	a.NotError(d.parseResponse(l, tag)).
-		Equal(len(d.Responses), 1)
+	d.parseResponse(l, tag)
+	a.Equal(len(d.Responses), 1)
 	resp := d.Responses[0]
 	a.Equal(resp.Status, 200).
 		Equal(resp.Mimetype, "*").
@@ -121,16 +126,16 @@ func TestResponses_parseResponse(t *testing.T) {
 		Equal(resp.Type.Type, schema.Array)
 
 	// 可以添加多次。
-	a.NotError(d.parseResponse(l, tag)).
-		Equal(len(d.Responses), 2)
+	d.parseResponse(l, tag)
+	a.Equal(len(d.Responses), 2)
 	resp = d.Responses[1]
 	a.Equal(resp.Status, 200).
 		Equal(resp.Mimetype, "*")
 
 	// 忽略可选参数
-	tag = newTag(`200 array.object * `)
-	a.NotError(d.parseResponse(l, tag)).
-		Equal(len(d.Responses), 3)
+	tag = newTag(`@apiResponse 200 array.object * `)
+	d.parseResponse(l, tag)
+	a.Equal(len(d.Responses), 3)
 	resp = d.Responses[2]
 	a.Equal(resp.Status, 200).
 		Equal(resp.Mimetype, "*").

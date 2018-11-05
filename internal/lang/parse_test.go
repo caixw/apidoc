@@ -5,10 +5,14 @@
 package lang
 
 import (
+	"io/ioutil"
+	"log"
 	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/errors"
 )
 
 var (
@@ -29,17 +33,20 @@ printf("hello world!")
 )
 
 func TestParse(t *testing.T) {
+	erro := log.New(ioutil.Discard, "[ERRO]", 0)
+	warn := log.New(ioutil.Discard, "[WARN]", 0)
+	h := errors.NewHandler(errors.NewHandlerFunc(erro, warn))
 	a := assert.New(t)
 
 	ret := Parse(nil, nil, nil)
 	a.NotNil(ret).
 		Equal(0, len(ret))
 
-	ret = Parse(nil, cStyle, nil)
+	ret = Parse(nil, cStyle, h)
 	a.NotNil(ret).
 		Equal(0, len(ret))
 
-	ret = Parse([]byte(code1), cStyle, nil)
+	ret = Parse([]byte(code1), cStyle, h)
 	a.NotNil(ret).
 		Equal(1, len(ret)). // 字符串直接被过滤，不再返回
 		True(strings.Contains(string(ret[4]), "注释代码"))
@@ -47,7 +54,7 @@ func TestParse(t *testing.T) {
 	// 注释缺少结束符
 	//
 	// 但依然会返回内容
-	ret = Parse([]byte(code2), cStyle, nil)
+	ret = Parse([]byte(code2), cStyle, h)
 	a.NotNil(ret).
 		Equal(0, len(ret))
 }

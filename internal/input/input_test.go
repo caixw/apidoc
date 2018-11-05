@@ -86,7 +86,7 @@ func testParse(a *assert.Assertion, lang string) {
 		Recursive: true,
 	}
 
-	channel, err := Parse(context.Background(), nil, nil, o)
+	channel, err := Parse(context.Background(), nil, o)
 	a.NotError(err).NotNil(channel)
 
 	for b := range channel {

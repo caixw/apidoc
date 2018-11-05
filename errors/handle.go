@@ -4,9 +4,7 @@
 
 package errors
 
-import (
-	"log"
-)
+import "log"
 
 // HandlerFunc 错误处理函数
 type HandlerFunc func(err *Error)

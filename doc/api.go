@@ -62,9 +62,21 @@ func (doc *Doc) parseAPI(l *lexer.Lexer) {
 		parse(l, tag)
 	}
 
+	doc.append(api)
+}
+
+func (doc *Doc) append(api *API) *errors.Error {
 	doc.locker.Lock()
+	defer doc.locker.Unlock()
+
+	for _, item := range doc.Apis {
+		if item.Method == api.Method && item.Path == api.Path {
+			return api.errInvalidFormat("@api") // TODO 重复的路由项
+		}
+	}
+
 	doc.Apis = append(doc.Apis, api)
-	doc.locker.Unlock()
+	return nil
 }
 
 type apiParser func(*API, *lexer.Lexer, *lexer.Tag)
