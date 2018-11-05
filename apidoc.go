@@ -34,7 +34,7 @@ func Version() string {
 
 // Do 分析输入信息，并最终输出到指定的文件。
 //
-// erro 用于输出语法错误内容；
+// h 表示处理语法错误的处理器。
 // output 输出设置项；
 // inputs 输入设置项。
 func Do(ctx context.Context, h *errors.Handler, output *options.Output, inputs ...*options.Input) error {

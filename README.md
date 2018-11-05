@@ -61,13 +61,14 @@ LANG=lang apidoc
 
 ### 集成
 
-若需要将 apidoc 当作包集成到其它 Go 程序中，可分别引用 `input` 和 `output` 的相关函数：
+若需要将 apidoc 当作包集成到其它 Go 程序中，可参考以下代码：
 
 ```go
 // 初始本地化内容
 apidoc.InitLocale()
 
-// 分析文档内容
+// 可以自定义实现具体的错误处理方式
+h := errors.NewHandler()
 
 erro := log.NewLogger()
 output := &output.Options{...}
@@ -75,7 +76,7 @@ inputs := []*input.Options{
     &input.Options{},
 }
 
-apidoc.Do(erro, output, inputs...)
+apidoc.Do(h, output, inputs...)
 ```
 
 
