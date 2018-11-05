@@ -38,8 +38,7 @@ func main() {
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
 	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
 	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
-	languages := flag.Bool("languages", false, locale.Sprintf(locale.FlagLanguagesUsage))
-	encodings := flag.Bool("encodings", false, locale.Sprintf(locale.FlagEncodingsUsage))
+	languages := flag.Bool("l", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -52,9 +51,6 @@ func main() {
 		return
 	case *languages:
 		locale.Printf(locale.FlagSupportedLanguages, lang.Langs())
-		return
-	case *encodings:
-		locale.Printf(locale.FlagSupportedEncodings)
 		return
 	case *g:
 		genConfigFile(*wd)

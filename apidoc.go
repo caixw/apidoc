@@ -36,9 +36,9 @@ func Version() string {
 //
 // erro 用于输出语法错误内容；
 // output 输出设置项；
-// input 输入设置项。
-func Do(ctx context.Context, h *errors.Handler, output *options.Output, input ...*options.Input) error {
-	doc, err := doc.Parse(ctx, h, input...)
+// inputs 输入设置项。
+func Do(ctx context.Context, h *errors.Handler, output *options.Output, inputs ...*options.Input) error {
+	doc, err := doc.Parse(ctx, h, inputs...)
 	if err != nil {
 		return err
 	}
