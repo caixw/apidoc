@@ -81,6 +81,12 @@ var langs = []*Language{
 	},
 
 	&Language{
+		Name:   "kotlin",
+		Exts:   []string{".kt"},
+		Blocks: cStyle,
+	},
+
+	&Language{
 		Name: "pascal",
 		Exts: []string{".pas", ".pp"},
 		Blocks: []Blocker{
