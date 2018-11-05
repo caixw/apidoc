@@ -11,6 +11,7 @@ import (
 
 	"github.com/caixw/apidoc/doc/lexer"
 	"github.com/caixw/apidoc/doc/schema"
+	"github.com/caixw/apidoc/internal/locale"
 )
 
 // Request 表示用户请求所表示的数据。
@@ -59,7 +60,7 @@ type Example struct {
 func (body *Body) parseExample(tag *lexer.Tag) {
 	lines := tag.Lines(2)
 	if len(lines) != 2 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 
@@ -91,7 +92,7 @@ func isOptional(data []byte) bool {
 func (body *Body) parseHeader(tag *lexer.Tag) {
 	data := tag.Words(3)
 	if len(data) != 3 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 
@@ -111,13 +112,13 @@ func (body *Body) parseHeader(tag *lexer.Tag) {
 func (body *Body) parseParam(tag *lexer.Tag) {
 	data := tag.Words(4)
 	if len(data) != 4 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 
 	if err := body.Type.Build(data[0], data[1], data[2], data[3]); err != nil {
 		// TODO err
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 }
@@ -144,13 +145,13 @@ func (resps *responses) parseResponse(l *lexer.Lexer, tag *lexer.Tag) {
 func newResponse(l *lexer.Lexer, tag *lexer.Tag) (resp *Response, ok bool) {
 	data := tag.Words(4)
 	if len(data) < 3 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return nil, false
 	}
 
 	status, err := strconv.Atoi(string(data[0]))
 	if err != nil {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return nil, false
 	}
 
@@ -162,7 +163,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (resp *Response, ok bool) {
 	s := &schema.Schema{}
 	if err := s.Build(nil, data[1], nil, desc); err != nil {
 		// TODO err
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return nil, false
 	}
 	resp = &Response{

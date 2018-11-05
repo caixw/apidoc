@@ -8,40 +8,24 @@ import (
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/errors"
-	"github.com/caixw/apidoc/internal/locale"
 )
 
-func newError(file, tag string, line int, msg message.Reference, vals ...interface{}) *errors.Error {
-	return &errors.Error{
-		File:  file,
-		Line:  line,
-		Field: tag,
-		LocaleError: errors.LocaleError{
-			MessageKey:  msg,
-			MessageArgs: vals,
-		},
-	}
-}
-
-func (l *Lexer) SyntaxError(err *errors.Error) {
+// Error 输出错误信息
+func (l *Lexer) Error(err *errors.Error) {
 	l.h.SyntaxError(err)
 }
 
-func (l *Lexer) SyntaxWarn(err *errors.Error) {
+// Warn 输出警告信息
+func (l *Lexer) Warn(err *errors.Error) {
 	l.h.SyntaxWarn(err)
 }
 
-// ErrInvalidFormat 输出格式无效的错误信息
-func (t *Tag) ErrInvalidFormat() {
-	t.l.SyntaxError(newError(t.File, t.Name, t.Line, locale.ErrInvalidFormat))
+// Warn 输出警告信息
+func (t *Tag) Warn(key message.Reference, vals ...interface{}) {
+	t.l.Warn(errors.New(t.File, t.Name, t.Line, key, vals...))
 }
 
-// ErrDuplicateTag 输出标签重复的错误信息
-func (t *Tag) ErrDuplicateTag() {
-	t.l.SyntaxError(newError(t.File, t.Name, t.Line, locale.ErrDuplicateTag))
-}
-
-// ErrInvalidTag 输出无效的标签错误
-func (t *Tag) ErrInvalidTag() {
-	t.l.SyntaxError(newError(t.File, t.Name, t.Line, locale.ErrInvalidTag))
+// Error 输出错误信息
+func (t *Tag) Error(key message.Reference, vals ...interface{}) {
+	t.l.Error(errors.New(t.File, t.Name, t.Line, key, vals...))
 }

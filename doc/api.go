@@ -9,6 +9,8 @@ import (
 	"sort"
 	"strings"
 
+	"golang.org/x/text/message"
+
 	"github.com/caixw/apidoc/doc/lexer"
 	"github.com/caixw/apidoc/doc/schema"
 	"github.com/caixw/apidoc/errors"
@@ -42,6 +44,10 @@ type Param struct {
 	Optional bool           `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
 }
 
+func (api *API) err(tag string, key message.Reference, vals ...interface{}) *errors.Error {
+	return errors.New(api.file, tag, api.line, key, vals...)
+}
+
 func (doc *Doc) parseAPI(l *lexer.Lexer) {
 	api := &API{}
 
@@ -55,28 +61,27 @@ func (doc *Doc) parseAPI(l *lexer.Lexer) {
 		case "@apiresponse":
 			parse = api.parseResponse
 		default:
-			tag.ErrInvalidTag()
+			tag.Warn(locale.ErrInvalidTag)
 			return
 		}
 
 		parse(l, tag)
 	}
 
-	doc.append(api)
+	doc.append(l, api)
 }
 
-func (doc *Doc) append(api *API) *errors.Error {
+func (doc *Doc) append(l *lexer.Lexer, api *API) {
 	doc.locker.Lock()
 	defer doc.locker.Unlock()
 
 	for _, item := range doc.Apis {
 		if item.Method == api.Method && item.Path == api.Path {
-			return api.errInvalidFormat("@api") // TODO 重复的路由项
+			l.Error(api.err("@api", locale.ErrDuplicateRoute, api.Method, api.Path))
 		}
 	}
 
 	doc.Apis = append(doc.Apis, api)
-	return nil
 }
 
 type apiParser func(*API, *lexer.Lexer, *lexer.Tag)
@@ -91,23 +96,21 @@ var apiParsers = map[string]apiParser{
 }
 
 // 检测内容是否正确
-func (api *API) check() *errors.Error {
+func (api *API) check(h *errors.Handler) {
 	names, err := api.getPathParams()
 	if err != nil {
-		return err
+		h.SyntaxWarn(err)
 	}
 
 	if len(names) != len(api.Params) {
-		return api.errInvalidFormat("@api") // TODO 专门的错误提示，地址参数与实际参数对不上
+		h.SyntaxWarn(api.err("@api", locale.ErrPathNotMatchParams))
 	}
 
 	for _, p := range api.Params {
 		if !names[p.Name] {
-			return api.errInvalidFormat("@api") // TODO 专门的错误提示，地址参数与实际参数对不上
+			h.SyntaxWarn(api.err("@api", locale.ErrPathNotMatchParams))
 		}
 	}
-
-	return nil
 }
 
 func (api *API) getPathParams() (map[string]bool, *errors.Error) {
@@ -119,14 +122,14 @@ func (api *API) getPathParams() (map[string]bool, *errors.Error) {
 		switch b {
 		case '{':
 			if state != '}' {
-				return nil, api.errInvalidFormat("@api")
+				return nil, api.err("@api", locale.ErrPathInvalid)
 			}
 
 			state = '{'
 			index = i
 		case '}':
 			if state != '{' {
-				return nil, api.errInvalidFormat("@api")
+				return nil, api.err("@api", locale.ErrPathInvalid)
 			}
 			names[api.Path[index+1:i]] = true
 			state = '}'
@@ -135,7 +138,7 @@ func (api *API) getPathParams() (map[string]bool, *errors.Error) {
 
 	// 缺少 } 结束符号
 	if state == '{' {
-		return nil, api.errInvalidFormat("@api")
+		return nil, api.err("@api", locale.ErrPathInvalid)
 	}
 
 	return names, nil
@@ -160,13 +163,13 @@ func (api *API) parseAPI(l *lexer.Lexer, tag *lexer.Tag) {
 //  @api GET /path summary
 func (api *API) parseapi(l *lexer.Lexer, tag *lexer.Tag) {
 	if api.Method != "" || api.Path != "" || api.Summary != "" {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
 	data := tag.Words(3)
 	if len(data) != 3 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 
@@ -177,27 +180,16 @@ func (api *API) parseapi(l *lexer.Lexer, tag *lexer.Tag) {
 	api.line = tag.Line
 }
 
-func (api *API) errInvalidFormat(tag string) *errors.Error {
-	return &errors.Error{
-		File:  api.file,
-		Line:  api.line,
-		Field: tag,
-		LocaleError: errors.LocaleError{
-			MessageKey: locale.ErrInvalidFormat,
-		},
-	}
-}
-
 // 解析 @apiServers 标签，格式如下：
 //  @apiServers s1,s2
 func (api *API) parseServers(l *lexer.Lexer, tag *lexer.Tag) {
 	if len(api.Servers) > 0 {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
 	if len(tag.Data) == 0 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrRequired)
 		return
 	}
 
@@ -208,18 +200,22 @@ func (api *API) parseServers(l *lexer.Lexer, tag *lexer.Tag) {
 //  @apiTags t1,t2
 func (api *API) parseTags(l *lexer.Lexer, tag *lexer.Tag) {
 	if len(api.Tags) > 0 {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
 	if len(tag.Data) == 0 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrRequired)
 		return
 	}
 
 	api.Tags = splitToArray(tag)
 }
 
+// 按 , 分隔内容。并去掉各个元素的首尾空格。
+// 如果存在相同元素，则返回错误信息。
+//
+// 一般用于诸如 @apiTags 等标签的检测。
 func splitToArray(tag *lexer.Tag) []string {
 	items := bytes.FieldsFunc(tag.Data, func(r rune) bool { return r == ',' })
 	ret := make([]string, 0, len(items))
@@ -231,7 +227,7 @@ func splitToArray(tag *lexer.Tag) []string {
 	sort.Strings(ret)
 	for i := 1; i < len(ret); i++ {
 		if ret[i] == ret[i-1] {
-			tag.ErrInvalidFormat() // 重复的名称
+			tag.Error(locale.ErrDuplicateValue)
 			return nil
 		}
 	}
@@ -243,12 +239,12 @@ func splitToArray(tag *lexer.Tag) []string {
 //  @apiDeprecated description
 func (api *API) parseDeprecated(l *lexer.Lexer, tag *lexer.Tag) {
 	if api.Deprecated != "" {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
 	if len(tag.Data) == 0 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrRequired)
 		return
 	}
 
@@ -268,7 +264,7 @@ func (api *API) parseQuery(l *lexer.Lexer, tag *lexer.Tag) {
 	}
 
 	if api.queryExists(p.Name) {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateValue)
 		return
 	}
 
@@ -298,7 +294,7 @@ func (api *API) parseParam(l *lexer.Lexer, tag *lexer.Tag) {
 	}
 
 	if api.paramExists(p.Name) {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateValue)
 		return
 	}
 
@@ -337,7 +333,7 @@ func (api *API) paramExists(name string) bool {
 func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) {
 	data := tag.Words(3)
 	if len(data) < 2 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 
@@ -358,7 +354,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) {
 
 	if err := req.Type.Build(nil, data[0], nil, desc); err != nil {
 		// TODO err
-		tag.ErrInvalidTag()
+		tag.Error(locale.ErrInvalidTag)
 		return
 	}
 
@@ -387,14 +383,14 @@ LOOP:
 func newParam(tag *lexer.Tag) (p *Param, ok bool) {
 	data := tag.Words(4)
 	if len(data) != 4 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return nil, false
 	}
 
 	s := &schema.Schema{}
 	if err := s.Build(nil, data[1], data[2], nil); err != nil {
 		// TODO err
-		tag.ErrInvalidTag()
+		tag.Error(locale.ErrInvalidTag)
 		return nil, false
 	}
 

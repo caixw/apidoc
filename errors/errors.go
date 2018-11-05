@@ -47,3 +47,16 @@ func (err *Error) Error() string {
 
 	return locale.Sprintf(locale.ErrMessage, msg, err.File, err.Line, err.Field)
 }
+
+// New 声明新的 Error 实例
+func New(file, field string, line int, msg message.Reference, vals ...interface{}) *Error {
+	return &Error{
+		File:  file,
+		Line:  line,
+		Field: field,
+		LocaleError: LocaleError{
+			MessageKey:  msg,
+			MessageArgs: vals,
+		},
+	}
+}

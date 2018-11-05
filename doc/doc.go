@@ -16,6 +16,7 @@ import (
 	"github.com/caixw/apidoc/doc/lexer"
 	"github.com/caixw/apidoc/errors"
 	i "github.com/caixw/apidoc/internal/input"
+	"github.com/caixw/apidoc/internal/locale"
 	"github.com/caixw/apidoc/internal/vars"
 	"github.com/caixw/apidoc/options"
 )
@@ -116,19 +117,17 @@ LOOP:
 
 func (doc *Doc) check(h *errors.Handler) {
 	for _, api := range doc.Apis {
-		if err := api.check(); err != nil {
-			h.SyntaxError(err)
-		}
+		api.check(h)
 
 		for _, tag := range api.Tags {
 			if !doc.tagExists(tag) {
-				h.SyntaxError(api.errInvalidFormat("@apiTags")) // TODO 专门的错误信息
+				h.SyntaxError(api.err("@apiTags", locale.ErrInvalidValue))
 			}
 		}
 
 		for _, srv := range api.Servers {
 			if !doc.serverExists(srv) {
-				h.SyntaxError(api.errInvalidFormat("@apiServers")) // TODO 专门的错误信息
+				h.SyntaxError(api.err("@apiServers", locale.ErrInvalidValue))
 			}
 		}
 	}
@@ -166,7 +165,7 @@ func (doc *Doc) parseAPIDoc(l *lexer.Lexer) {
 	for tag := l.Tag(); tag != nil; tag = l.Tag() {
 		fn, found := apiDocParsers[strings.ToLower(tag.Name)]
 		if !found {
-			tag.ErrInvalidTag()
+			tag.Error(locale.ErrInvalidTag)
 			return
 		}
 
@@ -178,12 +177,12 @@ func (doc *Doc) parseAPIDoc(l *lexer.Lexer) {
 //  @apidoc title of document
 func (doc *Doc) parseapidoc(l *lexer.Lexer, tag *lexer.Tag) {
 	if doc.Title != "" {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
 	if len(tag.Data) == 0 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrRequired)
 		return
 	}
 
@@ -194,12 +193,12 @@ func (doc *Doc) parseapidoc(l *lexer.Lexer, tag *lexer.Tag) {
 //  @apicontent xxxx
 func (doc *Doc) parseContent(l *lexer.Lexer, tag *lexer.Tag) {
 	if doc.Content != "" {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
 	if len(tag.Data) == 0 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrRequired)
 		return
 	}
 
@@ -210,12 +209,12 @@ func (doc *Doc) parseContent(l *lexer.Lexer, tag *lexer.Tag) {
 //  @apiVersion 3.2.1
 func (doc *Doc) parseVersion(l *lexer.Lexer, tag *lexer.Tag) {
 	if doc.Version != "" {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
 	if len(tag.Data) == 0 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrRequired)
 		return
 	}
 
@@ -228,7 +227,7 @@ func (doc *Doc) parseVersion(l *lexer.Lexer, tag *lexer.Tag) {
 //  @apiContact name name@example.com
 func (doc *Doc) parseContact(l *lexer.Lexer, tag *lexer.Tag) {
 	if doc.Contact != nil {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
@@ -253,7 +252,7 @@ func (doc *Doc) tagExists(tag string) bool {
 func (doc *Doc) parseTag(l *lexer.Lexer, tag *lexer.Tag) {
 	data := tag.Words(2)
 	if len(data) != 2 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 
@@ -263,7 +262,7 @@ func (doc *Doc) parseTag(l *lexer.Lexer, tag *lexer.Tag) {
 
 	name := string(data[0])
 	if doc.tagExists(name) {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateValue)
 		return
 	}
 
@@ -289,11 +288,11 @@ func (doc *Doc) serverExists(name string) bool {
 func (doc *Doc) parseServer(l *lexer.Lexer, tag *lexer.Tag) {
 	data := tag.Words(3)
 	if len(data) < 2 { // 描述为可选字段
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 	if !is.URL(data[1]) {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 
@@ -303,7 +302,7 @@ func (doc *Doc) parseServer(l *lexer.Lexer, tag *lexer.Tag) {
 
 	name := string(data[0])
 	if doc.serverExists(name) {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
@@ -321,18 +320,18 @@ func (doc *Doc) parseServer(l *lexer.Lexer, tag *lexer.Tag) {
 //  @apilicense MIT https://opensources.org/licenses/MIT
 func (doc *Doc) parseLicense(l *lexer.Lexer, tag *lexer.Tag) {
 	if doc.License != nil {
-		tag.ErrDuplicateTag()
+		tag.Error(locale.ErrDuplicateTag)
 		return
 	}
 
 	data := tag.Words(2)
 	if len(data) != 2 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 
 	if !is.URL(data[1]) {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return
 	}
 
@@ -351,7 +350,7 @@ func newContact(tag *lexer.Tag) (c *Contact, ok bool) {
 	data := tag.Words(3)
 
 	if len(data) < 2 {
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return nil, false
 	}
 
@@ -363,7 +362,7 @@ func newContact(tag *lexer.Tag) (c *Contact, ok bool) {
 	case 2:
 		contact.Email = v
 	default:
-		tag.ErrInvalidFormat()
+		tag.Error(locale.ErrInvalidFormat)
 		return nil, false
 	}
 
@@ -375,7 +374,7 @@ func newContact(tag *lexer.Tag) (c *Contact, ok bool) {
 		case 2:
 			contact.Email = v
 		default:
-			tag.ErrInvalidFormat()
+			tag.Error(locale.ErrInvalidFormat)
 			return nil, false
 		}
 	}
