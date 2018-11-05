@@ -353,8 +353,7 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) {
 	api.Requests = append(api.Requests, req)
 
 	if err := req.Type.Build(nil, data[0], nil, desc); err != nil {
-		// TODO err
-		tag.Error(locale.ErrInvalidTag)
+		tag.ErrorWithError(err, locale.ErrInvalidFormat)
 		return
 	}
 
@@ -389,8 +388,7 @@ func newParam(tag *lexer.Tag) (p *Param, ok bool) {
 
 	s := &schema.Schema{}
 	if err := s.Build(nil, data[1], data[2], nil); err != nil {
-		// TODO err
-		tag.Error(locale.ErrInvalidTag)
+		tag.ErrorWithError(err, locale.ErrInvalidFormat)
 		return nil, false
 	}
 

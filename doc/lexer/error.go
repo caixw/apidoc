@@ -29,3 +29,13 @@ func (t *Tag) Warn(key message.Reference, vals ...interface{}) {
 func (t *Tag) Error(key message.Reference, vals ...interface{}) {
 	t.l.Error(errors.New(t.File, t.Name, t.Line, key, vals...))
 }
+
+// WarnWithError 输出警告信息
+func (t *Tag) WarnWithError(err error, key message.Reference, vals ...interface{}) {
+	t.l.Warn(errors.WithError(err, t.File, t.Name, t.Line, key, vals...))
+}
+
+// ErrorWithError 输出错误信息
+func (t *Tag) ErrorWithError(err error, key message.Reference, vals ...interface{}) {
+	t.l.Error(errors.WithError(err, t.File, t.Name, t.Line, key, vals...))
+}

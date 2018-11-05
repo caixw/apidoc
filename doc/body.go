@@ -117,8 +117,7 @@ func (body *Body) parseParam(tag *lexer.Tag) {
 	}
 
 	if err := body.Type.Build(data[0], data[1], data[2], data[3]); err != nil {
-		// TODO err
-		tag.Error(locale.ErrInvalidFormat)
+		tag.ErrorWithError(err, locale.ErrInvalidFormat)
 		return
 	}
 }
@@ -162,8 +161,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (resp *Response, ok bool) {
 
 	s := &schema.Schema{}
 	if err := s.Build(nil, data[1], nil, desc); err != nil {
-		// TODO err
-		tag.Error(locale.ErrInvalidFormat)
+		tag.ErrorWithError(err, locale.ErrInvalidFormat)
 		return nil, false
 	}
 	resp = &Response{

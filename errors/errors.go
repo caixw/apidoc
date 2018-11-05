@@ -27,7 +27,7 @@ type LocaleError struct {
 // Error 错误信息
 type Error struct {
 	LocaleError
-	Message string
+	prev error // 前一条错误信息
 
 	Type  int8
 	File  string
@@ -40,17 +40,34 @@ func (err *LocaleError) Error() string {
 }
 
 func (err *Error) Error() string {
-	msg := err.Message
-	if msg == "" {
-		msg = err.LocaleError.Error()
+	msg := err.LocaleError.Error()
+
+	if err.prev == nil {
+		// ErrMessage = "%s 位次于 %s:%d 的 %s"
+		return locale.Sprintf(locale.ErrMessage, msg, err.File, err.Line, err.Field)
 	}
 
-	return locale.Sprintf(locale.ErrMessage, msg, err.File, err.Line, err.Field)
+	// ErrMessageWithError = "%s[%s] 位于 %s:%d 的 %s"
+	return locale.Sprintf(locale.ErrMessageWithError, msg, err.prev, err.File, err.Line, err.Field)
 }
 
 // New 声明新的 Error 实例
 func New(file, field string, line int, msg message.Reference, vals ...interface{}) *Error {
 	return &Error{
+		File:  file,
+		Line:  line,
+		Field: field,
+		LocaleError: LocaleError{
+			MessageKey:  msg,
+			MessageArgs: vals,
+		},
+	}
+}
+
+// WithError 返回一条带错误内容的 Error 实例
+func WithError(err error, file, field string, line int, msg message.Reference, vals ...interface{}) *Error {
+	return &Error{
+		prev:  err,
 		File:  file,
 		Line:  line,
 		Field: field,
