@@ -15,7 +15,7 @@ func TestBody_parseExample(t *testing.T) {
 	a := assert.New(t)
 	body := &Body{}
 
-	tag := newTag(`@apiExample application/json summary text
+	tag := newTagString(`@apiExample application/json summary text
 {
 	"id": 1,
 	"name": "name"
@@ -30,7 +30,7 @@ func TestBody_parseExample(t *testing.T) {
 }`)
 
 	// 长度不够
-	tag = newTag("application/json")
+	tag = newTagString("application/json")
 	body.parseExample(tag)
 }
 
@@ -38,14 +38,14 @@ func TestBody_parseHeader(t *testing.T) {
 	a := assert.New(t)
 	body := &Body{}
 
-	tag := newTag(`@apiExample content-type required json 或是 xml`)
+	tag := newTagString(`@apiExample content-type required json 或是 xml`)
 	body.parseHeader(tag)
 	h := body.Headers[0]
 	a.Equal(h.Summary, "json 或是 xml").
 		Equal(h.Name, "content-type").
 		False(h.Optional)
 
-	tag = newTag(`@apiExample ETag optional etag`)
+	tag = newTagString(`@apiExample ETag optional etag`)
 	body.parseHeader(tag)
 	h = body.Headers[1]
 	a.Equal(h.Summary, "etag").
@@ -53,7 +53,7 @@ func TestBody_parseHeader(t *testing.T) {
 		True(h.Optional)
 
 	// 长度不够
-	tag = newTag("ETag")
+	tag = newTagString("ETag")
 	body.parseHeader(tag)
 }
 
@@ -68,7 +68,7 @@ func TestIsOptional(t *testing.T) {
 
 func TestNewResponse(t *testing.T) {
 	a := assert.New(t)
-	l := newLexer(`@apiHeader content-type optional 指定内容类型
+	l := newLexerString(`@apiHeader content-type optional 指定内容类型
 	@apiParam id int required 唯一 ID
 	@apiParam name string required 名称
 	@apiParam nickname string optional 昵称
@@ -79,7 +79,7 @@ func TestNewResponse(t *testing.T) {
 		"nickname": "nickname"
 	}
 	@apiUnknown xxx`)
-	tag := newTag(`@apiResponse 200 array.object * 通用的返回内容定义`)
+	tag := newTagString(`@apiResponse 200 array.object * 通用的返回内容定义`)
 
 	resp, ok := newResponse(l, tag)
 	a.True(ok).NotNil(resp)
@@ -97,7 +97,7 @@ func TestResponses_parseResponse(t *testing.T) {
 	a := assert.New(t)
 	d := &responses{}
 
-	l := newLexer(`@apiHeader content-type optional 指定内容类型
+	l := newLexerString(`@apiHeader content-type optional 指定内容类型
 	@apiParam id int required 唯一 ID
 	@apiParam name string required 名称
 	@apiParam nickname string optional 昵称
@@ -108,7 +108,7 @@ func TestResponses_parseResponse(t *testing.T) {
 		"nickname": "nickname"
 	}
 	@apiUnknown xxx`)
-	tag := newTag(`@apiResponse 200 array.object * 通用的返回内容定义`)
+	tag := newTagString(`@apiResponse 200 array.object * 通用的返回内容定义`)
 
 	d.parseResponse(l, tag)
 	a.Equal(len(d.Responses), 1)
@@ -131,7 +131,7 @@ func TestResponses_parseResponse(t *testing.T) {
 		Equal(resp.Mimetype, "*")
 
 	// 忽略可选参数
-	tag = newTag(`@apiResponse 200 array.object * `)
+	tag = newTagString(`@apiResponse 200 array.object * `)
 	d.parseResponse(l, tag)
 	a.Equal(len(d.Responses), 3)
 	resp = d.Responses[2]

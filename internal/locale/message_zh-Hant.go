@@ -47,7 +47,7 @@ func init() {
 		ErrDirIsEmpty:            "目錄下沒有需要解析的文件",
 		ErrInvalidValue:          "無效的值",
 		ErrInvalidOpenapi:        "openapi 內容錯誤：字段：%s；錯誤內容：%s",
-		ErrDuplicateRoute:        "重復的路由項 %s:%s",
+		ErrDuplicateRoute:        "重復的路由項",
 		ErrPathNotMatchParams:    "地址參數不匹配",
 		ErrPathInvalid:           "地址格式錯誤",
 		ErrDuplicateValue:        "重復的值",

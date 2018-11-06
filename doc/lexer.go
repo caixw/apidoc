@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package lexer 简单的词法分解工具
-package lexer
+package doc
 
 import (
 	"unicode"
@@ -12,37 +11,36 @@ import (
 	"github.com/caixw/apidoc/internal/input"
 )
 
-// Lexer 简单的词法分析
-type Lexer struct {
+// 简单的词法分析
+type lexer struct {
 	data      input.Block
-	pos       int  // 当前指针位置
-	ln        int  // 当前位置所在的行号
-	backupTag *Tag // 回退的标签内容
+	pos       int       // 当前指针位置
+	ln        int       // 当前位置所在的行号
+	backupTag *lexerTag // 回退的标签内容
 	h         *errors.Handler
 }
 
-// Tag 表示一个标签的内容
-type Tag struct {
+// 表示一个标签的内容
+type lexerTag struct {
 	File string
 	Line int // 当前 tag 在文件中的起始行号
 	Data []byte
 	Name string // 标签名称
-	l    *Lexer
+	l    *lexer
 }
 
-// New 声明一个新的 Lexer 实例。
-func New(block input.Block, h *errors.Handler) *Lexer {
-	return &Lexer{
+func newLexer(block input.Block, h *errors.Handler) *lexer {
+	return &lexer{
 		data: block,
 		ln:   block.Line,
 		h:    h,
 	}
 }
 
-func newTag(l *Lexer, file string, line int, data []byte) *Tag {
-	strs := SplitWords(data, 2)
+func newLexerTag(l *lexer, file string, line int, data []byte) *lexerTag {
+	strs := splitWords(data, 2)
 
-	tag := &Tag{
+	tag := &lexerTag{
 		File: file,
 		Line: line,
 		Name: string(strs[0]),
@@ -62,19 +60,19 @@ func newTag(l *Lexer, file string, line int, data []byte) *Tag {
 	return tag
 }
 
-func (l *Lexer) atEOF() bool {
+func (l *lexer) atEOF() bool {
 	return l.pos >= len(l.data.Data)
 }
 
 // Backup 回退一个标签
-func (l *Lexer) Backup(t *Tag) {
+func (l *lexer) backup(t *lexerTag) {
 	l.backupTag = t
 }
 
 // Tag 返回下一个标签。
 //
 // 若返回 nil 表示已经在结尾处。
-func (l *Lexer) Tag() (t *Tag) {
+func (l *lexer) tag() (t *lexerTag) {
 	if l.backupTag != nil {
 		t = l.backupTag
 		l.backupTag = nil
@@ -93,7 +91,7 @@ LOOP:
 			if len(data) == 0 {
 				return nil
 			}
-			return newTag(l, l.data.File, ln, data)
+			return newLexerTag(l, l.data.File, ln, data)
 		}
 
 		b := l.data.Data[l.pos]
@@ -105,31 +103,31 @@ LOOP:
 		case newLine && unicode.IsSpace(rune(b)): // 跳过行首空白字符
 			continue LOOP
 		case newLine && b == '@':
-			return newTag(l, l.data.File, ln, l.data.Data[start:end])
+			return newLexerTag(l, l.data.File, ln, l.data.Data[start:end])
 		default:
 			newLine = false
 		}
 	}
 }
 
-// Words 将 tag.Data 以空隔分成 num 个数组。
+// 将 tag.Data 以空隔分成 num 个数组。
 //
 // 如果不够数量，则返回实际数量的元素。
-func (tag *Tag) Words(num int) [][]byte {
-	return SplitWords(tag.Data, num)
+func (tag *lexerTag) words(num int) [][]byte {
+	return splitWords(tag.Data, num)
 }
 
-// Lines 分成指定的行并返回
+// 分成指定的行并返回
 //
 // 如果不够数量，则返回实际数量的元素。
-func (tag *Tag) Lines(num int) [][]byte {
+func (tag *lexerTag) lines(num int) [][]byte {
 	return splitLines(tag.Data, num)
 }
 
-// SplitWords 将 data 以空隔分成 num 个数组。
+// 将 data 以空隔分成 num 个数组。
 //
 // 如果不够数量，则返回实际数量的元素。
-func SplitWords(data []byte, size int) [][]byte {
+func splitWords(data []byte, size int) [][]byte {
 	return splitFunc(data, size, func(b byte) bool { return unicode.IsSpace(rune(b)) })
 }
 

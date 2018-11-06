@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/caixw/apidoc/doc/lexer"
 	"github.com/caixw/apidoc/internal/locale"
 )
 
@@ -56,14 +55,14 @@ type Example struct {
 //      "id": 1,
 //      "name": "name",
 //  }
-func (body *Body) parseExample(tag *lexer.Tag) {
-	lines := tag.Lines(2)
+func (body *Body) parseExample(tag *lexerTag) {
+	lines := tag.lines(2)
 	if len(lines) != 2 {
-		tag.Error(locale.ErrInvalidFormat)
+		tag.err(locale.ErrInvalidFormat)
 		return
 	}
 
-	words := lexer.SplitWords(lines[0], 2)
+	words := splitWords(lines[0], 2)
 
 	if body.Examples == nil {
 		body.Examples = make([]*Example, 0, 3)
@@ -88,10 +87,10 @@ func isOptional(data []byte) bool {
 
 // 解析 @apiHeader 标签，格式如下：
 //  @apiheader content-type required desc
-func (body *Body) parseHeader(tag *lexer.Tag) {
-	data := tag.Words(3)
+func (body *Body) parseHeader(tag *lexerTag) {
+	data := tag.words(3)
 	if len(data) != 3 {
-		tag.Error(locale.ErrInvalidFormat)
+		tag.err(locale.ErrInvalidFormat)
 		return
 	}
 
@@ -108,20 +107,20 @@ func (body *Body) parseHeader(tag *lexer.Tag) {
 
 // 解析 @apiparam 标签，格式如下：
 //  @apiparam group object reqiured desc
-func (body *Body) parseParam(tag *lexer.Tag) {
-	data := tag.Words(4)
+func (body *Body) parseParam(tag *lexerTag) {
+	data := tag.words(4)
 	if len(data) != 4 {
-		tag.Error(locale.ErrInvalidFormat)
+		tag.err(locale.ErrInvalidFormat)
 		return
 	}
 
 	if err := body.Type.build(data[0], data[1], data[2], data[3]); err != nil {
-		tag.ErrorWithError(err, locale.ErrInvalidFormat)
+		tag.errWithError(err, locale.ErrInvalidFormat)
 		return
 	}
 }
 
-func (resps *responses) parseResponse(l *lexer.Lexer, tag *lexer.Tag) {
+func (resps *responses) parseResponse(l *lexer, tag *lexerTag) {
 	if resps.Responses == nil {
 		resps.Responses = make([]*Response, 0, 3)
 	}
@@ -140,16 +139,16 @@ func (resps *responses) parseResponse(l *lexer.Lexer, tag *lexer.Tag) {
 //  @apiparam name string reqiured desc
 //  @apiparam group object reqiured desc
 //  @apiparam group.id int reqiured desc
-func newResponse(l *lexer.Lexer, tag *lexer.Tag) (resp *Response, ok bool) {
-	data := tag.Words(4)
+func newResponse(l *lexer, tag *lexerTag) (resp *Response, ok bool) {
+	data := tag.words(4)
 	if len(data) < 3 {
-		tag.Error(locale.ErrInvalidFormat)
+		tag.err(locale.ErrInvalidFormat)
 		return nil, false
 	}
 
 	status, err := strconv.Atoi(string(data[0]))
 	if err != nil {
-		tag.Error(locale.ErrInvalidFormat)
+		tag.err(locale.ErrInvalidFormat)
 		return nil, false
 	}
 
@@ -160,7 +159,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (resp *Response, ok bool) {
 
 	s := &Schema{}
 	if err := s.build(nil, data[1], nil, desc); err != nil {
-		tag.ErrorWithError(err, locale.ErrInvalidFormat)
+		tag.errWithError(err, locale.ErrInvalidFormat)
 		return nil, false
 	}
 	resp = &Response{
@@ -172,7 +171,7 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (resp *Response, ok bool) {
 	}
 
 LOOP:
-	for tag := l.Tag(); tag != nil; tag = l.Tag() {
+	for tag := l.tag(); tag != nil; tag = l.tag() {
 		fn := resp.parseExample
 		switch strings.ToLower(tag.Name) {
 		case "@apiexample":
@@ -182,7 +181,7 @@ LOOP:
 		case "@apiparam":
 			fn = resp.parseParam
 		default:
-			l.Backup(tag)
+			l.backup(tag)
 			break LOOP
 		}
 

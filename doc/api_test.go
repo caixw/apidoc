@@ -46,7 +46,7 @@ func TestDoc_parseAPI(t *testing.T) {
 	a := assert.New(t)
 	d := &Doc{}
 
-	l := newLexer(`@api get /path xxxx
+	l := newLexerString(`@api get /path xxxx
 	@apiRequest object application/json summary
 	@apiheader content-type required mimetype value
 	@apiresponse 200 object application/json summary`)
@@ -54,7 +54,7 @@ func TestDoc_parseAPI(t *testing.T) {
 	a.Equal(len(d.Apis), 1)
 
 	// 重复内容。
-	l = newLexer(`@api get /path xxxx
+	l = newLexerString(`@api get /path xxxx
 	@apiNotExists object application/json summary
 	@apiheader content-type required mimetype value
 	@apiresponse 200 object application/json summary`)
@@ -66,16 +66,16 @@ func TestAPI_parseAPI(t *testing.T) {
 	a := assert.New(t)
 	api := &API{}
 
-	l := newLexer(`@api get /path xxxx
+	l := newLexerString(`@api get /path xxxx
 	@apirequest xxx`)
-	tag := l.Tag()
+	tag := l.tag()
 	api.parseAPI(l, tag)
 	a.Equal(api.Method, "GET")
 
 	api = &API{}
-	l = newLexer(`@apinotexists get /path xxxx
+	l = newLexerString(`@apinotexists get /path xxxx
 	@apirequest xxx`)
-	tag = l.Tag()
+	tag = l.tag()
 	api.parseAPI(l, tag)
 }
 
@@ -84,10 +84,10 @@ func TestAPI_parseapi(t *testing.T) {
 	api := &API{}
 
 	// 缺少参数
-	tag := newTag("@api get /path")
+	tag := newTagString("@api get /path")
 	api.parseapi(nil, tag)
 
-	tag = newTag("@api get /path summary content")
+	tag = newTagString("@api get /path summary content")
 	tag.File = "file.go"
 	tag.Line = 111
 	api.parseapi(nil, tag)
@@ -98,7 +98,7 @@ func TestAPI_parseapi(t *testing.T) {
 		Equal(api.line, 111)
 
 	// 多次调用
-	tag = newTag("get /path summary content")
+	tag = newTagString("get /path summary content")
 	api.parseapi(nil, tag)
 }
 
@@ -107,16 +107,16 @@ func TestAPI_parseServer(t *testing.T) {
 	api := &API{}
 
 	// 不能为空
-	tag := newTag("@apiServers")
+	tag := newTagString("@apiServers")
 	api.parseServers(nil, tag)
 
 	// 正常情况
-	tag = newTag("@apiServers server1, server2")
+	tag = newTagString("@apiServers server1, server2")
 	api.parseServers(nil, tag)
 	a.Equal(api.Servers, []string{"server1", "server2"})
 
 	// 不能多次调用
-	tag = newTag("@apiServers s1")
+	tag = newTagString("@apiServers s1")
 	api.parseServers(nil, tag)
 }
 
@@ -125,20 +125,20 @@ func TestAPI_parseTags(t *testing.T) {
 	api := &API{}
 
 	// 不能为空
-	tag := newTag("@apiTags")
+	tag := newTagString("@apiTags")
 	api.parseTags(nil, tag)
 
-	tag = newTag("@apiTags t1, t2")
+	tag = newTagString("@apiTags t1, t2")
 	api.parseTags(nil, tag)
 	a.Equal(api.Tags, []string{"t1", "t2"})
 
 	// 不能多次调用
-	tag = newTag("@apiTags t1,t2")
+	tag = newTagString("@apiTags t1,t2")
 	api.parseTags(nil, tag)
 
 	// 两次同名
 	api = &API{}
-	tag = newTag("@apiTags t1,t1")
+	tag = newTagString("@apiTags t1,t1")
 	api.parseTags(nil, tag)
 }
 
@@ -147,16 +147,16 @@ func TestAPI_parseDeperecated(t *testing.T) {
 	api := &API{}
 
 	// 不能为空
-	tag := newTag("@apiDeprecated")
+	tag := newTagString("@apiDeprecated")
 	api.parseDeprecated(nil, tag)
 
 	// 正常
-	tag = newTag("@apiDeprecated 临时取消")
+	tag = newTagString("@apiDeprecated 临时取消")
 	api.parseDeprecated(nil, tag)
 	a.Equal(api.Deprecated, "临时取消")
 
 	// 不能多次指定
-	tag = newTag("@apiDeprecated 临时取消")
+	tag = newTagString("@apiDeprecated 临时取消")
 	api.parseDeprecated(nil, tag)
 }
 
@@ -164,7 +164,7 @@ func TestAPI_parseQuery(t *testing.T) {
 	a := assert.New(t)
 	api := &API{}
 
-	tag := newTag("@apiQuery name string required  名称")
+	tag := newTagString("@apiQuery name string required  名称")
 	api.parseQuery(nil, tag)
 	a.Equal(len(api.Queries), 1)
 	q := api.Queries[0]
@@ -173,7 +173,7 @@ func TestAPI_parseQuery(t *testing.T) {
 		False(q.Optional).
 		Equal(q.Summary, "名称")
 
-	tag = newTag("@apiQuery name1 string optional.v1  名称")
+	tag = newTagString("@apiQuery name1 string optional.v1  名称")
 	api.parseQuery(nil, tag)
 	a.Equal(len(api.Queries), 2)
 	q = api.Queries[1]
@@ -183,7 +183,7 @@ func TestAPI_parseQuery(t *testing.T) {
 		Equal(q.Summary, "名称")
 
 	// 同名参数
-	tag = newTag("@apiQuery name string optional.v1  名称")
+	tag = newTagString("@apiQuery name string optional.v1  名称")
 	api.parseQuery(nil, tag)
 }
 
@@ -191,7 +191,7 @@ func TestAPI_parseParam(t *testing.T) {
 	a := assert.New(t)
 	api := &API{}
 
-	tag := newTag("@apiParam name string required  名称")
+	tag := newTagString("@apiParam name string required  名称")
 	api.parseParam(nil, tag)
 	a.Equal(len(api.Params), 1)
 	p := api.Params[0]
@@ -200,7 +200,7 @@ func TestAPI_parseParam(t *testing.T) {
 		False(p.Optional).
 		Equal(p.Summary, "名称")
 
-	tag = newTag("@apiParam name1 string optional.v1  名称")
+	tag = newTagString("@apiParam name1 string optional.v1  名称")
 	api.parseParam(nil, tag)
 	a.Equal(len(api.Params), 2)
 	p = api.Params[1]
@@ -210,7 +210,7 @@ func TestAPI_parseParam(t *testing.T) {
 		Equal(p.Summary, "名称")
 
 	// 同名参数
-	tag = newTag("@apiParam name string optional.v1  名称")
+	tag = newTagString("@apiParam name string optional.v1  名称")
 	api.parseParam(nil, tag)
 }
 
@@ -218,7 +218,7 @@ func TestAPI_parseResponse(t *testing.T) {
 	a := assert.New(t)
 	api := &API{}
 
-	l := newLexer(`@apiHeader content-type optional 指定内容类型
+	l := newLexerString(`@apiHeader content-type optional 指定内容类型
 	@apiParam id int required 唯一 ID
 	@apiParam name string required 名称
 	@apiParam nickname string optional 昵称
@@ -229,7 +229,7 @@ func TestAPI_parseResponse(t *testing.T) {
 		"nickname": "nickname"
 	}
 	@apiUnknown xxx`)
-	tag := newTag(`@apiResponse array.object * 通用的返回内容定义`)
+	tag := newTagString(`@apiResponse array.object * 通用的返回内容定义`)
 
 	api.parseRequest(l, tag)
 	a.Equal(len(api.Requests), 1)
@@ -249,7 +249,7 @@ func TestAPI_parseResponse(t *testing.T) {
 	a.Equal(req.Mimetype, "*")
 
 	// 可选的描述内容
-	tag = newTag(`@apiResponse array.object application/json `)
+	tag = newTagString(`@apiResponse array.object application/json `)
 	api.parseRequest(l, tag)
 	a.Equal(len(api.Requests), 3)
 	req = api.Requests[2]
@@ -257,14 +257,14 @@ func TestAPI_parseResponse(t *testing.T) {
 		Empty(req.Type.Description)
 
 	// @apiRequest 格式错误
-	tag = newTag("xxxx")
+	tag = newTagString("xxxx")
 	api.parseRequest(l, tag)
 }
 
 func TestNewParam(t *testing.T) {
 	a := assert.New(t)
 
-	tag := newTag("@apiParam name string required  名称")
+	tag := newTagString("@apiParam name string required  名称")
 	p, ok := newParam(tag)
 	a.True(ok).
 		NotNil(p).
@@ -273,7 +273,7 @@ func TestNewParam(t *testing.T) {
 		False(p.Optional).
 		Equal(p.Summary, "名称")
 
-	tag = newTag("@apiParam name string optional.v1  名称")
+	tag = newTagString("@apiParam name string optional.v1  名称")
 	p, ok = newParam(tag)
 	a.True(ok).
 		NotNil(p).
@@ -282,7 +282,7 @@ func TestNewParam(t *testing.T) {
 		True(p.Optional).
 		Equal(p.Summary, "名称")
 
-	tag = newTag("@apiParam name string optional  名称")
+	tag = newTagString("@apiParam name string optional  名称")
 	p, ok = newParam(tag)
 	a.True(ok).
 		NotNil(p).
@@ -292,7 +292,7 @@ func TestNewParam(t *testing.T) {
 		Equal(p.Summary, "名称")
 
 	// 参数不够
-	tag = newTag("name ")
+	tag = newTagString("name ")
 	p, ok = newParam(tag)
 	a.False(ok).Nil(p)
 }

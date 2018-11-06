@@ -50,7 +50,7 @@ const (
 	ErrDirIsEmpty            = "目录下没有需要解析的文件"
 	ErrInvalidValue          = "无效的值"
 	ErrInvalidOpenapi        = "openapi 内容错误：字段：%s；错误内容：%s"
-	ErrDuplicateRoute        = "重复的路由项 %s:%s"
+	ErrDuplicateRoute        = "重复的路由项"
 	ErrPathNotMatchParams    = "地址参数不匹配"
 	ErrPathInvalid           = "地址格式错误"
 	ErrDuplicateValue        = "重复的值"
