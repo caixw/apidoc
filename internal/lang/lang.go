@@ -176,6 +176,7 @@ var langs = []*Language{
 var cStyle = []Blocker{
 	&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 	&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
+	&block{Type: blockTypeSComment, Begin: `///`},       // 需要在 // 之前定义
 	&block{Type: blockTypeSComment, Begin: `//`},
 	&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
 }
