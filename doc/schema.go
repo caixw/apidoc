@@ -81,8 +81,8 @@ var seqaratorDot = []byte{'.'}
 
 // 用于将一条语名添加到 Schema 对象，作为其子元素，语句可能是以下格式：
 // @param list.groups array.string [locked,deleted] desc markdown
-//  * xx: xxxxx
-//  * xx: xxxxx
+//  - xx xxxxx
+//  - xx xxxxx
 //
 //
 // name 表示变量的名称。若为空，表示是顶层的对象。
@@ -246,10 +246,11 @@ LOOP:
 //
 // type 表示希望最终返回的类型。
 //
-// 支持类似的的格式：
+// data 支持类似的的格式：
 //  - s1 xxxx
 //  - s2 xx
-//  * s3 xxxx
+//  多行内容
+//  - s3 xxxx
 // 将返回 s1,s2,s3
 func parseEnum(typ string, data []byte) ([]interface{}, error) {
 	enum := make([]string, 0, 5)
@@ -262,14 +263,17 @@ LOOP:
 		line := scanner.Bytes()
 		line = bytes.TrimSpace(line)
 
-		// 过滤非 - 和 * 开头的行
-		if (len(line) == 0) || (line[0] != '*' && line[0] != '-') {
+		// 过滤非 - 开头的行
+		//
+		// bug(caixw):如果需要添加其它类型的前缀符号，
+		// 请注意 internal/lang.filterSymbols 函数中的相关说明。
+		if (len(line) == 0) || (line[0] != '-') {
 			continue
 		}
 
-		// 去掉 * - 和空格
+		// 去掉 - 和空格
 		line = bytes.TrimLeftFunc(line, func(r rune) bool {
-			return r == '-' || r == '*' || unicode.IsSpace(r)
+			return r == '-' || unicode.IsSpace(r)
 		})
 
 		// 拿到首单词

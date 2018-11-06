@@ -163,6 +163,8 @@ func (b *block) endMComments(l *lexer) ([][]byte, bool) {
 // 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。
 // symbol 为 charset 中的任意字符。
 func filterSymbols(line []byte, charset string) []byte {
+	// bug(caixw): 此处有可能会把 doc.parseEnum 中规定的枚举前缀过滤掉。
+	// 需要保证 在 type 不为 blockTypeString 时，Escape 的值不为 -
 	if len(charset) == 0 {
 		return line
 	}

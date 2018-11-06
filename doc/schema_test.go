@@ -140,7 +140,7 @@ func TestParseEnum(t *testing.T) {
 	enums, err := parseEnum(String, []byte(`xx
 	- state1 状态 1 描述
 	- s2 状态 2 描述
-	* s3 状态 3 描述
+	- s3 状态 3 描述
 	状态3 换行描述
 	- 状态4 状态 4 描述`))
 	a.NotError(err).
