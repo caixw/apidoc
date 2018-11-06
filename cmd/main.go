@@ -79,7 +79,6 @@ func parse(wd string) {
 	if err != nil {
 		if ferr, ok := err.(*errors.Error); ok {
 			ferr.File = configFilename
-			ferr.Field = "inputs." + ferr.Field
 		}
 		printError(err)
 		return
@@ -88,9 +87,9 @@ func parse(wd string) {
 	if err = output.Render(doc, cfg.Output); err != nil {
 		if ferr, ok := err.(*errors.Error); ok {
 			ferr.File = configFilename
-			ferr.Field = "output." + ferr.Field
 		}
 		printError(err)
+		return
 	}
 
 	printInfo(locale.Sprintf(locale.Complete, cfg.Output.Path, doc.Elapsed))
