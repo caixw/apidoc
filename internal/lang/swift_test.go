@@ -33,7 +33,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(ret, [][]byte{[]byte("\n"), []byte("xx\n"), []byte("yy\n")})
+		Equal(ret, [][]byte{[]byte("\n"), []byte(" xx\n"), []byte(" yy\n")})
 
 	l = &lexer{data: []byte(`/**
 	* xx/yy/zz
@@ -42,7 +42,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(ret, [][]byte{[]byte("\n"), []byte("xx/yy/zz\n"), []byte("yy/zz/\n"), []byte("\t")})
+		Equal(ret, [][]byte{[]byte("\n"), []byte(" xx/yy/zz\n"), []byte(" yy/zz/\n"), []byte("\t")})
 
 	// 嵌套注释
 	l = &lexer{data: []byte(`/*0/*1/*2*/*/*/`)}

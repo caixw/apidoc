@@ -160,7 +160,7 @@ func (b *block) endMComments(l *lexer) ([][]byte, bool) {
 	} // end for
 }
 
-// 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。
+// 行首若出现`空白字符+symbol+空白字符`的组合，则去掉 synbol 及之前的字符。
 // symbol 为 charset 中的任意字符。
 func filterSymbols(line []byte, charset string) []byte {
 	// bug(caixw): 此处有可能会把 doc.parseEnum 中规定的枚举前缀过滤掉。
@@ -169,7 +169,7 @@ func filterSymbols(line []byte, charset string) []byte {
 		return line
 	}
 
-	for k, v := range line {
+	for index, v := range line {
 		if unicode.IsSpace(rune(v)) && v != '\n' { // 跳过行首的空格，但不能换行
 			continue
 		}
@@ -180,11 +180,11 @@ func filterSymbols(line []byte, charset string) []byte {
 		}
 
 		// 若下个字符正好是是空格
-		if len(line) > k+1 && unicode.IsSpace(rune(line[k+1])) {
-			if line[k+1] == '\n' {
+		if len(line) > index+1 && unicode.IsSpace(rune(line[index+1])) {
+			if line[index+1] == '\n' {
 				return []byte{'\n'}
 			}
-			return line[k+2:]
+			return line[index+1:]
 		}
 		return line
 	}

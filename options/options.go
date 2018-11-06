@@ -11,7 +11,7 @@ const (
 	ApidocYAML  = "apidoc+yaml"
 	OpenapiJSON = "openapi+json"
 	OpenapiYAML = "openapi+yaml"
-	RAMLJSON    = "raml+json"
+	RAMLYAML    = "raml+yaml"
 )
 
 // Output 指定了渲染输出的相关设置项。

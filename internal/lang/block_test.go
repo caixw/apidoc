@@ -153,18 +153,18 @@ func TestFilterSymbols(t *testing.T) {
 		a.NotEqual(s1, v2)
 	}
 
-	eq("/*", "* ", "")
-	eq("/*", "* line", "line")
-	eq("/*", "*   line", "  line")
-	eq("/*", "*\tline", "line")
-	eq("/*", "* \tline", "\tline")
+	eq("/*", "* ", " ")
+	eq("/*", "* line", " line")
+	eq("/*", "*   line", "   line")
+	eq("/*", "*\tline", "\tline")
+	eq("/*", "* \tline", " \tline")
 
-	eq("/*", "/ line", "line")
-	eq("/*", "/   line", "  line")
+	eq("/*", "/ line", " line")
+	eq("/*", "/   line", "   line")
 
-	eq("/*", "  * line", "line")
-	eq("/*", "  *  line", " line")
-	eq("/*", "\t*  line", " line")
+	eq("/*", "  * line", " line")
+	eq("/*", "  *  line", "  line")
+	eq("/*", "\t*  line", "  line")
 
 	neq("/*", "*\nline", "line")
 	// 包含多个符号
@@ -177,6 +177,6 @@ func TestFilterSymbols(t *testing.T) {
 	neq("/*", "+ line", "line")
 	neq("/*", "+   line", "  line")
 
-	eq("++", "+ line", "line")
+	eq("++", "+ line", " line")
 	neq("++", "++ line", "line")
 }
