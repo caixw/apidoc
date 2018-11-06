@@ -12,7 +12,6 @@ import (
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/doc/lexer"
-	"github.com/caixw/apidoc/doc/schema"
 	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/internal/locale"
 )
@@ -38,10 +37,10 @@ type API struct {
 
 // Param 简单参数的描述，比如查询参数等
 type Param struct {
-	Name     string         `yaml:"name" json:"name"`                             // 参数名称
-	Type     *schema.Schema `yaml:"type" json:"type"`                             // 类型
-	Summary  string         `yaml:"summary" json:"summary"`                       // 参数介绍
-	Optional bool           `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
+	Name     string  `yaml:"name" json:"name"`                             // 参数名称
+	Type     *Schema `yaml:"type" json:"type"`                             // 类型
+	Summary  string  `yaml:"summary" json:"summary"`                       // 参数介绍
+	Optional bool    `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
 }
 
 func (api *API) err(tag string, key message.Reference, vals ...interface{}) *errors.Error {
@@ -348,11 +347,11 @@ func (api *API) parseRequest(l *lexer.Lexer, tag *lexer.Tag) {
 
 	req := &Request{
 		Mimetype: string(data[1]),
-		Type:     &schema.Schema{},
+		Type:     &Schema{},
 	}
 	api.Requests = append(api.Requests, req)
 
-	if err := req.Type.Build(nil, data[0], nil, desc); err != nil {
+	if err := req.Type.build(nil, data[0], nil, desc); err != nil {
 		tag.ErrorWithError(err, locale.ErrInvalidFormat)
 		return
 	}
@@ -386,8 +385,8 @@ func newParam(tag *lexer.Tag) (p *Param, ok bool) {
 		return nil, false
 	}
 
-	s := &schema.Schema{}
-	if err := s.Build(nil, data[1], data[2], nil); err != nil {
+	s := &Schema{}
+	if err := s.build(nil, data[1], data[2], nil); err != nil {
 		tag.ErrorWithError(err, locale.ErrInvalidFormat)
 		return nil, false
 	}

@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/doc/lexer"
-	"github.com/caixw/apidoc/doc/schema"
 	"github.com/caixw/apidoc/internal/locale"
 )
 
@@ -31,10 +30,10 @@ type responses struct {
 
 // Body 表示请求和返回的共有内容
 type Body struct {
-	Mimetype string         `yaml:"mimetype,omitempty" json:"mimetype,omitempty"`
-	Headers  []*Header      `yaml:"headers,omitempty" json:"headers,omitempty"`
-	Type     *schema.Schema `yaml:"type" json:"type"`
-	Examples []*Example     `yaml:"examples,omitempty" json:"examples,omitempty"`
+	Mimetype string     `yaml:"mimetype,omitempty" json:"mimetype,omitempty"`
+	Headers  []*Header  `yaml:"headers,omitempty" json:"headers,omitempty"`
+	Type     *Schema    `yaml:"type" json:"type"`
+	Examples []*Example `yaml:"examples,omitempty" json:"examples,omitempty"`
 }
 
 // Header 报头
@@ -116,7 +115,7 @@ func (body *Body) parseParam(tag *lexer.Tag) {
 		return
 	}
 
-	if err := body.Type.Build(data[0], data[1], data[2], data[3]); err != nil {
+	if err := body.Type.build(data[0], data[1], data[2], data[3]); err != nil {
 		tag.ErrorWithError(err, locale.ErrInvalidFormat)
 		return
 	}
@@ -159,8 +158,8 @@ func newResponse(l *lexer.Lexer, tag *lexer.Tag) (resp *Response, ok bool) {
 		desc = data[3]
 	}
 
-	s := &schema.Schema{}
-	if err := s.Build(nil, data[1], nil, desc); err != nil {
+	s := &Schema{}
+	if err := s.build(nil, data[1], nil, desc); err != nil {
 		tag.ErrorWithError(err, locale.ErrInvalidFormat)
 		return nil, false
 	}

@@ -5,18 +5,18 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/doc/schema"
+	"github.com/caixw/apidoc/doc"
 	"github.com/caixw/apidoc/errors"
 )
 
 // Schema.Type 需要的一些预定义数据类型
 const (
-	TypeInt      = schema.Integer
+	TypeInt      = doc.Integer
 	TypeLong     = "long"
 	TypeFloat    = "float"
 	TypeDouble   = "double"
-	TypeString   = schema.String
-	TypeBool     = schema.Bool
+	TypeString   = doc.String
+	TypeBool     = doc.Bool
 	TypePassword = "password"
 )
 
@@ -32,7 +32,7 @@ func IsWellDataType(typ string) bool {
 
 // Schema 定义了输出和输出的数据类型
 type Schema struct {
-	*schema.Schema
+	doc.Schema
 	Discriminator *Discriminator         `json:"discriminator,omitempty" yaml:"discriminator,omitempty"`
 	XML           *XML                   `json:"xml,omitempty" yaml:"xml,omitempty"`
 	ExternalDocs  *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`

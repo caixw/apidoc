@@ -9,8 +9,6 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-
-	"github.com/caixw/apidoc/doc/schema"
 )
 
 func TestBody_parseExample(t *testing.T) {
@@ -92,7 +90,7 @@ func TestNewResponse(t *testing.T) {
 		Equal(resp.Headers[0].Summary, "指定内容类型").
 		True(resp.Headers[0].Optional)
 	a.NotNil(resp.Type).
-		Equal(resp.Type.Type, schema.Array)
+		Equal(resp.Type.Type, Array)
 }
 
 func TestResponses_parseResponse(t *testing.T) {
@@ -123,7 +121,7 @@ func TestResponses_parseResponse(t *testing.T) {
 		Equal(resp.Headers[0].Summary, "指定内容类型").
 		True(resp.Headers[0].Optional)
 	a.NotNil(resp.Type).
-		Equal(resp.Type.Type, schema.Array)
+		Equal(resp.Type.Type, Array)
 
 	// 可以添加多次。
 	d.parseResponse(l, tag)

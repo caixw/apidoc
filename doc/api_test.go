@@ -8,8 +8,6 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-
-	"github.com/caixw/apidoc/doc/schema"
 )
 
 func TestAPI_getPathParams(t *testing.T) {
@@ -171,7 +169,7 @@ func TestAPI_parseQuery(t *testing.T) {
 	a.Equal(len(api.Queries), 1)
 	q := api.Queries[0]
 	a.Equal(q.Name, "name").
-		Equal(q.Type.Type, schema.String).
+		Equal(q.Type.Type, String).
 		False(q.Optional).
 		Equal(q.Summary, "名称")
 
@@ -180,7 +178,7 @@ func TestAPI_parseQuery(t *testing.T) {
 	a.Equal(len(api.Queries), 2)
 	q = api.Queries[1]
 	a.Equal(q.Name, "name1").
-		Equal(q.Type.Type, schema.String).
+		Equal(q.Type.Type, String).
 		True(q.Optional).
 		Equal(q.Summary, "名称")
 
@@ -198,7 +196,7 @@ func TestAPI_parseParam(t *testing.T) {
 	a.Equal(len(api.Params), 1)
 	p := api.Params[0]
 	a.Equal(p.Name, "name").
-		Equal(p.Type.Type, schema.String).
+		Equal(p.Type.Type, String).
 		False(p.Optional).
 		Equal(p.Summary, "名称")
 
@@ -207,7 +205,7 @@ func TestAPI_parseParam(t *testing.T) {
 	a.Equal(len(api.Params), 2)
 	p = api.Params[1]
 	a.Equal(p.Name, "name1").
-		Equal(p.Type.Type, schema.String).
+		Equal(p.Type.Type, String).
 		True(p.Optional).
 		Equal(p.Summary, "名称")
 
@@ -242,7 +240,7 @@ func TestAPI_parseResponse(t *testing.T) {
 		Equal(req.Headers[0].Summary, "指定内容类型").
 		True(req.Headers[0].Optional)
 	a.NotNil(req.Type).
-		Equal(req.Type.Type, schema.Array)
+		Equal(req.Type.Type, Array)
 
 	// 可以添加多次。
 	api.parseRequest(l, tag)
@@ -271,7 +269,7 @@ func TestNewParam(t *testing.T) {
 	a.True(ok).
 		NotNil(p).
 		Equal(p.Name, "name").
-		Equal(p.Type.Type, schema.String).
+		Equal(p.Type.Type, String).
 		False(p.Optional).
 		Equal(p.Summary, "名称")
 
@@ -280,7 +278,7 @@ func TestNewParam(t *testing.T) {
 	a.True(ok).
 		NotNil(p).
 		Equal(p.Name, "name").
-		Equal(p.Type.Type, schema.String).
+		Equal(p.Type.Type, String).
 		True(p.Optional).
 		Equal(p.Summary, "名称")
 
@@ -289,7 +287,7 @@ func TestNewParam(t *testing.T) {
 	a.True(ok).
 		NotNil(p).
 		Equal(p.Name, "name").
-		Equal(p.Type.Type, schema.String).
+		Equal(p.Type.Type, String).
 		True(p.Optional).
 		Equal(p.Summary, "名称")
 

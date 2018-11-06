@@ -45,8 +45,8 @@ func parse(doc *doc.Doc) (*OpenAPI, error) {
 	return openapi, nil
 }
 
-func parsePaths(openapi *OpenAPI, doc *doc.Doc) *errors.Error {
-	for _, api := range doc.Apis {
+func parsePaths(openapi *OpenAPI, d *doc.Doc) *errors.Error {
+	for _, api := range d.Apis {
 		p := openapi.Paths[api.Path]
 		if p == nil {
 			p = &PathItem{}
@@ -76,7 +76,7 @@ func parsePaths(openapi *OpenAPI, doc *doc.Doc) *errors.Error {
 				}
 
 				content[r.Mimetype] = &MediaType{
-					Schema:   &Schema{Schema: r.Type},
+					Schema:   &Schema{Schema: *r.Type},
 					Examples: examples,
 				}
 			}
@@ -115,7 +115,7 @@ func parsePaths(openapi *OpenAPI, doc *doc.Doc) *errors.Error {
 				}
 			}
 			r.Content[resp.Mimetype] = &MediaType{
-				Schema:   &Schema{Schema: resp.Type},
+				Schema:   &Schema{Schema: *resp.Type},
 				Examples: examples,
 			}
 		}
@@ -133,7 +133,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 			IN:          ParameterINPath,
 			Description: Description(param.Summary),
 			Required:    !param.Optional,
-			Schema:      &Schema{Schema: param.Type},
+			Schema:      &Schema{Schema: *param.Type},
 		})
 	}
 
@@ -143,7 +143,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 			IN:          ParameterINQuery,
 			Description: Description(param.Summary),
 			Required:    !param.Optional,
-			Schema:      &Schema{Schema: param.Type},
+			Schema:      &Schema{Schema: *param.Type},
 		})
 	}
 
