@@ -44,7 +44,7 @@ type Schema struct {
 	MaxItems        int     `json:"maxItems,omitempty" yaml:"maxItems,omitempty"`
 	MinItems        int     `json:"minItems,omitempty" yaml:"minItems,omitempty"`
 	UniqueItems     bool    `json:"uniqueItems,omitempty" yaml:"uniqueItems,omitempty"`
-	Contains        *Schema `json:"contains,omtempty" yaml:"contains,omtempty"`
+	Contains        *Schema `json:"contains,omitempty" yaml:"contains,omitempty"`
 
 	// 对象验证
 	MaxProperties        int                `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
