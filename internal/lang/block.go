@@ -163,6 +163,10 @@ func (b *block) endMComments(l *lexer) ([][]byte, bool) {
 // 行首若出现`空白字符+symbol+空白字符`的组合，则去掉这些字符。
 // symbol 为 charset 中的任意字符。
 func filterSymbols(line []byte, charset string) []byte {
+	if len(charset) == 0 {
+		return line
+	}
+
 	for k, v := range line {
 		if unicode.IsSpace(rune(v)) && v != '\n' { // 跳过行首的空格，但不能换行
 			continue

@@ -57,7 +57,7 @@ func buildOptions(o *opt.Output) (*options, *errors.Error) {
 		marshal = openapi.JSON
 	case opt.OpenapiYAML:
 		marshal = openapi.YAML
-	case opt.RamlJSON:
+	case opt.RAMLJSON:
 		// TODO
 	default:
 		return nil, errors.New("", "type", 0, locale.ErrInvalidValue)
