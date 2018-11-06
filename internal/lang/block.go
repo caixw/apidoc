@@ -39,10 +39,25 @@ type Blocker interface {
 //
 // block 作为 Blocker 的默认实现，能适应大部分语言的定义。
 type block struct {
-	Type   int8   // 代码块的类型，可以是字符串，单行注释或是多行注释
-	Begin  string // 块的起始字符串
-	End    string // 块的结束字符串，单行注释不用定义此值
-	Escape string // 当 Type 为 blockTypeString 时，此值表示转义字符，Type 为其它值时，此值无意义
+	// 代码块的类型，可以是字符串，单行注释或是多行注释
+	Type int8
+
+	// 块的起始字符串
+	Begin string
+
+	// 块的结束字符串，单行注释不用定义此值
+	End string
+
+	// 转义字符
+	//
+	// 当 Type 为 blockTypeString 时，此值表示转义字符。
+	// 当 Type 为 blockTypeMComment 时，此值表示需要过滤的行首字符，比如：
+	//  /**
+	//   *
+	//   *
+	//   */
+	// 以上注释，会过滤掉每一行的 * 字符。
+	Escape string
 }
 
 // BeginFunc 实现 Blocker.BeginFunc
@@ -101,7 +116,7 @@ LOOP:
 			}
 
 			if r == '\n' {
-				lines = append(lines, filterSymbols(l.data[start:l.pos], b.Begin))
+				lines = append(lines, filterSymbols(l.data[start:l.pos], b.Escape))
 				break
 			}
 		}
@@ -131,14 +146,14 @@ func (b *block) endMComments(l *lexer) ([][]byte, bool) {
 			return nil, false
 		case l.match(b.End):
 			if pos := l.pos - len(b.End); pos > start {
-				lines = append(lines, filterSymbols(l.data[start:pos], b.Begin))
+				lines = append(lines, filterSymbols(l.data[start:pos], b.Escape))
 			}
 			return lines, true
 		default:
 			r := l.data[l.pos]
 			l.pos++
 			if r == '\n' {
-				lines = append(lines, filterSymbols(l.data[start:l.pos], b.Begin))
+				lines = append(lines, filterSymbols(l.data[start:l.pos], b.Escape))
 				start = l.pos
 			}
 		}

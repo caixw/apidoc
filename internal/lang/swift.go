@@ -8,15 +8,17 @@ package lang
 type swiftNestMCommentBlock struct {
 	begin      string
 	end        string
+	prefix     string // 需要过滤的前缀
 	beginRunes []byte
 	endRunes   []byte
 	level      int8
 }
 
-func newSwiftNestMCommentBlock(begin, end string) Blocker {
+func newSwiftNestMCommentBlock(begin, end, prefix string) Blocker {
 	return &swiftNestMCommentBlock{
 		begin:      begin,
 		end:        end,
+		prefix:     prefix,
 		beginRunes: []byte(begin),
 		endRunes:   []byte(end),
 	}
@@ -44,7 +46,7 @@ LOOP:
 			b.level--
 			if b.level == 0 {
 				if len(line) > 0 { // 如果 len(line) == 0 表示最后一行仅仅只有一个结束符
-					lines = append(lines, filterSymbols(line, b.begin))
+					lines = append(lines, filterSymbols(line, b.prefix))
 				}
 				break LOOP
 			}
@@ -60,7 +62,7 @@ LOOP:
 			l.pos++
 			line = append(line, r)
 			if r == '\n' {
-				lines = append(lines, filterSymbols(line, b.begin))
+				lines = append(lines, filterSymbols(line, b.prefix))
 				line = make([]byte, 0, 100)
 			}
 		}

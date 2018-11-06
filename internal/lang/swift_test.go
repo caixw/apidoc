@@ -15,7 +15,7 @@ var _ Blocker = &swiftNestMCommentBlock{}
 func TestSwiftNestCommentBlock(t *testing.T) {
 	a := assert.New(t)
 
-	b := newSwiftNestMCommentBlock("/*", "*/")
+	b := newSwiftNestMCommentBlock("/*", "*/", "*")
 	a.NotNil(b)
 
 	l := &lexer{data: []byte(`/* *123*123**/`)}

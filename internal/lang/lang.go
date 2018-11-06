@@ -44,7 +44,7 @@ var langs = []*Language{
 			&block{Type: blockTypeString, Begin: "`", End: "`"},
 			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
 			&block{Type: blockTypeSComment, Begin: `//`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
 		},
 	},
 
@@ -56,7 +56,7 @@ var langs = []*Language{
 			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 			&block{Type: blockTypeString, Begin: "'''", End: "'''", Escape: `\`},
 			&block{Type: blockTypeSComment, Begin: `//`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
 		},
 	},
 
@@ -74,7 +74,7 @@ var langs = []*Language{
 			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
 			&block{Type: blockTypeString, Begin: "`", End: "`", Escape: `\`},
 			&block{Type: blockTypeSComment, Begin: `//`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
 			// NOTE: js 中若出现 /*abc/.test() 应该是先优先注释的。放最后，优先匹配 // 和 /*
 			&block{Type: blockTypeString, Begin: "/", End: "/", Escape: `\`}, // 正则表达式
 		},
@@ -93,7 +93,7 @@ var langs = []*Language{
 			newPascalStringBlock('\''),
 			newPascalStringBlock('"'),
 			&block{Type: blockTypeMComment, Begin: "{", End: "}"},
-			&block{Type: blockTypeMComment, Begin: "(*", End: "*)"},
+			&block{Type: blockTypeMComment, Begin: "(*", End: "*)", Escape: "*"},
 		},
 	},
 
@@ -117,7 +117,7 @@ var langs = []*Language{
 			newPHPDocBlock(),
 			&block{Type: blockTypeSComment, Begin: `//`},
 			&block{Type: blockTypeSComment, Begin: `#`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
 		},
 	},
 
@@ -151,7 +151,7 @@ var langs = []*Language{
 			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
 			&block{Type: blockTypeSComment, Begin: `///`},       // 需要在 // 之前定义
 			&block{Type: blockTypeSComment, Begin: `//`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
 		},
 	},
 
@@ -168,7 +168,7 @@ var langs = []*Language{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
 			&block{Type: blockTypeSComment, Begin: `//`},
-			newSwiftNestMCommentBlock("/*", "*/"),
+			newSwiftNestMCommentBlock("/*", "*/", "*"),
 		},
 	},
 }
@@ -177,7 +177,7 @@ var cStyle = []Blocker{
 	&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 	&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
 	&block{Type: blockTypeSComment, Begin: `//`},
-	&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`},
+	&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
 }
 
 // Language 语言模块的定义
