@@ -142,7 +142,7 @@ func getConfig(wd string) (*config, error) {
 		return nil, err
 	}
 	if len(inputs) == 0 {
-		return nil, locale.Errorf(locale.ErrNotFoundSupportedLang)
+		return nil, &errors.LocaleError{MessageKey: locale.ErrNotFoundSupportedLang}
 	}
 
 	return &config{
