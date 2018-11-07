@@ -10,26 +10,30 @@ import "fmt"
 // 所有支持的语言模型定义
 var langs = []*Language{
 	&Language{
-		Name:   "c#",
-		Exts:   []string{".cs"},
-		Blocks: cStyle,
+		DisplayName: "C#",
+		Name:        "c#",
+		Exts:        []string{".cs"},
+		Blocks:      cStyle,
 	},
 
 	&Language{
-		Name:   "c++",
-		Exts:   []string{".h", ".c", ".cpp", ".cxx", ".hpp"},
-		Blocks: cStyle,
+		DisplayName: "C/C++",
+		Name:        "c++",
+		Exts:        []string{".h", ".c", ".cpp", ".cxx", ".hpp"},
+		Blocks:      cStyle,
 	},
 
 	&Language{
-		Name:   "d",
-		Exts:   []string{".d"},
-		Blocks: cStyle,
+		DisplayName: "D",
+		Name:        "d",
+		Exts:        []string{".d"},
+		Blocks:      cStyle,
 	},
 
 	&Language{
-		Name: "erlang",
-		Exts: []string{".erl", ".hrl"},
+		DisplayName: "Erlang",
+		Name:        "erlang",
+		Exts:        []string{".erl", ".hrl"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeSComment, Begin: `%`},
@@ -37,8 +41,9 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name: "go",
-		Exts: []string{".go"},
+		DisplayName: "Go",
+		Name:        "go",
+		Exts:        []string{".go"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: "`", End: "`"},
@@ -49,8 +54,9 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name: "groovy",
-		Exts: []string{".groovy"},
+		DisplayName: "Groovy",
+		Name:        "groovy",
+		Exts:        []string{".groovy"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
@@ -61,14 +67,16 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name:   "java",
-		Exts:   []string{".java"},
-		Blocks: cStyle,
+		DisplayName: "Java",
+		Name:        "java",
+		Exts:        []string{".java"},
+		Blocks:      cStyle,
 	},
 
 	&Language{
-		Name: "javascript",
-		Exts: []string{".js"},
+		DisplayName: "JavaScript",
+		Name:        "javascript",
+		Exts:        []string{".js"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
@@ -81,14 +89,16 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name:   "kotlin",
-		Exts:   []string{".kt"},
-		Blocks: cStyle,
+		DisplayName: "Kotlin",
+		Name:        "kotlin",
+		Exts:        []string{".kt"},
+		Blocks:      cStyle,
 	},
 
 	&Language{
-		Name: "pascal",
-		Exts: []string{".pas", ".pp"},
+		DisplayName: "Pascal/Delphi",
+		Name:        "pascal",
+		Exts:        []string{".pas", ".pp"},
 		Blocks: []Blocker{
 			newPascalStringBlock('\''),
 			newPascalStringBlock('"'),
@@ -98,8 +108,9 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name: "perl",
-		Exts: []string{".perl", ".prl", ".pl"},
+		DisplayName: "Perl",
+		Name:        "perl",
+		Exts:        []string{".perl", ".prl", ".pl"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
@@ -109,8 +120,9 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name: "php",
-		Exts: []string{".php"},
+		DisplayName: "PHP",
+		Name:        "php",
+		Exts:        []string{".php"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
@@ -122,8 +134,9 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name: "python",
-		Exts: []string{".py"},
+		DisplayName: "Python",
+		Name:        "python",
+		Exts:        []string{".py"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeMComment, Begin: `"""`, End: `"""`},
 			&block{Type: blockTypeMComment, Begin: "'''", End: `'''`},
@@ -133,8 +146,9 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name: "ruby",
-		Exts: []string{".rb"},
+		DisplayName: "Ruby",
+		Name:        "ruby",
+		Exts:        []string{".rb"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
@@ -144,8 +158,9 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name: "rust",
-		Exts: []string{".rs"},
+		DisplayName: "Rust",
+		Name:        "rust",
+		Exts:        []string{".rs"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
@@ -156,14 +171,16 @@ var langs = []*Language{
 	},
 
 	&Language{
-		Name:   "scala",
-		Exts:   []string{".scala"},
-		Blocks: cStyle,
+		DisplayName: "Scala",
+		Name:        "scala",
+		Exts:        []string{".scala"},
+		Blocks:      cStyle,
 	},
 
 	&Language{
-		Name: "swift",
-		Exts: []string{".swift"},
+		DisplayName: "Swift",
+		Name:        "swift",
+		Exts:        []string{".swift"},
 		Blocks: []Blocker{
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
@@ -183,9 +200,10 @@ var cStyle = []Blocker{
 
 // Language 语言模块的定义
 type Language struct {
-	Name   string
-	Blocks []Blocker
-	Exts   []string
+	DisplayName string    // 显示友好的名称
+	Name        string    // 语言唯一名称，一律小写
+	Blocks      []Blocker // 注释块的解析规则定义
+	Exts        []string  // 扩展名列表，必须以 . 开头且小写
 }
 
 // Get 获取指定语言的定义信息
