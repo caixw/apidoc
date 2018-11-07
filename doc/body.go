@@ -27,6 +27,23 @@ type responses struct {
 	Responses []*Response `yaml:"responses,omitempty" json:"responses,omitempty"`
 }
 
+// API 和 Callback 共同需要的属性
+type apiCallback struct {
+	Method      string     `yaml:"method" json:"method"`
+	Description Markdown   `yaml:"description,omitempty" json:"description,omitempty"`
+	Queries     []*Param   `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
+	Params      []*Param   `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
+	Requests    []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
+}
+
+// Param 简单参数的描述，比如查询参数等
+type Param struct {
+	Name     string  `yaml:"name" json:"name"`                             // 参数名称
+	Type     *Schema `yaml:"type" json:"type"`                             // 类型
+	Summary  string  `yaml:"summary" json:"summary"`                       // 参数介绍
+	Optional bool    `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
+}
+
 // Body 表示请求和返回的共有内容
 type Body struct {
 	Mimetype string     `yaml:"mimetype,omitempty" json:"mimetype,omitempty"`
@@ -120,18 +137,6 @@ func (body *Body) parseParam(tag *lexerTag) {
 	}
 }
 
-func (resps *responses) parseResponse(l *lexer, tag *lexerTag) {
-	if resps.Responses == nil {
-		resps.Responses = make([]*Response, 0, 3)
-	}
-
-	resp, ok := newResponse(l, tag)
-	if !ok {
-		return
-	}
-	resps.Responses = append(resps.Responses, resp)
-}
-
 // 解析 @apiResponse 及子标签，格式如下：
 //  @apiresponse 200 array.object * 通用的返回内容定义
 //  @apiheader content-type required desc
@@ -139,17 +144,21 @@ func (resps *responses) parseResponse(l *lexer, tag *lexerTag) {
 //  @apiparam name string reqiured desc
 //  @apiparam group object reqiured desc
 //  @apiparam group.id int reqiured desc
-func newResponse(l *lexer, tag *lexerTag) (resp *Response, ok bool) {
+func (resps *responses) parseResponse(l *lexer, tag *lexerTag) {
+	if resps.Responses == nil {
+		resps.Responses = make([]*Response, 0, 3)
+	}
+
 	data := tag.words(4)
 	if len(data) < 3 {
 		tag.err(locale.ErrInvalidFormat)
-		return nil, false
+		return
 	}
 
 	status, err := strconv.Atoi(string(data[0]))
 	if err != nil {
 		tag.err(locale.ErrInvalidFormat)
-		return nil, false
+		return
 	}
 
 	var desc []byte
@@ -160,9 +169,10 @@ func newResponse(l *lexer, tag *lexerTag) (resp *Response, ok bool) {
 	s := &Schema{}
 	if err := s.build(nil, data[1], nil, desc); err != nil {
 		tag.errWithError(err, locale.ErrInvalidFormat)
-		return nil, false
+		return
 	}
-	resp = &Response{
+
+	resp := &Response{
 		Status: status,
 		Body: Body{
 			Mimetype: string(data[2]),
@@ -188,5 +198,154 @@ LOOP:
 		fn(tag)
 	}
 
-	return resp, true
+	resps.Responses = append(resps.Responses, resp)
+}
+
+// 解析 @apiRequest 及其子标签，格式如下：
+//  @apirequest object * 通用的请求主体
+//  @apiheader name optional desc
+//  @apiheader name optional desc
+//  @apiparam count int optional desc
+//  @apiparam list array.string optional desc
+//  @apiparam list.id int optional desc
+//  @apiparam list.name int reqiured desc
+//  @apiparam list.groups array.string optional.xxxx desc markdown enum:
+//   * xx: xxxxx
+//   * xx: xxxxx
+//  @apiexample application/json summary
+//  {
+//   count: 5,
+//   list: [
+//     {id:1, name: 'name1', 'groups': [1,2]},
+//     {id:2, name: 'name2', 'groups': [1,2]}
+//   ]
+//  }
+func (c *apiCallback) parseRequest(l *lexer, tag *lexerTag) {
+	data := tag.words(3)
+	if len(data) < 2 {
+		tag.err(locale.ErrInvalidFormat)
+		return
+	}
+
+	if c.Requests == nil {
+		c.Requests = make([]*Request, 0, 3)
+	}
+
+	var desc []byte
+	if len(data) == 3 {
+		desc = data[2]
+	}
+
+	req := &Request{
+		Mimetype: string(data[1]),
+		Type:     &Schema{},
+	}
+	c.Requests = append(c.Requests, req)
+
+	if err := req.Type.build(nil, data[0], nil, desc); err != nil {
+		tag.errWithError(err, locale.ErrInvalidFormat)
+		return
+	}
+
+LOOP:
+	for tag := l.tag(); tag != nil; tag = l.tag() {
+		fn := req.parseExample
+		switch strings.ToLower(tag.Name) {
+		case "@apiexample":
+			fn = req.parseExample
+		case "@apiheader":
+			fn = req.parseHeader
+		case "@apiparam":
+			fn = req.parseParam
+		default:
+			l.backup(tag)
+			break LOOP
+		}
+
+		fn(tag)
+	}
+}
+
+// 解析 @cQuery 标签，格式如下：
+//  @cQuery name type.subtype optional.defaultValue markdown desc
+func (c *apiCallback) parseQuery(l *lexer, tag *lexerTag) {
+	if c.Queries == nil {
+		c.Queries = make([]*Param, 0, 10)
+	}
+
+	p, ok := newParam(tag)
+	if !ok {
+		return
+	}
+
+	if c.queryExists(p.Name) {
+		tag.err(locale.ErrDuplicateValue)
+		return
+	}
+
+	c.Queries = append(c.Queries, p)
+}
+
+func (c *apiCallback) queryExists(name string) bool {
+	for _, q := range c.Queries {
+		if q.Name == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+// 解析 @cParam 标签，格式如下：
+//  @cParam name type.subtype optional.defaultValue markdown desc
+func (c *apiCallback) parseParam(l *lexer, tag *lexerTag) {
+	if c.Params == nil {
+		c.Params = make([]*Param, 0, 3)
+	}
+
+	p, ok := newParam(tag)
+	if !ok {
+		return
+	}
+
+	if c.paramExists(p.Name) {
+		tag.err(locale.ErrDuplicateValue)
+		return
+	}
+
+	c.Params = append(c.Params, p)
+}
+
+func (c *apiCallback) paramExists(name string) bool {
+	for _, p := range c.Params {
+		if p.Name == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+// 解析参数标签，格式如下：
+// 用于路径参数和查义参数，request 和 response 中的不在此解析
+//  @tag name type.subtype optional.defaultValue markdown desc
+func newParam(tag *lexerTag) (p *Param, ok bool) {
+	data := tag.words(4)
+	if len(data) != 4 {
+		tag.err(locale.ErrInvalidFormat)
+		return nil, false
+	}
+
+	s := &Schema{}
+	if err := s.build(nil, data[1], data[2], nil); err != nil {
+		tag.errWithError(err, locale.ErrInvalidFormat)
+		return nil, false
+	}
+
+	return &Param{
+		Name:     string(data[0]),
+		Summary:  string(data[3]),
+		Type:     s,
+		Optional: s.Default != nil,
+	}, true
 }

@@ -79,6 +79,22 @@ func TestAPI_parseAPI(t *testing.T) {
 	api.parseAPI(l, tag)
 }
 
+func TestAPI_parseCallback(t *testing.T) {
+	a := assert.New(t)
+	api := &API{}
+
+	l := newLexerString(`@apiCallback GET description
+@apiQuery page int page
+@apiParam no string no
+@apiRequest application/json * desc
+@apiResponse 200 application/json * desc
+@apiUnknown xx`)
+	tag := l.tag()
+	api.parseCallback(l, tag)
+	a.Equal(api.Callback.Method, "GET").
+		Equal(api.Callback.Description, "description")
+}
+
 func TestAPI_parseapi(t *testing.T) {
 	a := assert.New(t)
 	api := &API{}
@@ -158,141 +174,4 @@ func TestAPI_parseDeperecated(t *testing.T) {
 	// 不能多次指定
 	tag = newTagString("@apiDeprecated 临时取消")
 	api.parseDeprecated(nil, tag)
-}
-
-func TestAPI_parseQuery(t *testing.T) {
-	a := assert.New(t)
-	api := &API{}
-
-	tag := newTagString("@apiQuery name string required  名称")
-	api.parseQuery(nil, tag)
-	a.Equal(len(api.Queries), 1)
-	q := api.Queries[0]
-	a.Equal(q.Name, "name").
-		Equal(q.Type.Type, String).
-		False(q.Optional).
-		Equal(q.Summary, "名称")
-
-	tag = newTagString("@apiQuery name1 string optional.v1  名称")
-	api.parseQuery(nil, tag)
-	a.Equal(len(api.Queries), 2)
-	q = api.Queries[1]
-	a.Equal(q.Name, "name1").
-		Equal(q.Type.Type, String).
-		True(q.Optional).
-		Equal(q.Summary, "名称")
-
-	// 同名参数
-	tag = newTagString("@apiQuery name string optional.v1  名称")
-	api.parseQuery(nil, tag)
-}
-
-func TestAPI_parseParam(t *testing.T) {
-	a := assert.New(t)
-	api := &API{}
-
-	tag := newTagString("@apiParam name string required  名称")
-	api.parseParam(nil, tag)
-	a.Equal(len(api.Params), 1)
-	p := api.Params[0]
-	a.Equal(p.Name, "name").
-		Equal(p.Type.Type, String).
-		False(p.Optional).
-		Equal(p.Summary, "名称")
-
-	tag = newTagString("@apiParam name1 string optional.v1  名称")
-	api.parseParam(nil, tag)
-	a.Equal(len(api.Params), 2)
-	p = api.Params[1]
-	a.Equal(p.Name, "name1").
-		Equal(p.Type.Type, String).
-		True(p.Optional).
-		Equal(p.Summary, "名称")
-
-	// 同名参数
-	tag = newTagString("@apiParam name string optional.v1  名称")
-	api.parseParam(nil, tag)
-}
-
-func TestAPI_parseResponse(t *testing.T) {
-	a := assert.New(t)
-	api := &API{}
-
-	l := newLexerString(`@apiHeader content-type optional 指定内容类型
-	@apiParam id int required 唯一 ID
-	@apiParam name string required 名称
-	@apiParam nickname string optional 昵称
-	@apiExample json 默认返回示例
-	{
-		"id": 1,
-		"name": "name",
-		"nickname": "nickname"
-	}
-	@apiUnknown xxx`)
-	tag := newTagString(`@apiResponse array.object * 通用的返回内容定义`)
-
-	api.parseRequest(l, tag)
-	a.Equal(len(api.Requests), 1)
-	req := api.Requests[0]
-	a.Equal(req.Mimetype, "*")
-	a.Equal(len(req.Headers), 1).
-		Equal(req.Headers[0].Name, "content-type").
-		Equal(req.Headers[0].Summary, "指定内容类型").
-		True(req.Headers[0].Optional)
-	a.NotNil(req.Type).
-		Equal(req.Type.Type, Array)
-
-	// 可以添加多次。
-	api.parseRequest(l, tag)
-	a.Equal(len(api.Requests), 2)
-	req = api.Requests[1]
-	a.Equal(req.Mimetype, "*")
-
-	// 可选的描述内容
-	tag = newTagString(`@apiResponse array.object application/json `)
-	api.parseRequest(l, tag)
-	a.Equal(len(api.Requests), 3)
-	req = api.Requests[2]
-	a.Equal(req.Mimetype, "application/json").
-		Empty(req.Type.Description)
-
-	// @apiRequest 格式错误
-	tag = newTagString("xxxx")
-	api.parseRequest(l, tag)
-}
-
-func TestNewParam(t *testing.T) {
-	a := assert.New(t)
-
-	tag := newTagString("@apiParam name string required  名称")
-	p, ok := newParam(tag)
-	a.True(ok).
-		NotNil(p).
-		Equal(p.Name, "name").
-		Equal(p.Type.Type, String).
-		False(p.Optional).
-		Equal(p.Summary, "名称")
-
-	tag = newTagString("@apiParam name string optional.v1  名称")
-	p, ok = newParam(tag)
-	a.True(ok).
-		NotNil(p).
-		Equal(p.Name, "name").
-		Equal(p.Type.Type, String).
-		True(p.Optional).
-		Equal(p.Summary, "名称")
-
-	tag = newTagString("@apiParam name string optional  名称")
-	p, ok = newParam(tag)
-	a.True(ok).
-		NotNil(p).
-		Equal(p.Name, "name").
-		Equal(p.Type.Type, String).
-		True(p.Optional).
-		Equal(p.Summary, "名称")
-
-	// 参数不够
-	tag = newTagString("name ")
-	p, ok = newParam(tag)
-	a.False(ok).Nil(p)
 }
