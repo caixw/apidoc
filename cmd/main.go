@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -46,7 +47,7 @@ func main() {
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
 	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
 	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
-	languages := flag.Bool("l", false, locale.Sprintf(locale.FlagLanguagesUsage))
+	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -57,7 +58,7 @@ func main() {
 	case *v:
 		printVersion()
 		return
-	case *languages:
+	case *l:
 		printLanguages()
 		return
 	case *g:
@@ -120,19 +121,7 @@ func printVersion() {
 	locale.Printf(locale.FlagVersionCommitHash, vars.CommitHash())
 }
 
-func newConsoleHandlerFunc() errors.HandlerFunc {
-	return func(err *errors.Error) {
-		switch err.Type {
-		case errors.SyntaxError:
-			printError(err)
-		case errors.SyntaxWarn:
-			printWarn(err)
-		default:
-			printError(err)
-		}
-	}
-}
-
+// 将支持的语言内容以表格的形式输出
 func printLanguages() {
 	langs := lang.Langs()
 	var maxDisplay, maxName int
@@ -151,27 +140,40 @@ func printLanguages() {
 	for _, l := range langs {
 		d := strings.Repeat(" ", maxDisplay-len(l.DisplayName))
 		n := strings.Repeat(" ", maxName-len(l.Name))
-		locale.Println(l.Name, n, l.DisplayName, d, strings.Join(l.Exts, ", "))
+		fmt.Println(l.Name, n, l.DisplayName, d, strings.Join(l.Exts, ", "))
 	}
 }
 
-func print(out *os.File, prefix string, color colors.Color, val interface{}) {
+func newConsoleHandlerFunc() errors.HandlerFunc {
+	return func(err *errors.Error) {
+		switch err.Type {
+		case errors.SyntaxError:
+			printError(err)
+		case errors.SyntaxWarn:
+			printWarn(err)
+		default:
+			printError(err)
+		}
+	}
+}
+
+func printWarn(val interface{}) {
+	println(os.Stderr, locale.Sprintf(locale.WarnPrefix), warnColor, val)
+}
+
+func printError(val interface{}) {
+	println(os.Stderr, locale.Sprintf(locale.ErrorPrefix), erroColor, val)
+}
+
+func printInfo(val interface{}) {
+	println(os.Stderr, locale.Sprintf(locale.InfoPrefix), infoColor, val)
+}
+
+func println(out *os.File, prefix string, color colors.Color, val interface{}) {
 	if out != os.Stderr && out != os.Stdout {
 		panic("无效的 out 参数")
 	}
 
 	colors.Fprint(out, color, colors.Default, prefix)
 	colors.Fprintln(out, colors.Default, colors.Default, val)
-}
-
-func printWarn(val interface{}) {
-	print(os.Stderr, locale.Sprintf(locale.WarnPrefix), warnColor, val)
-}
-
-func printError(val interface{}) {
-	print(os.Stderr, locale.Sprintf(locale.ErrorPrefix), erroColor, val)
-}
-
-func printInfo(val interface{}) {
-	print(os.Stderr, locale.Sprintf(locale.InfoPrefix), infoColor, val)
 }
