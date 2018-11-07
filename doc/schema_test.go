@@ -144,7 +144,18 @@ func TestParseEnum(t *testing.T) {
 	状态3 换行描述
 	- 状态4 状态 4 描述`))
 	a.NotError(err).
-		Equal(enums, []string{"state1", "s2", "s3", "状态4"})
+		Equal(enums, []string{"s2", "s3", "state1", "状态4"})
+
+	// 重复的枚举值
+	enums, err = parseEnum(String, []byte(`xx
+	- s2 状态 2 描述
+	- s2 状态 3 描述
+	- 状态4 状态 4 描述`))
+	a.Error(err).Nil(enums)
+
+	// 没有枚举值
+	enums, err = parseEnum(String, []byte(`xx`))
+	a.NotError(err).Nil(enums)
 }
 
 func TestConvertEnumType(t *testing.T) {

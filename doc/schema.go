@@ -7,6 +7,7 @@ package doc
 import (
 	"bufio"
 	"bytes"
+	"sort"
 	"strconv"
 	"unicode"
 
@@ -283,6 +284,18 @@ LOOP:
 				enum = append(enum, str[:index])
 				continue LOOP
 			}
+		}
+	}
+
+	if len(enum) == 0 {
+		return nil, nil
+	}
+
+	// 检查重复的枚举值
+	sort.Strings(enum)
+	for i := 1; i < len(enum); i++ {
+		if enum[i-1] == enum[i] {
+			return nil, errors.New("", "", 0, locale.ErrDuplicateValue)
 		}
 	}
 
