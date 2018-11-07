@@ -240,11 +240,6 @@ func GetByExt(ext string) *Language {
 }
 
 // Langs 返回所有支持的语言
-func Langs() []string {
-	ret := make([]string, 0, len(langs))
-	for _, l := range langs {
-		ret = append(ret, l.Name)
-	}
-
-	return ret
+func Langs() []*Language {
+	return langs
 }

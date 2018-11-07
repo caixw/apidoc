@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/issue9/term/colors"
 	"golang.org/x/text/language"
@@ -57,7 +58,7 @@ func main() {
 		printVersion()
 		return
 	case *languages:
-		locale.Printf(locale.FlagSupportedLanguages, lang.Langs())
+		printLanguages()
 		return
 	case *g:
 		genConfigFile(*wd)
@@ -129,6 +130,28 @@ func newConsoleHandlerFunc() errors.HandlerFunc {
 		default:
 			printError(err)
 		}
+	}
+}
+
+func printLanguages() {
+	langs := lang.Langs()
+	var maxDisplay, maxName int
+	for _, l := range langs {
+		if len(l.DisplayName) > maxDisplay {
+			maxDisplay = len(l.DisplayName)
+		}
+		if len(l.Name) > maxName {
+			maxName = len(l.Name)
+		}
+	}
+
+	maxDisplay += 3
+	maxName += 3
+
+	for _, l := range langs {
+		d := strings.Repeat(" ", maxDisplay-len(l.DisplayName))
+		n := strings.Repeat(" ", maxName-len(l.Name))
+		locale.Println(l.Name, n, l.DisplayName, d, strings.Join(l.Exts, ", "))
 	}
 }
 

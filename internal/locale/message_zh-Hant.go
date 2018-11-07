@@ -27,7 +27,6 @@ func init() {
 		FlagWDUsage:             "指定工作目錄，默認為當前目錄",
 		FlagVersionBuildWith:    "%s %s build with %s\n",
 		FlagVersionCommitHash:   "commit hash %s\n",
-		FlagSupportedLanguages:  "目前支持以下語言 %v\n",
 		FlagConfigWritedSuccess: "配置內容成功寫入 %s",
 
 		VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
