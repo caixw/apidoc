@@ -16,29 +16,28 @@ import (
 // API 表示单个 API 文档
 type API struct {
 	responses
-	requests
-	Method      string     `yaml:"method" json:"method"`
-	Path        string     `yaml:"path" json:"path"`
-	Summary     string     `yaml:"summary" json:"summary"`
-	Description Markdown   `yaml:"description,omitempty" json:"description,omitempty"`
-	Tags        []string   `yaml:"tags,omitempty" json:"tags,omitempty"`
-	Queries     []*Param   `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
-	Params      []*Param   `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
-	Requests    []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
-	Deprecated  string     `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
-	Servers     []string   `yaml:"servers" json:"servers"`
+	apiCallback
+	Path       string     `yaml:"path" json:"path"`
+	Summary    string     `yaml:"summary" json:"summary"`
+	Tags       []string   `yaml:"tags,omitempty" json:"tags,omitempty"`
+	Requests   []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
+	Deprecated string     `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
+	Servers    []string   `yaml:"servers" json:"servers"`
+	Callback   *Callback  `yaml:"callback,omitempty" json:"callback,omitempty"`
 
 	// 记录起始位置，方便错误定位
 	file string
 	line int
 }
 
-// Param 简单参数的描述，比如查询参数等
-type Param struct {
-	Name     string  `yaml:"name" json:"name"`                             // 参数名称
-	Type     *Schema `yaml:"type" json:"type"`                             // 类型
-	Summary  string  `yaml:"summary" json:"summary"`                       // 参数介绍
-	Optional bool    `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
+// Callback 回调内容
+//
+//  @apiCallback GET
+//  @apiquery ...
+//  @apiparam ...
+type Callback struct {
+	responses
+	apiCallback
 }
 
 func (doc *Doc) parseAPI(l *lexer) {
@@ -53,6 +52,8 @@ func (doc *Doc) parseAPI(l *lexer) {
 			parse = api.parseRequest
 		case "@apiresponse":
 			parse = api.parseResponse
+		case "@apicallback":
+			parse = api.parseCallback
 		default:
 			tag.warn(locale.ErrInvalidTag)
 			return
@@ -152,6 +153,53 @@ func (api *API) parseAPI(l *lexer, tag *lexerTag) {
 	}
 }
 
+// 解析 @apiCallback 标签
+func (api *API) parseCallback(l *lexer, tag *lexerTag) {
+	if api.Callback != nil {
+		tag.err(locale.ErrDuplicateTag)
+		return
+	}
+
+	if len(tag.Data) == 0 {
+		tag.err(locale.ErrRequired)
+		return
+	}
+
+	data := tag.words(2)
+
+	c := &Callback{
+		apiCallback: apiCallback{
+			Method: string(data[0]),
+		},
+	}
+
+	if len(data) == 2 {
+		c.Description = Markdown(data[1])
+	}
+
+LOOP:
+	for tag := l.tag(); tag != nil; tag = l.tag() {
+		parse := api.parseAPI
+		switch strings.ToLower(tag.Name) {
+		case "@apiquery":
+			parse = c.parseQuery
+		case "@apiparam":
+			parse = c.parseParam
+		case "@apirequest":
+			parse = c.parseRequest
+		case "@apiresponse":
+			parse = c.parseResponse
+		default:
+			l.backup(tag)
+			break LOOP
+		}
+
+		parse(l, tag)
+	}
+
+	api.Callback = c
+}
+
 // 解析 @api 标签，格式如下：
 //  @api GET /path summary
 func (api *API) parseapi(l *lexer, tag *lexerTag) {
@@ -242,88 +290,4 @@ func (api *API) parseDeprecated(l *lexer, tag *lexerTag) {
 	}
 
 	api.Deprecated = string(tag.Data)
-}
-
-// 解析 @apiQuery 标签，格式如下：
-//  @apiQuery name type.subtype optional.defaultValue markdown desc
-func (api *API) parseQuery(l *lexer, tag *lexerTag) {
-	if api.Queries == nil {
-		api.Queries = make([]*Param, 0, 10)
-	}
-
-	p, ok := newParam(tag)
-	if !ok {
-		return
-	}
-
-	if api.queryExists(p.Name) {
-		tag.err(locale.ErrDuplicateValue)
-		return
-	}
-
-	api.Queries = append(api.Queries, p)
-}
-
-func (api *API) queryExists(name string) bool {
-	for _, q := range api.Queries {
-		if q.Name == name {
-			return true
-		}
-	}
-
-	return false
-}
-
-// 解析 @apiParam 标签，格式如下：
-//  @apiParam name type.subtype optional.defaultValue markdown desc
-func (api *API) parseParam(l *lexer, tag *lexerTag) {
-	if api.Params == nil {
-		api.Params = make([]*Param, 0, 3)
-	}
-
-	p, ok := newParam(tag)
-	if !ok {
-		return
-	}
-
-	if api.paramExists(p.Name) {
-		tag.err(locale.ErrDuplicateValue)
-		return
-	}
-
-	api.Params = append(api.Params, p)
-}
-
-func (api *API) paramExists(name string) bool {
-	for _, p := range api.Params {
-		if p.Name == name {
-			return true
-		}
-	}
-
-	return false
-}
-
-// 解析参数标签，格式如下：
-// 用于路径参数和查义参数，request 和 response 中的不在此解析
-//  @tag name type.subtype optional.defaultValue markdown desc
-func newParam(tag *lexerTag) (p *Param, ok bool) {
-	data := tag.words(4)
-	if len(data) != 4 {
-		tag.err(locale.ErrInvalidFormat)
-		return nil, false
-	}
-
-	s := &Schema{}
-	if err := s.build(nil, data[1], data[2], nil); err != nil {
-		tag.errWithError(err, locale.ErrInvalidFormat)
-		return nil, false
-	}
-
-	return &Param{
-		Name:     string(data[0]),
-		Summary:  string(data[3]),
-		Type:     s,
-		Optional: s.Default != nil,
-	}, true
 }

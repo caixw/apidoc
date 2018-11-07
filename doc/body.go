@@ -28,8 +28,20 @@ type responses struct {
 }
 
 // API 和 Callback 共同需要的属性
-type requests struct {
-	Requests []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
+type apiCallback struct {
+	Method      string     `yaml:"method" json:"method"`
+	Description Markdown   `yaml:"description,omitempty" json:"description,omitempty"`
+	Queries     []*Param   `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
+	Params      []*Param   `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
+	Requests    []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
+}
+
+// Param 简单参数的描述，比如查询参数等
+type Param struct {
+	Name     string  `yaml:"name" json:"name"`                             // 参数名称
+	Type     *Schema `yaml:"type" json:"type"`                             // 类型
+	Summary  string  `yaml:"summary" json:"summary"`                       // 参数介绍
+	Optional bool    `yaml:"optional,omitempty" json:"optional,omitempty"` // 是否为可选参数
 }
 
 // Body 表示请求和返回的共有内容
@@ -208,15 +220,15 @@ LOOP:
 //     {id:2, name: 'name2', 'groups': [1,2]}
 //   ]
 //  }
-func (reqs *requests) parseRequest(l *lexer, tag *lexerTag) {
+func (c *apiCallback) parseRequest(l *lexer, tag *lexerTag) {
 	data := tag.words(3)
 	if len(data) < 2 {
 		tag.err(locale.ErrInvalidFormat)
 		return
 	}
 
-	if reqs.Requests == nil {
-		reqs.Requests = make([]*Request, 0, 3)
+	if c.Requests == nil {
+		c.Requests = make([]*Request, 0, 3)
 	}
 
 	var desc []byte
@@ -228,7 +240,7 @@ func (reqs *requests) parseRequest(l *lexer, tag *lexerTag) {
 		Mimetype: string(data[1]),
 		Type:     &Schema{},
 	}
-	reqs.Requests = append(reqs.Requests, req)
+	c.Requests = append(c.Requests, req)
 
 	if err := req.Type.build(nil, data[0], nil, desc); err != nil {
 		tag.errWithError(err, locale.ErrInvalidFormat)
@@ -252,4 +264,88 @@ LOOP:
 
 		fn(tag)
 	}
+}
+
+// 解析 @cQuery 标签，格式如下：
+//  @cQuery name type.subtype optional.defaultValue markdown desc
+func (c *apiCallback) parseQuery(l *lexer, tag *lexerTag) {
+	if c.Queries == nil {
+		c.Queries = make([]*Param, 0, 10)
+	}
+
+	p, ok := newParam(tag)
+	if !ok {
+		return
+	}
+
+	if c.queryExists(p.Name) {
+		tag.err(locale.ErrDuplicateValue)
+		return
+	}
+
+	c.Queries = append(c.Queries, p)
+}
+
+func (c *apiCallback) queryExists(name string) bool {
+	for _, q := range c.Queries {
+		if q.Name == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+// 解析 @cParam 标签，格式如下：
+//  @cParam name type.subtype optional.defaultValue markdown desc
+func (c *apiCallback) parseParam(l *lexer, tag *lexerTag) {
+	if c.Params == nil {
+		c.Params = make([]*Param, 0, 3)
+	}
+
+	p, ok := newParam(tag)
+	if !ok {
+		return
+	}
+
+	if c.paramExists(p.Name) {
+		tag.err(locale.ErrDuplicateValue)
+		return
+	}
+
+	c.Params = append(c.Params, p)
+}
+
+func (c *apiCallback) paramExists(name string) bool {
+	for _, p := range c.Params {
+		if p.Name == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+// 解析参数标签，格式如下：
+// 用于路径参数和查义参数，request 和 response 中的不在此解析
+//  @tag name type.subtype optional.defaultValue markdown desc
+func newParam(tag *lexerTag) (p *Param, ok bool) {
+	data := tag.words(4)
+	if len(data) != 4 {
+		tag.err(locale.ErrInvalidFormat)
+		return nil, false
+	}
+
+	s := &Schema{}
+	if err := s.build(nil, data[1], data[2], nil); err != nil {
+		tag.errWithError(err, locale.ErrInvalidFormat)
+		return nil, false
+	}
+
+	return &Param{
+		Name:     string(data[0]),
+		Summary:  string(data[3]),
+		Type:     s,
+		Optional: s.Default != nil,
+	}, true
 }

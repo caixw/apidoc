@@ -20,8 +20,8 @@
 // @apiparam list.id int optional desc
 // @apiparam list.name int reqiured desc
 // @apiparam list.groups array.string optional.xxxx desc markdown enum:
-//  * xx: xxxxx
-//  * xx: xxxxx
+//  - xx1 xxxxx
+//  - xx2 xxxxx
 // @apiexample application/json summary
 // {
 //  count: 5,
@@ -47,6 +47,10 @@
 // @apiparam detail array.object reqiured desc
 // @apiparam detail.id string reqiured desc
 // @apiparam detail.message string reqiured desc
+//
+// @apiCallback GET 回调内容
+// @apirequest object application/xml 特定的请求主体
+// @apiresponse 404 object application/json 错误的返回内容
 void api() {
     // TODO
 }

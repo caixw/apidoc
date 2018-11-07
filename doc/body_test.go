@@ -113,9 +113,9 @@ func TestResponses_parseResponse(t *testing.T) {
 		Empty(resp.Type.Description)
 }
 
-func TestRequest_parseResponse(t *testing.T) {
+func TestAPICallback_parseRequest(t *testing.T) {
 	a := assert.New(t)
-	reqs := &requests{}
+	c := &apiCallback{}
 
 	l := newLexerString(`@apiHeader content-type optional 指定内容类型
 	@apiParam id int required 唯一 ID
@@ -130,9 +130,9 @@ func TestRequest_parseResponse(t *testing.T) {
 	@apiUnknown xxx`)
 	tag := newTagString(`@apiResponse array.object * 通用的返回内容定义`)
 
-	reqs.parseRequest(l, tag)
-	a.Equal(len(reqs.Requests), 1)
-	req := reqs.Requests[0]
+	c.parseRequest(l, tag)
+	a.Equal(len(c.Requests), 1)
+	req := c.Requests[0]
 	a.Equal(req.Mimetype, "*")
 	a.Equal(len(req.Headers), 1).
 		Equal(req.Headers[0].Name, "content-type").
@@ -142,20 +142,110 @@ func TestRequest_parseResponse(t *testing.T) {
 		Equal(req.Type.Type, Array)
 
 	// 可以添加多次。
-	reqs.parseRequest(l, tag)
-	a.Equal(len(reqs.Requests), 2)
-	req = reqs.Requests[1]
+	c.parseRequest(l, tag)
+	a.Equal(len(c.Requests), 2)
+	req = c.Requests[1]
 	a.Equal(req.Mimetype, "*")
 
 	// 可选的描述内容
 	tag = newTagString(`@reqsResponse array.object application/json `)
-	reqs.parseRequest(l, tag)
-	a.Equal(len(reqs.Requests), 3)
-	req = reqs.Requests[2]
+	c.parseRequest(l, tag)
+	a.Equal(len(c.Requests), 3)
+	req = c.Requests[2]
 	a.Equal(req.Mimetype, "application/json").
 		Empty(req.Type.Description)
 
 	// @reqsRequest 格式错误
 	tag = newTagString("xxxx")
-	reqs.parseRequest(l, tag)
+	c.parseRequest(l, tag)
+}
+
+func TestAPICallback_parseQuery(t *testing.T) {
+	a := assert.New(t)
+	api := &apiCallback{}
+
+	tag := newTagString("@apiQuery name string required  名称")
+	api.parseQuery(nil, tag)
+	a.Equal(len(api.Queries), 1)
+	q := api.Queries[0]
+	a.Equal(q.Name, "name").
+		Equal(q.Type.Type, String).
+		False(q.Optional).
+		Equal(q.Summary, "名称")
+
+	tag = newTagString("@apiQuery name1 string optional.v1  名称")
+	api.parseQuery(nil, tag)
+	a.Equal(len(api.Queries), 2)
+	q = api.Queries[1]
+	a.Equal(q.Name, "name1").
+		Equal(q.Type.Type, String).
+		True(q.Optional).
+		Equal(q.Summary, "名称")
+
+	// 同名参数
+	tag = newTagString("@apiQuery name string optional.v1  名称")
+	api.parseQuery(nil, tag)
+}
+
+func TestAPICallback_parseParam(t *testing.T) {
+	a := assert.New(t)
+	api := &apiCallback{}
+
+	tag := newTagString("@apiParam name string required  名称")
+	api.parseParam(nil, tag)
+	a.Equal(len(api.Params), 1)
+	p := api.Params[0]
+	a.Equal(p.Name, "name").
+		Equal(p.Type.Type, String).
+		False(p.Optional).
+		Equal(p.Summary, "名称")
+
+	tag = newTagString("@apiParam name1 string optional.v1  名称")
+	api.parseParam(nil, tag)
+	a.Equal(len(api.Params), 2)
+	p = api.Params[1]
+	a.Equal(p.Name, "name1").
+		Equal(p.Type.Type, String).
+		True(p.Optional).
+		Equal(p.Summary, "名称")
+
+	// 同名参数
+	tag = newTagString("@apiParam name string optional.v1  名称")
+	api.parseParam(nil, tag)
+}
+
+func TestNewParam(t *testing.T) {
+	a := assert.New(t)
+
+	tag := newTagString("@apiParam name string required  名称")
+	p, ok := newParam(tag)
+	a.True(ok).
+		NotNil(p).
+		Equal(p.Name, "name").
+		Equal(p.Type.Type, String).
+		False(p.Optional).
+		Equal(p.Summary, "名称")
+
+	tag = newTagString("@apiParam name string optional.v1  名称")
+	p, ok = newParam(tag)
+	a.True(ok).
+		NotNil(p).
+		Equal(p.Name, "name").
+		Equal(p.Type.Type, String).
+		True(p.Optional).
+		Equal(p.Summary, "名称")
+
+	tag = newTagString("@apiParam name string optional  名称")
+	p, ok = newParam(tag)
+	a.True(ok).
+		NotNil(p).
+		Equal(p.Name, "name").
+		Equal(p.Type.Type, String).
+		True(p.Optional).
+		Equal(p.Summary, "名称")
+
+	// 参数不够
+	tag = newTagString("name ")
+	p, ok = newParam(tag)
+	a.False(ok).Nil(p)
 }
