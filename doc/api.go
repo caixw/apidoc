@@ -16,6 +16,7 @@ import (
 // API 表示单个 API 文档
 type API struct {
 	responses
+	requests
 	Method      string     `yaml:"method" json:"method"`
 	Path        string     `yaml:"path" json:"path"`
 	Summary     string     `yaml:"summary" json:"summary"`
@@ -301,71 +302,6 @@ func (api *API) paramExists(name string) bool {
 	}
 
 	return false
-}
-
-// 解析 @apiRequest 及其子标签，格式如下：
-//  @apirequest object * 通用的请求主体
-//  @apiheader name optional desc
-//  @apiheader name optional desc
-//  @apiparam count int optional desc
-//  @apiparam list array.string optional desc
-//  @apiparam list.id int optional desc
-//  @apiparam list.name int reqiured desc
-//  @apiparam list.groups array.string optional.xxxx desc markdown enum:
-//   * xx: xxxxx
-//   * xx: xxxxx
-//  @apiexample application/json summary
-//  {
-//   count: 5,
-//   list: [
-//     {id:1, name: 'name1', 'groups': [1,2]},
-//     {id:2, name: 'name2', 'groups': [1,2]}
-//   ]
-//  }
-func (api *API) parseRequest(l *lexer, tag *lexerTag) {
-	data := tag.words(3)
-	if len(data) < 2 {
-		tag.err(locale.ErrInvalidFormat)
-		return
-	}
-
-	if api.Requests == nil {
-		api.Requests = make([]*Request, 0, 3)
-	}
-
-	var desc []byte
-	if len(data) == 3 {
-		desc = data[2]
-	}
-
-	req := &Request{
-		Mimetype: string(data[1]),
-		Type:     &Schema{},
-	}
-	api.Requests = append(api.Requests, req)
-
-	if err := req.Type.build(nil, data[0], nil, desc); err != nil {
-		tag.errWithError(err, locale.ErrInvalidFormat)
-		return
-	}
-
-LOOP:
-	for tag := l.tag(); tag != nil; tag = l.tag() {
-		fn := req.parseExample
-		switch strings.ToLower(tag.Name) {
-		case "@apiexample":
-			fn = req.parseExample
-		case "@apiheader":
-			fn = req.parseHeader
-		case "@apiparam":
-			fn = req.parseParam
-		default:
-			l.backup(tag)
-			break LOOP
-		}
-
-		fn(tag)
-	}
 }
 
 // 解析参数标签，格式如下：

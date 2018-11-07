@@ -139,3 +139,50 @@ func TestResponses_parseResponse(t *testing.T) {
 		Equal(resp.Mimetype, "*").
 		Empty(resp.Type.Description)
 }
+
+func TestRequest_parseResponse(t *testing.T) {
+	a := assert.New(t)
+	reqs := &requests{}
+
+	l := newLexerString(`@apiHeader content-type optional 指定内容类型
+	@apiParam id int required 唯一 ID
+	@apiParam name string required 名称
+	@apiParam nickname string optional 昵称
+	@apiExample json 默认返回示例
+	{
+		"id": 1,
+		"name": "name",
+		"nickname": "nickname"
+	}
+	@apiUnknown xxx`)
+	tag := newTagString(`@apiResponse array.object * 通用的返回内容定义`)
+
+	reqs.parseRequest(l, tag)
+	a.Equal(len(reqs.Requests), 1)
+	req := reqs.Requests[0]
+	a.Equal(req.Mimetype, "*")
+	a.Equal(len(req.Headers), 1).
+		Equal(req.Headers[0].Name, "content-type").
+		Equal(req.Headers[0].Summary, "指定内容类型").
+		True(req.Headers[0].Optional)
+	a.NotNil(req.Type).
+		Equal(req.Type.Type, Array)
+
+	// 可以添加多次。
+	reqs.parseRequest(l, tag)
+	a.Equal(len(reqs.Requests), 2)
+	req = reqs.Requests[1]
+	a.Equal(req.Mimetype, "*")
+
+	// 可选的描述内容
+	tag = newTagString(`@reqsResponse array.object application/json `)
+	reqs.parseRequest(l, tag)
+	a.Equal(len(reqs.Requests), 3)
+	req = reqs.Requests[2]
+	a.Equal(req.Mimetype, "application/json").
+		Empty(req.Type.Description)
+
+	// @reqsRequest 格式错误
+	tag = newTagString("xxxx")
+	reqs.parseRequest(l, tag)
+}
