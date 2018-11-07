@@ -66,33 +66,6 @@ func TestIsOptional(t *testing.T) {
 	a.True(isOptional([]byte("Optional")))
 }
 
-func TestNewResponse(t *testing.T) {
-	a := assert.New(t)
-	l := newLexerString(`@apiHeader content-type optional 指定内容类型
-	@apiParam id int required 唯一 ID
-	@apiParam name string required 名称
-	@apiParam nickname string optional 昵称
-	@apiExample json 默认返回示例
-	{
-		"id": 1,
-		"name": "name",
-		"nickname": "nickname"
-	}
-	@apiUnknown xxx`)
-	tag := newTagString(`@apiResponse 200 array.object * 通用的返回内容定义`)
-
-	resp, ok := newResponse(l, tag)
-	a.True(ok).NotNil(resp)
-	a.Equal(resp.Status, 200).
-		Equal(resp.Mimetype, "*")
-	a.Equal(len(resp.Headers), 1).
-		Equal(resp.Headers[0].Name, "content-type").
-		Equal(resp.Headers[0].Summary, "指定内容类型").
-		True(resp.Headers[0].Optional)
-	a.NotNil(resp.Type).
-		Equal(resp.Type.Type, Array)
-}
-
 func TestResponses_parseResponse(t *testing.T) {
 	a := assert.New(t)
 	d := &responses{}

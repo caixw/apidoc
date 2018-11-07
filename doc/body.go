@@ -125,15 +125,67 @@ func (body *Body) parseParam(tag *lexerTag) {
 	}
 }
 
+// 解析 @apiResponse 及子标签，格式如下：
+//  @apiresponse 200 array.object * 通用的返回内容定义
+//  @apiheader content-type required desc
+//  @apiparam id int reqiured desc
+//  @apiparam name string reqiured desc
+//  @apiparam group object reqiured desc
+//  @apiparam group.id int reqiured desc
 func (resps *responses) parseResponse(l *lexer, tag *lexerTag) {
 	if resps.Responses == nil {
 		resps.Responses = make([]*Response, 0, 3)
 	}
 
-	resp, ok := newResponse(l, tag)
-	if !ok {
+	data := tag.words(4)
+	if len(data) < 3 {
+		tag.err(locale.ErrInvalidFormat)
 		return
 	}
+
+	status, err := strconv.Atoi(string(data[0]))
+	if err != nil {
+		tag.err(locale.ErrInvalidFormat)
+		return
+	}
+
+	var desc []byte
+	if len(data) == 4 {
+		desc = data[3]
+	}
+
+	s := &Schema{}
+	if err := s.build(nil, data[1], nil, desc); err != nil {
+		tag.errWithError(err, locale.ErrInvalidFormat)
+		return
+	}
+
+	resp := &Response{
+		Status: status,
+		Body: Body{
+			Mimetype: string(data[2]),
+			Type:     s,
+		},
+	}
+
+LOOP:
+	for tag := l.tag(); tag != nil; tag = l.tag() {
+		fn := resp.parseExample
+		switch strings.ToLower(tag.Name) {
+		case "@apiexample":
+			fn = resp.parseExample
+		case "@apiheader":
+			fn = resp.parseHeader
+		case "@apiparam":
+			fn = resp.parseParam
+		default:
+			l.backup(tag)
+			break LOOP
+		}
+
+		fn(tag)
+	}
+
 	resps.Responses = append(resps.Responses, resp)
 }
 
@@ -200,63 +252,4 @@ LOOP:
 
 		fn(tag)
 	}
-}
-
-// 解析 @apiResponse 及子标签，格式如下：
-//  @apiresponse 200 array.object * 通用的返回内容定义
-//  @apiheader content-type required desc
-//  @apiparam id int reqiured desc
-//  @apiparam name string reqiured desc
-//  @apiparam group object reqiured desc
-//  @apiparam group.id int reqiured desc
-func newResponse(l *lexer, tag *lexerTag) (resp *Response, ok bool) {
-	data := tag.words(4)
-	if len(data) < 3 {
-		tag.err(locale.ErrInvalidFormat)
-		return nil, false
-	}
-
-	status, err := strconv.Atoi(string(data[0]))
-	if err != nil {
-		tag.err(locale.ErrInvalidFormat)
-		return nil, false
-	}
-
-	var desc []byte
-	if len(data) == 4 {
-		desc = data[3]
-	}
-
-	s := &Schema{}
-	if err := s.build(nil, data[1], nil, desc); err != nil {
-		tag.errWithError(err, locale.ErrInvalidFormat)
-		return nil, false
-	}
-	resp = &Response{
-		Status: status,
-		Body: Body{
-			Mimetype: string(data[2]),
-			Type:     s,
-		},
-	}
-
-LOOP:
-	for tag := l.tag(); tag != nil; tag = l.tag() {
-		fn := resp.parseExample
-		switch strings.ToLower(tag.Name) {
-		case "@apiexample":
-			fn = resp.parseExample
-		case "@apiheader":
-			fn = resp.parseHeader
-		case "@apiparam":
-			fn = resp.parseParam
-		default:
-			l.backup(tag)
-			break LOOP
-		}
-
-		fn(tag)
-	}
-
-	return resp, true
 }
