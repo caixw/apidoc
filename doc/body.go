@@ -29,11 +29,11 @@ type responses struct {
 
 // API 和 Callback 共同需要的属性
 type apiCallback struct {
-	Method      string     `yaml:"method" json:"method"`
-	Description Markdown   `yaml:"description,omitempty" json:"description,omitempty"`
-	Queries     []*Param   `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
-	Params      []*Param   `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
-	Requests    []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
+	Method   string     `yaml:"method" json:"method"`
+	Summary  string     `yaml:"summary" json:"summary"`
+	Queries  []*Param   `yaml:"queries,omitempty" json:"queries,omitempty"` // 查询参数
+	Params   []*Param   `yaml:"params,omitempty" json:"params,omitempty"`   // URL 参数
+	Requests []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
 }
 
 // Param 简单参数的描述，比如查询参数等

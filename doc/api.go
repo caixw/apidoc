@@ -17,13 +17,13 @@ import (
 type API struct {
 	responses
 	apiCallback
-	Path       string     `yaml:"path" json:"path"`
-	Summary    string     `yaml:"summary" json:"summary"`
-	Tags       []string   `yaml:"tags,omitempty" json:"tags,omitempty"`
-	Requests   []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
-	Deprecated string     `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
-	Servers    []string   `yaml:"servers" json:"servers"`
-	Callback   *Callback  `yaml:"callback,omitempty" json:"callback,omitempty"`
+	Path        string     `yaml:"path" json:"path"`
+	Description Markdown   `yaml:"description,omitempty" json:"description,omitempty"`
+	Tags        []string   `yaml:"tags,omitempty" json:"tags,omitempty"`
+	Requests    []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
+	Deprecated  string     `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
+	Servers     []string   `yaml:"servers" json:"servers"`
+	Callback    *Callback  `yaml:"callback,omitempty" json:"callback,omitempty"`
 
 	// 记录起始位置，方便错误定位
 	file string
@@ -174,7 +174,7 @@ func (api *API) parseCallback(l *lexer, tag *lexerTag) {
 	}
 
 	if len(data) == 2 {
-		c.Description = Markdown(data[1])
+		c.Summary = string(data[1])
 	}
 
 LOOP:
@@ -214,7 +214,7 @@ func (api *API) parseapi(l *lexer, tag *lexerTag) {
 		return
 	}
 
-	api.Method = strings.ToUpper(string(data[0])) // TODO 验证请求方法
+	api.Method = strings.ToUpper(string(data[0]))
 	api.Path = string(data[1])
 	api.Summary = string(data[2])
 	api.file = tag.File

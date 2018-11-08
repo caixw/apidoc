@@ -92,7 +92,7 @@ func TestAPI_parseCallback(t *testing.T) {
 	tag := l.tag()
 	api.parseCallback(l, tag)
 	a.Equal(api.Callback.Method, "GET").
-		Equal(api.Callback.Description, "description")
+		Equal(api.Callback.Summary, "description")
 }
 
 func TestAPI_parseapi(t *testing.T) {
