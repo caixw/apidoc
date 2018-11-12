@@ -208,7 +208,13 @@ func (api *API) parseapi(l *lexer, tag *lexerTag) {
 		return
 	}
 
-	data := tag.words(3)
+	lines := tag.lines(2)
+
+	if len(lines) == 2 {
+		api.Description = Markdown(lines[1])
+	}
+
+	data := splitWords(lines[0], 3)
 	if len(data) != 3 {
 		tag.err(locale.ErrInvalidFormat)
 		return

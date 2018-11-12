@@ -47,11 +47,14 @@ func TestDoc_parseAPI(t *testing.T) {
 	d := &Doc{}
 
 	l := newLexerString(`@api get /path xxxx
+	markdown line1
+	markdown line2
 	@apiRequest object application/json summary
 	@apiheader content-type required mimetype value
 	@apiresponse 200 object application/json summary`)
 	d.parseAPI(l)
 	a.Equal(len(d.Apis), 1)
+	a.NotEmpty(d.Apis[0].Description)
 
 	// 重复内容。
 	l = newLexerString(`@api get /path xxxx
