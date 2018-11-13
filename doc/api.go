@@ -17,13 +17,12 @@ import (
 type API struct {
 	responses
 	apiCallback
-	Path        string     `yaml:"path" json:"path"`
-	Description Markdown   `yaml:"description,omitempty" json:"description,omitempty"`
-	Tags        []string   `yaml:"tags,omitempty" json:"tags,omitempty"`
-	Requests    []*Request `yaml:"requests,omitempty" json:"requests,omitempty"`
-	Deprecated  string     `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
-	Servers     []string   `yaml:"servers" json:"servers"`
-	Callback    *Callback  `yaml:"callback,omitempty" json:"callback,omitempty"`
+	Path        string    `yaml:"path" json:"path"`
+	Description Markdown  `yaml:"description,omitempty" json:"description,omitempty"`
+	Tags        []string  `yaml:"tags,omitempty" json:"tags,omitempty"`
+	Deprecated  string    `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
+	Servers     []string  `yaml:"servers" json:"servers"`
+	Callback    *Callback `yaml:"callback,omitempty" json:"callback,omitempty"`
 
 	// 记录起始位置，方便错误定位
 	file string
