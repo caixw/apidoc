@@ -10,8 +10,8 @@
 // @apiquery state array.string [normal,lock] 状态码
 //
 // @apirequest object * 通用的请求主体
-// @apiheader name desc optional
-// @apiheader name desc optional
+// @apiheader name optional desc
+// @apiheader name1 optional desc
 // @apiparam count int optional desc
 // @apiparam list array.string optional desc
 // @apiparam list.id int optional desc
@@ -56,8 +56,8 @@ fn users() {}
 // @apiParam id int required 用户 ID
 //
 // @apirequest object * 通用的请求主体
-// @apiheader name desc optional
-// @apiheader name desc optional
+// @apiheader name2 optional desc
+// @apiheader name1 optional markdown desc
 // @apiparam id int optional desc
 // @apiparam name int reqiured desc
 // @apiparam groups array.string optional.xxxx desc markdown enum:

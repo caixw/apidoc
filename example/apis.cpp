@@ -14,7 +14,7 @@
 //
 // @apirequest object * 通用的请求主体
 // @apiheader name optional desc
-// @apiheader name optional desc markdown
+// @apiheader name1 optional desc markdown
 // @apiparam count int optional desc
 // @apiparam list array.string optional desc
 // @apiparam list.id int optional desc
