@@ -12,6 +12,8 @@ import (
 	"github.com/caixw/apidoc/internal/locale"
 )
 
+// TODO 根据 mimetype 排序，* 放最前面
+
 // Request 表示用户请求所表示的数据。
 type Request = Body
 
@@ -115,11 +117,27 @@ func (body *Body) parseHeader(tag *lexerTag) {
 		body.Headers = make([]*Header, 0, 3)
 	}
 
+	name := string(data[0])
+	if body.headerExists(name) {
+		tag.err(locale.ErrDuplicateValue)
+		return
+	}
+
 	body.Headers = append(body.Headers, &Header{
 		Name:     string(data[0]),
 		Summary:  string(data[2]),
 		Optional: isOptional(data[1]),
 	})
+}
+
+func (body *Body) headerExists(name string) bool {
+	for _, h := range body.Headers {
+		if h.Name == name {
+			return true
+		}
+	}
+
+	return false
 }
 
 // 解析 @apiparam 标签，格式如下：
