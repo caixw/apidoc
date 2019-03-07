@@ -3,6 +3,9 @@
 // license that can be found in the LICENSE file.
 
 // @api GET /users/{id}/logs/{lid} 获取用户日志信息
+// 这是关于接口的详细说明文档
+// ===
+// 可以是一个 *markdown* 内容
 // @apitags t1,t2
 // @apiservers admin
 // @apideprecated 新版本不再使用

@@ -9,5 +9,7 @@ import (
 )
 
 func init() {
-	locales[language.MustParse("en")] = map[string]string{}
+	locales[language.MustParse("en")] = map[string]string{
+		// TODO
+	}
 }
