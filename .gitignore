@@ -38,3 +38,6 @@ apidoc
 /.vscode
 apidoc.json
 apidoc.yaml
+
+.vscode
+.idea

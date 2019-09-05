@@ -3,23 +3,20 @@ language: go
 os:
   - linux
   - osx
+  - windows
+
+env:
+  - GO111MODULE=on
 
 go:
   - tip
-  - 1.11
-  - "1.10"
+  - 1.13.x
+  - 1.11.x
 
-install:
-  - go get github.com/issue9/assert
-  - go get github.com/issue9/term/colors
-  - go get github.com/issue9/utils
-  - go get github.com/issue9/version
-  - go get github.com/issue9/is
-  - go get github.com/issue9/logs
-
-  - go get gopkg.in/yaml.v2
-  - go get golang.org/x/text
-
-script: GO111MODULE=on go test -v -coverprofile=coverage.txt -covermode=atomic $(go list ./...)
+script: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
 
 after_success: bash <(curl -s https://codecov.io/bash)
+
+matrix:
+  allow_failures:
+    - go: tip
