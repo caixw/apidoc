@@ -1,0 +1,55 @@
+<!--
+Copyright 2019 by caixw, All rights reserved.
+Use of this source code is governed by a MIT
+license that can be found in the LICENSE file.
+-->
+
+<api method="GET" version="1.1" id="xxx">
+    <path path="/users/{id}/orders">
+        <param name="id">用户 ID </param>
+        <query name="size">size</query>
+        <query name="page">page</query>
+    </path>
+
+    <tag name="g1" />
+    <tag name="g2" />
+
+    <description>
+    description xxx
+    </description>
+
+    <request type="json,xml">
+        <header name="authorization">token</header>
+    </request>
+
+    <response status="200" mimetype="json,xml" type="object">
+        <param name="id" type="int" default="1" />
+        <param name="sex" type="string" default="male">
+            <enum value="male">男性</enum>
+            <enum value="female">女性</enum>
+        </param>
+        <param name="emails" type="string" array="true" />
+        <header name="WWW-authoricate">xxx</header>
+        <example type="json">
+        <![CDATA[
+        {
+            id: 1,
+            sex: male,
+            emaials: [xx@xx.com]
+        }
+        ]]>
+        </example>
+    </response>
+
+    <response status="400" mimetype="json/xml">
+    </response>
+
+    <callback method="post" mimetype="object">
+        <query name="size">size</query>
+
+        <param name="id" type="int" default="1" />
+        <param name="age" type="int" />
+        <example type="json">
+        </example>
+    </callback>
+</api> 
