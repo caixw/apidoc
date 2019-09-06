@@ -15,27 +15,14 @@ const (
 	Integer = "integer"
 )
 
-// Version 表示版本信息，不能独立使用，一般用在其它结构体中
-type Version struct {
-	Version string `xml:"version,attr,omitempty"`
-}
-
-// Reference 引用其它内容
-type Reference struct {
-	Reference string `xml:"ref,attr,omitempty"`
-}
-
-// Deprecated 已经失败的内容，值为失败的版本号
-type Deprecated struct {
-	Deprecated string `xml:"deprecated,attr,omitempty"`
-}
+// Richtext 富文本内容
+type Richtext string
 
 // Doc 文档
 type Doc struct {
 	XMLName struct{} `xml:"apidoc"`
 
-	APIDoc string `xml:"apidoc,attr"` // 当前的程序版本
-
+	APIDoc  string    `xml:"apidoc,attr"`            // 当前的程序版本
 	Version string    `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
 	Content string    `xml:"content"`
@@ -44,20 +31,24 @@ type Doc struct {
 	Tags    []*Tag    `xml:">tag,omitempty"`    // 所有的标签
 	Servers []*Server `xml:">server,omitempty"`
 
-	Apis []*API `xml:"-"`
+	References map[string]interface{}
+
+	Apis []*API `xml:"apis,omitempty"`
 }
 
 // Tag 标签内容
 type Tag struct {
-	Name        string `xml:"name,attr"`   // 字面名称，需要唯一
-	Description string `xml:"description"` // 具体描述
+	Name        string   `xml:"name,attr"` // 字面名称，需要唯一
+	Description Richtext `xml:",innerxml"` // 具体描述
+	Deprecated  string   `xml:"deprecated,attr,omitempty"`
 }
 
 // Server 服务信息
 type Server struct {
-	Name        string `xml:"name,attr"` // 字面名称，需要唯一
-	URL         string `xml:"url,attr"`
-	Description string `xml:"description,omitempty"` // 具体描述
+	Name        string   `xml:"name,attr"` // 字面名称，需要唯一
+	URL         string   `xml:"url,attr"`
+	Description Richtext `xml:",innerxml,omitempty"` // 具体描述
+	Deprecated  string   `xml:"deprecated,attr,omitempty"`
 }
 
 // Contact 描述联系方式

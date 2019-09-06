@@ -8,11 +8,13 @@ license that can be found in the LICENSE file.
     <path path="/users/{id}/orders">
         <param name="id">用户 ID </param>
         <query name="size">size</query>
-        <query name="page">page</query>
+        <query name="page" deprecated="0.1">page</query>
     </path>
 
-    <tag name="g1" />
-    <tag name="g2" />
+    <tag>g1</tag>
+    <tag>g2</tag>
+    <server>s1</server>
+    <server>s2</server>
 
     <description>
     description xxx
