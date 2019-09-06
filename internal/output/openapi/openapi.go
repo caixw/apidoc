@@ -25,7 +25,7 @@ const LatestVersion = "3.0.1"
 
 // Description 表示描述类型
 // 可以采用 MD 格式
-type Description = doc.Markdown
+type Description = doc.Richtext
 
 // OpenAPI openAPI 的根对象
 type OpenAPI struct {

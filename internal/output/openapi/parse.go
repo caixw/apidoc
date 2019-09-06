@@ -47,10 +47,10 @@ func parse(doc *doc.Doc) (*OpenAPI, error) {
 
 func parsePaths(openapi *OpenAPI, d *doc.Doc) *errors.Error {
 	for _, api := range d.Apis {
-		p := openapi.Paths[api.Path]
+		p := openapi.Paths[api.Path.Path]
 		if p == nil {
 			p = &PathItem{}
-			openapi.Paths[api.Path] = p
+			openapi.Paths[api.Path.Path] = p
 		}
 
 		operation, err := setOperation(p, api.Method)
@@ -70,13 +70,12 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *errors.Error {
 				examples := make(map[string]*Example, len(r.Examples))
 				for _, exp := range r.Examples {
 					examples[exp.Mimetype] = &Example{
-						Summary: exp.Summary,
-						Value:   ExampleValue(exp.Value),
+						Value: ExampleValue(exp.Content),
 					}
 				}
 
 				content[r.Mimetype] = &MediaType{
-					Schema:   &Schema{Schema: *r.Type},
+					// TODO Schema:   &Schema{Schema: *r.Type},
 					Examples: examples,
 				}
 			}
@@ -100,7 +99,7 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *errors.Error {
 			}
 			for _, h := range resp.Headers {
 				r.Headers[h.Name] = &Header{
-					Description: Description(h.Summary),
+					Description: Description(h.Description),
 				}
 			}
 
@@ -110,12 +109,12 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *errors.Error {
 			examples := make(map[string]*Example, len(resp.Examples))
 			for _, exp := range resp.Examples {
 				examples[exp.Mimetype] = &Example{
-					Summary: exp.Summary,
-					Value:   ExampleValue(exp.Value),
+					// TODO Summary: exp.Summary,
+					Value: ExampleValue(exp.Content),
 				}
 			}
 			r.Content[resp.Mimetype] = &MediaType{
-				Schema:   &Schema{Schema: *resp.Type},
+				// TODO Schema:   &Schema{Schema: *resp.Type},
 				Examples: examples,
 			}
 		}
@@ -125,25 +124,25 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *errors.Error {
 }
 
 func setOperationParams(operation *Operation, api *doc.API) {
-	operation.Parameters = make([]*Parameter, 0, len(api.Params)+len(api.Queries)+len(api.Requests[0].Headers))
+	operation.Parameters = make([]*Parameter, 0, len(api.Path.Params)+len(api.Path.Queries)+len(api.Requests[0].Headers))
 
-	for _, param := range api.Params {
+	for _, param := range api.Path.Params {
 		operation.Parameters = append(operation.Parameters, &Parameter{
 			Name:        param.Name,
 			IN:          ParameterINPath,
 			Description: Description(param.Summary),
-			Required:    !param.Optional,
-			Schema:      &Schema{Schema: *param.Type},
+			Required:    param.Required,
+			// TODO Schema:      &Schema{Schema: *param.Type},
 		})
 	}
 
-	for _, param := range api.Queries {
+	for _, param := range api.Path.Queries {
 		operation.Parameters = append(operation.Parameters, &Parameter{
 			Name:        param.Name,
 			IN:          ParameterINQuery,
 			Description: Description(param.Summary),
-			Required:    !param.Optional,
-			Schema:      &Schema{Schema: *param.Type},
+			Required:    param.Required,
+			// TODO Schema:      &Schema{Schema: *param.Type},
 		})
 	}
 
@@ -152,8 +151,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 			operation.Parameters = append(operation.Parameters, &Parameter{
 				Name:        param.Name,
 				IN:          ParameterINHeader,
-				Description: Description(param.Summary),
-				Required:    !param.Optional,
+				Description: Description(param.Description),
 			})
 		}
 	}

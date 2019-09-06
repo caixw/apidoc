@@ -1,5 +1,30 @@
-<!--
-Copyright 2019 by caixw, All rights reserved.
-Use of this source code is governed by a MIT
-license that can be found in the LICENSE file.
--->
+<!-- SPDX-License-Identifier: MIT -->
+
+<apidoc version="1.1">
+    <title>title</title>
+    <license url="https://opensource.org/licenses/MIT">MIT</license>
+    <contact name="test">
+        <email>test@example.com</email>
+        <url>https://example.com</url>
+    </contact>
+
+    <tag name="tag1">
+        tag description
+    </tag>
+    <tag name="tag2" deprecated="1.0">
+        tag description
+    </tag>
+
+    <server name="admin" url="https://api.example.com/admin">
+        admin api
+    </server>
+
+    <server name="client" url="https://api.example.com/client" deprecated="1.0">
+        client api
+    </server>
+
+    <content>
+    ## h2
+    ### h3
+    </content>
+</apidoc>

@@ -1,8 +1,4 @@
-<!--
-Copyright 2019 by caixw, All rights reserved.
-Use of this source code is governed by a MIT
-license that can be found in the LICENSE file.
--->
+<!-- SPDX-License-Identifier: MIT -->
 
 <api method="GET" version="1.1" id="xxx">
     <path path="/users/{id}/orders">
@@ -20,7 +16,7 @@ license that can be found in the LICENSE file.
     description xxx
     </description>
 
-    <request type="json,xml">
+    <request mimetype="json,xml">
         <header name="authorization">token</header>
     </request>
 
@@ -32,7 +28,7 @@ license that can be found in the LICENSE file.
         </param>
         <param name="emails" type="string" array="true" />
         <header name="WWW-authoricate">xxx</header>
-        <example type="json">
+        <example mimetype="json">
         <![CDATA[
         {
             id: 1,
@@ -46,12 +42,21 @@ license that can be found in the LICENSE file.
     <response status="400" mimetype="json/xml">
     </response>
 
-    <callback method="post" mimetype="object">
+    <callback method="post" mimetype="json" schema="https" type="object">
         <query name="size">size</query>
 
         <param name="id" type="int" default="1" />
         <param name="age" type="int" />
-        <example type="json">
+        <example mimetype="json">
+        <![CDATA[
+        {
+            id:1,
+            sex: male,
+        }
+        ]]>
         </example>
+
+        <response status="200" mimetype="text" type="text">
+        </response>
     </callback>
 </api> 

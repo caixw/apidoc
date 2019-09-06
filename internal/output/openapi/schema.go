@@ -32,7 +32,7 @@ func IsWellDataType(typ string) bool {
 
 // Schema 定义了输出和输出的数据类型
 type Schema struct {
-	doc.Schema
+	// TODO doc.Schema
 	Discriminator *Discriminator         `json:"discriminator,omitempty" yaml:"discriminator,omitempty"`
 	XML           *XML                   `json:"xml,omitempty" yaml:"xml,omitempty"`
 	ExternalDocs  *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`

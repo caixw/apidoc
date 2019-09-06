@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/issue9/term/colors"
 	"golang.org/x/text/language"
@@ -76,6 +77,7 @@ func parse(wd string) {
 		return
 	}
 
+	now := time.Now()
 	h := errors.NewHandler(newConsoleHandlerFunc())
 	doc, err := doc.Parse(context.Background(), h, cfg.Inputs...)
 	if err != nil {
@@ -93,8 +95,9 @@ func parse(wd string) {
 		printError(err)
 		return
 	}
+	elapsed := time.Now().Sub(now)
 
-	printInfo(locale.Sprintf(locale.Complete, cfg.Output.Path, doc.Elapsed))
+	printInfo(locale.Sprintf(locale.Complete, cfg.Output.Path, elapsed))
 }
 
 func usage() {

@@ -29,9 +29,6 @@ _testmain.go
 # osx
 .DS_Store
 
-# 临时编译文件
-apidoc
-
 # project
 .apidoc.yaml
 .apidoc.yml

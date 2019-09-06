@@ -1,6 +1,4 @@
-// Copyright 2019 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 package doc
 
@@ -8,7 +6,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/xml"
+	"sort"
 	"sync"
+
+	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/errors"
 	i "github.com/caixw/apidoc/internal/input"
@@ -19,6 +20,7 @@ import (
 
 // 表示支持的各种数据类型
 const (
+	None    = "none" // 仅用于 Request、Response 和 Callback 的 type 属性
 	Null    = "null"
 	Bool    = "boolean"
 	Object  = "object"
@@ -39,7 +41,7 @@ type Doc struct {
 
 	Version string    `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
-	Content string    `xml:"content"`
+	Content Richtext  `xml:"content"`
 	Contact *Contact  `xml:"contact"`
 	License *Link     `xml:"license,omitempty"` // 版本信息
 	Tags    []*Tag    `xml:"tag,omitempty"`     // 所有的标签
@@ -48,12 +50,15 @@ type Doc struct {
 	References map[string]interface{}
 
 	Apis []*API `xml:"apis,omitempty"`
+
+	file string
+	line int
 }
 
 // Tag 标签内容
 type Tag struct {
-	Name        string   `xml:"name,attr"` // 字面名称，需要唯一
-	Description Richtext `xml:",innerxml"` // 具体描述
+	Name        string   `xml:"name,attr"`  // 字面名称，需要唯一
+	Description Richtext `xml:",omitempty"` // 具体描述
 	Deprecated  string   `xml:"deprecated,attr,omitempty"`
 }
 
@@ -61,20 +66,20 @@ type Tag struct {
 type Server struct {
 	Name        string   `xml:"name,attr"` // 字面名称，需要唯一
 	URL         string   `xml:"url,attr"`
-	Description Richtext `xml:",innerxml,omitempty"` // 具体描述
+	Description Richtext `xml:",omitempty"` // 具体描述
 	Deprecated  string   `xml:"deprecated,attr,omitempty"`
 }
 
 // Contact 描述联系方式
 type Contact struct {
 	Name  string `xml:"name,attr"`
-	URL   string `xml:"url,attr"`
-	Email string `xml:"email,attr,omitempty"`
+	URL   string `xml:"url"`
+	Email string `xml:"email,omitempty"`
 }
 
 // Link 表示一个链接
 type Link struct {
-	Text string `xml:"text,attr"`
+	Text string `xml:",innerxml"`
 	URL  string `xml:"url,attr"`
 }
 
@@ -120,6 +125,44 @@ LOOP:
 }
 
 func (doc *Doc) check(h *errors.Handler) {
+	if !version.SemVerValid(doc.Version) {
+		h.SyntaxError(errors.New(doc.file, "", doc.line, locale.ErrInvalidValue))
+		return
+	}
+
+	// Tag.Name 查重
+	sort.SliceStable(doc.Tags, func(i, j int) bool {
+		return doc.Tags[i].Name > doc.Tags[j].Name
+	})
+	for i := 1; i < len(doc.Tags); i++ {
+		if doc.Tags[i].Name == doc.Tags[i-1].Name {
+			h.SyntaxError(errors.New(doc.file, "", doc.line, locale.ErrDuplicateTag))
+			return
+		}
+	}
+
+	// Server.Name 查重
+	sort.SliceStable(doc.Servers, func(i, j int) bool {
+		return doc.Servers[i].Name > doc.Servers[j].Name
+	})
+	for i := 1; i < len(doc.Tags); i++ {
+		if doc.Servers[i].Name == doc.Servers[i-1].Name {
+			h.SyntaxError(errors.New(doc.file, "", doc.line, locale.ErrDuplicateTag))
+			return
+		}
+	}
+
+	// Server.URL 查重
+	sort.SliceStable(doc.Servers, func(i, j int) bool {
+		return doc.Servers[i].URL > doc.Servers[j].URL
+	})
+	for i := 1; i < len(doc.Tags); i++ {
+		if doc.Servers[i].URL == doc.Servers[i-1].URL {
+			h.SyntaxError(errors.New(doc.file, "", doc.line, locale.ErrDuplicateTag))
+			return
+		}
+	}
+
 	for _, api := range doc.Apis {
 		for _, tag := range api.Tags {
 			if !doc.tagExists(tag) {
@@ -132,7 +175,7 @@ func (doc *Doc) check(h *errors.Handler) {
 				h.SyntaxError(errors.New(api.file, "", api.line, locale.ErrInvalidValue))
 			}
 		}
-	}
+	} // end doc.Apis
 }
 
 func (doc *Doc) parseBlock(block i.Block, h *errors.Handler) {

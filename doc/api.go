@@ -1,6 +1,4 @@
-// Copyright 2019 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 package doc
 
@@ -15,6 +13,7 @@ type API struct {
 	Requests    []*Request  `xml:"request"`
 	Responses   []*Response `xml:"response"`
 	Callback    *Callback   `xml:"callback,omitempty"`
+	Deprecated  string      `xml:"deprecated,attr,omitempty"`
 
 	Tags    []string `xml:"tag,omitempty"`
 	Servers []string `xml:"server,omitempty"`
@@ -30,17 +29,18 @@ type Response Request
 type Request struct {
 	Param
 
-	Status   int        `xml:"status,attr"`
-	Mimetype string     `xml:"mimetype,attr"`
-	Examples []*Example `xml:"example,omitempty"`
-	Headers  []*Header  `xml:"header,omitempty"`
+	Status      int        `xml:"status,attr"`
+	Mimetype    string     `xml:"mimetype,attr"`
+	Examples    []*Example `xml:"example,omitempty"`
+	Headers     []*Header  `xml:"header,omitempty"`
+	Description Richtext   `xml:",innerxml"`
 }
 
 // Path 路径信息
 type Path struct {
 	Path      string   `xml:"path,attr"`
-	Params    []*Param `xml:">param,omitempty"`
-	Queries   []*Param `xml:">query,omitempty"`
+	Params    []*Param `xml:"param,omitempty"`
+	Queries   []*Param `xml:"query,omitempty"`
 	Reference string   `xml:"ref,attr,omitempty"`
 }
 
@@ -50,10 +50,12 @@ type Param struct {
 	Type       string   `xml:"type,attr"`
 	Deprecated string   `xml:"deprecated,attr,omitempty"`
 	Default    string   `xml:"default,attr,omitempty"`
+	Required   bool     `xml:"required,attr,omitempty"`
 	Enums      []*Enum  `xml:"enum,omitempty"`
 	Array      bool     `xml:"array,attr,omitempty"`
 	Items      []*Param `xml:"param,omitempty"`
 	Reference  string   `xml:"ref,attr,omitempty"`
+	Summary    string   `xml:"summary,attr,omitempty"`
 }
 
 // Enum 表示枚举值
@@ -72,16 +74,24 @@ type Header struct {
 
 // Example 示例代码
 type Example struct {
-	Type    string   `xml:"type,attr"`
-	Content Richtext `xml:",innerxml"`
+	Mimetype string   `xml:"mimetype,attr"`
+	Content  Richtext `xml:",innerxml"`
 }
 
 // Callback 回调函数的定义
 type Callback struct {
-	Response
-	Method     string     `xml:"method,attr"`
-	Queries    []*Param   `xml:"queries,omitempty"` // 查询参数
-	Requests   []*Request `xml:"requests,omitempty"`
-	Deprecated string     `xml:"deprecated,attr,omitempty"`
-	Reference  string     `xml:"ref,attr,omitempty"`
+	Param
+	Schema      string     `xml:"schema,attr"` // http 或是 https
+	Description Richtext   `xml:",innerxml"`
+	Mimetype    string     `xml:"mimetype,attr"`
+	Examples    []*Example `xml:"example,omitempty"`
+	Headers     []*Header  `xml:"header,omitempty"`
+	Method      string     `xml:"method,attr"`
+	Queries     []*Param   `xml:"queries,omitempty"` // 查询参数
+	Requests    []*Request `xml:"requests,omitempty"`
+	Deprecated  string     `xml:"deprecated,attr,omitempty"`
+	Reference   string     `xml:"ref,attr,omitempty"`
+
+	// 对回调的返回要求
+	Responses []*Response `xml:"response,omitempty"`
 }
