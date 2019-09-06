@@ -18,6 +18,9 @@ type API struct {
 
 	Tags    []string `xml:"tag,omitempty"`
 	Servers []string `xml:"server,omitempty"`
+
+	line int
+	file string
 }
 
 // Response 返回的内容
