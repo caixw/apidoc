@@ -17,7 +17,9 @@ type Version string
 // UnmarshalXMLAttr xml.UnmarshalerAttr
 func (v *Version) UnmarshalXMLAttr(attr xml.Attr) error {
 	if !version.SemVerValid(attr.Value) {
-		return errors.New("TODO", "TODO", 0, locale.ErrInvalidVersionFormat)
+		return &errors.LocaleError{
+			MessageKey: locale.ErrInvalidVersionFormat,
+		}
 	}
 
 	*v = Version(attr.Value)
@@ -32,7 +34,9 @@ func (v *Version) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if !version.SemVerValid(str) {
-		return errors.New("TODO", "TODO", 0, locale.ErrInvalidVersionFormat)
+		return &errors.LocaleError{
+			MessageKey: locale.ErrInvalidVersionFormat,
+		}
 	}
 
 	*v = Version(str)

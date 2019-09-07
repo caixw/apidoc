@@ -13,7 +13,7 @@ import (
 func TestDoc(t *testing.T) {
 	a := assert.New(t)
 
-	data, err := ioutil.ReadFile("./doc.xml")
+	data, err := ioutil.ReadFile("./testdata/doc.xml")
 	a.NotError(err).NotNil(data)
 
 	doc := &Doc{}

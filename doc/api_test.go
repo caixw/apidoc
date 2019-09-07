@@ -13,7 +13,7 @@ import (
 func TestAPI(t *testing.T) {
 	a := assert.New(t)
 
-	data, err := ioutil.ReadFile("./api.xml")
+	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
 	api := &API{}
