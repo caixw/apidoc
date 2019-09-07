@@ -18,13 +18,13 @@ func TestDoc(t *testing.T) {
 
 	doc := &Doc{}
 	a.NotError(xml.Unmarshal(data, doc))
-	a.Equal(doc.Version, "1.1")
+	a.Equal(doc.Version, "1.1.1")
 
 	a.Equal(len(doc.Tags), 2)
 	tag := doc.Tags[0]
 	a.Equal(tag.Name, "tag1").NotEmpty(tag.Description)
 	tag = doc.Tags[1]
-	a.Equal(tag.Deprecated, "1.0").Equal(tag.Name, "tag2")
+	a.Equal(tag.Deprecated, "1.0.1").Equal(tag.Name, "tag2")
 
 	a.Equal(2, len(doc.Servers))
 	srv := doc.Servers[0]
@@ -34,7 +34,7 @@ func TestDoc(t *testing.T) {
 	srv = doc.Servers[1]
 	a.Equal(srv.Name, "client").
 		Equal(srv.URL, "https://api.example.com/client").
-		Equal(srv.Deprecated, "1.0")
+		Equal(srv.Deprecated, "1.0.1")
 
 	a.Equal(doc.License, &Link{Text: "MIT", URL: "https://opensource.org/licenses/MIT"}).
 		Equal(doc.Contact, &Contact{

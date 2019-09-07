@@ -1,10 +1,10 @@
 <!-- SPDX-License-Identifier: MIT -->
 
-<api method="GET" version="1.1" id="xxx" summary="获取订单信息">
+<api method="GET" version="1.1.0" id="xxx" summary="获取订单信息">
     <path path="/users/{id}/orders">
         <param name="id">用户 ID </param>
         <query name="size">size</query>
-        <query name="page" deprecated="0.1">page</query>
+        <query name="page" deprecated="0.1.1">page</query>
     </path>
 
     <tag>g1</tag>

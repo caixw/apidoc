@@ -9,8 +9,6 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/issue9/version"
-
 	"github.com/caixw/apidoc/v5/errors"
 	i "github.com/caixw/apidoc/v5/internal/input"
 	"github.com/caixw/apidoc/v5/internal/locale"
@@ -27,7 +25,7 @@ type Doc struct {
 
 	APIDoc string `xml:"-"` // 程序的版本号
 
-	Version string    `xml:"version,attr,omitempty"` // 文档的版本
+	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
 	Content Richtext  `xml:"content"`
 	Contact *Contact  `xml:"contact"`
@@ -50,7 +48,7 @@ type Doc struct {
 type Tag struct {
 	Name        string   `xml:"name,attr"`  // 字面名称，需要唯一
 	Description Richtext `xml:",omitempty"` // 具体描述
-	Deprecated  string   `xml:"deprecated,attr,omitempty"`
+	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 }
 
 // Server 服务信息
@@ -58,7 +56,7 @@ type Server struct {
 	Name        string   `xml:"name,attr"` // 字面名称，需要唯一
 	URL         string   `xml:"url,attr"`
 	Description Richtext `xml:",omitempty"` // 具体描述
-	Deprecated  string   `xml:"deprecated,attr,omitempty"`
+	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 }
 
 // Contact 描述联系方式
@@ -122,11 +120,6 @@ LOOP:
 }
 
 func (doc *Doc) check(h *errors.Handler) {
-	if !version.SemVerValid(doc.Version) {
-		h.SyntaxError(errors.New(doc.file, "", doc.line, locale.ErrInvalidValue))
-		return
-	}
-
 	// Tag.Name 查重
 	sort.SliceStable(doc.Tags, func(i, j int) bool {
 		return doc.Tags[i].Name > doc.Tags[j].Name

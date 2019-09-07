@@ -18,7 +18,7 @@ func TestAPI(t *testing.T) {
 
 	api := &API{}
 	a.NotError(xml.Unmarshal(data, api))
-	a.Equal(api.Version, "1.1").
+	a.Equal(api.Version, "1.1.0").
 		Equal(api.Tags, []string{"g1", "g2"})
 
 	a.Equal(len(api.Responses), 2)

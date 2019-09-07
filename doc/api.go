@@ -5,7 +5,7 @@ package doc
 // API 表示 <api> 顶层元素
 type API struct {
 	XMLName     struct{}    `xml:"api"`
-	Version     string      `xml:"version,attr,omitempty"`
+	Version     Version     `xml:"version,attr,omitempty"`
 	Method      string      `xml:"method,attr"`
 	ID          string      `xml:"id,attr,omitempty"`
 	Path        *Path       `xml:"path"`
@@ -14,7 +14,7 @@ type API struct {
 	Requests    []*Request  `xml:"request"`
 	Responses   []*Response `xml:"response"`
 	Callback    *Callback   `xml:"callback,omitempty"`
-	Deprecated  string      `xml:"deprecated,attr,omitempty"`
+	Deprecated  Version     `xml:"deprecated,attr,omitempty"`
 
 	Tags    []string `xml:"tag,omitempty"`
 	Servers []string `xml:"server,omitempty"`
@@ -49,7 +49,7 @@ type Path struct {
 type Param struct {
 	Name        string   `xml:"name,attr"`
 	Type        Type     `xml:"type,attr"`
-	Deprecated  string   `xml:"deprecated,attr,omitempty"`
+	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 	Default     string   `xml:"default,attr,omitempty"`
 	Required    bool     `xml:"required,attr,omitempty"`
 	Enums       []*Enum  `xml:"enum,omitempty"`
@@ -67,7 +67,7 @@ func (p *Param) IsEnum() bool {
 
 // Enum 表示枚举值
 type Enum struct {
-	Deprecated  string   `xml:"deprecated,attr,omitempty"`
+	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 	Value       string   `xml:"value,attr"`
 	Description Richtext `xml:",innerxml"`
 }
@@ -76,7 +76,7 @@ type Enum struct {
 type Header struct {
 	Name        string   `xml:"name,attr"`
 	Description Richtext `xml:",innerxml"`
-	Deprecated  string   `xml:"deprecated,attr,omitempty"`
+	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 }
 
 // Example 示例代码
@@ -96,7 +96,7 @@ type Callback struct {
 	Method      string     `xml:"method,attr"`
 	Queries     []*Param   `xml:"queries,omitempty"` // 查询参数
 	Requests    []*Request `xml:"requests,omitempty"`
-	Deprecated  string     `xml:"deprecated,attr,omitempty"`
+	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
 	Reference   string     `xml:"ref,attr,omitempty"`
 
 	// 对回调的返回要求

@@ -60,6 +60,7 @@ const (
 	ErrInvalidTag            = "无效的标签 %s"
 	ErrInvalidTypePrefix     = "无效的类型前缀名称 %s"
 	ErrInvalidType           = "无效的类型名称 %s"
+	ErrInvalidVersionFormat = "无效的版本号格式"
 
 	// logs
 	InfoPrefix  = "[INFO] "
