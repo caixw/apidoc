@@ -4,6 +4,7 @@ package doc
 
 import (
 	"encoding/xml"
+	"strconv"
 	"strings"
 
 	"github.com/caixw/apidoc/v5/errors"
@@ -21,10 +22,6 @@ const (
 	Number
 	String
 )
-
-// 数组作为一个特殊的类型，表示方式与其它类型不同。
-// 由一个专门的标记位标记该属性。
-const arrayFlag Type = 0b1000_0000
 
 var (
 	typeStringMap = map[Type]string{
@@ -44,44 +41,13 @@ var (
 	}
 )
 
-// String fmt.Stringer
-func (t Type) String() string {
-	flag := (arrayFlag & t) == arrayFlag
-	if flag {
-		t = t & (^arrayFlag)
-	}
-
-	ret, found := typeStringMap[t]
-	if !found {
-		return "none"
-	}
-
-	if flag {
-		ret = "array." + ret
-	}
-	return ret
-}
-
 func parseType(val string) (Type, error) {
 	val = strings.ToLower(val)
-	var flag Type
 
-	dotIndex := strings.IndexByte(val, '.')
-	if dotIndex > -1 {
-		prefix := val[:dotIndex]
-		if prefix != "array" {
-			return None, errors.New("TODO", "TODO", 0, locale.ErrInvalidTypePrefix, prefix)
-		}
-
-		flag = arrayFlag
-		val = val[dotIndex+1:]
+	if t, found := stringTypeMap[val]; found {
+		return t, nil
 	}
-
-	t, found := stringTypeMap[val]
-	if !found {
-		return None, errors.New("TODO", "TODO", 0, locale.ErrInvalidType, val)
-	}
-	return flag + t, nil
+	return None, errors.New("TODO", "TODO", 0, locale.ErrInvalidType, val)
 }
 
 // UnmarshalXMLAttr xml.UnmarshalerAttr
@@ -113,15 +79,26 @@ func (t *Type) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // MarshalXML xml.Marshaler
 func (t Type) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	v := t.String()
+	v, err := t.fmtString()
+	if err != nil {
+		return err
+	}
 
 	return e.EncodeElement(v, start)
 }
 
 // MarshalXMLAttr xml.MarshalerAttr
-func (t Type) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	return xml.Attr{
-		Name:  name,
-		Value: t.String(),
-	}, nil
+func (t Type) MarshalXMLAttr(name xml.Name) (attr xml.Attr, err error) {
+	attr = xml.Attr{Name: name}
+
+	attr.Value, err = t.fmtString()
+	return attr, err
+}
+
+// fmtString
+func (t Type) fmtString() (string, error) {
+	if v, found := typeStringMap[t]; found {
+		return v, nil
+	}
+	return "", errors.New("TODO", "TODO", 0, locale.ErrInvalidType, strconv.Itoa(int(t)))
 }

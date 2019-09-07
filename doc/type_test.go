@@ -28,19 +28,6 @@ func TestTypeMap(t *testing.T) {
 	}
 }
 
-func TestType(t *testing.T) {
-	a := assert.New(t)
-
-	v, err := parseType(None.String())
-	a.NotError(err).Equal(v, None)
-
-	v, err = parseType(String.String())
-	a.NotError(err).Equal(v, String)
-
-	v, err = parseType(Object.String())
-	a.NotError(err).Equal(v, Object)
-}
-
 func TestTypeXML(t *testing.T) {
 	a := assert.New(t)
 
