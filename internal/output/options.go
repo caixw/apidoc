@@ -3,9 +3,7 @@
 package output
 
 import (
-	"encoding/json"
-
-	yaml "gopkg.in/yaml.v2"
+	"encoding/xml"
 
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/errors"
@@ -42,15 +40,13 @@ func buildOptions(o *opt.Output) (*options, *errors.Error) {
 	}
 
 	if o.Type == "" {
-		o.Type = opt.ApidocJSON
+		o.Type = opt.ApidocXML
 	}
 
 	var marshal marshaler
 	switch o.Type {
-	case opt.ApidocJSON:
-		marshal = apidocJSONMarshal
-	case opt.ApidocYAML:
-		marshal = apidocYAMLMarshal
+	case opt.ApidocXML:
+		marshal = xmlMarshal
 	case opt.OpenapiJSON:
 		marshal = openapi.JSON
 	case opt.OpenapiYAML:
@@ -67,10 +63,6 @@ func buildOptions(o *opt.Output) (*options, *errors.Error) {
 	}, nil
 }
 
-func apidocJSONMarshal(v *doc.Doc) ([]byte, error) {
-	return json.Marshal(v)
-}
-
-func apidocYAMLMarshal(v *doc.Doc) ([]byte, error) {
-	return yaml.Marshal(v)
+func xmlMarshal(v *doc.Doc) ([]byte, error) {
+	return xml.Marshal(v)
 }

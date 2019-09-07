@@ -143,7 +143,7 @@ func getConfig(wd string) (*config, error) {
 		Version: vars.Version(),
 		Inputs:  inputs,
 		Output: &options.Output{
-			Type: options.ApidocJSON,
+			Type: options.ApidocXML,
 			Path: filepath.Join(wd, "apidoc.json"),
 		},
 	}, nil

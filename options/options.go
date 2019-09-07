@@ -5,8 +5,7 @@ package options
 
 // 文档类型定义
 const (
-	ApidocJSON  = "apidoc+json"
-	ApidocYAML  = "apidoc+yaml"
+	ApidocXML   = "apidoc+xml"
 	OpenapiJSON = "openapi+json"
 	OpenapiYAML = "openapi+yaml"
 	RAMLYAML    = "raml+yaml"

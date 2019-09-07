@@ -12,8 +12,7 @@ import (
 )
 
 var (
-	_ marshaler = apidocJSONMarshal
-	_ marshaler = apidocYAMLMarshal
+	_ marshaler = xmlMarshal
 
 	_ marshaler = openapi.JSON
 	_ marshaler = openapi.YAML
@@ -41,12 +40,10 @@ func TestBuildOptions(t *testing.T) {
 	oo.Path = "./testdir/apidoc.json"
 	o, err = buildOptions(oo)
 	a.NotError(err).NotNil(o)
-	a.Equal(o.marshal, marshaler(apidocJSONMarshal))
+	a.Equal(o.marshal, marshaler(xmlMarshal))
 
-	oo.Type = opt.ApidocYAML
 	o, err = buildOptions(oo)
 	a.NotError(err).NotNil(o)
-	a.Equal(o.marshal, marshaler(apidocYAMLMarshal))
 
 	oo.Type = "unknown"
 	o, err = buildOptions(oo)
