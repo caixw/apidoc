@@ -72,12 +72,6 @@ type Link struct {
 	URL  string `xml:"url,attr"`
 }
 
-// Summary 该元素的介绍信息
-type Summary struct {
-	Title       string   `xml:"title,attr"`
-	Description Richtext `xml:",innterxml,omitempty"`
-}
-
 // Parse 分析从 block 中获取的代码块。并填充到 Doc 中
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
