@@ -25,7 +25,7 @@ func TestHandler(t *testing.T) {
 	h := NewHandler(NewLogHandlerFunc(errolog, warnlog))
 	a.NotError(h)
 
-	le := LocaleError{MessageKey: locale.ErrRequired}
+	le := LocaleError{Key: locale.ErrRequired}
 	h.SyntaxError(&Error{File: "erro.go", LocaleError: le})
 	h.SyntaxWarn(&Error{File: "warn.go", LocaleError: le})
 

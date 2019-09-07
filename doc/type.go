@@ -47,10 +47,8 @@ func parseType(val string) (Type, error) {
 	if t, found := stringTypeMap[val]; found {
 		return t, nil
 	}
-	return None, &errors.LocaleError{
-		MessageKey:  locale.ErrInvalidType,
-		MessageArgs: []interface{}{val},
-	}
+	return None, errors.NewLocaleError(locale.ErrInvalidType, val)
+
 }
 
 // UnmarshalXMLAttr xml.UnmarshalerAttr
@@ -103,8 +101,5 @@ func (t Type) fmtString() (string, error) {
 	if v, found := typeStringMap[t]; found {
 		return v, nil
 	}
-	return "", &errors.LocaleError{
-		MessageKey:  locale.ErrInvalidType,
-		MessageArgs: []interface{}{strconv.Itoa(int(t))},
-	}
+	return "", errors.NewLocaleError(locale.ErrInvalidType, strconv.Itoa(int(t)))
 }

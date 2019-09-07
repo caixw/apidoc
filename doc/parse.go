@@ -41,6 +41,7 @@ func (doc *Doc) Sanitize() error {
 		}
 	}
 
+	// 查看 API 中的标签是否都存在
 	for _, api := range doc.Apis {
 		for _, tag := range api.Tags {
 			if !doc.tagExists(tag) {

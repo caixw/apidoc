@@ -18,8 +18,8 @@ const (
 
 // LocaleError 本地化的错误信息
 type LocaleError struct {
-	MessageKey  message.Reference
-	MessageArgs []interface{}
+	Key  message.Reference
+	Args []interface{}
 }
 
 // Error 错误信息
@@ -34,7 +34,7 @@ type Error struct {
 }
 
 func (err *LocaleError) Error() string {
-	return locale.Sprintf(err.MessageKey, err.MessageArgs...)
+	return locale.Sprintf(err.Key, err.Args...)
 }
 
 func (err *Error) Error() string {
@@ -49,6 +49,14 @@ func (err *Error) Error() string {
 	return locale.Sprintf(locale.ErrMessageWithError, msg, err.prev.Error(), err.File, err.Line, err.Field)
 }
 
+// NewLocaleError 声明 LocaleError
+func NewLocaleError(key message.Reference, val ...interface{}) *LocaleError {
+	return &LocaleError{
+		Key:  key,
+		Args: val,
+	}
+}
+
 // New 声明新的 Error 实例
 func New(file, field string, line int, msg message.Reference, vals ...interface{}) *Error {
 	return &Error{
@@ -56,8 +64,8 @@ func New(file, field string, line int, msg message.Reference, vals ...interface{
 		Line:  line,
 		Field: field,
 		LocaleError: LocaleError{
-			MessageKey:  msg,
-			MessageArgs: vals,
+			Key:  msg,
+			Args: vals,
 		},
 	}
 }
@@ -70,8 +78,8 @@ func WithError(err error, file, field string, line int, msg message.Reference, v
 		Line:  line,
 		Field: field,
 		LocaleError: LocaleError{
-			MessageKey:  msg,
-			MessageArgs: vals,
+			Key:  msg,
+			Args: vals,
 		},
 	}
 }
