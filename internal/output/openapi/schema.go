@@ -2,19 +2,16 @@
 
 package openapi
 
-import (
-	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/errors"
-)
+import "github.com/caixw/apidoc/v5/errors"
 
 // Schema.Type 需要的一些预定义数据类型
 const (
-	TypeInt      = doc.Integer
+	TypeInt      = "integer"
 	TypeLong     = "long"
 	TypeFloat    = "float"
 	TypeDouble   = "double"
-	TypeString   = doc.String
-	TypeBool     = doc.Bool
+	TypeString   = "string"
+	TypeBool     = "bool"
 	TypePassword = "password"
 )
 

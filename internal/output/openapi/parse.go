@@ -22,7 +22,7 @@ func parse(doc *doc.Doc) (*OpenAPI, error) {
 			Description: doc.Content,
 			Contact:     newContact(doc.Contact),
 			License:     newLicense(doc.License),
-			Version:     doc.Version,
+			Version:     string(doc.Version),
 		},
 		Servers: make([]*Server, 0, len(doc.Servers)),
 		Tags:    make([]*Tag, 0, len(doc.Tags)),
