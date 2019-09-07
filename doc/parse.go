@@ -9,15 +9,15 @@ import (
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-func (doc *Doc) check(h *errors.Handler) {
+// Sanitize 检测内容是否合法
+func (doc *Doc) Sanitize() error {
 	// Tag.Name 查重
 	sort.SliceStable(doc.Tags, func(i, j int) bool {
 		return doc.Tags[i].Name > doc.Tags[j].Name
 	})
 	for i := 1; i < len(doc.Tags); i++ {
 		if doc.Tags[i].Name == doc.Tags[i-1].Name {
-			h.SyntaxError(errors.New(doc.file, "", doc.line, locale.ErrDuplicateTag))
-			return
+			return errors.New(doc.file, "tag.name", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
@@ -25,10 +25,9 @@ func (doc *Doc) check(h *errors.Handler) {
 	sort.SliceStable(doc.Servers, func(i, j int) bool {
 		return doc.Servers[i].Name > doc.Servers[j].Name
 	})
-	for i := 1; i < len(doc.Tags); i++ {
+	for i := 1; i < len(doc.Servers); i++ {
 		if doc.Servers[i].Name == doc.Servers[i-1].Name {
-			h.SyntaxError(errors.New(doc.file, "", doc.line, locale.ErrDuplicateTag))
-			return
+			return errors.New(doc.file, "server.name", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
@@ -36,26 +35,27 @@ func (doc *Doc) check(h *errors.Handler) {
 	sort.SliceStable(doc.Servers, func(i, j int) bool {
 		return doc.Servers[i].URL > doc.Servers[j].URL
 	})
-	for i := 1; i < len(doc.Tags); i++ {
+	for i := 1; i < len(doc.Servers); i++ {
 		if doc.Servers[i].URL == doc.Servers[i-1].URL {
-			h.SyntaxError(errors.New(doc.file, "", doc.line, locale.ErrDuplicateTag))
-			return
+			return errors.New(doc.file, "server.url", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
 	for _, api := range doc.Apis {
 		for _, tag := range api.Tags {
 			if !doc.tagExists(tag) {
-				h.SyntaxError(errors.New(api.file, "", api.line, locale.ErrInvalidValue))
+				return errors.New(api.file, "tag", api.line, locale.ErrInvalidValue)
 			}
 		}
 
 		for _, srv := range api.Servers {
 			if !doc.serverExists(srv) {
-				h.SyntaxError(errors.New(api.file, "", api.line, locale.ErrInvalidValue))
+				return errors.New(api.file, "server", api.line, locale.ErrInvalidValue)
 			}
 		}
 	} // end doc.Apis
+
+	return nil
 }
 
 func (doc *Doc) tagExists(tag string) bool {

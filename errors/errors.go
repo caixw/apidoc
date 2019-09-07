@@ -46,7 +46,7 @@ func (err *Error) Error() string {
 	}
 
 	// ErrMessageWithError = "%s[%s] 位于 %s:%d 的 %s"
-	return locale.Sprintf(locale.ErrMessageWithError, msg, err.prev, err.File, err.Line, err.Field)
+	return locale.Sprintf(locale.ErrMessageWithError, msg, err.prev.Error(), err.File, err.Line, err.Field)
 }
 
 // New 声明新的 Error 实例

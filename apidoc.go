@@ -40,7 +40,9 @@ func Do(ctx context.Context, h *errors.Handler, output *options.Output, inputs .
 		return err
 	}
 
-	// TODO doc.check
+	if err := doc.Sanitize(); err != nil {
+		h.SyntaxError(err)
+	}
 
 	return o.Render(doc, output)
 }
