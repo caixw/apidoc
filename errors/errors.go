@@ -1,6 +1,4 @@
-// Copyright 2018 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 // Package errors 公用的错误信息
 package errors
@@ -8,7 +6,7 @@ package errors
 import (
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
 // 错误分类

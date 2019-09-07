@@ -4,7 +4,7 @@
 # license that can be found in the LICENSE file.
 
 # 指定工作目录
-wd=$(dirname $0)/../cmd
+wd=$(dirname $0)/../cmd/apidoc
 
 # 指定编译日期
 date=`date -u '+%Y%m%d'`
@@ -13,7 +13,7 @@ date=`date -u '+%Y%m%d'`
 hash=`git rev-parse HEAD`
 
 # 需要修改变量的地址，若为 main，则指接使用 main，而不是全地址
-path=github.com/caixw/apidoc/internal/vars
+path=github.com/caixw/apidoc/v5/internal/vars
 
 cd ${wd}
 

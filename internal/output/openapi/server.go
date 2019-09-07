@@ -1,15 +1,13 @@
-// Copyright 2018 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 package openapi
 
 import (
-	"github.com/caixw/apidoc/errors"
+	"github.com/caixw/apidoc/v5/errors"
 	"strings"
 
-	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/internal/locale"
+	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
 // 去掉 URL 中的 {} 模板参数。使其符合 is.URL 的判断规则

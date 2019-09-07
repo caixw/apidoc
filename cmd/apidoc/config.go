@@ -14,10 +14,10 @@ import (
 	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/errors"
-	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/internal/vars"
-	"github.com/caixw/apidoc/options"
+	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/options"
 )
 
 // 配置文件名称。

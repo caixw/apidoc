@@ -12,10 +12,10 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
 
-	"github.com/caixw/apidoc/errors"
-	"github.com/caixw/apidoc/internal/lang"
-	"github.com/caixw/apidoc/internal/locale"
-	opt "github.com/caixw/apidoc/options"
+	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/internal/lang"
+	"github.com/caixw/apidoc/v5/internal/locale"
+	opt "github.com/caixw/apidoc/v5/options"
 )
 
 type options struct {

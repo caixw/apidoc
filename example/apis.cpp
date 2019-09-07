@@ -1,6 +1,4 @@
-// Copyright 2018 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 // @api GET /users/{id}/logs/{lid} 获取用户日志信息
 // 这是关于接口的详细说明文档

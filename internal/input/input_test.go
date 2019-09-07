@@ -9,7 +9,7 @@ import (
 	"context"
 	"testing"
 
-	opt "github.com/caixw/apidoc/options"
+	opt "github.com/caixw/apidoc/v5/options"
 	"github.com/issue9/assert"
 )
 

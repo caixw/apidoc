@@ -1,6 +1,4 @@
-// Copyright 2018 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 package lang
 
@@ -12,7 +10,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/errors"
+	"github.com/caixw/apidoc/v5/errors"
 )
 
 var (

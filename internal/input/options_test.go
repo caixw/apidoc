@@ -11,8 +11,8 @@ import (
 	"github.com/issue9/assert"
 	"golang.org/x/text/encoding/simplifiedchinese"
 
-	"github.com/caixw/apidoc/internal/lang"
-	opt "github.com/caixw/apidoc/options"
+	"github.com/caixw/apidoc/v5/internal/lang"
+	opt "github.com/caixw/apidoc/v5/options"
 )
 
 func TestBuildOptions(t *testing.T) {

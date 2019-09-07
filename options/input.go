@@ -1,6 +1,4 @@
-// Copyright 2018 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 package options
 
@@ -10,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/caixw/apidoc/internal/lang"
+	"github.com/caixw/apidoc/v5/internal/lang"
 )
 
 // Input 指定输入内容的相关信息。

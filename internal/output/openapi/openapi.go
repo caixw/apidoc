@@ -1,6 +1,4 @@
-// Copyright 2018 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 // Package openapi 实现 openapi 的相关数据类型
 //
@@ -13,9 +11,9 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/errors"
-	"github.com/caixw/apidoc/internal/locale"
+	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
 // TODO 扩展字段未加

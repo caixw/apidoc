@@ -9,8 +9,8 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/doc"
-	opt "github.com/caixw/apidoc/options"
+	"github.com/caixw/apidoc/v5/doc"
+	opt "github.com/caixw/apidoc/v5/options"
 )
 
 func getTestDoc() *doc.Doc {

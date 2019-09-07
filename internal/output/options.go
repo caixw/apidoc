@@ -1,6 +1,4 @@
-// Copyright 2018 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 package output
 
@@ -9,11 +7,11 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/errors"
-	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/internal/output/openapi"
-	opt "github.com/caixw/apidoc/options"
+	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/output/openapi"
+	opt "github.com/caixw/apidoc/v5/options"
 )
 
 type marshaler func(v *doc.Doc) ([]byte, error)

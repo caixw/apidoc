@@ -1,21 +1,19 @@
-// Copyright 2018 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 // Package apidoc RESTful API 文档生成工具。
-package apidoc // import "github.com/caixw/apidoc"
+package apidoc
 
 import (
 	"context"
 
 	"golang.org/x/text/language"
 
-	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/errors"
-	"github.com/caixw/apidoc/internal/locale"
-	o "github.com/caixw/apidoc/internal/output"
-	"github.com/caixw/apidoc/internal/vars"
-	"github.com/caixw/apidoc/options"
+	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/internal/locale"
+	o "github.com/caixw/apidoc/v5/internal/output"
+	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/options"
 )
 
 // InitLocale 初始化语言环境

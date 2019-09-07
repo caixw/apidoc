@@ -9,10 +9,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/errors"
-	"github.com/caixw/apidoc/internal/locale"
-	opt "github.com/caixw/apidoc/options"
+	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/internal/locale"
+	opt "github.com/caixw/apidoc/v5/options"
 )
 
 // Render 渲染 doc 的内容，具体的渲染参数由 o 指定。

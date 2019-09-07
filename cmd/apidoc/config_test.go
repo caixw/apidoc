@@ -12,9 +12,9 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/errors"
-	"github.com/caixw/apidoc/internal/vars"
-	"github.com/caixw/apidoc/options"
+	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/options"
 )
 
 func TestGetPath(t *testing.T) {

@@ -19,13 +19,13 @@ import (
 	"github.com/issue9/term/colors"
 	"golang.org/x/text/language"
 
-	"github.com/caixw/apidoc"
-	"github.com/caixw/apidoc/doc"
-	"github.com/caixw/apidoc/errors"
-	"github.com/caixw/apidoc/internal/lang"
-	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/internal/output"
-	"github.com/caixw/apidoc/internal/vars"
+	"github.com/caixw/apidoc/v5"
+	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/internal/lang"
+	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/output"
+	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
 // 控制台的输出颜色

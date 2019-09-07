@@ -11,11 +11,11 @@ import (
 
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/errors"
-	i "github.com/caixw/apidoc/internal/input"
-	"github.com/caixw/apidoc/internal/locale"
-	"github.com/caixw/apidoc/internal/vars"
-	"github.com/caixw/apidoc/options"
+	"github.com/caixw/apidoc/v5/errors"
+	i "github.com/caixw/apidoc/v5/internal/input"
+	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/options"
 )
 
 // 表示支持的各种数据类型
