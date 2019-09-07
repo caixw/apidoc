@@ -5,7 +5,6 @@ package main
 import (
 	"io/ioutil"
 	"os"
-	"os/user"
 	"path/filepath"
 	"strings"
 
@@ -57,14 +56,11 @@ func getPath(path, wd string) (p string, err error) {
 
 	// 有可能 wd 是 ~/ 开头的
 	if strings.HasPrefix(path, "~/") { // 非 home 路开头的相对路径，需要将其定位到 wd 目录之下
-		// TODO 下个版本可以直接引用此函数
-		// https://github.com/golang/go/issues/26463
-		u, err := user.Current()
+		dir, err := os.UserHomeDir()
 		if err != nil {
 			return "", err
 		}
-
-		path = filepath.Join(u.HomeDir, path[2:])
+		path = filepath.Join(dir, path[2:])
 	}
 
 	if !filepath.IsAbs(path) {
