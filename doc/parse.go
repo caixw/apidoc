@@ -3,59 +3,11 @@
 package doc
 
 import (
-	"bytes"
-	"context"
-	"encoding/xml"
 	"sort"
-	"sync"
 
 	"github.com/caixw/apidoc/v5/errors"
-	i "github.com/caixw/apidoc/v5/internal/input"
 	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/internal/vars"
-	"github.com/caixw/apidoc/v5/options"
 )
-
-// Parse 分析从 block 中获取的代码块。并填充到 Doc 中
-//
-// 当所有的代码块已经放入 Block 之后，Block 会被关闭。
-//
-// 所有与解析有关的错误均通过 h 输出。而其它错误，比如参数问题等，通过返回参数返回。
-func Parse(ctx context.Context, h *errors.Handler, input ...*options.Input) (*Doc, error) {
-	block, err := i.Parse(ctx, h, input...)
-	if err != nil {
-		return nil, err
-	}
-
-	doc := &Doc{
-		APIDoc: vars.Version(),
-	}
-	wg := sync.WaitGroup{}
-
-LOOP:
-	for {
-		select {
-		case <-ctx.Done():
-			return nil, ctx.Err()
-		case blk, ok := <-block:
-			if !ok {
-				break LOOP
-			}
-
-			wg.Add(1)
-			go func(b i.Block) {
-				doc.parseBlock(b, h)
-				wg.Done()
-			}(blk)
-		}
-	}
-
-	wg.Wait()
-
-	doc.check(h)
-
-	return doc, nil
-}
 
 func (doc *Doc) check(h *errors.Handler) {
 	// Tag.Name 查重
@@ -104,33 +56,6 @@ func (doc *Doc) check(h *errors.Handler) {
 			}
 		}
 	} // end doc.Apis
-}
-
-var (
-	apidocBegin = []byte("<apidoc ")
-	apiBegin    = []byte("<api ")
-)
-
-func (doc *Doc) parseBlock(block i.Block, h *errors.Handler) {
-	switch {
-	case bytes.HasPrefix(block.Data, apidocBegin):
-		err := xml.Unmarshal(block.Data, doc)
-		if serr, ok := err.(*xml.SyntaxError); ok {
-			h.SyntaxError(errors.New(block.File, "", block.Line+serr.Line, serr.Msg))
-		}
-	case bytes.HasPrefix(block.Data, apiBegin):
-		api := &API{}
-		err := xml.Unmarshal(block.Data, api)
-		if err != nil {
-			if serr, ok := err.(*xml.SyntaxError); ok {
-				h.SyntaxError(errors.New(block.File, "", block.Line+serr.Line, serr.Msg))
-			}
-			return
-		}
-		api.line = block.Line
-		api.file = block.File
-		doc.Apis = append(doc.Apis, api)
-	}
 }
 
 func (doc *Doc) tagExists(tag string) bool {

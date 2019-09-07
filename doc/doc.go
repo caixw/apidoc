@@ -2,6 +2,8 @@
 
 package doc
 
+import "github.com/caixw/apidoc/v5/internal/vars"
+
 // Richtext 富文本内容
 type Richtext string
 
@@ -56,4 +58,11 @@ type Contact struct {
 type Link struct {
 	Text string `xml:",innerxml"`
 	URL  string `xml:"url,attr"`
+}
+
+// New 返回 Doc 实例
+func New() *Doc {
+	return &Doc{
+		APIDoc: vars.Version(),
+	}
 }

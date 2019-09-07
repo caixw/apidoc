@@ -8,7 +8,6 @@ import (
 
 	"golang.org/x/text/language"
 
-	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/errors"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	o "github.com/caixw/apidoc/v5/internal/output"
@@ -36,10 +35,12 @@ func Version() string {
 // output 输出设置项；
 // inputs 输入设置项。
 func Do(ctx context.Context, h *errors.Handler, output *options.Output, inputs ...*options.Input) error {
-	doc, err := doc.Parse(ctx, h, inputs...)
+	doc, err := Parse(ctx, h, inputs...)
 	if err != nil {
 		return err
 	}
+
+	// TODO doc.check
 
 	return o.Render(doc, output)
 }

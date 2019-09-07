@@ -102,3 +102,14 @@ type Callback struct {
 	// 对回调的返回要求
 	Responses []*Response `xml:"response,omitempty"`
 }
+
+// NewAPI 返回新的 API 实例
+func (doc *Doc) NewAPI(file string, line int) *API {
+	api := &API{
+		line: line,
+		file: file,
+	}
+	doc.Apis = append(doc.Apis, api)
+
+	return api
+}

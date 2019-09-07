@@ -18,7 +18,6 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5"
-	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/errors"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
@@ -77,7 +76,7 @@ func parse(wd string) {
 
 	now := time.Now()
 	h := errors.NewHandler(newConsoleHandlerFunc())
-	doc, err := doc.Parse(context.Background(), h, cfg.Inputs...)
+	doc, err := apidoc.Parse(context.Background(), h, cfg.Inputs...)
 	if err != nil {
 		if ferr, ok := err.(*errors.Error); ok {
 			ferr.File = configFilename
