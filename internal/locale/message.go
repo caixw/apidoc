@@ -58,6 +58,8 @@ const (
 	ErrInvalidMethod         = "无效的请求方法"
 	ErrMethodExists          = "该请求方法已经存在"
 	ErrInvalidTag            = "无效的标签 %s"
+	ErrInvalidTypePrefix     = "无效的类型前缀名称 %s"
+	ErrInvalidType           = "无效的类型名称 %s"
 
 	// logs
 	InfoPrefix  = "[INFO] "

@@ -21,8 +21,8 @@
     </request>
 
     <response status="200" mimetype="json,xml" type="object">
-        <param name="id" type="int" default="1" />
-        <param name="sex" type="string" default="male">
+        <param name="id" type="number" default="1" summary="id" />
+        <param name="sex" type="string" default="male" summary="sex">
             <enum value="male">男性</enum>
             <enum value="female">女性</enum>
         </param>
@@ -45,8 +45,8 @@
     <callback method="post" mimetype="json" schema="https" type="object">
         <query name="size">size</query>
 
-        <param name="id" type="int" default="1" />
-        <param name="age" type="int" />
+        <param name="id" type="number" default="1" />
+        <param name="age" type="number" />
         <example mimetype="json">
         <![CDATA[
         {
@@ -56,7 +56,7 @@
         ]]>
         </example>
 
-        <response status="200" mimetype="text" type="text">
+        <response status="200" mimetype="text" type="string">
         </response>
     </callback>
 </api> 

@@ -47,16 +47,17 @@ type Path struct {
 
 // Param 表示参数类型
 type Param struct {
-	Name       string   `xml:"name,attr"`
-	Type       string   `xml:"type,attr"`
-	Deprecated string   `xml:"deprecated,attr,omitempty"`
-	Default    string   `xml:"default,attr,omitempty"`
-	Required   bool     `xml:"required,attr,omitempty"`
-	Enums      []*Enum  `xml:"enum,omitempty"`
-	Array      bool     `xml:"array,attr,omitempty"`
-	Items      []*Param `xml:"param,omitempty"`
-	Reference  string   `xml:"ref,attr,omitempty"`
-	Summary    string   `xml:"summary,attr,omitempty"`
+	Name        string   `xml:"name,attr"`
+	Type        Type     `xml:"type,attr"`
+	Deprecated  string   `xml:"deprecated,attr,omitempty"`
+	Default     string   `xml:"default,attr,omitempty"`
+	Required    bool     `xml:"required,attr,omitempty"`
+	Enums       []*Enum  `xml:"enum,omitempty"`
+	Array       bool     `xml:"array,attr,omitempty"`
+	Items       []*Param `xml:"param,omitempty"`
+	Reference   string   `xml:"ref,attr,omitempty"`
+	Summary     string   `xml:"summary,attr,omitempty"`
+	Description Richtext `xml:",innerxml"`
 }
 
 // IsEnum 是否为一个枚举类型

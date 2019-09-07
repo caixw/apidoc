@@ -18,18 +18,6 @@ import (
 	"github.com/caixw/apidoc/v5/options"
 )
 
-// 表示支持的各种数据类型
-const (
-	None    = "none" // 仅用于 Request、Response 和 Callback 的 type 属性
-	Null    = "null"
-	Bool    = "boolean"
-	Object  = "object"
-	Array   = "array"
-	Number  = "number"
-	String  = "string"
-	Integer = "integer"
-)
-
 // Richtext 富文本内容
 type Richtext string
 
@@ -46,13 +34,16 @@ type Doc struct {
 	License *Link     `xml:"license,omitempty"` // 版本信息
 	Tags    []*Tag    `xml:"tag,omitempty"`     // 所有的标签
 	Servers []*Server `xml:"server,omitempty"`
+	Apis    []*API    `xml:"apis,omitempty"`
 
-	References map[string]interface{}
+	// 应用于全局的变量
+	//Responses []*Response `xml:"response,omitempty"`
+	//Requests  []*Request  `xml:"Request,omitempty"`
+	//Mimetypes string `` // 指定可用的 mimetype 类型
 
-	Apis []*API `xml:"apis,omitempty"`
-
-	file string
-	line int
+	references map[string]interface{}
+	file       string
+	line       int
 }
 
 // Tag 标签内容
