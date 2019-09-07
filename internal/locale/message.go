@@ -1,6 +1,4 @@
-// Copyright 2016 by caixw, All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
+// SPDX-License-Identifier: MIT
 
 package locale
 
@@ -60,7 +58,7 @@ const (
 	ErrInvalidTag            = "无效的标签 %s"
 	ErrInvalidTypePrefix     = "无效的类型前缀名称 %s"
 	ErrInvalidType           = "无效的类型名称 %s"
-	ErrInvalidVersionFormat = "无效的版本号格式"
+	ErrInvalidVersionFormat  = "无效的版本号格式"
 
 	// logs
 	InfoPrefix  = "[INFO] "
