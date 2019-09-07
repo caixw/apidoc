@@ -32,7 +32,7 @@ func TestAPI(t *testing.T) {
 		Equal(sex.Default, "male").
 		Equal(len(sex.Enums), 2)
 	example := resp.Examples[0]
-	a.Equal(example.Type, "json").
+	a.Equal(example.Mimetype, "json").
 		NotEmpty(example.Content)
 
 	a.Equal(1, len(api.Requests))

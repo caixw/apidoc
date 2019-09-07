@@ -9,6 +9,7 @@ type API struct {
 	Method      string      `xml:"method,attr"`
 	ID          string      `xml:"id,attr,omitempty"`
 	Path        *Path       `xml:"path"`
+	Summary     string      `xml:"summary,attr"`
 	Description Richtext    `xml:"description,omitempty"`
 	Requests    []*Request  `xml:"request"`
 	Responses   []*Response `xml:"response"`
@@ -56,6 +57,11 @@ type Param struct {
 	Items      []*Param `xml:"param,omitempty"`
 	Reference  string   `xml:"ref,attr,omitempty"`
 	Summary    string   `xml:"summary,attr,omitempty"`
+}
+
+// IsEnum 是否为一个枚举类型
+func (p *Param) IsEnum() bool {
+	return len(p.Enums) > 0
 }
 
 // Enum 表示枚举值
