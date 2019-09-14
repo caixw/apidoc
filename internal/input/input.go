@@ -18,7 +18,6 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
-	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
@@ -98,7 +97,7 @@ func parse(ctx context.Context, data chan Block, h *message.Handler, wg *sync.Wa
 func parseFile(channel chan Block, h *message.Handler, path string, o *options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
-		h.Error(&errors.Error{File: path})
+		h.Error(message.WithError(err, path, "", 0))
 		return
 	}
 

@@ -7,8 +7,9 @@ import (
 	"context"
 	"testing"
 
-	opt "github.com/caixw/apidoc/v5/options"
 	"github.com/issue9/assert"
+
+	opt "github.com/caixw/apidoc/v5/options"
 )
 
 var (
