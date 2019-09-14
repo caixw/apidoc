@@ -7,7 +7,7 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
@@ -35,17 +35,17 @@ type License struct {
 }
 
 // Sanitize 数据检测
-func (info *Info) Sanitize() *errors.Error {
+func (info *Info) Sanitize() *message.SyntaxError {
 	if info.Title == "" {
-		return errors.New("", "title", 0, locale.ErrRequired)
+		return message.NewError("", "title", 0, locale.ErrRequired)
 	}
 
 	if !version.SemVerValid(info.Version) {
-		return errors.New("", "version", 0, locale.ErrInvalidFormat)
+		return message.NewError("", "version", 0, locale.ErrInvalidFormat)
 	}
 
 	if info.TermsOfService != "" && !is.URL(info.TermsOfService) {
-		return errors.New("", "termsOfService", 0, locale.ErrInvalidFormat)
+		return message.NewError("", "termsOfService", 0, locale.ErrInvalidFormat)
 	}
 
 	if info.Contact != nil {
@@ -66,9 +66,9 @@ func (info *Info) Sanitize() *errors.Error {
 }
 
 // Sanitize 数据检测
-func (l *License) Sanitize() *errors.Error {
+func (l *License) Sanitize() *message.SyntaxError {
 	if l.URL != "" && !is.URL(l.URL) {
-		return errors.New("", "url", 0, locale.ErrInvalidFormat)
+		return message.NewError("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil
@@ -90,13 +90,13 @@ func newContact(c *doc.Contact) *Contact {
 }
 
 // Sanitize 数据检测
-func (c *Contact) Sanitize() *errors.Error {
+func (c *Contact) Sanitize() *message.SyntaxError {
 	if c.URL != "" && !is.URL(c.URL) {
-		return errors.New("", "url", 0, locale.ErrInvalidFormat)
+		return message.NewError("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	if c.Email != "" && !is.Email(c.Email) {
-		return errors.New("", "email", 0, locale.ErrInvalidFormat)
+		return message.NewError("", "email", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil

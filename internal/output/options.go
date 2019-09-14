@@ -6,7 +6,7 @@ import (
 	"encoding/xml"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/output/openapi"
 	opt "github.com/caixw/apidoc/v5/options"
@@ -34,9 +34,9 @@ func (o *options) contains(tags ...string) bool {
 	return false
 }
 
-func buildOptions(o *opt.Output) (*options, *errors.Error) {
+func buildOptions(o *opt.Output) (*options, *message.SyntaxError) {
 	if o.Path == "" {
-		return nil, errors.New("", "path", 0, locale.ErrRequired)
+		return nil, message.NewError("", "path", 0, locale.ErrRequired)
 	}
 
 	if o.Type == "" {
@@ -54,7 +54,7 @@ func buildOptions(o *opt.Output) (*options, *errors.Error) {
 	case opt.RAMLYAML:
 		// TODO
 	default:
-		return nil, errors.New("", "type", 0, locale.ErrInvalidValue)
+		return nil, message.NewError("", "type", 0, locale.ErrInvalidValue)
 	}
 
 	return &options{

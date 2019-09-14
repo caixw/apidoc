@@ -3,7 +3,7 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
@@ -82,9 +82,9 @@ type Response struct {
 }
 
 // Sanitize 数据检测
-func (req *RequestBody) Sanitize() *errors.Error {
+func (req *RequestBody) Sanitize() *message.SyntaxError {
 	if len(req.Content) == 0 {
-		return errors.New("", "content", 0, locale.ErrRequired)
+		return message.NewError("", "content", 0, locale.ErrRequired)
 	}
 
 	for key, mt := range req.Content {
@@ -98,9 +98,9 @@ func (req *RequestBody) Sanitize() *errors.Error {
 }
 
 // Sanitize 数据检测
-func (resp *Response) Sanitize() *errors.Error {
+func (resp *Response) Sanitize() *message.SyntaxError {
 	if resp.Description == "" {
-		return errors.New("", "description", 0, locale.ErrRequired)
+		return message.NewError("", "description", 0, locale.ErrRequired)
 	}
 
 	for key, header := range resp.Headers {
@@ -128,7 +128,7 @@ func (resp *Response) Sanitize() *errors.Error {
 }
 
 // Sanitize 数据检测
-func (mt *MediaType) Sanitize() *errors.Error {
+func (mt *MediaType) Sanitize() *message.SyntaxError {
 	if mt.Schema != nil {
 		if err := mt.Sanitize(); err != nil {
 			err.Field = "schema." + err.Field
@@ -146,7 +146,7 @@ func (mt *MediaType) Sanitize() *errors.Error {
 }
 
 // Sanitize 数据检测
-func (en *Encoding) Sanitize() *errors.Error {
+func (en *Encoding) Sanitize() *message.SyntaxError {
 	if err := en.Style.Sanitize(); err != nil {
 		return err
 	}

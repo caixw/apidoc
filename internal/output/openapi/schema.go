@@ -2,7 +2,7 @@
 
 package openapi
 
-import "github.com/caixw/apidoc/v5/errors"
+import "github.com/caixw/apidoc/v5/message"
 
 // Schema.Type 需要的一些预定义数据类型
 const (
@@ -53,7 +53,7 @@ type Discriminator struct {
 }
 
 // Sanitize 数据检测
-func (s *Schema) Sanitize() *errors.Error {
+func (s *Schema) Sanitize() *message.SyntaxError {
 	if s.ExternalDocs != nil {
 		if err := s.ExternalDocs.Sanitize(); err != nil {
 			err.Field = "externalDocs." + err.Field

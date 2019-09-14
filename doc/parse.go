@@ -5,7 +5,7 @@ package doc
 import (
 	"sort"
 
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
@@ -17,7 +17,7 @@ func (doc *Doc) Sanitize() error {
 	})
 	for i := 1; i < len(doc.Tags); i++ {
 		if doc.Tags[i].Name == doc.Tags[i-1].Name {
-			return errors.New(doc.file, "tag.name", doc.line, locale.ErrDuplicateValue)
+			return message.NewError(doc.file, "tag.name", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
@@ -27,7 +27,7 @@ func (doc *Doc) Sanitize() error {
 	})
 	for i := 1; i < len(doc.Servers); i++ {
 		if doc.Servers[i].Name == doc.Servers[i-1].Name {
-			return errors.New(doc.file, "server.name", doc.line, locale.ErrDuplicateValue)
+			return message.NewError(doc.file, "server.name", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
@@ -37,7 +37,7 @@ func (doc *Doc) Sanitize() error {
 	})
 	for i := 1; i < len(doc.Servers); i++ {
 		if doc.Servers[i].URL == doc.Servers[i-1].URL {
-			return errors.New(doc.file, "server.url", doc.line, locale.ErrDuplicateValue)
+			return message.NewError(doc.file, "server.url", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
@@ -45,13 +45,13 @@ func (doc *Doc) Sanitize() error {
 	for _, api := range doc.Apis {
 		for _, tag := range api.Tags {
 			if !doc.tagExists(tag) {
-				return errors.New(api.file, "tag", api.line, locale.ErrInvalidValue)
+				return message.NewError(api.file, "tag", api.line, locale.ErrInvalidValue)
 			}
 		}
 
 		for _, srv := range api.Servers {
 			if !doc.serverExists(srv) {
-				return errors.New(api.file, "server", api.line, locale.ErrInvalidValue)
+				return message.NewError(api.file, "server", api.line, locale.ErrInvalidValue)
 			}
 		}
 	} // end doc.Apis

@@ -18,11 +18,11 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5"
-	"github.com/caixw/apidoc/v5/errors"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/output"
 	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // 控制台的输出颜色
@@ -75,10 +75,10 @@ func parse(wd string) {
 	}
 
 	now := time.Now()
-	h := errors.NewHandler(newConsoleHandlerFunc())
+	h := message.NewHandler(newConsoleHandlerFunc())
 	doc, err := apidoc.Parse(context.Background(), h, cfg.Inputs...)
 	if err != nil {
-		if ferr, ok := err.(*errors.Error); ok {
+		if ferr, ok := err.(*message.SyntaxError); ok {
 			ferr.File = configFilename
 		}
 		printError(err)
@@ -86,7 +86,7 @@ func parse(wd string) {
 	}
 
 	if err = output.Render(doc, cfg.Output); err != nil {
-		if ferr, ok := err.(*errors.Error); ok {
+		if ferr, ok := err.(*message.SyntaxError); ok {
 			ferr.File = configFilename
 		}
 		printError(err)
@@ -144,12 +144,12 @@ func printLanguages() {
 	}
 }
 
-func newConsoleHandlerFunc() errors.HandlerFunc {
-	return func(err *errors.Error) {
+func newConsoleHandlerFunc() message.HandlerFunc {
+	return func(err *message.Message) {
 		switch err.Type {
-		case errors.SyntaxError:
+		case message.Erro:
 			printError(err)
-		case errors.SyntaxWarn:
+		case message.Warn:
 			printWarn(err)
 		default:
 			printError(err)

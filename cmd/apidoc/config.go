@@ -11,9 +11,9 @@ import (
 	"github.com/issue9/version"
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/v5/errors"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/options"
 )
 
@@ -95,24 +95,24 @@ func loadConfig(wd string) (*config, error) {
 
 func (cfg *config) sanitize() error {
 	if !version.SemVerValid(cfg.Version) {
-		return errors.New(configFilename, "version", 0, locale.ErrInvalidFormat)
+		return message.NewError(configFilename, "version", 0, locale.ErrInvalidFormat)
 	}
 
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
 	if err != nil {
-		return errors.WithError(err, configFilename, "version", 0, locale.VersionInCompatible)
+		return message.WithError(err, configFilename, "version", 0)
 	}
 	if !compatible {
-		return errors.New(configFilename, "version", 0, locale.VersionInCompatible)
+		return message.NewError(configFilename, "version", 0, locale.VersionInCompatible)
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return errors.New(configFilename, "inputs", 0, locale.ErrRequired)
+		return message.NewError(configFilename, "inputs", 0, locale.ErrRequired)
 	}
 
 	if cfg.Output == nil {
-		return errors.New(configFilename, "output", 0, locale.ErrRequired)
+		return message.NewError(configFilename, "output", 0, locale.ErrRequired)
 	}
 
 	for _, input := range cfg.Inputs {
@@ -136,7 +136,7 @@ func getConfig(wd string) (*config, error) {
 		return nil, err
 	}
 	if len(inputs) == 0 {
-		return nil, errors.NewLocaleError(locale.ErrNotFoundSupportedLang)
+		return nil, message.NewError("", "", 0, locale.ErrNotFoundSupportedLang)
 	}
 
 	return &config{

@@ -10,7 +10,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 var (
@@ -33,7 +33,7 @@ printf("hello world!")
 func TestParse(t *testing.T) {
 	erro := log.New(ioutil.Discard, "[ERRO]", 0)
 	warn := log.New(ioutil.Discard, "[WARN]", 0)
-	h := errors.NewHandler(errors.NewLogHandlerFunc(erro, warn))
+	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn))
 	a := assert.New(t)
 
 	ret := Parse(nil, nil, nil)

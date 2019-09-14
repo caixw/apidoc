@@ -3,7 +3,7 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
@@ -37,7 +37,7 @@ type Parameter struct {
 }
 
 // Sanitize 对数据进行验证
-func (p *Parameter) Sanitize() *errors.Error {
+func (p *Parameter) Sanitize() *message.SyntaxError {
 	if err := p.Style.Sanitize(); err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (p *Parameter) Sanitize() *errors.Error {
 	switch p.IN {
 	case ParameterINcookie, ParameterINHeader, ParameterINPath, ParameterINQuery:
 	default:
-		return errors.New("", "in", 0, locale.ErrInvalidValue)
+		return message.NewError("", "in", 0, locale.ErrInvalidValue)
 	}
 
 	// TODO 其它字段检测
@@ -54,17 +54,17 @@ func (p *Parameter) Sanitize() *errors.Error {
 }
 
 // Sanitize 对数据进行验证
-func (h *Header) Sanitize() *errors.Error {
+func (h *Header) Sanitize() *message.SyntaxError {
 	if err := h.Style.Sanitize(); err != nil {
 		return err
 	}
 
 	if h.IN != "" {
-		return errors.New("", "in", 0, locale.ErrMustEmpty)
+		return message.NewError("", "in", 0, locale.ErrMustEmpty)
 	}
 
 	if h.Name != "" {
-		return errors.New("", "name", 0, locale.ErrMustEmpty)
+		return message.NewError("", "name", 0, locale.ErrMustEmpty)
 	}
 
 	return nil

@@ -10,9 +10,9 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
 
-	"github.com/caixw/apidoc/v5/errors"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 	opt "github.com/caixw/apidoc/v5/options"
 )
 
@@ -23,24 +23,24 @@ type options struct {
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
 
-func buildOptions(opt *opt.Input) (*options, *errors.Error) {
+func buildOptions(opt *opt.Input) (*options, *message.SyntaxError) {
 	o := &options{}
 
 	if len(opt.Dir) == 0 {
-		return nil, errors.New("", "dir", 0, locale.ErrRequired)
+		return nil, message.NewError("", "dir", 0, locale.ErrRequired)
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return nil, errors.New("", "dir", 0, locale.ErrDirNotExists)
+		return nil, message.NewError("", "dir", 0, locale.ErrDirNotExists)
 	}
 
 	if len(opt.Lang) == 0 {
-		return nil, errors.New("", "dir", 0, locale.ErrRequired)
+		return nil, message.NewError("", "dir", 0, locale.ErrRequired)
 	}
 
 	language := lang.Get(opt.Lang)
 	if language == nil {
-		return nil, errors.New("", "dir", 0, locale.ErrUnsupportedInputLang, opt.Lang)
+		return nil, message.NewError("", "dir", 0, locale.ErrUnsupportedInputLang, opt.Lang)
 	}
 	o.blocks = language.Blocks
 
@@ -64,10 +64,10 @@ func buildOptions(opt *opt.Input) (*options, *errors.Error) {
 	// 生成 paths
 	paths, err := recursivePath(opt)
 	if err != nil {
-		return nil, errors.New("", "dir", 0, err.Error())
+		return nil, message.NewError("", "dir", 0, err.Error())
 	}
 	if len(paths) == 0 {
-		return nil, errors.New("", "dir", 0, locale.ErrDirIsEmpty)
+		return nil, message.NewError("", "dir", 0, locale.ErrDirIsEmpty)
 	}
 	o.paths = paths
 
@@ -75,7 +75,7 @@ func buildOptions(opt *opt.Input) (*options, *errors.Error) {
 	if opt.Encoding != "" {
 		o.encoding, err = ianaindex.IANA.Encoding(opt.Encoding)
 		if err != nil {
-			return nil, errors.WithError(err, "", "encoding", 0, locale.ErrUnsupportedEncoding)
+			return nil, message.WithError(err, "", "encoding", 0)
 		}
 	}
 

@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/caixw/apidoc/v5/errors"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // Type 表示数据类型
@@ -47,7 +47,7 @@ func parseType(val string) (Type, error) {
 	if t, found := stringTypeMap[val]; found {
 		return t, nil
 	}
-	return None, errors.NewLocaleError(locale.ErrInvalidType, val)
+	return None, message.NewError("", "", 0, locale.ErrInvalidType, val)
 
 }
 
@@ -101,5 +101,5 @@ func (t Type) fmtString() (string, error) {
 	if v, found := typeStringMap[t]; found {
 		return v, nil
 	}
-	return "", errors.NewLocaleError(locale.ErrInvalidType, strconv.Itoa(int(t)))
+	return "", message.NewError("", "", 0, locale.ErrInvalidType, strconv.Itoa(int(t)))
 }

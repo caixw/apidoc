@@ -6,14 +6,14 @@ import (
 	"math"
 	"unicode"
 
-	"github.com/caixw/apidoc/v5/errors"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 var minsize = len("@api ")
 
 // Parse 分析 data 中的内容，并以行号作为键名，代码块作为键值返回
-func Parse(data []byte, blocks []Blocker, h *errors.Handler) map[int][]byte {
+func Parse(data []byte, blocks []Blocker, h *message.Handler) map[int][]byte {
 	l := &lexer{data: data, blocks: blocks}
 	var block Blocker
 
@@ -34,7 +34,7 @@ func Parse(data []byte, blocks []Blocker, h *errors.Handler) map[int][]byte {
 		ln := l.lineNumber() + 1 // 记录当前的行号，1 表示从 1 开始记数
 		lines, ok := block.EndFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
-			h.SyntaxWarn(errors.New("", "", ln, locale.ErrNotFoundEndFlag))
+			h.Warn(message.NewError("", "", ln, locale.ErrNotFoundEndFlag))
 			return ret
 		}
 

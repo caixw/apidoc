@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	opt "github.com/caixw/apidoc/v5/options"
 )
@@ -16,7 +16,7 @@ import (
 // Render 渲染 doc 的内容，具体的渲染参数由 o 指定。
 func Render(d *doc.Doc, output *opt.Output) error {
 	if output == nil {
-		return errors.New("", "output", 0, locale.ErrRequired)
+		return message.NewError("", "output", 0, locale.ErrRequired)
 	}
 
 	opt, err := buildOptions(output)

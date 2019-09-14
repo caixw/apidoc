@@ -12,7 +12,7 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
@@ -96,17 +96,17 @@ func newTag(tag *doc.Tag) *Tag {
 }
 
 // Sanitize 数据检测
-func (oa *OpenAPI) Sanitize() *errors.Error {
+func (oa *OpenAPI) Sanitize() *message.SyntaxError {
 	if oa.OpenAPI == "" {
 		oa.OpenAPI = LatestVersion
 	}
 
 	if !version.SemVerValid(oa.OpenAPI) {
-		return errors.New("", "openapi", 0, locale.ErrInvalidFormat)
+		return message.NewError("", "openapi", 0, locale.ErrInvalidFormat)
 	}
 
 	if oa.Info == nil {
-		return errors.New("", "info", 0, locale.ErrRequired)
+		return message.NewError("", "info", 0, locale.ErrRequired)
 	}
 	if err := oa.Info.Sanitize(); err != nil {
 		err.Field = "info." + err.Field
@@ -128,7 +128,7 @@ func (oa *OpenAPI) Sanitize() *errors.Error {
 	}
 
 	if len(oa.Paths) == 0 {
-		return errors.New("", "paths", 0, locale.ErrRequired)
+		return message.NewError("", "paths", 0, locale.ErrRequired)
 	}
 	// TODO 验证 paths
 
@@ -157,7 +157,7 @@ func (oa *OpenAPI) Sanitize() *errors.Error {
 }
 
 // Sanitize 数据检测
-func (c *Components) Sanitize() *errors.Error {
+func (c *Components) Sanitize() *message.SyntaxError {
 	for key, item := range c.Schemas {
 		if err := item.Sanitize(); err != nil {
 			err.Field = "schemas[" + key + "]." + err.Field
@@ -204,16 +204,16 @@ func (c *Components) Sanitize() *errors.Error {
 }
 
 // Sanitize 数据检测
-func (ext *ExternalDocumentation) Sanitize() *errors.Error {
+func (ext *ExternalDocumentation) Sanitize() *message.SyntaxError {
 	if !is.URL(ext.URL) {
-		return errors.New("", "url", 0, locale.ErrInvalidFormat)
+		return message.NewError("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil
 }
 
 // Sanitize 数据检测
-func (l *Link) Sanitize() *errors.Error {
+func (l *Link) Sanitize() *message.SyntaxError {
 	if err := l.Server.Sanitize(); err != nil {
 		err.Field = "server." + err.Field
 		return err
@@ -223,9 +223,9 @@ func (l *Link) Sanitize() *errors.Error {
 }
 
 // Sanitize 数据检测
-func (tag *Tag) Sanitize() *errors.Error {
+func (tag *Tag) Sanitize() *message.SyntaxError {
 	if tag.Name == "" {
-		return errors.New("", "name", 0, locale.ErrInvalidFormat)
+		return message.NewError("", "name", 0, locale.ErrInvalidFormat)
 	}
 
 	if tag.ExternalDocs != nil {

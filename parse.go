@@ -9,8 +9,8 @@ import (
 	"sync"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/errors"
 	i "github.com/caixw/apidoc/v5/internal/input"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/options"
 )
 
@@ -19,7 +19,7 @@ import (
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
 //
 // 所有与解析有关的错误均通过 h 输出。而其它错误，比如参数问题等，通过返回参数返回。
-func Parse(ctx context.Context, h *errors.Handler, input ...*options.Input) (*doc.Doc, error) {
+func Parse(ctx context.Context, h *message.Handler, input ...*options.Input) (*doc.Doc, error) {
 	block, err := i.Parse(ctx, h, input...)
 	if err != nil {
 		return nil, err
@@ -56,17 +56,15 @@ var (
 	apiBegin    = []byte("<api ")
 )
 
-func parseBlock(d *doc.Doc, block i.Block, h *errors.Handler) {
+func parseBlock(d *doc.Doc, block i.Block, h *message.Handler) {
+	var err error
 	switch {
 	case bytes.HasPrefix(block.Data, apidocBegin):
-		err := xml.Unmarshal(block.Data, d)
-		h.SyntaxError(errors.WithError(err, block.File, "", block.Line))
+		err = xml.Unmarshal(block.Data, d)
 	case bytes.HasPrefix(block.Data, apiBegin):
 		api := d.NewAPI(block.File, block.Line)
-		err := xml.Unmarshal(block.Data, api)
-		if err != nil {
-			h.SyntaxError(errors.WithError(err, block.File, "", block.Line))
-			return
-		}
+		err = xml.Unmarshal(block.Data, api)
 	}
+
+	h.Error(message.WithError(err, block.File, "", block.Line))
 }

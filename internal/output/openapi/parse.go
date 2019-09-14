@@ -10,7 +10,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
@@ -43,7 +43,7 @@ func parse(doc *doc.Doc) (*OpenAPI, error) {
 	return openapi, nil
 }
 
-func parsePaths(openapi *OpenAPI, d *doc.Doc) *errors.Error {
+func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 	for _, api := range d.Apis {
 		p := openapi.Paths[api.Path.Path]
 		if p == nil {
@@ -155,48 +155,48 @@ func setOperationParams(operation *Operation, api *doc.API) {
 	}
 }
 
-func setOperation(path *PathItem, method string) (*Operation, *errors.Error) {
+func setOperation(path *PathItem, method string) (*Operation, *message.SyntaxError) {
 	operation := &Operation{}
 
 	switch strings.ToUpper(method) {
 	case "GET":
 		if path.Get != nil {
-			return nil, errors.New("", "get", 0, locale.ErrDuplicateValue)
+			return nil, message.NewError("", "get", 0, locale.ErrDuplicateValue)
 		}
 		path.Get = operation
 	case "DELETE":
 		if path.Delete != nil {
-			return nil, errors.New("", "delete", 0, locale.ErrDuplicateValue)
+			return nil, message.NewError("", "delete", 0, locale.ErrDuplicateValue)
 		}
 		path.Delete = operation
 	case "POST":
 		if path.Post != nil {
-			return nil, errors.New("", "post", 0, locale.ErrDuplicateValue)
+			return nil, message.NewError("", "post", 0, locale.ErrDuplicateValue)
 		}
 		path.Post = operation
 	case "PUT":
 		if path.Put != nil {
-			return nil, errors.New("", "put", 0, locale.ErrDuplicateValue)
+			return nil, message.NewError("", "put", 0, locale.ErrDuplicateValue)
 		}
 		path.Put = operation
 	case "PATCH":
 		if path.Patch != nil {
-			return nil, errors.New("", "patch", 0, locale.ErrDuplicateValue)
+			return nil, message.NewError("", "patch", 0, locale.ErrDuplicateValue)
 		}
 		path.Patch = operation
 	case "OPTIONS":
 		if path.Options != nil {
-			return nil, errors.New("", "options", 0, locale.ErrDuplicateValue)
+			return nil, message.NewError("", "options", 0, locale.ErrDuplicateValue)
 		}
 		path.Options = operation
 	case "HEAD":
 		if path.Head != nil {
-			return nil, errors.New("", "head", 0, locale.ErrDuplicateValue)
+			return nil, message.NewError("", "head", 0, locale.ErrDuplicateValue)
 		}
 		path.Head = operation
 	case "TRACE":
 		if path.Trace != nil {
-			return nil, errors.New("", "trace", 0, locale.ErrDuplicateValue)
+			return nil, message.NewError("", "trace", 0, locale.ErrDuplicateValue)
 		}
 		path.Trace = operation
 	}

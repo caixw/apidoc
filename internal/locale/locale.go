@@ -112,3 +112,22 @@ func Fprintln(w io.Writer, v ...interface{}) (int, error) {
 func Fprintf(w io.Writer, key message.Reference, v ...interface{}) (int, error) {
 	return localePrinter.Fprintf(w, key, v...)
 }
+
+// Locale 保存着本地化的信息，仅在需要时(调用 String)，才会被转换成当前语言。
+type Locale struct {
+	Key  message.Reference
+	Args []interface{}
+}
+
+// String fmt.Stringer
+func (l *Locale) String() string {
+	return Sprintf(l.Key, l.Args...)
+}
+
+// NewLocale 声明 Locale 实例
+func NewLocale(key message.Reference, v ...interface{}) *Locale {
+	return &Locale{
+		Key:  key,
+		Args: v,
+	}
+}

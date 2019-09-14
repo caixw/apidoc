@@ -52,7 +52,6 @@ const (
 	ErrPathInvalid           = "地址格式错误"
 	ErrDuplicateValue        = "重复的值"
 	ErrMessage               = "%s 位于 %s:%d 的 %s"
-	ErrMessageWithError      = "%s[%s] 位于 %s:%d 的 %s"
 	ErrInvalidMethod         = "无效的请求方法"
 	ErrMethodExists          = "该请求方法已经存在"
 	ErrInvalidTag            = "无效的标签 %s"

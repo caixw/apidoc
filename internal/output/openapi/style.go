@@ -3,7 +3,7 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
@@ -28,11 +28,11 @@ type Style struct {
 }
 
 // Sanitize 对数据进行验证
-func (style *Style) Sanitize() *errors.Error {
+func (style *Style) Sanitize() *message.SyntaxError {
 	switch style.Style {
 	case StyleMatrix, StyleLabel, StyleForm, StyleSimple, StyleSpaceDelimited, StylePipeDelimited, StyleDeepObject:
 	default:
-		return errors.New("", "style", 0, locale.ErrInvalidValue)
+		return message.NewError("", "style", 0, locale.ErrInvalidValue)
 	}
 
 	return nil

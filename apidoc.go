@@ -8,10 +8,10 @@ import (
 
 	"golang.org/x/text/language"
 
-	"github.com/caixw/apidoc/v5/errors"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	o "github.com/caixw/apidoc/v5/internal/output"
 	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/options"
 )
 
@@ -34,14 +34,14 @@ func Version() string {
 // h 表示处理语法错误的处理器。
 // output 输出设置项；
 // inputs 输入设置项。
-func Do(ctx context.Context, h *errors.Handler, output *options.Output, inputs ...*options.Input) error {
+func Do(ctx context.Context, h *message.Handler, output *options.Output, inputs ...*options.Input) error {
 	doc, err := Parse(ctx, h, inputs...)
 	if err != nil {
 		return err
 	}
 
 	if err := doc.Sanitize(); err != nil {
-		h.SyntaxError(err)
+		h.Error(err)
 	}
 
 	return o.Render(doc, output)

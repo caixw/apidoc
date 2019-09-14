@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package errors
+package message
 
 import (
 	"bytes"
@@ -25,9 +25,9 @@ func TestHandler(t *testing.T) {
 	h := NewHandler(NewLogHandlerFunc(errolog, warnlog))
 	a.NotError(h)
 
-	le := LocaleError{Key: locale.ErrRequired}
-	h.SyntaxError(&Error{File: "erro.go", LocaleError: le})
-	h.SyntaxWarn(&Error{File: "warn.go", LocaleError: le})
+	le := locale.NewLocale(locale.ErrRequired)
+	h.Error(&SyntaxError{File: "erro.go", locale: le})
+	h.Warn(&SyntaxError{File: "warn.go", locale: le})
 
 	time.Sleep(1 * time.Second) // 等待 channel 完成
 	a.Contains(erro.String(), "erro.go")
@@ -35,6 +35,6 @@ func TestHandler(t *testing.T) {
 
 	h.Stop()
 	a.Panic(func() {
-		h.SyntaxError(&Error{File: "erro.go", LocaleError: le})
+		h.Error(&SyntaxError{File: "erro.go", locale: le})
 	})
 }

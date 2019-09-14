@@ -10,8 +10,8 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/errors"
 	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/options"
 )
 
@@ -106,23 +106,23 @@ func TestConfig_sanitize(t *testing.T) {
 	conf := &config{}
 	err := conf.sanitize()
 	a.Error(err)
-	a.Equal(err.(*errors.Error).Field, "version")
+	a.Equal(err.(*message.SyntaxError).Field, "version")
 
 	// 版本号错误
 	conf.Version = "5.0"
 	err = conf.sanitize()
 	a.Error(err)
-	a.Equal(err.(*errors.Error).Field, "version")
+	a.Equal(err.(*message.SyntaxError).Field, "version")
 
 	// 未声明 inputs
 	conf.Version = "5.0.1"
 	err = conf.sanitize()
 	a.Error(err)
-	a.Equal(err.(*errors.Error).Field, "inputs")
+	a.Equal(err.(*message.SyntaxError).Field, "inputs")
 
 	// 未声明 output
 	conf.Inputs = []*options.Input{{}}
 	err = conf.sanitize()
 	a.Error(err)
-	a.Equal(err.(*errors.Error).Field, "output")
+	a.Equal(err.(*message.SyntaxError).Field, "output")
 }

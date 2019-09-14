@@ -18,9 +18,10 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
-	"github.com/caixw/apidoc/v5/errors"
+	"github.com/caixw/apidoc/errors"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 	opt "github.com/caixw/apidoc/v5/options"
 )
 
@@ -36,16 +37,16 @@ type Block struct {
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
 //
 // 所有与解析有关的错误均通过 h 输出。而其它错误，比如参数问题等，通过返回参数返回。
-func Parse(ctx context.Context, h *errors.Handler, inputs ...*opt.Input) (chan Block, error) {
+func Parse(ctx context.Context, h *message.Handler, inputs ...*opt.Input) (chan Block, error) {
 	if len(inputs) == 0 {
-		return nil, errors.New("", "inputs", 0, locale.ErrRequired)
+		return nil, message.NewError("", "inputs", 0, locale.ErrRequired)
 	}
 
 	opts := make([]*options, 0, len(inputs))
 	for index, item := range inputs {
 		field := "inputs[" + strconv.Itoa(index) + "]."
 		if item == nil {
-			return nil, errors.New("", field, 0, locale.ErrRequired)
+			return nil, message.NewError("", field, 0, locale.ErrRequired)
 		}
 		opt, err := buildOptions(item)
 		if err != nil {
@@ -76,7 +77,7 @@ func Parse(ctx context.Context, h *errors.Handler, inputs ...*opt.Input) (chan B
 	return data, nil
 }
 
-func parse(ctx context.Context, data chan Block, h *errors.Handler, wg *sync.WaitGroup, o *options) {
+func parse(ctx context.Context, data chan Block, h *message.Handler, wg *sync.WaitGroup, o *options) {
 	for _, path := range o.paths {
 		select {
 		case <-ctx.Done():
@@ -94,10 +95,10 @@ func parse(ctx context.Context, data chan Block, h *errors.Handler, wg *sync.Wai
 // 分析 path 指向的文件。
 //
 // NOTE: parseFile 内部不能有协程处理代码。
-func parseFile(channel chan Block, h *errors.Handler, path string, o *options) {
+func parseFile(channel chan Block, h *message.Handler, path string, o *options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
-		h.SyntaxError(&errors.Error{File: path})
+		h.Error(&errors.Error{File: path})
 		return
 	}
 
