@@ -22,10 +22,10 @@ type Doc struct {
 	Servers []*Server `xml:"server,omitempty"`
 	Apis    []*API    `xml:"apis,omitempty"`
 
-	// TODO 应用于全局的变量
-	//Responses []*Response `xml:"response,omitempty"`
-	//Requests  []*Request  `xml:"Request,omitempty"`
-	//Mimetypes string `` // 指定可用的 mimetype 类型
+	// 应用于全局的变量
+	Mimetypes string      `xml:"mimetypes,omitempty"` // 指定可用的 mimetype 类型
+	Responses []*Response `xml:"response,omitempty"`
+	Requests  []*Request  `xml:"Request,omitempty"`
 
 	references map[string]interface{}
 	file       string
