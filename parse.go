@@ -66,5 +66,5 @@ func parseBlock(d *doc.Doc, block i.Block, h *message.Handler) {
 		err = xml.Unmarshal(block.Data, api)
 	}
 
-	h.Error(message.WithError(err, block.File, "", block.Line))
+	h.Error(message.WithError(block.File, "", block.Line, err))
 }

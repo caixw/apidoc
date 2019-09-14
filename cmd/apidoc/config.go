@@ -101,7 +101,7 @@ func (cfg *config) sanitize() error {
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
 	if err != nil {
-		return message.WithError(err, configFilename, "version", 0)
+		return message.WithError(configFilename, "version", 0, err)
 	}
 	if !compatible {
 		return message.NewError(configFilename, "version", 0, locale.VersionInCompatible)

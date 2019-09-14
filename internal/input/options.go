@@ -75,7 +75,7 @@ func buildOptions(opt *opt.Input) (*options, *message.SyntaxError) {
 	if opt.Encoding != "" {
 		o.encoding, err = ianaindex.IANA.Encoding(opt.Encoding)
 		if err != nil {
-			return nil, message.WithError(err, "", "encoding", 0)
+			return nil, message.WithError("", "encoding", 0, err)
 		}
 	}
 

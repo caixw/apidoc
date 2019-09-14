@@ -9,6 +9,9 @@ import (
 )
 
 // SyntaxError 表示语法错误信息
+//
+// 无论是配置文件的错误，还是文档的语法错误，都将返回此错误。
+// apidoc 的错误基本上都是基于 SyntaxError。
 type SyntaxError struct {
 	locale *locale.Locale
 	prev   error
@@ -36,23 +39,18 @@ func (err *SyntaxError) Error() string {
 	return locale.Sprintf(locale.ErrMessage, msg, err.File, err.Line, err.Field)
 }
 
-// NewError 声明新的 Error 实例
-func NewError(file, field string, line int, msg message.Reference, vals ...interface{}) *SyntaxError {
-	return WithLocale(locale.NewLocale(msg, vals...), file, field, line)
-}
-
-// WithLocale 返回一条带错误内容的 Error 实例
-func WithLocale(l *locale.Locale, file, field string, line int) *SyntaxError {
+// NewError 声明新的 SyntaxError 实例
+func NewError(file, field string, line int, msg message.Reference, val ...interface{}) *SyntaxError {
 	return &SyntaxError{
-		locale: l,
+		locale: locale.NewLocale(msg, val...),
 		File:   file,
 		Line:   line,
 		Field:  field,
 	}
 }
 
-// WithError 带错误和信息提示
-func WithError(err error, file, field string, line int) *SyntaxError {
+// WithError 声明 SyntaxError 实例，其中的提示信息由 err 返回
+func WithError(file, field string, line int, err error) *SyntaxError {
 	return &SyntaxError{
 		prev:  err,
 		File:  file,
