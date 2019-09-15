@@ -141,33 +141,7 @@ func (api *API) sanitize() error {
 		}
 	}
 
-	api.fillRequestResponse()
-
 	// TODO ref
 
 	return nil
-}
-
-// 填充全局的 request 和 response 到当前的 api
-func (api *API) fillRequestResponse() {
-	for _, r := range api.doc.Requests {
-		if !api.requestResponseExists(api.Requests, r.Status, r.Mimetype) {
-			api.Requests = append(api.Requests, r)
-		}
-	}
-	for _, r := range api.doc.Responses {
-		if !api.requestResponseExists(api.Responses, r.Status, r.Mimetype) {
-			api.Responses = append(api.Responses, r)
-		}
-	}
-}
-
-func (api *API) requestResponseExists(body []*Request, status int, mimetype string) bool {
-	for _, r := range body {
-		if r.Status == status && r.Mimetype == mimetype {
-			return true
-		}
-	}
-
-	return false
 }
