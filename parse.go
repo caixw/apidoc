@@ -51,8 +51,8 @@ LOOP:
 }
 
 var (
-	apidocBegin = []byte("<apidoc ")
-	apiBegin    = []byte("<api ")
+	apidocBegin = []byte("<apidoc")
+	apiBegin    = []byte("<api")
 )
 
 func parseBlock(d *doc.Doc, block i.Block, h *message.Handler) {
