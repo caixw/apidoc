@@ -23,9 +23,9 @@ type Doc struct {
 	Apis    []*API    `xml:"apis,omitempty"`
 
 	// 应用于全局的变量
-	Mimetypes string      `xml:"mimetypes,omitempty"` // 指定可用的 mimetype 类型
-	Responses []*Response `xml:"response,omitempty"`
-	Requests  []*Request  `xml:"Request,omitempty"`
+	Mimetypes string     `xml:"mimetypes,omitempty"` // 指定可用的 mimetype 类型
+	Responses []*Request `xml:"response,omitempty"`
+	Requests  []*Request `xml:"Request,omitempty"`
 
 	references map[string]interface{}
 	file       string
@@ -41,10 +41,8 @@ type Tag struct {
 
 // Server 服务信息
 type Server struct {
-	Name        string   `xml:"name,attr"` // 字面名称，需要唯一
-	URL         string   `xml:"url,attr"`
-	Description Richtext `xml:",omitempty"` // 具体描述
-	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
+	Tag
+	URL string `xml:"url,attr"`
 }
 
 // Contact 描述联系方式
@@ -65,4 +63,40 @@ func New() *Doc {
 	return &Doc{
 		APIDoc: vars.Version(),
 	}
+}
+
+func (doc *Doc) tagExists(tag string) bool {
+	for _, s := range doc.Tags {
+		if s.Name == tag {
+			return true
+		}
+	}
+	return false
+}
+
+func (doc *Doc) serverExists(srv string) bool {
+	for _, s := range doc.Servers {
+		if s.Name == srv {
+			return true
+		}
+	}
+	return false
+}
+
+func (doc *Doc) requestExists(status int, mimetype string) bool {
+	return doc.requestResponseExists(doc.Requests, status, mimetype)
+}
+
+func (doc *Doc) responseExists(status int, mimetype string) bool {
+	return doc.requestResponseExists(doc.Responses, status, mimetype)
+}
+
+func (doc *Doc) requestResponseExists(body []*Request, status int, mimetype string) bool {
+	for _, r := range body {
+		if r.Status == status && r.Mimetype == mimetype {
+			return true
+		}
+	}
+
+	return false
 }

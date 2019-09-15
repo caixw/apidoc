@@ -2,29 +2,32 @@
 
 package doc
 
+import (
+	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
+)
+
 // API 表示 <api> 顶层元素
 type API struct {
-	XMLName     struct{}    `xml:"api"`
-	Version     Version     `xml:"version,attr,omitempty"`
-	Method      string      `xml:"method,attr"`
-	ID          string      `xml:"id,attr,omitempty"`
-	Path        *Path       `xml:"path"`
-	Summary     string      `xml:"summary,attr"`
-	Description Richtext    `xml:"description,omitempty"`
-	Requests    []*Request  `xml:"request"`
-	Responses   []*Response `xml:"response"`
-	Callback    *Callback   `xml:"callback,omitempty"`
-	Deprecated  Version     `xml:"deprecated,attr,omitempty"`
+	XMLName     struct{}   `xml:"api"`
+	Version     Version    `xml:"version,attr,omitempty"`
+	Method      string     `xml:"method,attr"`
+	ID          string     `xml:"id,attr,omitempty"`
+	Path        *Path      `xml:"path"`
+	Summary     string     `xml:"summary,attr"`
+	Description Richtext   `xml:"description,omitempty"`
+	Requests    []*Request `xml:"request"`
+	Responses   []*Request `xml:"response"`
+	Callback    *Callback  `xml:"callback,omitempty"`
+	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
 
 	Tags    []string `xml:"tag,omitempty"`
 	Servers []string `xml:"server,omitempty"`
 
 	line int
 	file string
+	doc  *Doc
 }
-
-// Response 返回的内容
-type Response Request
 
 // Request 请求内容
 type Request struct {
@@ -100,7 +103,7 @@ type Callback struct {
 	Reference   string     `xml:"ref,attr,omitempty"`
 
 	// 对回调的返回要求
-	Responses []*Response `xml:"response,omitempty"`
+	Responses []*Request `xml:"response,omitempty"`
 }
 
 // NewAPI 返回新的 API 实例
@@ -108,8 +111,56 @@ func (doc *Doc) NewAPI(file string, line int) *API {
 	api := &API{
 		line: line,
 		file: file,
+		doc:  doc,
 	}
 	doc.Apis = append(doc.Apis, api)
 
 	return api
+}
+
+// 检测和修复 api 对象，无法修复返回错误。
+//
+// NOTE: 需要保证 doc 已经初始化
+func (api *API) sanitize() error {
+	for _, tag := range api.Tags {
+		if !api.doc.tagExists(tag) {
+			return message.NewError(api.file, "tag", api.line, locale.ErrInvalidValue)
+		}
+	}
+
+	for _, srv := range api.Servers {
+		if !api.doc.serverExists(srv) {
+			return message.NewError(api.file, "server", api.line, locale.ErrInvalidValue)
+		}
+	}
+
+	api.fillRequestResponse()
+
+	// TODO ref
+
+	return nil
+}
+
+// 填充全局的 request 和 response 到当前的 api
+func (api *API) fillRequestResponse() {
+	for _, r := range api.doc.Requests {
+		if !api.requestResponseExists(api.Requests, r.Status, r.Mimetype) {
+			api.Requests = append(api.Requests, r)
+		}
+	}
+	for _, r := range api.doc.Responses {
+		if !api.requestResponseExists(api.Responses, r.Status, r.Mimetype) {
+			api.Responses = append(api.Responses, r)
+		}
+	}
+}
+
+func (api *API) requestResponseExists(body []*Request, status int, mimetype string) bool {
+	for _, r := range body {
+		if r.Status == status && r.Mimetype == mimetype {
+			return true
+		}
+	}
+
+	return false
 }

@@ -5,8 +5,8 @@ package doc
 import (
 	"sort"
 
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // Sanitize 检测内容是否合法
@@ -20,6 +20,8 @@ func (doc *Doc) Sanitize() error {
 			return message.NewError(doc.file, "tag.name", doc.line, locale.ErrDuplicateValue)
 		}
 	}
+
+	// TODO
 
 	// Server.Name 查重
 	sort.SliceStable(doc.Servers, func(i, j int) bool {
@@ -43,38 +45,10 @@ func (doc *Doc) Sanitize() error {
 
 	// 查看 API 中的标签是否都存在
 	for _, api := range doc.Apis {
-		for _, tag := range api.Tags {
-			if !doc.tagExists(tag) {
-				return message.NewError(api.file, "tag", api.line, locale.ErrInvalidValue)
-			}
+		if err := api.sanitize(); err != nil {
+			return err
 		}
-
-		for _, srv := range api.Servers {
-			if !doc.serverExists(srv) {
-				return message.NewError(api.file, "server", api.line, locale.ErrInvalidValue)
-			}
-		}
-	} // end doc.Apis
+	}
 
 	return nil
-}
-
-func (doc *Doc) tagExists(tag string) bool {
-	for _, t := range doc.Tags {
-		if t.Name == tag {
-			return true
-		}
-	}
-
-	return false
-}
-
-func (doc *Doc) serverExists(srv string) bool {
-	for _, s := range doc.Servers {
-		if s.Name == srv {
-			return true
-		}
-	}
-
-	return false
 }
