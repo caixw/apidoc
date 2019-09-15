@@ -3,21 +3,30 @@
 package doc
 
 import (
-	"encoding/xml"
 	"io/ioutil"
 	"testing"
 
 	"github.com/issue9/assert"
 )
 
-func TestAPI(t *testing.T) {
-	a := assert.New(t)
+func newAPI(a *assert.Assertion) *API {
+	doc := newDoc(a)
 
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	api := &API{}
-	a.NotError(xml.Unmarshal(data, api))
+	api := doc.NewAPI("", 1)
+	a.NotNil(api)
+
+	a.NotError(api.FromXML(data))
+
+	return api
+}
+
+func TestAPI(t *testing.T) {
+	a := assert.New(t)
+	api := newAPI(a)
+
 	a.Equal(api.Version, "1.1.0").
 		Equal(api.Tags, []string{"g1", "g2"})
 

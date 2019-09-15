@@ -3,6 +3,8 @@
 package doc
 
 import (
+	"encoding/xml"
+
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
 )
@@ -116,6 +118,11 @@ func (doc *Doc) NewAPI(file string, line int) *API {
 	doc.Apis = append(doc.Apis, api)
 
 	return api
+}
+
+// FromXML 从 XML 字符串初始化当前的实例
+func (api *API) FromXML(data []byte) error {
+	return xml.Unmarshal(data, api)
 }
 
 // 检测和修复 api 对象，无法修复返回错误。

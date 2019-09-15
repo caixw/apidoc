@@ -5,7 +5,6 @@ package apidoc
 import (
 	"bytes"
 	"context"
-	"encoding/xml"
 	"sync"
 
 	"github.com/caixw/apidoc/v5/doc"
@@ -60,10 +59,9 @@ func parseBlock(d *doc.Doc, block i.Block, h *message.Handler) {
 	var err error
 	switch {
 	case bytes.HasPrefix(block.Data, apidocBegin):
-		err = xml.Unmarshal(block.Data, d)
+		err = d.FromXML(block.Data)
 	case bytes.HasPrefix(block.Data, apiBegin):
-		api := d.NewAPI(block.File, block.Line)
-		err = xml.Unmarshal(block.Data, api)
+		err = d.NewAPI(block.File, block.Line).FromXML(block.Data)
 	}
 
 	h.Error(message.WithError(block.File, "", block.Line, err))

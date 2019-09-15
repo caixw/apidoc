@@ -3,21 +3,28 @@
 package doc
 
 import (
-	"encoding/xml"
 	"io/ioutil"
 	"testing"
 
 	"github.com/issue9/assert"
 )
 
-func TestDoc(t *testing.T) {
-	a := assert.New(t)
-
+func newDoc(a *assert.Assertion) *Doc {
 	data, err := ioutil.ReadFile("./testdata/doc.xml")
 	a.NotError(err).NotNil(data)
 
-	doc := &Doc{}
-	a.NotError(xml.Unmarshal(data, doc))
+	doc := New()
+	a.NotNil(doc)
+
+	a.NotError(doc.FromXML(data))
+
+	return doc
+}
+
+func TestDoc(t *testing.T) {
+	a := assert.New(t)
+	doc := newDoc(a)
+
 	a.Equal(doc.Version, "1.1.1")
 
 	a.Equal(len(doc.Tags), 2)
@@ -42,4 +49,10 @@ func TestDoc(t *testing.T) {
 			URL:   "https://example.com",
 			Email: "test@example.com",
 		})
+
+	a.True(doc.tagExists("tag1")).
+		False(doc.tagExists("not-exists"))
+
+	a.True(doc.serverExists("admin")).
+		False(doc.serverExists("not-exists"))
 }

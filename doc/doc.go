@@ -2,7 +2,11 @@
 
 package doc
 
-import "github.com/caixw/apidoc/v5/internal/vars"
+import (
+	"encoding/xml"
+
+	"github.com/caixw/apidoc/v5/internal/vars"
+)
 
 // Richtext 富文本内容
 type Richtext string
@@ -63,6 +67,11 @@ func New() *Doc {
 	return &Doc{
 		APIDoc: vars.Version(),
 	}
+}
+
+// FromXML 从 XML 字符串初始化当前的实例
+func (doc *Doc) FromXML(data []byte) error {
+	return xml.Unmarshal(data, doc)
 }
 
 func (doc *Doc) tagExists(tag string) bool {
