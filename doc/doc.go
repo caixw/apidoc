@@ -18,8 +18,7 @@ type Richtext string
 type Doc struct {
 	XMLName struct{} `xml:"apidoc"`
 
-	APIDoc string `xml:"-"` // 程序的版本号
-
+	APIDoc  string    `xml:"apidoc,attr,omitempty"`  // 程序的版本号
 	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
 	Content Richtext  `xml:"content"`
@@ -87,6 +86,8 @@ func (doc *Doc) FromXML(data []byte) error {
 
 // Sanitize 检测内容是否合法
 func (doc *Doc) Sanitize() error {
+	doc.APIDoc = vars.Version() // 防止被覆盖
+
 	// Tag.Name 查重
 	sort.SliceStable(doc.Tags, func(i, j int) bool {
 		return doc.Tags[i].Name > doc.Tags[j].Name
