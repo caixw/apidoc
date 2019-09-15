@@ -10,8 +10,8 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 func parse(doc *doc.Doc) (*OpenAPI, error) {
@@ -51,7 +51,7 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 			openapi.Paths[api.Path.Path] = p
 		}
 
-		operation, err := setOperation(p, api.Method)
+		operation, err := setOperation(p, string(api.Method))
 		if err != nil {
 			err.Field = "paths." + err.Field
 			return err

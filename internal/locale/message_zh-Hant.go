@@ -49,7 +49,7 @@ func init() {
 		ErrPathInvalid:           "地址格式錯誤",
 		ErrDuplicateValue:        "重復的值",
 		ErrMessage:               "%s 位於 %s:%d 的 %s",
-		ErrInvalidMethod:         "無效的請求方法",
+		ErrInvalidMethod:         "無效的請求方法: %s",
 		ErrMethodExists:          "該請求方法已經存在",
 		ErrInvalidTag:            "無效的標簽 %s",
 

@@ -13,7 +13,7 @@ import (
 type API struct {
 	XMLName     struct{}   `xml:"api"`
 	Version     Version    `xml:"version,attr,omitempty"`
-	Method      string     `xml:"method,attr"`
+	Method      Method     `xml:"method,attr"`
 	ID          string     `xml:"id,attr,omitempty"`
 	Path        *Path      `xml:"path"`
 	Summary     string     `xml:"summary,attr"`
@@ -98,7 +98,7 @@ type Callback struct {
 	Mimetype    string     `xml:"mimetype,attr"`
 	Examples    []*Example `xml:"example,omitempty"`
 	Headers     []*Header  `xml:"header,omitempty"`
-	Method      string     `xml:"method,attr"`
+	Method      Method     `xml:"method,attr"`
 	Queries     []*Param   `xml:"queries,omitempty"` // 查询参数
 	Requests    []*Request `xml:"requests,omitempty"`
 	Deprecated  Version    `xml:"deprecated,attr,omitempty"`

@@ -51,7 +51,7 @@ func TestAPI(t *testing.T) {
 
 	// callback
 	cb := api.Callback
-	a.Equal(cb.Method, "post").
+	a.Equal(cb.Method, "POST").
 		Equal(cb.Mimetype, "json").
 		Equal(cb.Schema, "https").
 		Equal(cb.Type, Object).
