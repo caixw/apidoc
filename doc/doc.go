@@ -74,7 +74,15 @@ func New() *Doc {
 
 // FromXML 从 XML 字符串初始化当前的实例
 func (doc *Doc) FromXML(data []byte) error {
-	return xml.Unmarshal(data, doc)
+	err := xml.Unmarshal(data, doc)
+	if serr, ok := err.(*message.SyntaxError); ok {
+		serr.File = doc.file
+		serr.Line = doc.line
+	} else {
+		return message.WithError(doc.file, "", doc.line, err)
+	}
+
+	return err
 }
 
 // Sanitize 检测内容是否合法
