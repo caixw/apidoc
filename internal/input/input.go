@@ -97,11 +97,11 @@ func parse(ctx context.Context, data chan Block, h *message.Handler, wg *sync.Wa
 func parseFile(channel chan Block, h *message.Handler, path string, o *options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
-		h.Error(message.WithError(path, "", 0, err))
+		h.Error(message.Erro, message.WithError(path, "", 0, err))
 		return
 	}
 
-	ret := lang.Parse(data, o.blocks, h)
+	ret := lang.Parse(path, data, o.blocks, h)
 	for line, data := range ret {
 		channel <- Block{
 			File: path,

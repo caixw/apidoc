@@ -8,25 +8,13 @@ import (
 	"context"
 	"sync"
 
-	"golang.org/x/text/language"
-
 	"github.com/caixw/apidoc/v5/doc"
 	i "github.com/caixw/apidoc/v5/internal/input"
-	"github.com/caixw/apidoc/v5/internal/locale"
 	o "github.com/caixw/apidoc/v5/internal/output"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/options"
 )
-
-// InitLocale 初始化语言环境
-//
-// NOTE: 必须保证在第一时间调用。
-//
-// 如果 tag 的值为 language.Und，则表示采用系统语言
-func InitLocale(tag language.Tag) error {
-	return locale.Init(tag)
-}
 
 // Version 获取当前程序的版本号
 func Version() string {
@@ -45,7 +33,7 @@ func Do(ctx context.Context, h *message.Handler, output *options.Output, inputs 
 	}
 
 	if err := doc.Sanitize(); err != nil {
-		h.Error(err)
+		h.Error(message.Erro, err)
 	}
 
 	return o.Render(doc, output)
@@ -102,5 +90,5 @@ func parseBlock(d *doc.Doc, block i.Block, h *message.Handler) {
 		err = d.NewAPI(block.File, block.Line).FromXML(block.Data)
 	}
 
-	h.Error(message.WithError(block.File, "", block.Line, err))
+	h.Error(message.Erro, message.WithError(block.File, "", block.Line, err))
 }

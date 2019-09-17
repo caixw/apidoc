@@ -15,11 +15,11 @@ import (
 	"time"
 
 	"github.com/issue9/term/colors"
-	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/locale/syslocale"
 	"github.com/caixw/apidoc/v5/internal/output"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
@@ -31,14 +31,6 @@ const (
 	warnColor = colors.Cyan
 	erroColor = colors.Red
 )
-
-// 确保第一时间初始化本地化信息
-func init() {
-	if err := apidoc.InitLocale(language.Und); err != nil {
-		printWarn(err)
-		return
-	}
-}
 
 func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
@@ -74,8 +66,13 @@ func parse(wd string) {
 		return
 	}
 
+	tag, err := syslocale.Get()
+	if err != nil {
+		printError(err)
+	}
+
 	now := time.Now()
-	h := message.NewHandler(newConsoleHandlerFunc())
+	h := message.NewHandler(newConsoleHandlerFunc(), tag)
 	doc, err := apidoc.Parse(context.Background(), h, cfg.Inputs...)
 	if err != nil {
 		if ferr, ok := err.(*message.SyntaxError); ok {

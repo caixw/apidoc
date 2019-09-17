@@ -120,8 +120,8 @@ type Locale struct {
 }
 
 // String fmt.Stringer
-func (l *Locale) String() string {
-	return Sprintf(l.Key, l.Args...)
+func (l *Locale) String(p *message.Printer) string {
+	return p.Sprintf(l.Key, l.Args...)
 }
 
 // NewLocale 声明 Locale 实例

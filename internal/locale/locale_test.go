@@ -3,7 +3,6 @@
 package locale
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -42,17 +41,13 @@ func TestInitLocales(t *testing.T) {
 	a.Equal(p.Sprintf(FlagHUsage), locales[language.MustParse("zh-Hans")][FlagHUsage])
 }
 
-var _ fmt.Stringer = &Locale{}
-
 func TestLocale(t *testing.T) {
 	a := assert.New(t)
 
 	l := NewLocale(FlagHUsage)
 	a.NotNil(l)
 
-	a.NotError(Init(language.MustParse("zh-hans")))
-	l1 := l.String()
-	a.NotError(Init(language.MustParse("zh-hant")))
-	l2 := l.String()
+	l1 := l.String(message.NewPrinter(language.MustParse("zh-hans")))
+	l2 := l.String(message.NewPrinter(language.MustParse("zh-hant")))
 	a.NotEqual(l1, l2)
 }

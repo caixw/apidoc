@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/message"
 )
@@ -33,18 +34,19 @@ printf("hello world!")
 func TestParse(t *testing.T) {
 	erro := log.New(ioutil.Discard, "[ERRO]", 0)
 	warn := log.New(ioutil.Discard, "[WARN]", 0)
-	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn))
+	info := log.New(ioutil.Discard, "[INFO]", 0)
+	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn, info), language.Und)
 	a := assert.New(t)
 
-	ret := Parse(nil, nil, nil)
+	ret := Parse("", nil, nil, nil)
 	a.NotNil(ret).
 		Equal(0, len(ret))
 
-	ret = Parse(nil, cStyle, h)
+	ret = Parse("", nil, cStyle, h)
 	a.NotNil(ret).
 		Equal(0, len(ret))
 
-	ret = Parse([]byte(code1), cStyle, h)
+	ret = Parse("", []byte(code1), cStyle, h)
 	a.NotNil(ret).
 		Equal(1, len(ret)). // 字符串直接被过滤，不再返回
 		True(strings.Contains(string(ret[4]), "注释代码"))
@@ -52,7 +54,7 @@ func TestParse(t *testing.T) {
 	// 注释缺少结束符
 	//
 	// 但依然会返回内容
-	ret = Parse([]byte(code2), cStyle, h)
+	ret = Parse("", []byte(code2), cStyle, h)
 	a.NotNil(ret).
 		Equal(0, len(ret))
 }
