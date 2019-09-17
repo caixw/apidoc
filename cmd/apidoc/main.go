@@ -103,7 +103,7 @@ func parse(wd string) {
 	}
 	elapsed := time.Now().Sub(now)
 
-	printInfo(localePrinter.Sprintf(locale.Complete, cfg.Output.Path, elapsed))
+	h.Message(message.Info, locale.Complete, cfg.Output.Path, elapsed)
 }
 
 func usage() {
@@ -157,11 +157,13 @@ func newConsoleHandlerFunc() message.HandlerFunc {
 	return func(err *message.Message) {
 		switch err.Type {
 		case message.Erro:
-			printError(err)
+			printError(err.Message)
 		case message.Warn:
-			printWarn(err)
+			printWarn(err.Message)
+		case message.Info:
+			printInfo(err.Message)
 		default:
-			printError(err)
+			printError(err.Message)
 		}
 	}
 }
