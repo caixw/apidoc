@@ -29,19 +29,25 @@ type Message struct {
 // HandlerFunc 错误处理函数
 type HandlerFunc func(*Message)
 
-// Handler 用于接收错误信息内容
+// Handler 异步的消息处理机制
+//
+// 包含了本地化的信息，输出时，会以指定的本地化内容输出
 type Handler struct {
+	tag     language.Tag
+	printer *message.Printer
+
 	messages chan *Message
 	f        HandlerFunc
-	printer  *message.Printer
 }
 
 // NewHandler 声明新的 Handler 实例
 func NewHandler(f HandlerFunc, tag language.Tag) *Handler {
 	h := &Handler{
+		tag:     tag,
+		printer: message.NewPrinter(tag),
+
 		messages: make(chan *Message, 100),
 		f:        f,
-		printer:  message.NewPrinter(tag),
 	}
 
 	go func() {
@@ -51,6 +57,16 @@ func NewHandler(f HandlerFunc, tag language.Tag) *Handler {
 	}()
 
 	return h
+}
+
+// Tag 关联的 language.Tag
+func (h *Handler) Tag() language.Tag {
+	return h.tag
+}
+
+// Printer 关联的 message.Printer
+func (h *Handler) Printer() *message.Printer {
+	return h.printer
 }
 
 // Stop 停止处理错误内容

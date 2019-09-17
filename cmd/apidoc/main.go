@@ -15,8 +15,6 @@ import (
 	"time"
 
 	"github.com/issue9/term/colors"
-	"golang.org/x/text/language"
-	xmessage "golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v5"
 	"github.com/caixw/apidoc/v5/internal/lang"
@@ -34,27 +32,23 @@ const (
 	erroColor = colors.Red
 )
 
-var (
-	localeTag     language.Tag
-	localePrinter *xmessage.Printer
-)
+var messageHandler *message.Handler
 
 func init() {
 	tag, err := syslocale.Get()
 	if err != nil {
-		panic(err) // 此时未初始化 localePrinter
+		panic(err) // 此时未初始化 messageHandler
 	}
 
-	localeTag = tag
-	localePrinter = xmessage.NewPrinter(localeTag)
+	messageHandler = message.NewHandler(newConsoleHandlerFunc(), tag)
 }
 
 func main() {
-	h := flag.Bool("h", false, localePrinter.Sprintf(locale.FlagHUsage))
-	v := flag.Bool("v", false, localePrinter.Sprintf(locale.FlagVUsage))
-	g := flag.Bool("g", false, localePrinter.Sprintf(locale.FlagGUsage))
-	wd := flag.String("wd", "./", localePrinter.Sprintf(locale.FlagWDUsage))
-	l := flag.Bool("l", false, localePrinter.Sprintf(locale.FlagLanguagesUsage))
+	h := flag.Bool("h", false, messageHandler.Printer().Sprintf(locale.FlagHUsage))
+	v := flag.Bool("v", false, messageHandler.Printer().Sprintf(locale.FlagVUsage))
+	g := flag.Bool("g", false, messageHandler.Printer().Sprintf(locale.FlagGUsage))
+	wd := flag.String("wd", "./", messageHandler.Printer().Sprintf(locale.FlagWDUsage))
+	l := flag.Bool("l", false, messageHandler.Printer().Sprintf(locale.FlagLanguagesUsage))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -84,8 +78,7 @@ func parse(wd string) {
 	}
 
 	now := time.Now()
-	h := message.NewHandler(newConsoleHandlerFunc(), localeTag)
-	doc, err := apidoc.Parse(context.Background(), h, cfg.Inputs...)
+	doc, err := apidoc.Parse(context.Background(), messageHandler, cfg.Inputs...)
 	if err != nil {
 		if ferr, ok := err.(*message.SyntaxError); ok {
 			ferr.File = configFilename
@@ -103,7 +96,7 @@ func parse(wd string) {
 	}
 	elapsed := time.Now().Sub(now)
 
-	h.Message(message.Info, locale.Complete, cfg.Output.Path, elapsed)
+	messageHandler.Message(message.Info, locale.Complete, cfg.Output.Path, elapsed)
 }
 
 func usage() {
@@ -111,7 +104,7 @@ func usage() {
 	flag.CommandLine.SetOutput(buf)
 	flag.PrintDefaults()
 
-	localePrinter.Printf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
+	messageHandler.Printer().Printf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
 }
 
 // 根据 wd 所在目录的内容生成一个配置文件，并写入到 wd 目录下的 .apidoc.yaml 中
@@ -122,12 +115,12 @@ func genConfigFile(wd string) {
 		return
 	}
 
-	printInfo(localePrinter.Sprintf(locale.FlagConfigWritedSuccess, path))
+	messageHandler.Message(message.Info, locale.FlagConfigWritedSuccess, path)
 }
 
 func printVersion() {
-	localePrinter.Printf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version())
-	localePrinter.Printf(locale.FlagVersionCommitHash, vars.CommitHash())
+	messageHandler.Printer().Printf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version())
+	messageHandler.Printer().Printf(locale.FlagVersionCommitHash, vars.CommitHash())
 }
 
 // 将支持的语言内容以表格的形式输出
@@ -169,15 +162,15 @@ func newConsoleHandlerFunc() message.HandlerFunc {
 }
 
 func printWarn(val interface{}) {
-	println(os.Stderr, localePrinter.Sprintf(locale.WarnPrefix), warnColor, val)
+	println(os.Stderr, messageHandler.Printer().Sprintf(locale.WarnPrefix), warnColor, val)
 }
 
 func printError(val interface{}) {
-	println(os.Stderr, localePrinter.Sprintf(locale.ErrorPrefix), erroColor, val)
+	println(os.Stderr, messageHandler.Printer().Sprintf(locale.ErrorPrefix), erroColor, val)
 }
 
 func printInfo(val interface{}) {
-	println(os.Stderr, localePrinter.Sprintf(locale.InfoPrefix), infoColor, val)
+	println(os.Stderr, messageHandler.Printer().Sprintf(locale.InfoPrefix), infoColor, val)
 }
 
 func println(out *os.File, prefix string, color colors.Color, val interface{}) {

@@ -39,9 +39,7 @@ func Do(ctx context.Context, h *message.Handler, output *options.Output, inputs 
 	return o.Render(doc, output)
 }
 
-// Parse 分析从 block 中获取的代码块。并填充到 Doc 中
-//
-// 当所有的代码块已经放入 Block 之后，Block 会被关闭。
+// Parse 分析从 input 中获取的代码块
 //
 // 所有与解析有关的错误均通过 h 输出。而其它错误，比如参数问题等，通过返回参数返回。
 func Parse(ctx context.Context, h *message.Handler, input ...*options.Input) (*doc.Doc, error) {
