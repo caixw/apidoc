@@ -21,27 +21,15 @@ func Version() string {
 	return vars.Version()
 }
 
-// Do 分析输入信息，并最终输出到指定的文件。
-//
-// h 表示处理语法错误的处理器。
-// output 输出设置项；
-// inputs 输入设置项。
-func Do(ctx context.Context, h *message.Handler, output *options.Output, inputs ...*options.Input) error {
-	doc, err := Parse(ctx, h, inputs...)
-	if err != nil {
-		return err
-	}
-
-	if err := doc.Sanitize(); err != nil {
-		h.Error(message.Erro, err)
-	}
-
+// Output 按 output 的要求输出内容。
+func Output(doc *doc.Doc, output *options.Output) error {
 	return o.Render(doc, output)
 }
 
 // Parse 分析从 input 中获取的代码块
 //
-// 所有与解析有关的错误均通过 h 输出。而其它错误，比如参数问题等，通过返回参数返回。
+// 所有与解析有关的错误均通过 h 输出。
+// 如果 input 参数有误，会通过 error 参数返回。
 func Parse(ctx context.Context, h *message.Handler, input ...*options.Input) (*doc.Doc, error) {
 	block, err := i.Parse(ctx, h, input...)
 	if err != nil {
@@ -70,6 +58,10 @@ LOOP:
 	}
 
 	wg.Wait()
+
+	if err := doc.Sanitize(); err != nil {
+		h.Error(message.Erro, err)
+	}
 
 	return doc, nil
 }

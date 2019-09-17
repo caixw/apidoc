@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/issue9/version"
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"

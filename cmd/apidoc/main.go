@@ -20,7 +20,6 @@ import (
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/locale/syslocale"
-	"github.com/caixw/apidoc/v5/internal/output"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 )
@@ -87,7 +86,7 @@ func parse(wd string) {
 		return
 	}
 
-	if err = output.Render(doc, cfg.Output); err != nil {
+	if err = apidoc.Output(doc, cfg.Output); err != nil {
 		if ferr, ok := err.(*message.SyntaxError); ok {
 			ferr.File = configFilename
 		}

@@ -35,21 +35,22 @@ type Block struct {
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
 //
-// 所有与解析有关的错误均通过 h 输出。而其它错误，比如参数问题等，通过返回参数返回。
-func Parse(ctx context.Context, h *message.Handler, inputs ...*opt.Input) (chan Block, error) {
+// 所有与解析有关的错误均通过 h 输出；
+// 而 inputs 中的相关错误，会通过返回的 SyntaxError 表示。
+func Parse(ctx context.Context, h *message.Handler, inputs ...*opt.Input) (chan Block, *message.SyntaxError) {
 	if len(inputs) == 0 {
 		return nil, message.NewError("", "inputs", 0, locale.ErrRequired)
 	}
 
 	opts := make([]*options, 0, len(inputs))
 	for index, item := range inputs {
-		field := "inputs[" + strconv.Itoa(index) + "]."
+		field := "inputs[" + strconv.Itoa(index) + "]"
 		if item == nil {
 			return nil, message.NewError("", field, 0, locale.ErrRequired)
 		}
 		opt, err := buildOptions(item)
 		if err != nil {
-			err.Field = field + err.Field
+			err.Field = field + "." + err.Field
 			return nil, err
 		}
 
