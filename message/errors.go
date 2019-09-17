@@ -52,7 +52,7 @@ func (err *SyntaxError) LocaleError(p *message.Printer) string {
 	// TODO 根据是否有 filed，返回不同的提示内容
 
 	// ErrMessage = "%s 位次于 %s:%d 的 %s"
-	return locale.Sprintf(locale.ErrMessage, msg, err.File, err.Line, err.Field)
+	return p.Sprintf(locale.ErrMessage, msg, err.File, err.Line, err.Field)
 }
 
 // NewError 声明新的 SyntaxError 实例

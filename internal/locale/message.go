@@ -2,13 +2,13 @@
 
 package locale
 
-import (
-	"golang.org/x/text/language"
-)
+import "golang.org/x/text/language"
 
-// 各个语种的语言对照表，通过相应文件的 init() 作初始化这样
-// 在删除文件是，就自动删除相应的语言文件，不需要手修改代码。
-var locales = map[language.Tag]map[string]string{}
+var locales = map[language.Tag]map[string]string{
+	language.MustParse("zh-Hans"): zhHans,
+	language.MustParse("zh-Hant"): zhHant,
+	language.MustParse("en"):      en,
+}
 
 // 各个语言需要翻译的所有字符串
 const (
