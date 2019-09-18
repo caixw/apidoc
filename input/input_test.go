@@ -49,7 +49,7 @@ request:
             description: 密码
 `)
 
-	doc = []byte(`@apidoc title of api
+	doc1 = []byte(`@apidoc title of api
 version: 2.9
 license:
   name: MIT
@@ -63,20 +63,20 @@ description:>
 func TestParse(t *testing.T) {
 	a := assert.New(t)
 
-	testParse(a, "go")
-	testParse(a, "groovy")
-	testParse(a, "java")
-	testParse(a, "javascript")
-	testParse(a, "pascal")
-	testParse(a, "perl")
-	testParse(a, "php")
-	testParse(a, "python")
-	testParse(a, "ruby")
-	testParse(a, "rust")
-	testParse(a, "swift")
+	testBuildBlock(a, "go")
+	testBuildBlock(a, "groovy")
+	testBuildBlock(a, "java")
+	testBuildBlock(a, "javascript")
+	testBuildBlock(a, "pascal")
+	testBuildBlock(a, "perl")
+	testBuildBlock(a, "php")
+	testBuildBlock(a, "python")
+	testBuildBlock(a, "ruby")
+	testBuildBlock(a, "rust")
+	testBuildBlock(a, "swift")
 }
 
-func testParse(a *assert.Assertion, lang string) {
+func testBuildBlock(a *assert.Assertion, lang string) {
 	o := &Options{
 		Lang:      lang,
 		Dir:       "./testdata/" + lang,
@@ -84,13 +84,13 @@ func testParse(a *assert.Assertion, lang string) {
 	}
 	a.NotError(o.Sanitize())
 
-	channel, err := Parse(context.Background(), nil, o)
+	channel, err := buildBlock(context.Background(), nil, o)
 	a.NotError(err).NotNil(channel)
 
 	for b := range channel {
 		eq := bytes.Equal(b.Data, api1) ||
 			bytes.Equal(b.Data, api2) ||
-			bytes.Equal(b.Data, doc) ||
+			bytes.Equal(b.Data, doc1) ||
 			(!bytes.HasPrefix(b.Data, []byte("@api ")) && !bytes.HasPrefix(b.Data, []byte("@apidoc ")))
 		a.True(eq, "lang(%s)：%s,%s,%d,%d", lang, string(b.Data), string(api1), len(b.Data), len(api1))
 	}

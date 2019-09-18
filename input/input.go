@@ -18,25 +18,80 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
+	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
 )
 
-// Block 解析出来的注释块
-type Block struct {
+// 解析出来的注释块
+type block struct {
 	File string
 	Line int
 	Data []byte
 }
 
-// Parse 分析源代码，获取相应的文档内容。
+// Parse 分析从 input 中获取的代码块
+//
+// 所有与解析有关的错误均通过 h 输出。
+// 如果 input 参数有误，会通过 error 参数返回。
+func Parse(ctx context.Context, h *message.Handler, opt ...*Options) (*doc.Doc, error) {
+	blocks, err := buildBlock(ctx, h, opt...)
+	if err != nil {
+		return nil, err
+	}
+
+	doc := doc.New()
+	wg := sync.WaitGroup{}
+
+LOOP:
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case blk, ok := <-blocks:
+			if !ok {
+				break LOOP
+			}
+
+			wg.Add(1)
+			go func(b block) {
+				parseBlock(doc, b, h)
+				wg.Done()
+			}(blk)
+		}
+	}
+
+	wg.Wait()
+
+	if err := doc.Sanitize(); err != nil {
+		h.Error(message.Erro, err)
+	}
+
+	return doc, nil
+}
+
+var (
+	apidocBegin = []byte("<apidoc")
+	apiBegin    = []byte("<api")
+)
+
+func parseBlock(d *doc.Doc, block block, h *message.Handler) {
+	var err error
+	switch {
+	case bytes.HasPrefix(block.Data, apidocBegin):
+		err = d.FromXML(block.Data)
+	case bytes.HasPrefix(block.Data, apiBegin):
+		err = d.NewAPI(block.File, block.Line).FromXML(block.Data)
+	}
+
+	h.Error(message.Erro, message.WithError(block.File, "", block.Line, err))
+}
+
+// 分析源代码，获取注释块。
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
-//
-// 所有与解析有关的错误均通过 h 输出；
-// 而 inputs 中的相关错误，会通过返回的 SyntaxError 表示。
-func Parse(ctx context.Context, h *message.Handler, opt ...*Options) (chan Block, *message.SyntaxError) {
+func buildBlock(ctx context.Context, h *message.Handler, opt ...*Options) (chan block, *message.SyntaxError) {
 	if len(opt) == 0 {
 		return nil, message.NewError("", "opt", 0, locale.ErrRequired)
 	}
@@ -53,7 +108,7 @@ func Parse(ctx context.Context, h *message.Handler, opt ...*Options) (chan Block
 		}
 	}
 
-	data := make(chan Block, 500)
+	data := make(chan block, 500)
 
 	go func() {
 		wg := &sync.WaitGroup{}
@@ -62,7 +117,7 @@ func Parse(ctx context.Context, h *message.Handler, opt ...*Options) (chan Block
 			case <-ctx.Done():
 				return
 			default:
-				parse(ctx, data, h, wg, o)
+				parseOptions(ctx, data, h, wg, o)
 			}
 		}
 		wg.Wait()
@@ -73,7 +128,8 @@ func Parse(ctx context.Context, h *message.Handler, opt ...*Options) (chan Block
 	return data, nil
 }
 
-func parse(ctx context.Context, data chan Block, h *message.Handler, wg *sync.WaitGroup, o *Options) {
+// 分析每个配置项对应的内容
+func parseOptions(ctx context.Context, data chan block, h *message.Handler, wg *sync.WaitGroup, o *Options) {
 	for _, path := range o.paths {
 		select {
 		case <-ctx.Done():
@@ -91,7 +147,7 @@ func parse(ctx context.Context, data chan Block, h *message.Handler, wg *sync.Wa
 // 分析 path 指向的文件。
 //
 // NOTE: parseFile 内部不能有协程处理代码。
-func parseFile(channel chan Block, h *message.Handler, path string, o *Options) {
+func parseFile(channel chan block, h *message.Handler, path string, o *Options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
 		h.Error(message.Erro, message.WithError(path, "", 0, err))
@@ -100,7 +156,7 @@ func parseFile(channel chan Block, h *message.Handler, path string, o *Options) 
 
 	ret := lang.Parse(path, data, o.blocks, h)
 	for line, data := range ret {
-		channel <- Block{
+		channel <- block{
 			File: path,
 			Line: line,
 			Data: data,
