@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package options
+package input
 
 import (
 	"os"
@@ -11,19 +11,10 @@ import (
 	"github.com/caixw/apidoc/v5/internal/lang"
 )
 
-// Input 指定输入内容的相关信息。
-type Input struct {
-	Lang      string   `yaml:"lang"`               // 输入的目标语言
-	Dir       string   `yaml:"dir"`                // 源代码目录，建议使用绝对路径
-	Exts      []string `yaml:"exts,omitempty"`     // 需要扫描的文件扩展名，若未指定，则使用默认值
-	Recursive bool     `yaml:"recursive"`          // 是否查找 Dir 的子目录
-	Encoding  string   `yaml:"encoding,omitempty"` // 文件的编码，为空表示 utf-8
-}
-
 // Detect 检测指定目录下的内容，并为其生成一个合适的 Input 实例。
 //
 // 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
-func Detect(dir string, recursive bool) ([]*Input, error) {
+func Detect(dir string, recursive bool) ([]*Options, error) {
 	dir, err := filepath.Abs(dir)
 	if err != nil {
 		return nil, err
@@ -36,9 +27,9 @@ func Detect(dir string, recursive bool) ([]*Input, error) {
 
 	langs := detectLanguage(exts)
 
-	inputs := make([]*Input, 0, len(langs))
+	opts := make([]*Options, 0, len(langs))
 	for _, lang := range langs {
-		inputs = append(inputs, &Input{
+		opts = append(opts, &Options{
 			Lang:      lang.Name,
 			Dir:       dir,
 			Exts:      lang.Exts,
@@ -46,7 +37,7 @@ func Detect(dir string, recursive bool) ([]*Input, error) {
 		})
 	}
 
-	return inputs, nil
+	return opts, nil
 }
 
 type language struct {

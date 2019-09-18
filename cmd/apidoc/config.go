@@ -11,10 +11,11 @@ import (
 	"github.com/issue9/version"
 	"gopkg.in/yaml.v2"
 
+	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
-	"github.com/caixw/apidoc/v5/options"
+	"github.com/caixw/apidoc/v5/output"
 )
 
 // 配置文件名称。
@@ -30,10 +31,10 @@ type config struct {
 	// 输入的配置项，可以指定多个项目
 	//
 	// 多语言项目，可能需要用到多个输入面。
-	Inputs []*options.Input `yaml:"inputs"`
+	Inputs []*input.Options `yaml:"inputs"`
 
 	// 输出配置项。
-	Output *options.Output `yaml:"output"`
+	Output *output.Options `yaml:"output"`
 
 	// 配置文件所在的目录。
 	//
@@ -131,7 +132,7 @@ func (cfg *config) sanitize() error {
 }
 
 func getConfig(wd string) (*config, error) {
-	inputs, err := options.Detect(wd, true)
+	inputs, err := input.Detect(wd, true)
 	if err != nil {
 		return nil, err
 	}
@@ -142,8 +143,8 @@ func getConfig(wd string) (*config, error) {
 	return &config{
 		Version: vars.Version(),
 		Inputs:  inputs,
-		Output: &options.Output{
-			Type: options.ApidocXML,
+		Output: &output.Options{
+			Type: output.ApidocXML,
 			Path: filepath.Join(wd, "apidoc.json"),
 		},
 	}, nil

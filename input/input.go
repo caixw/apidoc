@@ -21,7 +21,6 @@ import (
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
-	opt "github.com/caixw/apidoc/v5/options"
 )
 
 // Block 解析出来的注释块
@@ -37,36 +36,33 @@ type Block struct {
 //
 // 所有与解析有关的错误均通过 h 输出；
 // 而 inputs 中的相关错误，会通过返回的 SyntaxError 表示。
-func Parse(ctx context.Context, h *message.Handler, inputs ...*opt.Input) (chan Block, *message.SyntaxError) {
-	if len(inputs) == 0 {
-		return nil, message.NewError("", "inputs", 0, locale.ErrRequired)
+func Parse(ctx context.Context, h *message.Handler, opt ...*Options) (chan Block, *message.SyntaxError) {
+	if len(opt) == 0 {
+		return nil, message.NewError("", "opt", 0, locale.ErrRequired)
 	}
 
-	opts := make([]*options, 0, len(inputs))
-	for index, item := range inputs {
-		field := "inputs[" + strconv.Itoa(index) + "]"
+	for index, item := range opt {
+		field := "opt[" + strconv.Itoa(index) + "]"
 		if item == nil {
 			return nil, message.NewError("", field, 0, locale.ErrRequired)
 		}
-		opt, err := buildOptions(item)
-		if err != nil {
+
+		if err := item.Sanitize(); err != nil {
 			err.Field = field + "." + err.Field
 			return nil, err
 		}
-
-		opts = append(opts, opt)
 	}
 
 	data := make(chan Block, 500)
 
 	go func() {
 		wg := &sync.WaitGroup{}
-		for _, opt := range opts {
+		for _, o := range opt {
 			select {
 			case <-ctx.Done():
 				return
 			default:
-				parse(ctx, data, h, wg, opt)
+				parse(ctx, data, h, wg, o)
 			}
 		}
 		wg.Wait()
@@ -77,7 +73,7 @@ func Parse(ctx context.Context, h *message.Handler, inputs ...*opt.Input) (chan 
 	return data, nil
 }
 
-func parse(ctx context.Context, data chan Block, h *message.Handler, wg *sync.WaitGroup, o *options) {
+func parse(ctx context.Context, data chan Block, h *message.Handler, wg *sync.WaitGroup, o *Options) {
 	for _, path := range o.paths {
 		select {
 		case <-ctx.Done():
@@ -95,7 +91,7 @@ func parse(ctx context.Context, data chan Block, h *message.Handler, wg *sync.Wa
 // 分析 path 指向的文件。
 //
 // NOTE: parseFile 内部不能有协程处理代码。
-func parseFile(channel chan Block, h *message.Handler, path string, o *options) {
+func parseFile(channel chan Block, h *message.Handler, path string, o *Options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
 		h.Error(message.Erro, message.WithError(path, "", 0, err))

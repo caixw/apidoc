@@ -8,20 +8,18 @@ import (
 	"os"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
-	opt "github.com/caixw/apidoc/v5/options"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // Render 渲染 doc 的内容，具体的渲染参数由 o 指定。
-func Render(d *doc.Doc, output *opt.Output) error {
-	if output == nil {
-		return message.NewError("", "output", 0, locale.ErrRequired)
+func Render(d *doc.Doc, opt *Options) error {
+	if opt == nil {
+		return message.NewError("", "opt", 0, locale.ErrRequired)
 	}
 
-	opt, err := buildOptions(output)
-	if err != nil {
-		err.Field = "output." + err.Field
+	if err := opt.Sanitize(); err != nil {
+		err.Field = "opt." + err.Field
 		return err
 	}
 
@@ -34,7 +32,7 @@ func Render(d *doc.Doc, output *opt.Output) error {
 	return ioutil.WriteFile(opt.Path, data, os.ModePerm)
 }
 
-func filterDoc(d *doc.Doc, o *options) {
+func filterDoc(d *doc.Doc, o *Options) {
 	if len(o.Tags) == 0 {
 		return
 	}

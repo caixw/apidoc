@@ -10,9 +10,9 @@ import (
 
 	"github.com/issue9/assert"
 
+	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
-	"github.com/caixw/apidoc/v5/options"
 )
 
 func TestGetPath(t *testing.T) {
@@ -121,7 +121,7 @@ func TestConfig_sanitize(t *testing.T) {
 	a.Equal(err.(*message.SyntaxError).Field, "inputs")
 
 	// 未声明 output
-	conf.Inputs = []*options.Input{{}}
+	conf.Inputs = []*input.Options{{}}
 	err = conf.sanitize()
 	a.Error(err)
 	a.Equal(err.(*message.SyntaxError).Field, "output")

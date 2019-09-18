@@ -8,8 +8,6 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-
-	opt "github.com/caixw/apidoc/v5/options"
 )
 
 var (
@@ -79,11 +77,12 @@ func TestParse(t *testing.T) {
 }
 
 func testParse(a *assert.Assertion, lang string) {
-	o := &opt.Input{
+	o := &Options{
 		Lang:      lang,
 		Dir:       "./testdata/" + lang,
 		Recursive: true,
 	}
+	a.NotError(o.Sanitize())
 
 	channel, err := Parse(context.Background(), nil, o)
 	a.NotError(err).NotNil(channel)

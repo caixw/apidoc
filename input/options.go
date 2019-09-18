@@ -13,36 +13,40 @@ import (
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
-	opt "github.com/caixw/apidoc/v5/options"
 )
 
-type options struct {
-	opt.Input
+// Options 指定输入内容的相关信息。
+type Options struct {
+	Lang      string   `yaml:"lang"`               // 输入的目标语言
+	Dir       string   `yaml:"dir"`                // 源代码目录，建议使用绝对路径
+	Exts      []string `yaml:"exts,omitempty"`     // 需要扫描的文件扩展名，若未指定，则使用默认值
+	Recursive bool     `yaml:"recursive"`          // 是否查找 Dir 的子目录
+	Encoding  string   `yaml:"encoding,omitempty"` // 文件的编码，为空表示 utf-8
+
 	blocks   []lang.Blocker    // 根据 Lang 生成
 	paths    []string          // 根据 Dir 和 Recursive 生成
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
 
-func buildOptions(opt *opt.Input) (*options, *message.SyntaxError) {
-	o := &options{}
-
+// Sanitize 检测内容是否合法
+func (opt *Options) Sanitize() *message.SyntaxError {
 	if len(opt.Dir) == 0 {
-		return nil, message.NewError("", "dir", 0, locale.ErrRequired)
+		return message.NewError("", "dir", 0, locale.ErrRequired)
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return nil, message.NewError("", "dir", 0, locale.ErrDirNotExists)
+		return message.NewError("", "dir", 0, locale.ErrDirNotExists)
 	}
 
 	if len(opt.Lang) == 0 {
-		return nil, message.NewError("", "dir", 0, locale.ErrRequired)
+		return message.NewError("", "dir", 0, locale.ErrRequired)
 	}
 
 	language := lang.Get(opt.Lang)
 	if language == nil {
-		return nil, message.NewError("", "dir", 0, locale.ErrUnsupportedInputLang, opt.Lang)
+		return message.NewError("", "dir", 0, locale.ErrUnsupportedInputLang, opt.Lang)
 	}
-	o.blocks = language.Blocks
+	opt.blocks = language.Blocks
 
 	if len(opt.Exts) > 0 {
 		exts := make([]string, 0, len(opt.Exts))
@@ -64,27 +68,26 @@ func buildOptions(opt *opt.Input) (*options, *message.SyntaxError) {
 	// 生成 paths
 	paths, err := recursivePath(opt)
 	if err != nil {
-		return nil, message.NewError("", "dir", 0, err.Error())
+		return message.NewError("", "dir", 0, err.Error())
 	}
 	if len(paths) == 0 {
-		return nil, message.NewError("", "dir", 0, locale.ErrDirIsEmpty)
+		return message.NewError("", "dir", 0, locale.ErrDirIsEmpty)
 	}
-	o.paths = paths
+	opt.paths = paths
 
 	// 生成 encoding
 	if opt.Encoding != "" {
-		o.encoding, err = ianaindex.IANA.Encoding(opt.Encoding)
+		opt.encoding, err = ianaindex.IANA.Encoding(opt.Encoding)
 		if err != nil {
-			return nil, message.WithError("", "encoding", 0, err)
+			return message.WithError("", "encoding", 0, err)
 		}
 	}
 
-	o.Input = *opt
-	return o, nil
+	return nil
 }
 
 // 按 Options 中的规则查找所有符合条件的文件列表。
-func recursivePath(o *opt.Input) ([]string, error) {
+func recursivePath(o *Options) ([]string, error) {
 	paths := []string{}
 
 	extIsEnabled := func(ext string) bool {

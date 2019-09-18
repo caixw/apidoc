@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package options
+package input
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ import (
 func TestDetect(t *testing.T) {
 	a := assert.New(t)
 
-	o, err := Detect("./testdata", true)
+	o, err := Detect("./testdata2", true)
 	a.NotError(err).NotEmpty(o)
 	a.Equal(len(o), 2). // c and php
 				Equal(o[0].Lang, "c++").
@@ -40,12 +40,12 @@ func TestDetectLanguage(t *testing.T) {
 func TestDetectExts(t *testing.T) {
 	a := assert.New(t)
 
-	files, err := detectExts("./testdata", false)
+	files, err := detectExts("./testdata2", false)
 	a.NotError(err)
 	a.Equal(len(files), 4)
 	a.Equal(files[".php"], 1).Equal(files[".c"], 1)
 
-	files, err = detectExts("./testdata", true)
+	files, err = detectExts("./testdata2", true)
 	a.NotError(err)
 	a.Equal(len(files), 5)
 	a.Equal(files[".php"], 1).Equal(files[".1"], 3)

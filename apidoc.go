@@ -9,11 +9,10 @@ import (
 	"sync"
 
 	"github.com/caixw/apidoc/v5/doc"
-	i "github.com/caixw/apidoc/v5/internal/input"
-	o "github.com/caixw/apidoc/v5/internal/output"
+	i "github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
-	"github.com/caixw/apidoc/v5/options"
+	o "github.com/caixw/apidoc/v5/output"
 )
 
 // Version 获取当前程序的版本号
@@ -22,7 +21,7 @@ func Version() string {
 }
 
 // Output 按 output 的要求输出内容。
-func Output(doc *doc.Doc, output *options.Output) error {
+func Output(doc *doc.Doc, output *o.Options) error {
 	return o.Render(doc, output)
 }
 
@@ -30,7 +29,7 @@ func Output(doc *doc.Doc, output *options.Output) error {
 //
 // 所有与解析有关的错误均通过 h 输出。
 // 如果 input 参数有误，会通过 error 参数返回。
-func Parse(ctx context.Context, h *message.Handler, input ...*options.Input) (*doc.Doc, error) {
+func Parse(ctx context.Context, h *message.Handler, input ...*i.Options) (*doc.Doc, error) {
 	block, err := i.Parse(ctx, h, input...)
 	if err != nil {
 		return nil, err

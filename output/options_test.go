@@ -7,8 +7,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/internal/output/openapi"
-	opt "github.com/caixw/apidoc/v5/options"
+	"github.com/caixw/apidoc/v5/internal/openapi"
 )
 
 var (
@@ -21,7 +20,7 @@ var (
 func TestOptions_contains(t *testing.T) {
 	a := assert.New(t)
 
-	o := &options{}
+	o := &Options{}
 	a.True(o.contains("tag"))
 	a.True(o.contains(""))
 
@@ -33,19 +32,15 @@ func TestOptions_contains(t *testing.T) {
 
 func TestBuildOptions(t *testing.T) {
 	a := assert.New(t)
-	oo := &opt.Output{}
-	o, err := buildOptions(oo)
-	a.Error(err).Nil(o)
+	oo := &Options{}
+	a.Error(oo.Sanitize())
 
 	oo.Path = "./testdir/apidoc.json"
-	o, err = buildOptions(oo)
-	a.NotError(err).NotNil(o)
-	a.Equal(o.marshal, marshaler(xmlMarshal))
+	a.NotError(oo.Sanitize())
+	a.Equal(oo.marshal, marshaler(xmlMarshal))
 
-	o, err = buildOptions(oo)
-	a.NotError(err).NotNil(o)
+	a.NotError(oo.Sanitize())
 
 	oo.Type = "unknown"
-	o, err = buildOptions(oo)
-	a.Error(err).Nil(o)
+	a.Error(oo.Sanitize())
 }
