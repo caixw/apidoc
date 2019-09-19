@@ -7,8 +7,8 @@ import (
 
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/openapi"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // 文档类型定义
@@ -52,6 +52,10 @@ func (o *Options) contains(tags ...string) bool {
 
 // Sanitize 检测内容是否合法
 func (o *Options) Sanitize() *message.SyntaxError {
+	if o == nil {
+		return message.NewError("", "", 0, locale.ErrRequired)
+	}
+
 	if o.Path == "" {
 		return message.NewError("", "path", 0, locale.ErrRequired)
 	}

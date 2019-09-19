@@ -30,6 +30,10 @@ type Options struct {
 
 // Sanitize 检测内容是否合法
 func (opt *Options) Sanitize() *message.SyntaxError {
+	if opt == nil {
+		return message.NewError("", "", 0, locale.ErrRequired)
+	}
+
 	if len(opt.Dir) == 0 {
 		return message.NewError("", "dir", 0, locale.ErrRequired)
 	}

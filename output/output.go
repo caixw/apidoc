@@ -8,16 +8,10 @@ import (
 	"os"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
 )
 
 // Render 渲染 doc 的内容，具体的渲染参数由 o 指定。
 func Render(d *doc.Doc, opt *Options) error {
-	if opt == nil {
-		return message.NewError("", "opt", 0, locale.ErrRequired)
-	}
-
 	if err := opt.Sanitize(); err != nil {
 		err.Field = "opt." + err.Field
 		return err

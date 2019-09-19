@@ -41,12 +41,12 @@ func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
 
 	for index, item := range opt {
 		field := "opt[" + strconv.Itoa(index) + "]"
-		if item == nil {
-			return nil, message.NewError("", field, 0, locale.ErrRequired)
-		}
-
 		if err := item.Sanitize(); err != nil {
-			err.Field = field + "." + err.Field
+			if err.Field == "" {
+				err.Field = field
+			} else {
+				err.Field = field + "." + err.Field
+			}
 			return nil, err
 		}
 	}
