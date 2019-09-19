@@ -35,11 +35,23 @@ type block struct {
 // 所有与解析有关的错误均通过 h 输出。
 // 如果 input 参数有误，会通过 error 参数返回。
 func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
-	blocks, err := buildBlock(h, opt...)
-	if err != nil {
-		return nil, err
+	if len(opt) == 0 {
+		return nil, message.NewError("", "opt", 0, locale.ErrRequired)
 	}
 
+	for index, item := range opt {
+		field := "opt[" + strconv.Itoa(index) + "]"
+		if item == nil {
+			return nil, message.NewError("", field, 0, locale.ErrRequired)
+		}
+
+		if err := item.Sanitize(); err != nil {
+			err.Field = field + "." + err.Field
+			return nil, err
+		}
+	}
+
+	blocks := buildBlock(h, opt...)
 	doc := doc.New()
 	wg := sync.WaitGroup{}
 
@@ -80,23 +92,7 @@ func parseBlock(d *doc.Doc, block block, h *message.Handler) {
 // 分析源代码，获取注释块。
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
-func buildBlock(h *message.Handler, opt ...*Options) (chan block, *message.SyntaxError) {
-	if len(opt) == 0 {
-		return nil, message.NewError("", "opt", 0, locale.ErrRequired)
-	}
-
-	for index, item := range opt {
-		field := "opt[" + strconv.Itoa(index) + "]"
-		if item == nil {
-			return nil, message.NewError("", field, 0, locale.ErrRequired)
-		}
-
-		if err := item.Sanitize(); err != nil {
-			err.Field = field + "." + err.Field
-			return nil, err
-		}
-	}
-
+func buildBlock(h *message.Handler, opt ...*Options) chan block {
 	data := make(chan block, 500)
 
 	go func() {
@@ -109,7 +105,7 @@ func buildBlock(h *message.Handler, opt ...*Options) (chan block, *message.Synta
 		close(data)
 	}()
 
-	return data, nil
+	return data
 }
 
 // 分析每个配置项对应的内容

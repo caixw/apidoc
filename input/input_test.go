@@ -83,8 +83,8 @@ func testBuildBlock(a *assert.Assertion, lang string) {
 	}
 	a.NotError(o.Sanitize())
 
-	channel, err := buildBlock(nil, o)
-	a.NotError(err).NotNil(channel)
+	channel := buildBlock(nil, o)
+	a.NotNil(channel)
 
 	for b := range channel {
 		eq := bytes.Equal(b.Data, api1) ||
