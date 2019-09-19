@@ -11,7 +11,6 @@ package input
 import (
 	"bytes"
 	"io/ioutil"
-	"strconv"
 	"sync"
 
 	"golang.org/x/text/encoding"
@@ -33,21 +32,11 @@ type block struct {
 // Parse 分析从 input 中获取的代码块
 //
 // 所有与解析有关的错误均通过 h 输出。
-// 如果 input 参数有误，会通过 error 参数返回。
-func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
-	if len(opt) == 0 {
-		return nil, message.NewError("", "opt", 0, locale.ErrRequired)
-	}
-
-	for index, item := range opt {
-		field := "opt[" + strconv.Itoa(index) + "]"
-		if err := item.Sanitize(); err != nil {
-			if err.Field == "" {
-				err.Field = field
-			} else {
-				err.Field = field + "." + err.Field
-			}
-			return nil, err
+// 如果 input 参数有误，会触发 panic。
+func Parse(h *message.Handler, opt ...*Options) *doc.Doc {
+	for _, item := range opt {
+		if !item.sanitized {
+			panic(locale.Sprintf(locale.ErrUnsanitized))
 		}
 	}
 
@@ -69,7 +58,7 @@ func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
 		h.Error(message.Erro, err)
 	}
 
-	return doc, nil
+	return doc
 }
 
 var (

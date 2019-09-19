@@ -29,12 +29,6 @@ const (
 	erroColor = colors.Red
 )
 
-var messageHandler *message.Handler
-
-func init() {
-	messageHandler = message.NewHandler(newConsoleHandlerFunc())
-}
-
 func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
@@ -69,26 +63,15 @@ func parse(wd string) {
 		return
 	}
 
+	h := message.NewHandler(newConsoleHandlerFunc())
 	now := time.Now()
-	doc, err := apidoc.Parse(messageHandler, cfg.Inputs...)
-	if err != nil {
-		if ferr, ok := err.(*message.SyntaxError); ok {
-			ferr.File = configFilename
-		}
-		printError(err)
-		return
-	}
-
-	if err = apidoc.Output(doc, cfg.Output); err != nil {
-		if ferr, ok := err.(*message.SyntaxError); ok {
-			ferr.File = configFilename
-		}
+	if err = apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
 		printError(err)
 		return
 	}
 	elapsed := time.Now().Sub(now)
 
-	messageHandler.Message(message.Info, locale.Complete, cfg.Output.Path, elapsed)
+	h.Message(message.Info, locale.Complete, cfg.Output.Path, elapsed)
 }
 
 func usage() {
@@ -107,7 +90,7 @@ func genConfigFile(wd string) {
 		return
 	}
 
-	messageHandler.Message(message.Info, locale.FlagConfigWritedSuccess, path)
+	fmt.Println(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
 }
 
 func printVersion() {

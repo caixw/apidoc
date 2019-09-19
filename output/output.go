@@ -8,20 +8,20 @@ import (
 	"os"
 
 	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-// Render 渲染 doc 的内容，具体的渲染参数由 o 指定。
+// Render 渲染 doc 的内容
 func Render(d *doc.Doc, opt *Options) error {
-	if err := opt.Sanitize(); err != nil {
-		err.Field = "opt." + err.Field
-		return err
+	if !opt.sanitized {
+		panic(locale.Sprintf(locale.ErrUnsanitized))
 	}
 
 	filterDoc(d, opt)
 
-	data, serr := opt.marshal(d)
-	if serr != nil {
-		return serr
+	data, err := opt.marshal(d)
+	if err != nil {
+		return err
 	}
 	return ioutil.WriteFile(opt.Path, data, os.ModePerm)
 }

@@ -50,6 +50,7 @@ const (
 	ErrInvalidTypePrefix     = "无效的类型前缀名称 %s"
 	ErrInvalidType           = "无效的类型名称 %s"
 	ErrInvalidVersionFormat  = "无效的版本号格式"
+	ErrUnsanitized           = "未调用 Sanitize"
 
 	// logs
 	InfoPrefix  = "[INFO] "

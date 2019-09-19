@@ -33,6 +33,8 @@ type Options struct {
 	Tags []string `yaml:"tags,omitempty"`
 
 	marshal marshaler
+
+	sanitized bool
 }
 
 func (o *Options) contains(tags ...string) bool {
@@ -77,6 +79,7 @@ func (o *Options) Sanitize() *message.SyntaxError {
 		return message.NewError("", "type", 0, locale.ErrInvalidValue)
 	}
 
+	o.sanitized = true
 	return nil
 }
 

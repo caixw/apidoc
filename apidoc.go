@@ -6,7 +6,6 @@ package apidoc
 import (
 	"golang.org/x/text/language"
 
-	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
@@ -27,15 +26,9 @@ func Version() string {
 	return vars.Version()
 }
 
-// Output 按 output 的要求输出内容。
-func Output(doc *doc.Doc, opt *output.Options) error {
-	return output.Render(doc, opt)
-}
-
-// Parse 分析从 input 中获取的代码块
+// Do 执行分析操作
 //
-// 所有与解析有关的错误均通过 h 输出。
-// 如果 input 参数有误，会通过 error 参数返回。
-func Parse(h *message.Handler, opt ...*input.Options) (*doc.Doc, error) {
-	return input.Parse(h, opt...)
+// 需要确保已经调用 o 和 i 的各个 Sanitize 方法。
+func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
+	return output.Render(input.Parse(h, i...), o)
 }

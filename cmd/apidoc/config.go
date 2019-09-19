@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/issue9/version"
@@ -116,8 +117,19 @@ func (cfg *config) sanitize() error {
 		return message.NewError(configFilename, "output", 0, locale.ErrRequired)
 	}
 
-	for _, input := range cfg.Inputs {
+	for index, input := range cfg.Inputs {
 		if input.Dir, err = getPath(cfg.wd, input.Dir); err != nil {
+			return err
+		}
+
+		field := "inputs[" + strconv.Itoa(index) + "]"
+		if err := input.Sanitize(); err != nil {
+			err.File = configFilename
+			if err.Field == "" {
+				err.Field = field
+			} else {
+				err.Field = field + "." + err.Field
+			}
 			return err
 		}
 	}
@@ -125,6 +137,15 @@ func (cfg *config) sanitize() error {
 	if !filepath.IsAbs(cfg.Output.Path) {
 		if cfg.Output.Path, err = getPath(cfg.wd, cfg.Output.Path); err != nil {
 			return err
+		}
+
+		if err := cfg.Output.Sanitize(); err != nil {
+			err.File = configFilename
+			if err.Field == "" {
+				err.Field = "output"
+			} else {
+				err.Field = "output." + err.Field
+			}
 		}
 	}
 
