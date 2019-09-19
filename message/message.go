@@ -6,8 +6,9 @@ package message
 import (
 	"log"
 
-	"golang.org/x/text/language"
 	"golang.org/x/text/message"
+
+	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
 // Type 表示氐的类型
@@ -33,19 +34,13 @@ type HandlerFunc func(*Message)
 //
 // 包含了本地化的信息，输出时，会以指定的本地化内容输出
 type Handler struct {
-	tag     language.Tag
-	printer *message.Printer
-
 	messages chan *Message
 	f        HandlerFunc
 }
 
 // NewHandler 声明新的 Handler 实例
-func NewHandler(f HandlerFunc, tag language.Tag) *Handler {
+func NewHandler(f HandlerFunc) *Handler {
 	h := &Handler{
-		tag:     tag,
-		printer: message.NewPrinter(tag),
-
 		messages: make(chan *Message, 100),
 		f:        f,
 	}
@@ -59,16 +54,6 @@ func NewHandler(f HandlerFunc, tag language.Tag) *Handler {
 	return h
 }
 
-// Tag 关联的 language.Tag
-func (h *Handler) Tag() language.Tag {
-	return h.tag
-}
-
-// Printer 关联的 message.Printer
-func (h *Handler) Printer() *message.Printer {
-	return h.printer
-}
-
 // Stop 停止处理错误内容
 func (h *Handler) Stop() {
 	close(h.messages)
@@ -78,21 +63,16 @@ func (h *Handler) Stop() {
 func (h *Handler) Message(t Type, key message.Reference, val ...interface{}) {
 	h.messages <- &Message{
 		Type:    t,
-		Message: h.printer.Sprintf(key, val...),
+		Message: locale.Sprintf(key, val...),
 	}
 }
 
 // Error 将一条错误信息作为消息发送出去
 func (h *Handler) Error(t Type, err error) {
-	msg := &Message{Type: t}
-
-	if l, ok := err.(LocaleError); ok {
-		msg.Message = l.LocaleError(h.printer)
-	} else {
-		msg.Message = err.Error()
+	h.messages <- &Message{
+		Type:    t,
+		Message: err.Error(),
 	}
-
-	h.messages <- msg
 }
 
 // NewLogHandlerFunc 生成一个将错误信息输出到日志的 HandlerFunc

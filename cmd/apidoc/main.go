@@ -18,7 +18,6 @@ import (
 	"github.com/caixw/apidoc/v5"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/internal/locale/syslocale"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 )
@@ -33,20 +32,15 @@ const (
 var messageHandler *message.Handler
 
 func init() {
-	tag, err := syslocale.Get()
-	if err != nil {
-		panic(err) // 此时未初始化 messageHandler
-	}
-
-	messageHandler = message.NewHandler(newConsoleHandlerFunc(), tag)
+	messageHandler = message.NewHandler(newConsoleHandlerFunc())
 }
 
 func main() {
-	h := flag.Bool("h", false, messageHandler.Printer().Sprintf(locale.FlagHUsage))
-	v := flag.Bool("v", false, messageHandler.Printer().Sprintf(locale.FlagVUsage))
-	g := flag.Bool("g", false, messageHandler.Printer().Sprintf(locale.FlagGUsage))
-	wd := flag.String("wd", "./", messageHandler.Printer().Sprintf(locale.FlagWDUsage))
-	l := flag.Bool("l", false, messageHandler.Printer().Sprintf(locale.FlagLanguagesUsage))
+	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
+	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
+	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
+	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
+	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -102,7 +96,7 @@ func usage() {
 	flag.CommandLine.SetOutput(buf)
 	flag.PrintDefaults()
 
-	messageHandler.Printer().Printf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
+	fmt.Println(locale.Sprintf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL))
 }
 
 // 根据 wd 所在目录的内容生成一个配置文件，并写入到 wd 目录下的 .apidoc.yaml 中
@@ -117,8 +111,8 @@ func genConfigFile(wd string) {
 }
 
 func printVersion() {
-	messageHandler.Printer().Printf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version())
-	messageHandler.Printer().Printf(locale.FlagVersionCommitHash, vars.CommitHash())
+	fmt.Println(locale.Sprintf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version()))
+	fmt.Println(locale.Sprintf(locale.FlagVersionCommitHash, vars.CommitHash()))
 }
 
 // 将支持的语言内容以表格的形式输出
@@ -160,15 +154,15 @@ func newConsoleHandlerFunc() message.HandlerFunc {
 }
 
 func printWarn(val interface{}) {
-	println(os.Stderr, messageHandler.Printer().Sprintf(locale.WarnPrefix), warnColor, val)
+	println(os.Stderr, locale.Sprintf(locale.WarnPrefix), warnColor, val)
 }
 
 func printError(val interface{}) {
-	println(os.Stderr, messageHandler.Printer().Sprintf(locale.ErrorPrefix), erroColor, val)
+	println(os.Stderr, locale.Sprintf(locale.ErrorPrefix), erroColor, val)
 }
 
 func printInfo(val interface{}) {
-	println(os.Stderr, messageHandler.Printer().Sprintf(locale.InfoPrefix), infoColor, val)
+	println(os.Stderr, locale.Sprintf(locale.InfoPrefix), infoColor, val)
 }
 
 func println(out *os.File, prefix string, color colors.Color, val interface{}) {

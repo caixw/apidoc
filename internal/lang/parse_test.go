@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/message"
 )
@@ -35,7 +34,7 @@ func TestParse(t *testing.T) {
 	erro := log.New(ioutil.Discard, "[ERRO]", 0)
 	warn := log.New(ioutil.Discard, "[WARN]", 0)
 	info := log.New(ioutil.Discard, "[INFO]", 0)
-	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn, info), language.Und)
+	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn, info))
 	a := assert.New(t)
 
 	ret := Parse("", nil, nil, nil)

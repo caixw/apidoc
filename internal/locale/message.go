@@ -2,14 +2,6 @@
 
 package locale
 
-import "golang.org/x/text/language"
-
-var locales = map[language.Tag]map[string]string{
-	language.MustParse("zh-Hans"): zhHans,
-	language.MustParse("zh-Hant"): zhHant,
-	language.MustParse("en"):      en,
-}
-
 // 各个语言需要翻译的所有字符串
 const (
 	// 与 flag 包相关的处理

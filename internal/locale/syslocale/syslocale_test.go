@@ -5,9 +5,8 @@ package syslocale
 import (
 	"testing"
 
-	"golang.org/x/text/language"
-
 	"github.com/issue9/assert"
+	"golang.org/x/text/language"
 )
 
 func TestGet(t *testing.T) {

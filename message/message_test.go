@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/issue9/assert"
-	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
@@ -25,7 +24,7 @@ func TestHandler(t *testing.T) {
 	warnlog := log.New(warn, "[WARN]", 0)
 	infolog := log.New(info, "[INFO]", 0)
 
-	h := NewHandler(NewLogHandlerFunc(errolog, warnlog, infolog), language.Und)
+	h := NewHandler(NewLogHandlerFunc(errolog, warnlog, infolog))
 	a.NotError(h)
 
 	h.Error(Erro, NewError("erro.go", "", 0, locale.ErrRequired))
