@@ -4,8 +4,6 @@
 package apidoc
 
 import (
-	"context"
-
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/vars"
@@ -27,6 +25,6 @@ func Output(doc *doc.Doc, opt *output.Options) error {
 //
 // 所有与解析有关的错误均通过 h 输出。
 // 如果 input 参数有误，会通过 error 参数返回。
-func Parse(ctx context.Context, h *message.Handler, opt ...*input.Options) (*doc.Doc, error) {
-	return input.Parse(ctx, h, opt...)
+func Parse(h *message.Handler, opt ...*input.Options) (*doc.Doc, error) {
+	return input.Parse(h, opt...)
 }

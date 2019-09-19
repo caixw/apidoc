@@ -5,7 +5,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -77,7 +76,7 @@ func parse(wd string) {
 	}
 
 	now := time.Now()
-	doc, err := apidoc.Parse(context.Background(), messageHandler, cfg.Inputs...)
+	doc, err := apidoc.Parse(messageHandler, cfg.Inputs...)
 	if err != nil {
 		if ferr, ok := err.(*message.SyntaxError); ok {
 			ferr.File = configFilename

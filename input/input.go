@@ -10,7 +10,6 @@ package input
 
 import (
 	"bytes"
-	"context"
 	"io/ioutil"
 	"strconv"
 	"sync"
@@ -35,8 +34,8 @@ type block struct {
 //
 // 所有与解析有关的错误均通过 h 输出。
 // 如果 input 参数有误，会通过 error 参数返回。
-func Parse(ctx context.Context, h *message.Handler, opt ...*Options) (*doc.Doc, error) {
-	blocks, err := buildBlock(ctx, h, opt...)
+func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
+	blocks, err := buildBlock(h, opt...)
 	if err != nil {
 		return nil, err
 	}
@@ -44,22 +43,12 @@ func Parse(ctx context.Context, h *message.Handler, opt ...*Options) (*doc.Doc, 
 	doc := doc.New()
 	wg := sync.WaitGroup{}
 
-LOOP:
-	for {
-		select {
-		case <-ctx.Done():
-			return nil, ctx.Err()
-		case blk, ok := <-blocks:
-			if !ok {
-				break LOOP
-			}
-
-			wg.Add(1)
-			go func(b block) {
-				parseBlock(doc, b, h)
-				wg.Done()
-			}(blk)
-		}
+	for blk := range blocks {
+		wg.Add(1)
+		go func(b block) {
+			parseBlock(doc, b, h)
+			wg.Done()
+		}(blk)
 	}
 
 	wg.Wait()
@@ -91,7 +80,7 @@ func parseBlock(d *doc.Doc, block block, h *message.Handler) {
 // 分析源代码，获取注释块。
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
-func buildBlock(ctx context.Context, h *message.Handler, opt ...*Options) (chan block, *message.SyntaxError) {
+func buildBlock(h *message.Handler, opt ...*Options) (chan block, *message.SyntaxError) {
 	if len(opt) == 0 {
 		return nil, message.NewError("", "opt", 0, locale.ErrRequired)
 	}
@@ -113,12 +102,7 @@ func buildBlock(ctx context.Context, h *message.Handler, opt ...*Options) (chan 
 	go func() {
 		wg := &sync.WaitGroup{}
 		for _, o := range opt {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				parseOptions(ctx, data, h, wg, o)
-			}
+			parseOptions(data, h, wg, o)
 		}
 		wg.Wait()
 
@@ -129,19 +113,14 @@ func buildBlock(ctx context.Context, h *message.Handler, opt ...*Options) (chan 
 }
 
 // 分析每个配置项对应的内容
-func parseOptions(ctx context.Context, data chan block, h *message.Handler, wg *sync.WaitGroup, o *Options) {
+func parseOptions(data chan block, h *message.Handler, wg *sync.WaitGroup, o *Options) {
 	for _, path := range o.paths {
-		select {
-		case <-ctx.Done():
-			return
-		default:
-			wg.Add(1)
-			go func(path string) {
-				parseFile(data, h, path, o)
-				wg.Done()
-			}(path)
-		}
-	} // end for
+		wg.Add(1)
+		go func(path string) {
+			parseFile(data, h, path, o)
+			wg.Done()
+		}(path)
+	}
 }
 
 // 分析 path 指向的文件。

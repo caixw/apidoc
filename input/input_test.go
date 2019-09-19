@@ -4,7 +4,6 @@ package input
 
 import (
 	"bytes"
-	"context"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -84,7 +83,7 @@ func testBuildBlock(a *assert.Assertion, lang string) {
 	}
 	a.NotError(o.Sanitize())
 
-	channel, err := buildBlock(context.Background(), nil, o)
+	channel, err := buildBlock(nil, o)
 	a.NotError(err).NotNil(channel)
 
 	for b := range channel {
