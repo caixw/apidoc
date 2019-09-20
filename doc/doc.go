@@ -26,7 +26,7 @@ type Doc struct {
 	License *Link     `xml:"license,omitempty"` // 版本信息
 	Tags    []*Tag    `xml:"tag,omitempty"`     // 所有的标签
 	Servers []*Server `xml:"server,omitempty"`
-	Apis    []*API    `xml:"apis,omitempty"`
+	Apis    []*API    `xml:"api,omitempty"`
 
 	// 应用于全局的变量
 	Mimetypes string     `xml:"mimetypes,omitempty"` // 指定可用的 mimetype 类型
@@ -39,6 +39,7 @@ type Doc struct {
 }
 
 // Tag 标签内容
+//  <tag name="tag1" deprecated="1.1.1">description</tag>
 type Tag struct {
 	Name        string   `xml:"name,attr"`  // 字面名称，需要唯一
 	Description Richtext `xml:",omitempty"` // 具体描述
@@ -46,12 +47,17 @@ type Tag struct {
 }
 
 // Server 服务信息
+//  <server name="tag1" deprecated="1.1.1" url="api.example.com/admin">description</server>
 type Server struct {
 	Tag
 	URL string `xml:"url,attr"`
 }
 
 // Contact 描述联系方式
+//  <contact name="name">
+//      <url>https://example.com</url>
+//      <email>name@example.com</email>
+//  </contact>
 type Contact struct {
 	Name  string `xml:"name,attr"`
 	URL   string `xml:"url"`
@@ -59,6 +65,7 @@ type Contact struct {
 }
 
 // Link 表示一个链接
+//  <link url="https://example.com">text</link>
 type Link struct {
 	Text string `xml:",innerxml"`
 	URL  string `xml:"url,attr"`

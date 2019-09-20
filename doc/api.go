@@ -10,6 +10,14 @@ import (
 )
 
 // API 表示 <api> 顶层元素
+//  <api method="GET" version="1.1.1" id="get-user">
+//      <path path="/users/{id}">
+//          <param name="id" type="number" summary="summary" />
+//      </path>
+//      <tag>tag1</tag>
+//      <server>admin</server>
+//      ...
+//  </api>
 type API struct {
 	XMLName     struct{}   `xml:"api"`
 	Version     Version    `xml:"version,attr,omitempty"`
@@ -34,7 +42,6 @@ type API struct {
 // Request 请求内容
 type Request struct {
 	Param
-
 	Status      int        `xml:"status,attr"`
 	Mimetype    string     `xml:"mimetype,attr"`
 	Examples    []*Example `xml:"example,omitempty"`
@@ -43,6 +50,10 @@ type Request struct {
 }
 
 // Path 路径信息
+//  <path path="/users/{id}">
+//      <param name="id" type="number" summary="summary" />
+//      <query name="page" type="number" summary="page" default="1" />
+//  </path>
 type Path struct {
 	Path      string   `xml:"path,attr"`
 	Params    []*Param `xml:"param,omitempty"`
