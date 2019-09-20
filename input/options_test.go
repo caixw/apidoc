@@ -15,7 +15,10 @@ import (
 func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	o := &Options{}
+	var o *Options
+	a.Error(o.Sanitize())
+
+	o = &Options{}
 	a.Error(o.Sanitize())
 
 	o.Dir = "not exists"
@@ -53,47 +56,47 @@ func TestRecursivePath(t *testing.T) {
 	a := assert.New(t)
 
 	opt := &Options{
-		Dir:       "./testdir",
+		Dir:       "./testdata",
 		Recursive: false,
 		Exts:      []string{".c", ".h"},
 	}
 	paths, err := recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
-		filepath.Join("testdir", "testfile.c"),
-		filepath.Join("testdir", "testfile.h"),
+		filepath.Join("testdata", "testfile.c"),
+		filepath.Join("testdata", "testfile.h"),
 	})
 
-	opt.Dir = "./testdir"
+	opt.Dir = "./testdata"
 	opt.Recursive = true
 	opt.Exts = []string{".1", ".2"}
 	paths, err = recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
-		filepath.Join("testdir", "testdir1", "testfile.1"),
-		filepath.Join("testdir", "testdir1", "testfile.2"),
-		filepath.Join("testdir", "testdir2", "testfile.1"),
-		filepath.Join("testdir", "testfile.1"),
+		filepath.Join("testdata", "testdir1", "testfile.1"),
+		filepath.Join("testdata", "testdir1", "testfile.2"),
+		filepath.Join("testdata", "testdir2", "testfile.1"),
+		filepath.Join("testdata", "testfile.1"),
 	})
 
-	opt.Dir = "./testdir/testdir1"
+	opt.Dir = "./testdata/testdir1"
 	opt.Recursive = true
 	opt.Exts = []string{".1", ".2"}
 	paths, err = recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
-		filepath.Join("testdir", "testdir1", "testfile.1"),
-		filepath.Join("testdir", "testdir1", "testfile.2"),
+		filepath.Join("testdata", "testdir1", "testfile.1"),
+		filepath.Join("testdata", "testdir1", "testfile.2"),
 	})
 
-	opt.Dir = "./testdir"
+	opt.Dir = "./testdata"
 	opt.Recursive = true
 	opt.Exts = []string{".1"}
 	paths, err = recursivePath(opt)
 	a.NotError(err)
 	a.Contains(paths, []string{
-		filepath.Join("testdir", "testdir1", "testfile.1"),
-		filepath.Join("testdir", "testdir2", "testfile.1"),
-		filepath.Join("testdir", "testfile.1"),
+		filepath.Join("testdata", "testdir1", "testfile.1"),
+		filepath.Join("testdata", "testdir2", "testfile.1"),
+		filepath.Join("testdata", "testfile.1"),
 	})
 }

@@ -29,6 +29,12 @@ const (
 	erroColor = colors.Red
 )
 
+var (
+	infoOut = os.Stdout
+	warnOut = os.Stderr
+	erroOut = os.Stderr
+)
+
 func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
@@ -57,16 +63,17 @@ func main() {
 }
 
 func parse(wd string) {
+	h := message.NewHandler(newConsoleHandlerFunc())
+
 	cfg, err := loadConfig(wd)
 	if err != nil {
-		printError(err)
+		h.Error(message.Erro, err)
 		return
 	}
 
-	h := message.NewHandler(newConsoleHandlerFunc())
 	now := time.Now()
 	if err = apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
-		printError(err)
+		h.Error(message.Erro, err)
 		return
 	}
 	elapsed := time.Now().Sub(now)
@@ -79,23 +86,23 @@ func usage() {
 	flag.CommandLine.SetOutput(buf)
 	flag.PrintDefaults()
 
-	fmt.Println(locale.Sprintf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL))
+	fmt.Fprintln(infoOut, locale.Sprintf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL))
 }
 
 // 根据 wd 所在目录的内容生成一个配置文件，并写入到 wd 目录下的 .apidoc.yaml 中
 func genConfigFile(wd string) {
 	path := filepath.Join(wd, configFilename)
 	if err := generateConfig(wd, path); err != nil {
-		printError(err)
+		fmt.Fprintln(infoOut, err)
 		return
 	}
 
-	fmt.Println(locale.Sprintf(locale.FlagConfigWritedSuccess, path))
+	fmt.Fprintln(infoOut, locale.Sprintf(locale.FlagConfigWritedSuccess, path))
 }
 
 func printVersion() {
-	fmt.Println(locale.Sprintf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version()))
-	fmt.Println(locale.Sprintf(locale.FlagVersionCommitHash, vars.CommitHash()))
+	fmt.Fprintln(infoOut, locale.Sprintf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version()))
+	fmt.Fprintln(infoOut, locale.Sprintf(locale.FlagVersionCommitHash, vars.CommitHash()))
 }
 
 // 将支持的语言内容以表格的形式输出
@@ -117,7 +124,7 @@ func printLanguages() {
 	for _, l := range langs {
 		d := strings.Repeat(" ", maxDisplay-len(l.DisplayName))
 		n := strings.Repeat(" ", maxName-len(l.Name))
-		fmt.Println(l.Name, n, l.DisplayName, d, strings.Join(l.Exts, ", "))
+		fmt.Fprintln(infoOut, l.Name, n, l.DisplayName, d, strings.Join(l.Exts, ", "))
 	}
 }
 
@@ -125,34 +132,16 @@ func newConsoleHandlerFunc() message.HandlerFunc {
 	return func(err *message.Message) {
 		switch err.Type {
 		case message.Erro:
-			printError(err.Message)
+			printMessage(erroOut, erroColor, locale.Sprintf(locale.ErrorPrefix), err.Message)
 		case message.Warn:
-			printWarn(err.Message)
-		case message.Info:
-			printInfo(err.Message)
-		default:
-			printError(err.Message)
+			printMessage(warnOut, warnColor, locale.Sprintf(locale.WarnPrefix), err.Message)
+		default: // message.Info 采用相同的值
+			printMessage(infoOut, infoColor, locale.Sprintf(locale.InfoPrefix), err.Message)
 		}
 	}
 }
 
-func printWarn(val interface{}) {
-	println(os.Stderr, locale.Sprintf(locale.WarnPrefix), warnColor, val)
-}
-
-func printError(val interface{}) {
-	println(os.Stderr, locale.Sprintf(locale.ErrorPrefix), erroColor, val)
-}
-
-func printInfo(val interface{}) {
-	println(os.Stderr, locale.Sprintf(locale.InfoPrefix), infoColor, val)
-}
-
-func println(out *os.File, prefix string, color colors.Color, val interface{}) {
-	if out != os.Stderr && out != os.Stdout {
-		panic("无效的 out 参数")
-	}
-
+func printMessage(out *os.File, color colors.Color, prefix, msg string) {
 	colors.Fprint(out, color, colors.Default, prefix)
-	colors.Fprintln(out, colors.Default, colors.Default, val)
+	colors.Fprintln(out, colors.Default, colors.Default, msg)
 }

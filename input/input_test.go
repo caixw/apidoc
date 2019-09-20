@@ -3,94 +3,67 @@
 package input
 
 import (
-	"bytes"
+	"io/ioutil"
+	"log"
 	"testing"
 
 	"github.com/issue9/assert"
-)
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/simplifiedchinese"
 
-var (
-	api1 = []byte(`@api POST /users/login 登录
-group users
-tags: [t1,t2]
-
-request:
-  description: request body
-  content:
-    application/json:
-      schema:
-        type: object
-        properties:
-          username:
-            type: string
-            description: 登录账号
-          password:
-            type: string
-            description: 密码
-`)
-
-	api2 = []byte(`@api DELETE /users/login 注销登录
-group users
-tags: [t1,t2]
-
-request:
-  description: request body
-  content:
-    application/json:
-      schema:
-        type: object
-        properties:
-          username:
-            type: string
-            description: 登录账号
-          password:
-            type: string
-            description: 密码
-`)
-
-	doc1 = []byte(`@apidoc title of api
-version: 2.9
-license:
-  name: MIT
-  url: https://opensources.org/licenses/MIT
-description:>
-  line1
-  line2
-`)
+	"github.com/caixw/apidoc/v5/message"
 )
 
 func TestParse(t *testing.T) {
 	a := assert.New(t)
+	erro := log.New(ioutil.Discard, "[ERRO]", 0)
+	warn := log.New(ioutil.Discard, "[WARN]", 0)
+	info := log.New(ioutil.Discard, "[INFO]", 0)
+	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn, info))
+	a.NotNil(h)
 
-	testBuildBlock(a, "go")
-	testBuildBlock(a, "groovy")
-	testBuildBlock(a, "java")
-	testBuildBlock(a, "javascript")
-	testBuildBlock(a, "pascal")
-	testBuildBlock(a, "perl")
-	testBuildBlock(a, "php")
-	testBuildBlock(a, "python")
-	testBuildBlock(a, "ruby")
-	testBuildBlock(a, "rust")
-	testBuildBlock(a, "swift")
-}
+	php := &Options{
+		Lang:      "php",
+		Dir:       "./testdata",
+		Recursive: true,
+		Encoding:  "gbk",
+	}
+	a.Panic(func() {
+		Parse(h, php)
+	})
+	a.NotError(php.Sanitize())
 
-func testBuildBlock(a *assert.Assertion, lang string) {
-	o := &Options{
-		Lang:      lang,
-		Dir:       "./testdata/" + lang,
+	c := &Options{
+		Lang:      "c++",
+		Dir:       "./testdata",
 		Recursive: true,
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(c.Sanitize())
 
-	channel := buildBlock(nil, o)
-	a.NotNil(channel)
+	doc := Parse(h, php, c)
+	a.NotNil(doc).
+		Equal(1, len(doc.Apis)).
+		Equal(doc.Version, "1.1.1")
+	api := doc.Apis[0]
+	a.Equal(api.Method, "GET")
+}
 
-	for b := range channel {
-		eq := bytes.Equal(b.Data, api1) ||
-			bytes.Equal(b.Data, api2) ||
-			bytes.Equal(b.Data, doc1) ||
-			(!bytes.HasPrefix(b.Data, []byte("@api ")) && !bytes.HasPrefix(b.Data, []byte("@apidoc ")))
-		a.True(eq, "lang(%s)：%s,%s,%d,%d", lang, string(b.Data), string(api1), len(b.Data), len(api1))
-	}
+func TestReadFile(t *testing.T) {
+	a := assert.New(t)
+
+	nop, err := readFile("./testdata/gbk.php", encoding.Nop)
+	a.NotError(err).
+		NotNil(nop).
+		NotContains(string(nop), "这是一个 GBK 编码的文件")
+
+	def, err := readFile("./testdata/gbk.php", nil)
+	a.NotError(err).
+		NotNil(def).
+		NotContains(string(def), "这是一个 GBK 编码的文件")
+	a.Equal(def, nop)
+
+	data, err := readFile("./testdata/gbk.php", simplifiedchinese.GB18030)
+	a.NotError(err).
+		NotNil(data).
+		Contains(string(data), "这是一个 GBK 编码的文件")
 }

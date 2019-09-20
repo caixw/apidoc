@@ -67,15 +67,16 @@ var (
 )
 
 func parseBlock(d *doc.Doc, block block, h *message.Handler) {
-	var err error
 	switch {
 	case bytes.HasPrefix(block.Data, apidocBegin):
-		err = d.FromXML(block.Data)
+		if err := d.FromXML(block.Data); err != nil {
+			h.Error(message.Erro, message.WithError(block.File, "", block.Line, err))
+		}
 	case bytes.HasPrefix(block.Data, apiBegin):
-		err = d.NewAPI(block.File, block.Line).FromXML(block.Data)
+		if err := d.NewAPI(block.File, block.Line).FromXML(block.Data); err != nil {
+			h.Error(message.Erro, message.WithError(block.File, "", block.Line, err))
+		}
 	}
-
-	h.Error(message.Erro, message.WithError(block.File, "", block.Line, err))
 }
 
 // 分析源代码，获取注释块。
@@ -129,16 +130,16 @@ func parseFile(channel chan block, h *message.Handler, path string, o *Options) 
 }
 
 // 以指定的编码方式读取内容。
-func readFile(path string, encoding encoding.Encoding) ([]byte, error) {
+func readFile(path string, enc encoding.Encoding) ([]byte, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	if encoding == nil {
+	if enc == nil || enc == encoding.Nop {
 		return data, nil
 	}
 
-	reader := transform.NewReader(bytes.NewReader(data), encoding.NewDecoder())
+	reader := transform.NewReader(bytes.NewReader(data), enc.NewDecoder())
 	return ioutil.ReadAll(reader)
 }
