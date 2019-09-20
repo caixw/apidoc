@@ -119,7 +119,7 @@ func (cfg *config) sanitize() error {
 
 	for index, input := range cfg.Inputs {
 		if input.Dir, err = getPath(cfg.wd, input.Dir); err != nil {
-			return err
+			return message.WithError(configFilename, "inputs["+strconv.Itoa(index)+"].path", 0, err)
 		}
 
 		field := "inputs[" + strconv.Itoa(index) + "]"
@@ -136,7 +136,7 @@ func (cfg *config) sanitize() error {
 
 	if !filepath.IsAbs(cfg.Output.Path) {
 		if cfg.Output.Path, err = getPath(cfg.wd, cfg.Output.Path); err != nil {
-			return err
+			return message.WithError(configFilename, "output.path", 0, err)
 		}
 
 		if err := cfg.Output.Sanitize(); err != nil {
@@ -146,6 +146,7 @@ func (cfg *config) sanitize() error {
 			} else {
 				err.Field = "output." + err.Field
 			}
+			return err
 		}
 	}
 
