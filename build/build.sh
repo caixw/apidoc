@@ -1,7 +1,5 @@
 #!/bin/sh
-# Copyright 2017 by caixw, All rights reserved.
-# Use of this source code is governed by a MIT
-# license that can be found in the LICENSE file.
+# SPDX-License-Identifier: MIT
 
 # 指定工作目录
 wd=$(dirname $0)/../cmd/apidoc
