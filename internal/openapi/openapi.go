@@ -12,8 +12,8 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // TODO 扩展字段未加
@@ -77,7 +77,7 @@ type Tag struct {
 
 // Example 示例代码
 type Example struct {
-	Summary       string       `json:"summary,omitempty" yaml:"summary,omitempty"`
+	Summary       Description  `json:"summary,omitempty" yaml:"summary,omitempty"`
 	Description   Description  `json:"description,omitempty" yaml:"description,omitempty"`
 	Value         ExampleValue `json:"value,omitempty" yaml:"value,omitempty"`
 	ExternalValue string       `json:"external,omitempty" yaml:"external,omitempty"`

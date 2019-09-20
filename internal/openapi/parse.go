@@ -107,8 +107,8 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 			examples := make(map[string]*Example, len(resp.Examples))
 			for _, exp := range resp.Examples {
 				examples[exp.Mimetype] = &Example{
-					// TODO Summary: exp.Summary,
-					Value: ExampleValue(exp.Content),
+					Summary: exp.Description,
+					Value:   ExampleValue(exp.Content),
 				}
 			}
 			r.Content[resp.Mimetype] = &MediaType{

@@ -39,7 +39,7 @@ type Request struct {
 	Mimetype    string     `xml:"mimetype,attr"`
 	Examples    []*Example `xml:"example,omitempty"`
 	Headers     []*Header  `xml:"header,omitempty"`
-	Description Richtext   `xml:",innerxml"`
+	Description Richtext   `xml:"description,omitempty"`
 }
 
 // Path 路径信息
@@ -62,7 +62,7 @@ type Param struct {
 	Items       []*Param `xml:"param,omitempty"`
 	Reference   string   `xml:"ref,attr,omitempty"`
 	Summary     string   `xml:"summary,attr,omitempty"`
-	Description Richtext `xml:",innerxml"`
+	Description Richtext `xml:"description,omitempty"`
 }
 
 // IsEnum 是否为一个枚举类型
@@ -80,21 +80,22 @@ type Enum struct {
 // Header 报头信息
 type Header struct {
 	Name        string   `xml:"name,attr"`
-	Description Richtext `xml:",innerxml"`
+	Description Richtext `xml:"description,omitempty"`
 	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 }
 
 // Example 示例代码
 type Example struct {
-	Mimetype string   `xml:"mimetype,attr"`
-	Content  Richtext `xml:",innerxml"`
+	Description Richtext `xml:",innerxml"`
+	Mimetype    string   `xml:"mimetype,attr"`
+	Content     Richtext `xml:",innerxml"`
 }
 
 // Callback 回调函数的定义
 type Callback struct {
 	Param
 	Schema      string     `xml:"schema,attr"` // http 或是 https
-	Description Richtext   `xml:",innerxml"`
+	Description Richtext   `xml:"description,omitempty"`
 	Mimetype    string     `xml:"mimetype,attr"`
 	Examples    []*Example `xml:"example,omitempty"`
 	Headers     []*Header  `xml:"header,omitempty"`
