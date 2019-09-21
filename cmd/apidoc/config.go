@@ -167,7 +167,7 @@ func getConfig(wd string) (*config, error) {
 		Inputs:  inputs,
 		Output: &output.Options{
 			Type: output.ApidocXML,
-			Path: filepath.Join(wd, "apidoc.json"),
+			Path: filepath.Join(wd, configFilename),
 		},
 	}, nil
 }
@@ -181,6 +181,8 @@ func generateConfig(wd, path string) error {
 	if err != nil {
 		return err
 	}
+
+	// TODO 改为当前目录
 
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
