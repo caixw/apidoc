@@ -159,7 +159,7 @@ func generateConfig(wd, path string) error {
 
 // 处理 path，如果 path 是相对路径的，则将其设置为相对于 wd 的路径
 //
-// wd 表示工作目录；
+// wd 表示工作目录，当 path 不是绝对路径和 ~ 开头时，表示相对于此目录；
 // path 表示需要处理的路径。
 func getPath(path, wd string) (p string, err error) {
 	if filepath.IsAbs(path) {
@@ -170,8 +170,8 @@ func getPath(path, wd string) (p string, err error) {
 		path = filepath.Join(wd, path)
 	}
 
-	// 有可能 wd 是 ~/ 开头的
-	if strings.HasPrefix(path, "~/") { // 非 home 路开头的相对路径，需要将其定位到 wd 目录之下
+	// 非 ~ 路开头的相对路径，需要将其定位到 wd 目录之下
+	if strings.HasPrefix(path, "~/") {
 		dir, err := os.UserHomeDir()
 		if err != nil {
 			return "", err
