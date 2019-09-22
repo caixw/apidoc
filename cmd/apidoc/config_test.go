@@ -21,94 +21,100 @@ func TestGetPath(t *testing.T) {
 	wd, err := os.Getwd()
 	a.NotError(err).NotEmpty(wd)
 
+	abs := func(path string) string {
+		abs, err := filepath.Abs(path)
+		a.NotError(err)
+		return abs
+	}
+
 	data := []*struct {
 		path, wd, result string
 	}{
 		{ // 指定 home，不依赖于 wd
 			path:   "~/path",
 			wd:     "",
-			result: filepath.Join(hd, "/path"),
+			result: abs(filepath.Join(hd, "/path")),
 		},
 		{ // 绝对路径
 			path:   "/path",
 			wd:     "",
-			result: "/path",
+			result: abs("/path"),
 		},
 		{
 			path:   "path",
 			wd:     "",
-			result: filepath.Join(wd, "/path"),
+			result: abs(filepath.Join(wd, "/path")),
 		},
 		{
 			path:   "./path",
 			wd:     "",
-			result: filepath.Join(wd, "/path"),
+			result: abs(filepath.Join(wd, "/path")),
 		},
 
 		// 以下为 wd= /wd
 		{ // 指定 home，不依赖于 wd
 			path:   "~/path",
 			wd:     "/wd",
-			result: filepath.Join(hd, "/path"),
+			result: abs(filepath.Join(hd, "/path")),
 		},
 		{ // 绝对路径
 			path:   "/path",
 			wd:     "/wd",
-			result: "/path",
+			result: abs("/path"),
 		},
 		{
 			path:   "path",
 			wd:     "/wd",
-			result: "/wd/path",
+			result: abs("/wd/path"),
 		},
 		{
 			path:   "./path",
 			wd:     "/wd",
-			result: "/wd/path",
+			result: abs("/wd/path"),
 		},
 
 		// 以下为 wd= ~/wd
 		{ // 指定 home，不依赖于 wd
 			path:   "~/path",
 			wd:     "~/wd",
-			result: filepath.Join(hd, "/path"),
+			result: abs(filepath.Join(hd, "/path")),
 		},
 		{ // 绝对路径
 			path:   "/path",
 			wd:     "~/wd",
-			result: "/path",
+			result: abs("/path"),
 		},
 		{
 			path:   "path",
 			wd:     "~/wd",
-			result: filepath.Join(hd, "/wd/path"),
+			result: abs(filepath.Join(hd, "/wd/path")),
 		},
 		{
 			path:   "./path",
 			wd:     "~/wd",
-			result: filepath.Join(hd, "/wd/path"),
+			result: abs(filepath.Join(hd, "/wd/path")),
 		},
 
 		// 以下为 wd= ./wd
 		{ // 指定 home，不依赖于 wd
 			path:   "~/path",
 			wd:     "./wd",
-			result: filepath.Join(hd, "/path"),
+			result: abs(filepath.Join(hd, "/path")),
 		},
 		{ // 绝对路径
 			path:   "/path",
 			wd:     "./wd",
-			result: "/path",
+			result: abs("/path"),
 		},
 		{
 			path:   "path",
 			wd:     "./wd",
-			result: filepath.Join(wd, "/wd/path"),
+			result: abs(filepath.Join(wd, "/wd/path")),
 		},
 		{
 			path:   "./path",
 			wd:     "./wd",
-			result: filepath.Join(wd, "/wd/path"),
+			result: abs(filepath.Join(wd, "/wd/path")),
 		},
 	}
 
