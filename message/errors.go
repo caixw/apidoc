@@ -3,6 +3,8 @@
 package message
 
 import (
+	"encoding/xml"
+
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
@@ -38,6 +40,15 @@ func NewError(file, field string, line int, msg message.Reference, val ...interf
 
 // WithError 声明 SyntaxError 实例，其中的提示信息由 err 返回
 func WithError(file, field string, line int, err error) *SyntaxError {
+	if serr, ok := err.(*xml.SyntaxError); ok {
+		return &SyntaxError{
+			Message: serr.Msg,
+			File:    file,
+			Line:    line + serr.Line,
+			Field:   field,
+		}
+	}
+
 	return &SyntaxError{
 		Message: err.Error(),
 		File:    file,
