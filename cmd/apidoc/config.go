@@ -24,7 +24,7 @@ const configFilename = ".apidoc.yaml"
 
 // 项目的配置内容
 type config struct {
-	// 产生此配置文件的程序版本号。
+	// 产生此配置文件的程序版本号
 	//
 	// 程序会用此来判断程序的兼容性。
 	Version string `yaml:"version"`
@@ -34,7 +34,7 @@ type config struct {
 	// 多语言项目，可能需要用到多个输入面。
 	Inputs []*input.Options `yaml:"inputs"`
 
-	// 输出配置项。
+	// 输出配置项
 	Output *output.Options `yaml:"output"`
 
 	// 配置文件所在的目录。
@@ -85,12 +85,11 @@ func loadConfig(wd string) (*config, error) {
 	if err = yaml.Unmarshal(data, cfg); err != nil {
 		return nil, err
 	}
+	cfg.wd = wd
 
 	if err = cfg.sanitize(); err != nil {
 		return nil, err
 	}
-
-	cfg.wd = wd
 
 	return cfg, nil
 }
@@ -138,16 +137,15 @@ func (cfg *config) sanitize() error {
 		if cfg.Output.Path, err = getPath(cfg.wd, cfg.Output.Path); err != nil {
 			return message.WithError(configFilename, "output.path", 0, err)
 		}
-
-		if err := cfg.Output.Sanitize(); err != nil {
-			err.File = configFilename
-			if err.Field == "" {
-				err.Field = "output"
-			} else {
-				err.Field = "output." + err.Field
-			}
-			return err
+	}
+	if err := cfg.Output.Sanitize(); err != nil {
+		err.File = configFilename
+		if err.Field == "" {
+			err.Field = "output"
+		} else {
+			err.Field = "output." + err.Field
 		}
+		return err
 	}
 
 	return nil
