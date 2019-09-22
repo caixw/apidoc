@@ -12,9 +12,9 @@ import (
 	"github.com/issue9/version"
 	"gopkg.in/yaml.v2"
 
+	"github.com/caixw/apidoc/v5"
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/output"
 )
@@ -71,7 +71,7 @@ func (cfg *config) sanitize() *message.SyntaxError {
 	}
 
 	// 比较版本号兼容问题
-	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
+	compatible, err := version.SemVerCompatible(apidoc.Version(), cfg.Version)
 	if err != nil {
 		return message.WithError(configFilename, "version", 0, err)
 	}
@@ -141,7 +141,7 @@ func getConfig(wd string) (*config, error) {
 		return nil, err
 	}
 	return &config{
-		Version: vars.Version(),
+		Version: apidoc.Version(),
 		Inputs:  inputs,
 		Output: &output.Options{
 			Type: output.ApidocXML,

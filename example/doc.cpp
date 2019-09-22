@@ -1,13 +1,30 @@
 // SPDX-License-Identifier: MIT
 
-// @apidoc title of doc
-// @apiserver admin https://api.example.com/admin 后台管理接口
-// @apiserver client https://api.example.com/ 客户端接口
-// @apitag t1 desc
-// @apitag t2 desc
-// @apilicense name http://example.com
-// @apicontact name http://example.com
-// @apiversion 0.1.0
-// @apicontent description markdown
+// <apidoc version="1.1.1">
+//     <title>title of doc</title>
+//     <server name="admin" url="https://api.example.com/admin">后台管理接口</server>
+//     <server name="client" url="https://api.example.com">客户端接口</server>
+//     <tag name="t1">t1 desc</tag>
+//     <tag name="t2">t2 desc</tag>
+//     <license url="https://opensource.org/licenses/MIT">MIT</license>
+//     <contact name="name">
+//         <url>https://example.com</url>
+//         <email>example@example.com</email>
+//     </contact>
 //
-// @apiresponse 404 object application/json 全局的返回内容定义
+//     <response status="404" type="object">
+//         <header name="authorization">token</header>
+//         <param name="code" type="number" summary="状态码" required="true" />
+//         <param name="message" type="string" summary="错误信息" required="true" />
+//         <param name="detail" type="object" array="true" summary="错误明细">
+//             <param name="id" type="string" summary="id" />
+//             <param name="message" type="string" summary="message" />
+//         </param>
+//     </response>
+//
+//     <content>
+//     <![CDATA[
+//      这里可以是 markdown 文档
+//     ]]
+//     </content>
+// </apidoc>

@@ -42,19 +42,21 @@
     <response status="400" mimetype="json/xml">
     </response>
 
-    <callback method="post" mimetype="json" schema="https" type="object">
-        <query name="size">size</query>
+    <callback method="post" schema="https">
+        <request mimetype="json" type="object">
+            <query name="size">size</query>
 
-        <param name="id" type="number" default="1" />
-        <param name="age" type="number" />
-        <example mimetype="json">
-        <![CDATA[
-        {
-            id:1,
-            sex: male,
-        }
-        ]]>
-        </example>
+            <param name="id" type="number" default="1" />
+            <param name="age" type="number" />
+            <example mimetype="json">
+            <![CDATA[
+            {
+                id:1,
+                sex: male,
+            }
+            ]]>
+            </example>
+        </request>
 
         <response status="200" mimetype="text" type="string">
         </response>

@@ -91,33 +91,31 @@ type Enum struct {
 // Header 报头信息
 type Header struct {
 	Name        string   `xml:"name,attr"`
-	Description Richtext `xml:"description,omitempty"`
+	Description Richtext `xml:",innerxml"`
 	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 }
 
 // Example 示例代码
 type Example struct {
-	Description Richtext `xml:",innerxml"`
+	Description Richtext `xml:"description,omitempty"`
 	Mimetype    string   `xml:"mimetype,attr"`
 	Content     Richtext `xml:",innerxml"`
 }
 
 // Callback 回调函数的定义
 type Callback struct {
-	Param
 	Schema      string     `xml:"schema,attr"` // http 或是 https
+	Summary     string     `xml:"summary,attr,omitempty"`
 	Description Richtext   `xml:"description,omitempty"`
 	Mimetype    string     `xml:"mimetype,attr"`
 	Examples    []*Example `xml:"example,omitempty"`
 	Headers     []*Header  `xml:"header,omitempty"`
 	Method      Method     `xml:"method,attr"`
 	Queries     []*Param   `xml:"queries,omitempty"` // 查询参数
-	Requests    []*Request `xml:"requests,omitempty"`
 	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
 	Reference   string     `xml:"ref,attr,omitempty"`
-
-	// 对回调的返回要求
-	Responses []*Request `xml:"response,omitempty"`
+	Responses   []*Request `xml:"response,omitempty"`
+	Requests    []*Request `xml:"request,omitempty"`
 }
 
 // NewAPI 返回新的 API 实例
@@ -142,9 +140,9 @@ func (api *API) FromXML(data []byte) error {
 	if serr, ok := err.(*message.SyntaxError); ok {
 		serr.File = api.file
 		serr.Line = api.line
-
 		return err
 	}
+
 	return message.WithError(api.file, "", api.line, err)
 }
 

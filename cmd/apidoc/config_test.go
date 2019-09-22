@@ -9,8 +9,8 @@ import (
 
 	"github.com/issue9/assert"
 
+	"github.com/caixw/apidoc/v5"
 	"github.com/caixw/apidoc/v5/input"
-	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 )
 
@@ -153,7 +153,7 @@ func TestConfig_generateConfig_loadConfig(t *testing.T) {
 	a.NotError(err).
 		NotNil(cfg)
 
-	a.Equal(cfg.Version, vars.Version())
+	a.Equal(cfg.Version, apidoc.Version())
 }
 
 func TestConfig_sanitize(t *testing.T) {

@@ -17,7 +17,7 @@
 //         </query>
 //     </path>
 //
-//     <request type="object">
+//     <request type="object" status="200">
 //         <header name="name">desc</header>
 //         <header name="name1">desc1</header>
 //         <param name="count" type="int" required="true" summary="summary" />
@@ -40,29 +40,41 @@
 //         ]]</example>
 //     </request>
 //
-//     <response status="200" type="array.object">
-//         <param name="id"
+//     <response status="200" array="true" type="object">
+//         <param name="id" type="number" summary="desc" />
+//         <param name="name" type="string" summary="desc" />
+//         <param name="group" type="object" summary="object">
+//             <param name="id" type="number" summary="id" />
+//         </param>
 //     </response>
+//
+//     <response status="404" type="object">
+//         <header name="authorization">token</header>
+//         <param name="code" type="number" summary="状态码" required="true" />
+//         <param name="message" type="string" summary="错误信息" required="true" />
+//         <param name="detail" type="object" array="true" summary="错误明细">
+//             <param name="id" type="string" summary="id" />
+//             <param name="message" type="string" summary="message" />
+//         </param>
+//     </response>
+//
+//     <callback schema="https" summary="回调函数" method="POST">
+//         <request mimetype="json" type="object">
+//             <query name="size">size</query>
+//
+//             <param name="id" type="number" default="1" />
+//             <param name="age" type="number" />
+//             <example mimetype="json">
+//             <![CDATA[
+//             {
+//                 id:1,
+//                 sex: male,
+//             }
+//             ]]>
+//             </example>
+//         </request>
+//
+//         <response status="200" mimetype="text" type="string" />
+//     </callback>
 // </api>
-
-
-//
-// @apiresponse 200 array.object * 通用的返回内容定义
-// @apiheader string required desc
-// @apiparam id int reqiured desc
-// @apiparam name string reqiured desc
-// @apiparam group object reqiured desc
-// @apiparam group.id int reqiured desc
-//
-// @apiresponse 404 object application/json 错误的返回内容
-// @apiheader string required desc38G
-// @apiparam code int reqiured desc
-// @apiparam message string reqiured desc
-// @apiparam detail array.object reqiured desc
-// @apiparam detail.id string reqiured desc
-// @apiparam detail.message string reqiured desc
-//
-// @apiCallback GET 回调内容
-// @apirequest object application/xml 特定的请求主体
-// @apiresponse 404 object application/json 错误的返回内容
 void logs() {}
