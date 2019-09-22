@@ -72,7 +72,7 @@ func parse(wd string) {
 	}
 
 	now := time.Now()
-	if err = apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
+	if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
 		h.Error(message.Erro, err)
 		return
 	}

@@ -75,26 +75,26 @@ func getPath(path, wd string) (p string, err error) {
 }
 
 // 加载 wd 目录下的配置文件到 *config 实例。
-func loadConfig(wd string) (*config, error) {
+func loadConfig(wd string) (*config, *message.SyntaxError) {
 	data, err := ioutil.ReadFile(filepath.Join(wd, configFilename))
 	if err != nil {
-		return nil, err
+		return nil, message.WithError(configFilename, "", 0, err)
 	}
 
 	cfg := &config{}
 	if err = yaml.Unmarshal(data, cfg); err != nil {
-		return nil, err
+		return nil, message.WithError(configFilename, "", 0, err)
 	}
 	cfg.wd = wd
 
-	if err = cfg.sanitize(); err != nil {
+	if err := cfg.sanitize(); err != nil {
 		return nil, err
 	}
 
 	return cfg, nil
 }
 
-func (cfg *config) sanitize() error {
+func (cfg *config) sanitize() *message.SyntaxError {
 	if !version.SemVerValid(cfg.Version) {
 		return message.NewError(configFilename, "version", 0, locale.ErrInvalidFormat)
 	}

@@ -23,7 +23,7 @@ type marshaler func(v *doc.Doc) ([]byte, error)
 
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
-	// 文档的保存路径，建议使用绝对路径。
+	// 文档的保存路径
 	Path string `yaml:"path,omitempty"`
 
 	// 输出类型

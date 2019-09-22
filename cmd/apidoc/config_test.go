@@ -12,7 +12,6 @@ import (
 
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/vars"
-	"github.com/caixw/apidoc/v5/message"
 )
 
 func TestGetPath(t *testing.T) {
@@ -107,23 +106,23 @@ func TestConfig_sanitize(t *testing.T) {
 	conf := &config{}
 	err := conf.sanitize()
 	a.Error(err).
-		Equal(err.(*message.SyntaxError).Field, "version")
+		Equal(err.Field, "version")
 
 	// 版本号错误
 	conf.Version = "5.0"
 	err = conf.sanitize()
 	a.Error(err).
-		Equal(err.(*message.SyntaxError).Field, "version")
+		Equal(err.Field, "version")
 
 	// 未声明 inputs
 	conf.Version = "5.0.1"
 	err = conf.sanitize()
 	a.Error(err).
-		Equal(err.(*message.SyntaxError).Field, "inputs")
+		Equal(err.Field, "inputs")
 
 	// 未声明 output
 	conf.Inputs = []*input.Options{{}}
 	err = conf.sanitize()
 	a.Error(err).
-		Equal(err.(*message.SyntaxError).Field, "output")
+		Equal(err.Field, "output")
 }
