@@ -19,8 +19,10 @@ import (
 	"github.com/caixw/apidoc/v5/output"
 )
 
-// 配置文件名称。
-const configFilename = ".apidoc.yaml"
+const (
+	configFilename = ".apidoc.yaml"
+	docFilename    = "apidoc.xml"
+)
 
 // 项目的配置内容
 type config struct {
@@ -92,13 +94,7 @@ func (cfg *config) sanitize() *message.SyntaxError {
 
 		field := "inputs[" + strconv.Itoa(index) + "]"
 		if err := input.Sanitize(); err != nil {
-			err.File = configFilename
-			if err.Field == "" {
-				err.Field = field
-			} else {
-				err.Field = field + "." + err.Field
-			}
-			return err
+			return fixedSyntaxError(err, field)
 		}
 	}
 
@@ -108,16 +104,20 @@ func (cfg *config) sanitize() *message.SyntaxError {
 		}
 	}
 	if err := cfg.Output.Sanitize(); err != nil {
-		err.File = configFilename
-		if err.Field == "" {
-			err.Field = "output"
-		} else {
-			err.Field = "output." + err.Field
-		}
-		return err
+		return fixedSyntaxError(err, "output")
 	}
 
 	return nil
+}
+
+func fixedSyntaxError(err *message.SyntaxError, field string) *message.SyntaxError {
+	err.File = configFilename
+	if err.Field == "" {
+		err.Field = field
+	} else {
+		err.Field = field + "." + err.Field
+	}
+	return err
 }
 
 func getConfig(wd string) (*config, error) {
@@ -129,12 +129,23 @@ func getConfig(wd string) (*config, error) {
 		return nil, message.NewError("", "", 0, locale.ErrNotFoundSupportedLang)
 	}
 
+	for _, input := range inputs {
+		input.Dir, err = filepath.Rel(wd, input.Dir)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	outputFile, err := filepath.Rel(wd, filepath.Join(wd, docFilename))
+	if err != nil {
+		return nil, err
+	}
 	return &config{
 		Version: vars.Version(),
 		Inputs:  inputs,
 		Output: &output.Options{
 			Type: output.ApidocXML,
-			Path: filepath.Join(wd, configFilename),
+			Path: outputFile,
 		},
 	}, nil
 }

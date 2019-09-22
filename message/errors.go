@@ -22,10 +22,13 @@ type SyntaxError struct {
 }
 
 func (err *SyntaxError) Error() string {
-	// TODO 根据是否有 filed，返回不同的提示内容
+	if err.Field == "" {
+		// ErrMessage = "%s 位次于 %s:%d"
+		return locale.Sprintf(locale.ErrMessage, err.Message, err.File, err.Line)
+	}
 
-	// ErrMessage = "%s 位次于 %s:%d 的 %s"
-	return locale.Sprintf(locale.ErrMessage, err.Message, err.File, err.Line, err.Field)
+	// ErrMessageWithField = "%s 位次于 %s:%d 的 %s"
+	return locale.Sprintf(locale.ErrMessageWithField, err.Message, err.File, err.Line, err.Field)
 }
 
 // NewError 声明新的 SyntaxError 实例

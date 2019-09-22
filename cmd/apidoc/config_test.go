@@ -11,6 +11,7 @@ import (
 
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 func TestGetPath(t *testing.T) {
@@ -123,6 +124,22 @@ func TestGetPath(t *testing.T) {
 		a.NotError(err, "err @%d,%s", index, err).
 			Equal(result, item.result, "not equal @%d,v1=%s,v2=%s", index, result, item.result)
 	}
+}
+
+func TestFixedSyntaxError(t *testing.T) {
+	a := assert.New(t)
+
+	err := &message.SyntaxError{
+		Field: "f",
+	}
+	e := fixedSyntaxError(err, "p")
+	a.Equal(e.File, configFilename)
+	a.Equal(e.Field, "p.f")
+
+	err.Field = ""
+	e = fixedSyntaxError(err, "p")
+	a.Equal(e.File, configFilename)
+	a.Equal(e.Field, "p")
 }
 
 func TestConfig_generateConfig_loadConfig(t *testing.T) {
