@@ -37,41 +37,10 @@ type config struct {
 	// 输出配置项
 	Output *output.Options `yaml:"output"`
 
-	// 配置文件所在的目录。
+	// 配置文件所在的目录
 	//
 	// 如果 input 和 output 中涉及到地址为非绝对目录，则使用此值作为基地址。
 	wd string
-}
-
-// 处理 path，如果 path 是相对路径的，则将其设置为相对于 wd 的路径
-//
-// wd 表示工作目录；
-// path 表示需要处理的路径。
-func getPath(path, wd string) (p string, err error) {
-	if filepath.IsAbs(path) {
-		return filepath.Clean(path), nil
-	}
-
-	if !strings.HasPrefix(path, "~/") {
-		path = filepath.Join(wd, path)
-	}
-
-	// 有可能 wd 是 ~/ 开头的
-	if strings.HasPrefix(path, "~/") { // 非 home 路开头的相对路径，需要将其定位到 wd 目录之下
-		dir, err := os.UserHomeDir()
-		if err != nil {
-			return "", err
-		}
-		path = filepath.Join(dir, path[2:])
-	}
-
-	if !filepath.IsAbs(path) {
-		if path, err = filepath.Abs(path); err != nil {
-			return "", err
-		}
-	}
-
-	return filepath.Clean(path), nil
 }
 
 // 加载 wd 目录下的配置文件到 *config 实例。
@@ -180,12 +149,41 @@ func generateConfig(wd, path string) error {
 		return err
 	}
 
-	// TODO 改为当前目录
-
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
 		return err
 	}
 
 	return ioutil.WriteFile(path, data, os.ModePerm)
+}
+
+// 处理 path，如果 path 是相对路径的，则将其设置为相对于 wd 的路径
+//
+// wd 表示工作目录；
+// path 表示需要处理的路径。
+func getPath(path, wd string) (p string, err error) {
+	if filepath.IsAbs(path) {
+		return filepath.Clean(path), nil
+	}
+
+	if !strings.HasPrefix(path, "~/") {
+		path = filepath.Join(wd, path)
+	}
+
+	// 有可能 wd 是 ~/ 开头的
+	if strings.HasPrefix(path, "~/") { // 非 home 路开头的相对路径，需要将其定位到 wd 目录之下
+		dir, err := os.UserHomeDir()
+		if err != nil {
+			return "", err
+		}
+		path = filepath.Join(dir, path[2:])
+	}
+
+	if !filepath.IsAbs(path) {
+		if path, err = filepath.Abs(path); err != nil {
+			return "", err
+		}
+	}
+
+	return filepath.Clean(path), nil
 }

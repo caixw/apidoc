@@ -4,7 +4,6 @@ package main
 
 import (
 	"os"
-	"os/user"
 	"path/filepath"
 	"testing"
 
@@ -16,74 +15,108 @@ import (
 
 func TestGetPath(t *testing.T) {
 	a := assert.New(t)
-	home, err := user.Current()
-	a.NotError(err).NotEmpty(home)
-	hd := home.HomeDir
+	hd, err := os.UserHomeDir()
+	a.NotError(err).NotNil(hd)
 
 	wd, err := os.Getwd()
 	a.NotError(err).NotEmpty(wd)
 
-	// 指定 home，不依赖于 wd
-	path, err := getPath("~/path", "")
-	a.NotError(err).Equal(path, filepath.Join(hd, "/path"))
+	data := []*struct {
+		path, wd, result string
+	}{
+		{ // 指定 home，不依赖于 wd
+			path:   "~/path",
+			wd:     "",
+			result: filepath.Join(hd, "/path"),
+		},
+		{ // 绝对路径
+			path:   "/path",
+			wd:     "",
+			result: "/path",
+		},
+		{
+			path:   "path",
+			wd:     "",
+			result: filepath.Join(wd, "/path"),
+		},
+		{
+			path:   "./path",
+			wd:     "",
+			result: filepath.Join(wd, "/path"),
+		},
 
-	// 绝对路径
-	path, err = getPath("/path", "")
-	a.NotError(err).Equal(path, "/path")
+		// 以下为 wd= /wd
+		{ // 指定 home，不依赖于 wd
+			path:   "~/path",
+			wd:     "/wd",
+			result: filepath.Join(hd, "/path"),
+		},
+		{ // 绝对路径
+			path:   "/path",
+			wd:     "/wd",
+			result: "/path",
+		},
+		{
+			path:   "path",
+			wd:     "/wd",
+			result: "/wd/path",
+		},
+		{
+			path:   "./path",
+			wd:     "/wd",
+			result: "/wd/path",
+		},
 
-	path, err = getPath("path", "")
-	a.NotError(err).Equal(path, filepath.Join(wd, "/path"))
+		// 以下为 wd= ~/wd
+		{ // 指定 home，不依赖于 wd
+			path:   "~/path",
+			wd:     "~/wd",
+			result: filepath.Join(hd, "/path"),
+		},
+		{ // 绝对路径
+			path:   "/path",
+			wd:     "~/wd",
+			result: "/path",
+		},
+		{
+			path:   "path",
+			wd:     "~/wd",
+			result: filepath.Join(hd, "/wd/path"),
+		},
+		{
+			path:   "./path",
+			wd:     "~/wd",
+			result: filepath.Join(hd, "/wd/path"),
+		},
 
-	path, err = getPath("./path", "")
-	a.NotError(err).Equal(path, filepath.Join(wd, "/path"))
+		// 以下为 wd= ./wd
+		{ // 指定 home，不依赖于 wd
+			path:   "~/path",
+			wd:     "./wd",
+			result: filepath.Join(hd, "/path"),
+		},
+		{ // 绝对路径
+			path:   "/path",
+			wd:     "./wd",
+			result: "/path",
+		},
+		{
+			path:   "path",
+			wd:     "./wd",
+			result: filepath.Join(wd, "/wd/path"),
+		},
+		{
+			path:   "./path",
+			wd:     "./wd",
+			result: filepath.Join(wd, "/wd/path"),
+		},
+	}
 
-	// 以下为 wd= /wd
-
-	// 指定 home，不依赖于 wd
-	path, err = getPath("~/path", "/wd")
-	a.NotError(err).Equal(path, filepath.Join(hd, "/path"))
-
-	// 绝对路径
-	path, err = getPath("/path", "/wd")
-	a.NotError(err).Equal(path, "/path")
-
-	path, err = getPath("path", "/wd")
-	a.NotError(err).Equal(path, "/wd/path")
-
-	path, err = getPath("./path", "/wd")
-	a.NotError(err).Equal(path, "/wd/path")
-
-	// 以下为 wd= ~/wd
-
-	// 指定 home，不依赖于 wd
-	path, err = getPath("~/path", "~/wd")
-	a.NotError(err).Equal(path, filepath.Join(hd, "/path"))
-
-	// 绝对路径
-	path, err = getPath("/path", "~/wd")
-	a.NotError(err).Equal(path, "/path")
-
-	path, err = getPath("path", "~/wd")
-	a.NotError(err).Equal(path, filepath.Join(hd, "/wd/path"))
-
-	path, err = getPath("./path", "~/wd")
-	a.NotError(err).Equal(path, filepath.Join(hd, "/wd/path"))
-
-	// 以下为 wd= ./wd
-
-	// 指定 home，不依赖于 wd
-	path, err = getPath("~/path", "./wd")
-	a.NotError(err).Equal(path, filepath.Join(hd, "/path"))
-
-	// 绝对路径
-	path, err = getPath("/path", "~/wd")
-	a.NotError(err).Equal(path, "/path")
-
-	path, err = getPath("path", "./wd")
-	a.NotError(err).Equal(path, filepath.Join(wd, "/wd/path"))
-
-	path, err = getPath("./path", "./wd")
-	a.NotError(err).Equal(path, filepath.Join(wd, "/wd/path"))
+	for index, item := range data {
+		result, err := getPath(item.path, item.wd)
+		a.NotError(err, "err @%d,%s", index, err).
+			Equal(result, item.result, "not equal @%d,v1=%s,v2=%s", index, result, item.result)
+	}
 }
 
 func TestConfig_generateConfig_loadConfig(t *testing.T) {
