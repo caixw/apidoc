@@ -49,13 +49,18 @@ func (s *Status) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // MarshalXML xml.Marshaler
 func (s Status) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(strconv.Itoa(int(s)), start)
+	return e.EncodeElement(s.String(), start)
 }
 
 // MarshalXMLAttr xml.MarshalerAttr
 func (s Status) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	return xml.Attr{
 		Name:  name,
-		Value: strconv.Itoa(int(s)),
+		Value: s.String(),
 	}, nil
+}
+
+// String fmt.Stringer
+func (s Status) String() string {
+	return strconv.Itoa(int(s))
 }

@@ -152,15 +152,15 @@ func (doc *Doc) serverExists(srv string) bool {
 	return false
 }
 
-func (doc *Doc) requestExists(status int, mimetype string) bool {
+func (doc *Doc) requestExists(status Status, mimetype string) bool {
 	return doc.requestResponseExists(doc.Requests, status, mimetype)
 }
 
-func (doc *Doc) responseExists(status int, mimetype string) bool {
+func (doc *Doc) responseExists(status Status, mimetype string) bool {
 	return doc.requestResponseExists(doc.Responses, status, mimetype)
 }
 
-func (doc *Doc) requestResponseExists(body []*Request, status int, mimetype string) bool {
+func (doc *Doc) requestResponseExists(body []*Request, status Status, mimetype string) bool {
 	for _, r := range body {
 		if r.Status == status && r.Mimetype == mimetype {
 			return true

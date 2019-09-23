@@ -42,7 +42,7 @@ type API struct {
 // Request 请求内容
 type Request struct {
 	Param
-	Status      int        `xml:"status,attr"`
+	Status      Status     `xml:"status,attr"`
 	Mimetype    string     `xml:"mimetype,attr"`
 	Examples    []*Example `xml:"example,omitempty"`
 	Headers     []*Header  `xml:"header,omitempty"`

@@ -4,7 +4,6 @@ package openapi
 
 import (
 	"encoding/json"
-	"strconv"
 	"strings"
 
 	yaml "gopkg.in/yaml.v2"
@@ -85,7 +84,7 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 
 		operation.Responses = make(map[string]*Response, len(api.Responses))
 		for _, resp := range api.Responses {
-			status := strconv.Itoa(resp.Status)
+			status := resp.Status.String()
 			r, found := operation.Responses[status]
 			if !found {
 				r = &Response{}
