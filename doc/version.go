@@ -7,7 +7,6 @@ import (
 
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
@@ -17,7 +16,7 @@ type Version string
 // UnmarshalXMLAttr xml.UnmarshalerAttr
 func (v *Version) UnmarshalXMLAttr(attr xml.Attr) error {
 	if !version.SemVerValid(attr.Value) {
-		return message.NewError("","",0,locale.ErrInvalidVersionFormat)
+		return newXMLSyntaxError(0, locale.ErrInvalidVersionFormat)
 	}
 
 	*v = Version(attr.Value)
@@ -32,7 +31,7 @@ func (v *Version) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if !version.SemVerValid(str) {
-		return message.NewError("","",0,locale.ErrInvalidVersionFormat)
+		return newXMLSyntaxError(0, locale.ErrInvalidVersionFormat)
 	}
 
 	*v = Version(str)

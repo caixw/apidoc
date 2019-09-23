@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
 )
 
 // Method 表示请求方法
@@ -24,9 +23,8 @@ var validMethods = []string{
 	http.MethodOptions,
 }
 
-func isValidMethods(method string) bool {
+func isValidMethod(method string) bool {
 	method = strings.ToUpper(method)
-
 	for _, m := range validMethods {
 		if m == method {
 			return true
@@ -38,8 +36,8 @@ func isValidMethods(method string) bool {
 
 // UnmarshalXMLAttr xml.UnmarshalerAttr
 func (m *Method) UnmarshalXMLAttr(attr xml.Attr) error {
-	if !isValidMethods(attr.Value) {
-		return message.NewError("", "", 0, locale.ErrInvalidMethod, attr.Value)
+	if !isValidMethod(attr.Value) {
+		return newXMLSyntaxError(0, locale.ErrInvalidMethod, attr.Value)
 	}
 
 	*m = Method(strings.ToUpper(attr.Value))
@@ -53,8 +51,8 @@ func (m *Method) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return err
 	}
 
-	if !isValidMethods(str) {
-		return message.NewError("", "", 0, locale.ErrInvalidMethod, str)
+	if !isValidMethod(str) {
+		return newXMLSyntaxError(0, locale.ErrInvalidMethod, str)
 	}
 
 	*m = Method(strings.ToUpper(str))

@@ -6,6 +6,8 @@ import (
 	"encoding/xml"
 	"sort"
 
+	xmessage "golang.org/x/text/message"
+
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
@@ -80,17 +82,10 @@ func New() *Doc {
 
 // FromXML 从 XML 字符串初始化当前的实例
 func (doc *Doc) FromXML(data []byte) error {
-	err := xml.Unmarshal(data, doc)
-	if err == nil {
-		return nil
+	if err := xml.Unmarshal(data, doc); err != nil {
+		return message.WithError(doc.file, "", doc.line, err)
 	}
-
-	if serr, ok := err.(*message.SyntaxError); ok {
-		serr.File = doc.file
-		serr.Line = doc.line
-		return err
-	}
-	return message.WithError(doc.file, "", doc.line, err)
+	return nil
 }
 
 // Sanitize 检测内容是否合法
@@ -173,4 +168,11 @@ func (doc *Doc) requestResponseExists(body []*Request, status int, mimetype stri
 	}
 
 	return false
+}
+
+func newXMLSyntaxError(line int, key xmessage.Reference, val ...interface{}) *xml.SyntaxError {
+	return &xml.SyntaxError{
+		Msg:  locale.Sprintf(key, val...),
+		Line: line,
+	}
 }

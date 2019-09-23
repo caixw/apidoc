@@ -132,18 +132,10 @@ func (doc *Doc) NewAPI(file string, line int) *API {
 
 // FromXML 从 XML 字符串初始化当前的实例
 func (api *API) FromXML(data []byte) error {
-	err := xml.Unmarshal(data, api)
-	if err == nil {
-		return nil
+	if err := xml.Unmarshal(data, api); err != nil {
+		return message.WithError(api.file, "", api.line, err)
 	}
-
-	if serr, ok := err.(*message.SyntaxError); ok {
-		serr.File = api.file
-		serr.Line = api.line
-		return err
-	}
-
-	return message.WithError(api.file, "", api.line, err)
+	return nil
 }
 
 // 检测和修复 api 对象，无法修复返回错误。
