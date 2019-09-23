@@ -3,8 +3,6 @@
 package message
 
 import (
-	"encoding/xml"
-
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
@@ -31,8 +29,10 @@ func (err *SyntaxError) Error() string {
 	return locale.Sprintf(locale.ErrMessageWithField, err.Message, err.File, err.Line, err.Field)
 }
 
-// NewError 声明新的 SyntaxError 实例
-func NewError(file, field string, line int, msg message.Reference, val ...interface{}) *SyntaxError {
+// NewLocaleError 本地化的错误信息
+//
+// 其中的 msg 和 val 会被转换成本地化的内容保存。
+func NewLocaleError(file, field string, line int, msg message.Reference, val ...interface{}) *SyntaxError {
 	return &SyntaxError{
 		Message: locale.Sprintf(msg, val...),
 		File:    file,
@@ -43,15 +43,6 @@ func NewError(file, field string, line int, msg message.Reference, val ...interf
 
 // WithError 声明 SyntaxError 实例，其中的提示信息由 err 返回
 func WithError(file, field string, line int, err error) *SyntaxError {
-	if serr, ok := err.(*xml.SyntaxError); ok {
-		return &SyntaxError{
-			Message: serr.Msg,
-			File:    file,
-			Line:    line + serr.Line,
-			Field:   field,
-		}
-	}
-
 	return &SyntaxError{
 		Message: err.Error(),
 		File:    file,

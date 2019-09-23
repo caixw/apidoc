@@ -3,8 +3,8 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // Parameter.IN 的可选值
@@ -45,7 +45,7 @@ func (p *Parameter) Sanitize() *message.SyntaxError {
 	switch p.IN {
 	case ParameterINcookie, ParameterINHeader, ParameterINPath, ParameterINQuery:
 	default:
-		return message.NewError("", "in", 0, locale.ErrInvalidValue)
+		return message.NewLocaleError("", "in", 0, locale.ErrInvalidValue)
 	}
 
 	// TODO 其它字段检测
@@ -60,11 +60,11 @@ func (h *Header) Sanitize() *message.SyntaxError {
 	}
 
 	if h.IN != "" {
-		return message.NewError("", "in", 0, locale.ErrMustEmpty)
+		return message.NewLocaleError("", "in", 0, locale.ErrMustEmpty)
 	}
 
 	if h.Name != "" {
-		return message.NewError("", "name", 0, locale.ErrMustEmpty)
+		return message.NewLocaleError("", "name", 0, locale.ErrMustEmpty)
 	}
 
 	return nil

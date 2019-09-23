@@ -67,7 +67,7 @@ func loadConfig(wd string) (*config, *message.SyntaxError) {
 
 func (cfg *config) sanitize() *message.SyntaxError {
 	if !version.SemVerValid(cfg.Version) {
-		return message.NewError(configFilename, "version", 0, locale.ErrInvalidFormat)
+		return message.NewLocaleError(configFilename, "version", 0, locale.ErrInvalidFormat)
 	}
 
 	// 比较版本号兼容问题
@@ -76,15 +76,15 @@ func (cfg *config) sanitize() *message.SyntaxError {
 		return message.WithError(configFilename, "version", 0, err)
 	}
 	if !compatible {
-		return message.NewError(configFilename, "version", 0, locale.VersionInCompatible)
+		return message.NewLocaleError(configFilename, "version", 0, locale.VersionInCompatible)
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return message.NewError(configFilename, "inputs", 0, locale.ErrRequired)
+		return message.NewLocaleError(configFilename, "inputs", 0, locale.ErrRequired)
 	}
 
 	if cfg.Output == nil {
-		return message.NewError(configFilename, "output", 0, locale.ErrRequired)
+		return message.NewLocaleError(configFilename, "output", 0, locale.ErrRequired)
 	}
 
 	for index, input := range cfg.Inputs {
@@ -126,7 +126,7 @@ func getConfig(wd string) (*config, error) {
 		return nil, err
 	}
 	if len(inputs) == 0 {
-		return nil, message.NewError("", "", 0, locale.ErrNotFoundSupportedLang)
+		return nil, message.NewLocaleError("", "", 0, locale.ErrNotFoundSupportedLang)
 	}
 
 	for _, input := range inputs {

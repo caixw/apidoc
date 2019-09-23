@@ -32,24 +32,24 @@ type Options struct {
 // Sanitize 检测内容是否合法
 func (opt *Options) Sanitize() *message.SyntaxError {
 	if opt == nil {
-		return message.NewError("", "", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
 
 	if len(opt.Dir) == 0 {
-		return message.NewError("", "dir", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "dir", 0, locale.ErrRequired)
 	}
 
 	if !utils.FileExists(opt.Dir) {
-		return message.NewError("", "dir", 0, locale.ErrDirNotExists)
+		return message.NewLocaleError("", "dir", 0, locale.ErrDirNotExists)
 	}
 
 	if len(opt.Lang) == 0 {
-		return message.NewError("", "dir", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "dir", 0, locale.ErrRequired)
 	}
 
 	language := lang.Get(opt.Lang)
 	if language == nil {
-		return message.NewError("", "dir", 0, locale.ErrUnsupportedInputLang, opt.Lang)
+		return message.NewLocaleError("", "dir", 0, locale.ErrUnsupportedInputLang, opt.Lang)
 	}
 	opt.blocks = language.Blocks
 
@@ -73,10 +73,10 @@ func (opt *Options) Sanitize() *message.SyntaxError {
 	// 生成 paths
 	paths, err := recursivePath(opt)
 	if err != nil {
-		return message.NewError("", "dir", 0, err.Error())
+		return message.WithError("", "dir", 0, err)
 	}
 	if len(paths) == 0 {
-		return message.NewError("", "dir", 0, locale.ErrDirIsEmpty)
+		return message.NewLocaleError("", "dir", 0, locale.ErrDirIsEmpty)
 	}
 	opt.paths = paths
 

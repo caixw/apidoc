@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // 去掉 URL 中的 {} 模板参数。使其符合 is.URL 的判断规则
@@ -38,7 +38,7 @@ func newServer(srv *doc.Server) *Server {
 func (srv *Server) Sanitize() *message.SyntaxError {
 	url := urlreplace.Replace(srv.URL)
 	if url == "" { // 可以是 / 未必是一个 URL
-		return message.NewError("", "url", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "url", 0, locale.ErrRequired)
 	}
 
 	for key, val := range srv.Variables {
@@ -49,7 +49,7 @@ func (srv *Server) Sanitize() *message.SyntaxError {
 
 		k := "{" + key + "}"
 		if strings.Index(srv.URL, k) < 0 {
-			return message.NewError("", "variables["+key+"]", 0, locale.ErrInvalidValue)
+			return message.NewLocaleError("", "variables["+key+"]", 0, locale.ErrInvalidValue)
 		}
 	}
 
@@ -59,7 +59,7 @@ func (srv *Server) Sanitize() *message.SyntaxError {
 // Sanitize 数据检测
 func (v *ServerVariable) Sanitize() *message.SyntaxError {
 	if v.Default == "" {
-		return message.NewError("", "default", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "default", 0, locale.ErrRequired)
 	}
 
 	if len(v.Enum) == 0 {
@@ -75,7 +75,7 @@ func (v *ServerVariable) Sanitize() *message.SyntaxError {
 	}
 
 	if !found {
-		return message.NewError("", "default", 0, locale.ErrInvalidValue)
+		return message.NewLocaleError("", "default", 0, locale.ErrInvalidValue)
 	}
 
 	return nil

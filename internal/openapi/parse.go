@@ -161,42 +161,42 @@ func setOperation(path *PathItem, method string) (*Operation, *message.SyntaxErr
 	switch strings.ToUpper(method) {
 	case "GET":
 		if path.Get != nil {
-			return nil, message.NewError("", "get", 0, locale.ErrDuplicateValue)
+			return nil, message.NewLocaleError("", "get", 0, locale.ErrDuplicateValue)
 		}
 		path.Get = operation
 	case "DELETE":
 		if path.Delete != nil {
-			return nil, message.NewError("", "delete", 0, locale.ErrDuplicateValue)
+			return nil, message.NewLocaleError("", "delete", 0, locale.ErrDuplicateValue)
 		}
 		path.Delete = operation
 	case "POST":
 		if path.Post != nil {
-			return nil, message.NewError("", "post", 0, locale.ErrDuplicateValue)
+			return nil, message.NewLocaleError("", "post", 0, locale.ErrDuplicateValue)
 		}
 		path.Post = operation
 	case "PUT":
 		if path.Put != nil {
-			return nil, message.NewError("", "put", 0, locale.ErrDuplicateValue)
+			return nil, message.NewLocaleError("", "put", 0, locale.ErrDuplicateValue)
 		}
 		path.Put = operation
 	case "PATCH":
 		if path.Patch != nil {
-			return nil, message.NewError("", "patch", 0, locale.ErrDuplicateValue)
+			return nil, message.NewLocaleError("", "patch", 0, locale.ErrDuplicateValue)
 		}
 		path.Patch = operation
 	case "OPTIONS":
 		if path.Options != nil {
-			return nil, message.NewError("", "options", 0, locale.ErrDuplicateValue)
+			return nil, message.NewLocaleError("", "options", 0, locale.ErrDuplicateValue)
 		}
 		path.Options = operation
 	case "HEAD":
 		if path.Head != nil {
-			return nil, message.NewError("", "head", 0, locale.ErrDuplicateValue)
+			return nil, message.NewLocaleError("", "head", 0, locale.ErrDuplicateValue)
 		}
 		path.Head = operation
 	case "TRACE":
 		if path.Trace != nil {
-			return nil, message.NewError("", "trace", 0, locale.ErrDuplicateValue)
+			return nil, message.NewLocaleError("", "trace", 0, locale.ErrDuplicateValue)
 		}
 		path.Trace = operation
 	}

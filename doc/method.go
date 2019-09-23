@@ -37,7 +37,7 @@ func isValidMethod(method string) bool {
 // UnmarshalXMLAttr xml.UnmarshalerAttr
 func (m *Method) UnmarshalXMLAttr(attr xml.Attr) error {
 	if !isValidMethod(attr.Value) {
-		return newXMLSyntaxError(0, locale.ErrInvalidMethod, attr.Value)
+		return locale.Errorf(locale.ErrInvalidMethod, attr.Value)
 	}
 
 	*m = Method(strings.ToUpper(attr.Value))
@@ -52,7 +52,7 @@ func (m *Method) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if !isValidMethod(str) {
-		return newXMLSyntaxError(0, locale.ErrInvalidMethod, str)
+		return locale.Errorf(locale.ErrInvalidMethod, str)
 	}
 
 	*m = Method(strings.ToUpper(str))

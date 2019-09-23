@@ -3,6 +3,6 @@
 // <api method="GET">
 // <description>desc</description>
 // </api>
-api() void {
+void api() {
     // api
 }

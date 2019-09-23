@@ -46,7 +46,7 @@ type Schema struct {
 
 	// 数组验证
 	Items           *Schema `json:"items,omitempty" yaml:"items,omitempty"`
-	AdditionalItems *Schema `json:"additionalItems,omitempty" ymal:"additionalItems,omitempty"`
+	AdditionalItems *Schema `json:"additionalItems,omitempty" yaml:"additionalItems,omitempty"`
 	MaxItems        int     `json:"maxItems,omitempty" yaml:"maxItems,omitempty"`
 	MinItems        int     `json:"minItems,omitempty" yaml:"minItems,omitempty"`
 	UniqueItems     bool    `json:"uniqueItems,omitempty" yaml:"uniqueItems,omitempty"`

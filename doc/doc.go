@@ -3,10 +3,9 @@
 package doc
 
 import (
+	"bytes"
 	"encoding/xml"
 	"sort"
-
-	xmessage "golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
@@ -38,6 +37,7 @@ type Doc struct {
 	references map[string]interface{}
 	file       string
 	line       int
+	data       []byte
 }
 
 // Tag 标签内容
@@ -80,12 +80,26 @@ func New() *Doc {
 	}
 }
 
+type shadowDoc Doc
+
+// UnmarshalXML xml.Unmarshaler
+func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var obj shadowDoc
+	if err := d.DecodeElement(&obj, &start); err != nil {
+		line := bytes.Count(doc.data[:d.InputOffset()], []byte{'\n'})
+		return message.WithError(doc.file, "", line, err)
+	}
+
+	apis := doc.Apis
+	*doc = Doc(obj)
+	doc.Apis = apis
+	return nil
+}
+
 // FromXML 从 XML 字符串初始化当前的实例
 func (doc *Doc) FromXML(data []byte) error {
-	if err := xml.Unmarshal(data, doc); err != nil {
-		return message.WithError(doc.file, "", doc.line, err)
-	}
-	return nil
+	doc.data = data
+	return xml.Unmarshal(data, doc)
 }
 
 // Sanitize 检测内容是否合法
@@ -98,7 +112,7 @@ func (doc *Doc) Sanitize() error {
 	})
 	for i := 1; i < len(doc.Tags); i++ {
 		if doc.Tags[i].Name == doc.Tags[i-1].Name {
-			return message.NewError(doc.file, "tag.name", doc.line, locale.ErrDuplicateValue)
+			return message.NewLocaleError(doc.file, "tag.name", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
@@ -110,7 +124,7 @@ func (doc *Doc) Sanitize() error {
 	})
 	for i := 1; i < len(doc.Servers); i++ {
 		if doc.Servers[i].Name == doc.Servers[i-1].Name {
-			return message.NewError(doc.file, "server.name", doc.line, locale.ErrDuplicateValue)
+			return message.NewLocaleError(doc.file, "server.name", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
@@ -120,7 +134,7 @@ func (doc *Doc) Sanitize() error {
 	})
 	for i := 1; i < len(doc.Servers); i++ {
 		if doc.Servers[i].URL == doc.Servers[i-1].URL {
-			return message.NewError(doc.file, "server.url", doc.line, locale.ErrDuplicateValue)
+			return message.NewLocaleError(doc.file, "server.url", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
@@ -168,11 +182,4 @@ func (doc *Doc) requestResponseExists(body []*Request, status int, mimetype stri
 	}
 
 	return false
-}
-
-func newXMLSyntaxError(line int, key xmessage.Reference, val ...interface{}) *xml.SyntaxError {
-	return &xml.SyntaxError{
-		Msg:  locale.Sprintf(key, val...),
-		Line: line,
-	}
 }

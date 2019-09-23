@@ -42,12 +42,11 @@ var (
 
 func parseType(val string) (Type, error) {
 	val = strings.ToLower(val)
-
 	if t, found := stringTypeMap[val]; found {
 		return t, nil
 	}
 
-	return None, newXMLSyntaxError(0, locale.ErrInvalidType, val)
+	return None, locale.Errorf(locale.ErrInvalidType, val)
 
 }
 
@@ -102,5 +101,5 @@ func (t Type) fmtString() (string, error) {
 		return v, nil
 	}
 
-	return "", newXMLSyntaxError(0, locale.ErrInvalidType, strconv.Itoa(int(t)))
+	return "", locale.Errorf(locale.ErrInvalidType, strconv.Itoa(int(t)))
 }

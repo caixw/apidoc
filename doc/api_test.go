@@ -15,12 +15,8 @@ func newAPI(a *assert.Assertion) *API {
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	api := doc.NewAPI("", 1)
-	a.NotNil(api)
-
-	a.NotError(api.FromXML(data))
-
-	return api
+	a.NotError(doc.NewAPI("", 1, data))
+	return doc.Apis[0]
 }
 
 func TestAPI(t *testing.T) {

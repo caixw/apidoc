@@ -27,8 +27,8 @@ func TestHandler(t *testing.T) {
 	h := NewHandler(NewLogHandlerFunc(errolog, warnlog, infolog))
 	a.NotError(h)
 
-	h.Error(Erro, NewError("erro.go", "", 0, locale.ErrRequired))
-	h.Error(Warn, NewError("warn.go", "", 0, locale.ErrRequired))
+	h.Error(Erro, NewLocaleError("erro.go", "", 0, locale.ErrRequired))
+	h.Error(Warn, NewLocaleError("warn.go", "", 0, locale.ErrRequired))
 
 	time.Sleep(1 * time.Second) // 等待 channel 完成
 	a.Contains(erro.String(), "erro.go")
@@ -36,6 +36,6 @@ func TestHandler(t *testing.T) {
 
 	h.Stop()
 	a.Panic(func() { // 已经关闭 messages
-		h.Error(Erro, NewError("erro.go", "", 0, locale.ErrRequired))
+		h.Error(Erro, NewLocaleError("erro.go", "", 0, locale.ErrRequired))
 	})
 }
