@@ -3,8 +3,8 @@
 package input
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -16,9 +16,9 @@ import (
 
 func TestParse(t *testing.T) {
 	a := assert.New(t)
-	erro := log.New(ioutil.Discard, "[ERRO]", 0)
-	warn := log.New(ioutil.Discard, "[WARN]", 0)
-	info := log.New(ioutil.Discard, "[INFO]", 0)
+	erro := log.New(os.Stderr, "[ERRO]", 0)
+	warn := log.New(os.Stderr, "[WARN]", 0)
+	info := log.New(os.Stdout, "[INFO]", 0)
 	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn, info))
 	a.NotNil(h)
 

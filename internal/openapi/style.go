@@ -3,8 +3,8 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // Style.Style 的可选值
@@ -32,7 +32,7 @@ func (style *Style) Sanitize() *message.SyntaxError {
 	switch style.Style {
 	case StyleMatrix, StyleLabel, StyleForm, StyleSimple, StyleSpaceDelimited, StylePipeDelimited, StyleDeepObject:
 	default:
-		return message.NewError("", "style", 0, locale.ErrInvalidValue)
+		return message.NewLocaleError("", "style", 0, locale.ErrInvalidValue)
 	}
 
 	return nil

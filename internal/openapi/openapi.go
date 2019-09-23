@@ -102,11 +102,11 @@ func (oa *OpenAPI) Sanitize() *message.SyntaxError {
 	}
 
 	if !version.SemVerValid(oa.OpenAPI) {
-		return message.NewError("", "openapi", 0, locale.ErrInvalidFormat)
+		return message.NewLocaleError("", "openapi", 0, locale.ErrInvalidFormat)
 	}
 
 	if oa.Info == nil {
-		return message.NewError("", "info", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "info", 0, locale.ErrRequired)
 	}
 	if err := oa.Info.Sanitize(); err != nil {
 		err.Field = "info." + err.Field
@@ -128,7 +128,7 @@ func (oa *OpenAPI) Sanitize() *message.SyntaxError {
 	}
 
 	if len(oa.Paths) == 0 {
-		return message.NewError("", "paths", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "paths", 0, locale.ErrRequired)
 	}
 	// TODO 验证 paths
 
@@ -206,7 +206,7 @@ func (c *Components) Sanitize() *message.SyntaxError {
 // Sanitize 数据检测
 func (ext *ExternalDocumentation) Sanitize() *message.SyntaxError {
 	if !is.URL(ext.URL) {
-		return message.NewError("", "url", 0, locale.ErrInvalidFormat)
+		return message.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil
@@ -225,7 +225,7 @@ func (l *Link) Sanitize() *message.SyntaxError {
 // Sanitize 数据检测
 func (tag *Tag) Sanitize() *message.SyntaxError {
 	if tag.Name == "" {
-		return message.NewError("", "name", 0, locale.ErrInvalidFormat)
+		return message.NewLocaleError("", "name", 0, locale.ErrInvalidFormat)
 	}
 
 	if tag.ExternalDocs != nil {

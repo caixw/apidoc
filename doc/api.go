@@ -3,6 +3,7 @@
 package doc
 
 import (
+	"bytes"
 	"encoding/xml"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
@@ -36,6 +37,7 @@ type API struct {
 
 	line int
 	file string
+	data []byte
 	doc  *Doc
 }
 
@@ -118,23 +120,33 @@ type Callback struct {
 	Requests    []*Request `xml:"request,omitempty"`
 }
 
-// NewAPI 返回新的 API 实例
-func (doc *Doc) NewAPI(file string, line int) *API {
+// NewAPI 从 data 中解析新的 API 对象
+func (doc *Doc) NewAPI(file string, line int, data []byte) error {
 	api := &API{
-		line: line,
 		file: file,
-		doc:  doc,
+		line: line,
+		data: data,
 	}
-	doc.Apis = append(doc.Apis, api)
+	if err := xml.Unmarshal(data, api); err != nil {
+		return err
+	}
 
-	return api
+	api.doc = doc
+	doc.Apis = append(doc.Apis, api)
+	return nil
 }
 
-// FromXML 从 XML 字符串初始化当前的实例
-func (api *API) FromXML(data []byte) error {
-	if err := xml.Unmarshal(data, api); err != nil {
-		return message.WithError(api.file, "", api.line, err)
+type shadowAPI API
+
+// UnmarshalXML xml.Unmarshaler
+func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var obj shadowAPI
+	if err := d.DecodeElement(&obj, &start); err != nil {
+		line := bytes.Count(api.data[:d.InputOffset()], []byte{'\n'})
+		return message.WithError(api.file, "", api.line+line, err)
 	}
+
+	*api = API(obj)
 	return nil
 }
 
@@ -144,13 +156,13 @@ func (api *API) FromXML(data []byte) error {
 func (api *API) sanitize() error {
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag) {
-			return message.NewError(api.file, "tag", api.line, locale.ErrInvalidValue)
+			return message.NewLocaleError(api.file, "tag", api.line, locale.ErrInvalidValue)
 		}
 	}
 
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv) {
-			return message.NewError(api.file, "server", api.line, locale.ErrInvalidValue)
+			return message.NewLocaleError(api.file, "server", api.line, locale.ErrInvalidValue)
 		}
 	}
 

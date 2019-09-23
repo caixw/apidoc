@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/v5/message"
 )
 
 func newAPI(a *assert.Assertion) *API {
@@ -15,12 +17,8 @@ func newAPI(a *assert.Assertion) *API {
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	api := doc.NewAPI("", 1)
-	a.NotNil(api)
-
-	a.NotError(api.FromXML(data))
-
-	return api
+	a.NotError(doc.NewAPI("", 1, data))
+	return doc.Apis[0]
 }
 
 func TestAPI(t *testing.T) {
@@ -56,4 +54,21 @@ func TestAPI(t *testing.T) {
 		Equal(cb.Requests[0].Type, Object).
 		Equal(cb.Requests[0].Mimetype, "json").
 		Equal(cb.Responses[0].Status, 200)
+}
+
+// 测试错误提示的行号是否正确
+func TestAPI_lineNumber(t *testing.T) {
+	a := assert.New(t)
+	doc := newDoc(a)
+
+	data := []byte(`<api version="x.0.1"></api>`)
+	err := doc.NewAPI("file", 11, data)
+	a.Equal(err.(*message.SyntaxError).Line, 11)
+
+	data = []byte(`<api version="0.1.1">
+
+	    <callback method="not-exists" />
+	</api>`)
+	err = doc.NewAPI("file", 12, data)
+	a.Equal(err.(*message.SyntaxError).Line, 14)
 }

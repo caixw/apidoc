@@ -34,7 +34,7 @@ func Parse(file string, data []byte, blocks []Blocker, h *message.Handler) map[i
 		ln := l.lineNumber() + 1 // 记录当前的行号，1 表示从 1 开始记数
 		lines, ok := block.EndFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
-			h.Error(message.Warn, message.NewError(file, "", ln, locale.ErrNotFoundEndFlag))
+			h.Error(message.Warn, message.NewLocaleError(file, "", ln, locale.ErrNotFoundEndFlag))
 			return ret
 		}
 

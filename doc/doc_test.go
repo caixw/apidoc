@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/v5/message"
 )
 
 func newDoc(a *assert.Assertion) *Doc {
@@ -16,7 +18,7 @@ func newDoc(a *assert.Assertion) *Doc {
 	doc := New()
 	a.NotNil(doc)
 
-	a.NotError(doc.FromXML(data))
+	a.NotError(doc.FromXML("doc.xml", 0, data))
 
 	return doc
 }
@@ -55,4 +57,22 @@ func TestDoc(t *testing.T) {
 
 	a.True(doc.serverExists("admin")).
 		False(doc.serverExists("not-exists"))
+}
+
+// 测试错误提示的行号是否正确
+func TestDoc_lineNumber(t *testing.T) {
+	a := assert.New(t)
+	doc := New()
+	a.NotNil(doc)
+
+	data := []byte(`<apidoc version="x.0.1"></apidoc>`)
+	err := doc.FromXML("file", 11, data)
+	a.Equal(err.(*message.SyntaxError).Line, 11)
+
+	data = []byte(`<apidoc
+	
+	version="x.1.1">
+	</apidoc>`)
+	err = doc.FromXML("file", 12, data)
+	a.Equal(err.(*message.SyntaxError).Line, 14)
 }

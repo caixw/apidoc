@@ -3,8 +3,8 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // PathItem 每一条路径的详细描述信息
@@ -84,7 +84,7 @@ type Response struct {
 // Sanitize 数据检测
 func (req *RequestBody) Sanitize() *message.SyntaxError {
 	if len(req.Content) == 0 {
-		return message.NewError("", "content", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "content", 0, locale.ErrRequired)
 	}
 
 	for key, mt := range req.Content {
@@ -100,7 +100,7 @@ func (req *RequestBody) Sanitize() *message.SyntaxError {
 // Sanitize 数据检测
 func (resp *Response) Sanitize() *message.SyntaxError {
 	if resp.Description == "" {
-		return message.NewError("", "description", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "description", 0, locale.ErrRequired)
 	}
 
 	for key, header := range resp.Headers {

@@ -55,11 +55,11 @@ func (o *Options) contains(tags ...string) bool {
 // Sanitize 检测内容是否合法
 func (o *Options) Sanitize() *message.SyntaxError {
 	if o == nil {
-		return message.NewError("", "", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
 
 	if o.Path == "" {
-		return message.NewError("", "path", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "path", 0, locale.ErrRequired)
 	}
 
 	if o.Type == "" {
@@ -76,7 +76,7 @@ func (o *Options) Sanitize() *message.SyntaxError {
 	case RAMLYAML:
 		// TODO
 	default:
-		return message.NewError("", "type", 0, locale.ErrInvalidValue)
+		return message.NewLocaleError("", "type", 0, locale.ErrInvalidValue)
 	}
 
 	o.sanitized = true
