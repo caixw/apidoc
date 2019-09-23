@@ -10,11 +10,11 @@ import (
 )
 
 var (
-	m                     = Method("get")
-	_ xml.Unmarshaler     = &v
-	_ xml.UnmarshalerAttr = &v
-	_ xml.Marshaler       = v
-	_ xml.MarshalerAttr   = v
+	method                     = Method("get")
+	_      xml.Unmarshaler     = &method
+	_      xml.UnmarshalerAttr = &method
+	_      xml.Marshaler       = method
+	_      xml.MarshalerAttr   = method
 )
 
 func TestIsValidMethod(t *testing.T) {

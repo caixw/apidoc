@@ -48,8 +48,8 @@ const (
 	ErrInvalidMethod         = "无效的请求方法: %s"
 	ErrMethodExists          = "该请求方法已经存在"
 	ErrInvalidTag            = "无效的标签 %s"
-	ErrInvalidTypePrefix     = "无效的类型前缀名称 %s"
 	ErrInvalidType           = "无效的类型名称 %s"
+	ErrInvalidStatus         = "无效的 HTTP 状态值 %s"
 	ErrInvalidVersionFormat  = "无效的版本号格式"
 	ErrUnsanitized           = "未调用 Sanitize"
 

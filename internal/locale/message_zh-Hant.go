@@ -50,7 +50,9 @@ func init() {
 		ErrMessage:               "%s 位於 %s:%d",
 		ErrInvalidMethod:         "無效的請求方法: %s",
 		ErrMethodExists:          "該請求方法已經存在",
-		ErrInvalidTag:            "無效的標簽 %s",
+		ErrInvalidTag:            "无效的标签 %s",
+		ErrInvalidType:           "无效的类型名称 %s",
+		ErrInvalidStatus:         "无效的 HTTP 状态值 %s",
 
 		// logs
 		InfoPrefix:  "[信息] ",
