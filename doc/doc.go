@@ -97,7 +97,9 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 }
 
 // FromXML 从 XML 字符串初始化当前的实例
-func (doc *Doc) FromXML(data []byte) error {
+func (doc *Doc) FromXML(file string, line int, data []byte) error {
+	doc.file = file
+	doc.line = line
 	doc.data = data
 	return xml.Unmarshal(data, doc)
 }

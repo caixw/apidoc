@@ -69,7 +69,7 @@ var (
 func parseBlock(d *doc.Doc, block block, h *message.Handler) {
 	switch {
 	case bytes.HasPrefix(block.Data, apidocBegin):
-		if err := d.FromXML(block.Data); err != nil {
+		if err := d.FromXML(block.File, block.Line, block.Data); err != nil {
 			h.Error(message.Erro, message.WithError(block.File, "", block.Line, err))
 		}
 	case bytes.HasPrefix(block.Data, apiBegin):
