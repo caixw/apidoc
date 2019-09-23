@@ -87,7 +87,7 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var obj shadowDoc
 	if err := d.DecodeElement(&obj, &start); err != nil {
 		line := bytes.Count(doc.data[:d.InputOffset()], []byte{'\n'})
-		return message.WithError(doc.file, "", line, err)
+		return message.WithError(doc.file, "", doc.line+line, err)
 	}
 
 	apis := doc.Apis

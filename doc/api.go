@@ -143,7 +143,7 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var obj shadowAPI
 	if err := d.DecodeElement(&obj, &start); err != nil {
 		line := bytes.Count(api.data[:d.InputOffset()], []byte{'\n'})
-		return message.WithError(api.file, "", line, err)
+		return message.WithError(api.file, "", api.line+line, err)
 	}
 
 	*api = API(obj)
