@@ -1,0 +1,92 @@
+<!-- SPDX-License-Identifier: MIT -->
+
+<apidoc version="1.1.1">
+    <title>title</title>
+    <license url="https://opensource.org/licenses/MIT">MIT</license>
+    <contact name="test">
+        <email>test@example.com</email>
+        <url>https://example.com</url>
+    </contact>
+
+    <tag name="tag1">tag description</tag>
+    <tag name="tag2" deprecated="1.0.1">
+        tag description
+    </tag>
+
+    <server name="admin" url="https://api.example.com/admin">
+        admin api
+    </server>
+
+    <server name="client" url="https://api.example.com/client" deprecated="1.0.1">
+        client api
+    </server>
+
+    <content>
+    ## h2
+    ### h3
+    </content>
+
+    <api method="GET" version="1.1.0" id="xxx" summary="获取订单信息">
+        <path path="/users/{id}/orders">
+            <param name="id" type="number">用户 ID </param>
+            <query name="size" type="number">size</query>
+            <query name="page" type="number" deprecated="0.1.1">page</query>
+        </path>
+
+        <tag>g1</tag>
+        <tag>g2</tag>
+        <server>s1</server>
+        <server>s2</server>
+
+        <description>
+        description xxx
+        </description>
+
+        <request mimetype="json,xml" type="number">
+            <header name="authorization">token</header>
+        </request>
+
+        <response status="200" mimetype="json,xml" type="object">
+            <param name="id" type="number" default="1" summary="id" />
+            <param name="sex" type="string" default="male" summary="sex">
+                <enum value="male">男性</enum>
+                <enum value="female">女性</enum>
+            </param>
+            <param name="emails" type="string" array="true" />
+            <header name="WWW-authoricate">xxx</header>
+            <example mimetype="json">
+            <![CDATA[
+            {
+                id: 1,
+                sex: male,
+                emaials: [xx@xx.com]
+            }
+            ]]>
+            </example>
+        </response>
+
+        <response status="400" mimetype="json/xml" type="string">
+        </response>
+
+        <callback method="post" schema="https">
+            <request mimetype="json" type="object">
+                <query name="size" type="number">size</query>
+
+                <param name="id" type="number" default="1" />
+                <param name="age" type="number" />
+                <example mimetype="json">
+                <![CDATA[
+                {
+                    id:1,
+                    sex: male,
+                }
+                ]]>
+                </example>
+            </request>
+
+            <response status="200" mimetype="text" type="string">
+            </response>
+        </callback>
+    </api> 
+
+</apidoc>

@@ -11,7 +11,7 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
-func newDoc(a *assert.Assertion) *Doc {
+func loadDoc(a *assert.Assertion) *Doc {
 	data, err := ioutil.ReadFile("./testdata/doc.xml")
 	a.NotError(err).NotNil(data)
 
@@ -25,7 +25,7 @@ func newDoc(a *assert.Assertion) *Doc {
 
 func TestDoc(t *testing.T) {
 	a := assert.New(t)
-	doc := newDoc(a)
+	doc := loadDoc(a)
 
 	a.Equal(doc.Version, "1.1.1")
 
@@ -57,6 +57,39 @@ func TestDoc(t *testing.T) {
 
 	a.True(doc.serverExists("admin")).
 		False(doc.serverExists("not-exists"))
+}
+
+func TestDoc_all(t *testing.T) {
+	a := assert.New(t)
+
+	data, err := ioutil.ReadFile("./testdata/all.xml")
+	a.NotError(err).NotNil(data)
+	doc := New()
+	a.NotNil(doc)
+	a.NotError(doc.FromXML("doc.xml", 0, data))
+
+	a.Equal(doc.Version, "1.1.1")
+
+	a.Equal(len(doc.Tags), 2)
+	tag := doc.Tags[0]
+	a.Equal(tag.Name, "tag1").NotEmpty(tag.Description)
+	tag = doc.Tags[1]
+	a.Equal(tag.Deprecated, "1.0.1").Equal(tag.Name, "tag2")
+
+	a.Equal(2, len(doc.Servers))
+	srv := doc.Servers[0]
+	a.Equal(srv.Name, "admin").
+		Equal(srv.URL, "https://api.example.com/admin").
+		NotEmpty(srv.Description)
+
+	a.True(doc.tagExists("tag1")).
+		False(doc.tagExists("not-exists"))
+
+	a.True(doc.serverExists("admin")).
+		False(doc.serverExists("not-exists"))
+
+	// api
+	a.Equal(1, len(doc.Apis))
 }
 
 // 测试错误提示的行号是否正确

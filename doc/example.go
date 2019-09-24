@@ -19,19 +19,19 @@ type shadowExample Example
 
 // UnmarshalXML xml.Unmarshaler
 func (e *Example) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var hh shadowExample
-	if err := d.DecodeElement(&hh, &start); err != nil {
+	var shadow shadowExample
+	if err := d.DecodeElement(&shadow, &start); err != nil {
 		return err
 	}
 
-	if hh.Mimetype == "" {
+	if shadow.Mimetype == "" {
 		return locale.Errorf(locale.ErrRequired, "mimetype")
 	}
 
-	if hh.Content == "" {
+	if shadow.Content == "" {
 		return locale.Errorf(locale.ErrRequired, "content")
 	}
 
-	*e = Example(hh)
+	*e = Example(shadow)
 	return nil
 }

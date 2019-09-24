@@ -35,20 +35,20 @@ type (
 
 // UnmarshalXML xml.Unmarshaler
 func (l *Link) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var ll shadowLink
-	if err := d.DecodeElement(&ll, &start); err != nil {
+	var shadow shadowLink
+	if err := d.DecodeElement(&shadow, &start); err != nil {
 		return err
 	}
 
-	if !is.URL(ll.URL) {
-		return locale.Errorf(locale.ErrInvalidURL, ll.URL)
+	if !is.URL(shadow.URL) {
+		return locale.Errorf(locale.ErrInvalidURL, shadow.URL)
 	}
 
-	if ll.Text == "" {
+	if shadow.Text == "" {
 		return locale.Errorf(locale.ErrRequired, "text")
 	}
 
-	*l = Link(ll)
+	*l = Link(shadow)
 	return nil
 }
 

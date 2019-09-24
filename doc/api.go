@@ -47,12 +47,12 @@ func (doc *Doc) NewAPI(file string, line int, data []byte) error {
 		file: file,
 		line: line,
 		data: data,
+		doc:  doc,
 	}
 	if err := xml.Unmarshal(data, api); err != nil {
 		return err
 	}
 
-	api.doc = doc
 	doc.Apis = append(doc.Apis, api)
 	return nil
 }
@@ -61,16 +61,19 @@ type shadowAPI API
 
 // UnmarshalXML xml.Unmarshaler
 func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	// TODO 如果 api.file 为空，则采用 doc.file
-	// 这样可以正常解析 apidoc 和 api 合在一起的文档
+	var shadow shadowAPI
+	if err := d.DecodeElement(&shadow, &start); err != nil {
+		// API 可能是嵌套在 apidoc 里的一个子标签。
+		// 如果是子标签，则不应该有 doc 变量，也不需要构建错误信息。
+		if api.doc == nil {
+			return err
+		}
 
-	var obj shadowAPI
-	if err := d.DecodeElement(&obj, &start); err != nil {
 		line := bytes.Count(api.data[:d.InputOffset()], []byte{'\n'})
 		return message.WithError(api.file, "", api.line+line, err)
 	}
 
-	*api = API(obj)
+	*api = API(shadow)
 	return nil
 }
 

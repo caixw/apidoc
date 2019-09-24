@@ -96,3 +96,10 @@ func TestServer_UnmarshalXML(t *testing.T) {
 	str = `<Tag name="tag1" deprecated="x.0.1">desc</Tag>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 }
+
+func TestFindDupString(t *testing.T) {
+	a := assert.New(t)
+
+	a.Equal(findDupString([]string{"k1", "k2", "K2"}), "")
+	a.Equal(findDupString([]string{"k2", "k1", "k2"}), "k2")
+}

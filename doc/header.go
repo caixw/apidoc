@@ -19,19 +19,19 @@ type shadowHeader Header
 
 // UnmarshalXML xml.Unmarshaler
 func (h *Header) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var hh shadowHeader
-	if err := d.DecodeElement(&hh, &start); err != nil {
+	var shadow shadowHeader
+	if err := d.DecodeElement(&shadow, &start); err != nil {
 		return err
 	}
 
-	if hh.Name == "" {
+	if shadow.Name == "" {
 		return locale.Errorf(locale.ErrRequired, "name")
 	}
 
-	if hh.Description == "" {
+	if shadow.Description == "" {
 		return locale.Errorf(locale.ErrRequired, "description")
 	}
 
-	*h = Header(hh)
+	*h = Header(shadow)
 	return nil
 }

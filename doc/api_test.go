@@ -11,8 +11,8 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
-func newAPI(a *assert.Assertion) *API {
-	doc := newDoc(a)
+func loadAPI(a *assert.Assertion) *API {
+	doc := loadDoc(a)
 
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
@@ -23,7 +23,7 @@ func newAPI(a *assert.Assertion) *API {
 
 func TestAPI(t *testing.T) {
 	a := assert.New(t)
-	api := newAPI(a)
+	api := loadAPI(a)
 
 	a.Equal(api.Version, "1.1.0").
 		Equal(api.Tags, []string{"g1", "g2"})
@@ -59,7 +59,7 @@ func TestAPI(t *testing.T) {
 // 测试错误提示的行号是否正确
 func TestAPI_lineNumber(t *testing.T) {
 	a := assert.New(t)
-	doc := newDoc(a)
+	doc := loadDoc(a)
 
 	data := []byte(`<api version="x.0.1"></api>`)
 	err := doc.NewAPI("file", 11, data)

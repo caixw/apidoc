@@ -24,23 +24,23 @@ type shadowPath Path
 
 // UnmarshalXML xml.Unmarshaler
 func (p *Path) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var pp shadowPath
-	if err := d.DecodeElement(&pp, &start); err != nil {
+	var shadow shadowPath
+	if err := d.DecodeElement(&shadow, &start); err != nil {
 		return err
 	}
 
-	if pp.Path == "" {
+	if shadow.Path == "" {
 		return locale.Errorf(locale.ErrRequired, "path")
 	}
 
-	params, err := parsePath(pp.Path)
+	params, err := parsePath(shadow.Path)
 	if err != nil {
 		return err
 	}
-	if len(params) != len(pp.Params) {
+	if len(params) != len(shadow.Params) {
 		return locale.Errorf(locale.ErrPathNotMatchParams)
 	}
-	for _, param := range pp.Params {
+	for _, param := range shadow.Params {
 		if _, found := params[param.Name]; !found {
 			return locale.Errorf(locale.ErrPathNotMatchParams, param.Name)
 		}
@@ -48,7 +48,7 @@ func (p *Path) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	// queries 不作判断，同名会被当作数据处理
 
-	*p = Path(pp)
+	*p = Path(shadow)
 	return nil
 }
 

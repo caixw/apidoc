@@ -33,32 +33,32 @@ type shadowRequest Request
 
 // UnmarshalXML xml.Unmarshaler
 func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var rr shadowRequest
-	if err := d.DecodeElement(&rr, &start); err != nil {
+	var shadow shadowRequest
+	if err := d.DecodeElement(&shadow, &start); err != nil {
 		return err
 	}
 
-	if rr.Type == None {
+	if shadow.Type == None {
 		return locale.Errorf(locale.ErrRequired, "type")
 	}
-	if rr.Type == Object && len(rr.Items) == 0 {
+	if shadow.Type == Object && len(shadow.Items) == 0 {
 		return locale.Errorf(locale.ErrNeedProperty)
 	}
 
-	if rr.Mimetype == "" {
+	if shadow.Mimetype == "" {
 		return locale.Errorf(locale.ErrRequired, "mimetype")
 	}
 
 	// 判断 enums 的值是否相同
-	if key := getDuplicateEnum(rr.Enums); key != "" {
+	if key := getDuplicateEnum(shadow.Enums); key != "" {
 		return locale.Errorf(locale.ErrDuplicateEnum, key)
 	}
 
 	// 判断 items 的值是否相同
-	if key := getDuplicateItems(rr.Items); key != "" {
+	if key := getDuplicateItems(shadow.Items); key != "" {
 		return locale.Errorf(locale.ErrDuplicateValue, key)
 	}
 
-	*r = Request(rr)
+	*r = Request(shadow)
 	return nil
 }

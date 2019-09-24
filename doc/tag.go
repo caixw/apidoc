@@ -4,6 +4,7 @@ package doc
 
 import (
 	"encoding/xml"
+	"sort"
 
 	"github.com/issue9/is"
 
@@ -34,20 +35,20 @@ type (
 
 // UnmarshalXML xml.Unmarshaler
 func (t *Tag) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var tt shadowTag
-	if err := d.DecodeElement(&tt, &start); err != nil {
+	var shadow shadowTag
+	if err := d.DecodeElement(&shadow, &start); err != nil {
 		return err
 	}
 
-	if tt.Name == "" {
+	if shadow.Name == "" {
 		return locale.Errorf(locale.ErrRequired, "name")
 	}
 
-	if tt.Description == "" {
+	if shadow.Description == "" {
 		return locale.Errorf(locale.ErrRequired, "description")
 	}
 
-	*t = Tag(tt)
+	*t = Tag(shadow)
 	return nil
 }
 
@@ -72,4 +73,44 @@ func (srv *Server) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	*srv = Server(ss)
 	return nil
+}
+
+// 查找是否有重复的标签
+//
+// 根据标签名称查找
+func findDupTag(tags []*Tag) string {
+	ts := make([]string, 0, len(tags))
+	for _, tag := range tags {
+		ts = append(ts, tag.Name)
+	}
+	return findDupString(ts)
+}
+
+// 查找是否有重复的 Server 标签
+//
+// 根据 name 和 url 查找
+func findDupServer(servers []*Server) string {
+	names := make([]string, 0, len(servers))
+	urls := make([]string, 0, len(servers))
+	for _, srv := range servers {
+		names = append(names, srv.Name)
+		urls = append(urls, srv.URL)
+	}
+
+	if key := findDupString(names); key != "" {
+		return key
+	}
+	return findDupString(urls)
+}
+
+func findDupString(keys []string) string {
+	sort.Strings(keys)
+
+	for i := 1; i < len(keys); i++ {
+		if keys[i-1] == keys[i] {
+			return keys[i]
+		}
+	}
+
+	return ""
 }
