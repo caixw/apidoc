@@ -8,9 +8,7 @@
         <url>https://example.com</url>
     </contact>
 
-    <tag name="tag1">
-        tag description
-    </tag>
+    <tag name="tag1">tag description</tag>
     <tag name="tag2" deprecated="1.0.1">
         tag description
     </tag>

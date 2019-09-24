@@ -50,4 +50,19 @@ func TestTypeXML(t *testing.T) {
 	obj1 := &Object{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj, obj1)
+
+	// 无效的类型
+	str = `<type attr="not-exists" />`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+	str = `<type attr="string"><value>not-exists</value></type>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
+	// 语法错误
+	str = `<type attr="string"><value>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
+	// fmt
+	obj.Value = Type(100)
+	data, err = xml.Marshal(obj)
+	a.Error(err).Nil(data)
 }

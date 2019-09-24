@@ -39,11 +39,20 @@ func TestMethodXML(t *testing.T) {
 		Value: "POST",
 	}
 	str := `<xml attr="GET"><value>POST</value></xml>`
-
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
 
 	obj1 := &Object{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj1, obj)
+
+	// 不存在的 method
+	str = `<xml attr="not-exists" />`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+	str = `<xml attr="get"><value>not-exists</value></xml>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
+	// 语法错误
+	str = `<xml attr="GET"><value>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
 }

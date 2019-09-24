@@ -50,6 +50,8 @@ func init() {
 		ErrInvalidMethod:         "无效的请求方法: %s",
 		ErrMethodExists:          "该请求方法已经存在",
 		ErrInvalidTag:            "无效的标签 %s",
+		ErrInvalidURL:            "无效的 URL %s",
+		ErrInvalidEmail:          "无效的邮件地址 %s",
 		ErrInvalidType:           "无效的类型名称 %s",
 		ErrInvalidStatus:         "无效的 HTTP 状态值 %s",
 

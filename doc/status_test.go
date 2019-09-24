@@ -47,4 +47,18 @@ func TestStatusXML(t *testing.T) {
 	obj1 := &Object{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj1, obj)
+
+	// 无效的状态
+	str = `<xml attr="1000" />`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+	str = `<xml attr="201"><value>800</value></xml>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
+	// 无法转换的值
+	str = `<xml attr="string" />`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
+	// 语法错误
+	str = `<xml attr="201"><value>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
 }
