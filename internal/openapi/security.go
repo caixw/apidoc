@@ -27,7 +27,7 @@ type SecurityRequirement map[string][]string
 // SecurityScheme Object
 type SecurityScheme struct {
 	Type             string      `json:"type" yaml:"type"`
-	Description      Description `json:"description,omitempty" yaml:"description,omitempty"`
+	Description      string      `json:"description,omitempty" yaml:"description,omitempty"`
 	Name             string      `json:"name" yaml:"name"` // 报头或是 cookie 的名称
 	IN               string      `json:"in" yaml:"in"`     // 位置, header, query 和 cookie
 	Scheme           string      `json:"scheme" yaml:"scheme"`

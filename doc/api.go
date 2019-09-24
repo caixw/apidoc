@@ -26,7 +26,7 @@ type API struct {
 	ID          string     `xml:"id,attr,omitempty"`
 	Path        *Path      `xml:"path"`
 	Summary     string     `xml:"summary,attr"`
-	Description Richtext   `xml:"description,omitempty"`
+	Description string     `xml:"description,omitempty"`
 	Requests    []*Request `xml:"request"`
 	Responses   []*Request `xml:"response"`
 	Callback    *Callback  `xml:"callback,omitempty"`
@@ -48,7 +48,7 @@ type Request struct {
 	Mimetype    string     `xml:"mimetype,attr"`
 	Examples    []*Example `xml:"example,omitempty"`
 	Headers     []*Header  `xml:"header,omitempty"`
-	Description Richtext   `xml:"description,omitempty"`
+	Description string     `xml:"description,omitempty"`
 }
 
 // Path 路径信息
@@ -75,7 +75,7 @@ type Param struct {
 	Items       []*Param `xml:"param,omitempty"`
 	Reference   string   `xml:"ref,attr,omitempty"`
 	Summary     string   `xml:"summary,attr,omitempty"`
-	Description Richtext `xml:"description,omitempty"`
+	Description string   `xml:"description,omitempty"`
 }
 
 // IsEnum 是否为一个枚举类型
@@ -85,30 +85,30 @@ func (p *Param) IsEnum() bool {
 
 // Enum 表示枚举值
 type Enum struct {
-	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
-	Value       string   `xml:"value,attr"`
-	Description Richtext `xml:",innerxml"`
+	Deprecated  Version `xml:"deprecated,attr,omitempty"`
+	Value       string  `xml:"value,attr"`
+	Description string  `xml:",innerxml"`
 }
 
 // Header 报头信息
 type Header struct {
-	Name        string   `xml:"name,attr"`
-	Description Richtext `xml:",innerxml"`
-	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
+	Name        string  `xml:"name,attr"`
+	Description string  `xml:",innerxml"`
+	Deprecated  Version `xml:"deprecated,attr,omitempty"`
 }
 
 // Example 示例代码
 type Example struct {
-	Description Richtext `xml:"description,omitempty"`
-	Mimetype    string   `xml:"mimetype,attr"`
-	Content     Richtext `xml:",innerxml"`
+	Description string `xml:"description,omitempty"`
+	Mimetype    string `xml:"mimetype,attr"`
+	Content     string `xml:",innerxml"`
 }
 
 // Callback 回调函数的定义
 type Callback struct {
 	Schema      string     `xml:"schema,attr"` // http 或是 https
 	Summary     string     `xml:"summary,attr,omitempty"`
-	Description Richtext   `xml:"description,omitempty"`
+	Description string     `xml:"description,omitempty"`
 	Mimetype    string     `xml:"mimetype,attr"`
 	Examples    []*Example `xml:"example,omitempty"`
 	Headers     []*Header  `xml:"header,omitempty"`

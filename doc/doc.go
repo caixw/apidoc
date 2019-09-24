@@ -12,9 +12,6 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
-// Richtext 富文本内容
-type Richtext string
-
 // Doc 文档
 type Doc struct {
 	XMLName struct{} `xml:"apidoc"`
@@ -22,7 +19,7 @@ type Doc struct {
 	APIDoc  string    `xml:"apidoc,attr,omitempty"`  // 程序的版本号
 	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
-	Content Richtext  `xml:"content"`
+	Content string    `xml:"content"`
 	Contact *Contact  `xml:"contact"`
 	License *Link     `xml:"license,omitempty"` // 版本信息
 	Tags    []*Tag    `xml:"tag,omitempty"`     // 所有的标签

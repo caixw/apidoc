@@ -16,15 +16,15 @@ var urlreplace = strings.NewReplacer("{", "", "}", "")
 // Server 服务器描述信息
 type Server struct {
 	URL         string                     `json:"url" yaml:"url"`
-	Description Description                `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string                     `json:"description,omitempty" yaml:"description,omitempty"`
 	Variables   map[string]*ServerVariable `json:"variables,omitempty" yaml:"variables,omitempty"`
 }
 
 // ServerVariable Server 中 URL 模板中对应的参数变量值
 type ServerVariable struct {
-	Enum        []string    `json:"enum,omitempty" yaml:"enum,omitempty"`
-	Default     string      `json:"default" yaml:"default"`
-	Description Description `json:"description,omitempty" yaml:"description,omitempty"`
+	Enum        []string `json:"enum,omitempty" yaml:"enum,omitempty"`
+	Default     string   `json:"default" yaml:"default"`
+	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
 }
 
 func newServer(srv *doc.Server) *Server {

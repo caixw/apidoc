@@ -72,7 +72,7 @@ type Schema struct {
 	Ref         string             `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 
 	Title         string                 `json:"title,omitempty" yaml:"title,omitempty"`
-	Description   Description            `json:"description,omitempty" yaml:"description,omitempty"`
+	Description   string                 `json:"description,omitempty" yaml:"description,omitempty"`
 	Default       interface{}            `json:"default,omitempty" yaml:"default,omitempty"`
 	ReadOnly      bool                   `json:"readOnly,omitempty" yaml:"readOnly,omitempty"`
 	WriteOnly     bool                   `json:"writeOnly,omitempty" yaml:"writeOnly,omitempty"`

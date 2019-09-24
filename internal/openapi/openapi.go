@@ -21,10 +21,6 @@ import (
 // LatestVersion openapi 最新的版本号
 const LatestVersion = "3.0.1"
 
-// Description 表示描述类型
-// 可以采用 MD 格式
-type Description = doc.Richtext
-
 // OpenAPI openAPI 的根对象
 type OpenAPI struct {
 	OpenAPI      string                 `json:"openapi" yaml:"openapi"`
@@ -52,8 +48,8 @@ type Components struct {
 
 // ExternalDocumentation 引用外部资源的扩展文档
 type ExternalDocumentation struct {
-	Description Description `json:"description,omitempty" yaml:"description,omitempty"`
-	URL         string      `json:"url" yaml:"url"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	URL         string `json:"url" yaml:"url"`
 }
 
 // Link 链接信息
@@ -62,7 +58,7 @@ type Link struct {
 	OperationID  string            `json:"operationId,omitempty" yaml:"operationId,omitempty"`
 	Parameters   map[string]string `json:"parameters,omitempty" yaml:"parameters,omitempty"`
 	RequestBody  map[string]string `json:"requestBody,omitempty" yaml:"requestBody,omitempty"`
-	Description  Description       `json:"description,omitempty" yaml:"description,omitempty"`
+	Description  string            `json:"description,omitempty" yaml:"description,omitempty"`
 	Server       *Server           `json:"server,omitempty" yaml:"server,omitempty"`
 
 	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
@@ -71,14 +67,14 @@ type Link struct {
 // Tag 标签内容
 type Tag struct {
 	Name         string                 `json:"name" yaml:"name"`
-	Description  Description            `json:"description,omitempty" yaml:"description,omitempty"`
+	Description  string                 `json:"description,omitempty" yaml:"description,omitempty"`
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
 }
 
 // Example 示例代码
 type Example struct {
-	Summary       Description  `json:"summary,omitempty" yaml:"summary,omitempty"`
-	Description   Description  `json:"description,omitempty" yaml:"description,omitempty"`
+	Summary       string       `json:"summary,omitempty" yaml:"summary,omitempty"`
+	Description   string       `json:"description,omitempty" yaml:"description,omitempty"`
 	Value         ExampleValue `json:"value,omitempty" yaml:"value,omitempty"`
 	ExternalValue string       `json:"external,omitempty" yaml:"external,omitempty"`
 

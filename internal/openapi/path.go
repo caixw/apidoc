@@ -11,7 +11,7 @@ import (
 type PathItem struct {
 	Ref         string       `json:"ref,omitempty" yaml:"ref,omitempty"`
 	Summary     string       `json:"summary,omitempty" yaml:"summary,omitempty"`
-	Description Description  `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string       `json:"description,omitempty" yaml:"description,omitempty"`
 	Get         *Operation   `json:"get,omitempty" yaml:"get,omitempty"`
 	Put         *Operation   `json:"put,omitempty" yaml:"put,omitempty"`
 	Post        *Operation   `json:"post,omitempty" yaml:"post,omitempty"`
@@ -28,7 +28,7 @@ type PathItem struct {
 type Operation struct {
 	Tags         []string               `json:"tags,omitempty" yaml:"tags,omitempty"`
 	Summary      string                 `json:"summary,omitempty" yaml:"summary,omitempty"`
-	Description  Description            `json:"description,omitempty" yaml:"description,omitempty"`
+	Description  string                 `json:"description,omitempty" yaml:"description,omitempty"`
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
 	OperationID  string                 `json:"operationId,omitempty" yaml:"operationId,omitempty" `
 	Parameters   []*Parameter           `json:"parameters,omitempty" yaml:"parameters,omitempty"`
@@ -42,7 +42,7 @@ type Operation struct {
 
 // RequestBody 请求内容
 type RequestBody struct {
-	Description Description           `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string                `json:"description,omitempty" yaml:"description,omitempty"`
 	Content     map[string]*MediaType `json:"content" yaml:"content"`
 	Required    bool                  `json:"required,omitempty" yaml:"required,omitempty" `
 
@@ -73,7 +73,7 @@ type Callback PathItem
 
 // Response 每个 API 的返回信息
 type Response struct {
-	Description Description           `json:"description" yaml:"description"`
+	Description string                `json:"description" yaml:"description"`
 	Headers     map[string]*Header    `json:"headers,omitempty" yaml:"headers,omitempty"`
 	Content     map[string]*MediaType `json:"content,omitempty" yaml:"content,omitempty"`
 	Links       map[string]*Link      `json:"links,omitempty" yaml:"links,omitempty"`

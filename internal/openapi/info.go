@@ -13,12 +13,12 @@ import (
 
 // Info 接口文档的基本信息
 type Info struct {
-	Title          string      `json:"title" yaml:"title"`
-	Description    Description `json:"description,omitempty" yaml:"description,omitempty"`
-	TermsOfService string      `json:"termsOfService,omitempty" json:"termsOfService,omitempty"`
-	Contact        *Contact    `json:"contact,omitempty" yaml:"contact,omitempty"`
-	License        *License    `json:"license,omitempty" yaml:"license,omitempty"`
-	Version        string      `json:"version" yaml:"version"`
+	Title          string   `json:"title" yaml:"title"`
+	Description    string   `json:"description,omitempty" yaml:"description,omitempty"`
+	TermsOfService string   `json:"termsOfService,omitempty" json:"termsOfService,omitempty"`
+	Contact        *Contact `json:"contact,omitempty" yaml:"contact,omitempty"`
+	License        *License `json:"license,omitempty" yaml:"license,omitempty"`
+	Version        string   `json:"version" yaml:"version"`
 }
 
 // Contact 描述联系方式

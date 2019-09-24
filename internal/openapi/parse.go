@@ -96,7 +96,7 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 			}
 			for _, h := range resp.Headers {
 				r.Headers[h.Name] = &Header{
-					Description: Description(h.Description),
+					Description: h.Description,
 				}
 			}
 
@@ -127,7 +127,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 		operation.Parameters = append(operation.Parameters, &Parameter{
 			Name:        param.Name,
 			IN:          ParameterINPath,
-			Description: Description(param.Summary),
+			Description: param.Summary,
 			Required:    param.Required,
 			// TODO Schema:      &Schema{Schema: *param.Type},
 		})
@@ -137,7 +137,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 		operation.Parameters = append(operation.Parameters, &Parameter{
 			Name:        param.Name,
 			IN:          ParameterINQuery,
-			Description: Description(param.Summary),
+			Description: param.Summary,
 			Required:    param.Required,
 			// TODO Schema:      &Schema{Schema: *param.Type},
 		})
@@ -148,7 +148,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 			operation.Parameters = append(operation.Parameters, &Parameter{
 				Name:        param.Name,
 				IN:          ParameterINHeader,
-				Description: Description(param.Description),
+				Description: param.Description,
 			})
 		}
 	}
