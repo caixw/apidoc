@@ -94,7 +94,7 @@ func (opt *Options) Sanitize() *message.SyntaxError {
 
 // 按 Options 中的规则查找所有符合条件的文件列表。
 func recursivePath(o *Options) ([]string, error) {
-	paths := []string{}
+	var paths []string
 
 	extIsEnabled := func(ext string) bool {
 		for _, v := range o.Exts {

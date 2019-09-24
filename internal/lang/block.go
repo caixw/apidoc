@@ -10,10 +10,9 @@ import (
 
 // 用于描述 block.Type 的值。
 const (
-	blockTypeNone     int8 = iota
-	blockTypeString        // 字符串，将被忽略。
-	blockTypeSComment      // 单行注释
-	blockTypeMComment      // 多行注释
+	blockTypeString   int8 = iota + 1 // 字符串，将被忽略。
+	blockTypeSComment                 // 单行注释
+	blockTypeMComment                 // 多行注释
 )
 
 // Blocker 接口定义了解析代码块的所有操作。

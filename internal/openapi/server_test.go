@@ -18,20 +18,20 @@ func TestServer_Sanitize(t *testing.T) {
 	a.NotError(srv.Sanitize())
 
 	srv.Variables = map[string]*ServerVariable{
-		"tpl1": &ServerVariable{Default: "1"},
-		"tpl2": &ServerVariable{Default: "2", Enum: []string{"1", "2"}},
+		"tpl1": {Default: "1"},
+		"tpl2": {Default: "2", Enum: []string{"1", "2"}},
 	}
 	a.NotError(srv.Sanitize())
 
 	// variable 不在 URL 中
 	srv.Variables = map[string]*ServerVariable{
-		"tpl3": &ServerVariable{Default: "1"},
+		"tpl3": {Default: "1"},
 	}
 	a.Error(srv.Sanitize())
 
 	// variables 存在错误
 	srv.Variables = map[string]*ServerVariable{
-		"tpl2": &ServerVariable{Default: "not-exists", Enum: []string{"1", "2"}},
+		"tpl2": {Default: "not-exists", Enum: []string{"1", "2"}},
 	}
 	a.Error(srv.Sanitize())
 }

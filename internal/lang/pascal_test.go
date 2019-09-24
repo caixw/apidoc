@@ -8,7 +8,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-var _ Blocker = newPascalStringBlock('"')
+var _ Blocker = &pascalStringBlock{}
 
 func TestPascalStringBlock(t *testing.T) {
 	a := assert.New(t)

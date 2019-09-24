@@ -41,24 +41,24 @@ func Parse(h *message.Handler, opt ...*Options) *doc.Doc {
 	}
 
 	blocks := buildBlock(h, opt...)
-	doc := doc.New()
+	d := doc.New()
 	wg := sync.WaitGroup{}
 
 	for blk := range blocks {
 		wg.Add(1)
 		go func(b block) {
-			parseBlock(doc, b, h)
+			parseBlock(d, b, h)
 			wg.Done()
 		}(blk)
 	}
 
 	wg.Wait()
 
-	if err := doc.Sanitize(); err != nil {
+	if err := d.Sanitize(); err != nil {
 		h.Error(message.Erro, err)
 	}
 
-	return doc
+	return d
 }
 
 var (

@@ -37,7 +37,7 @@ func TestLangs(t *testing.T) {
 			if !ok {
 				continue
 			}
-			v := (b.Type == blockTypeString || b.Type == blockTypeMComment || b.Type == blockTypeSComment)
+			v := b.Type == blockTypeString || b.Type == blockTypeMComment || b.Type == blockTypeSComment
 			a.True(v, "langs[%v].[%v].Type 值为非法值", lang.Name, index)
 		}
 

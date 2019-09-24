@@ -26,14 +26,13 @@ type Doc struct {
 	Apis    []*API    `xml:"api,omitempty"`
 
 	// 应用于全局的变量
-	Mimetypes string     `xml:"mimetypes,omitempty"` // 指定可用的 mimetype 类型
+	Mimetype  string     `xml:"mimetype,omitempty"` // 指定可用的 mimetype 类型
 	Responses []*Request `xml:"response,omitempty"`
 	Requests  []*Request `xml:"Request,omitempty"`
 
-	references map[string]interface{}
-	file       string
-	line       int
-	data       []byte
+	file string
+	line int
+	data []byte
 }
 
 // New 返回 Doc 实例
@@ -108,23 +107,5 @@ func (doc *Doc) serverExists(srv string) bool {
 			return true
 		}
 	}
-	return false
-}
-
-func (doc *Doc) requestExists(status Status, mimetype string) bool {
-	return doc.requestResponseExists(doc.Requests, status, mimetype)
-}
-
-func (doc *Doc) responseExists(status Status, mimetype string) bool {
-	return doc.requestResponseExists(doc.Responses, status, mimetype)
-}
-
-func (doc *Doc) requestResponseExists(body []*Request, status Status, mimetype string) bool {
-	for _, r := range body {
-		if r.Status == status && r.Mimetype == mimetype {
-			return true
-		}
-	}
-
 	return false
 }

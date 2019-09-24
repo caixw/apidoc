@@ -87,13 +87,13 @@ func (cfg *config) sanitize() *message.SyntaxError {
 		return message.NewLocaleError(configFilename, "output", 0, locale.ErrRequired)
 	}
 
-	for index, input := range cfg.Inputs {
-		if input.Dir, err = getPath(cfg.wd, input.Dir); err != nil {
+	for index, i := range cfg.Inputs {
+		if i.Dir, err = getPath(cfg.wd, i.Dir); err != nil {
 			return message.WithError(configFilename, "inputs["+strconv.Itoa(index)+"].path", 0, err)
 		}
 
 		field := "inputs[" + strconv.Itoa(index) + "]"
-		if err := input.Sanitize(); err != nil {
+		if err := i.Sanitize(); err != nil {
 			return fixedSyntaxError(err, field)
 		}
 	}
@@ -129,8 +129,8 @@ func getConfig(wd string) (*config, error) {
 		return nil, message.NewLocaleError("", "", 0, locale.ErrNotFoundSupportedLang)
 	}
 
-	for _, input := range inputs {
-		input.Dir, err = filepath.Rel(wd, input.Dir)
+	for _, i := range inputs {
+		i.Dir, err = filepath.Rel(wd, i.Dir)
 		if err != nil {
 			return nil, err
 		}

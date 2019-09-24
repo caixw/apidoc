@@ -12,10 +12,10 @@ import (
 
 func getTestDoc() *doc.Doc {
 	return &doc.Doc{
-		Tags: []*doc.Tag{&doc.Tag{Name: "t1"}, &doc.Tag{Name: "t2"}},
+		Tags: []*doc.Tag{{Name: "t1"}, {Name: "t2"}},
 		Apis: []*doc.API{
-			&doc.API{Tags: []string{"t1", "tag1"}},
-			&doc.API{Tags: []string{"t2", "tag2"}},
+			{Tags: []string{"t1", "tag1"}},
+			{Tags: []string{"t2", "tag2"}},
 		},
 	}
 }

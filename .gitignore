@@ -35,6 +35,7 @@ _testmain.go
 /.vscode
 apidoc.json
 apidoc.yaml
+apidoc.xml
 
 .vscode
 .idea

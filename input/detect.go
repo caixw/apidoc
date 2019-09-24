@@ -28,11 +28,11 @@ func Detect(dir string, recursive bool) ([]*Options, error) {
 	langs := detectLanguage(exts)
 
 	opts := make([]*Options, 0, len(langs))
-	for _, lang := range langs {
+	for _, l := range langs {
 		opts = append(opts, &Options{
-			Lang:      lang.Name,
+			Lang:      l.Name,
 			Dir:       dir,
-			Exts:      lang.Exts,
+			Exts:      l.Exts,
 			Recursive: recursive,
 		})
 	}

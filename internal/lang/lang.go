@@ -7,28 +7,28 @@ import "fmt"
 
 // 所有支持的语言模型定义
 var langs = []*Language{
-	&Language{
+	{
 		DisplayName: "C#",
 		Name:        "c#",
 		Exts:        []string{".cs"},
 		Blocks:      cStyle,
 	},
 
-	&Language{
+	{
 		DisplayName: "C/C++",
 		Name:        "c++",
 		Exts:        []string{".h", ".c", ".cpp", ".cxx", ".hpp"},
 		Blocks:      cStyle,
 	},
 
-	&Language{
+	{
 		DisplayName: "D",
 		Name:        "d",
 		Exts:        []string{".d"},
 		Blocks:      cStyle,
 	},
 
-	&Language{
+	{
 		DisplayName: "Erlang",
 		Name:        "erlang",
 		Exts:        []string{".erl", ".hrl"},
@@ -38,7 +38,7 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "Go",
 		Name:        "go",
 		Exts:        []string{".go"},
@@ -51,7 +51,7 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "Groovy",
 		Name:        "groovy",
 		Exts:        []string{".groovy"},
@@ -64,14 +64,14 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "Java",
 		Name:        "java",
 		Exts:        []string{".java"},
 		Blocks:      cStyle,
 	},
 
-	&Language{
+	{
 		DisplayName: "JavaScript",
 		Name:        "javascript",
 		Exts:        []string{".js"},
@@ -86,14 +86,14 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "Kotlin",
 		Name:        "kotlin",
 		Exts:        []string{".kt"},
 		Blocks:      cStyle,
 	},
 
-	&Language{
+	{
 		DisplayName: "Pascal/Delphi",
 		Name:        "pascal",
 		Exts:        []string{".pas", ".pp"},
@@ -105,7 +105,7 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "Perl",
 		Name:        "perl",
 		Exts:        []string{".perl", ".prl", ".pl"},
@@ -117,7 +117,7 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "PHP",
 		Name:        "php",
 		Exts:        []string{".php"},
@@ -131,7 +131,7 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "Python",
 		Name:        "python",
 		Exts:        []string{".py"},
@@ -143,7 +143,7 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "Ruby",
 		Name:        "ruby",
 		Exts:        []string{".rb"},
@@ -155,7 +155,7 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "Rust",
 		Name:        "rust",
 		Exts:        []string{".rs"},
@@ -168,14 +168,14 @@ var langs = []*Language{
 		},
 	},
 
-	&Language{
+	{
 		DisplayName: "Scala",
 		Name:        "scala",
 		Exts:        []string{".scala"},
 		Blocks:      cStyle,
 	},
 
-	&Language{
+	{
 		DisplayName: "Swift",
 		Name:        "swift",
 		Exts:        []string{".swift"},
