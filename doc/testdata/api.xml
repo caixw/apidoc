@@ -2,9 +2,9 @@
 
 <api method="GET" version="1.1.0" id="xxx" summary="获取订单信息">
     <path path="/users/{id}/orders">
-        <param name="id">用户 ID </param>
-        <query name="size">size</query>
-        <query name="page" deprecated="0.1.1">page</query>
+        <param name="id" type="number">用户 ID </param>
+        <query name="size" type="number">size</query>
+        <query name="page" type="number" deprecated="0.1.1">page</query>
     </path>
 
     <tag>g1</tag>
@@ -16,7 +16,7 @@
     description xxx
     </description>
 
-    <request mimetype="json,xml">
+    <request mimetype="json,xml" type="number">
         <header name="authorization">token</header>
     </request>
 
@@ -39,12 +39,12 @@
         </example>
     </response>
 
-    <response status="400" mimetype="json/xml">
+    <response status="400" mimetype="json/xml" type="string">
     </response>
 
     <callback method="post" schema="https">
         <request mimetype="json" type="object">
-            <query name="size">size</query>
+            <query name="size" type="number">size</query>
 
             <param name="id" type="number" default="1" />
             <param name="age" type="number" />

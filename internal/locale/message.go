@@ -54,6 +54,9 @@ const (
 	ErrInvalidStatus         = "无效的 HTTP 状态值 %s"
 	ErrInvalidVersionFormat  = "无效的版本号格式"
 	ErrUnsanitized           = "未调用 Sanitize"
+	ErrDuplicateEnum         = "重复的枚举值 %s"
+	ErrNeedProperty          = "对象必须要有属性值"
+	ErrPathSyntaxError       = "路由项语法错误"
 
 	// logs
 	InfoPrefix  = "[INFO] "

@@ -41,64 +41,6 @@ type API struct {
 	doc  *Doc
 }
 
-// Request 请求内容
-type Request struct {
-	Param
-	Status      Status     `xml:"status,attr"`
-	Mimetype    string     `xml:"mimetype,attr"`
-	Examples    []*Example `xml:"example,omitempty"`
-	Headers     []*Header  `xml:"header,omitempty"`
-	Description string     `xml:"description,omitempty"`
-}
-
-// Path 路径信息
-//  <path path="/users/{id}">
-//      <param name="id" type="number" summary="summary" />
-//      <query name="page" type="number" summary="page" default="1" />
-//  </path>
-type Path struct {
-	Path      string   `xml:"path,attr"`
-	Params    []*Param `xml:"param,omitempty"`
-	Queries   []*Param `xml:"query,omitempty"`
-	Reference string   `xml:"ref,attr,omitempty"`
-}
-
-// Param 表示参数类型
-type Param struct {
-	Name        string   `xml:"name,attr"`
-	Type        Type     `xml:"type,attr"`
-	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
-	Default     string   `xml:"default,attr,omitempty"`
-	Required    bool     `xml:"required,attr,omitempty"`
-	Enums       []*Enum  `xml:"enum,omitempty"`
-	Array       bool     `xml:"array,attr,omitempty"`
-	Items       []*Param `xml:"param,omitempty"`
-	Reference   string   `xml:"ref,attr,omitempty"`
-	Summary     string   `xml:"summary,attr,omitempty"`
-	Description string   `xml:"description,omitempty"`
-}
-
-// IsEnum 是否为一个枚举类型
-func (p *Param) IsEnum() bool {
-	return len(p.Enums) > 0
-}
-
-// Callback 回调函数的定义
-type Callback struct {
-	Schema      string     `xml:"schema,attr"` // http 或是 https
-	Summary     string     `xml:"summary,attr,omitempty"`
-	Description string     `xml:"description,omitempty"`
-	Mimetype    string     `xml:"mimetype,attr"`
-	Examples    []*Example `xml:"example,omitempty"`
-	Headers     []*Header  `xml:"header,omitempty"`
-	Method      Method     `xml:"method,attr"`
-	Queries     []*Param   `xml:"queries,omitempty"` // 查询参数
-	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
-	Reference   string     `xml:"ref,attr,omitempty"`
-	Responses   []*Request `xml:"response,omitempty"`
-	Requests    []*Request `xml:"request,omitempty"`
-}
-
 // NewAPI 从 data 中解析新的 API 对象
 func (doc *Doc) NewAPI(file string, line int, data []byte) error {
 	api := &API{
@@ -119,6 +61,9 @@ type shadowAPI API
 
 // UnmarshalXML xml.Unmarshaler
 func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	// TODO 如果 api.file 为空，则采用 doc.file
+	// 这样可以正常解析 apidoc 和 api 合在一起的文档
+
 	var obj shadowAPI
 	if err := d.DecodeElement(&obj, &start); err != nil {
 		line := bytes.Count(api.data[:d.InputOffset()], []byte{'\n'})

@@ -54,6 +54,9 @@ func init() {
 		ErrInvalidEmail:          "无效的邮件地址 %s",
 		ErrInvalidType:           "无效的类型名称 %s",
 		ErrInvalidStatus:         "无效的 HTTP 状态值 %s",
+		ErrDuplicateEnum:         "重复的枚举值 %s",
+		ErrNeedProperty:          "对象必须要有属性值",
+		ErrPathSyntaxError:       "路由项语法错误",
 
 		// logs
 		InfoPrefix:  "[信息] ",
