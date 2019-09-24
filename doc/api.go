@@ -83,27 +83,6 @@ func (p *Param) IsEnum() bool {
 	return len(p.Enums) > 0
 }
 
-// Enum 表示枚举值
-type Enum struct {
-	Deprecated  Version `xml:"deprecated,attr,omitempty"`
-	Value       string  `xml:"value,attr"`
-	Description string  `xml:",innerxml"`
-}
-
-// Header 报头信息
-type Header struct {
-	Name        string  `xml:"name,attr"`
-	Description string  `xml:",innerxml"`
-	Deprecated  Version `xml:"deprecated,attr,omitempty"`
-}
-
-// Example 示例代码
-type Example struct {
-	Description string `xml:"description,omitempty"`
-	Mimetype    string `xml:"mimetype,attr"`
-	Content     string `xml:",innerxml"`
-}
-
 // Callback 回调函数的定义
 type Callback struct {
 	Schema      string     `xml:"schema,attr"` // http 或是 https
