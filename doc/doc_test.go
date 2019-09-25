@@ -16,7 +16,7 @@ func loadDoc(a *assert.Assertion) *Doc {
 	a.NotError(err).NotNil(data)
 
 	doc := New()
-	a.NotNil(doc)
+	a.NotNil(doc).NotEmpty(doc.APIDoc)
 
 	a.NotError(doc.FromXML("doc.xml", 0, data))
 
@@ -27,6 +27,7 @@ func TestDoc(t *testing.T) {
 	a := assert.New(t)
 	doc := loadDoc(a)
 
+	a.NotEmpty(doc.APIDoc)
 	a.Equal(doc.Version, "1.1.1")
 
 	a.Equal(len(doc.Tags), 2)

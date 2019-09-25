@@ -16,7 +16,12 @@ import (
 type Doc struct {
 	XMLName struct{} `xml:"apidoc"`
 
-	APIDoc  string    `xml:"apidoc,attr,omitempty"`  // 程序的版本号
+	// 程序的版本号
+	//
+	// 同时也作为文档格式的版本号。客户端可以依此值确定文档格式。
+	// 仅用于输出，文档中不需要指定此值。
+	APIDoc string `xml:"apidoc,attr,omitempty"`
+
 	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
 	Content string    `xml:"content"`

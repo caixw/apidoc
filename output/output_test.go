@@ -20,6 +20,17 @@ func getTestDoc() *doc.Doc {
 	}
 }
 
+func TestRender(t *testing.T) {
+	a := assert.New(t)
+	doc := getTestDoc()
+	o := &Options{
+		Path: "./apidoc.xml",
+		Type: ApidocXML,
+	}
+
+	a.NotError(Render(doc, o))
+}
+
 func TestFilterDoc(t *testing.T) {
 	a := assert.New(t)
 

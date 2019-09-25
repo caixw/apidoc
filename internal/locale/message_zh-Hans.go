@@ -20,8 +20,8 @@ func init() {
 		FlagLanguagesUsage:      "显示所有支持的语言",
 		FlagGUsage:              "创建一个默认的配置文件",
 		FlagWDUsage:             "指定工作目录，默认为当前目录",
-		FlagVersionBuildWith:    "%s %s build with %s\n",
-		FlagVersionCommitHash:   "commit hash %s\n",
+		FlagVersionBuildWith:    "%s %s build with %s",
+		FlagVersionCommitHash:   "commit hash %s",
 		FlagConfigWritedSuccess: "配置内容成功写入 %s",
 
 		VersionInCompatible: "当前程序与配置文件中指定的版本号不兼容",

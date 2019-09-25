@@ -63,6 +63,8 @@ func main() {
 }
 
 func parse(wd string) {
+	now := time.Now()
+
 	h := message.NewHandler(newConsoleHandlerFunc())
 
 	cfg, err := loadConfig(wd)
@@ -71,7 +73,6 @@ func parse(wd string) {
 		return
 	}
 
-	now := time.Now()
 	if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
 		h.Error(message.Erro, err)
 		return

@@ -46,7 +46,11 @@ type config struct {
 
 // 加载 wd 目录下的配置文件到 *config 实例。
 func loadConfig(wd string) (*config, *message.SyntaxError) {
-	data, err := ioutil.ReadFile(filepath.Join(wd, configFilename))
+	path, err := abs(configFilename, wd)
+	if err != nil {
+		return nil, message.WithError(configFilename, "", 0, err)
+	}
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, message.WithError(configFilename, "", 0, err)
 	}

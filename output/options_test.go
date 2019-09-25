@@ -12,7 +12,6 @@ import (
 
 var (
 	_ marshaler = xmlMarshal
-
 	_ marshaler = openapi.JSON
 	_ marshaler = openapi.YAML
 )
@@ -30,17 +29,19 @@ func TestOptions_contains(t *testing.T) {
 	a.False(o.contains(""))
 }
 
-func TestBuildOptions(t *testing.T) {
+func TestOptions_sanitize(t *testing.T) {
 	a := assert.New(t)
-	oo := &Options{}
-	a.Error(oo.sanitize())
 
-	oo.Path = "./testdir/apidoc.json"
-	a.NotError(oo.sanitize())
-	a.Equal(oo.marshal, marshaler(xmlMarshal))
+	var o *Options
+	a.Error(o.sanitize())
 
-	a.NotError(oo.sanitize())
+	o = &Options{}
+	a.Error(o.sanitize())
 
-	oo.Type = "unknown"
-	a.Error(oo.sanitize())
+	o.Path = "./testdir/apidoc.json"
+	a.NotError(o.sanitize())
+	a.Equal(o.marshal, marshaler(xmlMarshal))
+
+	o.Type = "unknown"
+	a.Error(o.sanitize())
 }
