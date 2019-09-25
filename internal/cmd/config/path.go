@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package main
+package config
 
 import (
 	"os"
@@ -36,4 +36,13 @@ func abs(path, wd string) (p string, err error) {
 	}
 
 	return filepath.Clean(path), nil
+}
+
+// 尽可能地返回 path 相对于 wd 的路径，如果不存在相对关系，则原因返回 path
+func rel(path, wd string) string {
+	p, err := filepath.Rel(wd, path)
+	if err != nil {
+		return path
+	}
+	return p
 }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package main
+package config
 
 import (
 	"path/filepath"
@@ -29,14 +29,15 @@ func TestFixedSyntaxError(t *testing.T) {
 	a.Equal(e.Field, "p")
 }
 
-func TestConfig_generateConfig_loadConfig(t *testing.T) {
+func TestConfig_writeConfig_loadConfig(t *testing.T) {
 	a := assert.New(t)
 
 	wd, err := filepath.Abs("./")
 	a.NotError(err).NotEmpty(wd)
 
-	a.NotError(generateConfig(wd, filepath.Join(wd, configFilename)))
-	cfg, err := loadConfig(wd)
+	a.NotError(Write(wd))
+	path := filepath.Join(wd, configFilename)
+	cfg, err := Load(path)
 	a.NotError(err).
 		NotNil(cfg)
 
@@ -46,7 +47,7 @@ func TestConfig_generateConfig_loadConfig(t *testing.T) {
 func TestConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	conf := &config{}
+	conf := &Config{}
 	err := conf.sanitize()
 	a.Error(err).
 		Equal(err.Field, "version")

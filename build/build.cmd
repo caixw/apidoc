@@ -1,6 +1,5 @@
 :: SPDX-License-Identifier: MIT
 
-
 :: 代码的主目录，变量赋值时，等号两边不能有空格。
 set wd=%~dp0\..\cmd\apidoc
 

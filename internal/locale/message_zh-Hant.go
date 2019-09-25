@@ -9,6 +9,9 @@ func init() {
 		// 與 flag 包相關的處理
 		FlagUsage: `%s 是壹個 RESTful API 文檔生成工具。
 
+用法：
+apidoc [options] [path]
+
 參數：
 %s
 
@@ -16,17 +19,16 @@ func init() {
 詳細信息可訪問官網 %s
 `,
 
-		FlagHUsage:              "顯示幫助信息",
-		FlagVUsage:              "顯示版本信息",
-		FlagLanguagesUsage:      "顯示所有支持的語言",
-		FlagGUsage:              "創建一個默認的配置文件",
-		FlagWDUsage:             "指定工作目錄，默認為當前目錄",
-		FlagVersionBuildWith:    "%s %s build with %s",
-		FlagVersionCommitHash:   "commit hash %s",
-		FlagConfigWritedSuccess: "配置內容成功寫入 %s",
+		FlagHUsage:            "顯示幫助信息",
+		FlagVUsage:            "顯示版本信息",
+		FlagLanguagesUsage:    "顯示所有支持的語言",
+		FlagDUsage:            "检测该目录下的内容并生成一个配置文件",
+		FlagVersionBuildWith:  "%s %s build with %s",
+		FlagVersionCommitHash: "commit hash %s",
 
 		VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
 		Complete:            "完成！文檔保存在：%s，總用時：%v",
+		ConfigWriteSuccess:  "配置內容成功寫入 %s",
 
 		// 錯誤信息，可能在地方用到
 		ErrRequired:              "不能為空",

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
-package main
+// Package config 负责命令行工具 apidoc 的配置文件管理
+package config
 
 import (
 	"io/ioutil"
@@ -23,8 +24,8 @@ const (
 	docFilename    = "apidoc.xml"
 )
 
-// 项目的配置内容
-type config struct {
+// Config 项目的配置内容
+type Config struct {
 	// 产生此配置文件的程序版本号
 	//
 	// 程序会用此来判断程序的兼容性。
@@ -44,9 +45,9 @@ type config struct {
 	wd string
 }
 
-// 加载 wd 目录下的配置文件到 *config 实例。
-func loadConfig(wd string) (*config, *message.SyntaxError) {
-	path, err := abs(configFilename, wd)
+// Load 加载指定的配置文件
+func Load(path string) (*Config, *message.SyntaxError) {
+	path, err := filepath.Abs(path)
 	if err != nil {
 		return nil, message.WithError(configFilename, "", 0, err)
 	}
@@ -55,11 +56,11 @@ func loadConfig(wd string) (*config, *message.SyntaxError) {
 		return nil, message.WithError(configFilename, "", 0, err)
 	}
 
-	cfg := &config{}
+	cfg := &Config{}
 	if err = yaml.Unmarshal(data, cfg); err != nil {
 		return nil, message.WithError(configFilename, "", 0, err)
 	}
-	cfg.wd = wd
+	cfg.wd = filepath.Dir(path)
 
 	if err := cfg.sanitize(); err != nil {
 		return nil, err
@@ -68,7 +69,7 @@ func loadConfig(wd string) (*config, *message.SyntaxError) {
 	return cfg, nil
 }
 
-func (cfg *config) sanitize() *message.SyntaxError {
+func (cfg *Config) sanitize() *message.SyntaxError {
 	if !version.SemVerValid(cfg.Version) {
 		return message.NewLocaleError(configFilename, "version", 0, locale.ErrInvalidFormat)
 	}
@@ -98,10 +99,8 @@ func (cfg *config) sanitize() *message.SyntaxError {
 		}
 	}
 
-	if !filepath.IsAbs(cfg.Output.Path) {
-		if cfg.Output.Path, err = abs(cfg.Output.Path, cfg.wd); err != nil {
-			return message.WithError(configFilename, "output.path", 0, err)
-		}
+	if cfg.Output.Path, err = abs(cfg.Output.Path, cfg.wd); err != nil {
+		return message.WithError(configFilename, "output.path", 0, err)
 	}
 
 	return nil
@@ -117,7 +116,7 @@ func fixedSyntaxError(err *message.SyntaxError, field string) *message.SyntaxErr
 	return err
 }
 
-func getConfig(wd string) (*config, error) {
+func detectConfig(wd string) (*Config, error) {
 	inputs, err := input.Detect(wd, true)
 	if err != nil {
 		return nil, err
@@ -127,17 +126,11 @@ func getConfig(wd string) (*config, error) {
 	}
 
 	for _, i := range inputs {
-		i.Dir, err = filepath.Rel(wd, i.Dir)
-		if err != nil {
-			return nil, err
-		}
+		i.Dir = rel(wd, i.Dir)
 	}
 
-	outputFile, err := filepath.Rel(wd, filepath.Join(wd, docFilename))
-	if err != nil {
-		return nil, err
-	}
-	return &config{
+	outputFile := rel(wd, filepath.Join(wd, docFilename))
+	return &Config{
 		Version: apidoc.Version(),
 		Inputs:  inputs,
 		Output: &output.Options{
@@ -147,12 +140,12 @@ func getConfig(wd string) (*config, error) {
 	}, nil
 }
 
-// 根据 wd 所在目录的内容生成一个配置文件，并写入到 path  中
+// Write 根据 wd 所在目录的内容生成一个配置文件，并写入到该目录配置文件中。
 //
 // wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
 // path 表示生成的配置文件存放的路径。
-func generateConfig(wd, path string) error {
-	cfg, err := getConfig(wd)
+func Write(wd string) error {
+	cfg, err := detectConfig(wd)
 	if err != nil {
 		return err
 	}
@@ -162,5 +155,9 @@ func generateConfig(wd, path string) error {
 		return err
 	}
 
+	path, err := abs(configFilename, wd)
+	if err != nil {
+		return err
+	}
 	return ioutil.WriteFile(path, data, os.ModePerm)
 }

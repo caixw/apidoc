@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -14,8 +15,10 @@ import (
 	"time"
 
 	"github.com/issue9/term/colors"
+	xmessage "golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v5"
+	"github.com/caixw/apidoc/v5/internal/cmd/config"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
@@ -38,8 +41,7 @@ var (
 func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
-	g := flag.Bool("g", false, locale.Sprintf(locale.FlagGUsage))
-	wd := flag.String("wd", "./", locale.Sprintf(locale.FlagWDUsage))
+	d := flag.String("d", "./", locale.Sprintf(locale.FlagDUsage))
 	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	flag.Usage = usage
 	flag.Parse()
@@ -54,32 +56,46 @@ func main() {
 	case *l:
 		printLanguages()
 		return
-	case *g:
-		genConfigFile(*wd)
+	case *d != "":
+		dir, err := filepath.Abs(*d)
+		if err != nil {
+			p(erroOut, err)
+		}
+		if err := config.Write(dir); err != nil {
+			p(erroOut, err)
+		} else {
+			pLocale(infoOut, locale.ConfigWriteSuccess, dir)
+		}
 		return
 	}
 
-	parse(*wd)
+	paths := flag.Args()
+	if len(paths) == 0 {
+		paths = append(paths, "./")
+	}
+	parse(paths)
 }
 
-func parse(wd string) {
+func parse(paths []string) {
 	now := time.Now()
 
 	h := message.NewHandler(newConsoleHandlerFunc())
 
-	cfg, err := loadConfig(wd)
-	if err != nil {
-		h.Error(message.Erro, err)
-		return
-	}
+	for _, path := range paths {
+		cfg, err := config.Load(path)
+		if err != nil {
+			h.Error(message.Erro, err)
+			return
+		}
 
-	if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
-		h.Error(message.Erro, err)
-		return
-	}
-	elapsed := time.Now().Sub(now)
+		if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
+			h.Error(message.Erro, err)
+			return
+		}
+		elapsed := time.Now().Sub(now)
 
-	h.Message(message.Info, locale.Complete, cfg.Output.Path, elapsed)
+		h.Message(message.Info, locale.Complete, cfg.Output.Path, elapsed)
+	}
 }
 
 func usage() {
@@ -87,23 +103,12 @@ func usage() {
 	flag.CommandLine.SetOutput(buf)
 	flag.PrintDefaults()
 
-	fmt.Fprintln(infoOut, locale.Sprintf(locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL))
-}
-
-// 根据 wd 所在目录的内容生成一个配置文件，并写入到 wd 目录下的 .apidoc.yaml 中
-func genConfigFile(wd string) {
-	path := filepath.Join(wd, configFilename)
-	if err := generateConfig(wd, path); err != nil {
-		fmt.Fprintln(infoOut, err)
-		return
-	}
-
-	fmt.Fprintln(infoOut, locale.Sprintf(locale.FlagConfigWritedSuccess, path))
+	pLocale(infoOut, locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
 }
 
 func printVersion() {
-	fmt.Fprintln(infoOut, locale.Sprintf(locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version()))
-	fmt.Fprintln(infoOut, locale.Sprintf(locale.FlagVersionCommitHash, vars.CommitHash()))
+	pLocale(infoOut, locale.FlagVersionBuildWith, vars.Name, vars.Version(), runtime.Version())
+	pLocale(infoOut, locale.FlagVersionCommitHash, vars.CommitHash())
 }
 
 // 将支持的语言内容以表格的形式输出
@@ -125,7 +130,22 @@ func printLanguages() {
 	for _, l := range langs {
 		d := strings.Repeat(" ", maxDisplay-len(l.DisplayName))
 		n := strings.Repeat(" ", maxName-len(l.Name))
-		fmt.Fprintln(infoOut, l.Name, n, l.DisplayName, d, strings.Join(l.Exts, ", "))
+		if _, err := fmt.Fprintln(infoOut, l.Name, n, l.DisplayName, d, strings.Join(l.Exts, ", ")); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func pLocale(out io.Writer, key xmessage.Reference, v ...interface{}) {
+	l := locale.Sprintf(key, v...)
+	if _, err := fmt.Fprintln(out, l); err != nil {
+		panic(err)
+	}
+}
+
+func p(out io.Writer, v ...interface{}) {
+	if _, err := fmt.Fprintln(out, v...); err != nil {
+		panic(err)
 	}
 }
 
@@ -143,6 +163,11 @@ func newConsoleHandlerFunc() message.HandlerFunc {
 }
 
 func printMessage(out *os.File, color colors.Color, prefix, msg string) {
-	colors.Fprint(out, color, colors.Default, prefix)
-	colors.Fprintln(out, colors.Default, colors.Default, msg)
+	if _, err := colors.Fprint(out, color, colors.Default, prefix); err != nil {
+		panic(err)
+	}
+
+	if _, err := colors.Fprintln(out, colors.Default, colors.Default, msg); err != nil {
+		panic(err)
+	}
 }

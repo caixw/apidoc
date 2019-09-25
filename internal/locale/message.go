@@ -7,23 +7,25 @@ const (
 	// 与 flag 包相关的处理
 	FlagUsage = `%s 是一个 RESTful API 文档生成工具。
 
+用法：
+apidoc [options] [path]
+
 参数：
 %s
 
 源代码采用 MIT 开源许可证，发布于 %s
 详细信息可访问官网 %s
 `
-	FlagHUsage              = "显示帮助信息"
-	FlagVUsage              = "显示版本信息"
-	FlagLanguagesUsage      = "显示所有支持的语言"
-	FlagGUsage              = "创建一个默认的配置文件"
-	FlagWDUsage             = "指定工作目录，默认为当前目录"
-	FlagVersionBuildWith    = "%s %s build with %s"
-	FlagVersionCommitHash   = "commit hash %s"
-	FlagConfigWritedSuccess = "配置内容成功写入 %s"
+	FlagHUsage            = "显示帮助信息"
+	FlagVUsage            = "显示版本信息"
+	FlagLanguagesUsage    = "显示所有支持的语言"
+	FlagDUsage            = "检测该目录下的内容并生成一个配置文件"
+	FlagVersionBuildWith  = "%s %s build with %s"
+	FlagVersionCommitHash = "commit hash %s"
 
 	VersionInCompatible = "当前程序与配置文件中指定的版本号不兼容"
 	Complete            = "完成！文档保存在：%s，总用时：%v"
+	ConfigWriteSuccess  = "配置内容成功写入 %s"
 
 	// 错误信息，可能在地方用到
 	ErrRequired              = "不能为空"

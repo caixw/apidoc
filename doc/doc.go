@@ -75,7 +75,7 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	*doc = Doc(shadow)
 	doc.Apis = apis
-	doc.APIDoc = vars.Version()
+	doc.APIDoc = vars.Version() // 读取的时候，忽略客户端指定的 apidoc
 	return nil
 }
 
