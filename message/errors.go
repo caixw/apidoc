@@ -3,6 +3,8 @@
 package message
 
 import (
+	"strconv"
+
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
@@ -15,18 +17,20 @@ import (
 type SyntaxError struct {
 	Message string
 	File    string
-	Line    int
-	Field   string
+
+	// 行号和字段二选一，构成语法错误的最终定位信息。
+	Line  int
+	Field string
 }
 
 func (err *SyntaxError) Error() string {
-	if err.Field == "" {
-		// ErrMessage = "%s 位次于 %s:%d"
-		return locale.Sprintf(locale.ErrMessage, err.Message, err.File, err.Line)
+	detail := err.Field
+	if detail == "" {
+		detail = strconv.Itoa(err.Line)
 	}
 
-	// ErrMessageWithField = "%s 位次于 %s:%d 的 %s"
-	return locale.Sprintf(locale.ErrMessageWithField, err.Message, err.File, err.Line, err.Field)
+	// ErrMessage = "%s 位次于 %s:%d"
+	return locale.Sprintf(locale.ErrMessage, err.Message, err.File, detail)
 }
 
 // NewLocaleError 本地化的错误信息
