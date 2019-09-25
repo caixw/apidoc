@@ -87,11 +87,12 @@ func (cfg *config) sanitize() *message.SyntaxError {
 	}
 
 	for index, i := range cfg.Inputs {
+		field := "inputs[" + strconv.Itoa(index) + "]"
+
 		if i.Dir, err = abs(i.Dir, cfg.wd); err != nil {
-			return message.WithError(configFilename, "inputs["+strconv.Itoa(index)+"].path", 0, err)
+			return message.WithError(configFilename, field+".path", 0, err)
 		}
 
-		field := "inputs[" + strconv.Itoa(index) + "]"
 		if err := i.Sanitize(); err != nil {
 			return fixedSyntaxError(err, field)
 		}
