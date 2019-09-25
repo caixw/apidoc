@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/issue9/version"
 	"gopkg.in/yaml.v2"
@@ -88,7 +87,7 @@ func (cfg *config) sanitize() *message.SyntaxError {
 	}
 
 	for index, i := range cfg.Inputs {
-		if i.Dir, err = getPath(cfg.wd, i.Dir); err != nil {
+		if i.Dir, err = abs(i.Dir, cfg.wd); err != nil {
 			return message.WithError(configFilename, "inputs["+strconv.Itoa(index)+"].path", 0, err)
 		}
 
@@ -99,7 +98,7 @@ func (cfg *config) sanitize() *message.SyntaxError {
 	}
 
 	if !filepath.IsAbs(cfg.Output.Path) {
-		if cfg.Output.Path, err = getPath(cfg.wd, cfg.Output.Path); err != nil {
+		if cfg.Output.Path, err = abs(cfg.Output.Path, cfg.wd); err != nil {
 			return message.WithError(configFilename, "output.path", 0, err)
 		}
 	}
@@ -166,35 +165,4 @@ func generateConfig(wd, path string) error {
 	}
 
 	return ioutil.WriteFile(path, data, os.ModePerm)
-}
-
-// 处理 path，如果 path 是相对路径的，则将其设置为相对于 wd 的路径
-//
-// wd 表示工作目录，当 path 不是绝对路径和 ~ 开头时，表示相对于此目录；
-// path 表示需要处理的路径。
-func getPath(path, wd string) (p string, err error) {
-	if filepath.IsAbs(path) {
-		return filepath.Clean(path), nil
-	}
-
-	if !strings.HasPrefix(path, "~/") {
-		path = filepath.Join(wd, path)
-	}
-
-	// 非 ~ 路开头的相对路径，需要将其定位到 wd 目录之下
-	if strings.HasPrefix(path, "~/") {
-		dir, err := os.UserHomeDir()
-		if err != nil {
-			return "", err
-		}
-		path = filepath.Join(dir, path[2:])
-	}
-
-	if !filepath.IsAbs(path) {
-		if path, err = filepath.Abs(path); err != nil {
-			return "", err
-		}
-	}
-
-	return filepath.Clean(path), nil
 }

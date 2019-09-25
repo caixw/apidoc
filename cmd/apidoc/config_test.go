@@ -3,7 +3,6 @@
 package main
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -13,118 +12,6 @@ import (
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/message"
 )
-
-func TestGetPath(t *testing.T) {
-	a := assert.New(t)
-	hd, err := os.UserHomeDir()
-	a.NotError(err).NotNil(hd)
-
-	wd, err := os.Getwd()
-	a.NotError(err).NotEmpty(wd)
-
-	abs := func(path string) string {
-		abs, err := filepath.Abs(path)
-		a.NotError(err)
-		return abs
-	}
-
-	data := []*struct {
-		path, wd, result string
-	}{
-		{ // 指定 home，不依赖于 wd
-			path:   "~/path",
-			wd:     "",
-			result: abs(filepath.Join(hd, "/path")),
-		},
-		{ // 绝对路径
-			path:   "/path",
-			wd:     "",
-			result: abs("/path"),
-		},
-		{
-			path:   "path",
-			wd:     "",
-			result: abs(filepath.Join(wd, "/path")),
-		},
-		{
-			path:   "./path",
-			wd:     "",
-			result: abs(filepath.Join(wd, "/path")),
-		},
-
-		// 以下为 wd= /wd
-		{ // 指定 home，不依赖于 wd
-			path:   "~/path",
-			wd:     "/wd",
-			result: abs(filepath.Join(hd, "/path")),
-		},
-		{ // 绝对路径
-			path:   "/path",
-			wd:     "/wd",
-			result: abs("/path"),
-		},
-		{
-			path:   "path",
-			wd:     "/wd",
-			result: abs("/wd/path"),
-		},
-		{
-			path:   "./path",
-			wd:     "/wd",
-			result: abs("/wd/path"),
-		},
-
-		// 以下为 wd= ~/wd
-		{ // 指定 home，不依赖于 wd
-			path:   "~/path",
-			wd:     "~/wd",
-			result: abs(filepath.Join(hd, "/path")),
-		},
-		{ // 绝对路径
-			path:   "/path",
-			wd:     "~/wd",
-			result: abs("/path"),
-		},
-		{
-			path:   "path",
-			wd:     "~/wd",
-			result: abs(filepath.Join(hd, "/wd/path")),
-		},
-		{
-			path:   "./path",
-			wd:     "~/wd",
-			result: abs(filepath.Join(hd, "/wd/path")),
-		},
-
-		// 以下为 wd= ./wd
-		{ // 指定 home，不依赖于 wd
-			path:   "~/path",
-			wd:     "./wd",
-			result: abs(filepath.Join(hd, "/path")),
-		},
-		{ // 绝对路径
-			path:   "/path",
-			wd:     "./wd",
-			result: abs("/path"),
-		},
-		{
-			path:   "path",
-			wd:     "./wd",
-			result: abs(filepath.Join(wd, "/wd/path")),
-		},
-		{
-			path:   "./path",
-			wd:     "./wd",
-			result: abs(filepath.Join(wd, "/wd/path")),
-		},
-	}
-
-	for index, item := range data {
-		result, err := getPath(item.path, item.wd)
-		a.NotError(err, "err @%d,%s", index, err).
-			Equal(result, item.result, "not equal @%d,v1=%s,v2=%s", index, result, item.result)
-	}
-}
 
 func TestFixedSyntaxError(t *testing.T) {
 	a := assert.New(t)
