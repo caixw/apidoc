@@ -28,7 +28,12 @@ func Version() string {
 
 // Do 执行分析操作
 //
-// 需要确保已经调用 o 和 i 的各个 Sanitize 方法。
+// 如果是 o 和 i 的配置内容有问题，error 返回的实际类型为 *message.SyntaxError
 func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
-	return output.Render(input.Parse(h, i...), o)
+	doc, err := input.Parse(h, i...)
+	if err != nil {
+		return err
+	}
+
+	return output.Render(doc, o)
 }

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+// Package doc 文档格式
 package doc
 
 import (

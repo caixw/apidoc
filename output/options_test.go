@@ -33,14 +33,14 @@ func TestOptions_contains(t *testing.T) {
 func TestBuildOptions(t *testing.T) {
 	a := assert.New(t)
 	oo := &Options{}
-	a.Error(oo.Sanitize())
+	a.Error(oo.sanitize())
 
 	oo.Path = "./testdir/apidoc.json"
-	a.NotError(oo.Sanitize())
+	a.NotError(oo.sanitize())
 	a.Equal(oo.marshal, marshaler(xmlMarshal))
 
-	a.NotError(oo.Sanitize())
+	a.NotError(oo.sanitize())
 
 	oo.Type = "unknown"
-	a.Error(oo.Sanitize())
+	a.Error(oo.sanitize())
 }

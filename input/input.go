@@ -18,7 +18,6 @@ import (
 
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/internal/lang"
-	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
 )
 
@@ -32,11 +31,11 @@ type block struct {
 // Parse 分析从 input 中获取的代码块
 //
 // 所有与解析有关的错误均通过 h 输出。
-// 如果 input 参数有误，会触发 panic。
-func Parse(h *message.Handler, opt ...*Options) *doc.Doc {
+// 如果是配置文件的错误，则通过 error 返回
+func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
 	for _, item := range opt {
-		if !item.sanitized {
-			panic(locale.Sprintf(locale.ErrUnsanitized))
+		if err := item.sanitize(); err != nil {
+			return nil, err
 		}
 	}
 
@@ -58,7 +57,7 @@ func Parse(h *message.Handler, opt ...*Options) *doc.Doc {
 		h.Error(message.Erro, err)
 	}
 
-	return d
+	return d, nil
 }
 
 var (

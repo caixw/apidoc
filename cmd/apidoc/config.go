@@ -92,19 +92,12 @@ func (cfg *config) sanitize() *message.SyntaxError {
 		if i.Dir, err = abs(i.Dir, cfg.wd); err != nil {
 			return message.WithError(configFilename, field+".path", 0, err)
 		}
-
-		if err := i.Sanitize(); err != nil {
-			return fixedSyntaxError(err, field)
-		}
 	}
 
 	if !filepath.IsAbs(cfg.Output.Path) {
 		if cfg.Output.Path, err = abs(cfg.Output.Path, cfg.wd); err != nil {
 			return message.WithError(configFilename, "output.path", 0, err)
 		}
-	}
-	if err := cfg.Output.Sanitize(); err != nil {
-		return fixedSyntaxError(err, "output")
 	}
 
 	return nil

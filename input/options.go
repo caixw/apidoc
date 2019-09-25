@@ -23,14 +23,12 @@ type Options struct {
 	Recursive bool     `yaml:"recursive"`          // 是否查找 Dir 的子目录
 	Encoding  string   `yaml:"encoding,omitempty"` // 文件的编码，为空表示 utf-8
 
-	blocks    []lang.Blocker    // 根据 Lang 生成
-	paths     []string          // 根据 Dir 和 Recursive 生成
-	encoding  encoding.Encoding // 根据 Encoding 生成
-	sanitized bool
+	blocks   []lang.Blocker    // 根据 Lang 生成
+	paths    []string          // 根据 Dir 和 Recursive 生成
+	encoding encoding.Encoding // 根据 Encoding 生成
 }
 
-// Sanitize 检测内容是否合法
-func (opt *Options) Sanitize() *message.SyntaxError {
+func (opt *Options) sanitize() *message.SyntaxError {
 	if opt == nil {
 		return message.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
@@ -88,7 +86,6 @@ func (opt *Options) Sanitize() *message.SyntaxError {
 		}
 	}
 
-	opt.sanitized = true
 	return nil
 }
 

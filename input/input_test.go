@@ -28,20 +28,15 @@ func TestParse(t *testing.T) {
 		Recursive: true,
 		Encoding:  "gbk",
 	}
-	a.Panic(func() {
-		Parse(h, php)
-	})
-	a.NotError(php.Sanitize())
 
 	c := &Options{
 		Lang:      "c++",
 		Dir:       "./testdata",
 		Recursive: true,
 	}
-	a.NotError(c.Sanitize())
 
-	doc := Parse(h, php, c)
-	a.NotNil(doc).
+	doc, err := Parse(h, php, c)
+	a.NotError(err).NotNil(doc).
 		Equal(1, len(doc.Apis)).
 		Equal(doc.Version, "1.1.1")
 	api := doc.Apis[0]

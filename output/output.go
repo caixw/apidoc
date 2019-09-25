@@ -8,13 +8,12 @@ import (
 	"os"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
 // Render 渲染 doc 的内容
 func Render(d *doc.Doc, opt *Options) error {
-	if !opt.sanitized {
-		panic(locale.Sprintf(locale.ErrUnsanitized))
+	if err := opt.sanitize(); err != nil {
+		return err
 	}
 
 	filterDoc(d, opt)
