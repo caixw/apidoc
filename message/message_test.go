@@ -41,3 +41,18 @@ func TestHandler(t *testing.T) {
 		h.Error(Erro, NewLocaleError("erro.go", "", 0, locale.ErrRequired))
 	})
 }
+
+func TestHandler_Stop(t *testing.T) {
+	a := assert.New(t)
+	var exit bool
+
+	h := NewHandler(func(msg *Message) {
+		time.Sleep(time.Second)
+		exit = true
+	})
+	a.NotError(h)
+
+	h.Message(Erro, locale.ErrRequired)
+	h.Stop() // 此处会阻塞，等待完成
+	a.True(exit)
+}

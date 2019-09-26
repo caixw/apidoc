@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/issue9/term/colors"
+	"golang.org/x/text/language"
 	xmessage "golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v5"
@@ -38,6 +39,12 @@ var (
 	warnOut = os.Stderr
 	erroOut = os.Stderr
 )
+
+func init() {
+	if err := apidoc.Init(language.Und); err != nil {
+		pLine(warnOut, warnColor, err)
+	}
+}
 
 func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
@@ -97,17 +104,19 @@ func parse(paths []string) {
 		cfg, err := config.Load(path)
 		if err != nil {
 			h.Error(message.Erro, err)
-			return
+			break
 		}
 
 		if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
 			h.Error(message.Erro, err)
-			return
+			break
 		}
-		elapsed := time.Now().Sub(now)
 
+		elapsed := time.Now().Sub(now)
 		h.Message(message.Info, locale.Complete, cfg.Output.Path, elapsed)
 	}
+
+	h.Stop()
 }
 
 func usage() {
@@ -147,6 +156,33 @@ func printLanguages() {
 	}
 }
 
+func newConsoleHandlerFunc() message.HandlerFunc {
+	erroPrefix := locale.Sprintf(locale.ErrorPrefix)
+	warnPrefix := locale.Sprintf(locale.WarnPrefix)
+	infoPrefix := locale.Sprintf(locale.InfoPrefix)
+	succPrefix := locale.Sprintf(locale.SuccessPrefix)
+
+	return func(msg *message.Message) {
+		switch msg.Type {
+		case message.Erro:
+			printMessage(erroOut, erroColor, erroPrefix, msg.Message)
+		case message.Warn:
+			printMessage(warnOut, warnColor, warnPrefix, msg.Message)
+		case message.Succ:
+			printMessage(succOut, succColor, succPrefix, msg.Message)
+		default: // message.Info 采用相同的值
+			printMessage(infoOut, infoColor, infoPrefix, msg.Message)
+		}
+	}
+}
+
+func printMessage(out io.Writer, color colors.Color, prefix, msg string) {
+	if _, err := colors.Fprint(out, color, colors.Default, prefix); err != nil {
+		panic(err)
+	}
+	pLine(out, colors.Default, msg)
+}
+
 // 向控制台输出一行本地化的内容
 func pLocale(out io.Writer, color colors.Color, key xmessage.Reference, v ...interface{}) {
 	l := locale.Sprintf(key, v...)
@@ -158,31 +194,4 @@ func pLine(out io.Writer, color colors.Color, v ...interface{}) {
 	if _, err := colors.Fprintln(out, color, colors.Default, v...); err != nil {
 		panic(err)
 	}
-}
-
-func newConsoleHandlerFunc() message.HandlerFunc {
-	erroPrefix := locale.Sprintf(locale.ErrorPrefix)
-	warnPrefix := locale.Sprintf(locale.WarnPrefix)
-	infoPrefix := locale.Sprintf(locale.InfoPrefix)
-	succPrefix := locale.Sprintf(locale.SuccessPrefix)
-
-	return func(err *message.Message) {
-		switch err.Type {
-		case message.Erro:
-			printMessage(erroOut, erroColor, erroPrefix, err.Message)
-		case message.Warn:
-			printMessage(warnOut, warnColor, warnPrefix, err.Message)
-		case message.Succ:
-			printMessage(succOut, succColor, succPrefix, err.Message)
-		default: // message.Info 采用相同的值
-			printMessage(infoOut, infoColor, infoPrefix, err.Message)
-		}
-	}
-}
-
-func printMessage(out *os.File, color colors.Color, prefix, msg string) {
-	if _, err := colors.Fprint(out, color, colors.Default, prefix); err != nil {
-		panic(err)
-	}
-	pLine(out, colors.Default, msg)
 }

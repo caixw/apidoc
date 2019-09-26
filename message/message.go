@@ -36,28 +36,35 @@ type HandlerFunc func(*Message)
 // 包含了本地化的信息，输出时，会以指定的本地化内容输出
 type Handler struct {
 	messages chan *Message
-	f        HandlerFunc
+	stop     chan struct{}
 }
 
 // NewHandler 声明新的 Handler 实例
 func NewHandler(f HandlerFunc) *Handler {
 	h := &Handler{
 		messages: make(chan *Message, 100),
-		f:        f,
+		stop:     make(chan struct{}),
 	}
 
 	go func() {
 		for msg := range h.messages {
-			h.f(msg)
+			f(msg)
 		}
+		h.stop <- struct{}{}
 	}()
 
 	return h
 }
 
 // Stop 停止处理错误内容
+//
+// 只有在消息处理完成之后，才会返回。
 func (h *Handler) Stop() {
 	close(h.messages)
+
+	// Stop() 调用可能是在主程序结束处。
+	// 通过 h.stop 阻塞函数返回，直到所有消息都处理完成。
+	<-h.stop
 }
 
 // Message 发送普通的文本信息，内容由 key 和 val 组成本地化信息
