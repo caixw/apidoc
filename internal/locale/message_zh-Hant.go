@@ -18,11 +18,10 @@ apidoc [options] [path]
 源代碼采用 MIT 開源許可證，發布於 %s
 詳細信息可訪問官網 %s
 `,
-
 		FlagHUsage:            "顯示幫助信息",
 		FlagVUsage:            "顯示版本信息",
 		FlagLanguagesUsage:    "顯示所有支持的語言",
-		FlagDUsage:            "检测该目录下的内容并生成一个配置文件",
+		FlagDUsage:            "根据目录下的内容生成配置文件",
 		FlagVersionBuildWith:  "%s %s build with %s",
 		FlagVersionCommitHash: "commit hash %s",
 

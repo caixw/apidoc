@@ -42,7 +42,7 @@ var (
 func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
-	d := flag.String("d", "./", locale.Sprintf(locale.FlagDUsage))
+	d := flag.Bool("d", false, locale.Sprintf(locale.FlagDUsage))
 	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLanguagesUsage))
 	flag.Usage = usage
 	flag.Parse()
@@ -57,24 +57,35 @@ func main() {
 	case *l:
 		printLanguages()
 		return
-	case *d != "":
-		dir, err := filepath.Abs(*d)
-		if err != nil {
-			pLine(erroOut, erroColor, err)
-		}
-		if err := config.Write(dir); err != nil {
-			pLine(erroOut, erroColor, err)
-		} else {
-			pLocale(succOut, succColor, locale.ConfigWriteSuccess, dir)
-		}
+	case *d:
+		write(getPaths())
 		return
 	}
 
+	parse(getPaths())
+}
+
+func getPaths() []string {
 	paths := flag.Args()
 	if len(paths) == 0 {
 		paths = append(paths, "./")
 	}
-	parse(paths)
+	return paths
+}
+
+func write(paths []string) {
+	for _, dir := range paths {
+		dir, err := filepath.Abs(dir)
+		if err != nil {
+			pLine(erroOut, erroColor, err)
+		}
+
+		if err := config.Write(dir); err != nil {
+			pLine(erroOut, erroColor, err)
+			return
+		}
+		pLocale(succOut, succColor, locale.ConfigWriteSuccess, dir)
+	}
 }
 
 func parse(paths []string) {

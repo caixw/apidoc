@@ -21,7 +21,7 @@ apidoc [options] [path]
 		FlagHUsage:            "显示帮助信息",
 		FlagVUsage:            "显示版本信息",
 		FlagLanguagesUsage:    "显示所有支持的语言",
-		FlagDUsage:            "检测该目录下的内容并生成一个配置文件",
+		FlagDUsage:            "根据目录下的内容生成配置文件",
 		FlagVersionBuildWith:  "%s %s build with %s",
 		FlagVersionCommitHash: "commit hash %s",
 
