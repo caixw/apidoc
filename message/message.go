@@ -4,8 +4,6 @@
 package message
 
 import (
-	"log"
-
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
@@ -80,23 +78,5 @@ func (h *Handler) Error(t Type, err error) {
 	h.messages <- &Message{
 		Type:    t,
 		Message: err.Error(),
-	}
-}
-
-// NewLogHandlerFunc 生成一个将错误信息输出到日志的 HandlerFunc
-func NewLogHandlerFunc(erro, warn, info, succ *log.Logger) HandlerFunc {
-	return func(msg *Message) {
-		switch msg.Type {
-		case Erro:
-			erro.Println(msg)
-		case Warn:
-			warn.Println(msg)
-		case Info:
-			info.Println(msg)
-		case Succ:
-			succ.Println(msg)
-		default:
-			panic("代码错误，不应该有其它错误类型")
-		}
 	}
 }

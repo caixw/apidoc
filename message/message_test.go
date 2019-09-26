@@ -4,7 +4,6 @@ package message
 
 import (
 	"bytes"
-	"log"
 	"testing"
 	"time"
 
@@ -13,32 +12,33 @@ import (
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-var _ HandlerFunc = NewLogHandlerFunc(nil, nil, nil, nil)
-
 func TestHandler(t *testing.T) {
 	a := assert.New(t)
+
 	erro := new(bytes.Buffer)
 	warn := new(bytes.Buffer)
-	info := new(bytes.Buffer)
-	succ := new(bytes.Buffer)
-	errolog := log.New(erro, "[ERRO]", 0)
-	warnlog := log.New(warn, "[WARN]", 0)
-	infolog := log.New(info, "[INFO]", 0)
-	succlog := log.New(succ, "[SUCC]", 0)
-
-	h := NewHandler(NewLogHandlerFunc(errolog, warnlog, infolog, succlog))
+	h := NewHandler(func(msg *Message) {
+		switch msg.Type {
+		case Erro:
+			erro.WriteString("erro")
+		case Warn:
+			warn.WriteString("warn")
+		default:
+			panic("panic")
+		}
+	})
 	a.NotError(h)
 
 	h.Error(Erro, NewLocaleError("erro.go", "", 0, locale.ErrRequired))
 	h.Error(Warn, NewLocaleError("warn.go", "", 0, locale.ErrRequired))
 
 	time.Sleep(1 * time.Second) // 等待 channel 完成
-	a.Contains(erro.String(), "erro.go")
-	a.Contains(warn.String(), "warn.go")
+	a.Equal(erro.String(), "erro")
+	a.Equal(warn.String(), "warn")
 
 	h.Stop()
 	a.Panic(func() { // 已经关闭 messages
-		h.Error(Erro, NewLocaleError("erro.go", "", 0, locale.ErrRequired))
+		h.Error(Erro, NewLocaleError("erro", "", 0, locale.ErrRequired))
 	})
 }
 

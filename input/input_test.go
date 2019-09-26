@@ -3,8 +3,6 @@
 package input
 
 import (
-	"log"
-	"os"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -16,11 +14,7 @@ import (
 
 func TestParse(t *testing.T) {
 	a := assert.New(t)
-	erro := log.New(os.Stderr, "[ERRO]", 0)
-	warn := log.New(os.Stderr, "[WARN]", 0)
-	info := log.New(os.Stdout, "[INFO]", 0)
-	succ := log.New(os.Stdout, "[SUCC]", 0)
-	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn, info, succ))
+	h := message.NewHandler(func(*message.Message) {})
 	a.NotNil(h)
 
 	php := &Options{
