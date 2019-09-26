@@ -19,6 +19,7 @@ import (
 	"github.com/caixw/apidoc/v5/output"
 )
 
+// 采用 detect 检测目录内容时，需要赋予的一些默认值
 const (
 	configFilename = ".apidoc.yaml"
 	docFilename    = "apidoc.xml"

@@ -20,7 +20,7 @@ apidoc [options] [path]
 `,
 		FlagHUsage:            "顯示幫助信息",
 		FlagVUsage:            "顯示版本信息",
-		FlagLanguagesUsage:    "顯示所有支持的語言",
+		FlagLUsage:            "顯示所有支持的語言",
 		FlagDUsage:            "根据目录下的内容生成配置文件",
 		FlagVersionBuildWith:  "%s %s build with %s",
 		FlagVersionCommitHash: "commit hash %s",
