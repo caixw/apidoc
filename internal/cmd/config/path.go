@@ -16,12 +16,12 @@ func abs(path, wd string) (p string, err error) {
 		return filepath.Clean(path), nil
 	}
 
-	if !strings.HasPrefix(path, "~/") {
+	if !isBeginHome(path) {
 		path = filepath.Join(wd, path)
 	}
 
 	// 非 ~ 路开头的相对路径，需要将其定位到 wd 目录之下
-	if strings.HasPrefix(path, "~/") {
+	if isBeginHome(path) {
 		dir, err := os.UserHomeDir()
 		if err != nil {
 			return "", err
@@ -36,6 +36,10 @@ func abs(path, wd string) (p string, err error) {
 	}
 
 	return filepath.Clean(path), nil
+}
+
+func isBeginHome(path string) bool {
+	return strings.HasPrefix(path, "~/") || strings.HasPrefix(path, "~\\")
 }
 
 // 尽可能地返回 path 相对于 wd 的路径，如果不存在相对关系，则原因返回 path

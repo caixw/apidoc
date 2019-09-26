@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 
+// +build !windows
+
 package config
 
 import (
@@ -55,7 +57,7 @@ func TestAbs(t *testing.T) {
 			result: absPath(filepath.Join(hd, "/path")),
 		},
 		{ // 绝对路径
-			path:   absPath("/path"), // /path 在 windows 不算绝对路径
+			path:   "/path",
 			wd:     "/wd",
 			result: absPath("/path"),
 		},
@@ -77,7 +79,7 @@ func TestAbs(t *testing.T) {
 			result: absPath(filepath.Join(hd, "/path")),
 		},
 		{ // 绝对路径
-			path:   absPath("/path"),
+			path:   "/path",
 			wd:     "~/wd",
 			result: absPath("/path"),
 		},
@@ -99,7 +101,7 @@ func TestAbs(t *testing.T) {
 			result: absPath(filepath.Join(hd, "/path")),
 		},
 		{ // 绝对路径
-			path:   absPath("/path"),
+			path:   "/path",
 			wd:     "./wd",
 			result: absPath("/path"),
 		},
