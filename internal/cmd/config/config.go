@@ -70,10 +70,6 @@ func Load(path string) (*Config, *message.SyntaxError) {
 }
 
 func (cfg *Config) sanitize() *message.SyntaxError {
-	if !version.SemVerValid(cfg.Version) {
-		return message.NewLocaleError(configFilename, "version", 0, locale.ErrInvalidFormat)
-	}
-
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(apidoc.Version(), cfg.Version)
 	if err != nil {

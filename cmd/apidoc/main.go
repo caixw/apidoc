@@ -136,6 +136,7 @@ func printLanguages() {
 		}
 	}
 
+	// 为每一列留出最少 3 个空白字符
 	maxDisplay += 3
 	maxName += 3
 

@@ -13,47 +13,43 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
-func TestFixedSyntaxError(t *testing.T) {
+func TestLoad(t *testing.T) {
 	a := assert.New(t)
 
-	err := &message.SyntaxError{
-		Field: "f",
-	}
-	e := fixedSyntaxError(err, "p")
-	a.Equal(e.File, configFilename)
-	a.Equal(e.Field, "p.f")
+	cfg, err := Load("./not-exists-file")
+	a.Error(err).Nil(cfg)
 
-	err.Field = ""
-	e = fixedSyntaxError(err, "p")
-	a.Equal(e.File, configFilename)
-	a.Equal(e.Field, "p")
+	cfg, err = Load("./failed.yaml")
+	a.Error(err).Nil(cfg)
 }
 
-func TestConfig_writeConfig_loadConfig(t *testing.T) {
+func TestWrite_Load(t *testing.T) {
 	a := assert.New(t)
 
 	wd, err := filepath.Abs("./")
 	a.NotError(err).NotEmpty(wd)
-
 	a.NotError(Write(wd))
+
 	path := filepath.Join(wd, configFilename)
 	cfg, err := Load(path)
 	a.NotError(err).
 		NotNil(cfg)
 
-	a.Equal(cfg.Version, apidoc.Version())
+	a.Equal(cfg.Version, apidoc.Version()).
+		Equal(cfg.Inputs[0].Lang, "go")
 }
 
 func TestConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
 
+	// 错误的版本号格式
 	conf := &Config{}
 	err := conf.sanitize()
 	a.Error(err).
 		Equal(err.Field, "version")
 
-	// 版本号错误
-	conf.Version = "5.0"
+	// 与当前程序的版本号不兼容
+	conf.Version = "1.0"
 	err = conf.sanitize()
 	a.Error(err).
 		Equal(err.Field, "version")
@@ -69,4 +65,20 @@ func TestConfig_sanitize(t *testing.T) {
 	err = conf.sanitize()
 	a.Error(err).
 		Equal(err.Field, "output")
+}
+
+func TestFixedSyntaxError(t *testing.T) {
+	a := assert.New(t)
+
+	err := &message.SyntaxError{
+		Field: "f",
+	}
+	e := fixedSyntaxError(err, "p")
+	a.Equal(e.File, configFilename)
+	a.Equal(e.Field, "p.f")
+
+	err.Field = ""
+	e = fixedSyntaxError(err, "p")
+	a.Equal(e.File, configFilename)
+	a.Equal(e.Field, "p")
 }

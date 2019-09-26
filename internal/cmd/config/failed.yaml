@@ -1,0 +1,4 @@
+# 这是一个无效的 yaml 文件，用于测试
+
+version: 1.1.x
+: value
