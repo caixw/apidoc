@@ -61,8 +61,9 @@ apidoc [options] [path]
 		ErrPathSyntaxError:       "路由项语法错误",
 
 		// logs
-		InfoPrefix:  "[信息] ",
-		WarnPrefix:  "[警告] ",
-		ErrorPrefix: "[錯誤] ",
+		InfoPrefix:    "[信息] ",
+		WarnPrefix:    "[警告] ",
+		ErrorPrefix:   "[錯誤] ",
+		SuccessPrefix: "[成功] ",
 	})
 }

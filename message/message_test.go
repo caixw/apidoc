@@ -13,18 +13,20 @@ import (
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-var _ HandlerFunc = NewLogHandlerFunc(nil, nil, nil)
+var _ HandlerFunc = NewLogHandlerFunc(nil, nil, nil, nil)
 
 func TestHandler(t *testing.T) {
 	a := assert.New(t)
 	erro := new(bytes.Buffer)
 	warn := new(bytes.Buffer)
 	info := new(bytes.Buffer)
+	succ := new(bytes.Buffer)
 	errolog := log.New(erro, "[ERRO]", 0)
 	warnlog := log.New(warn, "[WARN]", 0)
 	infolog := log.New(info, "[INFO]", 0)
+	succlog := log.New(succ, "[SUCC]", 0)
 
-	h := NewHandler(NewLogHandlerFunc(errolog, warnlog, infolog))
+	h := NewHandler(NewLogHandlerFunc(errolog, warnlog, infolog, succlog))
 	a.NotError(h)
 
 	h.Error(Erro, NewLocaleError("erro.go", "", 0, locale.ErrRequired))

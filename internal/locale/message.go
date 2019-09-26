@@ -59,7 +59,8 @@ apidoc [options] [path]
 	ErrPathSyntaxError       = "路由项语法错误"
 
 	// logs
-	InfoPrefix  = "[INFO] "
-	WarnPrefix  = "[WARN] "
-	ErrorPrefix = "[ERRO] "
+	InfoPrefix    = "[INFO] "
+	WarnPrefix    = "[WARN] "
+	ErrorPrefix   = "[ERRO] "
+	SuccessPrefix = "[SUCC] "
 )

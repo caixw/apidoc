@@ -34,7 +34,8 @@ func TestParse(t *testing.T) {
 	erro := log.New(ioutil.Discard, "[ERRO]", 0)
 	warn := log.New(ioutil.Discard, "[WARN]", 0)
 	info := log.New(ioutil.Discard, "[INFO]", 0)
-	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn, info))
+	succ := log.New(ioutil.Discard, "[SUCC]", 0)
+	h := message.NewHandler(message.NewLogHandlerFunc(erro, warn, info, succ))
 	a := assert.New(t)
 
 	ret := Parse("", nil, nil, nil)

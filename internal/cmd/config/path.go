@@ -41,7 +41,7 @@ func abs(path, wd string) (p string, err error) {
 // 尽可能地返回 path 相对于 wd 的路径，如果不存在相对关系，则原因返回 path
 func rel(path, wd string) string {
 	p, err := filepath.Rel(wd, path)
-	if err != nil {
+	if err != nil { // 不能转换不算错误，直接返回原值
 		return path
 	}
 	return p

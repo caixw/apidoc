@@ -19,6 +19,7 @@ const (
 	Erro Type = iota
 	Warn
 	Info
+	Succ
 )
 
 // Message 输出消息的具体结构
@@ -76,17 +77,17 @@ func (h *Handler) Error(t Type, err error) {
 }
 
 // NewLogHandlerFunc 生成一个将错误信息输出到日志的 HandlerFunc
-//
-// 该实例仅仅是将语法错误和语法警告信息输出到指定的日志通道。
-func NewLogHandlerFunc(errolog, warnlog, infolog *log.Logger) HandlerFunc {
+func NewLogHandlerFunc(erro, warn, info, succ *log.Logger) HandlerFunc {
 	return func(msg *Message) {
 		switch msg.Type {
 		case Erro:
-			errolog.Println(msg)
+			erro.Println(msg)
 		case Warn:
-			warnlog.Println(msg)
+			warn.Println(msg)
 		case Info:
-			infolog.Println(msg)
+			info.Println(msg)
+		case Succ:
+			succ.Println(msg)
 		default:
 			panic("代码错误，不应该有其它错误类型")
 		}
