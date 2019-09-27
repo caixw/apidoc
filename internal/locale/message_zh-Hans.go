@@ -55,4 +55,8 @@ apidoc [options] [path]
 
 func init() {
 	addLocale(language.MustParse("zh-Hans"), zhHans)
+
+	// 大部分的系统都采用 zh-cn 作为语言标记，
+	// 但是 golang.org/x/text 现在不能将 zh-cn 自动转换成 zh-hans
+	addLocale(language.MustParse("zh-cn"), zhHans)
 }
