@@ -4,7 +4,6 @@ package doc
 
 import (
 	"encoding/xml"
-	"strconv"
 	"strings"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
@@ -102,5 +101,5 @@ func (t Type) fmtString() (string, error) {
 		return v, nil
 	}
 
-	return "", locale.Errorf(locale.ErrInvalidType, strconv.Itoa(int(t)))
+	return "", locale.Errorf(locale.ErrInvalidValue)
 }

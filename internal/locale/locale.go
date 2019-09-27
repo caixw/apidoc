@@ -44,7 +44,7 @@ func Init(tag language.Tag) (err error) {
 	}
 
 	localeTag = tag
-	localePrinter = message.NewPrinter(tag)
+	localePrinter = message.NewPrinter(localeTag)
 	return nil
 }
 

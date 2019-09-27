@@ -36,11 +36,13 @@ var (
 	erroOut = os.Stderr
 )
 
-func main() {
+func init() {
 	if err := apidoc.Init(language.Und); err != nil {
 		term.Line(warnOut, warnColor, err)
 	}
+}
 
+func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
 	d := flag.Bool("d", false, locale.Sprintf(locale.FlagDUsage))

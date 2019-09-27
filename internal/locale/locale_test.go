@@ -21,16 +21,26 @@ func TestInit(t *testing.T) {
 	a := assert.New(t)
 
 	tag := language.MustParse("zh-Hans")
-	a.NotError(Init(tag))
-	a.Equal(localeTag, tag)
+	a.NotError(Init(tag)).
+		Equal(localeTag, tag).
+		NotEqual(Sprintf(ErrRequired), zhHant[ErrRequired]).
+		Equal(Sprintf(ErrRequired), zhHans[ErrRequired])
+
+	// zh-cn 应该会转换到 zh-hans
+	tag = language.MustParse("zh-CN")
+	a.NotError(Init(tag)).
+		Equal(localeTag, tag).
+		NotEqual(Sprintf(ErrRequired), zhHant[ErrRequired]).
+		Equal(Sprintf(ErrRequired), zhHans[ErrRequired])
 
 	tag = language.MustParse("zh-Hant")
-	a.NotError(Init(tag))
-	a.Equal(localeTag, tag)
+	a.NotError(Init(tag)).
+		Equal(localeTag, tag).
+		Equal(Sprintf(ErrRequired), zhHant[ErrRequired])
 
 	// 设置为系统语言
 	systag, err := syslocale.Get()
-	a.NotError(err)
-	a.NotError(Init(language.Und))
-	a.Equal(systag, localeTag)
+	a.NotError(err).
+		NotError(Init(language.Und)).
+		Equal(systag, localeTag)
 }

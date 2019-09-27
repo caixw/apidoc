@@ -53,7 +53,7 @@ func (m *Method) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if !isValidMethod(str) {
-		return newSyntaxError(name, locale.ErrInvalidMethod)
+		return newSyntaxError(name, locale.ErrInvalidValue)
 	}
 
 	*m = Method(strings.ToUpper(str))
