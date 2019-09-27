@@ -18,7 +18,7 @@ func parse(doc *doc.Doc) (*OpenAPI, error) {
 		OpenAPI: doc.APIDoc,
 		Info: &Info{
 			Title:       doc.Title,
-			Description: doc.Content,
+			Description: doc.Content.Text,
 			Contact:     newContact(doc.Contact),
 			License:     newLicense(doc.License),
 			Version:     string(doc.Version),

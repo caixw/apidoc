@@ -109,7 +109,7 @@ func parse(paths []string) {
 		}
 
 		elapsed := time.Now().Sub(now)
-		h.Message(message.Info, locale.Complete, cfg.Output.Path, elapsed)
+		h.Message(message.Succ, locale.Complete, cfg.Output.Path, elapsed)
 	}
 
 	h.Stop()

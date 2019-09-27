@@ -14,6 +14,10 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
+type cdata struct {
+	Text string `xml:",cdata"`
+}
+
 // Doc 文档
 type Doc struct {
 	XMLName struct{} `xml:"apidoc"`
@@ -26,8 +30,8 @@ type Doc struct {
 
 	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
-	Content string    `xml:"content"`
-	Contact *Contact  `xml:"contact"`
+	Content cdata     `xml:"content"`
+	Contact *Contact  `xml:"contact,omitempty"`
 	License *Link     `xml:"license,omitempty"` // 版本信息
 	Tags    []*Tag    `xml:"tag,omitempty"`     // 所有的标签
 	Servers []*Server `xml:"server,omitempty"`

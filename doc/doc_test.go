@@ -53,6 +53,9 @@ func TestDoc(t *testing.T) {
 			Email: "test@example.com",
 		})
 
+	a.NotEmpty(doc.Content.Text).
+		Contains(doc.Content.Text, "##")
+
 	a.True(doc.tagExists("tag1")).
 		False(doc.tagExists("not-exists"))
 

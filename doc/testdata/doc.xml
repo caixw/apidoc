@@ -22,7 +22,9 @@
     </server>
 
     <content>
+    <![CDATA[
     ## h2
     ### h3
+    ]]>
     </content>
 </apidoc>
