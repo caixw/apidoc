@@ -6,7 +6,7 @@ import "golang.org/x/text/language"
 
 var zhHant = map[string]string{
 	// 與 flag 包相關的處理
-	FlagUsage: `%s 是壹個 RESTful API 文檔生成工具。
+	FlagUsage: `%s 是壹個 RESTful API 文檔生成工具
 
 用法：
 apidoc [options] [path]

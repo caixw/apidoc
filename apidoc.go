@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: MIT
 
-// Package apidoc RESTful API 文档生成工具。
+// Package apidoc RESTful API 文档生成工具
+//
+// 可以从代码文件的注释中提取文档内容，生成 API 文档，
+// 支持大部分的主流的编程语言。
+//
+// apidoc 采用了多协程处理各个文件，所有的语法错误都是以异步的方式发送给
+// message.Handler 进行处理的。用户需要自行实现 message.HandlerFunc
+// 类型的方法交给 message.Handler，以实现自已的消息处理功能。
 package apidoc
 
 import (
@@ -21,7 +28,9 @@ func Init(tag language.Tag) error {
 	return locale.Init(tag)
 }
 
-// Version 获取当前程序的版本号
+// Version 当前程序的版本号
+//
+// 为一个正常的 semver(https://semver.org/lang/zh-CN/) 格式字符串。
 func Version() string {
 	return vars.Version()
 }

@@ -13,27 +13,36 @@ Perl、PHP、Python、Ruby、Rust、Scala 和 Swift。
 
 ```go
 /**
- * @api get /users 获取所有的用户信息
- * @apiTags users
- * @apiQuery page int 显示第几页的内容
- * @apiQuery size int 每页显示的数量
- *
- * @apiResponse 200 object application/json ok
- * @apiParam count int required 符合条件的所有用户数量
- * @apiParam users array.object required 用户列表。
- * @apiExample application/json
- * {
- *     "count": 500,
- *     "users": [
- *         {"id":1, "username": "admin1", "name": "管理员2"},
- *         {"id":2, "username": "admin2", "name": "管理员2"}
- *     ],
- * }
- * @apiExample application/xml
- * <users count="500">
- *     <user id="1" username="admin1" name="管理员1" />
- *     <user id="2" username="admin2" name="管理员2" />
- * </users>
+ * <api method="GET" summary="获取所有的用户信息">
+ *     <path path="/users">
+ *         <query name="page" type="number" default="0">显示第几页的内容</query>
+ *         <query name="size" type="number" default="20">每页显示的数量</query>
+ *     </path>
+ *     <tag>user</tag>
+ *     <server>users</server>
+ *     <response status="200" type="object" mimetype="application/json">
+ *         <param name="count" type="int" required="true" summary="符合条件的所有用户数量" />
+ *         <param name="users" type="object" array="true" required="true" summary="用户列表">
+ *             <param name="id" type="int" required="true" summary="唯一 ID" />
+ *             <param name="name" type="string" required="true" summary="姓名" />
+ *         </param>
+ *         <example mimetype="application/json">
+ *         <![CDATA[
+ *         {
+ *             "count": 500,
+ *             "users": [
+ *                 {"id":1, "name": "管理员2"},
+ *                 {"id":2, "name": "管理员2"}
+ *             ],
+ *         }
+ *         ]]>
+ *         </example>
+ *     </response>
+ *     <response status="500" mimetype="application/json" type="obj">
+ *         <param name="code" type="int" summary="错误代码" />
+ *         <param name="msg" type="string" summary="错误内容" />
+ *     </response>
+ * </api>
  */
 func login(w http.ResponseWriter, r *http.Request) {
     // TODO
@@ -48,8 +57,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 go get github.com/caixw/apidoc
 ```
 
-支持多种本地化语言，默认情况下会根据当前系统所使用的语言进行调整。若需要手动指定，
-windows 可以设置一个 `LANG` 环境变量指定，*nix 系统可以使用以下命令：
+支持多种本地化语言，默认情况下会根据当前系统所使用的语言进行调整。
+也可以通过设置环境变更 `LANG` 指定一个本地化信息。*nix 系统也可以使用以下命令：
 
 ```shell
 LANG=lang apidoc
@@ -65,12 +74,11 @@ LANG=lang apidoc
 
 ```go
 // 初始本地化内容
-apidoc.InitLocale()
+apidoc.Init("zh-cn")
 
 // 可以自定义实现具体的错误处理方式
-h := errors.NewHandler()
+h := message.NewHandler(...)
 
-erro := log.NewLogger()
 output := &output.Options{...}
 inputs := []*input.Options{
     &input.Options{},

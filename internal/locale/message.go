@@ -5,7 +5,7 @@ package locale
 // 各个语言需要翻译的所有字符串
 const (
 	// 与 flag 包相关的处理
-	FlagUsage = `%s 是一个 RESTful API 文档生成工具。
+	FlagUsage = `%s 是一个 RESTful API 文档生成工具
 
 用法：
 apidoc [options] [path]

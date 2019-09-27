@@ -1,6 +1,14 @@
 // SPDX-License-Identifier: MIT
 
-// apidoc 是一个 RESTful API 文档生成工具。
+// apidoc 是一个 RESTful API 文档生成工具
+//
+// 大致的使用方法为：
+//  apidoc [options] [path]
+// 具体的参数说明，可以使用 h 参数查看：
+//  apidoc -h
+// path 表示的路径列表，多个使用空格分隔。
+// 如果带了参数 d，则表示的需要检测的目录列表，
+// 否则为 apidoc 的配置文件地址列表。为空表示当前目录。
 package main
 
 import (
