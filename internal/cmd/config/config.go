@@ -47,11 +47,7 @@ type Config struct {
 }
 
 // Load 加载指定的配置文件
-func Load(path string) (*Config, *message.SyntaxError) {
-	path, err := filepath.Abs(path)
-	if err != nil {
-		return nil, message.WithError(configFilename, "", 0, err)
-	}
+func Load(path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, message.WithError(configFilename, "", 0, err)
@@ -101,16 +97,6 @@ func (cfg *Config) sanitize() *message.SyntaxError {
 	}
 
 	return nil
-}
-
-func fixedSyntaxError(err *message.SyntaxError, field string) *message.SyntaxError {
-	err.File = configFilename
-	if err.Field == "" {
-		err.Field = field
-	} else {
-		err.Field = field + "." + err.Field
-	}
-	return err
 }
 
 func detectConfig(wd string) (*Config, error) {

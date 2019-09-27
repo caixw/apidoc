@@ -17,20 +17,23 @@ import (
 type SyntaxError struct {
 	Message string
 	File    string
-
-	// 行号和字段二选一，构成语法错误的最终定位信息。
-	Line  int
-	Field string
+	Line    int
+	Field   string
 }
 
 func (err *SyntaxError) Error() string {
-	detail := err.Field
-	if detail == "" {
-		detail = strconv.Itoa(err.Line)
+	detail := err.File
+
+	if err.Line > 0 {
+		detail += ":" + strconv.Itoa(err.Line)
+	}
+
+	if err.Field != "" {
+		detail += ":" + err.Field
 	}
 
 	// ErrMessage = "%s 位次于 %s:%d"
-	return locale.Sprintf(locale.ErrMessage, err.Message, err.File, detail)
+	return locale.Sprintf(locale.ErrMessage, err.Message, detail)
 }
 
 // NewLocaleError 本地化的错误信息

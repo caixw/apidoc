@@ -24,25 +24,26 @@ type shadowPath Path
 
 // UnmarshalXML xml.Unmarshaler
 func (p *Path) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	name := "/" + start.Name.Local
 	var shadow shadowPath
 	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return err
+		return fixedSyntaxError(err, "", name, 0)
 	}
 
 	if shadow.Path == "" {
-		return locale.Errorf(locale.ErrRequired, "path")
+		return newSyntaxError(name+"#path", locale.ErrRequired)
 	}
 
 	params, err := parsePath(shadow.Path)
 	if err != nil {
-		return err
+		return fixedSyntaxError(err, "", name+"#path", 0)
 	}
 	if len(params) != len(shadow.Params) {
-		return locale.Errorf(locale.ErrPathNotMatchParams)
+		return newSyntaxError(name+"#path", locale.ErrPathNotMatchParams)
 	}
 	for _, param := range shadow.Params {
 		if _, found := params[param.Name]; !found {
-			return locale.Errorf(locale.ErrPathNotMatchParams, param.Name)
+			return newSyntaxError(name+"#path", locale.ErrPathNotMatchParams)
 		}
 	}
 
@@ -58,13 +59,13 @@ func parsePath(path string) (params map[string]struct{}, err error) {
 		switch b {
 		case '{':
 			if start != -1 {
-				return nil, locale.Errorf(locale.ErrPathSyntaxError, path)
+				return nil, locale.Errorf(locale.ErrInvalidFormat)
 			}
 
 			start = i + 1
 		case '}':
 			if start == -1 {
-				return nil, locale.Errorf(locale.ErrPathSyntaxError, path)
+				return nil, locale.Errorf(locale.ErrInvalidFormat)
 			}
 
 			if params == nil {
@@ -77,7 +78,7 @@ func parsePath(path string) (params map[string]struct{}, err error) {
 	}
 
 	if start != -1 { // 没有结束符号
-		return nil, locale.Errorf(locale.ErrPathSyntaxError, path)
+		return nil, locale.Errorf(locale.ErrInvalidFormat)
 	}
 
 	return params, nil

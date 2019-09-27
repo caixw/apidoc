@@ -10,7 +10,6 @@ import (
 
 	"github.com/caixw/apidoc/v5"
 	"github.com/caixw/apidoc/v5/input"
-	"github.com/caixw/apidoc/v5/message"
 )
 
 func TestLoad(t *testing.T) {
@@ -65,20 +64,4 @@ func TestConfig_sanitize(t *testing.T) {
 	err = conf.sanitize()
 	a.Error(err).
 		Equal(err.Field, "output")
-}
-
-func TestFixedSyntaxError(t *testing.T) {
-	a := assert.New(t)
-
-	err := &message.SyntaxError{
-		Field: "f",
-	}
-	e := fixedSyntaxError(err, "p")
-	a.Equal(e.File, configFilename)
-	a.Equal(e.Field, "p.f")
-
-	err.Field = ""
-	e = fixedSyntaxError(err, "p")
-	a.Equal(e.File, configFilename)
-	a.Equal(e.Field, "p")
 }

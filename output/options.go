@@ -80,5 +80,5 @@ func (o *Options) sanitize() *message.SyntaxError {
 }
 
 func xmlMarshal(v *doc.Doc) ([]byte, error) {
-	return xml.Marshal(v)
+	return xml.MarshalIndent(v, "", "\t")
 }

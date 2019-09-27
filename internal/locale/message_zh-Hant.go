@@ -47,7 +47,7 @@ apidoc [options] [path]
 		ErrPathNotMatchParams:    "地址參數不匹配",
 		ErrPathInvalid:           "地址格式錯誤",
 		ErrDuplicateValue:        "重復的值",
-		ErrMessage:               "%s 位於 %s:%s",
+		ErrMessage:               "%s 位於 %s",
 		ErrInvalidMethod:         "無效的請求方法: %s",
 		ErrMethodExists:          "該請求方法已經存在",
 		ErrInvalidTag:            "无效的标签 %s",

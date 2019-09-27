@@ -7,6 +7,8 @@ import (
 	"bytes"
 	"encoding/xml"
 
+	xmessage "golang.org/x/text/message"
+
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
@@ -50,22 +52,24 @@ func New() *Doc {
 
 type shadowDoc Doc
 
-// UnmarshalXML xml.Unmarshaler
+// UnmarshalXML 实现 xml.Unmarshaler 接口
+//
+// 返回的错误信息都为 message.SyntaxError 实例
 func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var shadow shadowDoc
 	if err := d.DecodeElement(&shadow, &start); err != nil {
 		line := bytes.Count(doc.data[:d.InputOffset()], []byte{'\n'})
-		return message.WithError(doc.file, "", doc.line+line, err)
+		return fixedSyntaxError(err, doc.file, "doc", doc.line+line)
 	}
 
 	// Tag.Name 查重
 	if key := findDupTag(shadow.Tags); key != "" {
-		return locale.Errorf(locale.ErrDuplicateTag, key)
+		return message.NewLocaleError(doc.file, "doc/tag#name", doc.line, locale.ErrDuplicateValue)
 	}
 
 	// Server.Name 查重
 	if key := findDupServer(shadow.Servers); key != "" {
-		return locale.Errorf(locale.ErrDuplicateValue, key)
+		return message.NewLocaleError(doc.file, "doc/server#name", doc.line, locale.ErrDuplicateValue)
 	}
 
 	apis := doc.Apis
@@ -90,7 +94,7 @@ func (doc *Doc) FromXML(file string, line int, data []byte) error {
 // Sanitize 检测内容是否合法
 func (doc *Doc) Sanitize() error {
 	for _, api := range doc.Apis { // 查看 API 中的标签是否都存在
-		if err := api.sanitize(); err != nil {
+		if err := api.sanitize("api"); err != nil {
 			return err
 		}
 	}
@@ -114,4 +118,24 @@ func (doc *Doc) serverExists(srv string) bool {
 		}
 	}
 	return false
+}
+
+func fixedSyntaxError(err error, file, field string, line int) error {
+	if serr, ok := err.(*message.SyntaxError); ok {
+		serr.File = file
+		serr.Line = line
+
+		if serr.Field == "" {
+			serr.Field = field
+		} else {
+			serr.Field = field + serr.Field
+		}
+		return err
+	}
+
+	return message.WithError(file, field, line, err)
+}
+
+func newSyntaxError(field string, key xmessage.Reference, val ...interface{}) error {
+	return message.NewLocaleError("", field, 0, key, val...)
 }

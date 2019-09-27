@@ -12,7 +12,7 @@
 //         <email>example@example.com</email>
 //     </contact>
 //
-//     <response status="404" type="object">
+//     <response status="404" type="object" mimetype="json">
 //         <header name="authorization">token</header>
 //         <param name="code" type="number" summary="状态码" required="true" />
 //         <param name="message" type="string" summary="错误信息" required="true" />
@@ -25,6 +25,6 @@
 //     <content>
 //     <![CDATA[
 //      这里可以是 markdown 文档
-//     ]]
+//     ]]>
 //     </content>
 // </apidoc>

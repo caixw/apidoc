@@ -35,17 +35,18 @@ type (
 
 // UnmarshalXML xml.Unmarshaler
 func (l *Link) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	name := "/" + start.Name.Local
 	var shadow shadowLink
 	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return err
+		return fixedSyntaxError(err, "", name, 0)
 	}
 
 	if !is.URL(shadow.URL) {
-		return locale.Errorf(locale.ErrInvalidURL, shadow.URL)
+		return newSyntaxError(name+"#url", locale.ErrInvalidFormat)
 	}
 
 	if shadow.Text == "" {
-		return locale.Errorf(locale.ErrRequired, "text")
+		return newSyntaxError(name, locale.ErrRequired)
 	}
 
 	*l = Link(shadow)
@@ -54,25 +55,26 @@ func (l *Link) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // UnmarshalXML xml.Unmarshaler
 func (c *Contact) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	name := "/" + start.Name.Local
 	var cc shadowContact
 	if err := d.DecodeElement(&cc, &start); err != nil {
-		return err
+		return fixedSyntaxError(err, "", name, 0)
 	}
 
 	if cc.Name == "" {
-		return locale.Errorf(locale.ErrRequired, "name")
+		return newSyntaxError(name+"#name", locale.ErrRequired)
 	}
 
 	if cc.URL == "" && cc.Email == "" {
-		return locale.Errorf(locale.ErrRequired, "url or email")
+		return newSyntaxError(name+"#url|email", locale.ErrRequired)
 	}
 
 	if cc.URL != "" && !is.URL(cc.URL) {
-		return locale.Errorf(locale.ErrInvalidURL, cc.URL)
+		return newSyntaxError(name+"#url", locale.ErrInvalidFormat)
 	}
 
 	if cc.Email != "" && !is.Email(cc.Email) {
-		return locale.Errorf(locale.ErrInvalidEmail, cc.Email)
+		return newSyntaxError(name+"#email", locale.ErrInvalidFormat)
 	}
 
 	*c = Contact(cc)

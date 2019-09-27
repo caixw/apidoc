@@ -91,6 +91,11 @@ func parse(paths []string) {
 
 	for _, path := range paths {
 		now := time.Now()
+		path, err := filepath.Abs(path)
+		if err != nil {
+			h.Error(message.Erro, err)
+			return
+		}
 
 		cfg, err := config.Load(path)
 		if err != nil {

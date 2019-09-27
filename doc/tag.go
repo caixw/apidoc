@@ -35,17 +35,18 @@ type (
 
 // UnmarshalXML xml.Unmarshaler
 func (t *Tag) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	name := "/" + start.Name.Local
 	var shadow shadowTag
 	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return err
+		return fixedSyntaxError(err, "", name, 0)
 	}
 
 	if shadow.Name == "" {
-		return locale.Errorf(locale.ErrRequired, "name")
+		return newSyntaxError(name+"#name", locale.ErrRequired)
 	}
 
 	if shadow.Description == "" {
-		return locale.Errorf(locale.ErrRequired, "description")
+		return newSyntaxError(name, locale.ErrRequired)
 	}
 
 	*t = Tag(shadow)
@@ -54,21 +55,22 @@ func (t *Tag) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // UnmarshalXML xml.Unmarshaler
 func (srv *Server) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	name := "/" + start.Name.Local
 	var ss shadowServer
 	if err := d.DecodeElement(&ss, &start); err != nil {
-		return err
+		return fixedSyntaxError(err, "", name, 0)
 	}
 
 	if ss.Name == "" {
-		return locale.Errorf(locale.ErrRequired, "name")
+		return newSyntaxError(name+"#name", locale.ErrRequired)
 	}
 
 	if ss.Description == "" {
-		return locale.Errorf(locale.ErrRequired, "description")
+		return newSyntaxError(name, locale.ErrRequired)
 	}
 
 	if !is.URL(ss.URL) {
-		return locale.Errorf(locale.ErrInvalidURL, ss.URL)
+		return newSyntaxError(name+"#url", locale.ErrInvalidFormat)
 	}
 
 	*srv = Server(ss)

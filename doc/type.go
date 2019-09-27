@@ -46,7 +46,7 @@ func parseType(val string) (Type, error) {
 		return t, nil
 	}
 
-	return None, locale.Errorf(locale.ErrInvalidType, val)
+	return None, locale.Errorf(locale.ErrInvalidFormat)
 
 }
 
@@ -63,14 +63,15 @@ func (t *Type) UnmarshalXMLAttr(attr xml.Attr) error {
 
 // UnmarshalXML xml.Unmarshaler
 func (t *Type) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	name := "/" + start.Name.Local
 	var str string
 	if err := d.DecodeElement(&str, &start); err != nil {
-		return err
+		return fixedSyntaxError(err, "", name, 0)
 	}
 
 	v, err := parseType(str)
 	if err != nil {
-		return err
+		return fixedSyntaxError(err, "", name+"/type", 0)
 	}
 
 	*t = v

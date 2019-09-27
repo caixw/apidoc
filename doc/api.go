@@ -59,18 +59,19 @@ func (doc *Doc) NewAPI(file string, line int, data []byte) error {
 
 type shadowAPI API
 
-// UnmarshalXML xml.Unmarshaler
+// UnmarshalXML 实现 xml.Unmarshaler 接口
 func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	field := start.Name.Local
 	var shadow shadowAPI
 	if err := d.DecodeElement(&shadow, &start); err != nil {
 		// API 可能是嵌套在 apidoc 里的一个子标签。
 		// 如果是子标签，则不应该有 doc 变量，也不需要构建错误信息。
 		if api.doc == nil {
-			return err
+			return fixedSyntaxError(err, "", field, 0)
 		}
 
 		line := bytes.Count(api.data[:d.InputOffset()], []byte{'\n'})
-		return message.WithError(api.file, "", api.line+line, err)
+		return fixedSyntaxError(err, api.file, field, api.line+line)
 	}
 
 	*api = API(shadow)
@@ -80,16 +81,22 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 // 检测和修复 api 对象，无法修复返回错误。
 //
 // NOTE: 需要保证 doc 已经初始化
-func (api *API) sanitize() error {
+func (api *API) sanitize(field string) error {
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag) {
-			return message.NewLocaleError(api.file, "tag", api.line, locale.ErrInvalidValue)
+			if api.doc == nil {
+				return newSyntaxError(field+"/tag#name", locale.ErrInvalidValue)
+			}
+			return message.NewLocaleError(api.file, field+"/tag#name", api.line, locale.ErrInvalidValue)
 		}
 	}
 
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv) {
-			return message.NewLocaleError(api.file, "server", api.line, locale.ErrInvalidValue)
+			if api.doc == nil {
+				return newSyntaxError(field+"/server#name", locale.ErrInvalidValue)
+			}
+			return message.NewLocaleError(api.file, field+"/server#name", api.line, locale.ErrInvalidValue)
 		}
 	}
 

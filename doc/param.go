@@ -41,30 +41,31 @@ type shadowParam Param
 
 // UnmarshalXML xml.Unmarshaler
 func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	name := "/" + start.Name.Local
 	var shadow shadowParam
 	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return err
+		return fixedSyntaxError(err, "", name, 0)
 	}
 
 	if shadow.Name == "" {
-		return locale.Errorf(locale.ErrRequired, "name")
+		return newSyntaxError(name+"#name", locale.ErrRequired)
 	}
 
 	if shadow.Type == None {
-		return locale.Errorf(locale.ErrRequired, "type")
+		return newSyntaxError(name+"#type", locale.ErrRequired)
 	}
 	if shadow.Type == Object && len(shadow.Items) == 0 {
-		return locale.Errorf(locale.ErrNeedProperty)
+		return newSyntaxError(name+"/items", locale.ErrRequired)
 	}
 
 	// 判断 enums 的值是否相同
 	if key := getDuplicateEnum(shadow.Enums); key != "" {
-		return locale.Errorf(locale.ErrDuplicateEnum, key)
+		return newSyntaxError(name+"/enum", locale.ErrDuplicateValue)
 	}
 
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
-		return locale.Errorf(locale.ErrDuplicateValue, key)
+		return newSyntaxError(name+"/items", locale.ErrDuplicateValue)
 	}
 
 	*p = Param(shadow)
