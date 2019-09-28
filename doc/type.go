@@ -35,6 +35,7 @@ var (
 		"bool":   Bool,
 		"object": Object,
 		"number": Number,
+		"int":    Number,
 		"string": String,
 	}
 )
@@ -62,15 +63,15 @@ func (t *Type) UnmarshalXMLAttr(attr xml.Attr) error {
 
 // UnmarshalXML xml.Unmarshaler
 func (t *Type) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
+	field := "/" + start.Name.Local
 	var str string
 	if err := d.DecodeElement(&str, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
 	v, err := parseType(str)
 	if err != nil {
-		return fixedSyntaxError(err, "", name+"/type", 0)
+		return fixedSyntaxError(err, "", field+"/type", 0)
 	}
 
 	*t = v

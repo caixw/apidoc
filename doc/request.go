@@ -34,8 +34,8 @@ type shadowRequest Request
 // UnmarshalXML xml.Unmarshaler
 func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
-	var shadow shadowRequest
-	if err := d.DecodeElement(&shadow, &start); err != nil {
+	shadow := (*shadowRequest)(r)
+	if err := d.DecodeElement(shadow, &start); err != nil {
 		return fixedSyntaxError(err, "", field, 0)
 	}
 
@@ -60,6 +60,5 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"/item", locale.ErrDuplicateValue)
 	}
 
-	*r = Request(shadow)
 	return nil
 }

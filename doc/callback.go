@@ -42,28 +42,27 @@ type shadowCallback Callback
 
 // UnmarshalXML xml.Unmarshaler
 func (c *Callback) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
+	field := "/" + start.Name.Local
 
-	var cc shadowCallback
-	if err := d.DecodeElement(&cc, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+	shadow := (*shadowCallback)(c)
+	if err := d.DecodeElement(shadow, &start); err != nil {
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
-	if cc.Method == "" {
-		return newSyntaxError(name+"#method", locale.ErrRequired)
+	if shadow.Method == "" {
+		return newSyntaxError(field+"#method", locale.ErrRequired)
 	}
 
-	schema := strings.ToUpper(cc.Schema)
+	schema := strings.ToUpper(shadow.Schema)
 	if schema != SchemaHTTP && schema != SchemaHTTPS {
-		return newSyntaxError(name+"#schema", locale.ErrInvalidValue)
+		return newSyntaxError(field+"#schema", locale.ErrInvalidValue)
 	}
 
-	if len(cc.Requests) == 0 {
-		return newSyntaxError(name+"/request", locale.ErrRequired)
+	if len(shadow.Requests) == 0 {
+		return newSyntaxError(field+"/request", locale.ErrRequired)
 	}
 
 	// 可以不需要 response
 
-	*c = Callback(cc)
 	return nil
 }

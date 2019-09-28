@@ -41,34 +41,33 @@ type shadowParam Param
 
 // UnmarshalXML xml.Unmarshaler
 func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
-	var shadow shadowParam
-	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+	field := "/" + start.Name.Local
+	shadow := (*shadowParam)(p)
+	if err := d.DecodeElement(shadow, &start); err != nil {
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
 	if shadow.Name == "" {
-		return newSyntaxError(name+"#name", locale.ErrRequired)
+		return newSyntaxError(field+"#name", locale.ErrRequired)
 	}
 
 	if shadow.Type == None {
-		return newSyntaxError(name+"#type", locale.ErrRequired)
+		return newSyntaxError(field+"#type", locale.ErrRequired)
 	}
 	if shadow.Type == Object && len(shadow.Items) == 0 {
-		return newSyntaxError(name+"/items", locale.ErrRequired)
+		return newSyntaxError(field+"/items", locale.ErrRequired)
 	}
 
 	// 判断 enums 的值是否相同
 	if key := getDuplicateEnum(shadow.Enums); key != "" {
-		return newSyntaxError(name+"/enum", locale.ErrDuplicateValue)
+		return newSyntaxError(field+"/enum", locale.ErrDuplicateValue)
 	}
 
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
-		return newSyntaxError(name+"/items", locale.ErrDuplicateValue)
+		return newSyntaxError(field+"/items", locale.ErrDuplicateValue)
 	}
 
-	*p = Param(shadow)
 	return nil
 }
 

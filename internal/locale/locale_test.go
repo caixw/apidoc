@@ -14,7 +14,7 @@ import (
 func TestDisplayNames(t *testing.T) {
 	a := assert.New(t)
 
-	a.Equal(len(DisplayNames()), 2)
+	a.Equal(len(DisplayNames()), 3)
 }
 
 func TestInit(t *testing.T) {

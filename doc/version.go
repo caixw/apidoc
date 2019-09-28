@@ -25,14 +25,14 @@ func (v *Version) UnmarshalXMLAttr(attr xml.Attr) error {
 
 // UnmarshalXML xml.Unmarshaler
 func (v *Version) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
+	field := "/" + start.Name.Local
 	var str string
 	if err := d.DecodeElement(&str, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
 	if !version.SemVerValid(str) {
-		return newSyntaxError(name, locale.ErrInvalidFormat)
+		return newSyntaxError(field, locale.ErrInvalidFormat)
 	}
 
 	*v = Version(str)

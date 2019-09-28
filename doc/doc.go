@@ -14,10 +14,6 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
-type cdata struct {
-	Text string `xml:",cdata"`
-}
-
 // Doc 文档
 type Doc struct {
 	XMLName struct{} `xml:"apidoc"`
@@ -54,14 +50,18 @@ func New() *Doc {
 	}
 }
 
+type cdata struct {
+	Text string `xml:",cdata"`
+}
+
 type shadowDoc Doc
 
 // UnmarshalXML 实现 xml.Unmarshaler 接口
 //
 // 返回的错误信息都为 message.SyntaxError 实例
 func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var shadow shadowDoc
-	if err := d.DecodeElement(&shadow, &start); err != nil {
+	shadow := (*shadowDoc)(doc)
+	if err := d.DecodeElement(shadow, &start); err != nil {
 		line := bytes.Count(doc.data[:d.InputOffset()], []byte{'\n'})
 		return fixedSyntaxError(err, doc.file, "doc", doc.line+line)
 	}
@@ -81,9 +81,6 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		apis = append(apis, shadow.Apis...)
 	}
 
-	*doc = Doc(shadow)
-	doc.Apis = apis
-	doc.APIDoc = vars.Version() // 读取的时候，忽略客户端指定的 apidoc
 	return nil
 }
 

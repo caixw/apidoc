@@ -21,20 +21,19 @@ type shadowEnum Enum
 
 // UnmarshalXML xml.Unmarshaler
 func (e *Enum) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
-	var shadow shadowEnum
-	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+	field := "/" + start.Name.Local
+	shadow := (*shadowEnum)(e)
+	if err := d.DecodeElement(shadow, &start); err != nil {
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
 	if shadow.Value == "" {
-		return newSyntaxError(name+"#value", locale.ErrRequired)
+		return newSyntaxError(field+"#value", locale.ErrRequired)
 	}
 
 	if shadow.Description == "" {
-		return newSyntaxError(name, locale.ErrRequired)
+		return newSyntaxError(field, locale.ErrRequired)
 	}
 
-	*e = Enum(shadow)
 	return nil
 }

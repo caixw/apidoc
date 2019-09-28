@@ -62,8 +62,8 @@ type shadowAPI API
 // UnmarshalXML 实现 xml.Unmarshaler 接口
 func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := start.Name.Local
-	var shadow shadowAPI
-	if err := d.DecodeElement(&shadow, &start); err != nil {
+	shadow := (*shadowAPI)(api)
+	if err := d.DecodeElement(shadow, &start); err != nil {
 		// API 可能是嵌套在 apidoc 里的一个子标签。
 		// 如果是子标签，则不应该有 doc 变量，也不需要构建错误信息。
 		if api.doc == nil {
@@ -74,7 +74,6 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return fixedSyntaxError(err, api.file, field, api.line+line)
 	}
 
-	*api = API(shadow)
 	return nil
 }
 
@@ -99,8 +98,6 @@ func (api *API) sanitize(field string) error {
 			return message.NewLocaleError(api.file, field+"/server#name", api.line, locale.ErrInvalidValue)
 		}
 	}
-
-	// TODO ref
 
 	return nil
 }

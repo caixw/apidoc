@@ -30,19 +30,23 @@ func TestExample_UnmarshalXML(t *testing.T) {
 	a.Equal(obj1, obj)
 
 	// 正常
+	obj1 = &Example{}
 	str = `<Example mimetype="json">text<description>desc</description></Example>`
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj1.Description, "desc")
 
 	// 少 value
+	obj1 = &Example{}
 	str = `<Example url="url">desc</Example>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 少 content
+	obj1 = &Example{}
 	str = `<Example mimetype="json"></Example>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 语法错误
+	obj1 = &Example{}
 	str = `<Example mimetype="json">text`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 }

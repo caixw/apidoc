@@ -46,14 +46,14 @@ func (m *Method) UnmarshalXMLAttr(attr xml.Attr) error {
 
 // UnmarshalXML xml.Unmarshaler
 func (m *Method) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
+	field := "/" + start.Name.Local
 	var str string
 	if err := d.DecodeElement(&str, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
 	if !isValidMethod(str) {
-		return newSyntaxError(name, locale.ErrInvalidValue)
+		return newSyntaxError(field, locale.ErrInvalidValue)
 	}
 
 	*m = Method(strings.ToUpper(str))

@@ -24,32 +24,31 @@ type shadowPath Path
 
 // UnmarshalXML xml.Unmarshaler
 func (p *Path) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
-	var shadow shadowPath
-	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+	field := "/" + start.Name.Local
+	shadow := (*shadowPath)(p)
+	if err := d.DecodeElement(shadow, &start); err != nil {
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
 	if shadow.Path == "" {
-		return newSyntaxError(name+"#path", locale.ErrRequired)
+		return newSyntaxError(field+"#path", locale.ErrRequired)
 	}
 
 	params, err := parsePath(shadow.Path)
 	if err != nil {
-		return fixedSyntaxError(err, "", name+"#path", 0)
+		return fixedSyntaxError(err, "", field+"#path", 0)
 	}
 	if len(params) != len(shadow.Params) {
-		return newSyntaxError(name+"#path", locale.ErrPathNotMatchParams)
+		return newSyntaxError(field+"#path", locale.ErrPathNotMatchParams)
 	}
 	for _, param := range shadow.Params {
 		if _, found := params[param.Name]; !found {
-			return newSyntaxError(name+"#path", locale.ErrPathNotMatchParams)
+			return newSyntaxError(field+"#path", locale.ErrPathNotMatchParams)
 		}
 	}
 
 	// queries 不作判断，同名会被当作数据处理
 
-	*p = Path(shadow)
 	return nil
 }
 

@@ -34,14 +34,14 @@ func (s *Status) UnmarshalXMLAttr(attr xml.Attr) error {
 
 // UnmarshalXML xml.Unmarshaler
 func (s *Status) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
+	field := "/" + start.Name.Local
 	var v int
 	if err := d.DecodeElement(&v, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
 	if !isValidStatus(v) {
-		return newSyntaxError(name+"/status", locale.ErrInvalidFormat)
+		return newSyntaxError(field+"/status", locale.ErrInvalidFormat)
 	}
 
 	*s = Status(v)

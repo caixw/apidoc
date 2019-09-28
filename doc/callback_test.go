@@ -30,6 +30,7 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 	a.Equal(obj1, obj)
 
 	// 正常
+	obj1 = &Callback{}
 	str = `<Callback deprecated="1.1.1" method="GET" schema="HTTPS">
 		<request status="200" mimetype="json" type="object">
 			<param name="name" type="string" />
@@ -46,22 +47,27 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 		Equal(obj1.Requests[0].Type, Object)
 
 	// 少 schema
+	obj1 = &Callback{}
 	str = `<Callback method="GET"><request type="string" mimetype="json" /></Callback>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 少 method
 	str = `<Callback schema="HTTP"><request type="string" mimetype="json" /></Callback>`
+	obj1 = &Callback{}
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 无效的 schema
 	str = `<Callback method="GET" schema="invalid"><request type="string" mimetype="json" /></Callback>`
+	obj1 = &Callback{}
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 缺少 request
+	obj1 = &Callback{}
 	str = `<Callback method="GET" schema="http"></Callback>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 语法错误
+	obj1 = &Callback{}
 	str = `<Callback name="url" deprecated="x.1.1">text</Callback>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 }

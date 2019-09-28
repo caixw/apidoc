@@ -17,14 +17,14 @@ var (
 	_    xml.MarshalerAttr   = none
 )
 
-// 确保 typeStringMap 和 stringTypeMap 相同
+// 确保 stringTypeMap 的内容都正确存在于 typeStringMap
 func TestTypeMap(t *testing.T) {
 	a := assert.New(t)
 
-	a.Equal(len(stringTypeMap), len(typeStringMap))
+	a.True(len(stringTypeMap) > len(typeStringMap))
 
-	for k, v := range stringTypeMap {
-		a.Equal(typeStringMap[v], k)
+	for k, v := range typeStringMap {
+		a.Equal(stringTypeMap[v], k)
 	}
 }
 
@@ -50,6 +50,11 @@ func TestTypeXML(t *testing.T) {
 	obj1 := &Object{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj, obj1)
+
+	// int 可以正常转换成 number
+	str = `<type attr="int" />`
+	a.NotError(xml.Unmarshal([]byte(str), obj1))
+	a.Equal(obj1.Attr, Number)
 
 	// 无效的类型
 	str = `<type attr="not-exists" />`

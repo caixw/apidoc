@@ -32,6 +32,7 @@ func TestPath_UnmarshalXML(t *testing.T) {
 	a.Equal(obj1, obj)
 
 	// query
+	obj1 = &Path{}
 	str = `<Path path="/users/{id}">
 		<param name="id" type="number" />
 		<query name="text" type="string" />
@@ -47,20 +48,24 @@ func TestPath_UnmarshalXML(t *testing.T) {
 		Equal(obj1.Queries[1].Name, "sex")
 
 	// 少 param
+	obj1 = &Path{}
 	str = `<Path path="/users/{id}" ref="#get-users"></Path>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 名称不匹配
+	obj1 = &Path{}
 	str = `<Path path="/users/{id}">
 		<param name="not-exists" type="number" />
 	</Path>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 少 path
+	obj1 = &Path{}
 	str = `<Path url="url">desc</Path>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 相同的参数名
+	obj1 = &Path{}
 	str = `<Path path="/users/{id}/logs/{id}">
 		<param name="id" type="number" />
 		<param name="id" type="number" />
@@ -68,10 +73,12 @@ func TestPath_UnmarshalXML(t *testing.T) {
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// path 语法错误
+	obj1 = &Path{}
 	str = `<Path path="/users/{id"></Path>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 语法错误
+	obj1 = &Path{}
 	str = `<Path path="/users/{id}">/Path>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 }

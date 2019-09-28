@@ -35,48 +35,46 @@ type (
 
 // UnmarshalXML xml.Unmarshaler
 func (l *Link) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
-	var shadow shadowLink
-	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+	field := "/" + start.Name.Local
+	shadow := (*shadowLink)(l)
+	if err := d.DecodeElement(shadow, &start); err != nil {
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
 	if !is.URL(shadow.URL) {
-		return newSyntaxError(name+"#url", locale.ErrInvalidFormat)
+		return newSyntaxError(field+"#url", locale.ErrInvalidFormat)
 	}
 
 	if shadow.Text == "" {
-		return newSyntaxError(name, locale.ErrRequired)
+		return newSyntaxError(field, locale.ErrRequired)
 	}
 
-	*l = Link(shadow)
 	return nil
 }
 
 // UnmarshalXML xml.Unmarshaler
 func (c *Contact) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	name := "/" + start.Name.Local
-	var cc shadowContact
-	if err := d.DecodeElement(&cc, &start); err != nil {
-		return fixedSyntaxError(err, "", name, 0)
+	field := "/" + start.Name.Local
+	shadow := (*shadowContact)(c)
+	if err := d.DecodeElement(shadow, &start); err != nil {
+		return fixedSyntaxError(err, "", field, 0)
 	}
 
-	if cc.Name == "" {
-		return newSyntaxError(name+"#name", locale.ErrRequired)
+	if shadow.Name == "" {
+		return newSyntaxError(field+"#name", locale.ErrRequired)
 	}
 
-	if cc.URL == "" && cc.Email == "" {
-		return newSyntaxError(name+"#url|email", locale.ErrRequired)
+	if shadow.URL == "" && shadow.Email == "" {
+		return newSyntaxError(field+"#url|email", locale.ErrRequired)
 	}
 
-	if cc.URL != "" && !is.URL(cc.URL) {
-		return newSyntaxError(name+"#url", locale.ErrInvalidFormat)
+	if shadow.URL != "" && !is.URL(shadow.URL) {
+		return newSyntaxError(field+"#url", locale.ErrInvalidFormat)
 	}
 
-	if cc.Email != "" && !is.Email(cc.Email) {
-		return newSyntaxError(name+"#email", locale.ErrInvalidFormat)
+	if shadow.Email != "" && !is.Email(shadow.Email) {
+		return newSyntaxError(field+"#email", locale.ErrInvalidFormat)
 	}
 
-	*c = Contact(cc)
 	return nil
 }

@@ -28,6 +28,7 @@ func TestRequest_UnmarshalXML(t *testing.T) {
 	a.Equal(obj1, obj)
 
 	// 正常
+	obj1 = &Request{}
 	str = `<Request deprecated="1.1.1" type="object" array="true" mimetype="json">
 		<param name="name" type="string" />
 		<param name="sex" type="string">
@@ -43,22 +44,27 @@ func TestRequest_UnmarshalXML(t *testing.T) {
 		Equal(3, len(obj1.Items))
 
 	// 少 name
+	obj1 = &Request{}
 	str = `<Request url="url" mimetype="json">desc</Request>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 少 type
+	obj1 = &Request{}
 	str = `<Request name="v1" mimetype="json"></Request>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 少 mimetype
+	obj1 = &Request{}
 	str = `<Request type="string"></Request>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// type=object，且没有子项
+	obj1 = &Request{}
 	str = `<Request type="Object" mimetype="json"></Request>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 相同的子项
+	obj1 = &Request{}
 	str = `<Request type="Object" mimetype="json">
 		<param name="n1" type="string" />
 		<param name="n1" type="number" />
@@ -66,6 +72,7 @@ func TestRequest_UnmarshalXML(t *testing.T) {
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 语法错误
+	obj1 = &Request{}
 	str = `<Request deprecated="x.1.1" mimetype="json">text</Request>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 }

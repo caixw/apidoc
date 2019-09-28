@@ -43,18 +43,22 @@ func TestParam_UnmarshalXML(t *testing.T) {
 		Equal(3, len(obj1.Items))
 
 	// 少 name
+	obj1 = &Param{}
 	str = `<Param url="url">desc</Param>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 少 type
+	obj1 = &Param{}
 	str = `<Param name="v1"></Param>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// type=object，且没有子项
+	obj1 = &Param{}
 	str = `<Param name="v1" type="Object"></Param>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 相同的子项
+	obj1 = &Param{}
 	str = `<Param name="v1" type="Object">
 		<param name="n1" type="string" />
 		<param name="n1" type="number" />
@@ -62,6 +66,7 @@ func TestParam_UnmarshalXML(t *testing.T) {
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 语法错误
+	obj1 = &Param{}
 	str = `<Param name="url" deprecated="x.1.1">text</Param>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 }
