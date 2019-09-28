@@ -20,7 +20,7 @@ func abs(path, wd string) (p string, err error) {
 		path = filepath.Join(wd, path)
 	}
 
-	// 非 ~ 路开头的相对路径，需要将其定位到 wd 目录之下
+	// ~ 路开头的相对路径，需要将其定位到 HOME 目录之下
 	if isBeginHome(path) {
 		dir, err := os.UserHomeDir()
 		if err != nil {

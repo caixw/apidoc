@@ -23,6 +23,7 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5"
+	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/cmd/config"
 	"github.com/caixw/apidoc/v5/internal/cmd/term"
 	"github.com/caixw/apidoc/v5/internal/locale"
@@ -68,7 +69,7 @@ func main() {
 		term.Locale(infoOut, infoColor, locale.FlagVersionCommitHash, vars.CommitHash())
 		return
 	case *t:
-		test(getPaths())
+		parse(true)
 		return
 	case *l:
 		for _, l := range term.Langs(3) {
@@ -76,21 +77,21 @@ func main() {
 		}
 		return
 	case *d:
-		detect(getPaths())
+		detect()
 		return
 	}
 
-	parse(getPaths())
+	parse(false)
 }
 
-func detect(paths []string) {
-	for _, dir := range paths {
-		dir, err := filepath.Abs(dir)
-		if err != nil {
-			term.Line(erroOut, erroColor, err)
-			return
-		}
+func detect() {
+	paths, err := getPaths()
+	if err != nil {
+		term.Line(erroOut, erroColor, err)
+		return
+	}
 
+	for _, dir := range paths {
 		if err := config.Write(dir); err != nil {
 			term.Line(erroOut, erroColor, err)
 			return
@@ -99,44 +100,18 @@ func detect(paths []string) {
 	}
 }
 
-func test(paths []string) {
+// 参数 test 表示是否只作语法检测，不输出内容。
+func parse(test bool) {
 	h := message.NewHandler(term.NewHandlerFunc(erroOut, warnOut, infoOut, succOut,
 		erroColor, warnColor, infoColor, succColor))
 
-	for _, path := range paths {
-		path, err := filepath.Abs(path)
-		if err != nil {
-			h.Error(message.Erro, err)
-			continue
-		}
-
-		cfg, err := config.Load(path)
-		if err != nil {
-			h.Error(message.Erro, err)
-			continue
-		}
-
-		if err := apidoc.Test(h, cfg.Inputs...); err != nil {
-			h.Error(message.Erro, err)
-			continue
-		}
-		h.Message(message.Succ, locale.TestSuccess)
+	paths, err := getPaths()
+	if err != nil {
+		h.Error(message.Erro, err)
+		return
 	}
-
-	h.Stop()
-}
-
-func parse(paths []string) {
-	h := message.NewHandler(term.NewHandlerFunc(erroOut, warnOut, infoOut, succOut,
-		erroColor, warnColor, infoColor, succColor))
-
 	for _, path := range paths {
 		now := time.Now()
-		path, err := filepath.Abs(path)
-		if err != nil {
-			h.Error(message.Erro, err)
-			continue
-		}
 
 		cfg, err := config.Load(path)
 		if err != nil {
@@ -144,14 +119,20 @@ func parse(paths []string) {
 			continue
 		}
 
-		if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
-			h.Error(message.Erro, err)
-			continue
+		if test {
+			if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
+				h.Error(message.Erro, err)
+				continue
+			}
+			h.Message(message.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(now))
+		} else {
+			if _, err := input.Parse(h, cfg.Inputs...); err != nil {
+				h.Error(message.Erro, err)
+				continue
+			}
+			h.Message(message.Succ, locale.TestSuccess)
 		}
-
-		elapsed := time.Now().Sub(now)
-		h.Message(message.Succ, locale.Complete, cfg.Output.Path, elapsed)
-	}
+	} // end for paths
 
 	h.Stop()
 }
@@ -164,10 +145,20 @@ func usage() {
 	term.Locale(infoOut, infoColor, locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
 }
 
-func getPaths() []string {
+func getPaths() ([]string, error) {
 	paths := flag.Args()
 	if len(paths) == 0 {
 		paths = append(paths, "./")
 	}
-	return paths
+
+	for index, path := range paths {
+		path, err := filepath.Abs(path)
+		if err != nil {
+			return nil, err
+		}
+
+		paths[index] = path
+	}
+
+	return paths, nil
 }

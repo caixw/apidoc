@@ -50,50 +50,50 @@ type Config struct {
 func Load(path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, message.WithError(configFilename, "", 0, err)
+		return nil, message.WithError(path, "", 0, err)
 	}
 
 	cfg := &Config{}
 	if err = yaml.Unmarshal(data, cfg); err != nil {
-		return nil, message.WithError(configFilename, "", 0, err)
+		return nil, message.WithError(path, "", 0, err)
 	}
 	cfg.wd = filepath.Dir(path)
 
-	if err := cfg.sanitize(); err != nil {
+	if err := cfg.sanitize(path); err != nil {
 		return nil, err
 	}
 
 	return cfg, nil
 }
 
-func (cfg *Config) sanitize() *message.SyntaxError {
+func (cfg *Config) sanitize(path string) *message.SyntaxError {
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(apidoc.Version(), cfg.Version)
 	if err != nil {
-		return message.WithError(configFilename, "version", 0, err)
+		return message.WithError(path, "version", 0, err)
 	}
 	if !compatible {
-		return message.NewLocaleError(configFilename, "version", 0, locale.VersionInCompatible)
+		return message.NewLocaleError(path, "version", 0, locale.VersionInCompatible)
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return message.NewLocaleError(configFilename, "inputs", 0, locale.ErrRequired)
+		return message.NewLocaleError(path, "inputs", 0, locale.ErrRequired)
 	}
 
 	if cfg.Output == nil {
-		return message.NewLocaleError(configFilename, "output", 0, locale.ErrRequired)
+		return message.NewLocaleError(path, "output", 0, locale.ErrRequired)
 	}
 
 	for index, i := range cfg.Inputs {
 		field := "inputs[" + strconv.Itoa(index) + "]"
 
 		if i.Dir, err = abs(i.Dir, cfg.wd); err != nil {
-			return message.WithError(configFilename, field+".path", 0, err)
+			return message.WithError(path, field+".path", 0, err)
 		}
 	}
 
 	if cfg.Output.Path, err = abs(cfg.Output.Path, cfg.wd); err != nil {
-		return message.WithError(configFilename, "output.path", 0, err)
+		return message.WithError(path, "output.path", 0, err)
 	}
 
 	return nil
@@ -112,13 +112,12 @@ func detectConfig(wd string) (*Config, error) {
 		i.Dir = rel(wd, i.Dir)
 	}
 
-	outputFile := rel(wd, filepath.Join(wd, docFilename))
 	return &Config{
 		Version: apidoc.Version(),
 		Inputs:  inputs,
 		Output: &output.Options{
 			Type: output.ApidocXML,
-			Path: outputFile,
+			Path: rel(wd, filepath.Join(wd, docFilename)),
 		},
 	}, nil
 }
@@ -126,7 +125,6 @@ func detectConfig(wd string) (*Config, error) {
 // Write 根据 wd 所在目录的内容生成一个配置文件，并写入到该目录配置文件中。
 //
 // wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
-// path 表示生成的配置文件存放的路径。
 func Write(wd string) error {
 	cfg, err := detectConfig(wd)
 	if err != nil {

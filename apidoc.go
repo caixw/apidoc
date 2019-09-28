@@ -4,10 +4,6 @@
 //
 // 可以从代码文件的注释中提取文档内容，生成 API 文档，
 // 支持大部分的主流的编程语言。
-//
-// apidoc 采用了多协程处理各个文件，所有的语法错误都是以异步的方式发送给
-// message.Handler 进行处理的。用户需要自行实现 message.HandlerFunc
-// 类型的方法交给 message.Handler，以实现自已的消息处理功能。
 package apidoc
 
 import (
@@ -35,9 +31,12 @@ func Version() string {
 	return vars.Version()
 }
 
-// Do 执行分析操作
+// Do 解析文档并输出文档内容
 //
-// 如果是 o 和 i 的配置内容有问题，error 返回的实际类型为 *message.SyntaxError
+// 如果需要控制详细的操作步骤，可以自行调用 input 和 output 的相关函数实现。
+//
+// 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
+// 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
 func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	doc, err := input.Parse(h, i...)
 	if err != nil {
@@ -45,12 +44,4 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	}
 
 	return output.Render(doc, o)
-}
-
-// Test 测试语法的正确性
-//
-// 错误信息依然输出到 h，配置文件的错误则直接返回。
-func Test(h *message.Handler, i ...*input.Options) error {
-	_, err := input.Parse(h, i...)
-	return err
 }

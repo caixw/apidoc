@@ -17,14 +17,27 @@ import (
 
 // Options 指定输入内容的相关信息。
 type Options struct {
-	Lang      string   `yaml:"lang"`               // 输入的目标语言
-	Dir       string   `yaml:"dir"`                // 源代码目录
-	Exts      []string `yaml:"exts,omitempty"`     // 需要扫描的文件扩展名，若未指定，则使用默认值
-	Recursive bool     `yaml:"recursive"`          // 是否查找 Dir 的子目录
-	Encoding  string   `yaml:"encoding,omitempty"` // 文件的编码，为空表示 utf-8
+	// 输入的目标语言
+	//
+	// 取值为 lang.Language.Name
+	Lang string `yaml:"lang"`
+
+	// 源代码目录
+	Dir string `yaml:"dir"`
+
+	// 需要扫描的文件扩展名
+	//
+	// 若未指定，则根据 Lang 选项获取其默认的扩展名作为过滤条件。
+	Exts []string `yaml:"exts,omitempty"`
+
+	// 是否查找 Dir 的子目录
+	Recursive bool `yaml:"recursive"`
+
+	// 源文件的编码，默认为 UTF-8
+	Encoding string `yaml:"encoding,omitempty"`
 
 	blocks   []lang.Blocker    // 根据 Lang 生成
-	paths    []string          // 根据 Dir 和 Recursive 生成
+	paths    []string          // 根据 Dir、Exts 和 Recursive 生成
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
 

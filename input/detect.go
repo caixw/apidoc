@@ -11,7 +11,7 @@ import (
 	"github.com/caixw/apidoc/v5/internal/lang"
 )
 
-// Detect 检测指定目录下的内容，并为其生成一个合适的 Input 实例。
+// Detect 检测指定目录下的内容，并为其生成一个合适的 input.Options 实例。
 //
 // 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
 func Detect(dir string, recursive bool) ([]*Options, error) {
