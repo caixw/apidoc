@@ -54,6 +54,7 @@ func main() {
 	h := flag.Bool("h", false, locale.Sprintf(locale.FlagHUsage))
 	v := flag.Bool("v", false, locale.Sprintf(locale.FlagVUsage))
 	d := flag.Bool("d", false, locale.Sprintf(locale.FlagDUsage))
+	t := flag.Bool("t", false, locale.Sprintf(locale.FlagTUsage))
 	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLUsage))
 	flag.Usage = usage
 	flag.Parse()
@@ -66,20 +67,23 @@ func main() {
 		term.Locale(infoOut, infoColor, locale.FlagVersionBuildWith, vars.Name, apidoc.Version(), runtime.Version())
 		term.Locale(infoOut, infoColor, locale.FlagVersionCommitHash, vars.CommitHash())
 		return
+	case *t:
+		test(getPaths())
+		return
 	case *l:
 		for _, l := range term.Langs(3) {
 			term.Line(infoOut, infoColor, l)
 		}
 		return
 	case *d:
-		write(getPaths())
+		detect(getPaths())
 		return
 	}
 
 	parse(getPaths())
 }
 
-func write(paths []string) {
+func detect(paths []string) {
 	for _, dir := range paths {
 		dir, err := filepath.Abs(dir)
 		if err != nil {
@@ -95,6 +99,33 @@ func write(paths []string) {
 	}
 }
 
+func test(paths []string) {
+	h := message.NewHandler(term.NewHandlerFunc(erroOut, warnOut, infoOut, succOut,
+		erroColor, warnColor, infoColor, succColor))
+
+	for _, path := range paths {
+		path, err := filepath.Abs(path)
+		if err != nil {
+			h.Error(message.Erro, err)
+			continue
+		}
+
+		cfg, err := config.Load(path)
+		if err != nil {
+			h.Error(message.Erro, err)
+			continue
+		}
+
+		if err := apidoc.Test(h, cfg.Inputs...); err != nil {
+			h.Error(message.Erro, err)
+			continue
+		}
+		h.Message(message.Succ, locale.TestSuccess)
+	}
+
+	h.Stop()
+}
+
 func parse(paths []string) {
 	h := message.NewHandler(term.NewHandlerFunc(erroOut, warnOut, infoOut, succOut,
 		erroColor, warnColor, infoColor, succColor))
@@ -104,18 +135,18 @@ func parse(paths []string) {
 		path, err := filepath.Abs(path)
 		if err != nil {
 			h.Error(message.Erro, err)
-			return
+			continue
 		}
 
 		cfg, err := config.Load(path)
 		if err != nil {
 			h.Error(message.Erro, err)
-			break
+			continue
 		}
 
 		if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
 			h.Error(message.Erro, err)
-			break
+			continue
 		}
 
 		elapsed := time.Now().Sub(now)

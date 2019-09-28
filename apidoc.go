@@ -46,3 +46,11 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 
 	return output.Render(doc, o)
 }
+
+// Test 测试语法的正确性
+//
+// 错误信息依然输出到 h，配置文件的错误则直接返回。
+func Test(h *message.Handler, i ...*input.Options) error {
+	_, err := input.Parse(h, i...)
+	return err
+}
