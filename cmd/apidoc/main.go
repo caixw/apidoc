@@ -138,7 +138,15 @@ func parse(test bool) {
 }
 
 func langs(w io.Writer, color colors.Color, tail int) {
-	langs := lang.Langs()
+	ls := lang.Langs()
+	langs := make([]*lang.Language, 1, len(ls)+1)
+	langs[0] = &lang.Language{
+		Name:        locale.Sprintf(locale.LangID),
+		DisplayName: locale.Sprintf(locale.LangName),
+		Exts:        []string{locale.Sprintf(locale.LangExts)},
+	}
+	langs = append(langs, ls...)
+
 	var maxDisplay, maxName int
 	for _, l := range langs {
 		if len(l.DisplayName) > maxDisplay {
@@ -155,7 +163,7 @@ func langs(w io.Writer, color colors.Color, tail int) {
 	for _, l := range langs {
 		n := l.Name + strings.Repeat(" ", maxName-len(l.Name))
 		d := l.DisplayName + strings.Repeat(" ", maxDisplay-len(l.DisplayName))
-		term.Line(w, color, n, d, strings.Join(l.Exts, ","))
+		term.Line(w, color, n, d, strings.Join(l.Exts, " "))
 	}
 }
 

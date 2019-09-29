@@ -60,7 +60,7 @@ func TestLangs(t *testing.T) {
 
 	langs(w, colors.Default, 3)
 	ls := lines(w)
-	a.Equal(len(ls), len(lang.Langs()))
+	a.Equal(len(ls), len(lang.Langs())+1)
 	for _, l := range ls {
 		cnt := strings.Count(l, strings.Repeat(" ", 3))
 		a.True(cnt >= 2)
@@ -69,7 +69,7 @@ func TestLangs(t *testing.T) {
 	w.Reset()
 	langs(w, colors.Default, 10)
 	ls = lines(w)
-	a.Equal(len(ls), len(lang.Langs()))
+	a.Equal(len(ls), len(lang.Langs())+1)
 	for _, l := range ls {
 		cnt := strings.Count(l, strings.Repeat(" ", 10))
 		a.True(cnt >= 2)

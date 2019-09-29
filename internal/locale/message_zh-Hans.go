@@ -29,6 +29,9 @@ apidoc [options] [path]
 	Complete:            "完成！文档保存在：%s，总用时：%v",
 	ConfigWriteSuccess:  "配置内容成功写入 %s",
 	TestSuccess:         "语法没有问题！",
+	LangID:              "ID",
+	LangName:            "名称",
+	LangExts:            "扩展名",
 
 	// 错误信息，可能在地方用到
 	ErrRequired:              "不能为空",
