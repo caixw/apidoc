@@ -43,15 +43,15 @@ type Doc struct {
 	data []byte
 }
 
+type cdata struct {
+	Text string `xml:",cdata"`
+}
+
 // New 返回 Doc 实例
 func New() *Doc {
 	return &Doc{
 		APIDoc: vars.Version(),
 	}
-}
-
-type cdata struct {
-	Text string `xml:",cdata"`
 }
 
 type shadowDoc Doc

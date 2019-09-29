@@ -96,6 +96,72 @@ func TestDoc_all(t *testing.T) {
 	a.Equal(1, len(doc.Apis))
 }
 
+func TestDoc_UnmarshalXML(t *testing.T) {
+	a := assert.New(t)
+
+	// 重得的标签名
+	data := `<apidoc version="1.1.1">
+		<tag name="t1">tet</tag>
+		<tag name="t1">tet</tag>
+	</apidoc>`
+	doc := New()
+	a.NotNil(doc)
+	err := doc.FromXML("file", 11, []byte(data))
+	serr, ok := err.(*message.SyntaxError)
+	a.True(ok).NotNil(serr)
+	a.Equal(serr.Line, 11).
+		Equal(serr.File, "file")
+
+		// 重得的 server
+	data = `<apidoc version="1.1.1">
+		<server name="s1" url="https://example.com/s1">tet</server>
+		<server name="s1" url="https://example.com/s2">tet</server>
+	</apidoc>`
+	doc = New()
+	a.NotNil(doc)
+	err = doc.FromXML("file", 12, []byte(data))
+	serr, ok = err.(*message.SyntaxError)
+	a.True(ok).NotNil(serr)
+	a.Equal(serr.Line, 12).
+		Equal(serr.File, "file")
+
+	data = `<apidoc version="1.1.1">
+			<tag name="t1" deprecated="x.0.1" />
+		</apidoc>`
+	err = doc.FromXML("file", 11, []byte(data))
+	serr, ok = err.(*message.SyntaxError)
+	a.True(ok).NotNil(serr)
+	a.Equal(serr.Line, 12)
+}
+
+func TestDoc_Sanitize(t *testing.T) {
+	a := assert.New(t)
+	doc := New()
+	a.NotNil(doc)
+
+	// api.tags 不存在于 doc
+	doc.Tags = []*Tag{
+		{Name: "tag1"},
+		{Name: "tag2"},
+	}
+	doc.Apis = []*API{
+		{Tags: []string{"tag1", "tag2"}, doc: doc},
+		{Tags: []string{"not-exists", "tag1"}, doc: doc},
+	}
+	a.Error(doc.Sanitize())
+
+	// api.servers 不存在于 doc
+	doc.Servers = []*Server{
+		{Name: "tag1"},
+		{Name: "tag2"},
+	}
+	doc.Apis = []*API{
+		{Servers: []string{"tag1", "tag2"}, doc: doc},
+		{Servers: []string{"not-exists", "tag1"}, doc: doc},
+	}
+	a.Error(doc.Sanitize())
+}
+
 // 测试错误提示的行号是否正确
 func TestDoc_lineNumber(t *testing.T) {
 	a := assert.New(t)
