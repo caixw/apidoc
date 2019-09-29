@@ -180,7 +180,9 @@ var langs = []*Language{
 		Name:        "swift",
 		Exts:        []string{".swift"},
 		Blocks: []Blocker{
+			&block{Type: blockTypeString, Begin: `"""`, End: `"""`, Escape: `\`},
 			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
+			&block{Type: blockTypeString, Begin: `#"`, End: `"#`},
 			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
 			&block{Type: blockTypeSComment, Begin: `//`},
 			newSwiftNestMCommentBlock("/*", "*/", "*"),

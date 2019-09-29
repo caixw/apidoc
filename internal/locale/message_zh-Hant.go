@@ -20,15 +20,15 @@ apidoc [options] [path]
 	FlagHUsage:            "顯示幫助信息",
 	FlagVUsage:            "顯示版本信息",
 	FlagLUsage:            "顯示所有支持的語言",
-	FlagDUsage:            "根据目录下的内容生成配置文件",
-	FlagTUsage:            "测试语法的正确性",
+	FlagDUsage:            "根據目錄下的內容生成配置文件",
+	FlagTUsage:            "測試語法的正確性",
 	FlagVersionBuildWith:  "%s %s build with %s",
 	FlagVersionCommitHash: "commit hash %s",
 
 	VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
 	Complete:            "完成！文檔保存在：%s，總用時：%v",
 	ConfigWriteSuccess:  "配置內容成功寫入 %s",
-	TestSuccess:         "语法没有问题！",
+	TestSuccess:         "語法沒有問題！",
 
 	// 錯誤信息，可能在地方用到
 	ErrRequired:              "不能為空",

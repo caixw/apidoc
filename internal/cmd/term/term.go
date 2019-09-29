@@ -5,42 +5,13 @@ package term
 
 import (
 	"io"
-	"strings"
 
 	"github.com/issue9/term/colors"
 	xmessage "golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
 )
-
-// Langs 对 lang.Langs 中的各列做自动对齐
-//
-// tail 每一列尾部最少留余的空格数量。
-func Langs(tail int) []string {
-	langs := lang.Langs()
-	var maxDisplay, maxName int
-	for _, l := range langs {
-		if len(l.DisplayName) > maxDisplay {
-			maxDisplay = len(l.DisplayName)
-		}
-		if len(l.Name) > maxName {
-			maxName = len(l.Name)
-		}
-	}
-
-	maxDisplay += tail
-	maxName += tail
-
-	ret := make([]string, 0, len(langs))
-	for _, l := range langs {
-		n := l.Name + strings.Repeat(" ", maxName-len(l.Name))
-		d := l.DisplayName + strings.Repeat(" ", maxDisplay-len(l.DisplayName))
-		ret = append(ret, n+d+strings.Join(l.Exts, ","))
-	}
-	return ret
-}
 
 // NewHandlerFunc 声明用于 message.Handler 的处理函数
 func NewHandlerFunc(

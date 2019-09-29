@@ -12,13 +12,13 @@ import (
 	"github.com/caixw/apidoc/v5/input"
 )
 
-func TestLoad(t *testing.T) {
+func TestLoadFile(t *testing.T) {
 	a := assert.New(t)
 
-	cfg, err := Load("./not-exists-file")
+	cfg, err := loadFile("./", "not-exists-file")
 	a.Error(err).Nil(cfg)
 
-	cfg, err = Load("./failed.yaml")
+	cfg, err = loadFile("./", "failed.yaml")
 	a.Error(err).Nil(cfg)
 }
 
@@ -29,8 +29,7 @@ func TestWrite_Load(t *testing.T) {
 	a.NotError(err).NotEmpty(wd)
 	a.NotError(Write(wd))
 
-	path := filepath.Join(wd, configFilename)
-	cfg, err := Load(path)
+	cfg, err := Load(wd)
 	a.NotError(err).
 		NotNil(cfg)
 

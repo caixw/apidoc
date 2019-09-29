@@ -46,8 +46,13 @@ type Config struct {
 	wd string
 }
 
-// Load 加载指定的配置文件
-func Load(path string) (*Config, error) {
+// Load 加载指定目录下的配置文件
+func Load(wd string) (*Config, error) {
+	return loadFile(wd, configFilename)
+}
+
+func loadFile(wd, file string) (*Config, error) {
+	path := filepath.Join(wd, file)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, message.WithError(path, "", 0, err)
@@ -57,7 +62,7 @@ func Load(path string) (*Config, error) {
 	if err = yaml.Unmarshal(data, cfg); err != nil {
 		return nil, message.WithError(path, "", 0, err)
 	}
-	cfg.wd = filepath.Dir(path)
+	cfg.wd = wd
 
 	if err := cfg.sanitize(path); err != nil {
 		return nil, err
@@ -109,7 +114,7 @@ func detectConfig(wd string) (*Config, error) {
 	}
 
 	for _, i := range inputs {
-		i.Dir = rel(wd, i.Dir)
+		i.Dir = rel(i.Dir, wd)
 	}
 
 	return &Config{
@@ -117,7 +122,7 @@ func detectConfig(wd string) (*Config, error) {
 		Inputs:  inputs,
 		Output: &output.Options{
 			Type: output.ApidocXML,
-			Path: rel(wd, filepath.Join(wd, docFilename)),
+			Path: rel(filepath.Join(wd, docFilename), wd),
 		},
 	}, nil
 }

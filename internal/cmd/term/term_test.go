@@ -4,34 +4,14 @@ package term
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
 	"github.com/issue9/term/colors"
 
-	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
 )
-
-func TestLangs(t *testing.T) {
-	a := assert.New(t)
-
-	langs := Langs(3)
-	a.Equal(len(langs), len(lang.Langs()))
-	for _, l := range langs {
-		cnt := strings.Count(l, strings.Repeat(" ", 3))
-		a.True(cnt >= 2)
-	}
-
-	langs = Langs(10)
-	a.Equal(len(langs), len(lang.Langs()))
-	for _, l := range langs {
-		cnt := strings.Count(l, strings.Repeat(" ", 10))
-		a.True(cnt >= 2)
-	}
-}
 
 func TestNewHandlerFunc(t *testing.T) {
 	a := assert.New(t)

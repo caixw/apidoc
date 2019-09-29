@@ -14,9 +14,11 @@ package main
 import (
 	"bytes"
 	"flag"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/issue9/term/colors"
@@ -26,6 +28,7 @@ import (
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/cmd/config"
 	"github.com/caixw/apidoc/v5/internal/cmd/term"
+	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
@@ -72,9 +75,7 @@ func main() {
 		parse(true)
 		return
 	case *l:
-		for _, l := range term.Langs(3) {
-			term.Line(infoOut, infoColor, l)
-		}
+		langs(infoOut, infoColor, 3)
 		return
 	case *d:
 		detect()
@@ -119,7 +120,7 @@ func parse(test bool) {
 			continue
 		}
 
-		if test {
+		if !test {
 			if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
 				h.Error(message.Erro, err)
 				continue
@@ -135,6 +136,28 @@ func parse(test bool) {
 	} // end for paths
 
 	h.Stop()
+}
+
+func langs(w io.Writer, color colors.Color, tail int) {
+	langs := lang.Langs()
+	var maxDisplay, maxName int
+	for _, l := range langs {
+		if len(l.DisplayName) > maxDisplay {
+			maxDisplay = len(l.DisplayName)
+		}
+		if len(l.Name) > maxName {
+			maxName = len(l.Name)
+		}
+	}
+
+	maxDisplay += tail
+	maxName += tail
+
+	for _, l := range langs {
+		n := l.Name + strings.Repeat(" ", maxName-len(l.Name))
+		d := l.DisplayName + strings.Repeat(" ", maxDisplay-len(l.DisplayName))
+		term.Line(w, color, n, d, strings.Join(l.Exts, ","))
+	}
 }
 
 func usage() {
