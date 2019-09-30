@@ -1,0 +1,114 @@
+@charset "utf-8";
+
+:root {
+    --aside-width: 13rem;
+    --border-color: gray;
+    --padding: 1rem;
+    --article-padding: calc(var(--padding) / 2);
+
+    /* method */
+    --method-get-color: green;
+    --method-options-color: green;
+    --method-post-color: darkorange;
+    --method-put-color: darkorange;
+    --method-patch-color: darkorange;
+    --method-delete-color: red;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
+/*************************** header ***********************/
+
+header h1 {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0;
+    padding: 0rem var(--padding);
+}
+
+header h1 .app-name {
+    width: var(--aside-width);
+    text-transform: uppercase;
+}
+
+header h1 .app-name img {
+    height: 1.5rem;
+    margin-right: .5rem;
+}
+
+/*************************** aside ***********************/
+
+aside {
+    padding: var(--padding);
+    width: var(--aside-width);
+    border-right: 1px solid var(--border-color);
+    float: left;
+    min-height: 100%;
+}
+
+aside h2 {
+    margin: 0
+}
+
+/*************************** main ***********************/
+
+main {
+    padding: 0rem var(--padding);
+    width: calc(100% - var(--aside-width) - (5 * var(--padding)));
+    float: right;
+    min-height: 100%;
+}
+
+main article {
+    margin:var(--padding) 0;
+}
+
+main article[data-method=GET] {
+    border: 1px solid var(--method-get-color);
+}
+main article[data-method=POST] {
+    border: 1px solid var(--method-post-color);
+}
+main article[data-method=PUT] {
+    border: 1px solid var(--method-put-color);
+}
+main article[data-method=PATCH] {
+    border: 1px solid var(--method-patch-color);
+}
+main article[data-method=DELETE] {
+    border: 1px solid var(--method-delete-color);
+}
+main article[data-method=OPTIONS] {
+    border: 1px solid var(--method-options-color);
+}
+
+main article h3 {
+    margin: 0;
+    padding: var(--article-padding);
+    border-bottom: 1px solid var(--border-color);
+}
+
+main article h3 .method {
+    min-width: 4rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+main article .summary {
+    padding:var(--article-padding);
+    margin: 0;
+}
+
+/*************************** footer ***********************/
+
+footer {
+    clear: both;
+    padding: var(--padding);
+}
