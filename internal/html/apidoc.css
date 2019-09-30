@@ -104,6 +104,7 @@ main article h3 .method {
 main article .summary {
     padding:var(--article-padding);
     margin: 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 /*************************** footer ***********************/

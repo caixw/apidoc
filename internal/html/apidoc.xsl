@@ -69,30 +69,21 @@
             </aside>
 
             <main>
-                <div class="servers">
-                    <xsl:for-each select="/apidoc/server">
-                    <div>
-                        <p>
-                            <xsl:value-of select="@url"/>
-                            <xsl:value-of select="@name"/>
-                        </p>
-                        <div>
-                            <xsl:value-of select="."/>
-                        </div>
-                    </div>
-                    </xsl:for-each>
+                <div class="content">
+                    <xsl:value-of select="/apidoc/content" />
                 </div>
 
-                <div class="tags">
-                    <xsl:for-each select="/apidoc/tag">
-                    <div>
-                        <p>
+                <div class="servers">
+                    <xsl:for-each select="/apidoc/server">
+                    <article class="server">
+                        <h3>
+                            <xsl:value-of select="@url"/>
                             <xsl:value-of select="@name"/>
-                        </p>
-                        <div>
+                        </h3>
+                        <div class="summary">
                             <xsl:value-of select="."/>
                         </div>
-                    </div>
+                    </article>
                     </xsl:for-each>
                 </div>
 
@@ -108,9 +99,9 @@
                         </span>
                         <xsl:value-of select="path/@path" />
                     </h3>
-                    <p class="summary">
+                    <div class="summary">
                         <xsl:value-of select="@summary" />
-                    </p>
+                    </div>
 
                     <div>
                         <div class="request">
