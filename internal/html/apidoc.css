@@ -2,7 +2,7 @@
 
 :root {
     --aside-width: 13rem;
-    --border-color: gray;
+    --border-color: #e0e0e0;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
 
@@ -73,20 +73,43 @@ main article {
 main article[data-method=GET] {
     border: 1px solid var(--method-get-color);
 }
+main article[data-method=GET] h3 {
+    border-bottom: 1px solid var(--method-get-color);
+}
+
 main article[data-method=POST] {
     border: 1px solid var(--method-post-color);
 }
+main article[data-method=POST] h3 {
+    border-bottom: 1px solid var(--method-get-color);
+}
+
 main article[data-method=PUT] {
     border: 1px solid var(--method-put-color);
 }
+main article[data-method=PUT] h3 {
+    border-bottom: 1px solid var(--method-get-color);
+}
+
 main article[data-method=PATCH] {
     border: 1px solid var(--method-patch-color);
 }
+main article[data-method=PATCH] h3 {
+    border-bottom: 1px solid var(--method-get-color);
+}
+
 main article[data-method=DELETE] {
     border: 1px solid var(--method-delete-color);
 }
+main article[data-method=DELETE] h3 {
+    border-bottom: 1px solid var(--method-get-color);
+}
+
 main article[data-method=OPTIONS] {
     border: 1px solid var(--method-options-color);
+}
+main article[data-method=OPTIONS] h3 {
+    border-bottom: 1px solid var(--method-get-color);
 }
 
 main article h3 {
@@ -105,6 +128,19 @@ main article .summary {
     padding:var(--article-padding);
     margin: 0;
     border-bottom: 1px solid var(--border-color);
+}
+
+main article .body {
+    display: flex;
+}
+
+main article .body .request, main article .body .response {
+    flex: 1 1 50%;
+    padding: var(--article-padding);
+}
+
+main article .body .request {
+    border-right: 1px dotted var(--border-color);
 }
 
 /*************************** footer ***********************/
