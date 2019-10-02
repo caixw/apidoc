@@ -85,10 +85,14 @@
                 </article>
                 </xsl:for-each>
 
+                <!-- api -->
                 <xsl:for-each select="apidoc/api">
                 <article>
                 <xsl:attribute name="data-method">
                     <xsl:value-of select="@method" />
+                </xsl:attribute>
+                <xsl:attribute name="id">
+                    <xsl:value-of select="generate-id(.)" />
                 </xsl:attribute>
 
                     <h3>
@@ -113,6 +117,7 @@
                     </div>
                 </article>
                 </xsl:for-each>
+                <!-- end api -->
             </main>
 
             <footer>
