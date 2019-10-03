@@ -32,10 +32,10 @@
                 <ul class="servers-selector">
                     <xsl:for-each select="apidoc/server">
                     <li>
-                        <label><input type="checkbox" /><xsl:value-of select="@name" /></label>
-                        <xsl:attribute name="data-server">
+                        <xsl:attribute name="data-server"><!-- chrome 和 safari 必须要在其它元素之前 -->
                             <xsl:value-of select="@name" />
                         </xsl:attribute>
+                        <label><input type="checkbox" /><xsl:value-of select="@name" /></label>
                     </li>
                     </xsl:for-each>
                 </ul>
@@ -44,10 +44,10 @@
                 <ul class="tags-selector">
                     <xsl:for-each select="apidoc/tag">
                     <li>
-                        <label><input type="checkbox" /><xsl:value-of select="@name" /></label>
                         <xsl:attribute name="data-server">
                             <xsl:value-of select="@name" />
                         </xsl:attribute>
+                        <label><input type="checkbox" /><xsl:value-of select="@name" /></label>
                     </li>
                     </xsl:for-each>
                 </ul>
@@ -58,10 +58,10 @@
                     <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
                     <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
                     <li>
-                        <label><input type="checkbox" /><xsl:value-of select="." /></label>
                         <xsl:attribute name="data-method">
                             <xsl:value-of select="." />
                         </xsl:attribute>
+                        <label><input type="checkbox" /><xsl:value-of select="." /></label>
                     </li>
                     </xsl:for-each>
                 </ul>
