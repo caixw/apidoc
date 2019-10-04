@@ -116,6 +116,7 @@ main article h3 {
     margin: 0;
     padding: var(--article-padding);
     border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
 }
 
 main article h3 .method {

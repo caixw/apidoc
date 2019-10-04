@@ -136,6 +136,7 @@
 
                 <!-- api -->
                 <xsl:for-each select="apidoc/api">
+                <xsl:sort select="path/@path"/>
                 <article>
                 <xsl:attribute name="data-method">
                     <xsl:value-of select="@method" />
