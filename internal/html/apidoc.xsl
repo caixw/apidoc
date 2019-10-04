@@ -7,6 +7,56 @@
     indent="yes"
     version="5.0"
     doctype-system="about:legacy-compat" />
+
+<!-- 替换字符串中特定的字符 -->
+<xsl:template name="replace">
+    <xsl:param name="text" />
+    <xsl:param name="old" />
+    <xsl:param name="new" />
+    <xsl:choose>
+        <xsl:when test="contains($text, $old)">
+            <xsl:value-of select="substring-before($text, $old)" />
+            <xsl:value-of select="$new" />
+            <xsl:call-template name="replace">
+                <xsl:with-param name="text" select="substring-after($text, $old)" />
+                <xsl:with-param name="old" select="$old" />
+                <xsl:with-param name="new" select="$new" />
+            </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="$text" />
+        </xsl:otherwise>
+    </xsl:choose>
+</xsl:template>
+
+<!-- 根据 method 和 path 生成唯一的 ID -->
+<xsl:template name="get-api-id">
+    <xsl:param name="method" />
+    <xsl:param name="path" />
+
+    <xsl:variable name="p1">
+        <xsl:call-template name="replace">
+            <xsl:with-param name="text" select="$path" />
+            <xsl:with-param name="old" select="'/'" />
+            <xsl:with-param name="new" select="'_'" />
+        </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="p2">
+        <xsl:call-template name="replace">
+            <xsl:with-param name="text" select="$p1" />
+            <xsl:with-param name="old" select="'{'" />
+            <xsl:with-param name="new" select="'-'" />
+        </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:value-of select="$method" />
+    <xsl:call-template name="replace">
+        <xsl:with-param name="text" select="$p2" />
+        <xsl:with-param name="old" select="'}'" />
+        <xsl:with-param name="new" select="'-'" />
+    </xsl:call-template>
+</xsl:template>
+
 <xsl:template match="/">
     <html>
         <head>
@@ -65,7 +115,6 @@
                     </li>
                     </xsl:for-each>
                 </ul>
-                <!-- methods -->
             </aside>
 
             <main>
@@ -92,7 +141,10 @@
                     <xsl:value-of select="@method" />
                 </xsl:attribute>
                 <xsl:attribute name="id">
-                    <xsl:value-of select="generate-id(.)" />
+                    <xsl:call-template name="get-api-id">
+                        <xsl:with-param name="path" select="path/@path" />
+                        <xsl:with-param name="method" select="@method" />
+                    </xsl:call-template>
                 </xsl:attribute>
 
                     <h3>
