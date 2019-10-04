@@ -81,35 +81,35 @@ main article[data-method=POST] {
     border: 1px solid var(--method-post-color);
 }
 main article[data-method=POST] h3 {
-    border-bottom: 1px solid var(--method-get-color);
+    border-bottom: 1px solid var(--method-post-color);
 }
 
 main article[data-method=PUT] {
     border: 1px solid var(--method-put-color);
 }
 main article[data-method=PUT] h3 {
-    border-bottom: 1px solid var(--method-get-color);
+    border-bottom: 1px solid var(--method-put-color);
 }
 
 main article[data-method=PATCH] {
     border: 1px solid var(--method-patch-color);
 }
 main article[data-method=PATCH] h3 {
-    border-bottom: 1px solid var(--method-get-color);
+    border-bottom: 1px solid var(--method-patch-color);
 }
 
 main article[data-method=DELETE] {
     border: 1px solid var(--method-delete-color);
 }
 main article[data-method=DELETE] h3 {
-    border-bottom: 1px solid var(--method-get-color);
+    border-bottom: 1px solid var(--method-delete-color);
 }
 
 main article[data-method=OPTIONS] {
     border: 1px solid var(--method-options-color);
 }
 main article[data-method=OPTIONS] h3 {
-    border-bottom: 1px solid var(--method-get-color);
+    border-bottom: 1px solid var(--method-options-color);
 }
 
 main article h3 {
@@ -134,9 +134,15 @@ main article .body {
     display: flex;
 }
 
-main article .body .request, main article .body .response {
+main article .body .request,
+main article .body .response {
     flex: 1 1 50%;
     padding: var(--article-padding);
+}
+
+main article .body .request h4,
+main article .body .response h4 {
+    margin: 0;
 }
 
 main article .body .request {
