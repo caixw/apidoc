@@ -7,9 +7,14 @@
 package apidoc
 
 import (
+	"io/ioutil"
+	"net/http"
+	"path"
+
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/input"
+	"github.com/caixw/apidoc/v5/internal/html"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
@@ -44,4 +49,40 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	}
 
 	return output.Render(doc, o)
+}
+
+// Handle 处理 apidoc 相关的依赖文件
+//
+// p 指定了 apidoc.xml 实际的文件路径；
+func Handle(p string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		switch path.Base(r.URL.Path) {
+		case "apidoc.xsl":
+			w.Header().Set("Content-Type", "text/xsl")
+			_, err = w.Write(html.XSL)
+		case "apidoc.js":
+			w.Header().Set("Content-Type", "application/javascript")
+			_, err = w.Write(html.JS)
+		case "apidoc.css":
+			w.Header().Set("Content-Type", "text/css")
+			_, err = w.Write(html.CSS)
+		case "apidoc.xml":
+			// TODO 替换掉 xml-stylesheet 为当前的 xsl
+			data, err := ioutil.ReadFile(p)
+			if err != nil {
+				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				return
+			}
+
+			w.Header().Set("Content-Type", "text/xml")
+			_, err = w.Write(data)
+		default:
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		}
+		if err != nil {
+			// TODO
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+	})
 }
