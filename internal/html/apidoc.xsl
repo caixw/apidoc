@@ -57,6 +57,108 @@
     </xsl:call-template>
 </xsl:template>
 
+<xsl:template name="param">
+    <xsl:param name="title" />
+    <xsl:param name="param" />
+    <h5><xsl:value-of select="$title" /></h5>
+    <table>
+        <thead>
+            <tr>
+                <th>变量</th>
+                <th>类型</th>
+                <th>必须</th>
+                <th>默认值</th>
+                <th>枚举</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <xsl:for-each select="$param">
+                <tr>
+                    <th><xsl:value-of select="@name" /></th>
+                    <td><xsl:value-of select="@type" /></td>
+                    <td><xsl:value-of select="@required" /></td>
+                    <td><xsl:value-of select="@default" /></td>
+                    <td><xsl:value-of select="@summary" /></td>
+                </tr>
+            </xsl:for-each>
+        </tbody>
+    </table>
+</xsl:template>
+
+<xsl:template match="/apidoc/api/request">
+    // TODO status
+    <xsl:if test="../path/param">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'路径参数'" />
+            <xsl:with-param name="param" select="../path/param" />
+        </xsl:call-template>
+    </xsl:if>
+    <xsl:if test="../path/query">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'查询参数'" />
+            <xsl:with-param name="param" select="../path/query" />
+        </xsl:call-template>
+    </xsl:if>
+    <xsl:if test="./header">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'请求报头'" />
+            <xsl:with-param name="param" select="header" />
+        </xsl:call-template>
+    </xsl:if>
+
+    // TODO param
+</xsl:template>
+
+<xsl:template match="/apidoc/api/response">
+TODO
+</xsl:template>
+
+<!-- api 元素界面 -->
+<xsl:template match="/apidoc/api">
+    <article class="api">
+    <xsl:attribute name="data-method">
+        <xsl:value-of select="@method" />
+    </xsl:attribute>
+    <xsl:attribute name="id">
+        <xsl:call-template name="get-api-id">
+            <xsl:with-param name="path" select="path/@path" />
+            <xsl:with-param name="method" select="@method" />
+        </xsl:call-template>
+    </xsl:attribute>
+
+        <h3>
+            <span class="action">
+            <xsl:value-of select="@method" />
+            </span>
+            <xsl:value-of select="path/@path" />
+        </h3>
+        <div class="summary">
+            <xsl:value-of select="@summary" />
+
+            <xsl:if test="./description">
+            <br />
+            <xsl:value-of select="./description" />
+            </xsl:if>
+        </div>
+
+        <div class="body">
+            <div class="request">
+                <h4>请求</h4>
+                <xsl:for-each select="request">
+                    <xsl:apply-templates select="." />
+                </xsl:for-each>
+            </div>
+            <div class="response">
+                <h4>返回</h4>
+                <xsl:for-each select="response">
+                    <xsl:apply-templates select="." />
+                </xsl:for-each>
+            </div>
+        </div>
+    </article>
+</xsl:template>
+
 <xsl:template match="/">
     <html>
         <head>
@@ -125,8 +227,10 @@
                 <xsl:for-each select="/apidoc/server">
                 <article class="server">
                     <h3>
-                        <xsl:value-of select="@url"/>
+                        <span class="action">
                         <xsl:value-of select="@name"/>
+                        </span>
+                        <xsl:value-of select="@url"/>
                     </h3>
                     <div class="summary">
                         <xsl:value-of select="."/>
@@ -134,43 +238,10 @@
                 </article>
                 </xsl:for-each>
 
-                <!-- api -->
                 <xsl:for-each select="apidoc/api">
                 <xsl:sort select="path/@path"/>
-                <article>
-                <xsl:attribute name="data-method">
-                    <xsl:value-of select="@method" />
-                </xsl:attribute>
-                <xsl:attribute name="id">
-                    <xsl:call-template name="get-api-id">
-                        <xsl:with-param name="path" select="path/@path" />
-                        <xsl:with-param name="method" select="@method" />
-                    </xsl:call-template>
-                </xsl:attribute>
-
-                    <h3>
-                        <span class="method">
-                        <xsl:value-of select="@method" />
-                        </span>
-                        <xsl:value-of select="path/@path" />
-                    </h3>
-                    <div class="summary">
-                        <xsl:value-of select="@summary" />
-                    </div>
-
-                    <div class="body">
-                        <div class="request">
-                            <h4>请求</h4>
-                            <!-- request -->
-                        </div>
-                        <div class="response">
-                            <h4>返回</h4>
-                            <!-- response -->
-                        </div>
-                    </div>
-                </article>
+                    <xsl:apply-templates select="." />
                 </xsl:for-each>
-                <!-- end api -->
             </main>
 
             <footer>

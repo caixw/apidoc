@@ -66,87 +66,94 @@ main {
     min-height: 100%;
 }
 
+main .content {
+    padding: var(--article-padding);
+}
+
 main article {
     margin:var(--padding) 0;
 }
 
-main article[data-method=GET] {
-    border: 1px solid var(--method-get-color);
-}
-main article[data-method=GET] h3 {
-    border-bottom: 1px solid var(--method-get-color);
-}
-
-main article[data-method=POST] {
-    border: 1px solid var(--method-post-color);
-}
-main article[data-method=POST] h3 {
-    border-bottom: 1px solid var(--method-post-color);
-}
-
-main article[data-method=PUT] {
-    border: 1px solid var(--method-put-color);
-}
-main article[data-method=PUT] h3 {
-    border-bottom: 1px solid var(--method-put-color);
-}
-
-main article[data-method=PATCH] {
-    border: 1px solid var(--method-patch-color);
-}
-main article[data-method=PATCH] h3 {
-    border-bottom: 1px solid var(--method-patch-color);
-}
-
-main article[data-method=DELETE] {
-    border: 1px solid var(--method-delete-color);
-}
-main article[data-method=DELETE] h3 {
-    border-bottom: 1px solid var(--method-delete-color);
-}
-
-main article[data-method=OPTIONS] {
-    border: 1px solid var(--method-options-color);
-}
-main article[data-method=OPTIONS] h3 {
-    border-bottom: 1px solid var(--method-options-color);
-}
-
-main article h3 {
+main .server h3,
+main .api h3{
     margin: 0;
     padding: var(--article-padding);
     border-bottom: 1px solid var(--border-color);
     cursor: pointer;
 }
 
-main article h3 .method {
+main .server h3 .action,
+main .api h3 .action {
     min-width: 4rem;
     font-weight: bold;
     display: inline-block;
 }
 
-main article .summary {
+main .server .summary,
+main .api .summary {
     padding:var(--article-padding);
     margin: 0;
     border-bottom: 1px solid var(--border-color);
 }
 
-main article .body {
+main .api[data-method=GET] {
+    border: 1px solid var(--method-get-color);
+}
+main .api[data-method=GET] h3 {
+    border-bottom: 1px solid var(--method-get-color);
+}
+
+main .api[data-method=POST] {
+    border: 1px solid var(--method-post-color);
+}
+main .api[data-method=POST] h3 {
+    border-bottom: 1px solid var(--method-post-color);
+}
+
+main .api[data-method=PUT] {
+    border: 1px solid var(--method-put-color);
+}
+main .api[data-method=PUT] h3 {
+    border-bottom: 1px solid var(--method-put-color);
+}
+
+main .api[data-method=PATCH] {
+    border: 1px solid var(--method-patch-color);
+}
+main .api[data-method=PATCH] h3 {
+    border-bottom: 1px solid var(--method-patch-color);
+}
+
+main .api[data-method=DELETE] {
+    border: 1px solid var(--method-delete-color);
+}
+main .api[data-method=DELETE] h3 {
+    border-bottom: 1px solid var(--method-delete-color);
+}
+
+main .api[data-method=OPTIONS] {
+    border: 1px solid var(--method-options-color);
+}
+main .api[data-method=OPTIONS] h3 {
+    border-bottom: 1px solid var(--method-options-color);
+}
+
+main .api .body {
     display: flex;
 }
 
-main article .body .request,
-main article .body .response {
+main .api .body .request,
+main .api .body .response {
     flex: 1 1 50%;
     padding: var(--article-padding);
 }
 
-main article .body .request h4,
-main article .body .response h4 {
+main .api .body .request h4,
+main .api .body .response h4 {
     margin: 0;
 }
 
-main article .body .request {
+main .api .body .request {
     border-right: 1px dotted var(--border-color);
 }
 
