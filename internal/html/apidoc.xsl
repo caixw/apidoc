@@ -57,7 +57,8 @@
     </xsl:call-template>
 </xsl:template>
 
-<xsl:template name="param">
+<!-- path param, path query, header 等的界面 -->
+<xsl:template name="simple-param">
     <xsl:param name="title" />
     <xsl:param name="param" />
     <h5><xsl:value-of select="$title" /></h5>
@@ -86,32 +87,43 @@
     </table>
 </xsl:template>
 
+<xsl:template name="param">
+    <xsl:param name="param" />
+    // TODO
+</xsl:template>
+
 <xsl:template match="/apidoc/api/request">
-    // TODO status
+<div class="request">
+    <h5 class="mimetype"><xsl:value-of select="@mimetype" /></h5>
     <xsl:if test="../path/param">
-        <xsl:call-template name="param">
+        <xsl:call-template name="simple-param">
             <xsl:with-param name="title" select="'路径参数'" />
             <xsl:with-param name="param" select="../path/param" />
         </xsl:call-template>
     </xsl:if>
     <xsl:if test="../path/query">
-        <xsl:call-template name="param">
+        <xsl:call-template name="simple-param">
             <xsl:with-param name="title" select="'查询参数'" />
             <xsl:with-param name="param" select="../path/query" />
         </xsl:call-template>
     </xsl:if>
     <xsl:if test="./header">
-        <xsl:call-template name="param">
+        <xsl:call-template name="simple-param">
             <xsl:with-param name="title" select="'请求报头'" />
             <xsl:with-param name="param" select="header" />
         </xsl:call-template>
     </xsl:if>
 
-    // TODO param
+    <xsl:call-template name="param">
+        <xsl:with-param name="param" select="." />
+    </xsl:call-template>
+</div>
 </xsl:template>
 
 <xsl:template match="/apidoc/api/response">
-TODO
+    <xsl:call-template name="param">
+        <xsl:with-param name="param" select="." />
+    </xsl:call-template>
 </xsl:template>
 
 <!-- api 元素界面 -->
@@ -143,13 +155,13 @@ TODO
         </div>
 
         <div class="body">
-            <div class="request">
+            <div class="requests">
                 <h4>请求</h4>
                 <xsl:for-each select="request">
                     <xsl:apply-templates select="." />
                 </xsl:for-each>
             </div>
-            <div class="response">
+            <div class="responses">
                 <h4>返回</h4>
                 <xsl:for-each select="response">
                     <xsl:apply-templates select="." />

@@ -142,19 +142,23 @@ main .api .body {
     display: flex;
 }
 
-main .api .body .request,
-main .api .body .response {
+main .api .body .requests,
+main .api .body .responses {
     flex: 1 1 50%;
     padding: var(--article-padding);
 }
+main .api .body .requests {
+    border-right: 1px dotted var(--border-color);
+}
 
-main .api .body .request h4,
-main .api .body .response h4 {
+main .api .body .requests h4,
+main .api .body .responses h4 {
     margin: 0;
 }
 
-main .api .body .request {
-    border-right: 1px dotted var(--border-color);
+main .api .body .request .mimetype,
+main .api .body .response .mimetype {
+    border-bottom: 1px solid var(--border-color);
 }
 
 /*************************** footer ***********************/
