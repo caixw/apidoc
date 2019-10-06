@@ -71,8 +71,8 @@
                 <th>类型</th>
                 <th>必须</th>
                 <th>默认值</th>
-                <th>描述</th>
                 <th>枚举</th>
+                <th>描述</th>
             </tr>
         </thead>
         <tbody>
@@ -99,7 +99,6 @@
         <td><xsl:value-of select="@type" /></td>
         <td><xsl:value-of select="@required" /></td>
         <td><xsl:value-of select="@default" /></td>
-        <td><xsl:value-of select="@summary" /></td>
         <td>
             <xsl:if test="./enum">
                 <ul>
@@ -111,6 +110,7 @@
                 </ul>
             </xsl:if>
         </td>
+        <td><xsl:value-of select="@summary" /></td>
     </tr>
 
     <xsl:if test="./param">

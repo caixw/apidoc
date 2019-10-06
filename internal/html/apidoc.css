@@ -25,6 +25,15 @@ body {
     height: 100%;
 }
 
+table {
+    width: 100%;
+}
+
+table th, table td {
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
 /*************************** header ***********************/
 
 header h1 {
@@ -160,6 +169,8 @@ main .api .body .request .mimetype,
 main .api .body .response .mimetype {
     border-bottom: 1px solid var(--border-color);
 }
+
+
 
 /*************************** footer ***********************/
 
