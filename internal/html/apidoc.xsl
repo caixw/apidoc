@@ -71,7 +71,6 @@
                 <th>类型</th>
                 <th>必须</th>
                 <th>默认值</th>
-                <th>枚举</th>
                 <th>描述</th>
             </tr>
         </thead>
@@ -83,6 +82,7 @@
     </table>
 </xsl:template>
 
+<!-- 列顺序必须要与 param 中的相同 -->
 <xsl:template name="param-list">
     <xsl:param name="param" />
     <xsl:param name="parent" /> <!-- 上一级的名称，嵌套对象时可用 -->
@@ -97,10 +97,16 @@
             <xsl:value-of select="@name" />
         </th>
         <td><xsl:value-of select="@type" /></td>
-        <td><xsl:value-of select="@required" /></td>
+        <td>
+            <xsl:if test="@required = 'true'">
+                <xsl:value-of select="'&#10003;'" />
+            </xsl:if>
+        </td>
         <td><xsl:value-of select="@default" /></td>
         <td>
+            <xsl:value-of select="@summary" />
             <xsl:if test="./enum">
+                <p>可以使用以下枚举值：</p>
                 <ul>
                 <xsl:for-each select="./enum">
                     <li>
@@ -110,7 +116,6 @@
                 </ul>
             </xsl:if>
         </td>
-        <td><xsl:value-of select="@summary" /></td>
     </tr>
 
     <xsl:if test="./param">
