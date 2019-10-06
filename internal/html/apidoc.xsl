@@ -156,6 +156,13 @@
 </xsl:template>
 
 <xsl:template match="/apidoc/api/response">
+    <xsl:if test="./header">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'返回报头'" />
+            <xsl:with-param name="param" select="header" />
+        </xsl:call-template>
+    </xsl:if>
+
     <xsl:call-template name="param">
         <xsl:with-param name="param" select="." />
     </xsl:call-template>
