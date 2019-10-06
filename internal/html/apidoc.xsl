@@ -58,9 +58,11 @@
 </xsl:template>
 
 <!-- path param, path query, header 等的界面 -->
-<xsl:template name="simple-param">
+<xsl:template name="param">
     <xsl:param name="title" />
     <xsl:param name="param" />
+    <xsl:param name="example" /><!-- 示例代码，即在 parent 为空时，才有可能有此值 -->
+
     <h5><xsl:value-of select="$title" /></h5>
     <table>
         <thead>
@@ -74,52 +76,69 @@
             </tr>
         </thead>
         <tbody>
-            <xsl:for-each select="$param">
-                <tr>
-                    <th><xsl:value-of select="@name" /></th>
-                    <td><xsl:value-of select="@type" /></td>
-                    <td><xsl:value-of select="@required" /></td>
-                    <td><xsl:value-of select="@default" /></td>
-                    <td><xsl:value-of select="@summary" /></td>
-                    <td>
-                        <xsl:if test="./enum">
-                            <ul>
-                            <xsl:for-each select="./enum">
-                                <li>
-                                <xsl:value-of select="@value" />:<xsl:value-of select="." />
-                                </li>
-                            </xsl:for-each>
-                            </ul>
-                        </xsl:if>
-                    </td>
-                </tr>
-            </xsl:for-each>
+            <xsl:call-template name="param-list">
+            <xsl:with-param name="param" select="$param" />
+            </xsl:call-template>
         </tbody>
     </table>
 </xsl:template>
 
-<xsl:template name="param">
+<xsl:template name="param-list">
     <xsl:param name="param" />
-    // TODO
+    <xsl:param name="parent" /> <!-- 上一级的名称，嵌套对象时可用 -->
+
+    <xsl:for-each select="$param">
+    <tr>
+        <th>
+            <xsl:if test="$parent">
+                <xsl:value-of select="$parent" />
+                <xsl:value-of select="'.'" />
+            </xsl:if>
+            <xsl:value-of select="@name" />
+        </th>
+        <td><xsl:value-of select="@type" /></td>
+        <td><xsl:value-of select="@required" /></td>
+        <td><xsl:value-of select="@default" /></td>
+        <td><xsl:value-of select="@summary" /></td>
+        <td>
+            <xsl:if test="./enum">
+                <ul>
+                <xsl:for-each select="./enum">
+                    <li>
+                    <xsl:value-of select="@value" />:<xsl:value-of select="." />
+                    </li>
+                </xsl:for-each>
+                </ul>
+            </xsl:if>
+        </td>
+    </tr>
+
+    <xsl:if test="./param">
+        <xsl:call-template name="param-list">
+            <xsl:with-param name="param" select="./param" />
+            <xsl:with-param name="parent" select="./@name" />
+        </xsl:call-template>
+    </xsl:if>
+    </xsl:for-each>
 </xsl:template>
 
 <xsl:template match="/apidoc/api/request">
 <div class="request">
     <h5 class="mimetype"><xsl:value-of select="@mimetype" /></h5>
     <xsl:if test="../path/param">
-        <xsl:call-template name="simple-param">
+        <xsl:call-template name="param">
             <xsl:with-param name="title" select="'路径参数'" />
             <xsl:with-param name="param" select="../path/param" />
         </xsl:call-template>
     </xsl:if>
     <xsl:if test="../path/query">
-        <xsl:call-template name="simple-param">
+        <xsl:call-template name="param">
             <xsl:with-param name="title" select="'查询参数'" />
             <xsl:with-param name="param" select="../path/query" />
         </xsl:call-template>
     </xsl:if>
     <xsl:if test="./header">
-        <xsl:call-template name="simple-param">
+        <xsl:call-template name="param">
             <xsl:with-param name="title" select="'请求报头'" />
             <xsl:with-param name="param" select="header" />
         </xsl:call-template>
