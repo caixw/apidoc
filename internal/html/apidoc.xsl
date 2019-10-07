@@ -218,7 +218,11 @@
 <!-- header 界面元素 -->
 <xsl:template name="header">
     <header>
-        <h1><img src="./icon.svg" /><xsl:value-of select="/apidoc/title" /></h1>
+        <h1>
+            <img src="./icon.svg" />
+            <xsl:value-of select="/apidoc/title" />
+            <span class="version">(<xsl:value-of select="/apidoc/@version" />)</span>
+        </h1>
 
         <div class="menu">
             <h2>servers</h2>
@@ -271,7 +275,8 @@
         <head>
             <title><xsl:value-of select="apidoc/title" /></title>
             <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+            <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+            <meta name="generator" content="https://apidoc.tools" />
             <link rel="stylesheet" type="text/css" href="./apidoc.css" />
             <link rel="icon" type="image/png" href="./icon.png" />
             <link rel="license">

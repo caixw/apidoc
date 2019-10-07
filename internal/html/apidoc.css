@@ -70,6 +70,10 @@ header h1, header h2 {
     display: inline-block;
 }
 
+header h1 .version {
+    font-size: 1rem;
+}
+
 header h1 img {
     height: 1.5rem;
     margin-right: .5rem;
