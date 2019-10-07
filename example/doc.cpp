@@ -4,8 +4,8 @@
 //     <title>title of doc</title>
 //     <server name="admin" url="https://api.example.com/admin">后台管理接口</server>
 //     <server name="client" url="https://api.example.com">客户端接口</server>
-//     <tag name="t1">t1 desc</tag>
-//     <tag name="t2">t2 desc</tag>
+//     <tag name="t1" title="标签1" />
+//     <tag name="t2" title="标签2" />
 //     <license url="https://opensource.org/licenses/MIT">MIT</license>
 //     <contact name="name">
 //         <url>https://example.com</url>

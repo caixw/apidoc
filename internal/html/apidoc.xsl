@@ -127,6 +127,7 @@
     </xsl:for-each>
 </xsl:template>
 
+<!-- api/request 的介面元素 -->
 <xsl:template match="/apidoc/api/request">
 <div class="request">
     <h5 class="mimetype"><xsl:value-of select="@mimetype" /></h5>
@@ -155,6 +156,7 @@
 </div>
 </xsl:template>
 
+<!-- api/response 的界面 -->
 <xsl:template match="/apidoc/api/response">
     <xsl:if test="./header">
         <xsl:call-template name="param">
@@ -168,7 +170,7 @@
     </xsl:call-template>
 </xsl:template>
 
-<!-- api 元素界面 -->
+<!-- api 界面元素 -->
 <xsl:template match="/apidoc/api">
     <article class="api">
     <xsl:attribute name="data-method">
@@ -213,6 +215,57 @@
     </article>
 </xsl:template>
 
+<!-- header 界面元素 -->
+<xsl:template name="header">
+    <header>
+        <h1><img src="./icon.svg" /><xsl:value-of select="/apidoc/title" /></h1>
+
+        <div class="menu">
+            <h2>servers</h2>
+            <ul>
+                <xsl:for-each select="apidoc/server">
+                <li>
+                    <xsl:attribute name="data-server"><!-- chrome 和 safari 必须要在其它元素之前 -->
+                        <xsl:value-of select="@name" />
+                    </xsl:attribute>
+                    <label><input type="checkbox" /><xsl:value-of select="@name" /></label>
+                </li>
+            </xsl:for-each>
+            </ul>
+        </div>
+
+        <div class="menu">
+            <h2>标签</h2>
+            <ul>
+                <xsl:for-each select="apidoc/tag">
+                <li>
+                    <xsl:attribute name="data-server">
+                        <xsl:value-of select="@name" />
+                    </xsl:attribute>
+                    <label><input type="checkbox" /><xsl:value-of select="@title" /></label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
+
+        <div class="menu">
+            <h2>请求方法</h2>
+            <ul>
+                <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
+                <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
+                <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
+                <li>
+                    <xsl:attribute name="data-method">
+                        <xsl:value-of select="." />
+                    </xsl:attribute>
+                    <label><input type="checkbox" /><xsl:value-of select="." /></label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
+    </header>
+</xsl:template>
+
 <xsl:template match="/">
     <html>
         <head>
@@ -227,51 +280,7 @@
             <script src="./apidoc.js"></script>
         </head>
         <body>
-            <header>
-                <h1>
-                    <span class="app-name"><img src="./icon.svg" />apidoc</span>
-                </h1>
-            </header>
-
-            <aside>
-                <h2>Servers</h2>
-                <ul class="servers-selector">
-                    <xsl:for-each select="apidoc/server">
-                    <li>
-                        <xsl:attribute name="data-server"><!-- chrome 和 safari 必须要在其它元素之前 -->
-                            <xsl:value-of select="@name" />
-                        </xsl:attribute>
-                        <label><input type="checkbox" /><xsl:value-of select="@name" /></label>
-                    </li>
-                    </xsl:for-each>
-                </ul>
-
-                <h2>Tags</h2>
-                <ul class="tags-selector">
-                    <xsl:for-each select="apidoc/tag">
-                    <li>
-                        <xsl:attribute name="data-server">
-                            <xsl:value-of select="@name" />
-                        </xsl:attribute>
-                        <label><input type="checkbox" /><xsl:value-of select="@name" /></label>
-                    </li>
-                    </xsl:for-each>
-                </ul>
-
-                <h2>Methods</h2>
-                <ul class="methods-selector">
-                    <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
-                    <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
-                    <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
-                    <li>
-                        <xsl:attribute name="data-method">
-                            <xsl:value-of select="." />
-                        </xsl:attribute>
-                        <label><input type="checkbox" /><xsl:value-of select="." /></label>
-                    </li>
-                    </xsl:for-each>
-                </ul>
-            </aside>
+            <xsl:call-template name="header" />
 
             <main>
                 <div class="content">
@@ -299,7 +308,13 @@
             </main>
 
             <footer>
-            <p>文档由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成！</p>
+            <p>文档版权为
+            <a>
+                <xsl:attribute name="href"><xsl:value-of select="apidoc/license/@url" /></xsl:attribute>
+                <xsl:value-of select="apidoc/license" />
+            </a>。
+            由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成。
+            </p>
             </footer>
         </body>
     </html>

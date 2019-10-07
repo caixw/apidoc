@@ -14,9 +14,9 @@ import (
 // Tag 标签内容
 //  <tag name="tag1" deprecated="1.1.1">description</tag>
 type Tag struct {
-	Name        string  `xml:"name,attr"` // 字面名称，需要唯一
-	Deprecated  Version `xml:"deprecated,attr,omitempty"`
-	Description string  `xml:",cdata"`
+	Name       string  `xml:"name,attr"`  // 标签的唯一 ID
+	Title      string  `xml:"title,attr"` // 显示的名称
+	Deprecated Version `xml:"deprecated,attr,omitempty"`
 }
 
 // Server 服务信息
@@ -45,8 +45,8 @@ func (t *Tag) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"#name", locale.ErrRequired)
 	}
 
-	if shadow.Description == "" {
-		return newSyntaxError(field, locale.ErrRequired)
+	if shadow.Title == "" {
+		return newSyntaxError(field+"#title", locale.ErrRequired)
 	}
 
 	*t = Tag(shadow)

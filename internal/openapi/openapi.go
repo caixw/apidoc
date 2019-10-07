@@ -87,7 +87,7 @@ type ExampleValue string
 func newTag(tag *doc.Tag) *Tag {
 	return &Tag{
 		Name:        tag.Name,
-		Description: tag.Description,
+		Description: tag.Title,
 	}
 }
 

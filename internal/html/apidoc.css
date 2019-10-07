@@ -1,10 +1,12 @@
 @charset "utf-8";
 
 :root {
-    --aside-width: 13rem;
+    --header-height: 54px;
     --border-color: #e0e0e0;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
+
+    --background: white;
 
     /* method */
     --method-get-color: green;
@@ -23,6 +25,7 @@ body {
     padding: 0;
     margin: 0;
     height: 100%;
+    background: var(--background);
 }
 
 table {
@@ -46,43 +49,71 @@ p {
 
 /*************************** header ***********************/
 
-header h1 {
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: block;
+    z-index: 1000;
+    padding: var(--padding);
+    padding-bottom: var(--article-padding);
+    height: var(--header-height);
+    box-sizing: border-box;
+
+    background: var(--background);
     border-bottom: 1px solid var(--border-color);
-    margin-bottom: 0;
-    padding: 0rem var(--padding);
 }
 
-header h1 .app-name {
-    width: var(--aside-width);
-    text-transform: uppercase;
+header h1, header h2 {
+    margin: 0;
+    display: inline-block;
 }
 
-header h1 .app-name img {
+header h1 img {
     height: 1.5rem;
     margin-right: .5rem;
 }
 
-/*************************** aside ***********************/
-
-aside {
-    padding: var(--padding);
-    width: var(--aside-width);
-    border-right: 1px solid var(--border-color);
-    float: left;
-    min-height: 100%;
+header .menu {
+    float: right;
+    margin-right: var(--padding);
+    position: relative;
+    margin-top: 9px;
+}
+header .menu:first-of-type {
+    margin-right: 0;
 }
 
-aside h2 {
-    margin: 0
+header .menu h2 {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+header .menu ul {
+    position: absolute;
+    min-width: 4rem;
+    display: none;
+    list-style: none;
+    background: var(--background);
+    border-bottom: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    padding: var(--article-padding);
+}
+
+header .menu:hover ul {
+    display: block;
 }
 
 /*************************** main ***********************/
 
 main {
     padding: 0rem var(--padding);
-    width: calc(100% - var(--aside-width) - (5 * var(--padding)));
-    float: right;
-    min-height: 100%;
+    top: calc(var(--header-height) + var(--padding));
+    left: 0;
+    right: 0;
+    position: relative;
 }
 
 main .content {
@@ -185,6 +216,6 @@ main .api .body .response .mimetype {
 /*************************** footer ***********************/
 
 footer {
-    clear: both;
+    margin-top: 4rem;
     padding: var(--padding);
 }

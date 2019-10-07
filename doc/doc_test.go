@@ -32,7 +32,7 @@ func TestDoc(t *testing.T) {
 
 	a.Equal(len(doc.Tags), 2)
 	tag := doc.Tags[0]
-	a.Equal(tag.Name, "tag1").NotEmpty(tag.Description)
+	a.Equal(tag.Name, "tag1").NotEmpty(tag.Title)
 	tag = doc.Tags[1]
 	a.Equal(tag.Deprecated, "1.0.1").Equal(tag.Name, "tag2")
 
@@ -76,7 +76,7 @@ func TestDoc_all(t *testing.T) {
 
 	a.Equal(len(doc.Tags), 2)
 	tag := doc.Tags[0]
-	a.Equal(tag.Name, "tag1").NotEmpty(tag.Description)
+	a.Equal(tag.Name, "tag1").NotEmpty(tag.Title)
 	tag = doc.Tags[1]
 	a.Equal(tag.Deprecated, "1.0.1").Equal(tag.Name, "tag2")
 
@@ -101,8 +101,8 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 
 	// 重得的标签名
 	data := `<apidoc version="1.1.1">
-		<tag name="t1">tet</tag>
-		<tag name="t1">tet</tag>
+		<tag name="t1" title="tet" />
+		<tag name="t1" title="tet"></tag>
 	</apidoc>`
 	doc := New()
 	a.NotNil(doc)

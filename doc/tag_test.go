@@ -18,11 +18,11 @@ func TestTag_UnmarshalXML(t *testing.T) {
 	a := assert.New(t)
 
 	obj := &Tag{
-		Name:        "tag1",
-		Deprecated:  "1.1.1",
-		Description: "<a>test</a>",
+		Name:       "tag1",
+		Title:      "test",
+		Deprecated: "1.1.1",
 	}
-	str := `<Tag name="tag1" deprecated="1.1.1"><![CDATA[<a>test</a>]]></Tag>`
+	str := `<Tag name="tag1" title="test" deprecated="1.1.1"></Tag>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
@@ -31,23 +31,11 @@ func TestTag_UnmarshalXML(t *testing.T) {
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj1, obj)
 
-	// 正常，带 CDATA
-	obj1 = &Tag{}
-	str = `<Tag name="tag1"><![CDATA[text]]></Tag>`
-	a.NotError(xml.Unmarshal([]byte(str), obj1))
-	a.Equal(obj1.Description, "text")
-
-	// 正常，不带 CDATA
-	obj1 = &Tag{}
-	str = `<Tag name="tag1">text</Tag>`
-	a.NotError(xml.Unmarshal([]byte(str), obj1))
-	a.Equal(obj1.Description, "text")
-
 	// 少 name
 	str = `<Tag>test</Tag>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
-	// 少 description
+	// 少 title
 	str = `<Tag name="tag1"></Tag>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
