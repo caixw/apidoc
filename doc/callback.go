@@ -4,19 +4,12 @@ package doc
 
 import (
 	"encoding/xml"
-	"strings"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-// HTTP 的安全模式
-const (
-	SchemaHTTP  = "HTTP"
-	SchemaHTTPS = "HTTPS"
-)
-
 // Callback 回调函数的定义
-//  <Callback deprecated="1.1.1" method="GET" schema="HTTPS">
+//  <Callback deprecated="1.1.1" method="GET">
 //       <request status="200" mimetype="json" type="object">
 //           <param name="name" type="string" />
 //           <param name="sex" type="string">
@@ -27,8 +20,8 @@ const (
 //       </request>
 //   </Callback>
 type Callback struct {
-	Schema      string     `xml:"schema,attr"` // http 或是 https，默认为 https
 	Summary     string     `xml:"summary,attr,omitempty"`
+	Path        *Path      `xml:"path,omitempty"`
 	Description string     `xml:"description,omitempty"`
 	Method      Method     `xml:"method,attr"`
 	Queries     []*Param   `xml:"queries,omitempty"`
@@ -51,11 +44,6 @@ func (c *Callback) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	if shadow.Method == "" {
 		return newSyntaxError(field+"#method", locale.ErrRequired)
-	}
-
-	schema := strings.ToUpper(shadow.Schema)
-	if schema != SchemaHTTP && schema != SchemaHTTPS {
-		return newSyntaxError(field+"#schema", locale.ErrInvalidValue)
 	}
 
 	if len(shadow.Requests) == 0 {

@@ -16,11 +16,10 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 	a := assert.New(t)
 
 	obj := &Callback{
-		Schema:   "http",
 		Method:   http.MethodGet,
 		Requests: []*Request{&Request{Mimetype: "json", Type: String}},
 	}
-	str := `<Callback schema="http" method="GET"><request type="string" mimetype="json"></request></Callback>`
+	str := `<Callback method="GET"><request type="string" mimetype="json"></request></Callback>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
@@ -31,7 +30,12 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 
 	// 正常
 	obj1 = &Callback{}
-	str = `<Callback deprecated="1.1.1" method="GET" schema="HTTPS">
+	str = `<Callback deprecated="1.1.1" method="GET">
+		<path path="/users/{id}/orders">
+			<param name="id" type="number">用户 ID </param>
+			<query name="size" type="number">size</query>
+			<query name="page" type="number" deprecated="0.1.1">page</query>
+		</path>
 		<request status="200" mimetype="json" type="object">
 			<param name="name" type="string" />
 			<param name="sex" type="string">
@@ -44,20 +48,14 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 	a.NotError(xml.Unmarshal([]byte(str), obj1)).
 		Equal(obj1.Deprecated, "1.1.1").
 		Equal(1, len(obj1.Requests)).
-		Equal(obj1.Requests[0].Type, Object)
+		Equal(obj1.Requests[0].Type, Object).
+		NotNil(obj1.Path).
+		Equal(obj1.Path.Path, "/users/{id}/orders")
 
-	// 少 schema
-	obj1 = &Callback{}
-	str = `<Callback method="GET"><request type="string" mimetype="json" /></Callback>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 少 method
-	str = `<Callback schema="HTTP"><request type="string" mimetype="json" /></Callback>`
-	obj1 = &Callback{}
-	a.Error(xml.Unmarshal([]byte(str), obj1))
-
-	// 无效的 schema
-	str = `<Callback method="GET" schema="invalid"><request type="string" mimetype="json" /></Callback>`
+	str = `<Callback><request type="string" mimetype="json" /></Callback>`
 	obj1 = &Callback{}
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
