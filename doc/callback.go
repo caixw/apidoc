@@ -20,11 +20,10 @@ import (
 //       </request>
 //   </Callback>
 type Callback struct {
-	Summary     string     `xml:"summary,attr,omitempty"`
-	Path        *Path      `xml:"path,omitempty"`
-	Description string     `xml:"description,omitempty"`
 	Method      Method     `xml:"method,attr"`
-	Queries     []*Param   `xml:"queries,omitempty"`
+	Path        *Path      `xml:"path,omitempty"`
+	Summary     string     `xml:"summary,attr,omitempty"`
+	Description string     `xml:"description,omitempty"`
 	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
 	Reference   string     `xml:"ref,attr,omitempty"`
 	Responses   []*Request `xml:"response,omitempty"`

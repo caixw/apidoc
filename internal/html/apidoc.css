@@ -159,46 +159,59 @@ main .api summary .summary {
     opacity: .5;
 }
 
-main .api[data-method=GET] {
+main .api[data-method=GET],
+main .callback[data-method=GET] h3 {
     border: 1px solid var(--method-get-color);
 }
 main .api[data-method=GET] summary {
     border-bottom: 1px solid var(--method-get-color);
 }
 
-main .api[data-method=POST] {
+main .api[data-method=POST],
+main .callback[data-method=POST] h3 {
     border: 1px solid var(--method-post-color);
 }
 main .api[data-method=POST] summary {
     border-bottom: 1px solid var(--method-post-color);
 }
 
-main .api[data-method=PUT] {
+main .api[data-method=PUT],
+main .callback[data-method=PUT] h3 {
     border: 1px solid var(--method-put-color);
 }
 main .api[data-method=PUT] summary {
     border-bottom: 1px solid var(--method-put-color);
 }
 
-main .api[data-method=PATCH] {
+main .api[data-method=PATCH],
+main .callback[data-method=PATCH] h3 {
     border: 1px solid var(--method-patch-color);
 }
 main .api[data-method=PATCH] summary {
     border-bottom: 1px solid var(--method-patch-color);
 }
 
-main .api[data-method=DELETE] {
+main .api[data-method=DELETE],
+main .callback[data-method=DELETE] h3 {
     border: 1px solid var(--method-delete-color);
 }
 main .api[data-method=DELETE] summary {
     border-bottom: 1px solid var(--method-delete-color);
 }
 
-main .api[data-method=OPTIONS] {
+main .api[data-method=OPTIONS],
+main .callback[data-method=OPTIONS] h3 {
     border: 1px solid var(--method-options-color);
 }
 main .api[data-method=OPTIONS] summary {
     border-bottom: 1px solid var(--method-options-color);
+}
+
+main .callback h3 {
+    padding: var(--article-padding) var(--padding);
+    margin: 0;
+    border-left: none !important;
+    border-right: none !important;
 }
 
 main .api .body {
@@ -223,7 +236,6 @@ main .api .body .request .mimetype,
 main .api .body .response .mimetype {
     border-bottom: 1px solid var(--border-color);
 }
-
 
 
 /*************************** footer ***********************/
