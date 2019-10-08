@@ -69,8 +69,7 @@
             <tr>
                 <th>变量</th>
                 <th>类型</th>
-                <th>必须</th>
-                <th>默认值</th>
+                <th title="是否为必填，以及默认值。">值</th>
                 <th>描述</th>
             </tr>
         </thead>
@@ -105,12 +104,16 @@
         </td>
 
         <td>
-            <xsl:if test="@required = 'true'">
-                <xsl:value-of select="'&#10003;'" />
+            <xsl:choose>
+                <xsl:when test="@required = 'true'"><xsl:value-of select="'R'" /></xsl:when>
+                <xsl:otherwise><xsl:value-of select="'O'" /></xsl:otherwise>
+            </xsl:choose>
+
+            <xsl:if test="@default">
+                <xsl:value-of select="' '" />
+                <xsl:value-of select="@default" />
             </xsl:if>
         </td>
-
-        <td><xsl:value-of select="@default" /></td>
 
         <td>
             <xsl:value-of select="@summary" />
