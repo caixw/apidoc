@@ -96,13 +96,22 @@
             </xsl:if>
             <xsl:value-of select="@name" />
         </th>
-        <td><xsl:value-of select="@type" /></td>
+
+        <td>
+            <xsl:value-of select="@type" />
+            <xsl:if test="@array = 'true'">
+                <xsl:value-of select="'[]'" />
+            </xsl:if>
+        </td>
+
         <td>
             <xsl:if test="@required = 'true'">
                 <xsl:value-of select="'&#10003;'" />
             </xsl:if>
         </td>
+
         <td><xsl:value-of select="@default" /></td>
+
         <td>
             <xsl:value-of select="@summary" />
             <xsl:if test="./enum">
