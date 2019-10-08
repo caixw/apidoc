@@ -125,10 +125,10 @@ main .content {
 }
 
 main .api {
-    margin-bottom: var(--padding);
+    margin-bottom: var(--article-padding);
 }
 
-main .api summary{
+main .api summary {
     margin: 0;
     padding: var(--article-padding);
     border-bottom: 1px solid var(--border-color);
@@ -212,6 +212,8 @@ main .callback h3 {
     margin: 0;
     border-left: none !important;
     border-right: none !important;
+    cursor: pointer;
+    line-height: 1;
 }
 
 main .api .body {

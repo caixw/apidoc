@@ -176,6 +176,9 @@
 <!-- api/response 的界面 -->
 <xsl:template name="response">
     <xsl:param name="response" />
+
+    <h5><xsl:value-of select="$response/@status" /></h5>
+
     <xsl:if test="$response/header">
         <xsl:call-template name="param">
             <xsl:with-param name="title" select="'返回报头'" />
