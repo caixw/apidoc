@@ -139,22 +139,34 @@
     </xsl:for-each>
 </xsl:template>
 
+<!-- path 界在元素 -->
+<xsl:template name="path">
+    <xsl:param name="path" />
+
+    <xsl:if test="$path/param">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'路径参数'" />
+            <xsl:with-param name="param" select="$path/param" />
+        </xsl:call-template>
+    </xsl:if>
+
+    <xsl:if test="$path/query">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'查询参数'" />
+            <xsl:with-param name="param" select="$path/query" />
+        </xsl:call-template>
+    </xsl:if>
+</xsl:template>
+
 <!-- api/request 的介面元素 -->
 <xsl:template match="/apidoc/api/request">
 <div class="request">
     <h5 class="mimetype"><xsl:value-of select="@mimetype" /></h5>
-    <xsl:if test="../path/param">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'路径参数'" />
-            <xsl:with-param name="param" select="../path/param" />
-        </xsl:call-template>
-    </xsl:if>
-    <xsl:if test="../path/query">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'查询参数'" />
-            <xsl:with-param name="param" select="../path/query" />
-        </xsl:call-template>
-    </xsl:if>
+
+    <xsl:call-template name="path">
+        <xsl:with-param name="path" select="../path" />
+    </xsl:call-template>
+    
     <xsl:if test="./header">
         <xsl:call-template name="param">
             <xsl:with-param name="title" select="'请求报头'" />
@@ -184,7 +196,7 @@
 
 <!-- api 界面元素 -->
 <xsl:template match="/apidoc/api">
-    <article class="api">
+    <details class="api">
     <xsl:attribute name="data-method">
         <xsl:value-of select="@method" />
     </xsl:attribute>
@@ -195,17 +207,18 @@
         </xsl:call-template>
     </xsl:attribute>
 
-        <h3>
+        <summary>
             <span class="action">
             <xsl:value-of select="@method" />
             </span>
             <xsl:value-of select="path/@path" />
-        </h3>
-        <div class="summary">
-            <xsl:value-of select="@summary" />
 
+            <span class="summary">
+            <xsl:value-of select="@summary" />
+            </span>
+        </summary>
+        <div class="description">
             <xsl:if test="./description">
-            <br />
             <xsl:value-of select="./description" />
             </xsl:if>
         </div>
@@ -224,7 +237,7 @@
                 </xsl:for-each>
             </div>
         </div>
-    </article>
+    </details>
 </xsl:template>
 
 <!-- header 界面元素 -->
@@ -235,20 +248,6 @@
             <xsl:value-of select="/apidoc/title" />
             <span class="version">(<xsl:value-of select="/apidoc/@version" />)</span>
         </h1>
-
-        <div class="menu">
-            <h2>servers</h2>
-            <ul>
-                <xsl:for-each select="apidoc/server">
-                <li>
-                    <xsl:attribute name="data-server"><!-- chrome 和 safari 必须要在其它元素之前 -->
-                        <xsl:value-of select="@name" />
-                    </xsl:attribute>
-                    <label><input type="checkbox" /><xsl:value-of select="@name" /></label>
-                </li>
-            </xsl:for-each>
-            </ul>
-        </div>
 
         <div class="menu">
             <h2>标签</h2>
@@ -312,7 +311,7 @@
                         </span>
                         <xsl:value-of select="@url"/>
                     </h3>
-                    <div class="summary">
+                    <div class="description">
                         <xsl:value-of select="."/>
                     </div>
                 </article>

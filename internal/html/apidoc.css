@@ -124,71 +124,83 @@ main .content {
     padding: var(--article-padding);
 }
 
-main article {
-    margin:var(--padding) 0;
+main .api {
+    margin-bottom: var(--padding);
 }
 
 main .server h3,
-main .api h3{
+main .api summary{
     margin: 0;
     padding: var(--article-padding);
     border-bottom: 1px solid var(--border-color);
     cursor: pointer;
+    line-height: 1;
+}
+
+
+main details.api:not([open]) summary {
+    border: none;
 }
 
 main .server h3 .action,
-main .api h3 .action {
+main .api summary .action {
     min-width: 4rem;
     font-weight: bold;
     display: inline-block;
 }
 
-main .server .summary,
-main .api .summary {
+main .server .description,
+main .api .description {
     padding:var(--article-padding);
     margin: 0;
     border-bottom: 1px solid var(--border-color);
 }
 
+main .api summary .summary {
+    float: right;
+    font-weight: 400;
+    opacity: .5;
+}
+
 main .api[data-method=GET] {
     border: 1px solid var(--method-get-color);
 }
-main .api[data-method=GET] h3 {
+main .api[data-method=GET] summary {
     border-bottom: 1px solid var(--method-get-color);
 }
 
 main .api[data-method=POST] {
     border: 1px solid var(--method-post-color);
 }
-main .api[data-method=POST] h3 {
+main .api[data-method=POST] summary {
     border-bottom: 1px solid var(--method-post-color);
 }
 
 main .api[data-method=PUT] {
     border: 1px solid var(--method-put-color);
 }
-main .api[data-method=PUT] h3 {
+main .api[data-method=PUT] summary {
     border-bottom: 1px solid var(--method-put-color);
 }
 
 main .api[data-method=PATCH] {
     border: 1px solid var(--method-patch-color);
 }
-main .api[data-method=PATCH] h3 {
+main .api[data-method=PATCH] summary {
     border-bottom: 1px solid var(--method-patch-color);
 }
 
 main .api[data-method=DELETE] {
     border: 1px solid var(--method-delete-color);
 }
-main .api[data-method=DELETE] h3 {
+main .api[data-method=DELETE] summary {
     border-bottom: 1px solid var(--method-delete-color);
 }
 
 main .api[data-method=OPTIONS] {
     border: 1px solid var(--method-options-color);
 }
-main .api[data-method=OPTIONS] h3 {
+main .api[data-method=OPTIONS] summary {
     border-bottom: 1px solid var(--method-options-color);
 }
 
