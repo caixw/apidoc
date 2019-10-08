@@ -197,17 +197,20 @@
     <xsl:attribute name="data-method">
         <xsl:value-of select="@method" />
     </xsl:attribute>
-    <xsl:attribute name="id">
-        <xsl:call-template name="get-api-id">
-            <xsl:with-param name="path" select="path/@path" />
-            <xsl:with-param name="method" select="@method" />
-        </xsl:call-template>
-    </xsl:attribute>
 
         <summary>
-            <span class="action">
-            <xsl:value-of select="@method" />
-            </span>
+            <a class="link">
+            <xsl:attribute name="href">
+                <xsl:value-of select="'#'" />
+                <xsl:call-template name="get-api-id">
+                    <xsl:with-param name="path" select="path/@path" />
+                    <xsl:with-param name="method" select="@method" />
+                </xsl:call-template>
+            </xsl:attribute>
+            &#128279;
+            </a>
+
+            <span class="action"><xsl:value-of select="@method" /></span>
             <xsl:value-of select="path/@path" />
 
             <span class="summary">

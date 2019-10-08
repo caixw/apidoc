@@ -147,6 +147,10 @@ main .api summary .action {
     display: inline-block;
 }
 
+main .api summary .link {
+    margin-right: 10px;
+}
+
 main .api .description {
     padding:var(--article-padding);
     margin: 0;
