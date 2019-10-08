@@ -286,7 +286,7 @@
                     </div>
                 </xsl:if>
             </div> <!-- end .body -->
-        </div> <!-- end .cakkback -->
+        </div> <!-- end .callback -->
         </xsl:if>
     </details>
 </xsl:template>

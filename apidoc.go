@@ -57,16 +57,16 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 func Handle(p string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var err error
-		switch path.Base(r.URL.Path) {
-		case "apidoc.xsl":
-			w.Header().Set("Content-Type", "text/xsl")
-			_, err = w.Write(html.XSL)
-		case "apidoc.js":
-			w.Header().Set("Content-Type", "application/javascript")
-			_, err = w.Write(html.JS)
-		case "apidoc.css":
-			w.Header().Set("Content-Type", "text/css")
-			_, err = w.Write(html.CSS)
+		name := path.Base(r.URL.Path)
+
+		data, contentType := html.Get(name)
+		if data != nil {
+			w.Header().Set("Content-Type", contentType)
+			_, err = w.Write(data)
+			return
+		}
+
+		switch name {
 		case "apidoc.xml":
 			// TODO 替换掉 xml-stylesheet 为当前的 xsl
 			data, err := ioutil.ReadFile(p)
