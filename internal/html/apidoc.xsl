@@ -303,20 +303,6 @@
                     <xsl:value-of select="/apidoc/content" />
                 </div>
 
-                <xsl:for-each select="/apidoc/server">
-                <article class="server">
-                    <h3>
-                        <span class="action">
-                        <xsl:value-of select="@name"/>
-                        </span>
-                        <xsl:value-of select="@url"/>
-                    </h3>
-                    <div class="description">
-                        <xsl:value-of select="."/>
-                    </div>
-                </article>
-                </xsl:for-each>
-
                 <xsl:for-each select="apidoc/api">
                 <xsl:sort select="path/@path"/>
                     <xsl:apply-templates select="." />
