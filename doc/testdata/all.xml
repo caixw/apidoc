@@ -68,7 +68,7 @@
         <response status="400" mimetype="json/xml" type="string">
         </response>
 
-        <callback method="post" schema="https">
+        <callback method="post">
             <request mimetype="json" type="object">
                 <query name="size" type="number">size</query>
 
