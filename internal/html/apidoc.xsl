@@ -198,6 +198,13 @@
         <xsl:value-of select="@method" />
     </xsl:attribute>
 
+    <xsl:attribute name="data-tags">
+        <xsl:for-each select="tag">
+            <xsl:value-of select="." />
+            <xsl:value-of select="','" />
+        </xsl:for-each>
+    </xsl:attribute>
+
         <summary>
             <a class="link">
             <xsl:attribute name="href">
@@ -293,21 +300,21 @@
             <span class="version">(<xsl:value-of select="/apidoc/@version" />)</span>
         </h1>
 
-        <div class="menu">
+        <div class="menu tags-selector">
             <h2>标签</h2>
             <ul>
                 <xsl:for-each select="apidoc/tag">
                 <li>
-                    <xsl:attribute name="data-server">
+                    <xsl:attribute name="data-tag">
                         <xsl:value-of select="@name" />
                     </xsl:attribute>
-                    <label><input type="checkbox" /><xsl:value-of select="@title" /></label>
+                    <label><input type="checkbox" checked="checked" /><xsl:value-of select="@title" /></label>
                 </li>
                 </xsl:for-each>
             </ul>
         </div>
 
-        <div class="menu">
+        <div class="menu methods-selector">
             <h2>请求方法</h2>
             <ul>
                 <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
@@ -317,7 +324,7 @@
                     <xsl:attribute name="data-method">
                         <xsl:value-of select="." />
                     </xsl:attribute>
-                    <label><input type="checkbox" /><xsl:value-of select="." /></label>
+                    <label><input type="checkbox" checked="true" /><xsl:value-of select="." /></label>
                 </li>
                 </xsl:for-each>
             </ul>

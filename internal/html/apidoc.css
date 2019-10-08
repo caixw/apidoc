@@ -97,6 +97,7 @@ header .menu h2 {
 header .menu ul {
     position: absolute;
     min-width: 4rem;
+    right: 0;
     display: none;
     list-style: none;
     background: var(--background);
@@ -104,6 +105,10 @@ header .menu ul {
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
     padding: var(--article-padding);
+}
+
+header .menu ul li {
+    margin-top: var(--article-padding);
 }
 
 header .menu:hover ul {
