@@ -53,7 +53,7 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	return output.Render(doc, o)
 }
 
-// Handle 处理 apidoc 相关的依赖文件
+// Handle 返回显示文档内容的中间件
 //
 // 会将 p 指向的文档内容中的 xml-stylesheet 替换成当前的 apidoc.xsl。
 //
