@@ -29,6 +29,24 @@
     </xsl:choose>
 </xsl:template>
 
+<!--
+给指定的元素添加已弃用的标记
+
+该模板会给父元素添加 class 和 title 属性，
+所以必须要在父元素的任何子元素之前，否则 chrome 和 safari 可能无法正常解析。
+-->
+<xsl:template name="deprecated">
+    <xsl:param name="deprecated" />
+
+    <xsl:if test="$deprecated">
+        <xsl:attribute name="class"><xsl:value-of select="'del'" /></xsl:attribute>
+        <xsl:attribute name="title">
+            <xsl:value-of select="'弃用于 '" />
+            <xsl:value-of select="$deprecated" />
+        </xsl:attribute>
+    </xsl:if>
+</xsl:template>
+
 <!-- 根据 method 和 path 生成唯一的 ID -->
 <xsl:template name="get-api-id">
     <xsl:param name="method" />
@@ -99,6 +117,10 @@
         </th>
 
         <td>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
+
             <xsl:value-of select="@type" />
             <xsl:if test="@array = 'true'">
                 <xsl:value-of select="'[]'" />
@@ -127,6 +149,10 @@
                 <ul>
                 <xsl:for-each select="./enum">
                     <li>
+                    <xsl:call-template name="deprecated">
+                        <xsl:with-param name="deprecated" select="@deprecated" />
+                    </xsl:call-template>
+
                     <xsl:value-of select="@value" />:<xsl:value-of select="." />
                     </li>
                 </xsl:for-each>
@@ -211,7 +237,7 @@
     </xsl:attribute>
 
         <summary>
-            <a class="link">
+            <a class="link"> <!-- 链接符号 -->
             <xsl:attribute name="href">
                 <xsl:value-of select="'#'" />
                 <xsl:call-template name="get-api-id">
@@ -223,7 +249,13 @@
             </a>
 
             <span class="action"><xsl:value-of select="@method" /></span>
-            <xsl:value-of select="path/@path" />
+            <span>
+                <xsl:call-template name="deprecated">
+                    <xsl:with-param name="deprecated" select="@deprecated" />
+                </xsl:call-template>
+
+                <xsl:value-of select="path/@path" />
+            </span>
 
             <span class="summary">
             <xsl:value-of select="@summary" />

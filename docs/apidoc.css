@@ -8,6 +8,7 @@
     --article-padding: calc(var(--padding) / 2);
 
     --background: white;
+    --delete-color: red;
 
     /* method */
     --method-get-color: green;
@@ -60,6 +61,11 @@ summary, input {
 
 a {
     text-decoration: none;
+}
+
+.del {
+    text-decoration: line-through;
+    text-decoration-color: var(--delete-color);
 }
 
 /*************************** header ***********************/
@@ -177,6 +183,7 @@ main .api summary .action {
 
 main .api summary .link {
     margin-right: 10px;
+    text-decoration: none;
 }
 
 main .api .description {

@@ -37,6 +37,24 @@ var data = []*static{
     </xsl:choose>
 </xsl:template>
 
+<!--
+给指定的元素添加已弃用的标记
+
+该模板会给父元素添加 class 和 title 属性，
+所以必须要在父元素的任何子元素之前，否则 chrome 和 safari 可能无法正常解析。
+-->
+<xsl:template name="deprecated">
+    <xsl:param name="deprecated" />
+
+    <xsl:if test="$deprecated">
+        <xsl:attribute name="class"><xsl:value-of select="'del'" /></xsl:attribute>
+        <xsl:attribute name="title">
+            <xsl:value-of select="'弃用于 '" />
+            <xsl:value-of select="$deprecated" />
+        </xsl:attribute>
+    </xsl:if>
+</xsl:template>
+
 <!-- 根据 method 和 path 生成唯一的 ID -->
 <xsl:template name="get-api-id">
     <xsl:param name="method" />
@@ -69,24 +87,26 @@ var data = []*static{
 <xsl:template name="param">
     <xsl:param name="title" />
     <xsl:param name="param" />
-    <xsl:param name="example" /><!-- 示例代码，即在 parent 为空时，才有可能有此值 -->
+    <xsl:param name="example" /> <!-- 示例代码 -->
 
-    <h5><xsl:value-of select="$title" /></h5>
-    <table>
-        <thead>
-            <tr>
-                <th>变量</th>
-                <th>类型</th>
-                <th title="是否为必填，以及默认值。">值</th>
-                <th>描述</th>
-            </tr>
-        </thead>
-        <tbody>
-            <xsl:call-template name="param-list">
-            <xsl:with-param name="param" select="$param" />
-            </xsl:call-template>
-        </tbody>
-    </table>
+    <div class="param">
+        <h4 class="title">&#x27a4;&#160;<xsl:value-of select="$title" /></h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>变量</th>
+                    <th>类型</th>
+                    <th title="是否为必填，以及默认值。">值</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <xsl:call-template name="param-list">
+                <xsl:with-param name="param" select="$param" />
+                </xsl:call-template>
+            </tbody>
+        </table>
+    </div>
 </xsl:template>
 
 <!-- 列顺序必须要与 param 中的相同 -->
@@ -105,6 +125,10 @@ var data = []*static{
         </th>
 
         <td>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
+
             <xsl:value-of select="@type" />
             <xsl:if test="@array = 'true'">
                 <xsl:value-of select="'[]'" />
@@ -124,12 +148,19 @@ var data = []*static{
         </td>
 
         <td>
-            <xsl:value-of select="@summary" />
+            <xsl:choose>
+                <xsl:when test="description"><xsl:value-of select="description" /></xsl:when>
+                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+            </xsl:choose>
             <xsl:if test="./enum">
                 <p>可以使用以下枚举值：</p>
                 <ul>
                 <xsl:for-each select="./enum">
                     <li>
+                    <xsl:call-template name="deprecated">
+                        <xsl:with-param name="deprecated" select="@deprecated" />
+                    </xsl:call-template>
+
                     <xsl:value-of select="@value" />:<xsl:value-of select="." />
                     </li>
                 </xsl:for-each>
@@ -152,8 +183,6 @@ var data = []*static{
 <xsl:param name="request" />
 <xsl:param name="path" />
 <div class="request">
-    <h5 class="mimetype"><xsl:value-of select="$request/@mimetype" /></h5>
-
     <xsl:if test="$path/param">
         <xsl:call-template name="param">
             <xsl:with-param name="title" select="'路径参数'" />
@@ -176,6 +205,7 @@ var data = []*static{
     </xsl:if>
 
     <xsl:call-template name="param">
+        <xsl:with-param name="title" select="'请求报文'" />
         <xsl:with-param name="param" select="$request" />
     </xsl:call-template>
 </div>
@@ -185,7 +215,7 @@ var data = []*static{
 <xsl:template name="response">
     <xsl:param name="response" />
 
-    <h5><xsl:value-of select="$response/@status" /></h5>
+    <h5 class="status"><xsl:value-of select="$response/@status" /></h5>
 
     <xsl:if test="$response/header">
         <xsl:call-template name="param">
@@ -195,6 +225,7 @@ var data = []*static{
     </xsl:if>
 
     <xsl:call-template name="param">
+        <xsl:with-param name="title" select="'返回报文'" />
         <xsl:with-param name="param" select="$response" />
     </xsl:call-template>
 </xsl:template>
@@ -214,7 +245,7 @@ var data = []*static{
     </xsl:attribute>
 
         <summary>
-            <a class="link">
+            <a class="link"> <!-- 链接符号 -->
             <xsl:attribute name="href">
                 <xsl:value-of select="'#'" />
                 <xsl:call-template name="get-api-id">
@@ -226,7 +257,13 @@ var data = []*static{
             </a>
 
             <span class="action"><xsl:value-of select="@method" /></span>
-            <xsl:value-of select="path/@path" />
+            <span>
+                <xsl:call-template name="deprecated">
+                    <xsl:with-param name="deprecated" select="@deprecated" />
+                </xsl:call-template>
+
+                <xsl:value-of select="path/@path" />
+            </span>
 
             <span class="summary">
             <xsl:value-of select="@summary" />
@@ -240,7 +277,7 @@ var data = []*static{
 
         <div class="body">
             <div class="requests">
-                <h4>请求</h4>
+                <h4 class="title">请求</h4>
                 <xsl:for-each select="request">
                     <xsl:call-template name="request">
                         <xsl:with-param name="request" select="." />
@@ -249,7 +286,7 @@ var data = []*static{
                 </xsl:for-each>
             </div>
             <div class="responses">
-                <h4>返回</h4>
+                <h4 class="title">返回</h4>
                 <xsl:for-each select="response">
                     <xsl:call-template name="response">
                         <xsl:with-param name="response" select="." />
@@ -274,7 +311,7 @@ var data = []*static{
 
             <div class="body">
                 <div class="requests">
-                    <h4>请求</h4>
+                    <h4 class="title">请求</h4>
                     <xsl:for-each select="./callback/request">
                         <xsl:call-template name="request">
                             <xsl:with-param name="request" select="." />
@@ -285,7 +322,7 @@ var data = []*static{
 
                 <xsl:if test="./callback/response">
                     <div class="responses">
-                        <h4>返回</h4>
+                        <h4 class="title">返回</h4>
                         <xsl:for-each select="./callback/response">
                             <xsl:call-template name="response">
                                 <xsl:with-param name="response" select="." />
@@ -389,12 +426,14 @@ var data = []*static{
 		data: []byte(`@charset "utf-8";
 
 :root {
+    --max-width: 100%;
     --header-height: 54px;
     --border-color: #e0e0e0;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
 
     --background: white;
+    --delete-color: red;
 
     /* method */
     --method-get-color: green;
@@ -414,6 +453,7 @@ body {
     margin: 0;
     height: 100%;
     background: var(--background);
+    text-align: center;
 }
 
 table {
@@ -421,8 +461,13 @@ table {
 }
 
 table th, table td {
+    font-weight: normal;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+}
+
+table caption {
+    text-align: left;
 }
 
 ul, ol {
@@ -443,6 +488,11 @@ a {
     text-decoration: none;
 }
 
+.del {
+    text-decoration: line-through;
+    text-decoration-color: var(--delete-color);
+}
+
 /*************************** header ***********************/
 
 header {
@@ -459,6 +509,10 @@ header {
 
     background: var(--background);
     border-bottom: 1px solid var(--border-color);
+
+    margin: 0 auto;
+    max-width: var(--max-width);
+    text-align: left;
 }
 
 header h1, header h2 {
@@ -519,6 +573,10 @@ main {
     left: 0;
     right: 0;
     position: relative;
+
+    margin: 0 auto;
+    max-width: var(--max-width);
+    text-align: left;
 }
 
 main .content {
@@ -550,6 +608,7 @@ main .api summary .action {
 
 main .api summary .link {
     margin-right: 10px;
+    text-decoration: none;
 }
 
 main .api .description {
@@ -634,13 +693,25 @@ main .api .body .requests {
     border-right: 1px dotted var(--border-color);
 }
 
-main .api .body .requests h4,
-main .api .body .responses h4 {
+main .api .body .requests .title,
+main .api .body .responses .title {
     margin: 0;
+    opacity: .5;
 }
 
-main .api .body .request .mimetype,
-main .api .body .response .mimetype {
+main .api .param {
+    margin-top: var(--padding);
+}
+
+main .api .param .title,
+main .api .param .title {
+    margin: 0;
+    opacity: 1 !important;
+    font-weight: normal;
+}
+
+main .api .body .responses .status {
+    margin: calc(var(--padding) + var(--article-padding)) 0 var(--article-padding);
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -650,6 +721,10 @@ main .api .body .response .mimetype {
 footer {
     margin-top: 4rem;
     padding: var(--padding);
+
+    margin: 4rem auto;
+    max-width: var(--max-width);
+    text-align: left;
 }
 `),
 	},
