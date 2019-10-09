@@ -26,7 +26,7 @@ type Doc struct {
 
 	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
-	Content cdata     `xml:"content"`
+	Content CDATA     `xml:"content"`
 	Contact *Contact  `xml:"contact,omitempty"`
 	License *Link     `xml:"license,omitempty"` // 版本信息
 	Tags    []*Tag    `xml:"tag,omitempty"`     // 所有的标签
@@ -41,10 +41,6 @@ type Doc struct {
 	file string
 	line int
 	data []byte
-}
-
-type cdata struct {
-	Text string `xml:",cdata"`
 }
 
 // New 返回 Doc 实例

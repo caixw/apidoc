@@ -29,7 +29,7 @@ type Param struct {
 	Reference   string   `xml:"ref,attr,omitempty"`
 	Summary     string   `xml:"summary,attr,omitempty"`
 	Enums       []*Enum  `xml:"enum,omitempty"`
-	Description string   `xml:"description,omitempty"`
+	Description CDATA    `xml:"description,omitempty"`
 }
 
 // IsEnum 是否为一个枚举类型
