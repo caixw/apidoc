@@ -116,7 +116,10 @@
         </td>
 
         <td>
-            <xsl:value-of select="@summary" />
+            <xsl:choose>
+                <xsl:when test="description"><xsl:value-of select="description" /></xsl:when>
+                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+            </xsl:choose>
             <xsl:if test="./enum">
                 <p>可以使用以下枚举值：</p>
                 <ul>

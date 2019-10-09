@@ -1,6 +1,7 @@
 @charset "utf-8";
 
 :root {
+    --max-width: 100%;
     --header-height: 54px;
     --border-color: #e0e0e0;
     --padding: 1rem;
@@ -26,6 +27,7 @@ body {
     margin: 0;
     height: 100%;
     background: var(--background);
+    text-align: center;
 }
 
 table {
@@ -71,6 +73,10 @@ header {
 
     background: var(--background);
     border-bottom: 1px solid var(--border-color);
+
+    margin: 0 auto;
+    max-width: var(--max-width);
+    text-align: left;
 }
 
 header h1, header h2 {
@@ -131,6 +137,10 @@ main {
     left: 0;
     right: 0;
     position: relative;
+
+    margin: 0 auto;
+    max-width: var(--max-width);
+    text-align: left;
 }
 
 main .content {
@@ -262,4 +272,8 @@ main .api .body .response .mimetype {
 footer {
     margin-top: 4rem;
     padding: var(--padding);
+
+    margin: 4rem auto;
+    max-width: var(--max-width);
+    text-align: left;
 }
