@@ -35,8 +35,13 @@ table {
 }
 
 table th, table td {
+    font-weight: normal;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+}
+
+table caption {
+    text-align: left;
 }
 
 ul, ol {
@@ -256,13 +261,25 @@ main .api .body .requests {
     border-right: 1px dotted var(--border-color);
 }
 
-main .api .body .requests h4,
-main .api .body .responses h4 {
+main .api .body .requests .title,
+main .api .body .responses .title {
     margin: 0;
+    opacity: .5;
 }
 
-main .api .body .request .mimetype,
-main .api .body .response .mimetype {
+main .api .param {
+    margin-top: var(--padding);
+}
+
+main .api .param .title,
+main .api .param .title {
+    margin: 0;
+    opacity: 1 !important;
+    font-weight: normal;
+}
+
+main .api .body .responses .status {
+    margin: calc(var(--padding) + var(--article-padding)) 0 var(--article-padding);
     border-bottom: 1px solid var(--border-color);
 }
 

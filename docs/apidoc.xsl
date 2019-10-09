@@ -61,24 +61,26 @@
 <xsl:template name="param">
     <xsl:param name="title" />
     <xsl:param name="param" />
-    <xsl:param name="example" /><!-- 示例代码，即在 parent 为空时，才有可能有此值 -->
+    <xsl:param name="example" /> <!-- 示例代码 -->
 
-    <h5><xsl:value-of select="$title" /></h5>
-    <table>
-        <thead>
-            <tr>
-                <th>变量</th>
-                <th>类型</th>
-                <th title="是否为必填，以及默认值。">值</th>
-                <th>描述</th>
-            </tr>
-        </thead>
-        <tbody>
-            <xsl:call-template name="param-list">
-            <xsl:with-param name="param" select="$param" />
-            </xsl:call-template>
-        </tbody>
-    </table>
+    <div class="param">
+        <h4 class="title">&#x27a4;&#160;<xsl:value-of select="$title" /></h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>变量</th>
+                    <th>类型</th>
+                    <th title="是否为必填，以及默认值。">值</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <xsl:call-template name="param-list">
+                <xsl:with-param name="param" select="$param" />
+                </xsl:call-template>
+            </tbody>
+        </table>
+    </div>
 </xsl:template>
 
 <!-- 列顺序必须要与 param 中的相同 -->
@@ -147,8 +149,6 @@
 <xsl:param name="request" />
 <xsl:param name="path" />
 <div class="request">
-    <h5 class="mimetype"><xsl:value-of select="$request/@mimetype" /></h5>
-
     <xsl:if test="$path/param">
         <xsl:call-template name="param">
             <xsl:with-param name="title" select="'路径参数'" />
@@ -171,6 +171,7 @@
     </xsl:if>
 
     <xsl:call-template name="param">
+        <xsl:with-param name="title" select="'请求报文'" />
         <xsl:with-param name="param" select="$request" />
     </xsl:call-template>
 </div>
@@ -180,7 +181,7 @@
 <xsl:template name="response">
     <xsl:param name="response" />
 
-    <h5><xsl:value-of select="$response/@status" /></h5>
+    <h5 class="status"><xsl:value-of select="$response/@status" /></h5>
 
     <xsl:if test="$response/header">
         <xsl:call-template name="param">
@@ -190,6 +191,7 @@
     </xsl:if>
 
     <xsl:call-template name="param">
+        <xsl:with-param name="title" select="'返回报文'" />
         <xsl:with-param name="param" select="$response" />
     </xsl:call-template>
 </xsl:template>
@@ -235,7 +237,7 @@
 
         <div class="body">
             <div class="requests">
-                <h4>请求</h4>
+                <h4 class="title">请求</h4>
                 <xsl:for-each select="request">
                     <xsl:call-template name="request">
                         <xsl:with-param name="request" select="." />
@@ -244,7 +246,7 @@
                 </xsl:for-each>
             </div>
             <div class="responses">
-                <h4>返回</h4>
+                <h4 class="title">返回</h4>
                 <xsl:for-each select="response">
                     <xsl:call-template name="response">
                         <xsl:with-param name="response" select="." />
@@ -269,7 +271,7 @@
 
             <div class="body">
                 <div class="requests">
-                    <h4>请求</h4>
+                    <h4 class="title">请求</h4>
                     <xsl:for-each select="./callback/request">
                         <xsl:call-template name="request">
                             <xsl:with-param name="request" select="." />
@@ -280,7 +282,7 @@
 
                 <xsl:if test="./callback/response">
                     <div class="responses">
-                        <h4>返回</h4>
+                        <h4 class="title">返回</h4>
                         <xsl:for-each select="./callback/response">
                             <xsl:call-template name="response">
                                 <xsl:with-param name="response" select="." />
