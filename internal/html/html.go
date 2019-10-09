@@ -3,6 +3,9 @@
 // Package html 处理静态的资源文件
 package html
 
+// StylesheetFilename xsl 文件名
+const StylesheetFilename = "apidoc.xsl"
+
 type static struct {
 	name        string
 	contentType string

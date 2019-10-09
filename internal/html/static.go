@@ -435,6 +435,14 @@ p {
     margin: 0;
 }
 
+summary, input {
+    outline: none;
+}
+
+a {
+    text-decoration: none;
+}
+
 /*************************** header ***********************/
 
 header {

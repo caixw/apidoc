@@ -8,8 +8,10 @@ package apidoc
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
 	"path"
+	"regexp"
 
 	"golang.org/x/text/language"
 
@@ -53,36 +55,74 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 
 // Handle 处理 apidoc 相关的依赖文件
 //
+// 会将 p 指向的文档内容中的 xml-stylesheet 替换成当前的 apidoc.xsl。
+//
 // p 指定了 apidoc.xml 实际的文件路径；
-func Handle(p string) http.Handler {
+// contentType 表示 p 的 mimetype 类型，如果为空，则会采用 "application/xml";
+// l 表示出错时，错误内容的发送通道，如果为 nil，表示不输出错误信息；
+func Handle(p, contentType string, l *log.Logger) http.Handler {
+	if contentType == "" {
+		contentType = "application/xml"
+	}
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var err error
+		printErr := func(err error) {
+			if l != nil {
+				l.Println(err)
+			}
+		}
+
 		name := path.Base(r.URL.Path)
 
-		data, contentType := html.Get(name)
-		if data != nil {
-			w.Header().Set("Content-Type", contentType)
-			_, err = w.Write(data)
+		if data, ct := html.Get(name); data != nil {
+			w.Header().Set("Content-Type", ct)
+			if _, err := w.Write(data); err != nil {
+				printErr(err) // 此时 writeHeader 已经发出，再输出状态码无意义
+			}
 			return
 		}
 
-		switch name {
-		case "apidoc.xml":
-			// TODO 替换掉 xml-stylesheet 为当前的 xsl
-			data, err := ioutil.ReadFile(p)
+		if name == "apidoc.xml" {
+			data, err := readDoc(p)
 			if err != nil {
-				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				printErr(err)
+				errStatus(w, http.StatusInternalServerError)
 				return
 			}
 
-			w.Header().Set("Content-Type", "text/xml")
-			_, err = w.Write(data)
-		default:
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			w.Header().Set("Content-Type", contentType)
+			if _, err = w.Write(data); err != nil {
+				printErr(err) // 此时 writeHeader 已经发出，再输出状态码无意义
+			}
+			return
 		}
-		if err != nil {
-			// TODO
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
+
+		errStatus(w, http.StatusNotFound)
 	})
+}
+
+func errStatus(w http.ResponseWriter, status int) {
+	http.Error(w, http.StatusText(status), status)
+}
+
+// 用于查找 <?xml 指令
+var procInst = regexp.MustCompile(`<\?xml .+ ?>`)
+
+// 读取 p 的内容并添加 xml-stylesheet
+//
+// 在 <?xml ...?> 之后添加或是在该指令不存在的时候，添加到文件头部。
+func readDoc(p string) ([]byte, error) {
+	data, err := ioutil.ReadFile(p)
+	if err != nil {
+		return nil, err
+	}
+
+	pi := `<?xml-stylesheet type="text/xsl" href="` + html.StylesheetFilename + `"?>`
+
+	if rslt := procInst.Find(data); len(rslt) > 0 {
+		return procInst.ReplaceAll(data, append(rslt, []byte(pi)...)), nil
+	}
+
+	ret := make([]byte, 0, len(data)+len(pi))
+	return append(append(ret, pi...), data...), nil
 }

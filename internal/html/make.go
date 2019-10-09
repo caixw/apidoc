@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 
 	"github.com/issue9/utils"
+
+	"github.com/caixw/apidoc/v5/internal/html"
 )
 
 const (
@@ -27,7 +29,7 @@ type file struct {
 
 var files = []*file{
 	{
-		file:        "apidoc.xsl",
+		file:        html.StylesheetFilename,
 		contentType: "application/xslt+xml",
 		name:        "apidoc.xsl",
 	},

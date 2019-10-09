@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	http.Handle("/apidoc/", apidoc.Handle("../../docs/apidoc.xml"))
+	http.Handle("/apidoc/", apidoc.Handle("../../docs/apidoc.xml", "", nil))
 	err := http.ListenAndServe(":8080", nil)
 	panic(err)
 }
