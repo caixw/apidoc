@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+// 用于 xml 的测试命令
 package main
 
 import (

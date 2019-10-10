@@ -3,11 +3,12 @@
 :root {
     --max-width: 100%;
     --header-height: 54px;
-    --border-color: #e0e0e0;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
 
+    --color: black;
     --background: white;
+    --border-color: #e0e0e0;
     --delete-color: red;
 
     /* method */
@@ -27,6 +28,7 @@ body {
     padding: 0;
     margin: 0;
     height: 100%;
+    color: var(--color);
     background: var(--background);
     text-align: center;
 }
