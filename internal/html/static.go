@@ -16,73 +16,237 @@ var data = []*static{
     version="5.0"
     doctype-system="about:legacy-compat" />
 
-<!-- 替换字符串中特定的字符 -->
-<xsl:template name="replace">
-    <xsl:param name="text" />
-    <xsl:param name="old" />
-    <xsl:param name="new" />
-    <xsl:choose>
-        <xsl:when test="contains($text, $old)">
-            <xsl:value-of select="substring-before($text, $old)" />
-            <xsl:value-of select="$new" />
-            <xsl:call-template name="replace">
-                <xsl:with-param name="text" select="substring-after($text, $old)" />
-                <xsl:with-param name="old" select="$old" />
-                <xsl:with-param name="new" select="$new" />
-            </xsl:call-template>
-        </xsl:when>
-        <xsl:otherwise>
-            <xsl:value-of select="$text" />
-        </xsl:otherwise>
-    </xsl:choose>
-</xsl:template>
-
-<!--
-给指定的元素添加已弃用的标记
-
-该模板会给父元素添加 class 和 title 属性，
-所以必须要在父元素的任何子元素之前，否则 chrome 和 safari 可能无法正常解析。
--->
-<xsl:template name="deprecated">
-    <xsl:param name="deprecated" />
-
-    <xsl:if test="$deprecated">
-        <xsl:attribute name="class"><xsl:value-of select="'del'" /></xsl:attribute>
-        <xsl:attribute name="title">
-            <xsl:value-of select="'弃用于 '" />
-            <xsl:value-of select="$deprecated" />
-        </xsl:attribute>
+<xsl:template match="/">
+    <html>
+    <xsl:if test="@locale">
+        <xsl:attribute name="lang"><xsl:value-of select="@locale" /></xsl:attribute>
     </xsl:if>
+
+        <head>
+            <title><xsl:value-of select="apidoc/title" /></title>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+            <meta name="generator" content="https://apidoc.tools" />
+            <link rel="stylesheet" type="text/css" href="./apidoc.css" />
+            <link rel="icon" type="image/png" href="./icon.png" />
+            <link rel="license" href="{apidoc/license/@url}" />
+            <script src="./apidoc.js"></script>
+        </head>
+        <body>
+            <xsl:call-template name="header" />
+
+            <main>
+                <div class="content">
+                    <xsl:value-of select="/apidoc/content" />
+                </div>
+
+                <xsl:for-each select="apidoc/api">
+                <xsl:sort select="path/@path"/>
+                    <xsl:apply-templates select="." />
+                </xsl:for-each>
+            </main>
+
+            <footer>
+            <p>文档版权为
+            <a href="{apidoc/license/@url}">
+                <xsl:value-of select="apidoc/license" />
+            </a>。
+            由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成。
+            </p>
+            </footer>
+        </body>
+    </html>
 </xsl:template>
 
-<!-- 根据 method 和 path 生成唯一的 ID -->
-<xsl:template name="get-api-id">
-    <xsl:param name="method" />
-    <xsl:param name="path" />
+<!-- header 界面元素 -->
+<xsl:template name="header">
+    <header>
+        <h1>
+            <img src="./icon.svg" />
+            <xsl:value-of select="/apidoc/title" />
+            <span class="version">(<xsl:value-of select="/apidoc/@version" />)</span>
+        </h1>
 
-    <xsl:variable name="p1">
-        <xsl:call-template name="replace">
-            <xsl:with-param name="text" select="$path" />
-            <xsl:with-param name="old" select="'/'" />
-            <xsl:with-param name="new" select="'_'" />
+        <div class="menu tags-selector">
+            <h2>标签</h2>
+            <ul>
+                <xsl:for-each select="apidoc/tag">
+                <li data-tag="{@name}">
+                    <label><input type="checkbox" checked="checked" /><xsl:value-of select="@title" /></label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
+
+        <div class="menu methods-selector">
+            <h2>请求方法</h2>
+            <ul>
+                <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
+                <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
+                <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
+                <li data-method="{.}">
+                    <label><input type="checkbox" checked="true" /><xsl:value-of select="." /></label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
+
+        <div class="menu colors-selector">
+            <h2><label><input type="checkbox" />深色</label></h2>
+        </div>
+    </header>
+</xsl:template>
+
+<!-- api 界面元素 -->
+<xsl:template match="/apidoc/api">
+    <xsl:variable name="id">
+        <xsl:call-template name="get-api-id">
+            <xsl:with-param name="path" select="path/@path" />
+            <xsl:with-param name="method" select="@method" />
         </xsl:call-template>
     </xsl:variable>
-    <xsl:variable name="p2">
-        <xsl:call-template name="replace">
-            <xsl:with-param name="text" select="$p1" />
-            <xsl:with-param name="old" select="'{'" />
-            <xsl:with-param name="new" select="'-'" />
-        </xsl:call-template>
-    </xsl:variable>
 
-    <xsl:value-of select="$method" />
-    <xsl:call-template name="replace">
-        <xsl:with-param name="text" select="$p2" />
-        <xsl:with-param name="old" select="'}'" />
-        <xsl:with-param name="new" select="'-'" />
+    <details id="{$id}" class="api" data-method="{@method}">
+    <xsl:attribute name="data-tags">
+        <xsl:for-each select="tag">
+            <xsl:value-of select="." />
+            <xsl:value-of select="','" />
+        </xsl:for-each>
+    </xsl:attribute>
+
+        <summary>
+            <a class="link" href="#{$id}"> <!-- 链接符号 -->
+            &#128279;
+            </a>
+
+            <span class="action"><xsl:value-of select="@method" /></span>
+            <span>
+                <xsl:call-template name="deprecated">
+                    <xsl:with-param name="deprecated" select="@deprecated" />
+                </xsl:call-template>
+
+                <xsl:value-of select="path/@path" />
+            </span>
+
+            <span class="summary">
+            <xsl:value-of select="@summary" />
+            </span>
+        </summary>
+        <div class="description">
+            <xsl:if test="./description">
+            <xsl:value-of select="./description" />
+            </xsl:if>
+        </div>
+
+        <div class="body">
+            <div class="requests">
+                <h4 class="title">请求</h4>
+                <xsl:for-each select="request">
+                    <xsl:call-template name="request">
+                        <xsl:with-param name="request" select="." />
+                        <xsl:with-param name="path" select="../path" />
+                    </xsl:call-template>
+                </xsl:for-each>
+            </div>
+            <div class="responses">
+                <h4 class="title">返回</h4>
+                <xsl:for-each select="response">
+                    <xsl:call-template name="response">
+                        <xsl:with-param name="response" select="." />
+                    </xsl:call-template>
+                </xsl:for-each>
+            </div>
+        </div>
+
+        <xsl:if test="./callback">
+        <div class="callback" data-method="{./callback/@method}">
+            <h3>回调</h3>
+            <div class="description">
+                <xsl:value-of select="./callback/@summary" />
+                <xsl:if test="./callback/description">
+                    <br />
+                    <xsl:value-of select="./callback/description" />
+                </xsl:if>
+            </div>
+
+            <div class="body">
+                <div class="requests">
+                    <h4 class="title">请求</h4>
+                    <xsl:for-each select="./callback/request">
+                        <xsl:call-template name="request">
+                            <xsl:with-param name="request" select="." />
+                            <xsl:with-param name="path" select="../path" />
+                        </xsl:call-template>
+                    </xsl:for-each>
+                </div>
+
+                <xsl:if test="./callback/response">
+                    <div class="responses">
+                        <h4 class="title">返回</h4>
+                        <xsl:for-each select="./callback/response">
+                            <xsl:call-template name="response">
+                                <xsl:with-param name="response" select="." />
+                            </xsl:call-template>
+                        </xsl:for-each>
+                    </div>
+                </xsl:if>
+            </div> <!-- end .body -->
+        </div> <!-- end .callback -->
+        </xsl:if>
+    </details>
+</xsl:template>
+
+<!-- api/request 的介面元素 -->
+<xsl:template name="request">
+<xsl:param name="request" />
+<xsl:param name="path" />
+<div class="request">
+    <xsl:if test="$path/param">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'路径参数'" />
+            <xsl:with-param name="param" select="$path/param" />
+        </xsl:call-template>
+    </xsl:if>
+
+    <xsl:if test="$path/query">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'查询参数'" />
+            <xsl:with-param name="param" select="$path/query" />
+        </xsl:call-template>
+    </xsl:if>
+    
+    <xsl:if test="$request/header">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'请求报头'" />
+            <xsl:with-param name="param" select="$request/header" />
+        </xsl:call-template>
+    </xsl:if>
+
+    <xsl:call-template name="param">
+        <xsl:with-param name="title" select="'请求报文'" />
+        <xsl:with-param name="param" select="$request" />
+    </xsl:call-template>
+</div>
+</xsl:template>
+
+<!-- api/response 的界面 -->
+<xsl:template name="response">
+    <xsl:param name="response" />
+
+    <h5 class="status"><xsl:value-of select="$response/@status" /></h5>
+
+    <xsl:if test="$response/header">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title" select="'返回报头'" />
+            <xsl:with-param name="param" select="$response/header" />
+        </xsl:call-template>
+    </xsl:if>
+
+    <xsl:call-template name="param">
+        <xsl:with-param name="title" select="'返回报文'" />
+        <xsl:with-param name="param" select="$response" />
     </xsl:call-template>
 </xsl:template>
-
 <!-- path param, path query, header 等的界面 -->
 <xsl:template name="param">
     <xsl:param name="title" />
@@ -178,245 +342,74 @@ var data = []*static{
     </xsl:for-each>
 </xsl:template>
 
-<!-- api/request 的介面元素 -->
-<xsl:template name="request">
-<xsl:param name="request" />
-<xsl:param name="path" />
-<div class="request">
-    <xsl:if test="$path/param">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'路径参数'" />
-            <xsl:with-param name="param" select="$path/param" />
-        </xsl:call-template>
-    </xsl:if>
+<!--
+给指定的元素添加已弃用的标记
 
-    <xsl:if test="$path/query">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'查询参数'" />
-            <xsl:with-param name="param" select="$path/query" />
-        </xsl:call-template>
-    </xsl:if>
-    
-    <xsl:if test="$request/header">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'请求报头'" />
-            <xsl:with-param name="param" select="$request/header" />
-        </xsl:call-template>
-    </xsl:if>
+该模板会给父元素添加 class 和 title 属性，
+所以必须要在父元素的任何子元素之前，否则 chrome 和 safari 可能无法正常解析。
+-->
+<xsl:template name="deprecated">
+    <xsl:param name="deprecated" />
 
-    <xsl:call-template name="param">
-        <xsl:with-param name="title" select="'请求报文'" />
-        <xsl:with-param name="param" select="$request" />
-    </xsl:call-template>
-</div>
+    <xsl:if test="$deprecated">
+        <xsl:attribute name="class"><xsl:value-of select="'del'" /></xsl:attribute>
+        <xsl:attribute name="title">
+            <xsl:value-of select="'弃用于 '" />
+            <xsl:value-of select="$deprecated" />
+        </xsl:attribute>
+    </xsl:if>
 </xsl:template>
 
-<!-- api/response 的界面 -->
-<xsl:template name="response">
-    <xsl:param name="response" />
+<!-- 根据 method 和 path 生成唯一的 ID -->
+<xsl:template name="get-api-id">
+    <xsl:param name="method" />
+    <xsl:param name="path" />
 
-    <h5 class="status"><xsl:value-of select="$response/@status" /></h5>
-
-    <xsl:if test="$response/header">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'返回报头'" />
-            <xsl:with-param name="param" select="$response/header" />
+    <xsl:variable name="p1">
+        <xsl:call-template name="replace">
+            <xsl:with-param name="text" select="$path" />
+            <xsl:with-param name="old" select="'/'" />
+            <xsl:with-param name="new" select="'_'" />
         </xsl:call-template>
-    </xsl:if>
+    </xsl:variable>
+    <xsl:variable name="p2">
+        <xsl:call-template name="replace">
+            <xsl:with-param name="text" select="$p1" />
+            <xsl:with-param name="old" select="'{'" />
+            <xsl:with-param name="new" select="'-'" />
+        </xsl:call-template>
+    </xsl:variable>
 
-    <xsl:call-template name="param">
-        <xsl:with-param name="title" select="'返回报文'" />
-        <xsl:with-param name="param" select="$response" />
+    <xsl:value-of select="$method" />
+    <xsl:call-template name="replace">
+        <xsl:with-param name="text" select="$p2" />
+        <xsl:with-param name="old" select="'}'" />
+        <xsl:with-param name="new" select="'-'" />
     </xsl:call-template>
 </xsl:template>
 
-<!-- api 界面元素 -->
-<xsl:template match="/apidoc/api">
-    <details class="api">
-    <xsl:attribute name="data-method">
-        <xsl:value-of select="@method" />
-    </xsl:attribute>
-
-    <xsl:attribute name="data-tags">
-        <xsl:for-each select="tag">
-            <xsl:value-of select="." />
-            <xsl:value-of select="','" />
-        </xsl:for-each>
-    </xsl:attribute>
-
-        <summary>
-            <a class="link"> <!-- 链接符号 -->
-            <xsl:attribute name="href">
-                <xsl:value-of select="'#'" />
-                <xsl:call-template name="get-api-id">
-                    <xsl:with-param name="path" select="path/@path" />
-                    <xsl:with-param name="method" select="@method" />
-                </xsl:call-template>
-            </xsl:attribute>
-            &#128279;
-            </a>
-
-            <span class="action"><xsl:value-of select="@method" /></span>
-            <span>
-                <xsl:call-template name="deprecated">
-                    <xsl:with-param name="deprecated" select="@deprecated" />
-                </xsl:call-template>
-
-                <xsl:value-of select="path/@path" />
-            </span>
-
-            <span class="summary">
-            <xsl:value-of select="@summary" />
-            </span>
-        </summary>
-        <div class="description">
-            <xsl:if test="./description">
-            <xsl:value-of select="./description" />
-            </xsl:if>
-        </div>
-
-        <div class="body">
-            <div class="requests">
-                <h4 class="title">请求</h4>
-                <xsl:for-each select="request">
-                    <xsl:call-template name="request">
-                        <xsl:with-param name="request" select="." />
-                        <xsl:with-param name="path" select="../path" />
-                    </xsl:call-template>
-                </xsl:for-each>
-            </div>
-            <div class="responses">
-                <h4 class="title">返回</h4>
-                <xsl:for-each select="response">
-                    <xsl:call-template name="response">
-                        <xsl:with-param name="response" select="." />
-                    </xsl:call-template>
-                </xsl:for-each>
-            </div>
-        </div>
-
-        <xsl:if test="./callback">
-        <div class="callback">
-            <xsl:attribute name="data-method">
-                <xsl:value-of select="./callback/@method" />
-            </xsl:attribute>
-            <h3>回调</h3>
-            <div class="description">
-                <xsl:value-of select="./callback/@summary" />
-                <xsl:if test="./callback/description">
-                    <br />
-                    <xsl:value-of select="./callback/description" />
-                </xsl:if>
-            </div>
-
-            <div class="body">
-                <div class="requests">
-                    <h4 class="title">请求</h4>
-                    <xsl:for-each select="./callback/request">
-                        <xsl:call-template name="request">
-                            <xsl:with-param name="request" select="." />
-                            <xsl:with-param name="path" select="../path" />
-                        </xsl:call-template>
-                    </xsl:for-each>
-                </div>
-
-                <xsl:if test="./callback/response">
-                    <div class="responses">
-                        <h4 class="title">返回</h4>
-                        <xsl:for-each select="./callback/response">
-                            <xsl:call-template name="response">
-                                <xsl:with-param name="response" select="." />
-                            </xsl:call-template>
-                        </xsl:for-each>
-                    </div>
-                </xsl:if>
-            </div> <!-- end .body -->
-        </div> <!-- end .callback -->
-        </xsl:if>
-    </details>
+<!-- 替换字符串中特定的字符 -->
+<xsl:template name="replace">
+    <xsl:param name="text" />
+    <xsl:param name="old" />
+    <xsl:param name="new" />
+    <xsl:choose>
+        <xsl:when test="contains($text, $old)">
+            <xsl:value-of select="substring-before($text, $old)" />
+            <xsl:value-of select="$new" />
+            <xsl:call-template name="replace">
+                <xsl:with-param name="text" select="substring-after($text, $old)" />
+                <xsl:with-param name="old" select="$old" />
+                <xsl:with-param name="new" select="$new" />
+            </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="$text" />
+        </xsl:otherwise>
+    </xsl:choose>
 </xsl:template>
 
-<!-- header 界面元素 -->
-<xsl:template name="header">
-    <header>
-        <h1>
-            <img src="./icon.svg" />
-            <xsl:value-of select="/apidoc/title" />
-            <span class="version">(<xsl:value-of select="/apidoc/@version" />)</span>
-        </h1>
 
-        <div class="menu tags-selector">
-            <h2>标签</h2>
-            <ul>
-                <xsl:for-each select="apidoc/tag">
-                <li>
-                    <xsl:attribute name="data-tag">
-                        <xsl:value-of select="@name" />
-                    </xsl:attribute>
-                    <label><input type="checkbox" checked="checked" /><xsl:value-of select="@title" /></label>
-                </li>
-                </xsl:for-each>
-            </ul>
-        </div>
-
-        <div class="menu methods-selector">
-            <h2>请求方法</h2>
-            <ul>
-                <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
-                <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
-                <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
-                <li>
-                    <xsl:attribute name="data-method">
-                        <xsl:value-of select="." />
-                    </xsl:attribute>
-                    <label><input type="checkbox" checked="true" /><xsl:value-of select="." /></label>
-                </li>
-                </xsl:for-each>
-            </ul>
-        </div>
-    </header>
-</xsl:template>
-
-<xsl:template match="/">
-    <html>
-        <head>
-            <title><xsl:value-of select="apidoc/title" /></title>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-            <meta name="generator" content="https://apidoc.tools" />
-            <link rel="stylesheet" type="text/css" href="./apidoc.css" />
-            <link rel="icon" type="image/png" href="./icon.png" />
-            <link rel="license">
-                <xsl:attribute name="href"><xsl:value-of select="apidoc/license/@url"/></xsl:attribute>
-            </link>
-            <script src="./apidoc.js"></script>
-        </head>
-        <body>
-            <xsl:call-template name="header" />
-
-            <main>
-                <div class="content">
-                    <xsl:value-of select="/apidoc/content" />
-                </div>
-
-                <xsl:for-each select="apidoc/api">
-                <xsl:sort select="path/@path"/>
-                    <xsl:apply-templates select="." />
-                </xsl:for-each>
-            </main>
-
-            <footer>
-            <p>文档版权为
-            <a>
-                <xsl:attribute name="href"><xsl:value-of select="apidoc/license/@url" /></xsl:attribute>
-                <xsl:value-of select="apidoc/license" />
-            </a>。
-            由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成。
-            </p>
-            </footer>
-        </body>
-    </html>
-</xsl:template>
 </xsl:stylesheet>
 `),
 	},
@@ -428,11 +421,12 @@ var data = []*static{
 :root {
     --max-width: 100%;
     --header-height: 54px;
-    --border-color: #e0e0e0;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
 
+    --color: black;
     --background: white;
+    --border-color: #e0e0e0;
     --delete-color: red;
 
     /* method */
@@ -452,6 +446,7 @@ body {
     padding: 0;
     margin: 0;
     height: 100%;
+    color: var(--color);
     background: var(--background);
     text-align: center;
 }
@@ -733,9 +728,29 @@ footer {
 		contentType: "application/javascript",
 		data: []byte(`'use strict';
 
+// 深色模式的颜色定义
+const darkColor = {
+    '--color': 'white',
+    '--background': 'black',
+    '--border-color': '#e0e0e0',
+    '--delete-color': 'red',
+
+    /* method */
+    '--method-get-color': 'green',
+    '--method-options-color': 'green',
+    '--method-post-color': 'darkorange',
+    '--method-put-color': 'darkorange',
+    '--method-patch-color': 'darkorange',
+    '--method-delete-color': 'red',
+}
+
+// 浅色模式的颜色定义，由代码从 css 中获取
+const lightColor = {}
+
 window.onload = function () {
     this.registerMethodFilter();
     this.registerTagFilter();
+    this.initColors()
 }
 
 function registerMethodFilter() {
@@ -766,7 +781,7 @@ function registerTagFilter() {
 
             const apis = this.document.querySelectorAll('.api');
             apis.forEach((api) => {
-                if (!api.getAttribute('data-tags').includes(tag+',')) {
+                if (!api.getAttribute('data-tags').includes(tag + ',')) {
                     return;
                 }
 
@@ -775,13 +790,37 @@ function registerTagFilter() {
         });
     });
 }
+
+function initColors() {
+    // 备份原来的颜色至 lightColor
+    for (const key in darkColor) {
+        lightColor[key] = document.documentElement.style.getPropertyValue(key);
+    }
+
+    const elem = document.querySelector('.colors-selector input');
+    elem.addEventListener('change', (event) => {
+        if (event.target.checked) {
+            setColors(darkColor);
+        } else {
+            setColors(lightColor);
+        }
+    });
+}
+
+// 设置颜色值，可用的颜色值列表可参考 apidoc.css 中的 root 元素内容。
+function setColors(colors) {
+    const root = document.documentElement;
+    for (const key in colors) {
+        root.style.setProperty(key, colors[key]);
+    }
+}
 `),
 	},
 	{
 		name:        "icon.svg",
 		contentType: "image/svg+xml",
 		data: []byte(`<?xml version="1.0" encoding="utf-8" ?>
-<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" stroke="red" fill="grey">
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" stroke="red">
     <circle cx="256" cy="256" r="252" fill-opacity="0" stroke-width="8" />
     <circle cx="585" cy="395" r="350" fill-opacity="0" stroke-width="8" />
     <circle cx="-70" cy="395" r="350" fill-opacity="0" stroke-width="8" />

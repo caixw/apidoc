@@ -24,6 +24,10 @@ type Doc struct {
 	// 仅用于输出，文档中不需要指定此值。
 	APIDoc string `xml:"apidoc,attr,omitempty"`
 
+	// 文档内容的区域信息
+	// 如果存在此值，客户端应该尽量根据此值显示相应的界面语言。
+	Locale string `xml:"locale,attr,omitempty"`
+
 	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
 	Content CDATA     `xml:"content"`
