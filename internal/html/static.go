@@ -36,9 +36,7 @@ var data = []*static{
             <xsl:call-template name="header" />
 
             <main>
-                <div class="content">
-                    <xsl:value-of select="/apidoc/content" />
-                </div>
+                <div class="content"><xsl:value-of select="/apidoc/content" /></div>
 
                 <xsl:for-each select="apidoc/api">
                 <xsl:sort select="path/@path"/>
@@ -48,9 +46,7 @@ var data = []*static{
 
             <footer>
             <p>文档版权为
-            <a href="{apidoc/license/@url}">
-                <xsl:value-of select="apidoc/license" />
-            </a>。
+            <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>。
             由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成。
             </p>
             </footer>
@@ -108,10 +104,7 @@ var data = []*static{
 
     <details id="{$id}" class="api" data-method="{@method}">
     <xsl:attribute name="data-tags">
-        <xsl:for-each select="tag">
-            <xsl:value-of select="." />
-            <xsl:value-of select="','" />
-        </xsl:for-each>
+        <xsl:for-each select="tag"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
     </xsl:attribute>
 
         <summary>
@@ -134,7 +127,7 @@ var data = []*static{
         </summary>
         <div class="description">
             <xsl:if test="./description">
-            <xsl:value-of select="./description" />
+                <xsl:value-of select="./description" />
             </xsl:if>
         </div>
 
@@ -282,8 +275,7 @@ var data = []*static{
     <tr>
         <th>
             <xsl:if test="$parent">
-                <xsl:value-of select="$parent" />
-                <xsl:value-of select="'.'" />
+                <xsl:value-of select="concat($parent, ',')" />
             </xsl:if>
             <xsl:value-of select="@name" />
         </th>
@@ -294,9 +286,7 @@ var data = []*static{
             </xsl:call-template>
 
             <xsl:value-of select="@type" />
-            <xsl:if test="@array = 'true'">
-                <xsl:value-of select="'[]'" />
-            </xsl:if>
+            <xsl:if test="@array = 'true'"><xsl:value-of select="'[]'" /></xsl:if>
         </td>
 
         <td>
@@ -306,8 +296,7 @@ var data = []*static{
             </xsl:choose>
 
             <xsl:if test="@default">
-                <xsl:value-of select="' '" />
-                <xsl:value-of select="@default" />
+                <xsl:value-of select="concat(' ', @default)" />
             </xsl:if>
         </td>
 
@@ -354,8 +343,7 @@ var data = []*static{
     <xsl:if test="$deprecated">
         <xsl:attribute name="class"><xsl:value-of select="'del'" /></xsl:attribute>
         <xsl:attribute name="title">
-            <xsl:value-of select="'弃用于 '" />
-            <xsl:value-of select="$deprecated" />
+            <xsl:value-of select="concat('弃用于 ', $deprecated)" />
         </xsl:attribute>
     </xsl:if>
 </xsl:template>
@@ -395,17 +383,14 @@ var data = []*static{
     <xsl:param name="new" />
     <xsl:choose>
         <xsl:when test="contains($text, $old)">
-            <xsl:value-of select="substring-before($text, $old)" />
-            <xsl:value-of select="$new" />
+            <xsl:value-of select="concat(substring-before($text, $old), $new)" />
             <xsl:call-template name="replace">
                 <xsl:with-param name="text" select="substring-after($text, $old)" />
                 <xsl:with-param name="old" select="$old" />
                 <xsl:with-param name="new" select="$new" />
             </xsl:call-template>
         </xsl:when>
-        <xsl:otherwise>
-            <xsl:value-of select="$text" />
-        </xsl:otherwise>
+        <xsl:otherwise><xsl:value-of select="$text" /></xsl:otherwise>
     </xsl:choose>
 </xsl:template>
 
