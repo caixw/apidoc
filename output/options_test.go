@@ -6,14 +6,6 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-
-	"github.com/caixw/apidoc/v5/internal/openapi"
-)
-
-var (
-	_ marshaler = xmlMarshal
-	_ marshaler = openapi.JSON
-	_ marshaler = openapi.YAML
 )
 
 func TestOptions_contains(t *testing.T) {
@@ -40,8 +32,4 @@ func TestOptions_sanitize(t *testing.T) {
 
 	o.Path = "./testdir/apidoc.json"
 	a.NotError(o.sanitize())
-	a.Equal(o.marshal, marshaler(xmlMarshal))
-
-	o.Type = "unknown"
-	a.Error(o.sanitize())
 }

@@ -121,7 +121,6 @@ func detectConfig(wd string) (*Config, error) {
 		Version: apidoc.Version(),
 		Inputs:  inputs,
 		Output: &output.Options{
-			Type: output.ApidocXML,
 			Path: rel(filepath.Join(wd, docFilename), wd),
 		},
 	}, nil

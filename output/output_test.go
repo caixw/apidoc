@@ -25,7 +25,6 @@ func TestRender(t *testing.T) {
 	doc := getTestDoc()
 	o := &Options{
 		Path: "./apidoc.xml",
-		Type: ApidocXML,
 	}
 
 	a.NotError(Render(doc, o))

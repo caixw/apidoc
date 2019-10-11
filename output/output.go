@@ -4,6 +4,7 @@
 package output
 
 import (
+	"encoding/xml"
 	"io/ioutil"
 	"os"
 
@@ -18,7 +19,7 @@ func Render(d *doc.Doc, opt *Options) error {
 
 	filterDoc(d, opt)
 
-	data, err := opt.marshal(d)
+	data, err := xml.MarshalIndent(d, "", "\t")
 	if err != nil {
 		return err
 	}
