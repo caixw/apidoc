@@ -18,7 +18,7 @@ const (
 	header   = "// 由 make.go 生成，请勿修改！\n\n"
 	pkgName  = "html"
 	fileName = "static.go"
-	resDir   = "../../docs" // 需要打包的资源文件所在的目录
+	resDir   = "../../docs/v5" // 需要打包的资源文件所在的目录
 )
 
 type file struct {
@@ -44,7 +44,7 @@ var files = []*file{
 		name:        "apidoc.js",
 	},
 	{
-		file:        "icon.svg",
+		file:        "../icon.svg",
 		contentType: "image/svg+xml",
 		name:        "icon.svg",
 	},

@@ -26,7 +26,7 @@ type Doc struct {
 
 	// 文档内容的区域信息
 	// 如果存在此值，客户端应该尽量根据此值显示相应的界面语言。
-	Locale string `xml:"locale,attr,omitempty"`
+	Lang string `xml:"lang,attr,omitempty"`
 
 	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`

@@ -18,8 +18,8 @@ var data = []*static{
 
 <xsl:template match="/">
     <html>
-    <xsl:if test="@locale">
-        <xsl:attribute name="lang"><xsl:value-of select="@locale" /></xsl:attribute>
+    <xsl:if test="@lang">
+        <xsl:attribute name="lang"><xsl:value-of select="@lang" /></xsl:attribute>
     </xsl:if>
 
         <head>
@@ -28,7 +28,7 @@ var data = []*static{
             <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
             <meta name="generator" content="https://apidoc.tools" />
             <link rel="stylesheet" type="text/css" href="./apidoc.css" />
-            <link rel="icon" type="image/png" href="./icon.png" />
+            <link rel="icon" type="image/png" href="../icon.png" />
             <link rel="license" href="{apidoc/license/@url}" />
             <script src="./apidoc.js"></script>
         </head>
@@ -58,7 +58,7 @@ var data = []*static{
 <xsl:template name="header">
     <header>
         <h1>
-            <img src="./icon.svg" />
+            <img src="../icon.svg" />
             <xsl:value-of select="/apidoc/title" />
             <span class="version">(<xsl:value-of select="/apidoc/@version" />)</span>
         </h1>
