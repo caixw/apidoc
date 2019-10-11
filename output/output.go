@@ -4,6 +4,7 @@
 package output
 
 import (
+	"bytes"
 	"encoding/xml"
 	"io/ioutil"
 	"os"
@@ -19,11 +20,17 @@ func Render(d *doc.Doc, opt *Options) error {
 
 	filterDoc(d, opt)
 
+	buf := bytes.NewBufferString(opt.procInst)
+
 	data, err := xml.MarshalIndent(d, "", "\t")
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(opt.Path, data, os.ModePerm)
+	if _, err = buf.Write(data); err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(opt.Path, buf.Bytes(), os.ModePerm)
 }
 
 func filterDoc(d *doc.Doc, o *Options) {

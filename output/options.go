@@ -14,6 +14,14 @@ type Options struct {
 
 	// 只输出该标签的文档，若为空，则表示所有。
 	Tags []string `yaml:"tags,omitempty"`
+
+	// xslt 文件地址
+	//
+	// 默认值为 https://apidoc.tools/docs/v5/apidoc.xsl 文件
+	// 其中 v5 根据当前版本变化
+	Style string `yaml:"style,omitempty"`
+
+	procInst string
 }
 
 func (o *Options) contains(tags ...string) bool {
@@ -39,6 +47,12 @@ func (o *Options) sanitize() *message.SyntaxError {
 	if o.Path == "" {
 		return message.NewLocaleError("", "path", 0, locale.ErrRequired)
 	}
+
+	if o.Style == "" {
+		o.Style = "https://apidoc.tools/v5/apidoc.xsl"
+	}
+
+	o.procInst = `<?xml-stylesheet type="text/xsl" href="` + o.Style + `"?>`
 
 	return nil
 }
