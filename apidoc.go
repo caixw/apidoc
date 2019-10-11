@@ -52,8 +52,6 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 
 // Handle 返回显示文档内容的中间件
 //
-// 会将 p 指向的文档内容中的 xml-stylesheet 替换成当前的 apidoc.xsl。
-//
 // p 指定了 apidoc.xml 实际的文件路径；
 // contentType 表示 p 的 mimetype 类型，如果为空，则会采用 "application/xml";
 // l 表示出错时，错误内容的发送通道，如果为 nil，表示不输出错误信息；
