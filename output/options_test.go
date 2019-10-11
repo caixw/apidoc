@@ -8,6 +8,11 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestStylesheet(t *testing.T) {
+	a := assert.New(t)
+	a.NotEmpty(stylesheetURL)
+}
+
 func TestOptions_contains(t *testing.T) {
 	a := assert.New(t)
 

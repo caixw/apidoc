@@ -3,9 +3,18 @@
 package output
 
 import (
+	"encoding/xml"
+
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 )
+
+var stylesheetURL string
+
+func init() {
+	stylesheetURL = vars.OfficialURL + "/" + vars.DocVersion() + "/apidoc.xsl"
+}
 
 // Options 指定了渲染输出的相关设置项。
 type Options struct {
@@ -17,11 +26,10 @@ type Options struct {
 
 	// xslt 文件地址
 	//
-	// 默认值为 https://apidoc.tools/docs/v5/apidoc.xsl 文件
-	// 其中 v5 根据当前版本变化
+	// 默认值为 https://apidoc.tools/docs/ 下当前版本的 apidoc.xsl
 	Style string `yaml:"style,omitempty"`
 
-	procInst string
+	procInst []string
 }
 
 func (o *Options) contains(tags ...string) bool {
@@ -49,10 +57,13 @@ func (o *Options) sanitize() *message.SyntaxError {
 	}
 
 	if o.Style == "" {
-		o.Style = "https://apidoc.tools/v5/apidoc.xsl"
+		o.Style = stylesheetURL
 	}
 
-	o.procInst = `<?xml-stylesheet type="text/xsl" href="` + o.Style + `"?>`
+	o.procInst = []string{
+		xml.Header,
+		`<?xml-stylesheet type="text/xsl" href="` + o.Style + `"?>`,
+	}
 
 	return nil
 }

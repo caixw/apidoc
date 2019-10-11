@@ -20,7 +20,16 @@ func Render(d *doc.Doc, opt *Options) error {
 
 	filterDoc(d, opt)
 
-	buf := bytes.NewBufferString(opt.procInst)
+	buf := new(bytes.Buffer)
+	for _, v := range opt.procInst {
+		if _, err := buf.WriteString(v); err != nil {
+			return err
+		}
+
+		if err := buf.WriteByte('\n'); err != nil {
+			return err
+		}
+	}
 
 	data, err := xml.MarshalIndent(d, "", "\t")
 	if err != nil {
