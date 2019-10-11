@@ -10,13 +10,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"path"
-	"regexp"
 
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/input"
-	"github.com/caixw/apidoc/v5/internal/html"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
@@ -72,57 +69,20 @@ func Handle(p, contentType string, l *log.Logger) http.Handler {
 			}
 		}
 
-		name := path.Base(r.URL.Path)
-
-		if data, ct := html.Get(name); data != nil {
-			w.Header().Set("Content-Type", ct)
-			if _, err := w.Write(data); err != nil {
-				printErr(err) // 此时 writeHeader 已经发出，再输出状态码无意义
-			}
+		data, err := ioutil.ReadFile(p)
+		if err != nil {
+			printErr(err)
+			errStatus(w, http.StatusInternalServerError)
 			return
 		}
 
-		if name == "apidoc.xml" {
-			data, err := readDoc(p)
-			if err != nil {
-				printErr(err)
-				errStatus(w, http.StatusInternalServerError)
-				return
-			}
-
-			w.Header().Set("Content-Type", contentType)
-			if _, err = w.Write(data); err != nil {
-				printErr(err) // 此时 writeHeader 已经发出，再输出状态码无意义
-			}
-			return
+		w.Header().Set("Content-Type", contentType)
+		if _, err = w.Write(data); err != nil {
+			printErr(err) // 此时 writeHeader 已经发出，再输出状态码无意义
 		}
-
-		errStatus(w, http.StatusNotFound)
 	})
 }
 
 func errStatus(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
-}
-
-// 用于查找 <?xml 指令
-var procInst = regexp.MustCompile(`<\?xml .+ ?>`)
-
-// 读取 p 的内容并添加 xml-stylesheet
-//
-// 在 <?xml ...?> 之后添加或是在该指令不存在的时候，添加到文件头部。
-func readDoc(p string) ([]byte, error) {
-	data, err := ioutil.ReadFile(p)
-	if err != nil {
-		return nil, err
-	}
-
-	pi := `<?xml-stylesheet type="text/xsl" href="` + html.StylesheetFilename + `"?>`
-
-	if rslt := procInst.Find(data); len(rslt) > 0 {
-		return procInst.ReplaceAll(data, append(rslt, []byte(pi)...)), nil
-	}
-
-	ret := make([]byte, 0, len(data)+len(pi))
-	return append(append(ret, pi...), data...), nil
 }
