@@ -78,10 +78,6 @@
                 </xsl:for-each>
             </ul>
         </div>
-
-        <div class="menu colors-selector">
-            <h2><label><input type="checkbox" />深色</label></h2>
-        </div>
     </header>
 </xsl:template>
 

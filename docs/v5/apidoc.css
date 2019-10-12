@@ -20,6 +20,23 @@
     --method-delete-color: red;
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color: #b0b0b0;
+        --background: black;
+        --border-color: #303030;
+        --delete-color: red;
+
+        /* method */
+        --method-get-color: green;
+        --method-options-color: green;
+        --method-post-color: darkorange;
+        --method-put-color: darkorange;
+        --method-patch-color: darkorange;
+        --method-delete-color: red;
+    }
+}
+
 html {
     height: 100%;
 }
