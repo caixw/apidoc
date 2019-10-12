@@ -37,4 +37,7 @@ func TestOptions_sanitize(t *testing.T) {
 
 	o.Path = "./testdir/apidoc.json"
 	a.NotError(o.sanitize())
+	a.Equal(o.Style, stylesheetURL).
+		Equal(2, len(o.procInst)).
+		Contains(o.procInst[1], stylesheetURL)
 }
