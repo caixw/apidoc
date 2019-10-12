@@ -28,6 +28,7 @@ type Doc struct {
 	// 如果存在此值，客户端应该尽量根据此值显示相应的界面语言。
 	Lang string `xml:"lang,attr,omitempty"`
 
+	Created string    `xml:"created,attr,omitempty"` // 文档的生成时间
 	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`
 	Content CDATA     `xml:"content"`
