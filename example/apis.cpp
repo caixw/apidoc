@@ -20,11 +20,11 @@
 //     <request type="object" mimetype="json">
 //         <header name="name">desc</header>
 //         <header name="name1">desc1</header>
-//         <param name="count" type="number" required="true" summary="summary" />
+//         <param name="count" type="number" optional="true" summary="summary" />
 //         <param name="list" type="object" array="true" summary="list">
-//             <param name="id" type="number" required="true" summary="desc" />
-//             <param name="name" type="string" required="true" summary="desc" />
-//             <param name="groups" type="string" array="true" required="true" summary="desc">
+//             <param name="id" type="number" optional="true" summary="desc" />
+//             <param name="name" type="string" optional="true" summary="desc" />
+//             <param name="groups" type="string" array="true" optional="true" summary="desc">
 //                 <enum value="xx1">xx</enum>
 //                 <enum value="xx2">xx</enum>
 //             </param>
@@ -50,8 +50,8 @@
 //
 //     <response status="404" type="object" mimetype="json">
 //         <header name="authorization">token</header>
-//         <param name="code" type="number" summary="状态码" required="true" />
-//         <param name="message" type="string" summary="错误信息" required="true" />
+//         <param name="code" type="number" summary="状态码" optional="false" />
+//         <param name="message" type="string" summary="错误信息" optional="false" />
 //         <param name="detail" type="object" array="true" summary="错误明细">
 //             <param name="id" type="string" summary="id" />
 //             <param name="message" type="string" summary="message" />

@@ -21,7 +21,9 @@ func TestParam_UnmarshalXML(t *testing.T) {
 	str := `<Param name="text" type="string"></Param>`
 
 	data, err := xml.Marshal(obj)
-	a.NotError(err).Equal(string(data), str)
+	a.NotError(err).
+		Equal(string(data), str).
+		False(obj.Optional)
 
 	obj1 := &Param{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
@@ -40,7 +42,8 @@ func TestParam_UnmarshalXML(t *testing.T) {
 		True(obj1.Array).
 		Equal(obj1.Type, Object).
 		Equal(obj1.Deprecated, "1.1.1").
-		Equal(3, len(obj1.Items))
+		Equal(3, len(obj1.Items)).
+		False(obj1.Optional)
 
 	// 少 name
 	obj1 = &Param{}

@@ -21,10 +21,10 @@ Perl、PHP、Python、Ruby、Rust、Scala 和 Swift。
  *     <tag>user</tag>
  *     <server>users</server>
  *     <response status="200" type="object" mimetype="application/json">
- *         <param name="count" type="int" required="true" summary="符合条件的所有用户数量" />
- *         <param name="users" type="object" array="true" required="true" summary="用户列表">
- *             <param name="id" type="int" required="true" summary="唯一 ID" />
- *             <param name="name" type="string" required="true" summary="姓名" />
+ *         <param name="count" type="int" optional="false" summary="符合条件的所有用户数量" />
+ *         <param name="users" type="object" array="true" summary="用户列表">
+ *             <param name="id" type="int" summary="唯一 ID" />
+ *             <param name="name" type="string" summary="姓名" />
  *         </param>
  *         <example mimetype="application/json">
  *         <![CDATA[

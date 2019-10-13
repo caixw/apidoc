@@ -23,7 +23,7 @@ type Param struct {
 	Type        Type     `xml:"type,attr"`
 	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 	Default     string   `xml:"default,attr,omitempty"`
-	Required    bool     `xml:"required,attr,omitempty"`
+	Optional    bool     `xml:"optional,attr,omitempty"`
 	Array       bool     `xml:"array,attr,omitempty"`
 	Items       []*Param `xml:"param,omitempty"`
 	Reference   string   `xml:"ref,attr,omitempty"`

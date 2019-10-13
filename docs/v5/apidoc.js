@@ -3,7 +3,7 @@
 window.onload = function () {
     this.registerMethodFilter();
     this.registerTagFilter();
-}
+};
 
 function registerMethodFilter() {
     const list = document.querySelectorAll('.methods-selector li input');
@@ -14,7 +14,7 @@ function registerMethodFilter() {
 
             const apis = this.document.querySelectorAll('.api');
             apis.forEach((api) => {
-                if (api.getAttribute('data-method') != method) {
+                if (api.getAttribute('data-method') !== method) {
                     return;
                 }
 

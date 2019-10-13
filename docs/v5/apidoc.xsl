@@ -228,6 +228,7 @@
         <xsl:with-param name="param" select="$response" />
     </xsl:call-template>
 </xsl:template>
+
 <!-- path param, path query, header 等的界面 -->
 <xsl:template name="param">
     <xsl:param name="title" />
@@ -267,7 +268,7 @@
 
         <th>
             <xsl:if test="$parent">
-                <xsl:value-of select="concat($parent, ',')" />
+                <xsl:value-of select="concat($parent, '.')" />
             </xsl:if>
             <xsl:value-of select="@name" />
         </th>
@@ -279,8 +280,8 @@
 
         <td>
             <xsl:choose>
-                <xsl:when test="@required = 'true'"><xsl:value-of select="'R'" /></xsl:when>
-                <xsl:otherwise><xsl:value-of select="'O'" /></xsl:otherwise>
+                <xsl:when test="@optional = 'true'"><xsl:value-of select="'O'" /></xsl:when>
+                <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
             </xsl:choose>
 
             <xsl:if test="@default">

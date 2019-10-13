@@ -14,8 +14,8 @@
 //
 //     <response status="404" type="object" mimetype="json">
 //         <header name="authorization">token</header>
-//         <param name="code" type="number" summary="状态码" required="true" />
-//         <param name="message" type="string" summary="错误信息" required="true" />
+//         <param name="code" type="number" summary="状态码" optional="false" />
+//         <param name="message" type="string" summary="错误信息" optional="false" />
 //         <param name="detail" type="object" array="true" summary="错误明细">
 //             <param name="id" type="string" summary="id" />
 //             <param name="message" type="string" summary="message" />
