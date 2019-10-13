@@ -39,7 +39,7 @@
             <footer>
             <p>文档版权为
             <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>。
-            由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成。
+                由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>。
             </p>
             </footer>
         </body>

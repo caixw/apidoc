@@ -26,7 +26,8 @@ type Options struct {
 
 	// xslt 文件地址
 	//
-	// 默认值为 https://apidoc.tools/docs/ 下当前版本的 apidoc.xsl
+	// 默认值为 https://apidoc.tools/docs/ 下当前版本的 apidoc.xsl，比如：
+	//  https://apidoc.tools/docs/v5/apidoc.xsl
 	Style string `yaml:"style,omitempty"`
 
 	procInst []string

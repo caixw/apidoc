@@ -6,6 +6,7 @@ package doc
 import (
 	"bytes"
 	"encoding/xml"
+	"time"
 
 	xmessage "golang.org/x/text/message"
 
@@ -13,6 +14,8 @@ import (
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 )
+
+const createdFormat = time.RFC3339
 
 // Doc 文档
 type Doc struct {
@@ -51,7 +54,8 @@ type Doc struct {
 // New 返回 Doc 实例
 func New() *Doc {
 	return &Doc{
-		APIDoc: vars.Version(),
+		APIDoc:  vars.Version(),
+		Created: time.Now().Format(createdFormat),
 	}
 }
 
