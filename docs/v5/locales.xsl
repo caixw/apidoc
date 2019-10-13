@@ -1,14 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
 <!--
-实现了简单的翻译功能
+当前文件实现了简单的翻译功能
 
 将所有支持的本地化信息都输出到 HTML，但只显示与当前语言相关联的那一条。
-
-语言 ID 必须小写，分隔符必须为 -，而不是 _。
 -->
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:template name="languages">
+    <li lang="zh-hans">
+        <label><input type="radio" name="lang" checked="{$curr-lang='zh-hans'}" />简体中文</label>
+    </li>
+
+    <li lang="zh-hant">
+        <label><input type="radio" name="lang" checked="{$curr-lang='zh-hant'}" />繁體中文</label>
+    </li>
+</xsl:template>
+
+<!-- language -->
+<xsl:variable name="locale-language">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'语言'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'語言'" />
+    </xsl:call-template>
+</xsl:variable>
 
 <!-- tag -->
 <xsl:variable name="locale-tag">
@@ -217,7 +238,7 @@
 
     <xsl:variable name="class">
         <xsl:choose>
-            <xsl:when test="translate(/apidoc/@lang, $uppercase, $lowercase)=translate($lang, $uppercase, $lowercase)">
+            <xsl:when test="$curr-lang=translate($lang, $uppercase, $lowercase)">
                 <xsl:value-of select="''" />
             </xsl:when>
             <xsl:otherwise>
@@ -226,11 +247,17 @@
         </xsl:choose>
     </xsl:variable>
 
-    <span lang="{$lang}" class="{$class}"><xsl:copy-of select="$text" /></span>
+    <!-- data-locale 属性表示该元素是一个本地化信息元素 -->
+    <span data-locale="true" lang="{$lang}" class="{$class}"><xsl:copy-of select="$text" /></span>
 </xsl:template>
 
+<!-- 返回当前文档的语言，会转换为小写，_ 也会被转换成 - -->
+<xsl:variable name="curr-lang">
+    <xsl:value-of select="translate(/apidoc/@lang, $uppercase, $lowercase)" />
+</xsl:variable>
+
 <!-- 用于实现 lower-case 和 upper-case，如果将来某天浏览器支持 xsl 2.0 了，可以直接采用相关函数 -->
-<xsl:variable name="lowercase" select="'abcdefghijklmnopqrstuvwxyz_'" />
-<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ-'" />
+<xsl:variable name="lowercase" select="'abcdefghijklmnopqrstuvwxyz-'" />
+<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'" />
 
 </xsl:stylesheet>

@@ -78,6 +78,11 @@
                 </xsl:for-each>
             </ul>
         </div>
+
+        <div class="menu languages-selector">
+            <h2><xsl:copy-of select="$locale-language" /></h2>
+            <ul><xsl:call-template name="languages" /></ul>
+        </div>
     </header>
 </xsl:template>
 
@@ -96,9 +101,7 @@
     </xsl:attribute>
 
         <summary>
-            <a class="link" href="#{$id}"> <!-- 链接符号 -->
-            &#128279;
-            </a>
+            <a class="link" href="#{$id}">&#128279;</a> <!-- 链接符号 -->
 
             <span class="action"><xsl:value-of select="@method" /></span>
             <span>
@@ -279,9 +282,7 @@
     </xsl:call-template>
 
         <th>
-            <xsl:if test="$parent">
-                <xsl:value-of select="concat($parent, '.')" />
-            </xsl:if>
+            <xsl:if test="$parent"><xsl:value-of select="concat($parent, '.')" /></xsl:if>
             <xsl:value-of select="@name" />
         </th>
 

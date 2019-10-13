@@ -132,6 +132,7 @@ header .menu {
     margin-right: var(--padding);
     position: relative;
     margin-top: 9px;
+    display: none; /* 默认不可见，只有在有 JS 的情况下，通过 JS 控制其可见性 */
 }
 header .menu:first-of-type {
     margin-right: 0;
