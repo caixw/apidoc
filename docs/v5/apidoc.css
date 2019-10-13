@@ -87,6 +87,10 @@ a {
     text-decoration-color: var(--delete-color);
 }
 
+.hidden {
+    display: none;
+}
+
 /*************************** header ***********************/
 
 header {

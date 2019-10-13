@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:import href="./locales.xsl" />
+
 <xsl:output
     method="html"
     encoding="utf-8"
@@ -37,10 +40,7 @@
             </main>
 
             <footer>
-            <p>文档版权为
-            <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>。
-                由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>。
-            </p>
+            <p><xsl:copy-of select="$locale-footer" /></p>
             </footer>
         </body>
     </html>
@@ -56,7 +56,7 @@
         </h1>
 
         <div class="menu tags-selector">
-            <h2>标签</h2>
+            <h2><xsl:copy-of select="$locale-tag" /></h2>
             <ul>
                 <xsl:for-each select="apidoc/tag">
                 <li data-tag="{@name}">
@@ -67,7 +67,7 @@
         </div>
 
         <div class="menu methods-selector">
-            <h2>请求方法</h2>
+            <h2><xsl:copy-of select="$locale-method" /></h2>
             <ul>
                 <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
                 <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
@@ -121,7 +121,7 @@
 
         <div class="body">
             <div class="requests">
-                <h4 class="title">请求</h4>
+                <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
                 <xsl:for-each select="request">
                     <xsl:call-template name="request">
                         <xsl:with-param name="request" select="." />
@@ -130,7 +130,7 @@
                 </xsl:for-each>
             </div>
             <div class="responses">
-                <h4 class="title">返回</h4>
+                <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
                 <xsl:for-each select="response">
                     <xsl:call-template name="response">
                         <xsl:with-param name="response" select="." />
@@ -141,7 +141,7 @@
 
         <xsl:if test="./callback">
         <div class="callback" data-method="{./callback/@method}">
-            <h3>回调</h3>
+            <h3><xsl:copy-of select="$locale-callback" /></h3>
             <div class="description">
                 <xsl:value-of select="./callback/@summary" />
                 <xsl:if test="./callback/description">
@@ -152,7 +152,7 @@
 
             <div class="body">
                 <div class="requests">
-                    <h4 class="title">请求</h4>
+                    <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
                     <xsl:for-each select="./callback/request">
                         <xsl:call-template name="request">
                             <xsl:with-param name="request" select="." />
@@ -163,7 +163,7 @@
 
                 <xsl:if test="./callback/response">
                     <div class="responses">
-                        <h4 class="title">返回</h4>
+                        <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
                         <xsl:for-each select="./callback/response">
                             <xsl:call-template name="response">
                                 <xsl:with-param name="response" select="." />
@@ -184,27 +184,35 @@
 <div class="request">
     <xsl:if test="$path/param">
         <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'路径参数'" />
+            <xsl:with-param name="title">
+                <xsl:copy-of select="$locale-path-param" />
+            </xsl:with-param>
             <xsl:with-param name="param" select="$path/param" />
         </xsl:call-template>
     </xsl:if>
 
     <xsl:if test="$path/query">
         <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'查询参数'" />
+            <xsl:with-param name="title">
+                <xsl:copy-of select="$locale-query" />
+            </xsl:with-param>
             <xsl:with-param name="param" select="$path/query" />
         </xsl:call-template>
     </xsl:if>
     
     <xsl:if test="$request/header">
         <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'请求报头'" />
+            <xsl:with-param name="title">
+                <xsl:copy-of select="$locale-header" />
+            </xsl:with-param>
             <xsl:with-param name="param" select="$request/header" />
         </xsl:call-template>
     </xsl:if>
 
     <xsl:call-template name="param">
-        <xsl:with-param name="title" select="'请求报文'" />
+        <xsl:with-param name="title">
+            <xsl:copy-of select="$locale-body" />
+        </xsl:with-param>
         <xsl:with-param name="param" select="$request" />
     </xsl:call-template>
 </div>
@@ -218,13 +226,17 @@
 
     <xsl:if test="$response/header">
         <xsl:call-template name="param">
-            <xsl:with-param name="title" select="'返回报头'" />
+            <xsl:with-param name="title">
+                <xsl:copy-of select="$locale-header" />
+            </xsl:with-param>
             <xsl:with-param name="param" select="$response/header" />
         </xsl:call-template>
     </xsl:if>
 
     <xsl:call-template name="param">
-        <xsl:with-param name="title" select="'返回报文'" />
+        <xsl:with-param name="title">
+            <xsl:copy-of select="$locale-body" />
+        </xsl:with-param>
         <xsl:with-param name="param" select="$response" />
     </xsl:call-template>
 </xsl:template>
@@ -236,14 +248,14 @@
     <xsl:param name="example" /> <!-- 示例代码 -->
 
     <div class="param">
-        <h4 class="title">&#x27a4;&#160;<xsl:value-of select="$title" /></h4>
+        <h4 class="title">&#x27a4;&#160;<xsl:copy-of select="$title" /></h4>
         <table>
             <thead>
                 <tr>
-                    <th>变量</th>
-                    <th>类型</th>
-                    <th>值</th>
-                    <th>描述</th>
+                    <th><xsl:copy-of select="$locale-var" /></th>
+                    <th><xsl:copy-of select="$locale-type" /></th>
+                    <th><xsl:copy-of select="$locale-value" /></th>
+                    <th><xsl:copy-of select="$locale-description" /></th>
                 </tr>
             </thead>
             <tbody>
@@ -295,7 +307,7 @@
                 <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
             </xsl:choose>
             <xsl:if test="./enum">
-                <p>可以使用以下枚举值：</p>
+                <p><xsl:copy-of select="$locale-enum" /></p>
                 <ul>
                 <xsl:for-each select="./enum">
                     <li>
@@ -382,6 +394,5 @@
         <xsl:otherwise><xsl:value-of select="$text" /></xsl:otherwise>
     </xsl:choose>
 </xsl:template>
-
 
 </xsl:stylesheet>
