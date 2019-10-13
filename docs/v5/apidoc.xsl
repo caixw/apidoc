@@ -241,7 +241,7 @@
                 <tr>
                     <th>变量</th>
                     <th>类型</th>
-                    <th title="是否为必填，以及默认值。">值</th>
+                    <th>值</th>
                     <th>描述</th>
                 </tr>
             </thead>
@@ -262,6 +262,10 @@
     <xsl:for-each select="$param">
     <tr>
         <th>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
+
             <xsl:if test="$parent">
                 <xsl:value-of select="concat($parent, ',')" />
             </xsl:if>
@@ -269,10 +273,6 @@
         </th>
 
         <td>
-            <xsl:call-template name="deprecated">
-                <xsl:with-param name="deprecated" select="@deprecated" />
-            </xsl:call-template>
-
             <xsl:value-of select="@type" />
             <xsl:if test="@array = 'true'"><xsl:value-of select="'[]'" /></xsl:if>
         </td>
