@@ -261,11 +261,11 @@
 
     <xsl:for-each select="$param">
     <tr>
-        <th>
-            <xsl:call-template name="deprecated">
-                <xsl:with-param name="deprecated" select="@deprecated" />
-            </xsl:call-template>
+    <xsl:call-template name="deprecated">
+        <xsl:with-param name="deprecated" select="@deprecated" />
+    </xsl:call-template>
 
+        <th>
             <xsl:if test="$parent">
                 <xsl:value-of select="concat($parent, ',')" />
             </xsl:if>
