@@ -51,13 +51,13 @@
                 <enum value="female">女性</enum>
             </param>
             <param name="emails" type="string" array="true" />
-            <header name="WWW-authoricate">xxx</header>
+            <header name="WWW-Authenticate">xxx</header>
             <example mimetype="json">
             <![CDATA[
             {
                 id: 1,
                 sex: male,
-                emaials: [xx@xx.com]
+                emails: [xx@xx.com]
             }
             ]]>
             </example>

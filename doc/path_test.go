@@ -15,7 +15,7 @@ func TestPath_UnmarshalXML(t *testing.T) {
 	obj := &Path{
 		Path:      "/users/{id}",
 		Reference: "#get-users",
-		Params:    []*Param{&Param{Name: "id", Type: Number}},
+		Params:    []*Param{{Name: "id", Type: Number}},
 	}
 	str := `<Path path="/users/{id}" ref="#get-users"><param name="id" type="number"></param></Path>`
 

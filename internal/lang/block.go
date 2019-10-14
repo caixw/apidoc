@@ -157,7 +157,7 @@ func (b *block) endMComments(l *lexer) ([][]byte, bool) {
 	} // end for
 }
 
-// 行首若出现`空白字符+symbol+空白字符`的组合，则去掉 synbol 及之前的字符。
+// 行首若出现`空白字符+symbol+空白字符`的组合，则去掉 symbol 及之前的字符。
 // symbol 为 charset 中的任意字符。
 func filterSymbols(line []byte, charset string) []byte {
 	// bug(caixw): 此处有可能会把 doc.parseEnum 中规定的枚举前缀过滤掉。

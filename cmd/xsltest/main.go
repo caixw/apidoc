@@ -2,7 +2,7 @@
 
 // 用于测试 xsl 的展示
 //
-// 访问 localhost:8080/v5/apidoc.xml 测试页面
+// 访问 localhost:8080/example/apidoc.xml 测试页面
 package main
 
 import "net/http"
