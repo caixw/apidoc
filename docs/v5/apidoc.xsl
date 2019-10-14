@@ -13,8 +13,8 @@
 
 <xsl:template match="/">
     <html>
-    <xsl:if test="@lang">
-        <xsl:attribute name="lang"><xsl:value-of select="@lang" /></xsl:attribute>
+    <xsl:if test="$curr-lang">
+        <xsl:attribute name="lang"><xsl:value-of select="$curr-lang" /></xsl:attribute>
     </xsl:if>
 
         <head>
