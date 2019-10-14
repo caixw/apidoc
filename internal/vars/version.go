@@ -18,7 +18,7 @@ var (
 func init() {
 	dotIndex := strings.IndexByte(version, '.')
 	if dotIndex <= 0 {
-		panic("无效的版本号 mainVersion")
+		panic("无效的版本号 version")
 	}
 	docVersion = "v" + version[:dotIndex]
 

@@ -24,7 +24,6 @@
 //
 //     <content>
 //     <![CDATA[
-//      这里可以是 markdown 文档
-//     ]]>
-//     </content>
+//      这里可以是 HTML 文档
+//     ]]></content>
 // </apidoc>
