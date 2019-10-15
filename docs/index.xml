@@ -2,16 +2,51 @@
 <?xml-stylesheet type="text/xsl" href="./index.xsl"?>
 
 <docs>
-    <title>apidoc | API 文档处理工具</title>
+    <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
-    <article>
-        <p>apidoc 用于从代码注释中提取特定格式的内容生成 API 文档，支持大部分的主流开发语言。</p>
+    <article id="about">
+        <h2>关于</h2>
+        <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。目前已支持以下语言：C#、C/C++、D、Erlang、Go、Groovy、Java、Javascript、Pascal/Delphi、Perl、PHP、Python、Rust、Ruby、Scala 和 Swift。</p>
+
+        <p>apidoc 拥有以下特点：</p>
+        <ol>
+            <li>跨平台，linux、windows、macOS 等都支持；</li>
+            <li>支持语言广泛，即使是不支持，也很方便扩展；</li>
+            <li>支持多个不同语言的多个项目生成一份文档；</li>
+            <li>输出模板可自定义；</li>
+        </ol>
+
+        <p>以下是一段简短的 Go 代码下的示例：</p>
+        <pre><![CDATA[
+/**
+ * <api method="GET" summary="获取所有的用户信息">
+ *     <path path="/users">
+ *         <query name="page" type="number" default="0">显示第几页的内容</query>
+ *         <query name="size" type="number" default="20">每页显示的数量</query>
+ *     </path>
+ *     <tag>user</tag>
+ *     <server>users</server>
+ *     <response status="200" type="object" mimetype="application/json">
+ *         <param name="count" type="int" optional="false" summary="符合条件的所有用户数量" />
+ *         <param name="users" type="object" array="true" summary="用户列表">
+ *             <param name="id" type="int" summary="唯一 ID" />
+ *             <param name="name" type="string" summary="姓名" />
+ *         </param>
+ *     </response>
+ *     <response status="500" mimetype="application/json" type="obj">
+ *         <param name="code" type="int" summary="错误代码" />
+ *         <param name="msg" type="string" summary="错误内容" />
+ *     </response>
+ * </api>
+ */
+        ]]></pre>
+        <p>多行注释中，每一行中以<code>空白字符+symbol+空白字符</code>开头的，这些字符将会被过滤，symbol 表示该注释块的起始字符中的任意字符。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
     </article>
 
     <article id="usage">
         <h2>使用</h2>
-        <article id="install">
+        <section id="install">
             <h3>安装</h3>
             <p>目前仅支持从源代码编译：</p>
             <ul>
@@ -20,29 +55,90 @@
                 <li>执行代码中 build/build.sh 或是 build/build.cmd 进行编译</li>
                 <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 PATH 目录</li>
             </ul>
-        </article>
+        </section>
 
-        <article id="cli">
+        <section>
+            <h3>环境变量</h3>
+            <p>apidoc 会读取 <var>LANG</var> 的环境变量作为其本地化的依据，若想指定其它语种，可以手动指定 <var>LANG</var> 环境变量：<samp>LANG=zh-Hant apidoc</samp>。在 windows 系统中，若不存在 <var>LANG</var> 环境变量，则会调用 <samp>GetUserDefaultLocaleName</samp> 函数来获取相应的语言信息。</p>
+        </section>
+
+        <section id="cli">
             <h3>命令行</h3>
             <p>可以通过 <code>apidoc -h</code> 查看命令行支持的参数。主要包含了以下几个参数：</p>
-            // TODO
-        </article>
+            <table>
+                <thead><tr><th>参数</th><th>描述</th></tr></thead>
+                <tbody>
+                    <tr><td>-h</td><td>显示帮助信息</td></tr>
+                    <tr><td>-v</td><td>显示版本信息</td></tr>
+                    <tr><td>-l</td><td>列出当前支持的语言</td></tr>
+                    <tr><td>-d</td><td>根据指定的目录生成配置文件</td></tr>
+                </tbody>
+            </table>
+        </section>
 
-        <article id="config-file">
+        <section id="config-file">
             <h3>配置文件</h3>
             <p>配置文件固定为 <code>.apidoc.yaml</code>，该文件可以通过命令行参数 -d 生成。主要包含了以几个配置项：</p>
-            // TODO
-        </article>
+            <table>
+                <thead><tr><th>名称</th><th>类型</th><th>描述</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td>version</td>
+                        <td>string</td>
+                        <td>产生此配置文件的 apidoc 版本号</td>
+                    </tr>
 
-        <article id="demo">
+                    <!-- input -->
+                    <tr>
+                        <td>inputs</td>
+                        <td>object[]</td>
+                        <td>指定输入的数据，同一项目只能解析一种语言。</td>
+                    </tr>
+                    <tr>
+                        <td>&#160;&#160;&#160;&#160;dir</td>
+                        <td>string</td>
+                        <td>需要解析的源文件所在目录</td>
+                    </tr>
+                    <tr>
+                        <td>&#160;&#160;&#160;&#160;recursive</td>
+                        <td>bool</td>
+                        <td>是否解析子目录下的源文件</td>
+                    </tr>
+                    <tr>
+                        <td>&#160;&#160;&#160;&#160;lang</td>
+                        <td>string</td>
+                        <td>源文件类型。具体支持的类型可通过 -l 参数进行查找</td>
+                    </tr>
+
+                    <!-- output -->
+                    <tr>
+                        <td>output</td>
+                        <td>object</td>
+                        <td>控制输出行为</td>
+                    </tr>
+                    <tr>
+                        <td>&#160;&#160;&#160;&#160;path</td>
+                        <td>string</td>
+                        <td>指定输出的文件名，包含路径信息。</td>
+                    </tr>
+                    <tr>
+                        <td>&#160;&#160;&#160;&#160;style</td>
+                        <td>string</td>
+                        <td>为 xml 文件指定的 xsl 文件，默认值为 <code>https://apidoc.tools/docs/v5/apidoc.xsl</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="demo">
             <h3>示例</h3>
             // TODO
-        </article>
+        </section>
 
-        <article id="advance">
-            <h3>高级用法</h3>
-            // TODO
-        </article>
+        <section id="xslt">
+            <h3>自定义模板</h3>
+            <p>用户可以通过配置文件中的 <code>output.style</code> 选项实现自定义模板。 </p>
+        </section>
     </article>
 
     <article id="docs">

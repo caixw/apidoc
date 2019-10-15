@@ -17,6 +17,7 @@
             <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
             <meta name="generator" content="https://apidoc.tools" />
             <link rel="icon" type="image/png" href="./icon.png" />
+            <link rel="canonical" href="{document('config.xml')/config/url}" />
             <link rel="stylesheet" type="text/css" href="./index.css" />
             <link rel="license" href="{/docs/liense/@url}" />
             <script src="./index.js"></script>

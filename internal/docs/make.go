@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	fileHeader = "<!-- 该文件由 /internal/docs/make.go 生成，请勿手动修改 -->\n\n"
+	fileHeader = "\n<!-- 该文件由 /internal/docs/make.go 生成，请勿手动修改 -->\n\n"
 	target     = "../../docs/config.xml"
 )
 
@@ -23,12 +23,14 @@ type config struct {
 	Name    string `xml:"name"`
 	Version string `xml:"version"`
 	Repo    string `xml:"repo"`
+	URL     string `xml:"url"`
 }
 
 var defaultConfig = &config{
 	Name:    vars.Name,
 	Version: vars.DocVersion(),
 	Repo:    vars.RepoURL,
+	URL:     vars.OfficialURL,
 }
 
 func main() {

@@ -219,7 +219,7 @@
         <xsl:with-param name="lang" select="'zh-hans'" />
         <xsl:with-param name="text">
             文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>。
-            由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>。
+            由 <a href="document('../config.xml')/config/url"><xsl:value-of select="document('../config.xml')/config/name" /></a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>。
         </xsl:with-param>
     </xsl:call-template>
 
@@ -227,7 +227,7 @@
         <xsl:with-param name="lang" select="'zh-hant'" />
         <xsl:with-param name="text">
             文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>。
-            由 <a href="https://github.com/caixw/apidoc">apidoc</a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>。
+            由 <a href="document('../config.xml')/config/url"><xsl:value-of select="document('../config.xml')/config/name" /></a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>。
         </xsl:with-param>
     </xsl:call-template>
 </xsl:variable>
