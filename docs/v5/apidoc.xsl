@@ -52,7 +52,7 @@
         <h1>
             <img src="../icon.svg" />
             <xsl:value-of select="/apidoc/title" />
-            <span class="version">(<xsl:value-of select="/apidoc/@version" />)</span>
+            <span class="version">&#160;(<xsl:value-of select="/apidoc/@version" />)</span>
         </h1>
 
         <div class="menu tags-selector">

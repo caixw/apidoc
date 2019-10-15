@@ -5,28 +5,51 @@
     <title>apidoc | API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
-    <article title="使用">
-        <section>
-        //
-        </section>
+    <article>
+        <p>apidoc 用于从代码注释中提取特定格式的内容生成 API 文档，支持大部分的主流开发语言。</p>
     </article>
 
-    <article title="命令行">
-        <section>
-        //
-        </section>
+    <article id="usage">
+        <h2>使用</h2>
+        <article id="install">
+            <h3>安装</h3>
+            <p>目前仅支持从源代码编译：</p>
+            <ul>
+                <li>下载 Go 编译工具</li>
+                <li>下载源代码</li>
+                <li>执行代码中 build/build.sh 或是 build/build.cmd 进行编译</li>
+                <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 PATH 目录</li>
+            </ul>
+        </article>
+
+        <article id="cli">
+            <h3>命令行</h3>
+            <p>可以通过 <code>apidoc -h</code> 查看命令行支持的参数。主要包含了以下几个参数：</p>
+            // TODO
+        </article>
+
+        <article id="config-file">
+            <h3>配置文件</h3>
+            <p>配置文件固定为 <code>.apidoc.yaml</code>，该文件可以通过命令行参数 -d 生成。主要包含了以几个配置项：</p>
+            // TODO
+        </article>
+
+        <article id="demo">
+            <h3>示例</h3>
+            // TODO
+        </article>
+
+        <article id="advance">
+            <h3>高级用法</h3>
+            // TODO
+        </article>
     </article>
 
-    <article title="配置文件">
-        <section>
-        //
-        </section>
-    </article>
-
-    <article title="文档格式">
-        <section>
-        //
-        </section>
+    <article id="docs">
+        <h2>文档格式</h2>
+        <p>
+        // TODO
+        </p>
     </article>
 
     <footer>

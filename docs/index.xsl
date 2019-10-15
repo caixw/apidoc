@@ -26,16 +26,21 @@
                 <h1>
                     <img src="./icon.svg" />
                     <xsl:value-of select="document('config.xml')/config/name" />
-                    <span class="version">(<xsl:value-of select="document('config.xml')/config/version" />)</span>
+                    <span class="version">&#160;(<xsl:value-of select="document('config.xml')/config/version" />)</span>
                 </h1>
+
+                <a href="{document('config.xml')/config/repo}">Github</a>
+
+                <xsl:for-each select="docs/article">
+                    <xsl:if test="h2">
+                        <a href="#{@id}"><xsl:value-of select="h2" /></a>
+                    </xsl:if>
+                </xsl:for-each>
             </header>
 
             <main>
             <xsl:for-each select="docs/article">
-                <article>
-                    <h2><xsl:value-of select="@title" /></h2>
-                    <xsl:copy-of select="." />
-                </article>
+                <xsl:copy-of select="." />
             </xsl:for-each>
             </main>
 

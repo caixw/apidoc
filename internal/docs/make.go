@@ -19,13 +19,16 @@ const (
 
 type config struct {
 	XMLName struct{} `xml:"config"`
-	Name    string   `xml:"name"`
-	Version string   `xml:"version"`
+
+	Name    string `xml:"name"`
+	Version string `xml:"version"`
+	Repo    string `xml:"repo"`
 }
 
 var defaultConfig = &config{
 	Name:    vars.Name,
 	Version: vars.DocVersion(),
+	Repo:    vars.RepoURL,
 }
 
 func main() {
