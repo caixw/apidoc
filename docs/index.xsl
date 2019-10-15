@@ -9,10 +9,6 @@
     version="5.0"
     doctype-system="about:legacy-compat" />
 
-<xsl:variable name="config">
-    <xsl:value-of select="document('config.xml')/config/name" />
-</xsl:variable>
-
 <xsl:template match="/">
     <html>
         <head>
@@ -29,8 +25,8 @@
             <header>
                 <h1>
                     <img src="./icon.svg" />
-                    <xsl:value-of select="document('config.xml')/config/item[@key='name']" />
-                    <span class="version">(<xsl:value-of select="document('config.xml')/config/item[@key='version']" />)</span>
+                    <xsl:value-of select="document('config.xml')/config/name" />
+                    <span class="version">(<xsl:value-of select="document('config.xml')/config/version" />)</span>
                 </h1>
             </header>
 

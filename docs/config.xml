@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 该文件由 /internal/docs/make.go 生成，请勿手动修改 -->
 
 <config>
-    <item key="name">apidoc</item>
-    <item key="version">v5</item>
+	<name>apidoc</name>
+	<version>v5</version>
 </config>
