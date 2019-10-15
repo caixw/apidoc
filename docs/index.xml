@@ -2,4 +2,22 @@
 <?xml-stylesheet type="text/xsl" href="./index.xsl"?>
 
 <docs>
+    <title>apidoc | API 文档处理工具</title>
+    <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
+
+    <article title="使用方法">
+        <section>
+        //
+        </section>
+    </article>
+
+    <article title="xx">
+        <section>
+        //
+        </section>
+    </article>
+
+    <footer>
+        <p>文档版权为 <a href="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</a>。</p>
+    </footer>
 </docs>

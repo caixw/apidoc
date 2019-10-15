@@ -1,4 +1,6 @@
 ## docs
 
-index.* 为 https://apidoc.tools 网站内容的相关页面；
-apidoc.* 系列文件用于转换 xml 文件为 html；
+当前目录下存储着 https://apidoc.tools 的内容，不区分版本，
+有新版本，自动覆盖旧版本内容。
+
+文档的转换工具，按各主版本号区分存放，防止有旧文档依旧指向该文件。

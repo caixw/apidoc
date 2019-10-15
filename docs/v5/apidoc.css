@@ -60,10 +60,6 @@ table th, table td {
     border-bottom: 1px solid var(--border-color);
 }
 
-table caption {
-    text-align: left;
-}
-
 ul, ol {
     padding: 0;
     margin: 0;
