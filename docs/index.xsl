@@ -65,52 +65,62 @@
             </xsl:call-template>
         </xsl:for-each>
 
+        <!-- 将类型显示为一个 table -->
         <xsl:for-each select="/docs/types[@parent=$doc/@id]/type">
-            <table>
-                <thead>
-                    <tr>
-                        <th><xsl:value-of select="/docs/type-locale/header/name" /></th>
-                        <th><xsl:value-of select="/docs/type-locale/header/type" /></th>
-                        <th><xsl:value-of select="/docs/type-locale/header/optional" /></th>
-                        <th><xsl:value-of select="/docs/type-locale/header/description" /></th>
+        <h3 id="type_{@name}"><xsl:value-of select="@name" /></h3>
+        <table>
+            <thead>
+                <tr>
+                    <th><xsl:value-of select="/docs/type-locale/header/name" /></th>
+                    <th><xsl:value-of select="/docs/type-locale/header/type" /></th>
+                    <th><xsl:value-of select="/docs/type-locale/header/optional" /></th>
+                    <th><xsl:value-of select="/docs/type-locale/header/description" /></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <th><xsl:value-of select="@name" /></th>
+                    <td><xsl:value-of select="@type" /></td>
+                    <td><xsl:value-of select="@optional" /></td>
+                    <td><xsl:copy-of select="description" /></td>
+                </tr>
+
+                <xsl:for-each select="item">
+                <tr>
+                    <th><xsl:value-of select="@name" /></th>
+                    <td><xsl:value-of select="@type" /></td>
+                    <td><xsl:value-of select="@optional" /></td>
+                    <td><xsl:copy-of select="." /></td>
+                </tr>
+                </xsl:for-each>
+
+                <xsl:for-each select="group">
+                    <tr data-group="true">
+                    <xsl:choose> <!-- 如果 group 也有类型信息，则按照 type 的方式输出 -->
+                        <xsl:when test="@type">
+                            <th><xsl:value-of select="@name" /></th>
+                            <td><xsl:value-of select="@type" /></td>
+                            <td><xsl:value-of select="@optional" /></td>
+                            <td><xsl:copy-of select="description" /></td>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <th colspan="4"><xsl:value-of select="@name" /></th>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     </tr>
-                </thead>
-                <tbody>
+
                     <xsl:for-each select="item">
-                        <tr>
-                            <th><xsl:value-of select="@name" /></th>
-                            <td><xsl:value-of select="@type" /></td>
-                            <td><xsl:value-of select="@optional" /></td>
-                            <td><xsl:copy-of select="." /></td>
-                        </tr>
+                    <tr>
+                        <th><xsl:value-of select="@name" /></th>
+                        <td><xsl:value-of select="@type" /></td>
+                        <td><xsl:value-of select="@optional" /></td>
+                        <td><xsl:copy-of select="." /></td>
+                    </tr>
                     </xsl:for-each>
-
-                    <xsl:for-each select="group">
-                        <tr data-group="true">
-                        <xsl:choose> <!-- 如果 group 也有类型信息，则按照 type 的方式输出 -->
-                            <xsl:when test="@type">
-                                <th><xsl:value-of select="@name" /></th>
-                                <td><xsl:value-of select="@type" /></td>
-                                <td><xsl:value-of select="@optional" /></td>
-                                <td><xsl:copy-of select="description" /></td>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <th colspan="4"><xsl:value-of select="@name" /></th>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        </tr>
-
-                        <xsl:for-each select="item">
-                        <tr>
-                            <th><xsl:value-of select="@name" /></th>
-                            <td><xsl:value-of select="@type" /></td>
-                            <td><xsl:value-of select="@optional" /></td>
-                            <td><xsl:copy-of select="." /></td>
-                        </tr>
-                        </xsl:for-each>
-                    </xsl:for-each>
-                </tbody>
-            </table>
+                </xsl:for-each>
+            </tbody>
+        </table>
         </xsl:for-each>
     </article>
 </xsl:template>
