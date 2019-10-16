@@ -5,8 +5,7 @@
     <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
-    <article id="about">
-        <h2>关于</h2>
+    <about id="about" title="关于">
         <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。目前已支持以下语言：C#、C/C++、D、Erlang、Go、Groovy、Java、Javascript、Pascal/Delphi、Perl、PHP、Python、Rust、Ruby、Scala 和 Swift。</p>
 
         <p>apidoc 拥有以下特点：</p>
@@ -42,10 +41,9 @@
  */
         ]]></pre>
         <p>多行注释中，每一行中以<code>空白字符+symbol+空白字符</code>开头的，这些字符将会被过滤，symbol 表示该注释块的起始字符中的任意字符。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
-    </article>
+    </about>
 
-    <article id="usage">
-        <h2>使用</h2>
+    <usage id="usage" title="使用">
         <section id="install">
             <h3>安装</h3>
             <p>目前仅支持从源代码编译：</p>
@@ -95,17 +93,17 @@
                         <td>指定输入的数据，同一项目只能解析一种语言。</td>
                     </tr>
                     <tr>
-                        <td>&#160;&#160;&#160;&#160;dir</td>
+                        <td>inputs.dir</td>
                         <td>string</td>
                         <td>需要解析的源文件所在目录</td>
                     </tr>
                     <tr>
-                        <td>&#160;&#160;&#160;&#160;recursive</td>
+                        <td>inputs.recursive</td>
                         <td>bool</td>
                         <td>是否解析子目录下的源文件</td>
                     </tr>
                     <tr>
-                        <td>&#160;&#160;&#160;&#160;lang</td>
+                        <td>inputs.lang</td>
                         <td>string</td>
                         <td>源文件类型。具体支持的类型可通过 -l 参数进行查找</td>
                     </tr>
@@ -117,12 +115,12 @@
                         <td>控制输出行为</td>
                     </tr>
                     <tr>
-                        <td>&#160;&#160;&#160;&#160;path</td>
+                        <td>output.path</td>
                         <td>string</td>
                         <td>指定输出的文件名，包含路径信息。</td>
                     </tr>
                     <tr>
-                        <td>&#160;&#160;&#160;&#160;style</td>
+                        <td>output.style</td>
                         <td>string</td>
                         <td>为 xml 文件指定的 xsl 文件，默认值为 <code>https://apidoc.tools/docs/v5/apidoc.xsl</code></td>
                     </tr>
@@ -139,14 +137,14 @@
             <h3>自定义模板</h3>
             <p>用户可以通过配置文件中的 <code>output.style</code> 选项实现自定义模板。 </p>
         </section>
-    </article>
+    </usage>
 
-    <article id="docs">
-        <h2>文档格式</h2>
-        <p>
-        // TODO
-        </p>
-    </article>
+    <docs id="docs" title="文档格式">
+        <p>文档采用 xml 格式</p>
+        <tag name="apidoc" desc="apidoc" type="object">
+            <attr name="version" type="version" desc="version" />
+        </tag>
+    </docs>
 
     <footer>
         <p>文档版权为 <a href="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</a>。</p>

@@ -31,18 +31,26 @@
                 </h1>
 
                 <a href="{document('config.xml')/config/repo}">Github</a>
-
-                <xsl:for-each select="docs/article">
-                    <xsl:if test="h2">
-                        <a href="#{@id}"><xsl:value-of select="h2" /></a>
-                    </xsl:if>
-                </xsl:for-each>
+                <a href="#{docs/docs/@id}"><xsl:value-of select="docs/docs/@title" /></a>
+                <a href="#{docs/usage/@id}"><xsl:value-of select="docs/usage/@title" /></a>
+                <a href="#{docs/about/@id}"><xsl:value-of select="docs/about/@title" /></a>
             </header>
 
             <main>
-            <xsl:for-each select="docs/article">
-                <xsl:copy-of select="." />
-            </xsl:for-each>
+                <article class="article" id="{docs/about/@id}">
+                    <h2><xsl:value-of select="docs/about/@title" /></h2>
+                    <xsl:copy-of select="docs/about" />
+                </article>
+
+                <article class="article" id="{docs/usage/@id}">
+                    <h2><xsl:value-of select="docs/usage/@title" /></h2>
+                    <xsl:copy-of select="docs/usage" />
+                </article>
+
+                <article class="article" id="{docs/docs/@id}">
+                    <h2><xsl:value-of select="docs/docs/@title" /></h2>
+                    <xsl:copy-of select="docs/docs" />
+                </article>
             </main>
 
             <footer>
