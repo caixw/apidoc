@@ -31,61 +31,18 @@
                 </h1>
 
                 <a href="{document('config.xml')/config/repo}">Github</a>
-                <a href="#{docs/docs/@id}"><xsl:value-of select="docs/docs/@title" /></a>
-                <a href="#{docs/usage/@id}"><xsl:value-of select="docs/usage/@title" /></a>
-                <a href="#{docs/about/@id}"><xsl:value-of select="docs/about/@title" /></a>
+                <xsl:for-each select="docs/doc[not(@parent)]">
+                    <xsl:sort select="position()" order="descending" data-type="number" />
+                    <a href="#{@id}"><xsl:value-of select="@title" /></a>
+                </xsl:for-each>
             </header>
 
             <main>
-                <article id="{docs/about/@id}">
-                    <h2><xsl:value-of select="docs/about/@title" /></h2>
-                    <xsl:copy-of select="docs/about" />
-                </article>
-
-                <article id="{docs/usage/@id}">
-                    <h2><xsl:value-of select="docs/usage/@title" /></h2>
-                    <xsl:copy-of select="docs/usage" />
-                </article>
-
-                <article id="{docs/docs/@id}">
-                    <h2><xsl:value-of select="docs/docs/@title" /></h2>
-                    <xsl:copy-of select="docs/docs" />
-
-                    <xsl:for-each select="docs/types[@parent='docs']/type">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><xsl:value-of select="/docs/type-locale/header/name" /></th>
-                                    <th><xsl:value-of select="/docs/type-locale/header/type" /></th>
-                                    <th><xsl:value-of select="/docs/type-locale/header/optional" /></th>
-                                    <th><xsl:value-of select="/docs/type-locale/header/description" /></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <xsl:for-each select="item">
-                                    <tr>
-                                        <th><xsl:value-of select="@name" /></th>
-                                        <td><xsl:value-of select="@type" /></td>
-                                        <td><xsl:value-of select="@optional" /></td>
-                                        <td><xsl:copy-of select="." /></td>
-                                    </tr>
-                                </xsl:for-each>
-
-                                <xsl:for-each select="group">
-                                    <tr><th colspan="4"><xsl:value-of select="@name" /></th></tr>
-                                    <xsl:for-each select="item">
-                                    <tr>
-                                        <th><xsl:value-of select="@name" /></th>
-                                        <td><xsl:value-of select="@type" /></td>
-                                        <td><xsl:value-of select="@optional" /></td>
-                                        <td><xsl:copy-of select="." /></td>
-                                    </tr>
-                                    </xsl:for-each>
-                                </xsl:for-each>
-                            </tbody>
-                        </table>
-                    </xsl:for-each>
-                </article>
+                <xsl:for-each select="docs/doc[not(@parent)]">
+                    <xsl:call-template name="article">
+                        <xsl:with-param name="doc" select="." />
+                    </xsl:call-template>
+                </xsl:for-each>
             </main>
 
             <footer>
@@ -94,4 +51,55 @@
         </body>
     </html>
 </xsl:template>
+
+<xsl:template name="article">
+    <xsl:param name="doc" />
+
+    <article>
+        <h2><xsl:value-of select="$doc/@title" /></h2>
+        <xsl:copy-of select="$doc/node()" />
+
+        <xsl:for-each select="/docs/doc[@parent=$doc/@id]">
+            <xsl:call-template name="article">
+                <xsl:with-param name="doc" select="." />
+            </xsl:call-template>
+        </xsl:for-each>
+
+        <xsl:for-each select="/docs/types[@parent=$doc/@id]/type">
+            <table>
+                <thead>
+                    <tr>
+                        <th><xsl:value-of select="/docs/type-locale/header/name" /></th>
+                        <th><xsl:value-of select="/docs/type-locale/header/type" /></th>
+                        <th><xsl:value-of select="/docs/type-locale/header/optional" /></th>
+                        <th><xsl:value-of select="/docs/type-locale/header/description" /></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <xsl:for-each select="item">
+                        <tr>
+                            <th><xsl:value-of select="@name" /></th>
+                            <td><xsl:value-of select="@type" /></td>
+                            <td><xsl:value-of select="@optional" /></td>
+                            <td><xsl:copy-of select="." /></td>
+                        </tr>
+                    </xsl:for-each>
+
+                    <xsl:for-each select="group">
+                        <tr><th colspan="4"><xsl:value-of select="@name" /></th></tr>
+                        <xsl:for-each select="item">
+                        <tr>
+                            <th><xsl:value-of select="@name" /></th>
+                            <td><xsl:value-of select="@type" /></td>
+                            <td><xsl:value-of select="@optional" /></td>
+                            <td><xsl:copy-of select="." /></td>
+                        </tr>
+                        </xsl:for-each>
+                    </xsl:for-each>
+                </tbody>
+            </table>
+        </xsl:for-each>
+    </article>
+</xsl:template>
+
 </xsl:stylesheet>
