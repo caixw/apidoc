@@ -86,7 +86,20 @@
                     </xsl:for-each>
 
                     <xsl:for-each select="group">
-                        <tr><th colspan="4"><xsl:value-of select="@name" /></th></tr>
+                        <tr data-group="true">
+                        <xsl:choose> <!-- 如果 group 也有类型信息，则按照 type 的方式输出 -->
+                            <xsl:when test="@type">
+                                <th><xsl:value-of select="@name" /></th>
+                                <td><xsl:value-of select="@type" /></td>
+                                <td><xsl:value-of select="@optional" /></td>
+                                <td><xsl:copy-of select="description" /></td>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <th colspan="4"><xsl:value-of select="@name" /></th>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        </tr>
+
                         <xsl:for-each select="item">
                         <tr>
                             <th><xsl:value-of select="@name" /></th>
