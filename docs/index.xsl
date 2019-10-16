@@ -37,19 +37,54 @@
             </header>
 
             <main>
-                <article class="article" id="{docs/about/@id}">
+                <article id="{docs/about/@id}">
                     <h2><xsl:value-of select="docs/about/@title" /></h2>
                     <xsl:copy-of select="docs/about" />
                 </article>
 
-                <article class="article" id="{docs/usage/@id}">
+                <article id="{docs/usage/@id}">
                     <h2><xsl:value-of select="docs/usage/@title" /></h2>
                     <xsl:copy-of select="docs/usage" />
                 </article>
 
-                <article class="article" id="{docs/docs/@id}">
+                <article id="{docs/docs/@id}">
                     <h2><xsl:value-of select="docs/docs/@title" /></h2>
                     <xsl:copy-of select="docs/docs" />
+
+                    <xsl:for-each select="docs/types[@parent='docs']/type">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><xsl:value-of select="/docs/type-locale/header/name" /></th>
+                                    <th><xsl:value-of select="/docs/type-locale/header/type" /></th>
+                                    <th><xsl:value-of select="/docs/type-locale/header/optional" /></th>
+                                    <th><xsl:value-of select="/docs/type-locale/header/description" /></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <xsl:for-each select="item">
+                                    <tr>
+                                        <th><xsl:value-of select="@name" /></th>
+                                        <td><xsl:value-of select="@type" /></td>
+                                        <td><xsl:value-of select="@optional" /></td>
+                                        <td><xsl:copy-of select="." /></td>
+                                    </tr>
+                                </xsl:for-each>
+
+                                <xsl:for-each select="group">
+                                    <tr><th colspan="4"><xsl:value-of select="@name" /></th></tr>
+                                    <xsl:for-each select="item">
+                                    <tr>
+                                        <th><xsl:value-of select="@name" /></th>
+                                        <td><xsl:value-of select="@type" /></td>
+                                        <td><xsl:value-of select="@optional" /></td>
+                                        <td><xsl:copy-of select="." /></td>
+                                    </tr>
+                                    </xsl:for-each>
+                                </xsl:for-each>
+                            </tbody>
+                        </table>
+                    </xsl:for-each>
                 </article>
             </main>
 

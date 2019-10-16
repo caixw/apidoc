@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="./index.xsl"?>
 
+<!--
+这是 https://apidoc.tools 的首页内容，同时也是简体中文的本地化内容。
+-->
+
 <docs>
     <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
+
+    <!--
+    type-locale 定义了类型结构在渲染为表格时，表格头的本地化内容。
+    类型结构的定义如下：
+    <type name="apidoc">
+        <item name="version" type="string" optional="true">版本信息</item>
+        <group name="子标签">
+            <item name="version" type="string" optional="true">版本信息</item>
+        </group>
+    </type>
+    -->
+    <type-locale>
+        <header>
+            <name>名称</name>
+            <type>类型</type>
+            <optional>可选</optional>
+            <description>描述</description>
+        </header>
+    </type-locale>
 
     <about id="about" title="关于">
         <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。目前已支持以下语言：C#、C/C++、D、Erlang、Go、Groovy、Java、Javascript、Pascal/Delphi、Perl、PHP、Python、Rust、Ruby、Scala 和 Swift。</p>
@@ -140,11 +163,20 @@
     </usage>
 
     <docs id="docs" title="文档格式">
-        <p>文档采用 xml 格式</p>
-        <tag name="apidoc" desc="apidoc" type="object">
-            <attr name="version" type="version" desc="version" />
-        </tag>
+        <p>文档采用 xml 格式。存在两个顶级标签：apidoc 和 api，用于描述整体内容和具体接口信息。</p>
     </docs>
+
+    <types parent="docs">
+        <type name="apidoc">
+            <item name="version" type="string" optional="true">文档的版本</item>
+            <item name="lang" type="string" optional="true">内容的本地化 ID，比如 <code>zh-hans</code> 等。</item>
+            <item name="created" type="string" optional="true">文档的生成时间</item>
+            <group name="子标签">
+                <item name="title" type="string" optional="false">文档的标题</item>
+                <item name="content" type="string" optional="false">文档的整体介绍</item>
+            </group>
+        </type>
+    </types>
 
     <footer>
         <p>文档版权为 <a href="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</a>。</p>

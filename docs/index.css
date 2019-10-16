@@ -116,7 +116,7 @@ main {
     text-align: left;
 }
 
-main .article {
+main article {
     margin-top: calc(var(--header-height) + var(--article-padding));
 }
 
