@@ -168,6 +168,7 @@ main>article {
 }
 
 main article .link {
+    font-size: .8rem;
     display: none;
 }
 
