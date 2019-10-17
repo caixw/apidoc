@@ -154,10 +154,6 @@ header .drop-menus:hover ul {
 
 main {
     padding: 0 var(--padding);
-    left: 0;
-    right: 0;
-    position: relative;
-
     margin: 0 auto;
     max-width: var(--max-width);
     text-align: left;
@@ -181,7 +177,7 @@ main article h3:hover .link {
 
 footer {
     padding: var(--padding);
-    margin: var(--padding) auto;
+    margin: 0 auto;
     max-width: var(--max-width);
     text-align: left;
 }
