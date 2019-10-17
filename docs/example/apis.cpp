@@ -4,20 +4,15 @@
 //     <description><![CDATA[
 // 这是关于接口的详细说明文档
 // ===
-// 可以是一个 *markdown* 内容]]>
-//     </description>
-//     <path path="/users/{id}/logs/{lid}">
+// 可以是一个 HTML 内容
+// ]]></description>
+//     <path path="/users/{id}/logs">
 //         <param name="id" type="number">用户 ID</param>
-//         <param name="lid" type="number">日志ID</param>
 //         <query name="page" type="number" default="0" summary="页码" />
 //         <query name="size" type="number" default="20">数量</query>
-//         <query name="state" type="string" array="true" default="[normal,lock]" summary="state">
-//              <enum value="normal">正常</enum>
-//              <enum value="lock">锁定</enum>
-//         </query>
 //     </path>
 //
-//     <request type="object" mimetype="json">
+//     <response status="200" array="true" type="object" mimetype="json">
 //         <header name="name">desc</header>
 //         <header name="name1">desc1</header>
 //         <param name="count" type="number" optional="true" summary="summary" />
@@ -38,14 +33,6 @@
 //  ]
 // }
 //         ]]></example>
-//     </request>
-//
-//     <response status="200" array="true" type="object" mimetype="json">
-//         <param name="id" type="number" summary="desc" />
-//         <param name="name" type="string" summary="desc" />
-//         <param name="group" type="object" summary="object">
-//             <param name="id" type="number" summary="id" />
-//         </param>
 //     </response>
 //
 //     <response status="404" type="object" mimetype="json">

@@ -1,0 +1,13 @@
+version: 5.0.0
+inputs:
+- lang: c++
+  dir: .
+  recursive: true
+
+- lang: rust
+  dir: .
+  recursive: true
+
+output:
+  path: ./apidoc.xml
+  type: apidoc+xml

@@ -17,7 +17,7 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 
 	obj := &Callback{
 		Method:   http.MethodGet,
-		Requests: []*Request{&Request{Mimetype: "json", Type: String}},
+		Requests: []*Request{{Mimetype: "json", Type: String}},
 	}
 	str := `<Callback method="GET"><request type="string" mimetype="json"></request></Callback>`
 

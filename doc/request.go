@@ -10,7 +10,7 @@ import (
 
 // Request 请求内容
 type Request struct {
-	Type        Type       `xml:"type,attr"`
+	Type        Type       `xml:"type,attr"` // Request 中默认为 None
 	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
 	Enums       []*Enum    `xml:"enum,omitempty"`
 	Array       bool       `xml:"array,attr,omitempty"`
@@ -39,11 +39,8 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return fixedSyntaxError(err, "", field, 0)
 	}
 
-	if shadow.Type == None {
-		return newSyntaxError(field+"#type", locale.ErrRequired)
-	}
 	if shadow.Type == Object && len(shadow.Items) == 0 {
-		return newSyntaxError(field+"/item", locale.ErrRequired)
+		return newSyntaxError(field+"/param", locale.ErrRequired)
 	}
 
 	if shadow.Mimetype == "" {
@@ -57,7 +54,7 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
-		return newSyntaxError(field+"/item", locale.ErrDuplicateValue)
+		return newSyntaxError(field+"/param", locale.ErrDuplicateValue)
 	}
 
 	return nil
