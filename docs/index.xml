@@ -7,7 +7,7 @@
 其它语言的本化地内容，需要重新改写本文件中除注释外的所有
 -->
 
-<docs>
+<docs lang="zh-hans">
     <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
@@ -68,8 +68,10 @@
         <p>多行注释中，每一行中以<code>空白字符+symbol+空白字符</code>开头的，这些字符将会被过滤，symbol 表示该注释块的起始字符中的任意字符。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
     </doc>
 
-    <doc id="usage" title="使用">
-        
+    <doc id="usage" title="使用"></doc>
+
+    <doc id="docs" title="文档格式">
+        <p>文档采用 xml 格式。存在两个顶级标签：apidoc 和 api，用于描述整体内容和具体接口信息。</p>
     </doc>
 
     <doc id="install" title="安装" parent="usage">
@@ -99,19 +101,8 @@
         </table>
     </doc>
 
-    <doc id="config-file" title="配置文件" parent="usage">
-    </doc>
-
-    <doc id="xslt" title="自定义模板" parent="usage">
-        <p>用户可以通过配置文件中的 <code>output.style</code> 选项实现自定义模板。 </p>
-    </doc>
-
-    <doc id="docs" title="文档格式">
-        <p>文档采用 xml 格式。存在两个顶级标签：apidoc 和 api，用于描述整体内容和具体接口信息。</p>
-    </doc>
-
     <!-- 配置文件的类型定义 -->
-    <types parent="config-file">
+    <types parent="usage">
         <type name="apidoc.yaml" type="file" optional="false">
             <description>配置文件固定为 .apidoc.yaml，该文件可以通过命令行参数 -d 生成。主要包含了以几个配置项</description>
             <item name="version" type="string" optional="false">产生此配置文件的 apidoc 版本</item>

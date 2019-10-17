@@ -9,6 +9,26 @@
     version="5.0"
     doctype-system="about:legacy-compat" />
 
+<xsl:variable name="curr-lang">
+    <xsl:value-of select="/docs/@lang" />
+</xsl:variable>
+
+<!-- 获取当前文档的语言名称，如果水存在，则直接采用 @lang 属性 -->
+<xsl:variable name="curr-lang-title">
+    <xsl:variable name="title">
+        <xsl:value-of select="document('locales.xml')/locales/locale[@id=$curr-lang]/@title" />
+    </xsl:variable>
+
+    <xsl:choose>
+        <xsl:when test="$title=''">
+            <xsl:value-of select="$curr-lang" />
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="$title" />
+        </xsl:otherwise>
+    </xsl:choose>
+</xsl:variable>
+
 <xsl:template match="/">
     <html>
         <head>
@@ -22,19 +42,34 @@
             <link rel="license" href="{/docs/liense/@url}" />
             <script src="./index.js"></script>
         </head>
+
         <body>
             <header>
-                <h1>
-                    <img src="./icon.svg" />
-                    <xsl:value-of select="document('config.xml')/config/name" />
-                    <span class="version">&#160;(<xsl:value-of select="document('config.xml')/config/version" />)</span>
-                </h1>
+                <div class="wrap">
+                    <h1>
+                        <img src="./icon.svg" />
+                        <xsl:value-of select="document('config.xml')/config/name" />
+                        <span class="version">&#160;(<xsl:value-of select="document('config.xml')/config/version" />)</span>
+                    </h1>
 
-                <a href="{document('config.xml')/config/repo}">Github</a>
-                <xsl:for-each select="docs/doc[not(@parent)]">
-                    <xsl:sort select="position()" order="descending" data-type="number" />
-                    <a href="#{@id}"><xsl:value-of select="@title" /></a>
-                </xsl:for-each>
+                    <div class="menus">
+                        <xsl:for-each select="docs/doc[not(@parent)]">
+                            <a class="menu" href="#{@id}"><xsl:value-of select="@title" /></a>
+                        </xsl:for-each>
+                        <a class="menu" href="{document('config.xml')/config/repo}">Github</a>
+
+                        <span class="drop-menus">
+                            <a class="menu">
+                            <xsl:value-of select="$curr-lang-title" />&#160;&#9660;
+                            </a>
+                            <ul>
+                            <xsl:for-each select="document('locales.xml')/locales/locale">
+                                <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
+                            </xsl:for-each>
+                            </ul>
+                        </span>
+                    </div>
+                </div>
             </header>
 
             <main>
@@ -55,8 +90,16 @@
 <xsl:template name="article">
     <xsl:param name="doc" />
 
-    <article>
-        <h2><xsl:value-of select="$doc/@title" /></h2>
+    <article id="{$doc/@id}">
+        <xsl:choose>
+            <xsl:when test="$doc/@parent">
+                <h3><xsl:value-of select="$doc/@title" /></h3>
+            </xsl:when>
+            <xsl:otherwise>
+                <h2><xsl:value-of select="$doc/@title" /></h2>
+            </xsl:otherwise>
+        </xsl:choose>
+
         <xsl:copy-of select="$doc/node()" />
 
         <xsl:for-each select="/docs/doc[@parent=$doc/@id]">

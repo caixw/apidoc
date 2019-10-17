@@ -1,12 +1,13 @@
 @charset "utf-8";
 
 :root {
-    --max-width: 100%;
+    --max-width: 1024px;
     --header-height: 54px;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
 
     --color: black;
+    --link-color: #06f;
     --background: white;
     --border-color: #e0e0e0;
 }
@@ -14,6 +15,7 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --color: #b0b0b0;
+        --link-color: #6cf;
         --background: black;
         --border-color: #303030;
     }
@@ -54,6 +56,7 @@ p {
 
 a {
     text-decoration: none;
+    color: var(--link-color);
 }
 
 /*************************** header ***********************/
@@ -70,16 +73,19 @@ header {
 
     background: var(--background);
     border-bottom: 1px solid var(--border-color);
+    text-align: center;
+}
 
+header .wrap {
     margin: 0 auto;
-    max-width: var(--max-width);
     text-align: left;
+    max-width: var(--max-width);
 }
 
 header h1 {
     display: inline-block;
-    margin: var(--padding);
-    margin-bottom: var(--article-padding);
+    margin: var(--padding) 0 var(--article-padding);
+    text-transform: uppercase;
 }
 
 header h1 .version {
@@ -91,22 +97,45 @@ header h1 img {
     margin-right: .5rem;
 }
 
-header a {
-    line-height: 3.5;
+header .menus {
     float: right;
-    margin-right: var(--padding);
+}
+
+header .menu {
+    line-height: 3.5;
+    margin-left: var(--padding);
     height: 100%;
     color: var(--color);
 }
 
-header a:hover {
+header .menu:hover {
     opacity: .5;
+}
+
+header .drop-menus {
+    position: relative;
+    cursor: pointer;
+}
+
+header .drop-menus ul {
+    position: absolute;
+    right: 0;
+    top: 20px;
+    display: none;
+    list-style: none;
+    background: var(--background);
+    border: 1px solid var(--border-color);
+    padding: var(--article-padding);
+}
+
+header .drop-menus:hover ul {
+    display: block;
 }
 
 /************************** main **************************/
 
 main {
-    padding: 0rem var(--padding);
+    padding: 0 var(--padding);
     left: 0;
     right: 0;
     position: relative;
@@ -116,18 +145,15 @@ main {
     text-align: left;
 }
 
-main article {
+main>article {
     margin-top: calc(var(--header-height) + var(--article-padding));
 }
 
 /************************* footer **************************/
 
 footer {
-    margin-top: 4rem;
     padding: var(--padding);
-
-    margin: 4rem auto;
+    margin: var(--padding) auto;
     max-width: var(--max-width);
     text-align: left;
 }
-
