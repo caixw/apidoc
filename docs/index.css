@@ -47,7 +47,8 @@ table th, table td {
     border-bottom: 1px solid var(--border-color);
 }
 
-table tr:last-of-type td {
+table tbody tr:last-of-type td,
+table tbody tr:last-of-type th {
     border-bottom: none;
 }
 
@@ -164,6 +165,15 @@ main {
 
 main>article {
     margin-top: calc(var(--header-height) + var(--article-padding));
+}
+
+main article .link {
+    display: none;
+}
+
+main article h2:hover .link,
+main article h3:hover .link {
+    display: inline-block;
 }
 
 /************************* footer **************************/

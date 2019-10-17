@@ -41,7 +41,7 @@
             <li>输出模板可自定义；</li>
         </ol>
 
-        <p>以下是一段简短的 Go 代码下的示例：</p>
+        <p>以下是一段简短的 C 语言风格代码下的示例：</p>
         <pre><![CDATA[/**
  * <api method="GET" summary="获取所有的用户信息">
  *     <path path="/users">
@@ -95,6 +95,7 @@
                 <tr><td>-v</td><td>显示版本信息</td></tr>
                 <tr><td>-l</td><td>列出当前支持的语言</td></tr>
                 <tr><td>-d</td><td>根据指定的目录生成配置文件</td></tr>
+                <tr><td>-t</td><td>检测语法是否准确</td></tr>
             </tbody>
         </table>
     </doc>

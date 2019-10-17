@@ -93,10 +93,16 @@
     <article id="{$doc/@id}">
         <xsl:choose>
             <xsl:when test="$doc/@parent">
-                <h3><xsl:value-of select="$doc/@title" /></h3>
+                <h3>
+                    <xsl:value-of select="$doc/@title" />
+                    <a class="link" href="#{$doc/@id}">&#160;&#128279;</a>
+                </h3>
             </xsl:when>
             <xsl:otherwise>
-                <h2><xsl:value-of select="$doc/@title" /></h2>
+                <h2>
+                    <xsl:value-of select="$doc/@title" />
+                    <a class="link" href="#{$doc/@id}">&#160;&#128279;</a>
+                </h2>
             </xsl:otherwise>
         </xsl:choose>
 
