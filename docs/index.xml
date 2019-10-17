@@ -42,8 +42,7 @@
         </ol>
 
         <p>以下是一段简短的 Go 代码下的示例：</p>
-        <pre><![CDATA[
-/**
+        <pre><![CDATA[/**
  * <api method="GET" summary="获取所有的用户信息">
  *     <path path="/users">
  *         <query name="page" type="number" default="0">显示第几页的内容</query>
@@ -63,8 +62,7 @@
  *         <param name="msg" type="string" summary="错误内容" />
  *     </response>
  * </api>
- */
-        ]]></pre>
+ */]]></pre>
         <p>多行注释中，每一行中以<code>空白字符+symbol+空白字符</code>开头的，这些字符将会被过滤，symbol 表示该注释块的起始字符中的任意字符。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
     </doc>
 

@@ -7,7 +7,6 @@
     --article-padding: calc(var(--padding) / 2);
 
     --color: black;
-    --link-color: #06f;
     --background: white;
     --border-color: #e0e0e0;
 }
@@ -15,7 +14,6 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --color: #b0b0b0;
-        --link-color: #6cf;
         --background: black;
         --border-color: #303030;
     }
@@ -36,12 +34,21 @@ body {
 
 table {
     width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+table thead tr {
+    height: 2.5rem;
 }
 
 table th, table td {
-    font-weight: normal;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+}
+
+table tr:last-of-type td {
+    border-bottom: none;
 }
 
 ul, ol {
@@ -56,7 +63,17 @@ p {
 
 a {
     text-decoration: none;
-    color: var(--link-color);
+    color: var(--color);
+}
+
+p {
+    margin: 15px 0;
+}
+
+pre {
+    border: 1px solid var(--border-color);
+    padding: var(--article-padding);
+    border-radius: 5px;
 }
 
 /*************************** header ***********************/
