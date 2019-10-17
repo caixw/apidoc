@@ -31,6 +31,11 @@ type Doc struct {
 	// 如果存在此值，客户端应该尽量根据此值显示相应的界面语言。
 	Lang string `xml:"lang,attr,omitempty"`
 
+	// 文档的图标
+	//
+	// 如果采用默认的 xsl 转换，会替换掉页面上的图标和 favicon 图标
+	Logo string `xml:"logo,attr,omitempty"`
+
 	Created string    `xml:"created,attr,omitempty"` // 文档的生成时间
 	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title   string    `xml:"title"`

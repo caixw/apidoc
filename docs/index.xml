@@ -126,6 +126,7 @@
             <group name="属性">
                 <item name="version" type="string" optional="true">文档的版本</item>
                 <item name="lang" type="string" optional="true">内容的本地化 ID，比如 <code>zh-hans</code> 等。</item>
+                <item name="logo" type="string" optional="true">图标</item>
                 <item name="created" type="string" optional="true">文档的生成时间</item>
             </group>
             <group name="子标签">

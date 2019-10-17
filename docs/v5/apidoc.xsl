@@ -21,9 +21,9 @@
             <title><xsl:value-of select="apidoc/title" /></title>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-            <meta name="generator" content="https://apidoc.tools" />
+            <meta name="generator" content="{document('../config.xml')/config/url}" />
             <link rel="stylesheet" type="text/css" href="./apidoc.css" />
-            <link rel="icon" type="image/png" href="../icon.png" />
+            <link rel="icon" type="image/png" href="{$icon}" />
             <link rel="license" href="{apidoc/license/@url}" />
             <script src="./apidoc.js"></script>
         </head>
@@ -51,7 +51,7 @@
     <header>
         <div class="wrap">
             <h1>
-                <img src="../icon.svg" />
+                <img src="{$icon}" />
                 <xsl:value-of select="/apidoc/title" />
                 <span class="version">&#160;(<xsl:value-of select="/apidoc/@version" />)</span>
             </h1>
@@ -397,5 +397,17 @@
         <xsl:otherwise><xsl:value-of select="$text" /></xsl:otherwise>
     </xsl:choose>
 </xsl:template>
+
+<!-- 根据情况获取相应的图标 -->
+<xsl:variable name="icon">
+    <xsl:choose>
+        <xsl:when test="/apidoc/@logo">
+            <xsl:value-of select="/apidoc/@logo" />
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="'../icon.svg'" />
+        </xsl:otherwise>
+    </xsl:choose>
+</xsl:variable>
 
 </xsl:stylesheet>
