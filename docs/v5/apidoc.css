@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 :root {
-    --max-width: 100%;
+    --max-width: 2000px;
     --header-height: 54px;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
@@ -103,10 +103,12 @@ header {
 
     background: var(--background);
     border-bottom: 1px solid var(--border-color);
+}
 
+header .wrap {
     margin: 0 auto;
-    max-width: var(--max-width);
     text-align: left;
+    max-width: var(--max-width);
 }
 
 header h1, header h2 {
