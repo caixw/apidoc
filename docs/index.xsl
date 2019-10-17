@@ -121,6 +121,7 @@
                 <xsl:value-of select="@name" />
                 <a class="link" href="#type_{$doc/@id}">&#160;&#160;&#128279;</a>
             </h3>
+            <p><xsl:copy-of select="description" /></p>
             <table>
                 <thead>
                     <tr>
@@ -132,13 +133,6 @@
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <th><xsl:value-of select="@name" /></th>
-                        <td><xsl:value-of select="@type" /></td>
-                        <td><xsl:value-of select="@optional" /></td>
-                        <td><xsl:copy-of select="description" /></td>
-                    </tr>
-
                     <xsl:for-each select="item">
                     <tr>
                         <th><xsl:value-of select="@name" /></th>
