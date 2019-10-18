@@ -87,6 +87,10 @@ header .wrap {
     margin: 0 auto;
     text-align: left;
     max-width: var(--max-width);
+    padding: 0 var(--padding);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 header h1 {
@@ -105,7 +109,8 @@ header h1 img {
 }
 
 header .menus {
-    float: right;
+    display: flex;
+    justify-items: stretch;
 }
 
 header .menu {
@@ -127,7 +132,6 @@ header .drop-menus {
 header .drop-menus ul {
     position: absolute;
     right: 0;
-    top: 20px;
     display: none;
     list-style: none;
     background: var(--background);
@@ -144,6 +148,7 @@ header .drop-menus:hover ul {
 main {
     margin: 0 auto;
     max-width: var(--max-width);
+    padding: var(--padding);
 }
 
 main article .link {
