@@ -114,14 +114,10 @@
                 <xsl:value-of select="path/@path" />
             </span>
 
-            <span class="summary">
-            <xsl:value-of select="@summary" />
-            </span>
+            <span class="summary"><xsl:value-of select="@summary" /></span>
         </summary>
         <div class="description">
-            <xsl:if test="./description">
-                <xsl:value-of select="./description" />
-            </xsl:if>
+            <xsl:if test="./description"><xsl:value-of select="./description" /></xsl:if>
         </div>
 
         <div class="body">
@@ -144,42 +140,44 @@
             </div>
         </div>
 
-        <xsl:if test="./callback">
-        <div class="callback" data-method="{./callback/@method}">
-            <h3><xsl:copy-of select="$locale-callback" /></h3>
-            <div class="description">
-                <xsl:value-of select="./callback/@summary" />
-                <xsl:if test="./callback/description">
-                    <br />
-                    <xsl:value-of select="./callback/description" />
-                </xsl:if>
+        <xsl:if test="./callback"><xsl:apply-templates select="./callback" /></xsl:if>
+    </details>
+</xsl:template>
+
+<!-- 回调内容 -->
+<xsl:template match="/apidoc/api/callback">
+    <div class="callback" data-method="{./@method}">
+        <h3><xsl:copy-of select="$locale-callback" /></h3>
+        <div class="description">
+            <xsl:value-of select="./@summary" />
+            <xsl:if test="./description">
+                <br /><xsl:value-of select="./description" />
+            </xsl:if>
+        </div>
+
+        <div class="body">
+            <div class="requests">
+                <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
+                <xsl:for-each select="./request">
+                    <xsl:call-template name="request">
+                        <xsl:with-param name="request" select="." />
+                        <xsl:with-param name="path" select="../path" />
+                    </xsl:call-template>
+                </xsl:for-each>
             </div>
 
-            <div class="body">
-                <div class="requests">
-                    <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
-                    <xsl:for-each select="./callback/request">
-                        <xsl:call-template name="request">
-                            <xsl:with-param name="request" select="." />
-                            <xsl:with-param name="path" select="../path" />
+            <xsl:if test="./response">
+                <div class="responses">
+                    <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
+                    <xsl:for-each select="./response">
+                        <xsl:call-template name="response">
+                            <xsl:with-param name="response" select="." />
                         </xsl:call-template>
                     </xsl:for-each>
                 </div>
-
-                <xsl:if test="./callback/response">
-                    <div class="responses">
-                        <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
-                        <xsl:for-each select="./callback/response">
-                            <xsl:call-template name="response">
-                                <xsl:with-param name="response" select="." />
-                            </xsl:call-template>
-                        </xsl:for-each>
-                    </div>
-                </xsl:if>
-            </div> <!-- end .body -->
-        </div> <!-- end .callback -->
-        </xsl:if>
-    </details>
+            </xsl:if>
+        </div> <!-- end .body -->
+    </div> <!-- end .callback -->
 </xsl:template>
 
 <!-- api/request 的介面元素 -->
@@ -265,7 +263,7 @@
             </thead>
             <tbody>
                 <xsl:call-template name="param-list">
-                <xsl:with-param name="param" select="$param" />
+                    <xsl:with-param name="param" select="$param" />
                 </xsl:call-template>
             </tbody>
         </table>
@@ -347,7 +345,7 @@
     <xsl:if test="$deprecated">
         <xsl:attribute name="class"><xsl:value-of select="'del'" /></xsl:attribute>
         <xsl:attribute name="title">
-            <xsl:value-of select="concat('弃用于 ', $deprecated)" />
+            <xsl:value-of select="$deprecated" />
         </xsl:attribute>
     </xsl:if>
 </xsl:template>
@@ -405,7 +403,7 @@
             <xsl:value-of select="/apidoc/@logo" />
         </xsl:when>
         <xsl:otherwise>
-            <xsl:value-of select="'../icon.svg'" />
+            <xsl:value-of select="'../icon.png'" />
         </xsl:otherwise>
     </xsl:choose>
 </xsl:variable>

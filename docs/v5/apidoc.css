@@ -2,7 +2,6 @@
 
 :root {
     --max-width: 2000px;
-    --header-height: 54px;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
 
@@ -35,10 +34,6 @@
         --method-patch-color: darkorange;
         --method-delete-color: red;
     }
-}
-
-html {
-    height: 100%;
 }
 
 body {
@@ -90,17 +85,13 @@ a {
 /*************************** header ***********************/
 
 header {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
     display: block;
     z-index: 1000;
     padding: var(--padding);
     padding-bottom: var(--article-padding);
-    height: var(--header-height);
     box-sizing: border-box;
-
     background: var(--background);
     border-bottom: 1px solid var(--border-color);
 }
@@ -166,7 +157,7 @@ header .menu:hover ul {
 
 main {
     padding: 0 var(--padding);
-    margin: calc(var(--header-height) + var(--padding)) auto 0;
+    margin: 0 auto;
     max-width: var(--max-width);
     text-align: left;
 }
@@ -314,5 +305,4 @@ footer {
     margin: 0 auto;
     max-width: var(--max-width);
     text-align: left;
-    clear: both;
 }

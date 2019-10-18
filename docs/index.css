@@ -2,7 +2,6 @@
 
 :root {
     --max-width: 1024px;
-    --header-height: 54px;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
 
@@ -19,17 +18,12 @@
     }
 }
 
-html {
-    height: 100%;
-}
-
 body {
     padding: 0;
-    margin: 0;
+    margin: 0 auto;
     height: 100%;
     color: var(--color);
     background: var(--background);
-    text-align: center;
 }
 
 table {
@@ -80,18 +74,13 @@ pre {
 /*************************** header ***********************/
 
 header {
-    position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    display: block;
+    position: sticky;
     z-index: 1000;
-    height: var(--header-height);
     box-sizing: border-box;
-
     background: var(--background);
-    border-bottom: 1px solid var(--border-color);
-    text-align: center;
+    box-shadow: 0px 1px 2px var(--border-color);
 }
 
 header .wrap {
@@ -153,14 +142,8 @@ header .drop-menus:hover ul {
 /************************** main **************************/
 
 main {
-    padding: 0 var(--padding);
     margin: 0 auto;
     max-width: var(--max-width);
-    text-align: left;
-}
-
-main>article {
-    margin-top: calc(var(--header-height) + var(--article-padding));
 }
 
 main article .link {
@@ -179,5 +162,4 @@ footer {
     padding: var(--padding);
     margin: 0 auto;
     max-width: var(--max-width);
-    text-align: left;
 }
