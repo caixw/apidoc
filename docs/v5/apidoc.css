@@ -6,6 +6,7 @@
     --article-padding: calc(var(--padding) / 2);
 
     --color: black;
+    --accent-color: #0074d9;
     --background: white;
     --border-color: #e0e0e0;
     --delete-color: red;
@@ -22,6 +23,7 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --color: #b0b0b0;
+        --accent-color: #0074d9;
         --background: black;
         --border-color: #303030;
         --delete-color: red;
@@ -55,7 +57,7 @@ table th, table td {
     border-bottom: 1px solid var(--border-color);
 }
 
-ul, ol {
+ul, ol, ul li, ol li {
     padding: 0;
     margin: 0;
     list-style-position: inside;
@@ -71,6 +73,11 @@ summary, input {
 
 a {
     text-decoration: none;
+    color: var(--accent-color);
+}
+
+a:hover {
+    opacity: .7;
 }
 
 .del {
@@ -89,21 +96,23 @@ header {
     top: 0;
     display: block;
     z-index: 1000;
-    padding: var(--padding);
-    padding-bottom: var(--article-padding);
     box-sizing: border-box;
     background: var(--background);
-    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0px 1px 2px var(--border-color);
 }
 
 header .wrap {
     margin: 0 auto;
     text-align: left;
     max-width: var(--max-width);
+    padding: 0 var(--padding);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
-header h1, header h2 {
-    margin: 0;
+header h1 {
+    margin: var(--padding) 0 var(--article-padding);
     display: inline-block;
 }
 
@@ -116,37 +125,41 @@ header h1 img {
     margin-right: .5rem;
 }
 
-header .menu {
-    float: right;
-    margin-right: var(--padding);
-    position: relative;
-    margin-top: 9px;
-    display: none; /* 默认不可见，只有在有 JS 的情况下，通过 JS 控制其可见性 */
-}
-header .menu:first-of-type {
-    margin-right: 0;
+
+header .menus {
+    display: flex;
+    justify-items: stretch;
+    line-height: 3.5;
 }
 
-header .menu h2 {
-    font-size: 1rem;
-    line-height: 1;
+header .menu {
+    position: relative;
+    margin-left: var(--padding);
+    display: none; /* 默认不可见，只有在有 JS 的情况下，通过 JS 控制其可见性 */
+}
+
+header .menu:hover span {
+    opacity: .7;
 }
 
 header .menu ul {
+    line-height: 1;
     position: absolute;
-    min-width: 4rem;
+    min-width: 5rem;
     right: 0;
     display: none;
     list-style: none;
     background: var(--background);
-    border-bottom: 1px solid var(--border-color);
-    border-left: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
+    border: 1px solid var(--border-color);
     padding: var(--article-padding);
 }
 
-header .menu ul li {
-    margin-top: var(--article-padding);
+header ul li {
+    padding-bottom: var(--article-padding);
+}
+
+header ul li:last-of-type {
+    padding-bottom: 0;
 }
 
 header .menu:hover ul {

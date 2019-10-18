@@ -15,9 +15,9 @@
     type-locale 定义了类型结构在渲染为表格时，表格头的本地化内容。
     类型结构的定义如下：
     <type name="apidoc">
-        <item name="version" type="string" optional="true">版本信息</item>
+        <item name="version" type="string" required="true">版本信息</item>
         <group name="子标签">
-            <item name="version" type="string" optional="true">版本信息</item>
+            <item name="version" type="string" required="true">版本信息</item>
         </group>
     </type>
     -->
@@ -25,7 +25,7 @@
         <header>
             <name>名称</name>
             <type>类型</type>
-            <optional>可选</optional>
+            <required>必填</required>
             <description>描述</description>
         </header>
     </type-locale>
@@ -69,7 +69,11 @@
     <doc id="usage" title="使用"></doc>
 
     <doc id="docs" title="文档格式">
-        <p>文档采用 xml 格式。存在两个顶级标签：apidoc 和 api，用于描述整体内容和具体接口信息。</p>
+        <p>文档采用 XML 格式。存在两个顶级标签：<code>apidoc</code> 和 <code>api</code>，用于描述整体内容和具体接口信息。</p>
+
+        <p>文档被从注释中提取之后，最终会被合并成一个 XML 文件，在该文件中 <code>api</code> 作为 <code>apidoc</code> 的一个子元素存在，如果你的项目不想把文档写在注释中，也可以直接编写一个完整的 XML 文件，将 <code>api</code> 作为 <code>apidoc</code> 的一个子元素。</p>
+
+        <p>以下是对各个 XML 元素以及参数介绍：</p>
     </doc>
 
     <doc id="install" title="安装" parent="usage">
@@ -77,7 +81,7 @@
         <ul>
             <li>下载 Go 编译工具</li>
             <li>下载源代码</li>
-            <li>执行代码中 build/build.sh 或是 build/build.cmd 进行编译</li>
+            <li>执行代码中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 进行编译</li>
             <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 PATH 目录</li>
         </ul>
     </doc>
@@ -87,7 +91,7 @@
     </doc>
 
     <doc id="cli" title="命令行" parent="usage">
-        <p>可以通过 <code>apidoc -h</code> 查看命令行支持的参数。主要包含了以下几个参数：</p>
+        <p>可以通过 <samp>apidoc -h</samp> 查看命令行支持的参数。主要包含了以下几个参数：</p>
         <table>
             <thead><tr><th>参数</th><th>描述</th></tr></thead>
             <tbody>
@@ -103,169 +107,177 @@
     <!-- 配置文件的类型定义 -->
     <types parent="usage">
         <type name="apidoc.yaml">
-            <description>配置文件固定为 .apidoc.yaml，该文件可以通过命令行参数 -d 生成。主要包含了以几个配置项</description>
-            <item name="version" type="string" optional="false">产生此配置文件的 apidoc 版本</item>
-            <group name="inputs" type="object[]" optional="false">
+            <description>
+                <p>配置文件名固定为 <code>.apidoc.yaml</code>，该文件可以通过命令行参数 <code>-d</code> 生成。主要包含了以几个配置项：</p>
+            </description>
+            <item name="version" type="version" required="true">产生此配置文件的 apidoc 版本</item>
+            <group name="inputs" type="object[]" required="true">
                 <description>指定输入的数据，同一项目只能解析一种语言。</description>
-                <item name="dir" type="string" optional="false">需要解析的源文件所在目录</item>
-                <item name="recursive" type="bool" optional="true">是否解析子目录下的源文件</item>
-                <item name="lang" type="string" optional="false">源文件类型。具体支持的类型可通过 -l 参数进行查找</item>
+                <item name="inputs.dir" type="string" required="true">需要解析的源文件所在目录</item>
+                <item name="inputs.recursive" type="bool" required="false">是否解析子目录下的源文件</item>
+                <item name="inputs.lang" type="string" required="true">源文件类型。具体支持的类型可通过 -l 参数进行查找</item>
             </group>
 
-            <group name="output" type="object" optional="false">
+            <group name="output" type="object" required="true">
                 <description>控制输出行为</description>
-                <item name="path" type="string" optional="false">指定输出的文件名，包含路径信息。</item>
-                <item name="style" type="string" optional="true">为 xml 文件指定的 xsl 文件，默认值为 <code>https://apidoc.tools/docs/v5/apidoc.xsl</code></item>
+                <item name="output.path" type="string" required="true">指定输出的文件名，包含路径信息。</item>
+                <item name="output.tags" type="string[]" required="false">只输出与这些标签相关联的文档，默认为全部。</item>
+                <item name="output.style" type="string" required="false">为 xml 文件指定的 xsl 文件，默认值为 <code>https://apidoc.tools/docs/v5/apidoc.xsl</code>。</item>
             </group>
         </type>
     </types>
 
     <types parent="docs">
         <type name="apidoc">
-            <description>用于描述整个文档的相关内容，只能出现一次。</description>
+            <description><p>用于描述整个文档的相关内容，只能出现一次。</p></description>
             <group name="属性">
-                <item name="version" type="string" optional="true">文档的版本</item>
-                <item name="lang" type="string" optional="true">内容的本地化 ID，比如 <code>zh-hans</code> 等。</item>
-                <item name="logo" type="string" optional="true">图标</item>
-                <item name="created" type="string" optional="true">文档的生成时间</item>
+                <item name="version" type="version" required="true">文档的版本</item>
+                <item name="lang" type="string" required="false">内容的本地化 ID，比如 <code>zh-hans</code> 等。</item>
+                <item name="logo" type="string" required="false">图标</item>
+                <item name="created" type="string" required="false">文档的生成时间</item>
             </group>
             <group name="子标签">
-                <item name="title" type="string" optional="false">文档的标题</item>
-                <item name="content" type="string" optional="false">文档的整体介绍，可以是使用 CDATA 包含 HTML 内容。</item>
-                <item name="contract" type="contract" optional="true">联系人信息</item>
-                <item name="license" type="link" optional="true">内容的版权信息</item>
-                <item name="tag" type="tag[]" optional="true">可以用的标签列表</item>
-                <item name="server" type="server[]" optional="false">API 基地址列表，每个 API 最少应该有一个 server。</item>
-                <item name="api" type="api[]" optional="true">API 文档内容</item>
+                <item name="title" type="string" required="true">文档的标题</item>
+                <item name="content" type="string" required="true">文档的整体介绍，可以是使用 CDATA 包含 HTML 内容。</item>
+                <item name="contract" type="contract" required="false">联系人信息</item>
+                <item name="license" type="link" required="false">内容的版权信息</item>
+                <item name="tag" type="tag[]" required="false">可以用的标签列表</item>
+                <item name="server" type="server[]" required="true">API 基地址列表，每个 API 最少应该有一个 server。</item>
+                <item name="api" type="api[]" required="false">API 文档内容</item>
             </group>
         </type>
 
         <type name="link">
-            <description>用于描述链接，一般转换为 HTML 的 a 标签。</description>
-            <item name="标签内容" type="string" optional="false">链接的文本内容</item>
+            <description><p>用于描述链接，一般转换为 HTML 的 a 标签。</p></description>
+            <item name="标签内容" type="string" required="true">链接的文本内容</item>
             <group name="属性">
-                <item name="url" type="string" optional="false">链接的地址</item>
+                <item name="url" type="string" required="true">链接指向的 URL</item>
             </group>
         </type>
 
         <type name="contact">
-            <description>用于描述联系方式</description>
-            <item name="标签内容" type="string" optional="false">链接的文本内容</item>
+            <description><p>用于描述联系方式</p></description>
+            <item name="标签内容" type="string" required="true">联系人名称</item>
             <group name="属性">
-                <item name="url" type="string" optional="false">链接的地址</item>
-                <item name="email" type="string" optional="false">邮件地址，与 url 必须二选一必填</item>
+                <item name="url" type="string" required="true">链接的 URL，与邮箱必须二选一必填</item>
+                <item name="email" type="string" required="true">邮件地址，与 url 必须二选一必填</item>
             </group>
         </type>
 
         <type name="tag">
-            <description>定义标签</description>
+            <description><p>定义标签，标签相当于关键字，作用于 API，相当于启到分类的作用。</p></description>
             <group name="属性">
-                <item name="name" type="string" optional="false">标签的唯一 ID，推荐采用英文字母表示。</item>
-                <item name="title" type="string" optional="false">标签名称</item>
-                <item name="deprecated" type="string" optional="true">表示该标签在大于等于该版本号时不再启作用</item>
+                <item name="name" type="string" required="true">标签的唯一 ID，推荐采用英文字母表示。</item>
+                <item name="title" type="string" required="true">标签名称</item>
+                <item name="deprecated" type="version" required="false">表示该标签在大于等于该版本号时不再启作用</item>
             </group>
         </type>
 
         <type name="server">
-            <description>服务基地址</description>
-            <item name="标签内容" type="string" optional="false">对该服务的具体描述，可以使用 CDATA 内容</item>
+            <description><p>定义服务器的相关信息，作用于 API，决定该 API 与哪个服务器相关联。</p></description>
+            <item name="标签内容" type="string" required="true">对该服务的具体描述，可以使用 CDATA 内容</item>
             <group name="属性">
-                <item name="name" type="string" optional="false">唯一 ID，推荐采用英文字母表示。</item>
-                <item name="url" type="string" optional="false">服务基地址</item>
-                <item name="deprecated" type="string" optional="true">表示在大于等于该版本号时不再启作用</item>
+                <item name="name" type="string" required="true">唯一 ID，推荐采用英文字母表示。</item>
+                <item name="url" type="string" required="true">服务基地址</item>
+                <item name="deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
             </group>
         </type>
 
         <type name="api">
-            <description>定义接口的具体内容</description>
+            <description><p>定义接口的具体内容</p></description>
             <group name="属性">
-                <item name="version" type="string" optional="false">表示此接口在该版本中添加</item>
-                <item name="method" type="string" optional="false">请求方法</item>
-                <item name="summary" type="string" optional="false">简要介绍</item>
-                <item name="deprecated" type="string" optional="true">表示在大于等于该版本号时不再启作用</item>
-                <item name="id" type="string" optional="true">唯一 ID</item>
+                <item name="version" type="version" required="false">表示此接口在该版本中添加</item>
+                <item name="method" type="string" required="true">请求方法</item>
+                <item name="summary" type="string" required="true">简要介绍</item>
+                <item name="deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
+                <item name="id" type="string" required="false">唯一 ID</item>
             </group>
             <group name="子标签">
-                <item name="description" type="string" optional="true">该接口的详细介绍</item>
-                <item name="path" type="path" optional="false">定义路径信息</item>
-                <item name="request" type="request[]" optional="false">定义可用的请求信息</item>
-                <item name="response" type="request[]" optional="false">定义可能的返回信息</item>
-                <item name="callback" type="callback" optional="true">定义回调接口内容</item>
-                <item name="tag" type="string[]" optional="true">关联的标签</item>
-                <item name="server" type="string[]" optional="true">关联的服务</item>
+                <item name="description" type="string" required="false">该接口的详细介绍，为 CDATA内容。</item>
+                <item name="path" type="path" required="false">定义路径信息</item>
+                <item name="request" type="request[]" required="false">定义可用的请求信息</item>
+                <item name="response" type="request[]" required="true">定义可能的返回信息</item>
+                <item name="callback" type="callback" required="false">定义回调接口内容</item>
+                <item name="tag" type="string[]" required="false">关联的标签</item>
+                <item name="server" type="string[]" required="false">关联的服务</item>
             </group>
         </type>
 
         <type name="path">
-            <description>用于定义请求时与路径相关的内容</description>
+            <description><p>用于定义请求时与路径相关的内容</p></description>
             <group name="属性">
-                <item name="path" type="string" optional="false">接口地址</item>
+                <item name="path" type="string" required="true">接口地址</item>
             </group>
             <group name="子标签">
-                <item name="param" type="param[]" optional="true">地址中的参数</item>
-                <item name="query" type="param[]" optional="true">地址中的查询参数</item>
+                <item name="param" type="param[]" required="false">地址中的参数</item>
+                <item name="query" type="param[]" required="false">地址中的查询参数</item>
             </group>
         </type>
 
         <type name="request">
-            <description>定义了请求和返回的相关内容</description>
+            <description><p>定义了请求和返回的相关内容</p></description>
             <group name="属性">
-                <item name="type" type="string" optional="false">值的类型，可以是 string、number、bool 和 object</item>
-                <item name="deprecated" type="string" optional="true">表示在大于等于该版本号时不再启作用</item>
-                <item name="summary" type="string" optional="false">简要介绍</item>
-                <item name="array" type="bool" optional="true">是否为数组</item>
-                <item name="status" type="number" optional="true">状态码</item>
-                <item name="mimetype" type="string" optional="true">媒体类型，比如 <code>application/json</code> 等。</item>
+                <item name="type" type="string" required="true">值的类型，可以是 string、number、bool 和 object</item>
+                <item name="deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
+                <item name="summary" type="string" required="true">简要介绍</item>
+                <item name="array" type="bool" required="false">是否为数组</item>
+                <item name="status" type="number" required="true">状态码。在 request 中，该值不可用，否则为必填项。</item>
+                <item name="mimetype" type="string" required="false">媒体类型，比如 <code>application/json</code> 等。</item>
             </group>
             <group name="子标签">
-                <item name="description" type="string" optional="true">该类型的详细介绍</item>
-                <item name="enum" type="enum[]" optional="true">当前参数可用的枚举值</item>
-                <item name="param" type="param[]" optional="true">子类型，比如对象的子元素。</item>
-                <item name="example" type="string" optional="true">示例代码，可以是 CDATA。</item>
-                <item name="header" type="header[]" optional="true">传递的报头内容</item>
+                <item name="description" type="string" required="false">详细介绍，为 CDATA 内容。</item>
+                <item name="enum" type="enum[]" required="false">当前参数可用的枚举值</item>
+                <item name="param" type="param[]" required="false">子类型，比如对象的子元素。</item>
+                <item name="example" type="string" required="false">示例代码，可以是 CDATA。</item>
+                <item name="header" type="header[]" required="false">传递的报头内容</item>
             </group>
         </type>
 
         <type name="enum">
-            <description>定义枚举类型的数所的枚举值</description>
-            <item name="标签内容" type="string" optional="false">该值的详细介绍</item>
+            <description><p>定义枚举类型的数所的枚举值</p></description>
+            <item name="标签内容" type="string" required="true">该值的详细介绍</item>
             <group name="属性">
-                <item name="value" type="string" optional="false">枚举值</item>
-                <item name="deprecated" type="string" optional="true">表示在大于等于该版本号时不再启作用</item>
+                <item name="value" type="string" required="true">枚举值</item>
+                <item name="deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
             </group>
         </type>
 
         <type name="example">
-            <description>示例代码</description>
-            <item name="标签内容" type="string" optional="false">示例代码的内容，需要使用 CDATA 包含代码。</item>
+            <description><p>示例代码</p></description>
+            <item name="标签内容" type="string" required="true">示例代码的内容，需要使用 CDATA 包含代码。</item>
             <group name="属性">
-                <item name="mimetype" type="string" optional="false">代码的 mimetype 类型。</item>
+                <item name="mimetype" type="string" required="true">代码的 mimetype 类型。</item>
             </group>
         </type>
 
         <type name="header">
-            <description>定义了请求和返回的报头结构</description>
+            <description><p>定义了请求和返回的报头结构</p></description>
+            <item name="标签内容" type="string" required="true">对报头的描述</item>
             <group name="属性">
-                <item name="deprecated" type="string" optional="true">表示在大于等于该版本号时不再启作用</item>
-            </group>
-            <group name="标签内容">
-                <item name="" type="string" optional="false">对报头的描述</item>
+                <item name="name" type="string" required="true">报头的名称</item>
+                <item name="deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
             </group>
         </type>
 
         <type name="callback">
-            <description>定义回调接口的内容</description>
+            <description><p>定义接口回调的相关内容</p></description>
             <group name="属性">
-                <item name="method" type="string" optional="false">请求方法</item>
-                <item name="summary" type="string" optional="false">简要介绍</item>
-                <item name="deprecated" type="string" optional="true">表示在大于等于该版本号时不再启作用</item>
+                <item name="method" type="string" required="true">请求方法</item>
+                <item name="summary" type="string" required="true">简要介绍</item>
+                <item name="deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
             </group>
             <group name="子标签">
-                <item name="description" type="string" optional="true">该接口的详细介绍</item>
-                <item name="path" type="path" optional="false">定义路径信息</item>
-                <item name="request" type="request[]" optional="false">定义可用的请求信息</item>
-                <item name="response" type="request[]" optional="false">定义可能的返回信息</item>
+                <item name="description" type="string" required="false">该接口的详细介绍</item>
+                <item name="path" type="path" required="true">定义路径信息</item>
+                <item name="request" type="request[]" required="true">定义可用的请求信息</item>
+                <item name="response" type="request[]" required="true">定义可能的返回信息</item>
             </group>
+        </type>
+
+        <type name="version">
+            <description>
+                <p>版本号格式，遵循 <a href="https://semver.org/lang/zh-CN/">semver</a> 的规则。比如 <samp>1.1.1</samp>、<samp>0.1.0</samp> 等。</p>
+            </description>
         </type>
     </types>
 

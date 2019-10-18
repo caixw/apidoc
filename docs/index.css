@@ -6,6 +6,7 @@
     --article-padding: calc(var(--padding) / 2);
 
     --color: black;
+    --accent-color: #0074d9;
     --background: white;
     --border-color: #e0e0e0;
 }
@@ -13,6 +14,7 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --color: #b0b0b0;
+        --accent-color: #0074d9;
         --background: black;
         --border-color: #303030;
     }
@@ -30,6 +32,7 @@ table {
     width: 100%;
     border: 1px solid var(--border-color);
     border-radius: 5px;
+    padding: 0 var(--article-padding);
 }
 
 table thead tr {
@@ -58,7 +61,11 @@ p {
 
 a {
     text-decoration: none;
-    color: var(--color);
+    color: var(--accent-color);
+}
+
+a:hover {
+    opacity: .5;
 }
 
 p {
@@ -139,6 +146,10 @@ header .drop-menus ul {
     padding: var(--article-padding);
 }
 
+header .drop-menus a {
+    color: var(--color);
+}
+
 header .drop-menus:hover ul {
     display: block;
 }
@@ -164,7 +175,11 @@ main article h3:hover .link {
 /************************* footer **************************/
 
 footer {
-    padding: var(--padding);
-    margin: 0 auto;
+    border-top: 1px solid var(--border-color);
+    padding: 0 var(--padding) var(--padding);
+}
+
+footer .wrap {
     max-width: var(--max-width);
+    margin: 0 auto;
 }

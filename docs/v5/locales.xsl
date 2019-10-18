@@ -22,12 +22,12 @@
 <xsl:variable name="locale-language">
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hans'" />
-        <xsl:with-param name="text" select="'语言'" />
+        <xsl:with-param name="text" select="'简体中文'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hant'" />
-        <xsl:with-param name="text" select="'語言'" />
+        <xsl:with-param name="text" select="'繁體中文'" />
     </xsl:call-template>
 </xsl:variable>
 

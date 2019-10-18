@@ -56,34 +56,36 @@
                 <span class="version">&#160;(<xsl:value-of select="/apidoc/@version" />)</span>
             </h1>
 
-            <div class="menu tags-selector">
-                <h2><xsl:copy-of select="$locale-tag" /></h2>
-                <ul>
-                    <xsl:for-each select="apidoc/tag">
-                    <li data-tag="{@name}">
-                        <label><input type="checkbox" checked="checked" /><xsl:value-of select="@title" /></label>
-                    </li>
-                    </xsl:for-each>
-                </ul>
-            </div>
+            <div class="menus">
+                <div class="menu tags-selector">
+                    <span><xsl:copy-of select="$locale-tag" /></span>
+                    <ul>
+                        <xsl:for-each select="apidoc/tag">
+                        <li data-tag="{@name}">
+                            <label><input type="checkbox" checked="checked" /><xsl:value-of select="@title" /></label>
+                        </li>
+                        </xsl:for-each>
+                    </ul>
+                </div>
 
-            <div class="menu methods-selector">
-                <h2><xsl:copy-of select="$locale-method" /></h2>
-                <ul>
-                    <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
-                    <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
-                    <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
-                    <li data-method="{.}">
-                        <label><input type="checkbox" checked="true" /><xsl:value-of select="." /></label>
-                    </li>
-                    </xsl:for-each>
-                </ul>
-            </div>
+                <div class="menu methods-selector">
+                    <span><xsl:copy-of select="$locale-method" /></span>
+                    <ul>
+                        <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
+                        <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
+                        <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
+                        <li data-method="{.}">
+                            <label><input type="checkbox" checked="true" /><xsl:value-of select="." /></label>
+                        </li>
+                        </xsl:for-each>
+                    </ul>
+                </div>
 
-            <div class="menu languages-selector">
-                <h2><xsl:copy-of select="$locale-language" /></h2>
-                <ul><xsl:call-template name="languages" /></ul>
-            </div>
+                <div class="menu languages-selector">
+                    <span><xsl:copy-of select="$locale-language" /></span>
+                    <ul><xsl:call-template name="languages" /></ul>
+                </div>
+            </div> <!-- end .menus -->
         </div> <!-- end .wrap -->
     </header>
 </xsl:template>
