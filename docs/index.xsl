@@ -136,18 +136,9 @@
                     </thead>
 
                     <tbody>
-                        <xsl:for-each select="item">
-                        <tr>
-                            <th><xsl:value-of select="@name" /></th>
-                            <td><xsl:value-of select="@type" /></td>
-                            <td>
-                                <xsl:call-template name="checkbox">
-                                    <xsl:with-param name="chk" select="@required" />
-                                </xsl:call-template>
-                            </td>
-                            <td><xsl:copy-of select="." /></td>
-                        </tr>
-                        </xsl:for-each>
+                        <xsl:call-template name="render-type-item">
+                            <xsl:with-param name="items" select="item" />
+                        </xsl:call-template>
 
                         <xsl:for-each select="group">
                             <tr data-group="true">
@@ -168,18 +159,9 @@
                             </xsl:choose>
                             </tr>
 
-                            <xsl:for-each select="item">
-                            <tr>
-                                <th><xsl:value-of select="@name" /></th>
-                                <td><xsl:value-of select="@type" /></td>
-                                <td>
-                                    <xsl:call-template name="checkbox">
-                                        <xsl:with-param name="chk" select="@required" />
-                                    </xsl:call-template>
-                                </td>
-                                <td><xsl:copy-of select="." /></td>
-                            </tr>
-                            </xsl:for-each>
+                            <xsl:call-template name="render-type-item">
+                                <xsl:with-param name="items" select="item" />
+                            </xsl:call-template>
                         </xsl:for-each> <!-- end .foreach group -->
                     </tbody>
                 </table>
@@ -187,6 +169,23 @@
         </article>
         </xsl:for-each>
     </article>
+</xsl:template>
+
+<xsl:template name="render-type-item">
+    <xsl:param name="items" />
+
+    <xsl:for-each select="$items">
+    <tr>
+        <th><xsl:value-of select="@name" /></th>
+        <td><xsl:value-of select="@type" /></td>
+        <td>
+            <xsl:call-template name="checkbox">
+                <xsl:with-param name="chk" select="@required" />
+            </xsl:call-template>
+        </td>
+        <td><xsl:copy-of select="." /></td>
+    </tr>
+    </xsl:for-each>
 </xsl:template>
 
 <xsl:template name="checkbox">

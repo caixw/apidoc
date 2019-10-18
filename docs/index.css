@@ -102,7 +102,7 @@ header .wrap {
 
 header h1 {
     display: inline-block;
-    margin: var(--padding) 0 var(--article-padding);
+    margin: var(--article-padding) 0;
     text-transform: uppercase;
 }
 

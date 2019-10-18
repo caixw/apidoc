@@ -22,10 +22,10 @@
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
             <meta name="generator" content="{document('../config.xml')/config/url}" />
-            <link rel="stylesheet" type="text/css" href="./apidoc.css" />
+            <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />
             <link rel="icon" type="image/png" href="{$icon}" />
             <link rel="license" href="{apidoc/license/@url}" />
-            <script src="./apidoc.js"></script>
+            <script src="{$base-url}apidoc.js"></script>
         </head>
         <body>
             <xsl:call-template name="header" />
@@ -405,9 +405,21 @@
             <xsl:value-of select="/apidoc/@logo" />
         </xsl:when>
         <xsl:otherwise>
-            <xsl:value-of select="'../icon.png'" />
+            <xsl:value-of select="concat($base-url, '../icon.png')" />
         </xsl:otherwise>
     </xsl:choose>
 </xsl:variable>
+
+<!-- 获取相对于当前 xsl 文件的基地址 -->
+<xsl:variable name="base-url">
+    <xsl:apply-templates select="processing-instruction('xml-stylesheet')" />
+</xsl:variable>
+
+<xsl:template match="processing-instruction('xml-stylesheet')">
+    <xsl:variable name="v1" select="substring-after(., 'href=&quot;')" />
+    <!-- NOTE: 此处假定当前文件叫作 apidoc.xsl，如果不是的话，需要另外处理此代码 -->
+    <xsl:variable name="v2" select="substring-before($v1, 'apidoc.xsl&quot;')" />
+    <xsl:value-of select="$v2" />
+</xsl:template>
 
 </xsl:stylesheet>
