@@ -92,12 +92,7 @@
 
 <!-- api 界面元素 -->
 <xsl:template match="/apidoc/api">
-    <xsl:variable name="id">
-        <xsl:call-template name="get-api-id">
-            <xsl:with-param name="path" select="path/@path" />
-            <xsl:with-param name="method" select="@method" />
-        </xsl:call-template>
-    </xsl:variable>
+    <xsl:variable name="id" select="concat(@method, translate(path/@path, $id-from, $id-to))" />
 
     <details id="{$id}" class="api" data-method="{@method}">
     <xsl:attribute name="data-tags">
@@ -352,51 +347,9 @@
     </xsl:if>
 </xsl:template>
 
-<!-- 根据 method 和 path 生成唯一的 ID -->
-<xsl:template name="get-api-id">
-    <xsl:param name="method" />
-    <xsl:param name="path" />
-
-    <xsl:variable name="p1">
-        <xsl:call-template name="replace">
-            <xsl:with-param name="text" select="$path" />
-            <xsl:with-param name="old" select="'/'" />
-            <xsl:with-param name="new" select="'_'" />
-        </xsl:call-template>
-    </xsl:variable>
-    <xsl:variable name="p2">
-        <xsl:call-template name="replace">
-            <xsl:with-param name="text" select="$p1" />
-            <xsl:with-param name="old" select="'{'" />
-            <xsl:with-param name="new" select="'-'" />
-        </xsl:call-template>
-    </xsl:variable>
-
-    <xsl:value-of select="$method" />
-    <xsl:call-template name="replace">
-        <xsl:with-param name="text" select="$p2" />
-        <xsl:with-param name="old" select="'}'" />
-        <xsl:with-param name="new" select="'-'" />
-    </xsl:call-template>
-</xsl:template>
-
-<!-- 替换字符串中特定的字符 -->
-<xsl:template name="replace">
-    <xsl:param name="text" />
-    <xsl:param name="old" />
-    <xsl:param name="new" />
-    <xsl:choose>
-        <xsl:when test="contains($text, $old)">
-            <xsl:value-of select="concat(substring-before($text, $old), $new)" />
-            <xsl:call-template name="replace">
-                <xsl:with-param name="text" select="substring-after($text, $old)" />
-                <xsl:with-param name="old" select="$old" />
-                <xsl:with-param name="new" select="$new" />
-            </xsl:call-template>
-        </xsl:when>
-        <xsl:otherwise><xsl:value-of select="$text" /></xsl:otherwise>
-    </xsl:choose>
-</xsl:template>
+<!-- 用于将 API 地址转换成合法的 ID 标记 -->
+<xsl:variable name="id-from" select="'{}/'" />
+<xsl:variable name="id-to" select="'__-'" />
 
 <!-- 根据情况获取相应的图标 -->
 <xsl:variable name="icon">
