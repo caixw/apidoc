@@ -84,7 +84,7 @@
                 <div class="wrap">
                 <xsl:copy-of select="docs/footer/node()" />
                 </div>
-                <a href="#" class="goto-up"></a>
+                <a href="#" class="goto-top"></a>
             </footer>
         </body>
     </html>

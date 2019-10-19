@@ -23,7 +23,6 @@
 body {
     padding: 0;
     margin: 0 auto;
-    height: 100%;
     color: var(--color);
     background: var(--background);
 }
@@ -72,17 +71,6 @@ pre {
     border: 1px solid var(--border-color);
     padding: var(--article-padding);
     border-radius: 5px;
-}
-
-.goto-up {
-    border: solid var(--color);
-    border-width: 0 5px 5px 0;
-    display: inline-block;
-    padding: 5px;
-    transform: rotate(-135deg);
-    position: fixed;
-    right: calc((100% - var(--max-width)) / 2 - 3rem);
-    bottom: 3rem;
 }
 
 /*************************** header ***********************/
@@ -197,4 +185,15 @@ footer {
 footer .wrap {
     max-width: var(--max-width);
     margin: 0 auto;
+}
+
+.goto-top {
+    border: solid var(--color);
+    border-width: 0 5px 5px 0;
+    display: block;
+    padding: 5px;
+    transform: rotate(-135deg);
+    position: fixed;
+    bottom: 3rem;
+    right: 3rem;
 }

@@ -41,7 +41,6 @@
 body {
     padding: 0;
     margin: 0;
-    height: 100%;
     color: var(--color);
     background: var(--background);
     text-align: center;
