@@ -60,7 +60,7 @@
 
                         <span class="drop-menus">
                             <a class="menu">
-                            <xsl:value-of select="$curr-lang-title" />&#160;&#9660;
+                            <xsl:value-of select="$curr-lang-title" />&#160;<i class="arrow" />
                             </a>
                             <ul>
                             <xsl:for-each select="document('locales.xml')/locales/locale">
@@ -84,6 +84,7 @@
                 <div class="wrap">
                 <xsl:copy-of select="docs/footer/node()" />
                 </div>
+                <a href="#" class="goto-up"></a>
             </footer>
         </body>
     </html>

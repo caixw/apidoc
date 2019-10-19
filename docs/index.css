@@ -55,10 +55,6 @@ ul, ol {
     list-style-position: inside;
 }
 
-p {
-    margin: 0;
-}
-
 a {
     text-decoration: none;
     color: var(--accent-color);
@@ -76,6 +72,17 @@ pre {
     border: 1px solid var(--border-color);
     padding: var(--article-padding);
     border-radius: 5px;
+}
+
+.goto-up {
+    border: solid var(--color);
+    border-width: 0 5px 5px 0;
+    display: inline-block;
+    padding: 5px;
+    transform: rotate(-135deg);
+    position: fixed;
+    right: calc((100% - var(--max-width)) / 2 - 3rem);
+    bottom: 3rem;
 }
 
 /*************************** header ***********************/
@@ -152,6 +159,14 @@ header .drop-menus a {
 
 header .drop-menus:hover ul {
     display: block;
+}
+
+header .arrow {
+    border: solid var(--color);
+    border-width: 0 3.5px 3.5px 0;
+    display: inline-block;
+    padding: 3.5px;
+    transform: rotate(45deg);
 }
 
 /************************** main **************************/
