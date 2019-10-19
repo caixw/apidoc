@@ -6,28 +6,36 @@
 将所有支持的本地化信息都输出到 HTML，但只显示与当前语言相关联的那一条。
 -->
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet
+version="1.0"
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:l="urn:locale"
+exclude-result-prefixes="l">
+
+<!-- 当前支持的本地化列表，其中第一个会被当作默认值。 -->
+<l:locales>
+    <locale id="zh-hans">简体中文</locale>
+    <locale id="zh-hant">繁體中文</locale>
+</l:locales>
 
 <xsl:template name="languages">
-    <li lang="zh-hans">
-        <label><input type="radio" name="lang" checked="{$curr-lang='zh-hans'}" />简体中文</label>
+    <xsl:for-each select="document('')/xsl:stylesheet/l:locales/locale">
+    <li lang="{@id}">
+        <label><input type="radio" name="lang" checked="{$curr-lang=@id}" /><xsl:value-of select="." /></label>
     </li>
-
-    <li lang="zh-hant">
-        <label><input type="radio" name="lang" checked="{$curr-lang='zh-hant'}" />繁體中文</label>
-    </li>
+    </xsl:for-each>
 </xsl:template>
 
 <!-- language -->
 <xsl:variable name="locale-language">
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hans'" />
-        <xsl:with-param name="text" select="'简体中文'" />
+        <xsl:with-param name="text" select="document('')/xsl:stylesheet/l:locales/locale[@id='zh-hans']" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hant'" />
-        <xsl:with-param name="text" select="'繁體中文'" />
+        <xsl:with-param name="text" select="document('')/xsl:stylesheet/l:locales/locale[@id='zh-hant']" />
     </xsl:call-template>
 </xsl:variable>
 
@@ -247,13 +255,37 @@
         </xsl:choose>
     </xsl:variable>
 
-    <!-- data-locale 属性表示该元素是一个本地化信息元素 -->
+    <!-- data-locale 属性表示该元素是一个本地化信息元素，JS 代码通过该标记切换语言。 -->
     <span data-locale="true" lang="{$lang}" class="{$class}"><xsl:copy-of select="$text" /></span>
 </xsl:template>
 
-<!-- 返回当前文档的语言，会转换为小写，_ 也会被转换成 - -->
+<!--
+返回当前文档的语言，会转换为小写，_ 也会被转换成 -
+如果文档指定的语言不存在，则会采取 l:locales 中的第一个元素作为默认语言。
+-->
 <xsl:variable name="curr-lang">
-    <xsl:value-of select="translate(/apidoc/@lang, $uppercase, $lowercase)" />
+    <xsl:variable name="curr" select="translate(/apidoc/@lang, $uppercase, $lowercase)" />
+
+    <xsl:variable name="r1">
+        <xsl:for-each select="document('')/xsl:stylesheet/l:locales/locale">
+            <xsl:if test="@id=$curr">
+                <xsl:value-of select="$curr" />
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:variable name="r2">
+    <xsl:choose>
+        <xsl:when test="$r1 and not($r1='')"> 
+            <xsl:value-of select="$r1" />
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="document('')/xsl:stylesheet/l:locales/locale[1]/@id" />
+        </xsl:otherwise>
+    </xsl:choose>
+    </xsl:variable>
+
+    <xsl:value-of select="$r2" />
 </xsl:variable>
 
 <!-- 用于实现 lower-case 和 upper-case，如果将来某天浏览器支持 xsl 2.0 了，可以直接采用相关函数 -->

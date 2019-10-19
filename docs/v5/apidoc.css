@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 :root {
-    --max-width: 2000px;
+    --max-width: 2048px;
     --padding: 1rem;
     --article-padding: calc(var(--padding) / 2);
 
@@ -132,6 +132,7 @@ header .menus {
 }
 
 header .menu {
+    cursor: pointer;
     position: relative;
     margin-left: var(--padding);
     display: none; /* 默认不可见，只有在有 JS 的情况下，通过 JS 控制其可见性 */
@@ -175,7 +176,7 @@ main {
 }
 
 main .content {
-    padding: var(--article-padding);
+    padding: var(--article-padding) 0;
 }
 
 main .api {
@@ -313,8 +314,13 @@ main .api .body .responses .status {
 /*************************** footer ***********************/
 
 footer {
-    padding: var(--padding);
+    border-top: 1px solid var(--border-color);
+    padding: var(--padding) var(--padding);
+    text-align: left;
+    margin-top: var(--padding);
+}
+
+footer .wrap {
     margin: 0 auto;
     max-width: var(--max-width);
-    text-align: left;
 }

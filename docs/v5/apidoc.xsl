@@ -40,7 +40,9 @@
             </main>
 
             <footer>
-            <p><xsl:copy-of select="$locale-footer" /></p>
+            <div class="wrap">
+                <p><xsl:copy-of select="$locale-footer" /></p>
+            </div>
             </footer>
         </body>
     </html>
