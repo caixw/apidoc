@@ -311,6 +311,10 @@ main .api .body .responses .status {
     border-bottom: 1px solid var(--border-color);
 }
 
+main .api .parent-type {
+    opacity: .5;
+}
+
 /*************************** footer ***********************/
 
 footer {

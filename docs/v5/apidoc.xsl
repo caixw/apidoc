@@ -284,9 +284,8 @@
     <xsl:call-template name="deprecated">
         <xsl:with-param name="deprecated" select="@deprecated" />
     </xsl:call-template>
-
         <th>
-            <xsl:if test="$parent"><xsl:value-of select="concat($parent, '.')" /></xsl:if>
+            <span class="parent-type"><xsl:value-of select="$parent" /></span>
             <xsl:value-of select="@name" />
         </th>
 
@@ -300,10 +299,7 @@
                 <xsl:when test="@optional = 'true'"><xsl:value-of select="'O'" /></xsl:when>
                 <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
             </xsl:choose>
-
-            <xsl:if test="@default">
-                <xsl:value-of select="concat(' ', @default)" />
-            </xsl:if>
+            <xsl:value-of select="concat(' ', @default)" />
         </td>
 
         <td>
@@ -329,9 +325,14 @@
     </tr>
 
     <xsl:if test="./param">
+        <xsl:variable name="p">
+                <xsl:value-of select="concat($parent, @name)" />
+                <xsl:if test="@name"><xsl:value-of select="'.'" /></xsl:if>
+        </xsl:variable>
+
         <xsl:call-template name="param-list">
             <xsl:with-param name="param" select="./param" />
-            <xsl:with-param name="parent" select="./@name" />
+            <xsl:with-param name="parent" select="$p" />
         </xsl:call-template>
     </xsl:if>
     </xsl:for-each>
