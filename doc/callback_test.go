@@ -37,12 +37,12 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 			<query name="page" type="number" deprecated="0.1.1">page</query>
 		</path>
 		<request status="200" mimetype="json" type="object">
-			<param name="name" type="string" />
-			<param name="sex" type="string">
+			<param name="name" type="string" summary="name" />
+			<param name="sex" type="string" summary="sex">
 				<enum value="male">Male</enum>
 				<enum value="female">Female</enum>
 			</param>
-			<param name="age" type="number" />
+			<param name="age" type="number" summary="age" />
 		</request>
 	</Callback>`
 	a.NotError(xml.Unmarshal([]byte(str), obj1)).

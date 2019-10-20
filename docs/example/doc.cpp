@@ -13,7 +13,7 @@
 //     </contact>
 //
 //     <response status="404" type="object" mimetype="json">
-//         <header name="authorization">token</header>
+//         <header name="authorization" type="string">token</header>
 //         <param name="code" type="number" summary="状态码" optional="false" />
 //         <param name="message" type="string" summary="错误信息" optional="false" />
 //         <param name="detail" type="object" array="true" summary="错误明细">

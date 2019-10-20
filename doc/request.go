@@ -10,18 +10,18 @@ import (
 
 // Request 请求内容
 type Request struct {
-	Type        Type       `xml:"type,attr"` // Request 中默认为 None
-	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
-	Enums       []*Enum    `xml:"enum,omitempty"`
-	Array       bool       `xml:"array,attr,omitempty"`
-	Items       []*Param   `xml:"param,omitempty"`
-	Reference   string     `xml:"ref,attr,omitempty"`
-	Summary     string     `xml:"summary,attr,omitempty"`
-	Status      Status     `xml:"status,attr,omitempty"`
-	Mimetype    string     `xml:"mimetype,attr"`
-	Examples    []*Example `xml:"example,omitempty"`
-	Headers     []*Header  `xml:"header,omitempty"`
-	Description string     `xml:"description,omitempty"`
+	Type        Type           `xml:"type,attr"` // Request 中默认为 None
+	Deprecated  Version        `xml:"deprecated,attr,omitempty"`
+	Enums       []*Enum        `xml:"enum,omitempty"`
+	Array       bool           `xml:"array,attr,omitempty"`
+	Items       []*Param       `xml:"param,omitempty"`
+	Reference   string         `xml:"ref,attr,omitempty"`
+	Summary     string         `xml:"summary,attr,omitempty"`
+	Status      Status         `xml:"status,attr,omitempty"`
+	Mimetype    string         `xml:"mimetype,attr"`
+	Examples    []*Example     `xml:"example,omitempty"`
+	Headers     []*SimpleParam `xml:"header,omitempty"`
+	Description CDATA          `xml:"description,omitempty"`
 }
 
 // IsEnum 是否为枚举值

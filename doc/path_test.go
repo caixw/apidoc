@@ -15,9 +15,9 @@ func TestPath_UnmarshalXML(t *testing.T) {
 	obj := &Path{
 		Path:      "/users/{id}",
 		Reference: "#get-users",
-		Params:    []*Param{{Name: "id", Type: Number}},
+		Params:    []*SimpleParam{{Name: "id", Type: Number, Summary: "summary"}},
 	}
-	str := `<Path path="/users/{id}" ref="#get-users"><param name="id" type="number"></param></Path>`
+	str := `<Path path="/users/{id}" ref="#get-users"><param name="id" type="number" summary="summary"></param></Path>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).
@@ -34,9 +34,10 @@ func TestPath_UnmarshalXML(t *testing.T) {
 	// query
 	obj1 = &Path{}
 	str = `<Path path="/users/{id}">
-		<param name="id" type="number" />
-		<query name="text" type="string" />
+		<param name="id" type="number" summary="id" />
+		<query name="text" type="string" summary="text" />
 		<query name="sex" type="string">
+			<description>sex</description>
 			<enum value="male">male</enum>
 			<enum value="female">female</enum>
 		</query>
@@ -62,6 +63,11 @@ func TestPath_UnmarshalXML(t *testing.T) {
 	// 少 path
 	obj1 = &Path{}
 	str = `<Path url="url">desc</Path>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
+	// 少 summary 和 description
+	obj1 = &Path{}
+	str = `<Path name="url" type="string"></Path>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 相同的参数名

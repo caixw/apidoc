@@ -14,10 +14,10 @@ import (
 //      <query name="page" type="number" summary="page" default="1" />
 //  </path>
 type Path struct {
-	Path      string   `xml:"path,attr"`
-	Params    []*Param `xml:"param,omitempty"`
-	Queries   []*Param `xml:"query,omitempty"`
-	Reference string   `xml:"ref,attr,omitempty"`
+	Path      string         `xml:"path,attr"`
+	Params    []*SimpleParam `xml:"param,omitempty"`
+	Queries   []*SimpleParam `xml:"query,omitempty"`
+	Reference string         `xml:"ref,attr,omitempty"`
 }
 
 type shadowPath Path

@@ -70,7 +70,7 @@ func TestDoc_all(t *testing.T) {
 	a.NotError(err).NotNil(data)
 	doc := New()
 	a.NotNil(doc)
-	a.NotError(doc.FromXML("doc.xml", 0, data))
+	a.NotError(doc.FromXML("all.xml", 0, data))
 
 	a.Equal(doc.Version, "1.1.1")
 

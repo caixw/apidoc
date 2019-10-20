@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
 <xsl:import href="./locales.xsl" />
-
-<xsl:output
-    method="html"
-    encoding="utf-8"
-    indent="yes"
-    version="5.0"
-    doctype-system="about:legacy-compat" />
+<xsl:output method="html" encoding="utf-8" indent="yes" version="5.0" doctype-system="about:legacy-compat" />
 
 <xsl:template match="/">
     <html lang="{$curr-lang}">
@@ -60,7 +53,9 @@
                     <ul>
                         <xsl:for-each select="apidoc/tag">
                         <li data-tag="{@name}">
-                            <label><input type="checkbox" checked="checked" /><xsl:value-of select="@title" /></label>
+                            <label>
+                                <input type="checkbox" checked="checked" /><xsl:value-of select="@title" />
+                            </label>
                         </li>
                         </xsl:for-each>
                     </ul>
@@ -193,6 +188,7 @@
                 <xsl:copy-of select="$locale-path-param" />
             </xsl:with-param>
             <xsl:with-param name="param" select="$path/param" />
+            <xsl:with-param name="simple" select="'true'" />
         </xsl:call-template>
     </xsl:if>
 
@@ -202,6 +198,7 @@
                 <xsl:copy-of select="$locale-query" />
             </xsl:with-param>
             <xsl:with-param name="param" select="$path/query" />
+            <xsl:with-param name="simple" select="'true'" />
         </xsl:call-template>
     </xsl:if>
     
@@ -211,6 +208,7 @@
                 <xsl:copy-of select="$locale-header" />
             </xsl:with-param>
             <xsl:with-param name="param" select="$request/header" />
+            <xsl:with-param name="simple" select="'true'" />
         </xsl:call-template>
     </xsl:if>
 
@@ -236,6 +234,7 @@
                 <xsl:copy-of select="$locale-header" />
             </xsl:with-param>
             <xsl:with-param name="param" select="$response/header" />
+            <xsl:with-param name="simple" select="'true'" />
         </xsl:call-template>
     </xsl:if>
 
@@ -253,6 +252,7 @@
     <xsl:param name="title" />
     <xsl:param name="param" />
     <xsl:param name="example" /> <!-- 示例代码 -->
+    <xsl:param name="simple" /> <!-- 简单的类型，不存在嵌套类型，也不会有示例代码 -->
 
     <xsl:if test="not($param/@type='none')">
         <div class="param">
@@ -267,9 +267,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <xsl:call-template name="param-list">
-                        <xsl:with-param name="param" select="$param" />
-                    </xsl:call-template>
+                    <xsl:choose>
+                        <xsl:when test="$simple">
+                            <xsl:call-template name="simple-param-list">
+                                <xsl:with-param name="param" select="$param" />
+                            </xsl:call-template>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:call-template name="param-list">
+                                <xsl:with-param name="param" select="$param" />
+                            </xsl:call-template>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </tbody>
             </table>
         </div>
@@ -277,67 +286,115 @@
 </xsl:template>
 
 <!-- 列顺序必须要与 param 中的相同 -->
+<xsl:template name="simple-param-list">
+    <xsl:param name="param" />
+
+    <xsl:for-each select="$param">
+        <tr>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
+
+            <th><xsl:value-of select="@name" /></th>
+
+            <td>
+                <xsl:value-of select="@type" />
+                <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+            </td>
+
+            <td>
+                <xsl:choose>
+                    <xsl:when test="@optional='true'"><xsl:value-of select="'O'" /></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
+                </xsl:choose>
+                <xsl:value-of select="concat(' ', @default)" />
+            </td>
+
+            <td>
+                <xsl:choose>
+                    <xsl:when test="not(.='')"><xsl:value-of select="." /></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+                </xsl:choose>
+                <xsl:call-template name="enum">
+                    <xsl:with-param name="enum" select="./enum"/>
+                </xsl:call-template>
+
+            </td>
+        </tr>
+    </xsl:for-each>
+</xsl:template>
+
+
+<!-- 列顺序必须要与 param 中的相同 -->
 <xsl:template name="param-list">
     <xsl:param name="param" />
     <xsl:param name="parent" /> <!-- 上一级的名称，嵌套对象时可用 -->
 
     <xsl:for-each select="$param">
-    <tr>
-    <xsl:call-template name="deprecated">
-        <xsl:with-param name="deprecated" select="@deprecated" />
-    </xsl:call-template>
-        <th>
-            <span class="parent-type"><xsl:value-of select="$parent" /></span>
-            <xsl:value-of select="@name" />
-        </th>
+        <tr>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
+            <th>
+                <span class="parent-type"><xsl:value-of select="$parent" /></span>
+                <xsl:value-of select="@name" />
+            </th>
 
-        <td>
-            <xsl:value-of select="@type" />
-            <xsl:if test="@array = 'true'"><xsl:value-of select="'[]'" /></xsl:if>
-        </td>
+            <td>
+                <xsl:value-of select="@type" />
+                <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+            </td>
 
-        <td>
-            <xsl:choose>
-                <xsl:when test="@optional = 'true'"><xsl:value-of select="'O'" /></xsl:when>
-                <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
-            </xsl:choose>
-            <xsl:value-of select="concat(' ', @default)" />
-        </td>
+            <td>
+                <xsl:choose>
+                    <xsl:when test="@optional='true'"><xsl:value-of select="'O'" /></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
+                </xsl:choose>
+                <xsl:value-of select="concat(' ', @default)" />
+            </td>
 
-        <td>
-            <xsl:choose>
-                <xsl:when test="description"><xsl:value-of select="description" /></xsl:when>
-                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
-            </xsl:choose>
-            <xsl:if test="./enum">
-                <p><xsl:copy-of select="$locale-enum" /></p>
-                <ul>
-                <xsl:for-each select="./enum">
-                    <li>
-                    <xsl:call-template name="deprecated">
-                        <xsl:with-param name="deprecated" select="@deprecated" />
-                    </xsl:call-template>
+            <td>
+                <xsl:choose>
+                    <xsl:when test="description"><xsl:value-of select="description" /></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+                </xsl:choose>
+                <xsl:call-template name="enum">
+                    <xsl:with-param name="enum" select="./enum"/>
+                </xsl:call-template>
+            </td>
+        </tr>
 
-                    <xsl:value-of select="@value" />:<xsl:value-of select="." />
-                    </li>
-                </xsl:for-each>
-                </ul>
-            </xsl:if>
-        </td>
-    </tr>
+        <xsl:if test="./param">
+            <xsl:variable name="p">
+                    <xsl:value-of select="concat($parent, @name)" />
+                    <xsl:if test="@name"><xsl:value-of select="'.'" /></xsl:if>
+            </xsl:variable>
 
-    <xsl:if test="./param">
-        <xsl:variable name="p">
-                <xsl:value-of select="concat($parent, @name)" />
-                <xsl:if test="@name"><xsl:value-of select="'.'" /></xsl:if>
-        </xsl:variable>
-
-        <xsl:call-template name="param-list">
-            <xsl:with-param name="param" select="./param" />
-            <xsl:with-param name="parent" select="$p" />
-        </xsl:call-template>
-    </xsl:if>
+            <xsl:call-template name="param-list">
+                <xsl:with-param name="param" select="./param" />
+                <xsl:with-param name="parent" select="$p" />
+            </xsl:call-template>
+        </xsl:if>
     </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="enum">
+    <xsl:param name="enum" />
+
+    <xsl:if test="./enum">
+        <p><xsl:copy-of select="$locale-enum" /></p>
+        <ul>
+        <xsl:for-each select="./enum">
+            <li>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
+
+            <xsl:value-of select="@value" />:<xsl:value-of select="." />
+            </li>
+        </xsl:for-each>
+        </ul>
+    </xsl:if>
 </xsl:template>
 
 <!--

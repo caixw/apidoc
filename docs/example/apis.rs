@@ -11,8 +11,8 @@
 //     </path>
 //
 //     <request type="none" mimetype="json">
-//         <header name="name">desc</header>
-//         <header name="name1">desc1</header>
+//         <header name="name" type="string">desc</header>
+//         <header name="name1" type="string">desc1</header>
 //     </request>
 //
 //     <response status="200" array="true" type="object" mimetype="json">

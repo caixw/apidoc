@@ -13,8 +13,8 @@
 //     </path>
 //
 //     <response status="200" array="true" type="object" mimetype="json">
-//         <header name="name">desc</header>
-//         <header name="name1">desc1</header>
+//         <header name="name" type="string">desc</header>
+//         <header name="name1" type="string">desc1</header>
 //         <param name="count" type="number" optional="true" summary="summary" />
 //         <param name="list" type="object" array="true" summary="list">
 //             <param name="id" type="number" optional="true" summary="desc" />
@@ -39,8 +39,8 @@
 //         <request mimetype="json" type="object">
 //             <query name="size">size</query>
 //
-//             <param name="id" type="number" default="1" />
-//             <param name="age" type="number" />
+//             <param name="id" type="number" default="1" summary="id" />
+//             <param name="age" type="number" summary="age" />
 //             <example mimetype="json">
 //             <![CDATA[
 //             {
