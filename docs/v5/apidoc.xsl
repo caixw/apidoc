@@ -12,11 +12,7 @@
     doctype-system="about:legacy-compat" />
 
 <xsl:template match="/">
-    <html>
-    <xsl:if test="$curr-lang">
-        <xsl:attribute name="lang"><xsl:value-of select="$curr-lang" /></xsl:attribute>
-    </xsl:if>
-
+    <html lang="{$curr-lang}">
         <head>
             <title><xsl:value-of select="apidoc/title" /></title>
             <meta charset="UTF-8" />

@@ -71,6 +71,7 @@ pre {
     border: 1px solid var(--border-color);
     padding: var(--article-padding);
     border-radius: 5px;
+    white-space: pre-wrap;
 }
 
 /*************************** header ***********************/

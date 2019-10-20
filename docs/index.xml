@@ -73,7 +73,7 @@
 
         <p>文档被从注释中提取之后，最终会被合并成一个 XML 文件，在该文件中 <code>api</code> 作为 <code>apidoc</code> 的一个子元素存在，如果你的项目不想把文档写在注释中，也可以直接编写一个完整的 XML 文件，将 <code>api</code> 作为 <code>apidoc</code> 的一个子元素。</p>
 
-        <p>具体的示例代码可以参考：<a href="https://apidoc.tools/example/apidoc.xml">example</a></p>
+        <p>具体的示例代码可以参考：<a href="./example/apidoc.xml">example</a></p>
 
         <p>以下是对各个 XML 元素以及参数介绍：</p>
     </doc>
@@ -124,7 +124,7 @@
                 <description>控制输出行为</description>
                 <item name="output.path" type="string" required="true">指定输出的文件名，包含路径信息。</item>
                 <item name="output.tags" type="string[]" required="false">只输出与这些标签相关联的文档，默认为全部。</item>
-                <item name="output.style" type="string" required="false">为 xml 文件指定的 xsl 文件，默认值为 <code>https://apidoc.tools/docs/v5/apidoc.xsl</code>。</item>
+                <item name="output.style" type="string" required="false">为 XML 文件指定的 XSL 文件，默认值为最新版的 XSL 文件。</item>
             </group>
         </type>
     </types>

@@ -35,7 +35,6 @@
             <title><xsl:value-of select="docs/title" /></title>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-            <meta name="generator" content="https://apidoc.tools" />
             <link rel="icon" type="image/png" href="./icon.png" />
             <link rel="canonical" href="{document('config.xml')/config/url}" />
             <link rel="stylesheet" type="text/css" href="./index.css" />
