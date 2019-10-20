@@ -26,16 +26,6 @@
 //             </param>
 //         </param>
 //     </response>
-//
-//     <response status="404" type="object" mimetype="json">
-//         <header name="authorization">token</header>
-//         <param name="code" type="number" summary="状态码" optional="false" />
-//         <param name="message" type="string" summary="错误信息" optional="false" />
-//         <param name="detail" type="object" array="true" summary="错误明细">
-//             <param name="id" type="string" summary="id" />
-//             <param name="message" type="string" summary="message" />
-//         </param>
-//     </response>
 // </api>
 fn getList() {}
 
@@ -60,16 +50,6 @@ fn getList() {}
 //
 //     <response status="200" array="true" type="none" mimetype="json">
 //     </response>
-//
-//     <response status="404" type="object" mimetype="json">
-//         <header name="authorization">token</header>
-//         <param name="code" type="number" summary="状态码" optional="false" />
-//         <param name="message" type="string" summary="错误信息" optional="false" />
-//         <param name="detail" type="object" array="true" summary="错误明细">
-//             <param name="id" type="string" summary="id" />
-//             <param name="message" type="string" summary="message" />
-//         </param>
-//     </response>
 // </api>
 fn post() {}
 
@@ -79,16 +59,6 @@ fn post() {}
 // 可以是一个 HTML 内容
 // ]]></description>
 //     <path path="/users" />
-//
-//     <response status="404" type="object" mimetype="json">
-//         <header name="authorization">token</header>
-//         <param name="code" type="number" summary="状态码" optional="false" />
-//         <param name="message" type="string" summary="错误信息" optional="false" />
-//         <param name="detail" type="object" array="true" summary="错误明细">
-//             <param name="id" type="string" summary="id" />
-//             <param name="message" type="string" summary="message" />
-//         </param>
-//     </response>
 // </api>
 fn delete() {}
 
@@ -111,16 +81,6 @@ fn delete() {}
 //         <param name="groups" type="string" optional="true" summary="用户所在的权限组">
 //             <param name="id" type="string" summary="权限组 ID" />
 //             <param name="name" type="string" summary="权限组名称" />
-//         </param>
-//     </response>
-//
-//     <response status="404" type="object" mimetype="json">
-//         <header name="authorization">token</header>
-//         <param name="code" type="number" summary="状态码" optional="false" />
-//         <param name="message" type="string" summary="错误信息" optional="false" />
-//         <param name="detail" type="object" array="true" summary="错误明细">
-//             <param name="id" type="string" summary="id" />
-//             <param name="message" type="string" summary="message" />
 //         </param>
 //     </response>
 // </api>

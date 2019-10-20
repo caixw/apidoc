@@ -46,10 +46,8 @@ type Doc struct {
 	Servers []*Server `xml:"server,omitempty"`
 	Apis    []*API    `xml:"api,omitempty"`
 
-	// 应用于全局的变量
-	Mimetype  string     `xml:"mimetype,omitempty"` // 指定可用的 mimetype 类型
+	// 表示所有 API 都有可能返回的内容
 	Responses []*Request `xml:"response,omitempty"`
-	Requests  []*Request `xml:"Request,omitempty"`
 
 	file string
 	line int

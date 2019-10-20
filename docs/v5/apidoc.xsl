@@ -127,6 +127,13 @@
             </div>
             <div class="responses">
                 <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
+
+                <xsl:for-each select="/apidoc/response"><!-- 公有的 response -->
+                    <xsl:call-template name="response">
+                        <xsl:with-param name="response" select="." />
+                    </xsl:call-template>
+                </xsl:for-each>
+
                 <xsl:for-each select="response">
                     <xsl:call-template name="response">
                         <xsl:with-param name="response" select="." />

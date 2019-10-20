@@ -35,16 +35,6 @@
 //         ]]></example>
 //     </response>
 //
-//     <response status="404" type="object" mimetype="json">
-//         <header name="authorization">token</header>
-//         <param name="code" type="number" summary="状态码" optional="false" />
-//         <param name="message" type="string" summary="错误信息" optional="false" />
-//         <param name="detail" type="object" array="true" summary="错误明细">
-//             <param name="id" type="string" summary="id" />
-//             <param name="message" type="string" summary="message" />
-//         </param>
-//     </response>
-//
 //     <callback schema="https" summary="回调函数" method="POST">
 //         <request mimetype="json" type="object">
 //             <query name="size">size</query>
