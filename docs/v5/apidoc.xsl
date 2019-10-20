@@ -252,24 +252,26 @@
     <xsl:param name="param" />
     <xsl:param name="example" /> <!-- 示例代码 -->
 
-    <div class="param">
-        <h4 class="title">&#x27a4;&#160;<xsl:copy-of select="$title" /></h4>
-        <table>
-            <thead>
-                <tr>
-                    <th><xsl:copy-of select="$locale-var" /></th>
-                    <th><xsl:copy-of select="$locale-type" /></th>
-                    <th><xsl:copy-of select="$locale-value" /></th>
-                    <th><xsl:copy-of select="$locale-description" /></th>
-                </tr>
-            </thead>
-            <tbody>
-                <xsl:call-template name="param-list">
-                    <xsl:with-param name="param" select="$param" />
-                </xsl:call-template>
-            </tbody>
-        </table>
-    </div>
+    <xsl:if test="not($param/@type='none')">
+        <div class="param">
+            <h4 class="title">&#x27a4;&#160;<xsl:copy-of select="$title" /></h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th><xsl:copy-of select="$locale-var" /></th>
+                        <th><xsl:copy-of select="$locale-type" /></th>
+                        <th><xsl:copy-of select="$locale-value" /></th>
+                        <th><xsl:copy-of select="$locale-description" /></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <xsl:call-template name="param-list">
+                        <xsl:with-param name="param" select="$param" />
+                    </xsl:call-template>
+                </tbody>
+            </table>
+        </div>
+    </xsl:if>
 </xsl:template>
 
 <!-- 列顺序必须要与 param 中的相同 -->
