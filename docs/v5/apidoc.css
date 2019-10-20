@@ -311,7 +311,8 @@ main .api .body .responses .status {
     border-bottom: 1px solid var(--border-color);
 }
 
-main .api .parent-type {
+main .api .param .parent-type,
+main .api .param .mimetype {
     opacity: .5;
 }
 

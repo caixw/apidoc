@@ -217,6 +217,7 @@
     <xsl:call-template name="param">
         <xsl:with-param name="title">
             <xsl:copy-of select="$locale-body" />
+            <span class="mimetype">&#160;(<xsl:value-of select="$request/@mimetype" />)</span>
         </xsl:with-param>
         <xsl:with-param name="param" select="$request" />
     </xsl:call-template>
@@ -241,6 +242,7 @@
     <xsl:call-template name="param">
         <xsl:with-param name="title">
             <xsl:copy-of select="$locale-body" />
+            <span class="mimetype">&#160;(<xsl:value-of select="$response/@mimetype" />)</span>
         </xsl:with-param>
         <xsl:with-param name="param" select="$response" />
     </xsl:call-template>
