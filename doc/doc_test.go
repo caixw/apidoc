@@ -4,6 +4,7 @@ package doc
 
 import (
 	"io/ioutil"
+	"net/http"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -145,8 +146,18 @@ func TestDoc_Sanitize(t *testing.T) {
 		{Name: "tag2"},
 	}
 	doc.Apis = []*API{
-		{Tags: []string{"tag1", "tag2"}, doc: doc},
-		{Tags: []string{"not-exists", "tag1"}, doc: doc},
+		{
+			Tags:   []string{"tag1", "tag2"},
+			doc:    doc,
+			Path:   &Path{},
+			Method: http.MethodGet,
+		},
+		{
+			Tags:   []string{"not-exists", "tag1"},
+			doc:    doc,
+			Path:   &Path{},
+			Method: http.MethodGet,
+		},
 	}
 	a.Error(doc.Sanitize())
 
@@ -156,8 +167,18 @@ func TestDoc_Sanitize(t *testing.T) {
 		{Name: "tag2"},
 	}
 	doc.Apis = []*API{
-		{Servers: []string{"tag1", "tag2"}, doc: doc},
-		{Servers: []string{"not-exists", "tag1"}, doc: doc},
+		{
+			Servers: []string{"tag1", "tag2"},
+			doc:     doc,
+			Path:    &Path{},
+			Method:  http.MethodGet,
+		},
+		{
+			Servers: []string{"not-exists", "tag1"},
+			doc:     doc,
+			Path:    &Path{},
+			Method:  http.MethodGet,
+		},
 	}
 	a.Error(doc.Sanitize())
 }

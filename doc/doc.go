@@ -6,6 +6,7 @@ package doc
 import (
 	"bytes"
 	"encoding/xml"
+	"sort"
 	"time"
 
 	xmessage "golang.org/x/text/message"
@@ -102,6 +103,18 @@ func (doc *Doc) FromXML(file string, line int, data []byte) error {
 
 // Sanitize 检测内容是否合法
 func (doc *Doc) Sanitize() error {
+	// doc.Apis 是多线程导入的，无法保证其顺序，
+	// 此处可以保证输出内容是按一定顺序排列的。
+	sort.SliceStable(doc.Apis, func(i, j int) bool {
+		ii := doc.Apis[i]
+		jj := doc.Apis[j]
+
+		if ii.Path.Path == jj.Path.Path {
+			return ii.Method < jj.Method
+		}
+		return ii.Path.Path < jj.Path.Path
+	})
+
 	for _, api := range doc.Apis { // 查看 API 中的标签是否都存在
 		if err := api.sanitize("api"); err != nil {
 			return err
