@@ -14,6 +14,7 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/input"
+	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
@@ -48,6 +49,13 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	}
 
 	return output.Render(doc, o)
+}
+
+// Site 启用站点服务
+//
+// 相当于提供了完整的 https://apidoc.tools 网站服务
+func Site(dir string) http.Handler {
+	return docs.Handler(dir)
 }
 
 // Handle 返回显示文档内容的中间件

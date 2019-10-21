@@ -8,11 +8,11 @@ package main
 import (
 	"net/http"
 
-	"github.com/caixw/apidoc/v5/internal/docs"
+	"github.com/caixw/apidoc/v5"
 )
 
 func main() {
-	http.Handle("/", docs.Handler("../../docs"))
+	http.Handle("/", apidoc.Site("../../docs"))
 	err := http.ListenAndServe(":8080", nil)
 	panic(err)
 }
