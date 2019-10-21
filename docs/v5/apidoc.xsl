@@ -20,7 +20,7 @@
             <xsl:call-template name="header" />
 
             <main>
-                <div class="content"><xsl:value-of select="/apidoc/content" /></div>
+                <div class="content"><xsl:copy-of select="apidoc/description" /></div>
 
                 <xsl:for-each select="apidoc/api">
                 <xsl:sort select="path/@path"/>

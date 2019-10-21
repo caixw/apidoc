@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="https://apidoc.tools/v5/apidoc.xsl"?>
-<apidoc apidoc="5.0.0" created="2019-10-20T23:41:52+08:00" version="1.1.1">
-	<title>title of doc</title>
+<apidoc apidoc="5.0.0" created="2019-10-22T23:42:10+08:00" version="1.1.1">
+	<title>示例文档</title>
 	<content><![CDATA[
     
-     这里可以是 HTML 文档
+    <p>这是一个用于测试的文档用例</p>
     ]]></content>
 	<contact name="name">
 		<url>https://example.com</url>
@@ -16,6 +16,10 @@
 	<tag name="t2" title="标签2"></tag>
 	<server name="admin" url="https://api.example.com/admin"><![CDATA[后台管理接口]]></server>
 	<server name="client" url="https://api.example.com"><![CDATA[客户端接口]]></server>
+	<api method="DELETE" summary="删除用户">
+		<path path="/users"></path>
+		<description>&#xA;这是关于接口的详细说明文档&#xA;可以是一个 HTML 内容&#xA;</description>
+	</api>
 	<api method="GET" summary="获取用户">
 		<path path="/users">
 			<query name="page" type="number" default="0" summary="页码"></query>
@@ -54,9 +58,26 @@
 		</request>
 		<response type="none" array="true" status="200" mimetype="json"></response>
 	</api>
-	<api method="DELETE" summary="删除用户">
-		<path path="/users"></path>
+	<api method="GET" summary="获取用户详情">
+		<path path="/users/{id}">
+			<param name="id" type="number" summary="用户 ID"></param>
+			<query name="state" type="string" default="[normal,lock]" array="true" summary="state">
+				<enum value="normal"><![CDATA[正常]]></enum>
+				<enum value="lock"><![CDATA[锁定]]></enum><![CDATA[
+             
+             
+        ]]>
+			</query>
+		</path>
 		<description>&#xA;这是关于接口的详细说明文档&#xA;可以是一个 HTML 内容&#xA;</description>
+		<response type="object" array="true" status="200" mimetype="json">
+			<param name="id" type="number" summary="用户 ID"></param>
+			<param name="name" type="string" summary="用户名"></param>
+			<param name="groups" type="string" optional="true" summary="用户所在的权限组">
+				<param name="id" type="string" summary="权限组 ID"></param>
+				<param name="name" type="string" summary="权限组名称"></param>
+			</param>
+		</response>
 	</api>
 	<api method="GET" summary="获取用户日志">
 		<path path="/users/{id}/logs">
@@ -103,34 +124,13 @@
 			</request>
 		</callback>
 	</api>
-	<api method="GET" summary="获取用户详情">
-		<path path="/users/{id}">
-			<param name="id" type="number" summary="用户 ID"></param>
-			<query name="state" type="string" default="[normal,lock]" array="true" summary="state">
-				<enum value="normal"><![CDATA[正常]]></enum>
-				<enum value="lock"><![CDATA[锁定]]></enum><![CDATA[
-             
-             
-        ]]>
-			</query>
-		</path>
-		<description>&#xA;这是关于接口的详细说明文档&#xA;可以是一个 HTML 内容&#xA;</description>
-		<response type="object" array="true" status="200" mimetype="json">
-			<param name="id" type="number" summary="用户 ID"></param>
-			<param name="name" type="string" summary="用户名"></param>
-			<param name="groups" type="string" optional="true" summary="用户所在的权限组">
-				<param name="id" type="string" summary="权限组 ID"></param>
-				<param name="name" type="string" summary="权限组名称"></param>
-			</param>
-		</response>
-	</api>
-	<response type="object" status="404" mimetype="json">
+	<response type="object" status="400" mimetype="json">
 		<param name="code" type="number" summary="状态码"></param>
 		<param name="message" type="string" summary="错误信息"></param>
 		<param name="detail" type="object" array="true" summary="错误明细">
 			<param name="id" type="string" summary="id"></param>
 			<param name="message" type="string" summary="message"></param>
 		</param>
-		<header name="authorization" type="string"><![CDATA[token]]></header>
 	</response>
+	<response type="none" summary="not found" status="404" mimetype="json"></response>
 </apidoc>

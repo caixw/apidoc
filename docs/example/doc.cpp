@@ -22,8 +22,13 @@
 //     </response>
 //     <response status="404" type="none" mimetype="json" summary="not found" />
 //
-//     <content>
+//     <description>
 //     <![CDATA[
 //     <p>这是一个用于测试的文档用例</p>
-//     ]]></content>
+//     状态码：
+//     <ul>
+//         <li>40300:xxx</li>
+//         <li>40301:xxx</li>
+//     </ul>
+//     ]]></description>
 // </apidoc>

@@ -19,10 +19,10 @@
         client api
     </server>
 
-    <content>
+    <description>
     <![CDATA[
     ## h2
     ### h3
     ]]>
-    </content>
+    </description>
 </apidoc>

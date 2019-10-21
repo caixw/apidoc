@@ -37,15 +37,15 @@ type Doc struct {
 	// 如果采用默认的 xsl 转换，会替换掉页面上的图标和 favicon 图标
 	Logo string `xml:"logo,attr,omitempty"`
 
-	Created string    `xml:"created,attr,omitempty"` // 文档的生成时间
-	Version Version   `xml:"version,attr,omitempty"` // 文档的版本
-	Title   string    `xml:"title"`
-	Content CDATA     `xml:"content"`
-	Contact *Contact  `xml:"contact,omitempty"`
-	License *Link     `xml:"license,omitempty"` // 版本信息
-	Tags    []*Tag    `xml:"tag,omitempty"`     // 所有的标签
-	Servers []*Server `xml:"server,omitempty"`
-	Apis    []*API    `xml:"api,omitempty"`
+	Created     string    `xml:"created,attr,omitempty"` // 文档的生成时间
+	Version     Version   `xml:"version,attr,omitempty"` // 文档的版本
+	Title       string    `xml:"title"`
+	Description CDATA     `xml:"description"`
+	Contact     *Contact  `xml:"contact,omitempty"`
+	License     *Link     `xml:"license,omitempty"` // 版本信息
+	Tags        []*Tag    `xml:"tag,omitempty"`     // 所有的标签
+	Servers     []*Server `xml:"server,omitempty"`
+	Apis        []*API    `xml:"api,omitempty"`
 
 	// 表示所有 API 都有可能返回的内容
 	Responses []*Request `xml:"response,omitempty"`
