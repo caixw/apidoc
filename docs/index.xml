@@ -140,12 +140,12 @@
             </group>
             <group name="子标签">
                 <item name="title" type="string" required="true">文档的标题</item>
-                <item name="content" type="string" required="true">文档的整体介绍，可以是使用 CDATA 包含 HTML 内容。</item>
+                <item name="description" type="string" required="true">文档的整体介绍，可以是使用 CDATA 包含 HTML 内容。</item>
                 <item name="contract" type="contract" required="false">联系人信息</item>
                 <item name="license" type="link" required="false">内容的版权信息</item>
                 <item name="tag" type="tag[]" required="false">可以用的标签列表</item>
                 <item name="server" type="server[]" required="true">API 基地址列表，每个 API 最少应该有一个 server。</item>
-                <item name="resopnse" type="request[]" required="false">表示所有 API 都有可能返回的內容</item>
+                <item name="response" type="request[]" required="false">表示所有 API 都有可能返回的內容</item>
                 <item name="api" type="api[]" required="false">API 文档内容</item>
             </group>
         </type>
