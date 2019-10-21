@@ -181,6 +181,7 @@ main .content {
 
 main .api {
     margin-bottom: var(--article-padding);
+    border: 1px solid var(--border-color);
 }
 
 main .api summary {
@@ -219,7 +220,8 @@ main .api summary .summary {
     opacity: .5;
 }
 
-main .api[data-method=GET],
+main .api[data-method=GET][open],
+main .api[data-method=GET]:hover,
 main .callback[data-method=GET] h3 {
     border: 1px solid var(--method-get-color);
 }
@@ -227,7 +229,8 @@ main .api[data-method=GET] summary {
     border-bottom: 1px solid var(--method-get-color);
 }
 
-main .api[data-method=POST],
+main .api[data-method=POST][open],
+main .api[data-method=POST]:hover,
 main .callback[data-method=POST] h3 {
     border: 1px solid var(--method-post-color);
 }
@@ -235,7 +238,8 @@ main .api[data-method=POST] summary {
     border-bottom: 1px solid var(--method-post-color);
 }
 
-main .api[data-method=PUT],
+main .api[data-method=PUT][open],
+main .api[data-method=PUT]:hover,
 main .callback[data-method=PUT] h3 {
     border: 1px solid var(--method-put-color);
 }
@@ -243,7 +247,8 @@ main .api[data-method=PUT] summary {
     border-bottom: 1px solid var(--method-put-color);
 }
 
-main .api[data-method=PATCH],
+main .api[data-method=PATCH][open],
+main .api[data-method=PATCH]:hover,
 main .callback[data-method=PATCH] h3 {
     border: 1px solid var(--method-patch-color);
 }
@@ -251,7 +256,8 @@ main .api[data-method=PATCH] summary {
     border-bottom: 1px solid var(--method-patch-color);
 }
 
-main .api[data-method=DELETE],
+main .api[data-method=DELETE][open],
+main .api[data-method=DELETE]:hover,
 main .callback[data-method=DELETE] h3 {
     border: 1px solid var(--method-delete-color);
 }
@@ -259,7 +265,8 @@ main .api[data-method=DELETE] summary {
     border-bottom: 1px solid var(--method-delete-color);
 }
 
-main .api[data-method=OPTIONS],
+main .api[data-method=OPTIONS][open],
+main .api[data-method=OPTIONS]:hover,
 main .callback[data-method=OPTIONS] h3 {
     border: 1px solid var(--method-options-color);
 }
