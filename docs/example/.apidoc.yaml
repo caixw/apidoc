@@ -11,3 +11,4 @@ inputs:
 output:
   path: ./apidoc.xml
   type: apidoc+xml
+  style: "../v5/apidoc.xsl"
