@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 
 	"golang.org/x/text/language"
 
@@ -50,14 +51,17 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	return output.Render(doc, o)
 }
 
-// Handle 返回显示文档内容的中间件
+const docContentType = "application/xml"
+
+// Handler 返回显示文档内容的中间件
 //
 // p 指定了 apidoc.xml 实际的文件路径；
 // contentType 表示 p 的 mimetype 类型，如果为空，则会采用 "application/xml";
+// stylesheet 如果该值不为空，则表示需要使用此值替换 XML 文件中的 xml-stylesheet 的文件地址。
 // l 表示出错时，错误内容的发送通道，如果为 nil，表示不输出错误信息；
-func Handle(p, contentType string, l *log.Logger) http.Handler {
+func Handler(p, contentType, stylesheet string, l *log.Logger) http.Handler {
 	if contentType == "" {
-		contentType = "application/xml"
+		contentType = docContentType
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +71,7 @@ func Handle(p, contentType string, l *log.Logger) http.Handler {
 			}
 		}
 
-		data, err := ioutil.ReadFile(p)
+		data, err := readDoc(p, stylesheet)
 		if err != nil {
 			printErr(err)
 			errStatus(w, http.StatusInternalServerError)
@@ -79,6 +83,35 @@ func Handle(p, contentType string, l *log.Logger) http.Handler {
 			printErr(err) // 此时 writeHeader 已经发出，再输出状态码无意义
 		}
 	})
+}
+
+// 用于查找 <?xml 指令
+var procInst = regexp.MustCompile(`<\?xml .+ ?>`)
+
+// 读取 p 的内容并添加 xml-stylesheet
+//
+// p 表示文件地址；
+// stylesheet 表示 xml-stylesheet 的 URL，如果为空，则不修改该值；
+//
+// 在 <?xml ...?> 之后添加或是在该指令不存在的时候，添加到文件头部。
+func readDoc(p, stylesheet string) ([]byte, error) {
+	data, err := ioutil.ReadFile(p)
+	if err != nil {
+		return nil, err
+	}
+
+	if stylesheet == "" {
+		return data, nil
+	}
+
+	pi := `<?xml-stylesheet type="text/xsl" href="` + stylesheet + `"?>`
+
+	if rslt := procInst.Find(data); len(rslt) > 0 {
+		return procInst.ReplaceAll(data, append(rslt, []byte(pi)...)), nil
+	}
+
+	ret := make([]byte, 0, len(data)+len(pi))
+	return append(append(ret, pi...), data...), nil
 }
 
 func errStatus(w http.ResponseWriter, status int) {
