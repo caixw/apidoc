@@ -201,6 +201,7 @@ main .api summary .action {
     min-width: 4rem;
     font-weight: bold;
     display: inline-block;
+    margin-right: 1rem;
 }
 
 main .api summary .link {
@@ -208,16 +209,16 @@ main .api summary .link {
     text-decoration: none;
 }
 
-main .api .description {
-    padding:var(--article-padding);
-    margin: 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
 main .api summary .summary {
     float: right;
     font-weight: 400;
     opacity: .5;
+}
+
+main .api .description {
+    padding:var(--article-padding);
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 main .api[data-method=GET][open],
