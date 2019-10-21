@@ -26,8 +26,8 @@ type API struct {
 	ID          string     `xml:"id,attr,omitempty"`
 	Path        *Path      `xml:"path"`
 	Summary     string     `xml:"summary,attr"`
-	Description string     `xml:"description,omitempty"`
-	Requests    []*Request `xml:"request"`
+	Description CDATA      `xml:"description,omitempty"`
+	Requests    []*Request `xml:"request"` // 不同的 mimetype 可能会定义不同
 	Responses   []*Request `xml:"response"`
 	Callback    *Callback  `xml:"callback,omitempty"`
 	Deprecated  Version    `xml:"deprecated,attr,omitempty"`

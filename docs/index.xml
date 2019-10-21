@@ -68,7 +68,7 @@
 
     <doc id="usage" title="使用"></doc>
 
-    <doc id="docs" title="文档格式">
+    <doc id="spec" title="文档格式">
         <p>文档采用 XML 格式。存在两个顶级标签：<code>apidoc</code> 和 <code>api</code>，用于描述整体内容和具体接口信息。</p>
 
         <p>文档被从注释中提取之后，最终会被合并成一个 XML 文件，在该文件中 <code>api</code> 作为 <code>apidoc</code> 的一个子元素存在，如果你的项目不想把文档写在注释中，也可以直接编写一个完整的 XML 文件，将 <code>api</code> 作为 <code>apidoc</code> 的一个子元素。</p>
@@ -129,7 +129,7 @@
         </type>
     </types>
 
-    <types parent="docs">
+    <types parent="spec">
         <type name="apidoc">
             <description><p>用于描述整个文档的相关内容，只能出现一次。</p></description>
             <group name="属性">
