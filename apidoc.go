@@ -51,9 +51,14 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	return output.Render(doc, o)
 }
 
-// Site 启用站点服务
+// Site 将 dir 作为静态文件服务内容
 //
-// 相当于提供了完整的 https://apidoc.tools 网站服务
+// 默认页为 index.xml，同时会过滤 CNAME，
+// 如果将 dir 指同 docs 目录，相当于本地版本的 https://apidoc.tools
+//
+// 用户可以通过诸如：
+//  http.Handle("/apidoc", apidoc.Site("./docs"))
+// 的代码搭建一个简易的 https://apidoc.tools 网站。
 func Site(dir string) http.Handler {
 	return docs.Handler(dir)
 }
