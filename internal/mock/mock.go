@@ -14,6 +14,7 @@ import (
 // Mock 管理 mock 数据
 type Mock struct {
 	doc     *doc.Doc
+	prefix  string
 	mux     *mux.Mux
 	servers map[string]string
 }
@@ -22,6 +23,7 @@ type Mock struct {
 func New(d *doc.Doc, prefix string, servers map[string]string) (*Mock, error) {
 	m := &Mock{
 		doc:     d,
+		prefix:  prefix,
 		mux:     mux.New(false, false, true, nil, nil),
 		servers: servers,
 	}
@@ -49,8 +51,10 @@ func NewWithPath(path, prefix string, servers map[string]string) (*Mock, error) 
 }
 
 func (m *Mock) parse() error {
+	p := m.mux.Prefix(m.prefix)
+
 	for name, prefix := range m.servers {
-		prefix := m.mux.Prefix(prefix)
+		prefix := p.Prefix(prefix)
 
 		for _, api := range m.doc.Apis {
 			if !hasTag(api.Tags, name) {
