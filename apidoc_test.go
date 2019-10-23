@@ -24,7 +24,7 @@ func TestVersion(t *testing.T) {
 func TestHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, Handler("./docs/example/apidoc.xml", "", "", nil), nil)
+	srv := rest.NewServer(t, Handler("./docs/example/index.xml", "", "", nil), nil)
 	defer srv.Close()
 	srv.Get("").
 		Do().
@@ -32,7 +32,7 @@ func TestHandler(t *testing.T) {
 		Header("content-type", docContentType)
 
 	// 测试 content-type 是否正确
-	srv = rest.NewServer(t, Handler("./docs/example/apidoc.xml", "text/xml", "", nil), nil)
+	srv = rest.NewServer(t, Handler("./docs/example/index.xml", "text/xml", "", nil), nil)
 	defer srv.Close()
 	srv.Get("").
 		Do().
@@ -42,7 +42,7 @@ func TestHandler(t *testing.T) {
 	// 测试 xml-stylesheet 是否正确
 	xsl := "https://example.com/xsl.xsl"
 	buf := new(bytes.Buffer)
-	srv = rest.NewServer(t, Handler("./docs/example/apidoc.xml", "", xsl, nil), nil)
+	srv = rest.NewServer(t, Handler("./docs/example/index.xml", "", xsl, nil), nil)
 	defer srv.Close()
 	srv.Get("").
 		Do().
