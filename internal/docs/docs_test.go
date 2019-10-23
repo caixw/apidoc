@@ -30,6 +30,16 @@ func TestHandler(t *testing.T) {
 		Status(http.StatusOK).
 		Header("content-type", "application/xml")
 
+	srv.Get("/example/").
+		Do().
+		Status(http.StatusOK).
+		Header("content-type", "application/xml")
+
+	srv.Get("/example").
+		Do().
+		Status(http.StatusOK).
+		Header("content-type", "application/xml")
+
 	srv.Get("/index.xml").
 		Do().
 		Status(http.StatusOK).

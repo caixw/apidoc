@@ -17,12 +17,7 @@ func Handler(docs string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
 
-		filename := indexPage
-		if len(pp) > 0 && pp[len(pp)-1] != '/' {
-			filename = path.Base(pp)
-		}
-
-		if filename == "CNAME" {
+		if len(pp) > 0 && path.Base(pp) == "CNAME" {
 			errStatus(w, http.StatusNotFound)
 			return
 		}
@@ -48,7 +43,7 @@ func Handler(docs string) http.Handler {
 			return
 		}
 		if info.IsDir() {
-			pp += filepath.Join(pp, indexPage)
+			pp = filepath.Clean(filepath.Join(pp, indexPage))
 		}
 
 		http.ServeFile(w, r, pp)
