@@ -196,7 +196,7 @@
                 <item name="id" type="string" required="false">唯壹 ID</item>
             </group>
             <group name="子標簽">
-                <item name="description" type="string" required="false">該接口的詳細介紹，為 CDATA內容。</item>
+                <item name="description" type="string" required="false">該接口的詳細介紹，為 CDATA 內容。</item>
                 <item name="path" type="path" required="false">定義路徑信息</item>
                 <item name="request" type="request[]" required="false">定義可用的請求信息</item>
                 <item name="response" type="request[]" required="true">定義可能的返回信息</item>
