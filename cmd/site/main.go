@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-// 用于测试 xsl 的展示
+// 简单地将 docs 作为一个 web 服务运行
 //
-// 访问 localhost:8080/example 测试页面
+// 可作为测试 xsl 使用，访问 localhost:8080/example 测试页面
 package main
 
 import (
