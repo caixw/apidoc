@@ -93,7 +93,7 @@
     <xsl:param name="doc" />
 
     <article id="{$doc/@id}">
-        <xsl:choose>
+        <xsl:choose> <!-- 根据是否存在 $parent，决定是用 h3 还是 h2 标签 -->
             <xsl:when test="$doc/@parent">
                 <h3>
                     <xsl:value-of select="$doc/@title" />
@@ -116,52 +116,46 @@
             </xsl:call-template>
         </xsl:for-each>
 
-        <!-- 将类型显示为一个 table -->
-        <xsl:for-each select="/docs/types[@parent=$doc/@id]/type">
-        <article id="type_{@name}">
-            <h3>
-                <xsl:value-of select="@name" />
-                <a class="link" href="#type_{$doc/@id}">&#160;&#160;&#128279;</a>
-            </h3>
-            <xsl:copy-of select="description/node()" />
-            <xsl:if test="item or group">
-                <table>
-                    <thead>
-                        <tr>
-                            <th><xsl:value-of select="/docs/type-locale/header/name" /></th>
-                            <th><xsl:value-of select="/docs/type-locale/header/type" /></th>
-                            <th><xsl:value-of select="/docs/type-locale/header/required" /></th>
-                            <th><xsl:value-of select="/docs/type-locale/header/description" /></th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <xsl:call-template name="render-type-item">
-                            <xsl:with-param name="items" select="item" />
-                        </xsl:call-template>
-                    </tbody>
-                </table>
-            </xsl:if>
-        </article>
-        </xsl:for-each>
+        <xsl:apply-templates select="/docs/types[@parent=$doc/@id]/type" />
     </article>
 </xsl:template>
 
-<xsl:template name="render-type-item">
-    <xsl:param name="items" />
+<!-- 将类型显示为一个 table -->
+<xsl:template match="/docs/types/type">
+    <article id="type_{@name}">
+        <h3>
+            <xsl:value-of select="@name" />
+            <a class="link" href="#type_{@name}">&#160;&#160;&#128279;</a>
+        </h3>
+        <xsl:copy-of select="description/node()" />
+        <xsl:if test="item or group">
+            <table>
+                <thead>
+                    <tr>
+                        <th><xsl:value-of select="/docs/type-locale/header/name" /></th>
+                        <th><xsl:value-of select="/docs/type-locale/header/type" /></th>
+                        <th><xsl:value-of select="/docs/type-locale/header/required" /></th>
+                        <th><xsl:value-of select="/docs/type-locale/header/description" /></th>
+                    </tr>
+                </thead>
 
-    <xsl:for-each select="$items">
-    <tr>
-        <th><xsl:value-of select="@name" /></th>
-        <td><xsl:value-of select="@type" /></td>
-        <td>
-            <xsl:call-template name="checkbox">
-                <xsl:with-param name="chk" select="@required" />
-            </xsl:call-template>
-        </td>
-        <td><xsl:copy-of select="." /></td>
-    </tr>
-    </xsl:for-each>
+                <tbody>
+                    <xsl:for-each select="item">
+                    <tr>
+                        <th><xsl:value-of select="@name" /></th>
+                        <td><xsl:value-of select="@type" /></td>
+                        <td>
+                            <xsl:call-template name="checkbox">
+                                <xsl:with-param name="chk" select="@required" />
+                            </xsl:call-template>
+                        </td>
+                        <td><xsl:copy-of select="." /></td>
+                    </tr>
+                    </xsl:for-each>
+                </tbody>
+            </table>
+        </xsl:if>
+    </article>
 </xsl:template>
 
 <xsl:template name="checkbox">
