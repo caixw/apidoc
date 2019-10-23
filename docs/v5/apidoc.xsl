@@ -20,10 +20,10 @@
             <xsl:call-template name="header" />
 
             <main>
-                <div class="content"><xsl:copy-of select="apidoc/description" /></div>
+                <pre><xsl:copy-of select="apidoc/description/text()" /></pre>
 
                 <xsl:for-each select="apidoc/api">
-                <xsl:sort select="path/@path"/>
+                    <xsl:sort select="path/@path"/>
                     <xsl:apply-templates select="." />
                 </xsl:for-each>
             </main>
@@ -430,7 +430,10 @@
     </xsl:choose>
 </xsl:variable>
 
-<!-- 获取相对于当前 xsl 文件的基地址 -->
+<!--
+获取相对于当前 xsl 文件的基地址
+xsl 2.0 可以直接采用 base-uri(document(''))
+-->
 <xsl:variable name="base-url">
     <xsl:apply-templates select="processing-instruction('xml-stylesheet')" />
 </xsl:variable>
