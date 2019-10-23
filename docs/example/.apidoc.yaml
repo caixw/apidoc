@@ -9,6 +9,6 @@ inputs:
   recursive: true
 
 output:
-  path: ./apidoc.xml
+  path: ./index.xml
   type: apidoc+xml
   style: "../v5/apidoc.xsl"

@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.0.0" created="2019-10-22T10:38:46+08:00" version="1.1.1">
+<apidoc apidoc="5.0.0" created="2019-10-23T18:22:24+08:00" version="1.1.1">
 	<title>title of doc</title>
-	<content><![CDATA[
-    
-     这里可以是 HTML 文档
-    ]]></content>
 	<contact name="name">
 		<url>https://example.com</url>
 		<email>example@example.com</email>
@@ -18,14 +14,20 @@
 	<server name="client" url="https://api.example.com"><![CDATA[客户端接口]]></server>
 	<api method="DELETE" summary="删除用户">
 		<path path="/users"></path>
-		<description>&#xA;这是关于接口的详细说明文档&#xA;可以是一个 HTML 内容&#xA;</description>
+		<description><![CDATA[
+这是关于接口的详细说明文档
+可以是一个 HTML 内容
+]]></description>
 	</api>
 	<api method="GET" summary="获取用户">
 		<path path="/users">
 			<query name="page" type="number" default="0" summary="页码"></query>
 			<query name="size" type="number" default="20"><![CDATA[数量]]></query>
 		</path>
-		<description>&#xA;这是关于接口的详细说明文档&#xA;可以是一个 HTML 内容&#xA;</description>
+		<description><![CDATA[
+这是关于接口的详细说明文档
+可以是一个 HTML 内容
+]]></description>
 		<request type="none" mimetype="json">
 			<header name="name" type="string"><![CDATA[desc]]></header>
 			<header name="name1" type="string"><![CDATA[desc1]]></header>
@@ -44,7 +46,10 @@
 	</api>
 	<api method="POST" summary="添加用户">
 		<path path="/users"></path>
-		<description>&#xA;这是关于接口的详细说明文档&#xA;可以是一个 HTML 内容&#xA;</description>
+		<description><![CDATA[
+这是关于接口的详细说明文档
+可以是一个 HTML 内容
+]]></description>
 		<request type="object" mimetype="json">
 			<param name="count" type="number" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
@@ -58,13 +63,41 @@
 		</request>
 		<response type="none" array="true" status="200" mimetype="json"></response>
 	</api>
+	<api method="GET" summary="获取用户详情">
+		<path path="/users/{id}">
+			<param name="id" type="number" summary="用户 ID"></param>
+			<query name="state" type="string" default="[normal,lock]" array="true" summary="state">
+				<enum value="normal"><![CDATA[正常]]></enum>
+				<enum value="lock"><![CDATA[锁定]]></enum><![CDATA[
+             
+             
+        ]]>
+			</query>
+		</path>
+		<description><![CDATA[
+这是关于接口的详细说明文档
+可以是一个 HTML 内容
+]]></description>
+		<response type="object" array="true" status="200" mimetype="json">
+			<param name="id" type="number" summary="用户 ID"></param>
+			<param name="name" type="string" summary="用户名"></param>
+			<param name="groups" type="string" optional="true" summary="用户所在的权限组">
+				<param name="id" type="string" summary="权限组 ID"></param>
+				<param name="name" type="string" summary="权限组名称"></param>
+			</param>
+		</response>
+	</api>
 	<api method="GET" summary="获取用户日志">
 		<path path="/users/{id}/logs">
 			<param name="id" type="number"><![CDATA[用户 ID]]></param>
 			<query name="page" type="number" default="0" summary="页码"></query>
 			<query name="size" type="number" default="20"><![CDATA[数量]]></query>
 		</path>
-		<description>&#xA;这是关于接口的详细说明文档&#xA;===&#xA;可以是一个 HTML 内容&#xA;</description>
+		<description><![CDATA[
+这是关于接口的详细说明文档
+===
+可以是一个 HTML 内容
+]]></description>
 		<response type="object" array="true" status="200" mimetype="json">
 			<param name="count" type="number" optional="true" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
@@ -102,27 +135,6 @@
             ]]></example>
 			</request>
 		</callback>
-	</api>
-	<api method="GET" summary="获取用户详情">
-		<path path="/users/{id}">
-			<param name="id" type="number" summary="用户 ID"></param>
-			<query name="state" type="string" default="[normal,lock]" array="true" summary="state">
-				<enum value="normal"><![CDATA[正常]]></enum>
-				<enum value="lock"><![CDATA[锁定]]></enum><![CDATA[
-             
-             
-        ]]>
-			</query>
-		</path>
-		<description>&#xA;这是关于接口的详细说明文档&#xA;可以是一个 HTML 内容&#xA;</description>
-		<response type="object" array="true" status="200" mimetype="json">
-			<param name="id" type="number" summary="用户 ID"></param>
-			<param name="name" type="string" summary="用户名"></param>
-			<param name="groups" type="string" optional="true" summary="用户所在的权限组">
-				<param name="id" type="string" summary="权限组 ID"></param>
-				<param name="name" type="string" summary="权限组名称"></param>
-			</param>
-		</response>
 	</api>
 	<response type="object" status="404" mimetype="json">
 		<param name="code" type="number" summary="状态码"></param>
