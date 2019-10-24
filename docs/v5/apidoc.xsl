@@ -107,7 +107,7 @@
             <span class="summary"><xsl:value-of select="@summary" /></span>
         </summary>
         <div class="description">
-            <xsl:if test="./description"><xsl:value-of select="./description" /></xsl:if>
+            <xsl:if test="description"><xsl:value-of select="description" /></xsl:if>
         </div>
 
         <div class="body">
@@ -146,16 +146,16 @@
     <div class="callback" data-method="{./@method}">
         <h3><xsl:copy-of select="$locale-callback" /></h3>
         <div class="description">
-            <xsl:value-of select="./@summary" />
-            <xsl:if test="./description">
-                <br /><xsl:value-of select="./description" />
+            <xsl:value-of select="@summary" />
+            <xsl:if test="description">
+                <br /><xsl:value-of select="description" />
             </xsl:if>
         </div>
 
         <div class="body">
             <div class="requests">
                 <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
-                <xsl:for-each select="./request">
+                <xsl:for-each select="request">
                     <xsl:call-template name="request">
                         <xsl:with-param name="request" select="." />
                         <xsl:with-param name="path" select="../path" />
@@ -163,10 +163,10 @@
                 </xsl:for-each>
             </div>
 
-            <xsl:if test="./response">
+            <xsl:if test="response">
                 <div class="responses">
                     <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
-                    <xsl:for-each select="./response">
+                    <xsl:for-each select="response">
                         <xsl:call-template name="response">
                             <xsl:with-param name="response" select="." />
                         </xsl:call-template>
@@ -268,7 +268,7 @@
                 </thead>
                 <tbody>
                     <xsl:choose>
-                        <xsl:when test="$simple">
+                        <xsl:when test="$simple='true'">
                             <xsl:call-template name="simple-param-list">
                                 <xsl:with-param name="param" select="$param" />
                             </xsl:call-template>
@@ -316,7 +316,7 @@
                     <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
                 </xsl:choose>
                 <xsl:call-template name="enum">
-                    <xsl:with-param name="enum" select="./enum"/>
+                    <xsl:with-param name="enum" select="enum"/>
                 </xsl:call-template>
 
             </td>
@@ -359,25 +359,26 @@
                     <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
                 </xsl:choose>
                 <xsl:call-template name="enum">
-                    <xsl:with-param name="enum" select="./enum"/>
+                    <xsl:with-param name="enum" select="enum"/>
                 </xsl:call-template>
             </td>
         </tr>
 
-        <xsl:if test="./param">
+        <xsl:if test="param">
             <xsl:variable name="p">
                     <xsl:value-of select="concat($parent, @name)" />
                     <xsl:if test="@name"><xsl:value-of select="'.'" /></xsl:if>
             </xsl:variable>
 
             <xsl:call-template name="param-list">
-                <xsl:with-param name="param" select="./param" />
+                <xsl:with-param name="param" select="param" />
                 <xsl:with-param name="parent" select="$p" />
             </xsl:call-template>
         </xsl:if>
     </xsl:for-each>
 </xsl:template>
 
+<!-- 显示枚举类型的内容 -->
 <xsl:template name="enum">
     <xsl:param name="enum" />
 
@@ -390,7 +391,11 @@
                 <xsl:with-param name="deprecated" select="@deprecated" />
             </xsl:call-template>
 
-            <xsl:value-of select="@value" />:<xsl:value-of select="." />
+            <xsl:value-of select="@value" />:
+            <xsl:choose>
+                <xsl:when test="."><xsl:copy-of select="." /></xsl:when>
+                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+            </xsl:choose>
             </li>
         </xsl:for-each>
         </ul>

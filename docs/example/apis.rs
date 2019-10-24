@@ -47,6 +47,25 @@ fn getList() {}
 //             </param>
 //         </param>
 //     </request>
+//     <request type="object" mimetype="application/xml" name="users">
+//         <param name="count" type="number" optional="false" summary="summary" />
+//         <param name="list" type="object" array="true" summary="list">
+//             <param name="id" type="number" summary="用户 ID" />
+//             <param name="name" type="string" summary="用户名" />
+//             <param name="groups" type="string" array="true" optional="true" summary="用户所在的权限组">
+//                 <param name="id" type="string" summary="权限组 ID" />
+//                 <param name="name" type="string" summary="权限组名称" />
+//             </param>
+//         </param>
+//         <example mimetype="application/xml">
+//         <![CDATA[
+//             <users count="20">
+//                 <user id="20" name="xx"></user>
+//                 <user id="21" name="xx"></user>
+//             </users>
+//         ]]>
+//         </example>
+//     </request>
 //
 //     <response status="200" array="true" type="none" mimetype="json">
 //     </response>
@@ -58,7 +77,9 @@ fn post() {}
 // 这是关于接口的详细说明文档
 // 可以是一个 HTML 内容
 // ]]></description>
-//     <path path="/users" />
+//     <path path="/users/{id}">
+//         <param name="id" type="number" summary="用户 ID" />
+//     </path>
 // </api>
 fn delete() {}
 

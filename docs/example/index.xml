@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.0.0" created="2019-10-23T22:39:49+08:00" version="1.1.1">
+<apidoc apidoc="5.0.0" created="2019-10-24T22:27:17+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description><![CDATA[
     
@@ -21,13 +21,6 @@
 	<tag name="t2" title="标签2"></tag>
 	<server name="admin" url="https://api.example.com/admin"><![CDATA[后台管理接口]]></server>
 	<server name="client" url="https://api.example.com"><![CDATA[客户端接口]]></server>
-	<api method="DELETE" summary="删除用户">
-		<path path="/users"></path>
-		<description><![CDATA[
-这是关于接口的详细说明文档
-可以是一个 HTML 内容
-]]></description>
-	</api>
 	<api method="GET" summary="获取用户">
 		<path path="/users">
 			<query name="page" type="number" default="0" summary="页码"></query>
@@ -70,7 +63,35 @@
 				</param>
 			</param>
 		</request>
+		<request name="users" type="object" mimetype="application/xml">
+			<param name="count" type="number" summary="summary"></param>
+			<param name="list" type="object" array="true" summary="list">
+				<param name="id" type="number" summary="用户 ID"></param>
+				<param name="name" type="string" summary="用户名"></param>
+				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
+					<param name="id" type="string" summary="权限组 ID"></param>
+					<param name="name" type="string" summary="权限组名称"></param>
+				</param>
+			</param>
+			<example mimetype="application/xml"><![CDATA[
+        
+            <users count="20">
+                <user id="20" name="xx"></user>
+                <user id="21" name="xx"></user>
+            </users>
+        
+        ]]></example>
+		</request>
 		<response type="none" array="true" status="200" mimetype="json"></response>
+	</api>
+	<api method="DELETE" summary="删除用户">
+		<path path="/users/{id}">
+			<param name="id" type="number" summary="用户 ID"></param>
+		</path>
+		<description><![CDATA[
+这是关于接口的详细说明文档
+可以是一个 HTML 内容
+]]></description>
 	</api>
 	<api method="GET" summary="获取用户详情">
 		<path path="/users/{id}">

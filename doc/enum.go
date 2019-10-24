@@ -14,6 +14,7 @@ import (
 type Enum struct {
 	Deprecated  Version `xml:"deprecated,attr,omitempty"`
 	Value       string  `xml:"value,attr"`
+	Summary     string  `xml:"summary,attr,omitempty"`
 	Description string  `xml:",cdata"`
 }
 
@@ -31,8 +32,8 @@ func (e *Enum) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"#value", locale.ErrRequired)
 	}
 
-	if shadow.Description == "" {
-		return newSyntaxError(field, locale.ErrRequired)
+	if shadow.Description == "" && shadow.Summary == "" {
+		return newSyntaxError(field+"/summary", locale.ErrRequired)
 	}
 
 	return nil

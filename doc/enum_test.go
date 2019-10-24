@@ -39,7 +39,7 @@ func TestEnum_UnmarshalXML(t *testing.T) {
 	str = `<Enum url="url">desc</Enum>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
-	// 少 description
+	// 少 description 和 summary
 	obj1 = &Enum{}
 	str = `<Enum value="v1"></Enum>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
