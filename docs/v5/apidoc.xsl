@@ -113,12 +113,10 @@
         <div class="body">
             <div class="requests">
                 <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
-                <xsl:for-each select="request">
-                    <xsl:call-template name="request">
-                        <xsl:with-param name="request" select="." />
-                        <xsl:with-param name="path" select="../path" />
-                    </xsl:call-template>
-                </xsl:for-each>
+                <xsl:call-template name="request">
+                    <xsl:with-param name="request" select="request" />
+                    <xsl:with-param name="path" select="path" />
+                </xsl:call-template>
             </div>
             <div class="responses">
                 <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
@@ -155,12 +153,10 @@
         <div class="body">
             <div class="requests">
                 <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
-                <xsl:for-each select="request">
-                    <xsl:call-template name="request">
-                        <xsl:with-param name="request" select="." />
-                        <xsl:with-param name="path" select="../path" />
-                    </xsl:call-template>
-                </xsl:for-each>
+                <xsl:call-template name="request">
+                    <xsl:with-param name="request" select="request" />
+                    <xsl:with-param name="path" select="path" />
+                </xsl:call-template>
             </div>
 
             <xsl:if test="response">
@@ -201,24 +197,26 @@
             <xsl:with-param name="simple" select="'true'" />
         </xsl:call-template>
     </xsl:if>
-    
-    <xsl:if test="$request/header">
+
+    <xsl:for-each select="$request">
+        <xsl:if test="header">
+            <xsl:call-template name="param">
+                <xsl:with-param name="title">
+                    <xsl:copy-of select="$locale-header" />
+                </xsl:with-param>
+                <xsl:with-param name="param" select="header" />
+                <xsl:with-param name="simple" select="'true'" />
+            </xsl:call-template>
+        </xsl:if>
+
         <xsl:call-template name="param">
             <xsl:with-param name="title">
-                <xsl:copy-of select="$locale-header" />
+                <xsl:copy-of select="$locale-body" />
+                <span class="mimetype">&#160;(<xsl:value-of select="@mimetype" />)</span>
             </xsl:with-param>
-            <xsl:with-param name="param" select="$request/header" />
-            <xsl:with-param name="simple" select="'true'" />
+            <xsl:with-param name="param" select="." />
         </xsl:call-template>
-    </xsl:if>
-
-    <xsl:call-template name="param">
-        <xsl:with-param name="title">
-            <xsl:copy-of select="$locale-body" />
-            <span class="mimetype">&#160;(<xsl:value-of select="$request/@mimetype" />)</span>
-        </xsl:with-param>
-        <xsl:with-param name="param" select="$request" />
-    </xsl:call-template>
+    </xsl:for-each>
 </div>
 </xsl:template>
 
