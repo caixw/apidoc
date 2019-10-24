@@ -4,7 +4,6 @@ apidoc 是一个基于 [MIT](https://opensource.org/licenses/MIT) 的开源软�
 欢迎大家共同参与开发。**若需要新功能，请先开 issue 讨论。**
 
 
-
 ## 本地化
 
 本地化包含以下几个部分：
@@ -13,13 +12,15 @@ apidoc 是一个基于 [MIT](https://opensource.org/licenses/MIT) 的开源软�
 - `docs/index.*.xml` https://apidoc.tools 网站的内容，* 表示语言 ID，同时需要修改 `docs\locales.xml` 文件；
 
 
-## 测试
+## 文档
 
-xslt 可以通过 /cmd/xsltest 构建本地服务进行测试；
+可以通过 /cmd/site 将 docs 作为一个本地的 web 服务，方便 XSL 相关功能的调试；
+
+文档应该尽可能的保证在非 Javascript 环境下，也有基本的功能。
 
 
 ## 添加新编程语言支持
 
 `internal/lang/lang.go` 文件中有所有语言模型的定义，若需要添加对新语言的支持，
-在该文件中有详细的文档说明如何定义语言模弄。提交后请更新
+在该文件中有详细的文档说明如何定义语言模弄。提交并更新
 [#11](https://github.com/caixw/apidoc/issues/11)
