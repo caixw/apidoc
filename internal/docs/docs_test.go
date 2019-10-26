@@ -27,23 +27,19 @@ func TestHandler(t *testing.T) {
 
 	srv.Get("/").
 		Do().
-		Status(http.StatusOK).
-		Header("content-type", "application/xml")
+		Status(http.StatusOK)
 
 	srv.Get("/example/").
 		Do().
-		Status(http.StatusOK).
-		Header("content-type", "application/xml")
+		Status(http.StatusOK)
 
 	srv.Get("/example").
 		Do().
-		Status(http.StatusOK).
-		Header("content-type", "application/xml")
+		Status(http.StatusOK)
 
 	srv.Get("/index.xml").
 		Do().
-		Status(http.StatusOK).
-		Header("content-type", "application/xml")
+		Status(http.StatusOK)
 }
 
 func TestHandler_prefix(t *testing.T) {
@@ -72,16 +68,13 @@ func TestHandler_prefix(t *testing.T) {
 
 	srv.Get("/prefix/").
 		Do().
-		Status(http.StatusOK).
-		Header("content-type", "application/xml")
+		Status(http.StatusOK)
 
 	srv.Get("/prefix/index.xml").
 		Do().
-		Status(http.StatusOK).
-		Header("content-type", "application/xml")
+		Status(http.StatusOK)
 
 	srv.Get("/prefix/v5/apidoc.xsl").
 		Do().
-		Status(http.StatusOK).
-		Header("content-type", "application/xml")
+		Status(http.StatusOK)
 }
