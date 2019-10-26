@@ -17,13 +17,12 @@ apidoc [options] [path]
 源代碼采用 MIT 開源許可證，發布於 %s
 詳細信息可訪問官網 %s
 `,
-	FlagHUsage:            "顯示幫助信息",
-	FlagVUsage:            "顯示版本信息",
-	FlagLUsage:            "顯示所有支持的語言",
-	FlagDUsage:            "根據目錄下的內容生成配置文件",
-	FlagTUsage:            "測試語法的正確性",
-	FlagVersionBuildWith:  "%s %s build with %s",
-	FlagVersionCommitHash: "commit hash %s",
+	FlagHUsage:  "顯示幫助信息",
+	FlagVUsage:  "顯示版本信息",
+	FlagLUsage:  "顯示所有支持的語言",
+	FlagDUsage:  "根據目錄下的內容生成配置文件",
+	FlagTUsage:  "測試語法的正確性",
+	FlagVersion: "%s %s\ndoc %s\nhash %s\nbuild with %s",
 
 	VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
 	Complete:            "完成！文檔保存在：%s，總用時：%v",

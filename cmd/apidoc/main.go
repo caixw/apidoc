@@ -67,8 +67,7 @@ func main() {
 		flag.Usage()
 		return
 	case *v:
-		term.Locale(infoOut, infoColor, locale.FlagVersionBuildWith, vars.Name, apidoc.Version(), runtime.Version())
-		term.Locale(infoOut, infoColor, locale.FlagVersionCommitHash, vars.CommitHash())
+		term.Locale(infoOut, infoColor, locale.FlagVersion, vars.Name, apidoc.Version(), vars.DocVersion(), vars.CommitHash(), runtime.Version())
 		return
 	case *t:
 		parse(true)
