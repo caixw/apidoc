@@ -249,8 +249,8 @@
 <xsl:template name="param">
     <xsl:param name="title" />
     <xsl:param name="param" />
-    <xsl:param name="example" /> <!-- 示例代码 -->
-    <xsl:param name="simple" /> <!-- 简单的类型，不存在嵌套类型，也不会有示例代码 -->
+    <xsl:param name="example" select="''" /> <!-- 示例代码 -->
+    <xsl:param name="simple" select="'false'" /> <!-- 简单的类型，不存在嵌套类型，也不会有示例代码 -->
 
     <xsl:if test="not($param/@type='none')">
         <div class="param">
@@ -326,7 +326,7 @@
 <!-- 列顺序必须要与 param 中的相同 -->
 <xsl:template name="param-list">
     <xsl:param name="param" />
-    <xsl:param name="parent" /> <!-- 上一级的名称，嵌套对象时可用 -->
+    <xsl:param name="parent" select="''" /> <!-- 上一级的名称，嵌套对象时可用 -->
 
     <xsl:for-each select="$param">
         <tr>
@@ -380,10 +380,10 @@
 <xsl:template name="enum">
     <xsl:param name="enum" />
 
-    <xsl:if test="./enum">
+    <xsl:if test="$enum">
         <p><xsl:copy-of select="$locale-enum" /></p>
         <ul>
-        <xsl:for-each select="./enum">
+        <xsl:for-each select="$enum">
             <li>
             <xsl:call-template name="deprecated">
                 <xsl:with-param name="deprecated" select="@deprecated" />

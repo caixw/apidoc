@@ -53,6 +53,11 @@ table {
 table th, table td {
     font-weight: normal;
     text-align: left;
+    border-bottom: 1px solid transparent;
+}
+
+table tr:hover th,
+table tr:hover td {
     border-bottom: 1px solid var(--border-color);
 }
 
