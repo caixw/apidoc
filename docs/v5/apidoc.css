@@ -315,13 +315,15 @@ main .api .param .title {
     font-weight: normal;
 }
 
-main .api .body .responses .status {
+main .api .body .responses .status,
+main .api .body .requests .status {
     margin: calc(var(--padding) + var(--article-padding)) 0 var(--article-padding);
     border-bottom: 1px solid var(--border-color);
+    padding-bottom: 3px;
 }
 
 main .api .param .parent-type,
-main .api .param .mimetype {
+main .api .status .mimetype {
     opacity: .5;
 }
 

@@ -12,7 +12,7 @@
 //         <email>example@example.com</email>
 //     </contact>
 //
-//     <response status="400" type="object" mimetype="json">
+//     <response status="400" type="object" mimetype="application/json">
 //         <param name="code" type="number" summary="状态码" optional="false" />
 //         <param name="message" type="string" summary="错误信息" optional="false" />
 //         <param name="detail" type="object" array="true" summary="错误明细">
@@ -20,7 +20,15 @@
 //             <param name="message" type="string" summary="message" />
 //         </param>
 //     </response>
-//     <response status="404" type="none" mimetype="json" summary="not found" />
+//     <response status="400" type="object" mimetype="application/xml">
+//         <param name="code" type="number" summary="状态码" optional="false" />
+//         <param name="message" type="string" summary="错误信息" optional="false" />
+//         <param name="detail" type="object" array="true" summary="错误明细">
+//             <param name="id" type="string" summary="id" />
+//             <param name="message" type="string" summary="message" />
+//         </param>
+//     </response>
+//     <response status="404" type="none" mimetype="application/json application/xml" summary="not found" />
 //
 //     <description>
 //     <![CDATA[

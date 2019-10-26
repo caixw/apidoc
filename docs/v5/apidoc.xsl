@@ -199,6 +199,8 @@
     </xsl:if>
 
     <xsl:for-each select="$request">
+        <h5 class="status"><xsl:value-of select="@mimetype" /></h5>
+
         <xsl:if test="header">
             <xsl:call-template name="param">
                 <xsl:with-param name="title">
@@ -210,10 +212,7 @@
         </xsl:if>
 
         <xsl:call-template name="param">
-            <xsl:with-param name="title">
-                <xsl:copy-of select="$locale-body" />
-                <span class="mimetype">&#160;(<xsl:value-of select="@mimetype" />)</span>
-            </xsl:with-param>
+            <xsl:with-param name="title"><xsl:copy-of select="$locale-body" /></xsl:with-param>
             <xsl:with-param name="param" select="." />
         </xsl:call-template>
     </xsl:for-each>
@@ -224,7 +223,10 @@
 <xsl:template name="response">
     <xsl:param name="response" />
 
-    <h5 class="status"><xsl:value-of select="$response/@status" /></h5>
+    <h5 class="status">
+        <xsl:value-of select="$response/@status" />
+        <span class="mimetype">&#160;(<xsl:value-of select="$response/@mimetype" />)</span>
+    </h5>
 
     <xsl:if test="$response/header">
         <xsl:call-template name="param">
@@ -237,10 +239,7 @@
     </xsl:if>
 
     <xsl:call-template name="param">
-        <xsl:with-param name="title">
-            <xsl:copy-of select="$locale-body" />
-            <span class="mimetype">&#160;(<xsl:value-of select="$response/@mimetype" />)</span>
-        </xsl:with-param>
+        <xsl:with-param name="title"><xsl:copy-of select="$locale-body" /></xsl:with-param>
         <xsl:with-param name="param" select="$response" />
     </xsl:call-template>
 </xsl:template>
