@@ -184,6 +184,7 @@
             <item name="callback" type="callback" required="false">定义回调接口内容</item>
             <item name="tag" type="string[]" required="false">关联的标签</item>
             <item name="server" type="string[]" required="false">关联的服务</item>
+            <item name="header" type="header[]" required="false">传递的报头内容，如果是某个 mimetype 专用的，可以放在 request 元素中。</item>
         </type>
 
         <type name="path">

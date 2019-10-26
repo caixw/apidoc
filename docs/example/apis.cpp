@@ -12,7 +12,7 @@
 //         <query name="size" type="number" default="20">数量</query>
 //     </path>
 //
-//     <response status="200" array="true" type="object" mimetype="json">
+//     <response status="200" array="true" type="object" mimetype="application/json">
 //         <header name="name" type="string">desc</header>
 //         <header name="name1" type="string">desc1</header>
 //         <param name="count" type="number" optional="true" summary="summary" />
@@ -24,7 +24,7 @@
 //                 <enum value="xx2">xx</enum>
 //             </param>
 //         </param>
-//         <example mimetype="json"><![CDATA[
+//         <example mimetype="application/json"><![CDATA[
 // {
 //  count: 5,
 //  list: [
@@ -36,7 +36,7 @@
 //     </response>
 //
 //     <callback schema="https" summary="回调函数" method="POST">
-//         <request mimetype="json" type="object">
+//         <request mimetype="application/json" type="object">
 //             <query name="size">size</query>
 //
 //             <param name="id" type="number" default="1" summary="id" />
@@ -51,7 +51,7 @@
 //             </example>
 //         </request>
 //
-//         <response status="200" mimetype="text" type="string" />
+//         <response status="200" mimetype="text/plain" type="string" />
 //     </callback>
 // </api>
 void logs() {}

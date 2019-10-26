@@ -20,17 +20,18 @@ import (
 //      ...
 //  </api>
 type API struct {
-	XMLName     struct{}   `xml:"api"`
-	Version     Version    `xml:"version,attr,omitempty"`
-	Method      Method     `xml:"method,attr"`
-	ID          string     `xml:"id,attr,omitempty"`
-	Path        *Path      `xml:"path"`
-	Summary     string     `xml:"summary,attr"`
-	Description CDATA      `xml:"description,omitempty"`
-	Requests    []*Request `xml:"request"` // 不同的 mimetype 可能会定义不同
-	Responses   []*Request `xml:"response"`
-	Callback    *Callback  `xml:"callback,omitempty"`
-	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
+	XMLName     struct{}       `xml:"api"`
+	Version     Version        `xml:"version,attr,omitempty"`
+	Method      Method         `xml:"method,attr"`
+	ID          string         `xml:"id,attr,omitempty"`
+	Path        *Path          `xml:"path"`
+	Summary     string         `xml:"summary,attr"`
+	Description CDATA          `xml:"description,omitempty"`
+	Requests    []*Request     `xml:"request"` // 不同的 mimetype 可能会定义不同
+	Responses   []*Request     `xml:"response"`
+	Callback    *Callback      `xml:"callback,omitempty"`
+	Deprecated  Version        `xml:"deprecated,attr,omitempty"`
+	Headers     []*SimpleParam `xml:"header,omitempty"`
 
 	Tags    []string `xml:"tag,omitempty"`
 	Servers []string `xml:"server,omitempty"`

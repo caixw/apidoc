@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.0.0" created="2019-10-26T12:28:05+08:00" version="1.1.1">
+<apidoc apidoc="5.0.0" created="2019-10-27T23:54:36+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description><![CDATA[
     
@@ -30,11 +30,7 @@
 这是关于接口的详细说明文档
 可以是一个 HTML 内容
 ]]></description>
-		<request type="none" mimetype="json">
-			<header name="name" type="string"><![CDATA[desc]]></header>
-			<header name="name1" type="string"><![CDATA[desc1]]></header>
-		</request>
-		<response type="object" array="true" status="200" mimetype="json">
+		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="count" type="number" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" summary="用户 ID"></param>
@@ -45,6 +41,8 @@
 				</param>
 			</param>
 		</response>
+		<header name="name" type="string"><![CDATA[desc]]></header>
+		<header name="name1" type="string"><![CDATA[desc1]]></header>
 	</api>
 	<api method="POST" summary="添加用户">
 		<path path="/users"></path>
@@ -52,7 +50,7 @@
 这是关于接口的详细说明文档
 可以是一个 HTML 内容
 ]]></description>
-		<request type="object" mimetype="json">
+		<request type="object" mimetype="application/json">
 			<param name="count" type="number" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" summary="用户 ID"></param>
@@ -62,6 +60,7 @@
 					<param name="name" type="string" summary="权限组名称"></param>
 				</param>
 			</param>
+			<header name="content-type" type="string" summary="application/json"></header>
 		</request>
 		<request name="users" type="object" mimetype="application/xml">
 			<param name="count" type="number" summary="summary"></param>
@@ -82,7 +81,7 @@
         
         ]]></example>
 		</request>
-		<response type="none" array="true" status="200" mimetype="json"></response>
+		<response type="none" array="true" status="200" mimetype="application/json"></response>
 	</api>
 	<api method="DELETE" summary="删除用户">
 		<path path="/users/{id}">
@@ -108,7 +107,7 @@
 这是关于接口的详细说明文档
 可以是一个 HTML 内容
 ]]></description>
-		<response type="object" array="true" status="200" mimetype="json">
+		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="id" type="number" summary="用户 ID"></param>
 			<param name="name" type="string" summary="用户名"></param>
 			<param name="groups" type="string" optional="true" summary="用户所在的权限组">
@@ -128,7 +127,7 @@
 ===
 可以是一个 HTML 内容
 ]]></description>
-		<response type="object" array="true" status="200" mimetype="json">
+		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="count" type="number" optional="true" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" optional="true" summary="desc"></param>
@@ -138,7 +137,7 @@
 					<enum value="xx2"><![CDATA[xx]]></enum>
 				</param>
 			</param>
-			<example mimetype="json"><![CDATA[
+			<example mimetype="application/json"><![CDATA[
 {
  count: 5,
  list: [
@@ -151,8 +150,8 @@
 			<header name="name1" type="string"><![CDATA[desc1]]></header>
 		</response>
 		<callback method="POST" summary="回调函数">
-			<response type="string" status="200" mimetype="text"></response>
-			<request type="object" mimetype="json">
+			<response type="string" status="200" mimetype="text/plain"></response>
+			<request type="object" mimetype="application/json">
 				<param name="id" type="number" default="1" summary="id"></param>
 				<param name="age" type="number" summary="age"></param>
 				<example mimetype="json"><![CDATA[
@@ -174,13 +173,25 @@
 			<param name="message" type="string" summary="message"></param>
 		</param>
 	</response>
-	<response type="object" status="400" mimetype="application/xml">
+	<response name="result" type="object" status="400" mimetype="application/xml">
 		<param name="code" type="number" summary="状态码"></param>
 		<param name="message" type="string" summary="错误信息"></param>
-		<param name="detail" type="object" array="true" summary="错误明细">
-			<param name="id" type="string" summary="id"></param>
-			<param name="message" type="string" summary="message"></param>
+		<param name="detail" type="object" array="true" summary="错误明细列表">
+			<param name="msg" type="object" summary="message">
+				<param name="@id" type="string" summary="id"></param>
+			</param>
 		</param>
+		<example mimetype="application/xml"><![CDATA[
+        
+        <result code="40001">
+            <message>错误信息内容</message>
+            <detail>
+                <msg id="name">不能为空</msg>
+                <msg id="id">不能为空</msg>
+            </detail>
+        </result>
+        
+        ]]></example>
 	</response>
 	<response type="none" summary="not found" status="404" mimetype="application/json application/xml"></response>
 </apidoc>

@@ -113,9 +113,10 @@
         <div class="body">
             <div class="requests">
                 <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
-                <xsl:call-template name="request">
+                <xsl:call-template name="requests">
                     <xsl:with-param name="request" select="request" />
                     <xsl:with-param name="path" select="path" />
+                    <xsl:with-param name="headers" select="header" />
                 </xsl:call-template>
             </div>
             <div class="responses">
@@ -153,9 +154,10 @@
         <div class="body">
             <div class="requests">
                 <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
-                <xsl:call-template name="request">
+                <xsl:call-template name="requests">
                     <xsl:with-param name="request" select="request" />
                     <xsl:with-param name="path" select="path" />
+                    <xsl:with-param name="headers" select="header" />
                 </xsl:call-template>
             </div>
 
@@ -173,10 +175,12 @@
     </div> <!-- end .callback -->
 </xsl:template>
 
-<!-- api/request 的介面元素 -->
-<xsl:template name="request">
+<!-- api/request 的界面元素 -->
+<xsl:template name="requests">
 <xsl:param name="request" />
 <xsl:param name="path" />
+<xsl:param name="headers" /> <!-- 公用的报头 -->
+
 <div class="request">
     <xsl:if test="$path/param">
         <xsl:call-template name="param">
@@ -194,6 +198,16 @@
                 <xsl:copy-of select="$locale-query" />
             </xsl:with-param>
             <xsl:with-param name="param" select="$path/query" />
+            <xsl:with-param name="simple" select="'true'" />
+        </xsl:call-template>
+    </xsl:if>
+
+    <xsl:if test="$headers">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title">
+                <xsl:copy-of select="$locale-header" />
+            </xsl:with-param>
+            <xsl:with-param name="param" select="$headers" />
             <xsl:with-param name="simple" select="'true'" />
         </xsl:call-template>
     </xsl:if>

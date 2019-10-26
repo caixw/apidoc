@@ -10,12 +10,10 @@
 //         <query name="size" type="number" default="20">数量</query>
 //     </path>
 //
-//     <request type="none" mimetype="json">
-//         <header name="name" type="string">desc</header>
-//         <header name="name1" type="string">desc1</header>
-//     </request>
+//     <header name="name" type="string">desc</header>
+//     <header name="name1" type="string">desc1</header>
 //
-//     <response status="200" array="true" type="object" mimetype="json">
+//     <response status="200" array="true" type="object" mimetype="application/json">
 //         <param name="count" type="number" optional="false" summary="summary" />
 //         <param name="list" type="object" array="true" summary="list">
 //             <param name="id" type="number" summary="用户 ID" />
@@ -36,7 +34,8 @@ fn getList() {}
 // ]]></description>
 //     <path path="/users" />
 //
-//     <request type="object" mimetype="json">
+//     <request type="object" mimetype="application/json">
+//         <header name="content-type" summary="application/json" type="string" />
 //         <param name="count" type="number" optional="false" summary="summary" />
 //         <param name="list" type="object" array="true" summary="list">
 //             <param name="id" type="number" summary="用户 ID" />
@@ -67,7 +66,7 @@ fn getList() {}
 //         </example>
 //     </request>
 //
-//     <response status="200" array="true" type="none" mimetype="json">
+//     <response status="200" array="true" type="none" mimetype="application/json">
 //     </response>
 // </api>
 fn post() {}
@@ -96,7 +95,7 @@ fn delete() {}
 //         </query>
 //     </path>
 //
-//     <response status="200" array="true" type="object" mimetype="json">
+//     <response status="200" array="true" type="object" mimetype="application/json">
 //         <param name="id" type="number" summary="用户 ID" />
 //         <param name="name" type="string" summary="用户名" />
 //         <param name="groups" type="string" optional="true" summary="用户所在的权限组">
