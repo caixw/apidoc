@@ -20,15 +20,15 @@ import (
 //       </request>
 //   </Callback>
 type Callback struct {
-	Method      Method         `xml:"method,attr"`
-	Path        *Path          `xml:"path,omitempty"`
-	Summary     string         `xml:"summary,attr,omitempty"`
-	Description Richtext       `xml:"description,omitempty"`
-	Deprecated  Version        `xml:"deprecated,attr,omitempty"`
-	Reference   string         `xml:"ref,attr,omitempty"`
-	Responses   []*Request     `xml:"response,omitempty"`
-	Requests    []*Request     `xml:"request"` // 至少一个
-	Headers     []*SimpleParam `xml:"header,omitempty"`
+	Method      Method     `xml:"method,attr"`
+	Path        *Path      `xml:"path,omitempty"`
+	Summary     string     `xml:"summary,attr,omitempty"`
+	Description Richtext   `xml:"description,omitempty"`
+	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
+	Reference   string     `xml:"ref,attr,omitempty"`
+	Responses   []*Request `xml:"response,omitempty"`
+	Requests    []*Request `xml:"request"` // 至少一个
+	Headers     []*Param   `xml:"header,omitempty"`
 }
 
 type shadowCallback Callback

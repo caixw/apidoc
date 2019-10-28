@@ -13,18 +13,18 @@ type Request struct {
 	// 一般无用，但是用于描述 XML 对象时，可以用来表示顶层元素的名称
 	Name string `xml:"name,attr,omitempty"`
 
-	Type        Type           `xml:"type,attr"` // Request 中默认为 None
-	Deprecated  Version        `xml:"deprecated,attr,omitempty"`
-	Enums       []*Enum        `xml:"enum,omitempty"`
-	Array       bool           `xml:"array,attr,omitempty"`
-	Items       []*Param       `xml:"param,omitempty"`
-	Reference   string         `xml:"ref,attr,omitempty"`
-	Summary     string         `xml:"summary,attr,omitempty"`
-	Status      Status         `xml:"status,attr,omitempty"`
-	Mimetype    string         `xml:"mimetype,attr"`
-	Examples    []*Example     `xml:"example,omitempty"`
-	Headers     []*SimpleParam `xml:"header,omitempty"` // 当前独有的报头，公用的可以放在 API 中
-	Description Richtext       `xml:"description,omitempty"`
+	Type        Type       `xml:"type,attr"` // Request 中默认为 None
+	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
+	Enums       []*Enum    `xml:"enum,omitempty"`
+	Array       bool       `xml:"array,attr,omitempty"`
+	Items       []*Param   `xml:"param,omitempty"`
+	Reference   string     `xml:"ref,attr,omitempty"`
+	Summary     string     `xml:"summary,attr,omitempty"`
+	Status      Status     `xml:"status,attr,omitempty"`
+	Mimetype    string     `xml:"mimetype,attr"`
+	Examples    []*Example `xml:"example,omitempty"`
+	Headers     []*Param   `xml:"header,omitempty"` // 当前独有的报头，公用的可以放在 API 中
+	Description Richtext   `xml:"description,omitempty"`
 }
 
 // IsEnum 是否为枚举值

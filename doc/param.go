@@ -32,34 +32,12 @@ type Param struct {
 	Description Richtext `xml:"description,omitempty"`
 }
 
-// SimpleParam 简单参数类型，不存在子元素，类型值不能为 Object
-type SimpleParam struct {
-	Name        string   `xml:"name,attr"`
-	Type        Type     `xml:"type,attr"`
-	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
-	Default     string   `xml:"default,attr,omitempty"`
-	Optional    bool     `xml:"optional,attr,omitempty"`
-	Array       bool     `xml:"array,attr,omitempty"`
-	Reference   string   `xml:"ref,attr,omitempty"`
-	Summary     string   `xml:"summary,attr,omitempty"`
-	Enums       []*Enum  `xml:"enum,omitempty"`
-	Description Richtext `xml:"description,omitempty"`
-}
-
 // IsEnum 是否为一个枚举类型
 func (p *Param) IsEnum() bool {
 	return len(p.Enums) > 0
 }
 
-// IsEnum 是否为一个枚举类型
-func (p *SimpleParam) IsEnum() bool {
-	return len(p.Enums) > 0
-}
-
-type (
-	shadowParam       Param
-	shadowSimpleParam SimpleParam
-)
+type shadowParam Param
 
 // UnmarshalXML xml.Unmarshaler
 func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -88,37 +66,6 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
 		return newSyntaxError(field+"/items", locale.ErrDuplicateValue)
-	}
-
-	if p.Summary == "" && p.Description.String() == "" {
-		return newSyntaxError(field+"/summary", locale.ErrRequired)
-	}
-
-	return nil
-}
-
-// UnmarshalXML xml.Unmarshaler
-func (p *SimpleParam) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	field := "/" + start.Name.Local
-	shadow := (*shadowSimpleParam)(p)
-	if err := d.DecodeElement(shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
-	}
-
-	if shadow.Name == "" {
-		return newSyntaxError(field+"#name", locale.ErrRequired)
-	}
-
-	if shadow.Type == None {
-		return newSyntaxError(field+"#type", locale.ErrRequired)
-	}
-	if shadow.Type == Object {
-		return newSyntaxError(field+"/type", locale.ErrInvalidValue)
-	}
-
-	// 判断 enums 的值是否相同
-	if key := getDuplicateEnum(shadow.Enums); key != "" {
-		return newSyntaxError(field+"/enum", locale.ErrDuplicateValue)
 	}
 
 	if p.Summary == "" && p.Description.String() == "" {

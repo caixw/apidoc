@@ -11,7 +11,6 @@ import (
 
 var (
 	_ xml.Unmarshaler = &Param{}
-	_ xml.Unmarshaler = &SimpleParam{}
 )
 
 func TestParam_UnmarshalXML(t *testing.T) {
@@ -85,54 +84,6 @@ func TestParam_UnmarshalXML(t *testing.T) {
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 }
 
-func TestSimpleParam_UnmarshalXML(t *testing.T) {
-	a := assert.New(t)
-
-	obj := &SimpleParam{
-		Name:        "text",
-		Type:        String,
-		Description: Richtext{Text: "<a>test</a>"},
-	}
-	str := `<SimpleParam name="text" type="string"><description><a>test</a></description></SimpleParam>`
-
-	data, err := xml.Marshal(obj)
-	a.NotError(err).
-		Equal(string(data), str).
-		False(obj.Optional)
-
-	obj1 := &SimpleParam{}
-	a.NotError(xml.Unmarshal([]byte(str), obj1))
-	a.Equal(obj1, obj)
-
-	// 正常
-	str = `<SimpleParam name="user" deprecated="1.1.1" type="string" summary="user"></SimpleParam>`
-	a.NotError(xml.Unmarshal([]byte(str), obj1)).
-		Equal(obj1.Type, String).
-		Equal(obj1.Summary, "user").
-		Equal(obj1.Deprecated, "1.1.1").
-		False(obj1.Optional)
-
-	// 少 name
-	obj1 = &SimpleParam{}
-	str = `<SimpleParam url="url">desc</SimpleParam>`
-	a.Error(xml.Unmarshal([]byte(str), obj1))
-
-	// 少 type
-	obj1 = &SimpleParam{}
-	str = `<SimpleParam name="v1"></SimpleParam>`
-	a.Error(xml.Unmarshal([]byte(str), obj1))
-
-	// type=object
-	obj1 = &SimpleParam{}
-	str = `<SimpleParam name="v1" type="Object"></SimpleParam>`
-	a.Error(xml.Unmarshal([]byte(str), obj1))
-
-	// 语法错误
-	obj1 = &SimpleParam{}
-	str = `<SimpleParam name="url" deprecated="x.1.1">text</SimpleParam>`
-	a.Error(xml.Unmarshal([]byte(str), obj1))
-}
-
 func TestParam_UnmarshalXML_enum(t *testing.T) {
 	a := assert.New(t)
 
@@ -155,30 +106,5 @@ func TestParam_UnmarshalXML_enum(t *testing.T) {
 			<enum value="female">Male</enum>
 			<enum value="female">Female</enum>
 	</Param>`
-	a.Error(xml.Unmarshal([]byte(str), obj))
-}
-
-func TestSimpleParam_UnmarshalXML_enum(t *testing.T) {
-	a := assert.New(t)
-
-	obj := &SimpleParam{}
-	str := `<SimpleParam name="sex" type="string">
-			<description>sex</description>
-			<enum value="male">Male</enum>
-			<enum value="female">Female</enum>
-	</SimpleParam>`
-	a.NotError(xml.Unmarshal([]byte(str), obj)).
-		False(obj.Array).
-		True(obj.IsEnum()).
-		Equal(obj.Type, String).
-		Equal(2, len(obj.Enums))
-
-	// 枚举中存在相同值
-	obj = &SimpleParam{}
-	str = `<SimpleParam name="sex" type="string">
-			<description>sex</description>
-			<enum value="female">Male</enum>
-			<enum value="female">Female</enum>
-	</SimpleParam>`
 	a.Error(xml.Unmarshal([]byte(str), obj))
 }
