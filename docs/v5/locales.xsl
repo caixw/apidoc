@@ -152,6 +152,19 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 </xsl:variable>
 
+<!-- example -->
+<xsl:variable name="locale-example">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'示例代码'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'示例代碼'" />
+    </xsl:call-template>
+</xsl:variable>
+
 <!-- var -->
 <xsl:variable name="locale-var">
     <xsl:call-template name="build-locale">

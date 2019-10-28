@@ -115,7 +115,7 @@
             <div class="requests">
                 <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
                 <xsl:call-template name="requests">
-                    <xsl:with-param name="request" select="request" />
+                    <xsl:with-param name="requests" select="request" />
                     <xsl:with-param name="path" select="path" />
                     <xsl:with-param name="headers" select="header" />
                 </xsl:call-template>
@@ -156,7 +156,7 @@
             <div class="requests">
                 <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
                 <xsl:call-template name="requests">
-                    <xsl:with-param name="request" select="request" />
+                    <xsl:with-param name="requests" select="request" />
                     <xsl:with-param name="path" select="path" />
                     <xsl:with-param name="headers" select="header" />
                 </xsl:call-template>
@@ -178,7 +178,7 @@
 
 <!-- api/request 的界面元素 -->
 <xsl:template name="requests">
-<xsl:param name="request" />
+<xsl:param name="requests" />
 <xsl:param name="path" />
 <xsl:param name="headers" /> <!-- 公用的报头 -->
 
@@ -213,7 +213,7 @@
         </xsl:call-template>
     </xsl:if>
 
-    <xsl:for-each select="$request">
+    <xsl:for-each select="$requests">
         <h5 class="status"><xsl:value-of select="@mimetype" /></h5>
 
         <xsl:if test="header">
@@ -263,13 +263,18 @@
 <xsl:template name="param">
     <xsl:param name="title" />
     <xsl:param name="param" />
-    <xsl:param name="example" select="''" /> <!-- 示例代码 -->
     <xsl:param name="simple" select="'false'" /> <!-- 简单的类型，不存在嵌套类型，也不会有示例代码 -->
 
     <xsl:if test="not($param/@type='none')">
         <div class="param">
-            <h4 class="title">&#x27a4;&#160;<xsl:copy-of select="$title" /></h4>
-            <table>
+            <h4 class="title">
+                &#x27a4;&#160;<xsl:copy-of select="$title" />
+                <xsl:if test="$param/example">
+                    &#160;(<a class="toggle-example"><xsl:copy-of select="$locale-example" /></a>)
+                </xsl:if>
+            </h4>
+
+            <table class="param-list" data-visible="true">
                 <thead>
                     <tr>
                         <th><xsl:copy-of select="$locale-var" /></th>
@@ -293,6 +298,12 @@
                     </xsl:choose>
                 </tbody>
             </table>
+
+            <xsl:if test="$param/example">
+            <pre class="example" data-visible="false" data-mimetype="{$param/example/@mimetype}">
+                <xsl:copy-of select="$param/example/node()" />
+            </pre>
+            </xsl:if>
         </div>
     </xsl:if>
 </xsl:template>

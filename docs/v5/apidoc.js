@@ -4,6 +4,7 @@ window.onload = function () {
     registerMethodFilter();
     registerTagFilter();
     registerLanguageFilter();
+    initExample()
 };
 
 function registerMethodFilter() {
@@ -74,6 +75,34 @@ function registerLanguageFilter() {
                     elem.className = 'hidden';
                 }
             });
+        });
+    });
+}
+
+function initExample() {
+    const buttons = document.querySelectorAll('.toggle-example');
+
+    buttons.forEach((btn)=>{
+        btn.addEventListener('click', (e)=> {
+            const parent = e.target.parentNode.parentNode.parentNode;
+            const table = parent.querySelector('.param-list');
+            const pre = parent.querySelector('.example');
+
+            if (table.getAttribute('data-visible') === 'true') {
+                table.setAttribute('data-visible', 'false');
+                table.style.display = 'none';
+            } else {
+                table.setAttribute('data-visible', 'true');
+                table.style.display = 'table';
+            }
+
+            if (pre.getAttribute('data-visible') === 'true') {
+                pre.setAttribute('data-visible', 'false');
+                pre.style.display = 'none';
+            } else {
+                pre.setAttribute('data-visible', 'true');
+                pre.style.display = 'block';
+            }
         });
     });
 }
