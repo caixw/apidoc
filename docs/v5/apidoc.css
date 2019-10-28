@@ -198,6 +198,25 @@ main .api summary {
 }
 
 
+main .servers {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-between;
+    margin-bottom: var(--padding);
+}
+
+main .servers .server {
+    width: 33%;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    padding: var(--padding) var(--article-padding);
+}
+
+main .servers .server h4 {
+    margin: 0 0 var(--padding);
+}
+
+
 main details.api:not([open]) summary {
     border: none;
 }
@@ -221,7 +240,7 @@ main .api summary .summary {
 }
 
 main .api .description {
-    padding:var(--article-padding);
+    padding: var(--article-padding);
     margin: 0;
     border-bottom: 1px solid var(--border-color);
 }

@@ -22,6 +22,21 @@
             <main>
                 <div class="content"><xsl:copy-of select="apidoc/description/node()" /></div>
 
+                <div class="servers">
+                    <xsl:for-each select="apidoc/server">
+                        <div class="server">
+                            <h4>
+                                <xsl:call-template name="deprecated">
+                                    <xsl:with-param name="deprecated" select="@deprecated" />
+                                </xsl:call-template>
+                                <xsl:value-of select="@name" />
+                            </h4>
+                            <p><xsl:value-of select="@url" /></p>
+                            <div><xsl:copy-of select="." /></div>
+                        </div>
+                    </xsl:for-each>
+                </div> <!-- end .servers -->
+
                 <xsl:for-each select="apidoc/api">
                     <xsl:sort select="path/@path"/>
                     <xsl:apply-templates select="." />

@@ -2,7 +2,10 @@
 
 // <apidoc version="1.1.1">
 //     <title>示例文档</title>
-//     <server name="admin" url="https://api.example.com/admin">后台管理接口</server>
+//     <server name="admin" url="https://api.example.com/admin">
+//     后台管理接口，<br /><br /><br /><br /><p style="color:red">admin</p>
+//     </server>
+//     <server name="old-client" url="https://api.example.com/client" deprecated="1.1.1">客户端接口</server>
 //     <server name="client" url="https://api.example.com">客户端接口</server>
 //     <tag name="t1" title="标签1" />
 //     <tag name="t2" title="标签2" />

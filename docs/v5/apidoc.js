@@ -15,6 +15,10 @@ function registerMethodFilter() {
     const list = menu.querySelectorAll('li input');
     list.forEach((val) => {
         val.addEventListener('change', (event) => {
+            if (event.target === null) {
+                return;
+            }
+
             const chk = event.target.checked;
             const method = event.target.parentNode.parentNode.getAttribute('data-method');
 
@@ -38,6 +42,10 @@ function registerTagFilter() {
     const list = menu.querySelectorAll('li input');
     list.forEach((val) => {
         val.addEventListener('change', (event) => {
+            if (event.target === null) {
+                return;
+            }
+
             const chk = event.target.checked;
             const tag = event.target.parentNode.parentNode.getAttribute('data-tag');
 
@@ -61,7 +69,7 @@ function registerLanguageFilter() {
     const list = menu.querySelectorAll('li input');
     list.forEach((val) => {
         val.addEventListener('change', (event) => {
-            if (!event.target.checked) {
+            if (event.target === null || !event.target.checked) {
                 return;
             }
 
@@ -79,14 +87,19 @@ function registerLanguageFilter() {
     });
 }
 
+// 初始化示例代码的初始化功能
 function initExample() {
     const buttons = document.querySelectorAll('.toggle-example');
 
     buttons.forEach((btn)=>{
-        btn.addEventListener('click', (e)=> {
-            const parent = e.target.parentNode.parentNode.parentNode;
-            const table = parent.querySelector('.param-list');
-            const pre = parent.querySelector('.example');
+        btn.addEventListener('click', (event)=> {
+            if (event.target === null) {
+                return;
+            }
+
+            const parent = event.target.parentNode.parentNode.parentNode;
+            const table = parent.querySelector('table');
+            const pre = parent.querySelector('pre');
 
             if (table.getAttribute('data-visible') === 'true') {
                 table.setAttribute('data-visible', 'false');
