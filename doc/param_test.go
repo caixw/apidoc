@@ -93,7 +93,7 @@ func TestSimpleParam_UnmarshalXML(t *testing.T) {
 		Type:        String,
 		Description: Richtext{Text: "<a>test</a>"},
 	}
-	str := `<SimpleParam name="text" type="string"><a>test</a></SimpleParam>`
+	str := `<SimpleParam name="text" type="string"><description><a>test</a></description></SimpleParam>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).

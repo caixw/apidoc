@@ -11,22 +11,22 @@ import (
 )
 
 var (
-	_ xml.Marshaler = CDATA{}
-	_ fmt.Stringer  = CDATA{}
+	_ xml.Marshaler = Richtext{}
+	_ fmt.Stringer  = Richtext{}
 )
 
-func TestCDATA_Marshal(t *testing.T) {
+func TestRichtext_Marshal(t *testing.T) {
 	a := assert.New(t)
 
 	type Object struct {
 		XMLName struct{} `xml:"xml"`
-		Value   CDATA    `xml:"value"`
+		Value   Richtext `xml:"value"`
 	}
 
 	obj := &Object{
-		Value: CDATA{Text: "cdata"},
+		Value: Richtext{Text: "<a>test</a>"},
 	}
-	str := `<xml><value><![CDATA[cdata]]></value></xml>`
+	str := `<xml><value><a>test</a></value></xml>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
@@ -37,7 +37,7 @@ func TestCDATA_Marshal(t *testing.T) {
 
 	// 空值
 	obj = &Object{
-		Value: CDATA{},
+		Value: Richtext{},
 	}
 	str = `<xml></xml>`
 
@@ -49,18 +49,18 @@ func TestCDATA_Marshal(t *testing.T) {
 	a.Equal(obj1, obj)
 }
 
-func TestShadowCDATA_Marshal(t *testing.T) {
+func TestShadowRichtext_Marshal(t *testing.T) {
 	a := assert.New(t)
 
 	type Object struct {
-		XMLName struct{}    `xml:"xml"`
-		Value   shadowCDATA `xml:"value"`
+		XMLName struct{}       `xml:"xml"`
+		Value   shadowRichtext `xml:"value"`
 	}
 
 	obj := &Object{
-		Value: shadowCDATA{Text: "cdata"},
+		Value: shadowRichtext{Text: "<p>cdata</p>"},
 	}
-	str := `<xml><value><![CDATA[cdata]]></value></xml>`
+	str := `<xml><value><p>cdata</p></value></xml>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
@@ -71,7 +71,7 @@ func TestShadowCDATA_Marshal(t *testing.T) {
 
 	// 空值
 	obj = &Object{
-		Value: shadowCDATA{},
+		Value: shadowRichtext{},
 	}
 	str = `<xml><value></value></xml>`
 

@@ -32,9 +32,9 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 	obj1 = &Callback{}
 	str = `<Callback deprecated="1.1.1" method="GET">
 		<path path="/users/{id}/orders">
-			<param name="id" type="number">用户 ID </param>
-			<query name="size" type="number">size</query>
-			<query name="page" type="number" deprecated="0.1.1">page</query>
+			<param name="id" type="number" summary="用户 ID" />
+			<query name="size" type="number" summary="size" />
+			<query name="page" type="number" deprecated="0.1.1"><description>page</description></query>
 		</path>
 		<request status="200" mimetype="json" type="object">
 			<param name="name" type="string" summary="name" />
