@@ -300,9 +300,7 @@
             </table>
 
             <xsl:if test="$param/example">
-            <pre class="example" data-visible="false" data-mimetype="{$param/example/@mimetype}">
-                <xsl:copy-of select="$param/example/node()" />
-            </pre>
+            <pre class="example" data-visible="false" data-mimetype="{$param/example/@mimetype}"><xsl:copy-of select="$param/example/node()" /></pre>
             </xsl:if>
         </div>
     </xsl:if>

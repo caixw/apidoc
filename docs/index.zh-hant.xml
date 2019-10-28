@@ -110,7 +110,7 @@
     <types parent="usage">
         <type name="apidoc.yaml">
             <description>
-                <p>配置文件名固定為 <code>.apidoc.yaml</code>，格式為 YAML，可參考 <a href="example/.apidoc.yaml">apidoc</a>。文件可以通過命令行參數 <code>-d</code> 生成。主要包含了以幾個配置項：</p>
+                <p>配置文件名固定為 <code>.apidoc.yaml</code>，格式為 YAML，可參考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通過命令行參數 <code>-d</code> 生成。主要包含了以幾個配置項：</p>
             </description>
             <item name="version" type="version" required="true">產生此配置文件的 apidoc 版本</item>
             <item name="inputs" type="object[]" required="true">指定輸入的數據，同壹項目只能解析壹種語言。</item>
@@ -121,7 +121,7 @@
             <item name="output" type="object" required="true">控制輸出行為</item>
             <item name="output.path" type="string" required="true">指定輸出的文件名，包含路徑信息。</item>
             <item name="output.tags" type="string[]" required="false">只輸出與這些標簽相關聯的文檔，默認為全部。</item>
-            <item name="output.style" type="string" required="false">為 XML 文件指定的 XSL 文件，默認值為最新版的 XSL 文件。</item>
+            <item name="output.style" type="string" required="false">為 XML 文件指定的 XSL 文件。</item>
         </type>
     </types>
 
