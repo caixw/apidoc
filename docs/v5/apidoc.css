@@ -180,6 +180,10 @@ main {
     text-align: left;
 }
 
+main .content {
+    margin: var(--padding) 0;
+}
+
 main .api {
     margin-bottom: var(--article-padding);
     border: 1px solid var(--border-color);
