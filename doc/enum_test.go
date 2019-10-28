@@ -18,9 +18,9 @@ func TestEnum_UnmarshalXML(t *testing.T) {
 
 	obj := &Enum{
 		Value:       "text",
-		Description: "<a>desc</a>",
+		Description: "<a><p>desc</p></a>",
 	}
-	str := `<Enum value="text"><![CDATA[<a>desc</a>]]></Enum>`
+	str := `<Enum value="text"><a><p>desc</p></a></Enum>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)

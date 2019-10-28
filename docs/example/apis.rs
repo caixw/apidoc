@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 
 // <api method="GET" summary="获取用户">
-//     <description><![CDATA[
-// 这是关于接口的详细说明文档
+//     <description>
+// <p>这是关于接口的详细说明文档</p><br />
 // 可以是一个 HTML 内容
-// ]]></description>
+// </description>
 //     <path path="/users">
 //         <query name="page" type="number" default="0" summary="页码" />
-//         <query name="size" type="number" default="20">数量</query>
+//         <query name="size" type="number" default="20"><description>数量</description></query>
 //     </path>
 //
-//     <header name="name" type="string">desc</header>
-//     <header name="name1" type="string">desc1</header>
+//     <header name="name" type="string"><description>desc</description></header>
+//     <header name="name1" type="string" summary="name1 desc" />
 //
 //     <response status="200" array="true" type="object" mimetype="application/json">
 //         <param name="count" type="number" optional="false" summary="summary" />
@@ -28,10 +28,10 @@
 fn getList() {}
 
 // <api method="POST" summary="添加用户">
-//     <description><![CDATA[
-// 这是关于接口的详细说明文档
+//     <description>
+// 这是关于接口的详细说明文档<br />
 // 可以是一个 HTML 内容
-// ]]></description>
+// </description>
 //     <path path="/users" />
 //
 //     <request type="object" mimetype="application/json">
@@ -72,10 +72,10 @@ fn getList() {}
 fn post() {}
 
 // <api method="DELETE" summary="删除用户">
-//     <description><![CDATA[
-// 这是关于接口的详细说明文档
-// 可以是一个 HTML 内容
-// ]]></description>
+//     <description>
+// 这是关于接口的详细说明文档<br />
+// 可以是一个 HTML 内容<br />
+// </description>
 //     <path path="/users/{id}">
 //         <param name="id" type="number" summary="用户 ID" />
 //     </path>
@@ -83,15 +83,15 @@ fn post() {}
 fn delete() {}
 
 // <api method="GET" summary="获取用户详情">
-//     <description><![CDATA[
+//     <description>
 // 这是关于接口的详细说明文档
 // 可以是一个 HTML 内容
-// ]]></description>
+// </description>
 //     <path path="/users/{id}">
 //         <param name="id" type="number" summary="用户 ID" />
 //         <query name="state" type="string" array="true" default="[normal,lock]" summary="state">
-//              <enum value="normal">正常</enum>
-//              <enum value="lock">锁定</enum>
+//              <enum value="normal" summary="正常" />
+//              <enum value="lock"><span style="color:red">锁定</span></enum>
 //         </query>
 //     </path>
 //

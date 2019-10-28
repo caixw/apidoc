@@ -35,7 +35,7 @@ func TestParam_UnmarshalXML(t *testing.T) {
 
 	// 正常
 	str = `<Param name="user" deprecated="1.1.1" type="object" array="true">
-		<description><![CDATA[user]]></description>
+		<description><a>user</a></description>
 		<param name="name" type="string" summary="name" />
 		<param name="sex" type="string" summary="sex">
 			<enum value="male">Male</enum>
@@ -45,7 +45,7 @@ func TestParam_UnmarshalXML(t *testing.T) {
 	</Param>`
 	a.NotError(xml.Unmarshal([]byte(str), obj1)).
 		True(obj1.Array).
-		Equal(obj1.Description.String(), "user").
+		Equal(obj1.Description.String(), "<a>user</a>").
 		Equal(obj1.Type, Object).
 		Equal(obj1.Deprecated, "1.1.1").
 		Equal(3, len(obj1.Items)).
@@ -91,9 +91,9 @@ func TestSimpleParam_UnmarshalXML(t *testing.T) {
 	obj := &SimpleParam{
 		Name:        "text",
 		Type:        String,
-		Description: "test",
+		Description: Richtext{Text: "<a>test</a>"},
 	}
-	str := `<SimpleParam name="text" type="string"><![CDATA[test]]></SimpleParam>`
+	str := `<SimpleParam name="text" type="string"><a>test</a></SimpleParam>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).

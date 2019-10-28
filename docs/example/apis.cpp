@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 
 // <api method="GET" summary="获取用户日志">
-//     <description><![CDATA[
-// 这是关于接口的详细说明文档
-// ===
+//     <description>
+// 这是关于接口的详细说明文档<br />
+// ===<br />
 // 可以是一个 HTML 内容
-// ]]></description>
+// </description>
 //     <path path="/users/{id}/logs">
-//         <param name="id" type="number">用户 ID</param>
+//         <param name="id" type="number"><description>用户 ID</description></param>
 //         <query name="page" type="number" default="0" summary="页码" />
-//         <query name="size" type="number" default="20">数量</query>
+//         <query name="size" type="number" default="20"><description>数量</description></query>
 //     </path>
 //
 //     <response status="200" array="true" type="object" mimetype="application/json">
-//         <header name="name" type="string">desc</header>
-//         <header name="name1" type="string">desc1</header>
+//         <header name="name" type="string" summary="desc" />
+//         <header name="name1" type="string" summary="desc1" />
 //         <param name="count" type="number" optional="true" summary="summary" />
 //         <param name="list" type="object" array="true" summary="list">
 //             <param name="id" type="number" optional="true" summary="desc" />
@@ -36,6 +36,10 @@
 //     </response>
 //
 //     <callback schema="https" summary="回调函数" method="POST">
+//     <description>
+//         <p style="color:red">这是一个回调函数的详细说明</p>
+//         <p>为一个 html 文档</p>
+//     </description>
 //         <request mimetype="application/json" type="object">
 //             <query name="size">size</query>
 //

@@ -23,7 +23,7 @@ type Callback struct {
 	Method      Method         `xml:"method,attr"`
 	Path        *Path          `xml:"path,omitempty"`
 	Summary     string         `xml:"summary,attr,omitempty"`
-	Description string         `xml:"description,omitempty"`
+	Description Richtext       `xml:"description,omitempty"`
 	Deprecated  Version        `xml:"deprecated,attr,omitempty"`
 	Reference   string         `xml:"ref,attr,omitempty"`
 	Responses   []*Request     `xml:"response,omitempty"`

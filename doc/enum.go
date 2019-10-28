@@ -15,7 +15,7 @@ type Enum struct {
 	Deprecated  Version `xml:"deprecated,attr,omitempty"`
 	Value       string  `xml:"value,attr"`
 	Summary     string  `xml:"summary,attr,omitempty"`
-	Description string  `xml:",cdata"`
+	Description string  `xml:",innerxml"`
 }
 
 type shadowEnum Enum

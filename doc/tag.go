@@ -25,7 +25,7 @@ type Server struct {
 	Name        string  `xml:"name,attr"` // 字面名称，需要唯一
 	URL         string  `xml:"url,attr"`
 	Deprecated  Version `xml:"deprecated,attr,omitempty"`
-	Description string  `xml:",cdata"`
+	Description string  `xml:",innerxml"`
 }
 
 type (

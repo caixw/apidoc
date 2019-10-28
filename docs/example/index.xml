@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.0.0" created="2019-10-27T23:54:36+08:00" version="1.1.1">
+<apidoc apidoc="5.0.0" created="2019-10-28T20:00:01+08:00" version="1.1.1">
 	<title>示例文档</title>
-	<description><![CDATA[
-    
+	<description>
     <p>这是一个用于测试的文档用例</p>
     状态码：
     <ul>
         <li>40300:xxx</li>
         <li>40301:xxx</li>
     </ul>
-    ]]></description>
+    </description>
 	<contact name="name">
 		<url>https://example.com</url>
 		<email>example@example.com</email>
@@ -19,17 +18,19 @@
 	<license url="https://opensource.org/licenses/MIT">MIT</license>
 	<tag name="t1" title="标签1"></tag>
 	<tag name="t2" title="标签2"></tag>
-	<server name="admin" url="https://api.example.com/admin"><![CDATA[后台管理接口]]></server>
-	<server name="client" url="https://api.example.com"><![CDATA[客户端接口]]></server>
+	<server name="admin" url="https://api.example.com/admin">后台管理接口</server>
+	<server name="client" url="https://api.example.com">客户端接口</server>
 	<api method="GET" summary="获取用户">
 		<path path="/users">
 			<query name="page" type="number" default="0" summary="页码"></query>
-			<query name="size" type="number" default="20"><![CDATA[数量]]></query>
+			<query name="size" type="number" default="20">
+				<description>数量</description>
+			</query>
 		</path>
-		<description><![CDATA[
-这是关于接口的详细说明文档
+		<description>
+<p>这是关于接口的详细说明文档</p><br />
 可以是一个 HTML 内容
-]]></description>
+</description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="count" type="number" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
@@ -41,15 +42,17 @@
 				</param>
 			</param>
 		</response>
-		<header name="name" type="string"><![CDATA[desc]]></header>
-		<header name="name1" type="string"><![CDATA[desc1]]></header>
+		<header name="name" type="string">
+			<description>desc</description>
+		</header>
+		<header name="name1" type="string" summary="name1 desc"></header>
 	</api>
 	<api method="POST" summary="添加用户">
 		<path path="/users"></path>
-		<description><![CDATA[
-这是关于接口的详细说明文档
+		<description>
+这是关于接口的详细说明文档<br />
 可以是一个 HTML 内容
-]]></description>
+</description>
 		<request type="object" mimetype="application/json">
 			<param name="count" type="number" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
@@ -87,26 +90,23 @@
 		<path path="/users/{id}">
 			<param name="id" type="number" summary="用户 ID"></param>
 		</path>
-		<description><![CDATA[
-这是关于接口的详细说明文档
-可以是一个 HTML 内容
-]]></description>
+		<description>
+这是关于接口的详细说明文档<br />
+可以是一个 HTML 内容<br />
+</description>
 	</api>
 	<api method="GET" summary="获取用户详情">
 		<path path="/users/{id}">
 			<param name="id" type="number" summary="用户 ID"></param>
 			<query name="state" type="string" default="[normal,lock]" array="true" summary="state">
-				<enum value="normal"><![CDATA[正常]]></enum>
-				<enum value="lock"><![CDATA[锁定]]></enum><![CDATA[
-             
-             
-        ]]>
+				<enum value="normal" summary="正常"></enum>
+				<enum value="lock"><span style="color:red">锁定</span></enum>
 			</query>
 		</path>
-		<description><![CDATA[
+		<description>
 这是关于接口的详细说明文档
 可以是一个 HTML 内容
-]]></description>
+</description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="id" type="number" summary="用户 ID"></param>
 			<param name="name" type="string" summary="用户名"></param>
@@ -118,23 +118,27 @@
 	</api>
 	<api method="GET" summary="获取用户日志">
 		<path path="/users/{id}/logs">
-			<param name="id" type="number"><![CDATA[用户 ID]]></param>
+			<param name="id" type="number">
+				<description>用户 ID</description>
+			</param>
 			<query name="page" type="number" default="0" summary="页码"></query>
-			<query name="size" type="number" default="20"><![CDATA[数量]]></query>
+			<query name="size" type="number" default="20">
+				<description>数量</description>
+			</query>
 		</path>
-		<description><![CDATA[
-这是关于接口的详细说明文档
-===
+		<description>
+这是关于接口的详细说明文档<br />
+===<br />
 可以是一个 HTML 内容
-]]></description>
+</description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="count" type="number" optional="true" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" optional="true" summary="desc"></param>
 				<param name="name" type="string" optional="true" summary="desc"></param>
 				<param name="groups" type="string" optional="true" array="true" summary="desc">
-					<enum value="xx1"><![CDATA[xx]]></enum>
-					<enum value="xx2"><![CDATA[xx]]></enum>
+					<enum value="xx1">xx</enum>
+					<enum value="xx2">xx</enum>
 				</param>
 			</param>
 			<example mimetype="application/json"><![CDATA[
@@ -146,10 +150,14 @@
  ]
 }
         ]]></example>
-			<header name="name" type="string"><![CDATA[desc]]></header>
-			<header name="name1" type="string"><![CDATA[desc1]]></header>
+			<header name="name" type="string" summary="desc"></header>
+			<header name="name1" type="string" summary="desc1"></header>
 		</response>
 		<callback method="POST" summary="回调函数">
+			<description>
+        <p style="color:red">这是一个回调函数的详细说明</p>
+        <p>为一个 html 文档</p>
+    </description>
 			<response type="string" status="200" mimetype="text/plain"></response>
 			<request type="object" mimetype="application/json">
 				<param name="id" type="number" default="1" summary="id"></param>

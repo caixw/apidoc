@@ -40,7 +40,7 @@ type Doc struct {
 	Created     string    `xml:"created,attr,omitempty"` // 文档的生成时间
 	Version     Version   `xml:"version,attr,omitempty"` // 文档的版本
 	Title       string    `xml:"title"`
-	Description CDATA     `xml:"description"`
+	Description Richtext  `xml:"description"`
 	Contact     *Contact  `xml:"contact,omitempty"`
 	License     *Link     `xml:"license,omitempty"` // 版本信息
 	Tags        []*Tag    `xml:"tag,omitempty"`     // 所有的标签

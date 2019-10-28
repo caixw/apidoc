@@ -29,21 +29,21 @@ type Param struct {
 	Reference   string   `xml:"ref,attr,omitempty"`
 	Summary     string   `xml:"summary,attr,omitempty"`
 	Enums       []*Enum  `xml:"enum,omitempty"`
-	Description CDATA    `xml:"description,omitempty"`
+	Description Richtext `xml:"description,omitempty"`
 }
 
 // SimpleParam 简单参数类型，不存在子元素，类型值不能为 Object
 type SimpleParam struct {
-	Name        string  `xml:"name,attr"`
-	Type        Type    `xml:"type,attr"`
-	Deprecated  Version `xml:"deprecated,attr,omitempty"`
-	Default     string  `xml:"default,attr,omitempty"`
-	Optional    bool    `xml:"optional,attr,omitempty"`
-	Array       bool    `xml:"array,attr,omitempty"`
-	Reference   string  `xml:"ref,attr,omitempty"`
-	Summary     string  `xml:"summary,attr,omitempty"`
-	Enums       []*Enum `xml:"enum,omitempty"`
-	Description string  `xml:",cdata"`
+	Name        string   `xml:"name,attr"`
+	Type        Type     `xml:"type,attr"`
+	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
+	Default     string   `xml:"default,attr,omitempty"`
+	Optional    bool     `xml:"optional,attr,omitempty"`
+	Array       bool     `xml:"array,attr,omitempty"`
+	Reference   string   `xml:"ref,attr,omitempty"`
+	Summary     string   `xml:"summary,attr,omitempty"`
+	Enums       []*Enum  `xml:"enum,omitempty"`
+	Description Richtext `xml:"description,omitempty"`
 }
 
 // IsEnum 是否为一个枚举类型
@@ -121,7 +121,7 @@ func (p *SimpleParam) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 		return newSyntaxError(field+"/enum", locale.ErrDuplicateValue)
 	}
 
-	if p.Summary == "" && p.Description == "" {
+	if p.Summary == "" && p.Description.String() == "" {
 		return newSyntaxError(field+"/summary", locale.ErrRequired)
 	}
 

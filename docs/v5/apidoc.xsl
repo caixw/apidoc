@@ -11,16 +11,16 @@
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
             <meta name="generator" content="{document('../config.xml')/config/url}" />
-            <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />
             <link rel="icon" type="image/png" href="{$icon}" />
             <link rel="license" href="{apidoc/license/@url}" />
+            <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />
             <script src="{$base-url}apidoc.js"></script>
         </head>
         <body>
             <xsl:call-template name="header" />
 
             <main>
-                <pre><xsl:copy-of select="apidoc/description/text()" /></pre>
+                <div><xsl:copy-of select="apidoc/description/node()" /></div>
 
                 <xsl:for-each select="apidoc/api">
                     <xsl:sort select="path/@path"/>
@@ -106,9 +106,10 @@
 
             <span class="summary"><xsl:value-of select="@summary" /></span>
         </summary>
-        <div class="description">
-            <xsl:if test="description"><xsl:value-of select="description" /></xsl:if>
-        </div>
+
+        <xsl:if test="description">
+            <div class="description"><xsl:copy-of select="description" /></div>
+        </xsl:if>
 
         <div class="body">
             <div class="requests">
@@ -147,7 +148,7 @@
         <div class="description">
             <xsl:value-of select="@summary" />
             <xsl:if test="description">
-                <br /><xsl:value-of select="description" />
+                <br /><xsl:copy-of select="description" />
             </xsl:if>
         </div>
 
@@ -404,7 +405,7 @@
 
             <xsl:value-of select="@value" />:
             <xsl:choose>
-                <xsl:when test="."><xsl:copy-of select="." /></xsl:when>
+                <xsl:when test="not(.='')"><xsl:copy-of select="." /></xsl:when>
                 <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
             </xsl:choose>
             </li>

@@ -2,9 +2,9 @@
 
 <api method="GET" version="1.1.0" id="xxx" summary="获取订单信息">
     <path path="/users/{id}/orders">
-        <param name="id" type="number">用户 ID </param>
-        <query name="size" type="number">size</query>
-        <query name="page" type="number" deprecated="0.1.1">page</query>
+        <param name="id" type="number" summary="用户 ID" />
+        <query name="size" type="number" summary="size" />
+        <query name="page" type="number" deprecated="0.1.1" summary="page" />
     </path>
 
     <tag>g1</tag>
@@ -13,7 +13,7 @@
     <server>s2</server>
 
     <description>
-    description xxx
+        <p>这是描述信息</p>
     </description>
 
     <request mimetype="json,xml" type="number" summary="请求内容">

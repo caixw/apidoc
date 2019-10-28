@@ -24,7 +24,7 @@ type Request struct {
 	Mimetype    string         `xml:"mimetype,attr"`
 	Examples    []*Example     `xml:"example,omitempty"`
 	Headers     []*SimpleParam `xml:"header,omitempty"` // 当前独有的报头，公用的可以放在 API 中
-	Description CDATA          `xml:"description,omitempty"`
+	Description Richtext       `xml:"description,omitempty"`
 }
 
 // IsEnum 是否为枚举值

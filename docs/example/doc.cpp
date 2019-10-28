@@ -43,12 +43,11 @@
 //     <response status="404" type="none" mimetype="application/json application/xml" summary="not found" />
 //
 //     <description>
-//     <![CDATA[
 //     <p>这是一个用于测试的文档用例</p>
 //     状态码：
 //     <ul>
 //         <li>40300:xxx</li>
 //         <li>40301:xxx</li>
 //     </ul>
-//     ]]></description>
+//     </description>
 // </apidoc>
