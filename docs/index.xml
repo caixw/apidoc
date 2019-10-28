@@ -133,7 +133,7 @@
             <item name="@logo" type="string" required="false">图标</item>
             <item name="@created" type="string" required="false">文档的生成时间</item>
             <item name="title" type="string" required="true">文档的标题</item>
-            <item name="description" type="string" required="true">文档的整体介绍，可以是使用 CDATA 包含 HTML 内容。</item>
+            <item name="description" type="string" required="true">文档的整体介绍，可以是使用 HTML 内容。</item>
             <item name="contract" type="contract" required="false">联系人信息</item>
             <item name="license" type="link" required="false">内容的版权信息</item>
             <item name="tag" type="tag[]" required="false">可以用的标签列表</item>
@@ -167,7 +167,7 @@
             <item name="@name" type="string" required="true">唯一 ID，推荐采用英文字母表示。</item>
             <item name="@url" type="string" required="true">服务基地址</item>
             <item name="@deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
-            <item name="标签内容" type="string" required="true">对该服务的具体描述，可以使用 CDATA 内容</item>
+            <item name="标签内容" type="string" required="true">对该服务的具体描述，可以使用 HTML 内容</item>
         </type>
 
         <type name="api">
@@ -177,7 +177,7 @@
             <item name="@summary" type="string" required="true">简要介绍</item>
             <item name="@deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
             <item name="@id" type="string" required="false">唯一 ID</item>
-            <item name="description" type="string" required="false">该接口的详细介绍，为 CDATA 内容。</item>
+            <item name="description" type="string" required="false">该接口的详细介绍，为 HTML 内容。</item>
             <item name="path" type="path" required="false">定义路径信息</item>
             <item name="request" type="request[]" required="false">定义可用的请求信息</item>
             <item name="response" type="request[]" required="true">定义可能的返回信息</item>
@@ -196,17 +196,32 @@
 
         <type name="request">
             <description><p>定义了请求和返回的相关内容</p></description>
+            <item name="@name" type="string" required="true">当 mimetype XML 时，此值表示 XML 的顶层元素名称，否则无用。</item>
             <item name="@type" type="string" required="true">值的类型，可以是 string、number、bool 和 object</item>
             <item name="@deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
             <item name="@summary" type="string" required="true">简要介绍</item>
             <item name="@array" type="bool" required="false">是否为数组</item>
             <item name="@status" type="number" required="true">状态码。在 request 中，该值不可用，否则为必填项。</item>
             <item name="@mimetype" type="string" required="false">媒体类型，比如 <code>application/json</code> 等。</item>
-            <item name="description" type="string" required="false">详细介绍，为 CDATA 内容。</item>
+            <item name="description" type="string" required="false">详细介绍，为 HTML 内容。</item>
             <item name="enum" type="enum[]" required="false">当前参数可用的枚举值</item>
             <item name="param" type="param[]" required="false">子类型，比如对象的子元素。</item>
-            <item name="example" type="string" required="false">示例代码，可以是 CDATA。</item>
+            <item name="example" type="example" required="false">示例代码。</item>
             <item name="header" type="header[]" required="false">传递的报头内容</item>
+        </type>
+
+        <type name="param">
+            <description>参数类型</description>
+            <item name="@name" type="string" required="true">值的名称</item>
+            <item name="@type" type="string" required="true">值的类型，可以是 string、number、bool 和 object</item>
+            <item name="@deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
+            <item name="@default" type="string" required="false">默认值</item>
+            <item name="@optional" type="bool" required="false">是否为可选的参数</item>
+            <item name="@summary" type="string" required="true">简要介绍</item>
+            <item name="@array" type="bool" required="false">是否为数组</item>
+            <item name="description" type="string" required="false">详细介绍，为 HTML 内容。</item>
+            <item name="enum" type="enum[]" required="false">当前参数可用的枚举值</item>
+            <item name="param" type="param[]" required="false">子类型，比如对象的子元素。</item>
         </type>
 
         <type name="enum">
@@ -226,7 +241,8 @@
             <description><p>定义了请求和返回的报头结构</p></description>
             <item name="@name" type="string" required="true">报头的名称</item>
             <item name="@deprecated" type="version" required="false">表示在大于等于该版本号时不再启作用</item>
-            <item name="标签内容" type="string" required="true">对报头的描述</item>
+            <item name="@summary" type="string" required="true">对报头的描述</item>
+            <item name="description" type="string" required="true">对报头的描述</item>
         </type>
 
         <type name="callback">

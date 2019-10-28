@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-// <api method="GET" summary="获取用户">
+// <api method="GET" summary="获取用户" deprecated="1.1.11">
 //     <description>
 // <p>这是关于接口的详细说明文档</p><br />
 // 可以是一个 HTML 内容
