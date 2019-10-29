@@ -21,7 +21,7 @@ apidoc [options] [path]
 	FlagLUsage  = "显示所有支持的语言"
 	FlagDUsage  = "根据目录下的内容生成配置文件"
 	FlagTUsage  = "测试语法的正确性"
-	FlagVersion = "%s %s\ndoc %s\nhash %s\nbuild with %s"
+	FlagVersion = "版本：%s\n文档：%s\n提交：%s\nGo：%s"
 
 	VersionInCompatible = "当前程序与配置文件中指定的版本号不兼容"
 	Complete            = "完成！文档保存在：%s，总用时：%v"

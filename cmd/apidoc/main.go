@@ -67,7 +67,8 @@ func main() {
 		flag.Usage()
 		return
 	case *v:
-		term.Locale(infoOut, infoColor, locale.FlagVersion, vars.Name, apidoc.Version(), vars.DocVersion(), vars.CommitHash(), runtime.Version())
+		goVersion := strings.TrimLeft(runtime.Version(), "go")
+		term.Locale(infoOut, infoColor, locale.FlagVersion, apidoc.Version(), vars.DocVersion(), vars.CommitHash(), goVersion)
 		return
 	case *t:
 		parse(true)
