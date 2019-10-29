@@ -28,7 +28,8 @@ function registerMethodFilter() {
                     return;
                 }
 
-                api.style.display = chk ? 'block' : 'none';
+                api.setAttribute("data-hidden-method", chk ? "" : "true");
+                toggleAPIVisible(api);
             });
         });
     });
@@ -55,10 +56,19 @@ function registerTagFilter() {
                     return;
                 }
 
-                api.style.display = chk ? 'block' : 'none';
+                api.setAttribute("data-hidden-tag", chk ? "" : "true");
+                toggleAPIVisible(api);
             });
         });
     });
+}
+
+function toggleAPIVisible(api) {
+    const hidden = api.getAttribute('data-hidden-tag') === 'true' ||
+        api.getAttribute('data-hidden-server') === 'true' ||
+        api.getAttribute('data-hidden-method') === 'true';
+
+    api.style.display = hidden ? 'none' : 'block';
 }
 
 function registerLanguageFilter() {

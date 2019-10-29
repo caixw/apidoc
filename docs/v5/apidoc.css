@@ -184,19 +184,7 @@ main .content {
     margin: var(--padding) 0;
 }
 
-main .api {
-    margin-bottom: var(--article-padding);
-    border: 1px solid var(--border-color);
-}
-
-main .api summary {
-    margin: 0;
-    padding: var(--article-padding);
-    border-bottom: 1px solid var(--border-color);
-    cursor: pointer;
-    line-height: 1;
-}
-
+/****************** .servers *******************/
 
 main .servers {
     display: flex;
@@ -212,8 +200,27 @@ main .servers .server {
     padding: var(--padding) var(--article-padding);
 }
 
+main .servers .server:hover {
+    border: 1px solid var(--accent-color);
+}
+
 main .servers .server h4 {
     margin: 0 0 var(--padding);
+}
+
+/********************** .api **********************/
+
+main .api {
+    margin-bottom: var(--article-padding);
+    border: 1px solid var(--border-color);
+}
+
+main .api summary {
+    margin: 0;
+    padding: var(--article-padding);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    line-height: 1;
 }
 
 

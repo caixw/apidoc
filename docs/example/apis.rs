@@ -10,6 +10,9 @@
 //         <query name="size" type="number" default="20"><description>数量</description></query>
 //     </path>
 //
+//     <tag>t1</tag>
+//     <tag>t2</tag>
+//     <server>admin</server>
 //     <header name="name" type="string"><description>desc</description></header>
 //     <header name="name1" type="string" summary="name1 desc" />
 //
@@ -33,6 +36,10 @@ fn getList() {}
 // 可以是一个 HTML 内容
 // </description>
 //     <path path="/users" />
+//
+//     <tag>t2</tag>
+//     <server>admin</server>
+//     <server>old-client</server>
 //
 //     <request type="object" mimetype="application/json">
 //         <header name="content-type" summary="application/json" type="string" />

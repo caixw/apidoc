@@ -106,6 +106,9 @@
     <xsl:attribute name="data-tags">
         <xsl:for-each select="tag"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
     </xsl:attribute>
+    <xsl:attribute name="data-servers">
+        <xsl:for-each select="server"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
+    </xsl:attribute>
 
         <summary>
             <a class="link" href="#{$id}">&#128279;</a> <!-- 链接符号 -->
