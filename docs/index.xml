@@ -16,9 +16,6 @@
     类型结构的定义如下：
     <type name="apidoc">
         <item name="version" type="string" required="true">版本信息</item>
-        <group name="子标签">
-            <item name="version" type="string" required="true">版本信息</item>
-        </group>
     </type>
     -->
     <type-locale>

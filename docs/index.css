@@ -114,6 +114,7 @@ header h1 img {
 
 header .menus {
     display: flex;
+    align-items: baseline;
 }
 
 header .menu {

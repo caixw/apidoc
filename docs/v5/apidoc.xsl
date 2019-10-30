@@ -21,26 +21,8 @@
 
             <main>
                 <div class="content"><xsl:copy-of select="apidoc/description/node()" /></div>
-
-                <div class="servers">
-                    <xsl:for-each select="apidoc/server">
-                        <div class="server">
-                            <h4>
-                                <xsl:call-template name="deprecated">
-                                    <xsl:with-param name="deprecated" select="@deprecated" />
-                                </xsl:call-template>
-                                <xsl:value-of select="@name" />
-                            </h4>
-                            <p><xsl:value-of select="@url" /></p>
-                            <div><xsl:copy-of select="." /></div>
-                        </div>
-                    </xsl:for-each>
-                </div> <!-- end .servers -->
-
-                <xsl:for-each select="apidoc/api">
-                    <xsl:sort select="path/@path"/>
-                    <xsl:apply-templates select="." />
-                </xsl:for-each>
+                <div class="servers"><xsl:apply-templates select="apidoc/server" /></div>
+                <xsl:apply-templates select="apidoc/api" />
             </main>
 
             <footer>
@@ -48,6 +30,20 @@
             </footer>
         </body>
     </html>
+</xsl:template>
+
+<xsl:template match="/apidoc/server">
+    <div class="server">
+        <h4>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
+            <xsl:value-of select="@name" />
+        </h4>
+
+        <p><xsl:value-of select="@url" /></p>
+        <div><xsl:copy-of select="." /></div>
+    </div>
 </xsl:template>
 
 <!-- header 界面元素 -->
@@ -61,11 +57,12 @@
             </h1>
 
             <div class="menus">
-                <div class="menu tags-selector" role="menu">
-                    <span><xsl:copy-of select="$locale-tag" />&#160;&#x25bc;</span>
-                    <ul>
+                <div class="menu tags-selector" role="menu" aria-haspopup="true">
+                    <xsl:copy-of select="$locale-tag" />
+                    <span aria-hiddren="true">&#160;&#x25bc;</span>
+                    <ul role="menu" aria-hiddren="true">
                         <xsl:for-each select="apidoc/tag">
-                        <li data-tag="{@name}">
+                        <li data-tag="{@name}" role="menuitemcheckbox">
                             <label>
                                 <input type="checkbox" checked="checked" /><xsl:value-of select="@title" />
                             </label>
@@ -74,22 +71,24 @@
                     </ul>
                 </div>
 
-                <div class="menu methods-selector" role="menu">
-                    <span><xsl:copy-of select="$locale-method" />&#160;&#x25bc;</span>
-                    <ul>
+                <div class="menu methods-selector" role="menu" aria-haspopup="true">
+                    <xsl:copy-of select="$locale-method" />
+                    <span aria-hiddren="true">&#160;&#x25bc;</span>
+                    <ul role="menu" aria-hiddren="true">
                         <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
                         <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
                         <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
-                        <li data-method="{.}">
+                        <li data-method="{.}" role="menuitemcheckbox">
                             <label><input type="checkbox" checked="true" /><xsl:value-of select="." /></label>
                         </li>
                         </xsl:for-each>
                     </ul>
                 </div>
 
-                <div class="menu languages-selector" role="menu">
-                    <span><xsl:copy-of select="$locale-language" />&#160;&#x25bc;</span>
-                    <ul><xsl:call-template name="languages" /></ul>
+                <div class="menu languages-selector" role="menu" aria-haspopup="true">
+                    <xsl:copy-of select="$locale-language" />
+                    <span aria-hiddren="true">&#160;&#x25bc;</span>
+                    <ul role="menu" aria-hiddren="true"><xsl:call-template name="languages" /></ul>
                 </div>
             </div> <!-- end .menus -->
         </div> <!-- end .wrap -->

@@ -59,7 +59,8 @@
 
                         <span class="drop-menus" role="menu">
                             <a class="menu">
-                            <xsl:value-of select="$curr-lang-title" />&#160;&#x25bc;
+                            <xsl:value-of select="$curr-lang-title" />
+                            <span aria-hiddren="true">&#160;&#x25bc;</span>
                             </a>
                             <ul>
                             <xsl:for-each select="document('locales.xml')/locales/locale">
