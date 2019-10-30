@@ -61,8 +61,8 @@
             </h1>
 
             <div class="menus">
-                <div class="menu tags-selector">
-                    <span><xsl:copy-of select="$locale-tag" /></span>
+                <div class="menu tags-selector" role="menu">
+                    <span><xsl:copy-of select="$locale-tag" />&#160;&#x25bc;</span>
                     <ul>
                         <xsl:for-each select="apidoc/tag">
                         <li data-tag="{@name}">
@@ -74,8 +74,8 @@
                     </ul>
                 </div>
 
-                <div class="menu methods-selector">
-                    <span><xsl:copy-of select="$locale-method" /></span>
+                <div class="menu methods-selector" role="menu">
+                    <span><xsl:copy-of select="$locale-method" />&#160;&#x25bc;</span>
                     <ul>
                         <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
                         <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
@@ -87,8 +87,8 @@
                     </ul>
                 </div>
 
-                <div class="menu languages-selector">
-                    <span><xsl:copy-of select="$locale-language" /></span>
+                <div class="menu languages-selector" role="menu">
+                    <span><xsl:copy-of select="$locale-language" />&#160;&#x25bc;</span>
                     <ul><xsl:call-template name="languages" /></ul>
                 </div>
             </div> <!-- end .menus -->

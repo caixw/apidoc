@@ -114,6 +114,7 @@ header .wrap {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
 }
 
 header h1 {
@@ -133,8 +134,6 @@ header h1 img {
 
 header .menus {
     display: flex;
-    justify-items: stretch;
-    line-height: 3.5;
 }
 
 header .menu {
@@ -149,9 +148,8 @@ header .menu:hover span {
 }
 
 header .menu ul {
-    line-height: 1;
     position: absolute;
-    min-width: 5rem;
+    min-width: 4rem;
     right: 0;
     display: none;
     list-style: none;
@@ -160,11 +158,18 @@ header .menu ul {
     padding: var(--article-padding);
 }
 
-header ul li {
+header .menu ul li {
     padding-bottom: var(--article-padding);
 }
 
-header ul li:last-of-type {
+/* 可以保证 label 的内容在同一行 */
+header .menu ul li label {
+    display: inline-flex;
+    align-items: baseline;
+    word-break: keep-all;
+}
+
+header .menu ul li:last-of-type {
     padding-bottom: 0;
 }
 

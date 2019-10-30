@@ -94,6 +94,7 @@ header .wrap {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
 }
 
 header h1 {
@@ -113,13 +114,10 @@ header h1 img {
 
 header .menus {
     display: flex;
-    justify-items: stretch;
 }
 
 header .menu {
-    line-height: 3.5;
     margin-left: var(--padding);
-    height: 100%;
     color: var(--color);
 }
 
@@ -148,14 +146,6 @@ header .drop-menus a {
 
 header .drop-menus:hover ul {
     display: block;
-}
-
-header .arrow {
-    border: solid var(--color);
-    border-width: 0 3.5px 3.5px 0;
-    display: inline-block;
-    padding: 3.5px;
-    transform: rotate(45deg);
 }
 
 /************************** main **************************/

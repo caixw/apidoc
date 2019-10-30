@@ -51,15 +51,15 @@
                         <span class="version">&#160;(<xsl:value-of select="document('config.xml')/config/version" />)</span>
                     </h1>
 
-                    <div class="menus">
+                    <div class="menus" role="navigation">
                         <xsl:for-each select="docs/doc[not(@parent)]">
                             <a class="menu" href="#{@id}"><xsl:value-of select="@title" /></a>
                         </xsl:for-each>
                         <a class="menu" href="{document('config.xml')/config/repo}">Github</a>
 
-                        <span class="drop-menus">
+                        <span class="drop-menus" role="menu">
                             <a class="menu">
-                            <xsl:value-of select="$curr-lang-title" />&#160;<i class="arrow" />
+                            <xsl:value-of select="$curr-lang-title" />&#160;&#x25bc;
                             </a>
                             <ul>
                             <xsl:for-each select="document('locales.xml')/locales/locale">
