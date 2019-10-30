@@ -60,7 +60,7 @@ a {
 }
 
 a:hover {
-    opacity: .5;
+    opacity: .7;
 }
 
 p {
@@ -83,7 +83,7 @@ header {
     z-index: 1000;
     box-sizing: border-box;
     background: var(--background);
-    box-shadow: 0px 1px 2px var(--border-color);
+    box-shadow: 2px 2px 2px var(--border-color);
 }
 
 header .wrap {
@@ -123,7 +123,7 @@ header .menu {
 }
 
 header .menu:hover {
-    opacity: .5;
+    opacity: .7;
 }
 
 header .drop-menus {

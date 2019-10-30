@@ -103,7 +103,7 @@ header {
     z-index: 1000;
     box-sizing: border-box;
     background: var(--background);
-    box-shadow: 0px 1px 2px var(--border-color);
+    box-shadow: 2px 2px 2px var(--border-color);
 }
 
 header .wrap {
