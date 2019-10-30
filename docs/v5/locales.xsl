@@ -35,6 +35,20 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 </xsl:variable>
 
+<!-- server -->
+<xsl:variable name="locale-server">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'服务'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'服務'" />
+    </xsl:call-template>
+</xsl:variable>
+
+
 <!-- tag -->
 <xsl:variable name="locale-tag">
     <xsl:call-template name="build-locale">

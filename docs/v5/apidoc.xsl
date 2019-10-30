@@ -48,51 +48,65 @@
 
 <!-- header 界面元素 -->
 <xsl:template name="header">
-    <header>
-        <div class="wrap">
-            <h1>
-                <img src="{$icon}" />
-                <xsl:value-of select="/apidoc/title" />
-                <span class="version">&#160;(<xsl:value-of select="/apidoc/@version" />)</span>
-            </h1>
+<header>
+<div class="wrap">
+    <h1>
+        <img src="{$icon}" />
+        <xsl:value-of select="/apidoc/title" />
+        <span class="version">&#160;(<xsl:value-of select="/apidoc/@version" />)</span>
+    </h1>
 
-            <div class="menus">
-                <div class="menu tags-selector" role="menu" aria-haspopup="true">
-                    <xsl:copy-of select="$locale-tag" />
-                    <span aria-hiddren="true">&#160;&#x25bc;</span>
-                    <ul role="menu" aria-hiddren="true">
-                        <xsl:for-each select="apidoc/tag">
-                        <li data-tag="{@name}" role="menuitemcheckbox">
-                            <label>
-                                <input type="checkbox" checked="checked" /><xsl:value-of select="@title" />
-                            </label>
-                        </li>
-                        </xsl:for-each>
-                    </ul>
-                </div>
+    <div class="menus">
+        <div class="menu servers-selector" role="menu" aria-haspopup="true">
+            <xsl:copy-of select="$locale-server" />
+            <span aria-hiddren="true">&#160;&#x25bc;</span>
+            <ul role="menu" aria-hiddren="true">
+                <xsl:for-each select="apidoc/server">
+                <li data-server="{@name}" role="menuitemcheckbox">
+                    <label>
+                        <input type="checkbox" checked="checked" /><xsl:value-of select="@name" />
+                    </label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
 
-                <div class="menu methods-selector" role="menu" aria-haspopup="true">
-                    <xsl:copy-of select="$locale-method" />
-                    <span aria-hiddren="true">&#160;&#x25bc;</span>
-                    <ul role="menu" aria-hiddren="true">
-                        <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
-                        <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
-                        <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
-                        <li data-method="{.}" role="menuitemcheckbox">
-                            <label><input type="checkbox" checked="true" /><xsl:value-of select="." /></label>
-                        </li>
-                        </xsl:for-each>
-                    </ul>
-                </div>
+        <div class="menu tags-selector" role="menu" aria-haspopup="true">
+            <xsl:copy-of select="$locale-tag" />
+            <span aria-hiddren="true">&#160;&#x25bc;</span>
+            <ul role="menu" aria-hiddren="true">
+                <xsl:for-each select="apidoc/tag">
+                <li data-tag="{@name}" role="menuitemcheckbox">
+                    <label>
+                        <input type="checkbox" checked="checked" /><xsl:value-of select="@title" />
+                    </label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
 
-                <div class="menu languages-selector" role="menu" aria-haspopup="true">
-                    <xsl:copy-of select="$locale-language" />
-                    <span aria-hiddren="true">&#160;&#x25bc;</span>
-                    <ul role="menu" aria-hiddren="true"><xsl:call-template name="languages" /></ul>
-                </div>
-            </div> <!-- end .menus -->
-        </div> <!-- end .wrap -->
-    </header>
+        <div class="menu methods-selector" role="menu" aria-haspopup="true">
+            <xsl:copy-of select="$locale-method" />
+            <span aria-hiddren="true">&#160;&#x25bc;</span>
+            <ul role="menu" aria-hiddren="true">
+                <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
+                <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
+                <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
+                <li data-method="{.}" role="menuitemcheckbox">
+                    <label><input type="checkbox" checked="true" /><xsl:value-of select="." /></label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
+
+        <div class="menu languages-selector" role="menu" aria-haspopup="true">
+            <xsl:copy-of select="$locale-language" />
+            <span aria-hiddren="true">&#160;&#x25bc;</span>
+            <ul role="menu" aria-hiddren="true"><xsl:call-template name="languages" /></ul>
+        </div>
+    </div> <!-- end .menus -->
+</div> <!-- end .wrap -->
+</header>
 </xsl:template>
 
 <!-- api 界面元素 -->

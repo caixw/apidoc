@@ -2,6 +2,7 @@
 
 window.onload = function () {
     registerMethodFilter();
+    registerServerFilter();
     registerTagFilter();
     registerLanguageFilter();
     initExample()
@@ -29,6 +30,34 @@ function registerMethodFilter() {
                 }
 
                 api.setAttribute("data-hidden-method", chk ? "" : "true");
+                toggleAPIVisible(api);
+            });
+        });
+    });
+}
+
+function registerServerFilter() {
+    const menu = document.querySelector('.servers-selector');
+
+    menu.style.display = 'block';
+
+    const list = menu.querySelectorAll('li input');
+    list.forEach((val) => {
+        val.addEventListener('change', (event) => {
+            if (event.target === null) {
+                return;
+            }
+
+            const chk = event.target.checked;
+            const tag = event.target.parentNode.parentNode.getAttribute('data-server');
+
+            const apis = document.querySelectorAll('.api');
+            apis.forEach((api) => {
+                if (!api.getAttribute('data-servers').includes(tag + ',')) {
+                    return;
+                }
+
+                api.setAttribute("data-hidden-server", chk ? "" : "true");
                 toggleAPIVisible(api);
             });
         });
@@ -97,7 +126,6 @@ function registerLanguageFilter() {
     });
 }
 
-// 初始化示例代码的初始化功能
 function initExample() {
     const buttons = document.querySelectorAll('.toggle-example');
 
