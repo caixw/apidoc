@@ -57,7 +57,7 @@
     </h1>
 
     <div class="menus">
-        <div class="menu servers-selector" role="menu" aria-haspopup="true">
+        <div class="menu server-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-server" />
             <span aria-hiddren="true">&#160;&#x25bc;</span>
             <ul role="menu" aria-hiddren="true">
@@ -71,7 +71,7 @@
             </ul>
         </div>
 
-        <div class="menu tags-selector" role="menu" aria-haspopup="true">
+        <div class="menu tag-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-tag" />
             <span aria-hiddren="true">&#160;&#x25bc;</span>
             <ul role="menu" aria-hiddren="true">
@@ -85,7 +85,7 @@
             </ul>
         </div>
 
-        <div class="menu methods-selector" role="menu" aria-haspopup="true">
+        <div class="menu method-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-method" />
             <span aria-hiddren="true">&#160;&#x25bc;</span>
             <ul role="menu" aria-hiddren="true">
@@ -113,11 +113,11 @@
 <xsl:template match="/apidoc/api">
     <xsl:variable name="id" select="concat(@method, translate(path/@path, $id-from, $id-to))" />
 
-    <details id="{$id}" class="api" data-method="{@method}">
-    <xsl:attribute name="data-tags">
+    <details id="{$id}" class="api" data-method="{@method},">
+    <xsl:attribute name="data-tag">
         <xsl:for-each select="tag"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
     </xsl:attribute>
-    <xsl:attribute name="data-servers">
+    <xsl:attribute name="data-server">
         <xsl:for-each select="server"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
     </xsl:attribute>
 

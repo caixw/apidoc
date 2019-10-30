@@ -1,103 +1,41 @@
 'use strict';
 
 window.onload = function () {
-    registerMethodFilter();
-    registerServerFilter();
-    registerTagFilter();
+    registerFilter('method');
+    registerFilter('server');
+    registerFilter('tag');
+
     registerLanguageFilter();
     initExample()
 };
 
-function registerMethodFilter() {
-    const menu = document.querySelector('.methods-selector');
+function registerFilter(type) {
+    const menu = document.querySelector('.' + type + '-selector');
 
-    menu.style.display = 'block';
+    menu.style.display = 'block'; // 有 JS 的情况下，展示过滤菜单
 
-    const list = menu.querySelectorAll('li input');
-    list.forEach((val) => {
+    menu.querySelectorAll('li input').forEach((val) => {
         val.addEventListener('change', (event) => {
             if (event.target === null) {
                 return;
             }
 
             const chk = event.target.checked;
-            const method = event.target.parentNode.parentNode.getAttribute('data-method');
-
-            const apis = document.querySelectorAll('.api');
-            apis.forEach((api) => {
-                if (api.getAttribute('data-method') !== method) {
+            const tag = event.target.parentNode.parentNode.getAttribute('data-' + type);
+            document.querySelectorAll('.api').forEach((api) => {
+                if (!api.getAttribute('data-' + type).includes(tag + ',')) {
                     return;
                 }
 
-                api.setAttribute("data-hidden-method", chk ? "" : "true");
-                toggleAPIVisible(api);
+                api.setAttribute("data-hidden-" + type, chk ? "" : "true");
+
+                const hidden = api.getAttribute('data-hidden-tag') === 'true' ||
+                    api.getAttribute('data-hidden-server') === 'true' ||
+                    api.getAttribute('data-hidden-method') === 'true';
+                api.style.display = hidden ? 'none' : 'block';
             });
-        });
-    });
-}
-
-function registerServerFilter() {
-    const menu = document.querySelector('.servers-selector');
-
-    menu.style.display = 'block';
-
-    const list = menu.querySelectorAll('li input');
-    list.forEach((val) => {
-        val.addEventListener('change', (event) => {
-            if (event.target === null) {
-                return;
-            }
-
-            const chk = event.target.checked;
-            const tag = event.target.parentNode.parentNode.getAttribute('data-server');
-
-            const apis = document.querySelectorAll('.api');
-            apis.forEach((api) => {
-                if (!api.getAttribute('data-servers').includes(tag + ',')) {
-                    return;
-                }
-
-                api.setAttribute("data-hidden-server", chk ? "" : "true");
-                toggleAPIVisible(api);
-            });
-        });
-    });
-}
-
-function registerTagFilter() {
-    const menu = document.querySelector('.tags-selector');
-
-    menu.style.display = 'block';
-
-    const list = menu.querySelectorAll('li input');
-    list.forEach((val) => {
-        val.addEventListener('change', (event) => {
-            if (event.target === null) {
-                return;
-            }
-
-            const chk = event.target.checked;
-            const tag = event.target.parentNode.parentNode.getAttribute('data-tag');
-
-            const apis = document.querySelectorAll('.api');
-            apis.forEach((api) => {
-                if (!api.getAttribute('data-tags').includes(tag + ',')) {
-                    return;
-                }
-
-                api.setAttribute("data-hidden-tag", chk ? "" : "true");
-                toggleAPIVisible(api);
-            });
-        });
-    });
-}
-
-function toggleAPIVisible(api) {
-    const hidden = api.getAttribute('data-hidden-tag') === 'true' ||
-        api.getAttribute('data-hidden-server') === 'true' ||
-        api.getAttribute('data-hidden-method') === 'true';
-
-    api.style.display = hidden ? 'none' : 'block';
+        }); // end addEventListener('change')
+    }); // end forEach('li input')
 }
 
 function registerLanguageFilter() {
@@ -105,32 +43,23 @@ function registerLanguageFilter() {
 
     menu.style.display = 'block';
 
-    const list = menu.querySelectorAll('li input');
-    list.forEach((val) => {
+    menu.querySelectorAll('li input').forEach((val) => {
         val.addEventListener('change', (event) => {
             if (event.target === null || !event.target.checked) {
                 return;
             }
 
             const lang = event.target.parentNode.parentNode.getAttribute('lang');
-            const elems = document.querySelectorAll('[data-locale]');
-
-            elems.forEach((elem) => {
-                if (elem.getAttribute('lang') === lang) {
-                    elem.className = '';
-                } else {
-                    elem.className = 'hidden';
-                }
+            document.querySelectorAll('[data-locale]').forEach((elem) => {
+                elem.className = elem.getAttribute('lang') === lang ? '' : 'hidden';
             });
-        });
-    });
+        }); // end addEventListener('change')
+    }); // end forEach('li input')
 }
 
 function initExample() {
-    const buttons = document.querySelectorAll('.toggle-example');
-
-    buttons.forEach((btn)=>{
-        btn.addEventListener('click', (event)=> {
+    document.querySelectorAll('.toggle-example').forEach((btn) => {
+        btn.addEventListener('click', (event) => {
             if (event.target === null) {
                 return;
             }
