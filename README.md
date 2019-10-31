@@ -74,7 +74,7 @@ LANG=lang apidoc
 
 ```go
 // 初始本地化内容
-apidoc.Init("zh-cn")
+apidoc.Init(language.MustParse("zh-Hans"))
 
 // 可以自定义实现具体的错误处理方式
 h := message.NewHandler(...)
@@ -97,4 +97,7 @@ apidoc.Do(h, output, inputs...)
 
 ### 版权
 
-本项目采用 [MIT](https://opensource.org/licenses/MIT) 开源授权许可证，完整的授权说明可在 [LICENSE](LICENSE) 文件中找到。
+本项目源码采用 [MIT](https://opensource.org/licenses/MIT) 开源授权许可证，完整的授权说明可在 [LICENSE](LICENSE) 文件中找到。
+
+
+文档内容的版权由各个文档各自表述。
