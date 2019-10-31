@@ -4,8 +4,10 @@ package vars
 
 import "strings"
 
-// 主版本号，实际版本号可能还会加上构建日期，
-// 可通过 Version() 函数获取完整的版本号。
+// 程序的版本号
+//
+// 遵守 https://semver.org/lang/zh-CN/ 规则。
+// 程序不兼容或是文档格式不兼容时，需要提升主版本号。
 const version = "5.0.0"
 
 var (
@@ -39,7 +41,7 @@ func CommitHash() string {
 
 // DocVersion 文档的版本号
 //
-// 取程序版本号的主版本号部分，返回格式为 v + 主版本号，比如 v5
+// 当文档格式不兼容时，此值也会发生变化。
 func DocVersion() string {
 	return docVersion
 }

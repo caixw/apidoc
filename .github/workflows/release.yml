@@ -2,7 +2,9 @@ name: Release
 on:
   create:
     tags:
-      - v*
+      - 'v*'
+      - '!v*-alpha'
+      - '!v*-beta'
 
 jobs:
 
@@ -36,4 +38,3 @@ jobs:
           args: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          # TODO 使用 ../../build.sh 编译？

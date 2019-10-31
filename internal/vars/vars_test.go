@@ -10,7 +10,7 @@ import (
 )
 
 // 对一些堂量的基本检测。
-func TestConsts(t *testing.T) {
+func TestConst(t *testing.T) {
 	a := assert.New(t)
 
 	a.True(len(Name) > 0)
