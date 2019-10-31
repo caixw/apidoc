@@ -13,3 +13,8 @@ charset = utf-8
 [*.{htm,html,js,css}]
 indent_style = space
 indent_size = 4
+
+# yaml
+[*.{yaml,yml}]
+indent_style = space
+indent_size = 2
