@@ -1,6 +1,6 @@
 # goreleaser 配置文件
 
-builders:
+builds:
   - id: binary
     goos:
       - darwin
@@ -10,4 +10,16 @@ builders:
       - amd64
     ldflags:
       - -s -w -X github.com/caixw/apidoc/v5/internal/vars.commitHash={{.Commit}} -X github.com/caixw/apidoc/v5/internal/vars.buildDate={{time "20060102"}}
+
+archives:
+  - builds:
+      - binary
+    replacements:
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: 'checksums.txt'
 
