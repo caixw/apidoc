@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-// Package config 负责命令行工具 apidoc 的配置文件管理
+// Package config 管理配置文件的相关功能
 package config
 
 import (
@@ -12,9 +12,9 @@ import (
 	"github.com/issue9/version"
 	"gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/v5"
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/output"
 )
@@ -73,7 +73,7 @@ func loadFile(wd, file string) (*Config, error) {
 
 func (cfg *Config) sanitize(path string) *message.SyntaxError {
 	// 比较版本号兼容问题
-	compatible, err := version.SemVerCompatible(apidoc.Version(), cfg.Version)
+	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
 	if err != nil {
 		return message.WithError(path, "version", 0, err)
 	}
@@ -104,8 +104,8 @@ func (cfg *Config) sanitize(path string) *message.SyntaxError {
 	return nil
 }
 
-func detectConfig(wd string) (*Config, error) {
-	inputs, err := input.Detect(wd, true)
+func detectConfig(wd string, recursive bool) (*Config, error) {
+	inputs, err := input.Detect(wd, recursive)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func detectConfig(wd string) (*Config, error) {
 	}
 
 	return &Config{
-		Version: apidoc.Version(),
+		Version: vars.Version(),
 		Inputs:  inputs,
 		Output: &output.Options{
 			Path: rel(filepath.Join(wd, docFilename), wd),
@@ -129,8 +129,8 @@ func detectConfig(wd string) (*Config, error) {
 // Write 根据 wd 所在目录的内容生成一个配置文件，并写入到该目录配置文件中。
 //
 // wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
-func Write(wd string) error {
-	cfg, err := detectConfig(wd)
+func Write(wd string, recursive bool) error {
+	cfg, err := detectConfig(wd, recursive)
 	if err != nil {
 		return err
 	}

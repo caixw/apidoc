@@ -8,10 +8,12 @@ package apidoc
 
 import (
 	"net/http"
+	"time"
 
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/input"
+	"github.com/caixw/apidoc/v5/internal/config"
 	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
@@ -40,6 +42,8 @@ func Version() string {
 //
 // 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
 // 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
+//
+// NOTE: 需要先调用 Init() 初始化本地化信息。
 func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	doc, err := input.Parse(h, i...)
 	if err != nil {
@@ -59,4 +63,36 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 // 的代码搭建一个简易的 https://apidoc.tools 网站。
 func Site(dir string) http.Handler {
 	return docs.Handler(dir)
+}
+
+// Make 加载 wd 下的配置文件，生成文档内容。
+//
+// NOTE: 需要先调用 Init() 初始化本地化信息。
+func Make(h *message.Handler, wd string, test bool) {
+	now := time.Now()
+
+	cfg, err := config.Load(wd)
+	if err != nil {
+		h.Error(message.Erro, err)
+		return
+	}
+
+	if !test {
+		if err := Do(h, cfg.Output, cfg.Inputs...); err != nil {
+			h.Error(message.Erro, err)
+			return
+		}
+		h.Message(message.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(now))
+	} else {
+		if _, err := input.Parse(h, cfg.Inputs...); err != nil {
+			h.Error(message.Erro, err)
+			return
+		}
+		h.Message(message.Succ, locale.TestSuccess)
+	}
+}
+
+// Detect 检测 wd 目录，并根据目录情况写入配置文件到该目录。
+func Detect(wd string, recursive bool) error {
+	return config.Write(wd, recursive)
 }

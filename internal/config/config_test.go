@@ -8,8 +8,8 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5"
 	"github.com/caixw/apidoc/v5/input"
+	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
 func TestLoadFile(t *testing.T) {
@@ -27,13 +27,13 @@ func TestWrite_Load(t *testing.T) {
 
 	wd, err := filepath.Abs("./")
 	a.NotError(err).NotEmpty(wd)
-	a.NotError(Write(wd))
+	a.NotError(Write(wd, true))
 
 	cfg, err := Load(wd)
 	a.NotError(err).
 		NotNil(cfg)
 
-	a.Equal(cfg.Version, apidoc.Version()).
+	a.Equal(cfg.Version, vars.Version()).
 		Equal(cfg.Inputs[0].Lang, "go")
 }
 

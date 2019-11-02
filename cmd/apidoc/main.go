@@ -18,15 +18,12 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"time"
 
 	"github.com/issue9/term/colors"
 	"golang.org/x/text/language"
+	xmessage "golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v5"
-	"github.com/caixw/apidoc/v5/input"
-	"github.com/caixw/apidoc/v5/internal/cmd/config"
-	"github.com/caixw/apidoc/v5/internal/cmd/term"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
@@ -49,7 +46,7 @@ var (
 
 func init() {
 	if err := apidoc.Init(language.Und); err != nil {
-		term.Line(warnOut, warnColor, err)
+		printLine(warnOut, warnColor, err)
 	}
 }
 
@@ -68,7 +65,7 @@ func main() {
 		return
 	case *v:
 		goVersion := strings.TrimLeft(runtime.Version(), "go")
-		term.Locale(infoOut, infoColor, locale.FlagVersion, apidoc.Version(), vars.DocVersion(), vars.CommitHash(), goVersion)
+		printLocale(infoOut, infoColor, locale.FlagVersion, apidoc.Version(), vars.DocVersion(), vars.CommitHash(), goVersion)
 		return
 	case *t:
 		parse(true)
@@ -87,23 +84,22 @@ func main() {
 func detect() {
 	paths, err := getPaths()
 	if err != nil {
-		term.Line(erroOut, erroColor, err)
+		printLine(erroOut, erroColor, err)
 		return
 	}
 
 	for _, dir := range paths {
-		if err := config.Write(dir); err != nil {
-			term.Line(erroOut, erroColor, err)
+		if err := apidoc.Detect(dir, true); err != nil {
+			printLine(erroOut, erroColor, err)
 			return
 		}
-		term.Locale(succOut, succColor, locale.ConfigWriteSuccess, dir)
+		printLocale(succOut, succColor, locale.ConfigWriteSuccess, dir)
 	}
 }
 
 // 参数 test 表示是否只作语法检测，不输出内容。
 func parse(test bool) {
-	h := message.NewHandler(term.NewHandlerFunc(erroOut, warnOut, infoOut, succOut,
-		erroColor, warnColor, infoColor, succColor))
+	h := message.NewHandler(newHandlerFunc())
 
 	paths, err := getPaths()
 	if err != nil {
@@ -111,27 +107,7 @@ func parse(test bool) {
 		return
 	}
 	for _, path := range paths {
-		now := time.Now()
-
-		cfg, err := config.Load(path)
-		if err != nil {
-			h.Error(message.Erro, err)
-			continue
-		}
-
-		if !test {
-			if err := apidoc.Do(h, cfg.Output, cfg.Inputs...); err != nil {
-				h.Error(message.Erro, err)
-				continue
-			}
-			h.Message(message.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(now))
-		} else {
-			if _, err := input.Parse(h, cfg.Inputs...); err != nil {
-				h.Error(message.Erro, err)
-				continue
-			}
-			h.Message(message.Succ, locale.TestSuccess)
-		}
+		apidoc.Make(h, path, test)
 	} // end for paths
 
 	h.Stop()
@@ -163,7 +139,7 @@ func langs(w io.Writer, color colors.Color, tail int) {
 	for _, l := range langs {
 		n := l.Name + strings.Repeat(" ", maxName-len(l.Name))
 		d := l.DisplayName + strings.Repeat(" ", maxDisplay-len(l.DisplayName))
-		term.Line(w, color, n, d, strings.Join(l.Exts, " "))
+		printLine(w, color, n, d, strings.Join(l.Exts, " "))
 	}
 }
 
@@ -172,7 +148,7 @@ func usage() {
 	flag.CommandLine.SetOutput(buf)
 	flag.PrintDefaults()
 
-	term.Locale(infoOut, infoColor, locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
+	printLocale(infoOut, infoColor, locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
 }
 
 func getPaths() ([]string, error) {
@@ -191,4 +167,44 @@ func getPaths() ([]string, error) {
 	}
 
 	return paths, nil
+}
+
+func newHandlerFunc() message.HandlerFunc {
+	erroPrefix := locale.Sprintf(locale.ErrorPrefix)
+	warnPrefix := locale.Sprintf(locale.WarnPrefix)
+	infoPrefix := locale.Sprintf(locale.InfoPrefix)
+	succPrefix := locale.Sprintf(locale.SuccessPrefix)
+
+	return func(msg *message.Message) {
+		switch msg.Type {
+		case message.Erro:
+			printMessage(erroOut, erroColor, erroPrefix, msg.Message)
+		case message.Warn:
+			printMessage(warnOut, warnColor, warnPrefix, msg.Message)
+		case message.Succ:
+			printMessage(succOut, succColor, succPrefix, msg.Message)
+		default: // message.Info 采用相同的值
+			printMessage(infoOut, infoColor, infoPrefix, msg.Message)
+		}
+	}
+}
+
+func printMessage(out io.Writer, color colors.Color, prefix, msg string) {
+	if _, err := colors.Fprint(out, color, colors.Default, prefix); err != nil {
+		panic(err)
+	}
+	printLine(out, colors.Default, msg)
+}
+
+// 向控制台输出一行本地化的内容
+func printLocale(out io.Writer, color colors.Color, key xmessage.Reference, v ...interface{}) {
+	l := locale.Sprintf(key, v...)
+	printLine(out, color, l)
+}
+
+// 向控制台输出一行内容
+func printLine(out io.Writer, color colors.Color, v ...interface{}) {
+	if _, err := colors.Fprintln(out, color, colors.Default, v...); err != nil {
+		panic(err)
+	}
 }

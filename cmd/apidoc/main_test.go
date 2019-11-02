@@ -16,6 +16,7 @@ import (
 	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v5/internal/lang"
+	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
 func TestDetect(t *testing.T) {
@@ -86,4 +87,12 @@ func TestGetPaths(t *testing.T) {
 	abs, err := filepath.Abs("./")
 	a.NotError(err).NotEmpty(abs)
 	a.Equal(paths[0], abs)
+}
+
+func TestPrintLocale(t *testing.T) {
+	a := assert.New(t)
+
+	buf := new(bytes.Buffer)
+	printLocale(buf, colors.Default, locale.ErrRequired)
+	a.Contains(buf.String(), locale.ErrRequired)
 }
