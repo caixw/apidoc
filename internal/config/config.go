@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/issue9/utils"
 	"github.com/issue9/version"
 	"gopkg.in/yaml.v2"
 
@@ -19,11 +20,8 @@ import (
 	"github.com/caixw/apidoc/v5/output"
 )
 
-// 采用 detect 检测目录内容时，需要赋予的一些默认值
-const (
-	configFilename = ".apidoc.yaml"
-	docFilename    = "apidoc.xml"
-)
+// 允许的配置文件名称
+var configFilenames = []string{".apidoc.yaml", ".apidoc.yml"}
 
 // Config 项目的配置内容
 type Config struct {
@@ -48,11 +46,17 @@ type Config struct {
 
 // Load 加载指定目录下的配置文件
 func Load(wd string) (*Config, error) {
-	return loadFile(wd, configFilename)
+	for _, filename := range configFilenames {
+		path := filepath.Join(wd, filename)
+		if utils.FileExists(path) {
+			return loadFile(wd, path)
+		}
+	}
+
+	return nil, message.NewLocaleError("", filepath.Join(wd, configFilenames[0]), 0, locale.ErrRequired)
 }
 
-func loadFile(wd, file string) (*Config, error) {
-	path := filepath.Join(wd, file)
+func loadFile(wd, path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, message.WithError(path, "", 0, err)
@@ -121,7 +125,7 @@ func detectConfig(wd string, recursive bool) (*Config, error) {
 		Version: vars.Version(),
 		Inputs:  inputs,
 		Output: &output.Options{
-			Path: rel(filepath.Join(wd, docFilename), wd),
+			Path: rel(filepath.Join(wd, "apidoc.xml"), wd),
 		},
 	}, nil
 }
@@ -140,7 +144,7 @@ func Write(wd string, recursive bool) error {
 		return err
 	}
 
-	path, err := abs(configFilename, wd)
+	path, err := abs(configFilenames[0], wd)
 	if err != nil {
 		return err
 	}

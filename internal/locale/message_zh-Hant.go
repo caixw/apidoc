@@ -34,13 +34,11 @@ apidoc [options] [path]
 
 	// 錯誤信息，可能在地方用到
 	ErrRequired:              "不能為空",
-	ErrMustEmpty:             "只能為空",
 	ErrInvalidFormat:         "格式不正確",
 	ErrDirNotExists:          "目錄不存在",
 	ErrUnsupportedInputLang:  "不支持的輸入語言：%s",
 	ErrNotFoundEndFlag:       "找不到結束符號",
 	ErrNotFoundSupportedLang: "該目錄下沒有支持的語言文件",
-	ErrUnknownTag:            "不認識的標簽",
 	ErrDirIsEmpty:            "目錄下沒有需要解析的文件",
 	ErrInvalidValue:          "無效的值",
 	ErrPathNotMatchParams:    "地址參數不匹配",

@@ -15,10 +15,10 @@ import (
 func TestLoadFile(t *testing.T) {
 	a := assert.New(t)
 
-	cfg, err := loadFile("./", "not-exists-file")
+	cfg, err := loadFile("./", "./not-exists-file")
 	a.Error(err).Nil(cfg)
 
-	cfg, err = loadFile("./", "failed.yaml")
+	cfg, err = loadFile("./", "./failed.yaml")
 	a.Error(err).Nil(cfg)
 }
 

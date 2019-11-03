@@ -33,13 +33,11 @@ apidoc [options] [path]
 
 	// 错误信息，可能在地方用到
 	ErrRequired              = "不能为空"
-	ErrMustEmpty             = "只能为空"
 	ErrInvalidFormat         = "格式不正确"
 	ErrDirNotExists          = "目录不存在"
 	ErrUnsupportedInputLang  = "不支持的输入语言：%s"
 	ErrNotFoundEndFlag       = "找不到结束符号"
 	ErrNotFoundSupportedLang = "该目录下没有支持的语言文件"
-	ErrUnknownTag            = "不认识的标签"
 	ErrDirIsEmpty            = "目录下没有需要解析的文件"
 	ErrInvalidValue          = "无效的值"
 	ErrPathNotMatchParams    = "地址参数不匹配"
