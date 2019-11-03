@@ -14,14 +14,14 @@ jobs:
         
     steps:
 
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+
       - name: Set up Go ${{ matrix.go }}
         uses: actions/setup-go@v1
         with:
           go-version: ${{ matrix.go }}
         id: go
-
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v1
 
       - name: generate
         run: go generate -v ./...

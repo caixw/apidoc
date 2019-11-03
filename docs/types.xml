@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<types>
+
+    <!-- 配置文件的类型定义 -->
+    <types parent="usage">
+        <type name=".apidoc.yaml">
+            <item name="version" type="version" required="true" />
+            <item name="inputs" type="object[]" required="true" />
+            <item name="inputs.dir" type="string" required="true" />
+            <item name="inputs.recursive" type="bool" required="false" />
+            <item name="inputs.lang" type="string" required="true" />
+            <item name="output" type="object" required="true" />
+            <item name="output.path" type="string" required="true" />
+            <item name="output.tags" type="string[]" required="false" />
+            <item name="output.style" type="string" required="false" />
+        </type>
+    </types>
+
+    <types parent="spec">
+        <type name="apidoc">
+            <item name="@version" type="version" required="true" />
+            <item name="@lang" type="string" required="false" />
+            <item name="@logo" type="string" required="false" />
+            <item name="@created" type="string" required="false" />
+            <item name="title" type="string" required="true" />
+            <item name="description" type="string" required="true" />
+            <item name="contract" type="contract" required="false" />
+            <item name="license" type="link" required="false" />
+            <item name="tag" type="tag[]" required="false" />
+            <item name="server" type="server[]" required="true" />
+            <item name="response" type="request[]" required="false" />
+            <item name="api" type="api[]" required="false" />
+        </type>
+
+        <type name="link">
+            <item name="@url" type="string" required="true" />
+            <item name="." type="string" required="true" />
+        </type>
+
+        <type name="contact">
+            <item name="@url" type="string" required="true" />
+            <item name="@email" type="string" required="true" />
+            <item name="." type="string" required="true" />
+        </type>
+
+        <type name="tag">
+            <item name="@name" type="string" required="true" />
+            <item name="@title" type="string" required="true" />
+            <item name="@deprecated" type="version" required="false" />
+        </type>
+
+        <type name="server">
+            <item name="@name" type="string" required="true" />
+            <item name="@url" type="string" required="true" />
+            <item name="@deprecated" type="version" required="false" />
+            <item name="." type="string" required="true" />
+        </type>
+
+        <type name="api">
+            <item name="@version" type="version" required="false" />
+            <item name="@method" type="string" required="true" />
+            <item name="@summary" type="string" required="true" />
+            <item name="@deprecated" type="version" required="false" />
+            <item name="@id" type="string" required="false" />
+            <item name="description" type="string" required="false" />
+            <item name="path" type="path" required="false" />
+            <item name="request" type="request[]" required="false" />
+            <item name="response" type="request[]" required="true" />
+            <item name="callback" type="callback" required="false" />
+            <item name="tag" type="string[]" required="false" />
+            <item name="server" type="string[]" required="false" />
+            <item name="header" type="header[]" required="false" />
+        </type>
+
+        <type name="path">
+            <item name="@path" type="string" required="true" />
+            <item name="param" type="param[]" required="false" />
+            <item name="query" type="param[]" required="false" />
+        </type>
+
+        <type name="request">
+            <item name="@name" type="string" required="true" />
+            <item name="@type" type="string" required="true" />
+            <item name="@deprecated" type="version" required="false" />
+            <item name="@summary" type="string" required="true" />
+            <item name="@array" type="bool" required="false" />
+            <item name="@status" type="number" required="true" />
+            <item name="@mimetype" type="string" required="false" />
+            <item name="description" type="string" required="false" />
+            <item name="enum" type="enum[]" required="false" />
+            <item name="param" type="param[]" required="false" />
+            <item name="example" type="example" required="false" />
+            <item name="header" type="header[]" required="false" />
+        </type>
+
+        <type name="param">
+            <item name="@name" type="string" required="true" />
+            <item name="@type" type="string" required="true" />
+            <item name="@deprecated" type="version" required="false" />
+            <item name="@default" type="string" required="false" />
+            <item name="@optional" type="bool" required="false" />
+            <item name="@summary" type="string" required="true" />
+            <item name="@array" type="bool" required="false" />
+            <item name="description" type="string" required="false" />
+            <item name="enum" type="enum[]" required="false" />
+            <item name="param" type="param[]" required="false" />
+        </type>
+
+        <type name="enum">
+            <item name="@value" type="string" required="true" />
+            <item name="@deprecated" type="version" required="false" />
+            <item name="." type="string" required="true" />
+        </type>
+
+        <type name="example">
+            <item name="@mimetype" type="string" required="true" />
+            <item name="." type="string" required="true" />
+        </type>
+
+        <type name="header">
+            <item name="@name" type="string" required="true" />
+            <item name="@deprecated" type="version" required="false" />
+            <item name="@summary" type="string" required="true" />
+            <item name="description" type="string" required="true" />
+        </type>
+
+        <type name="callback">
+            <item name="@method" type="string" required="true" />
+            <item name="@summary" type="string" required="true" />
+            <item name="@deprecated" type="version" required="false" />
+            <item name="description" type="string" required="false" />
+            <item name="path" type="path" required="true" />
+            <item name="request" type="request[]" required="true" />
+            <item name="response" type="request[]" required="true" />
+        </type>
+
+        <type name="version" />
+    </types>
+</types>

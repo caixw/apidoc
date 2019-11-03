@@ -117,31 +117,45 @@
             </xsl:call-template>
         </xsl:for-each>
 
-        <xsl:apply-templates select="/docs/types[@parent=$doc/@id]/type" />
+        <xsl:for-each select="document('types.xml')/types/types[@parent=$doc/@id]/type">
+            <xsl:call-template name="type">
+                <xsl:with-param name="type" select="." />
+                <xsl:with-param name="parent" select="$doc/@id" />
+            </xsl:call-template>
+        </xsl:for-each>
     </article>
 </xsl:template>
 
+<xsl:variable name="header-locale" select="/docs/type-locale/header" />
+<xsl:variable name="doc-types" select="/docs/types" />
+
 <!-- 将类型显示为一个 table -->
-<xsl:template match="/docs/types/type">
-    <article id="type_{@name}">
+<xsl:template name="type">
+    <xsl:param name="type" />
+    <xsl:param name="parent" />
+
+    <xsl:variable name="type-locale" select="$doc-types[@parent=$parent]/type[@name=$type/@name]" />
+
+    <article id="type_{$type/@name}">
         <h3>
-            <xsl:value-of select="@name" />
-            <a class="link" href="#type_{@name}">&#160;&#160;&#128279;</a>
+            <xsl:value-of select="$type/@name" />
+            <a class="link" href="#type_{$type/@name}">&#160;&#160;&#128279;</a>
         </h3>
-        <xsl:copy-of select="description/node()" />
-        <xsl:if test="item or group">
+        <xsl:copy-of select="$type-locale/description/node()" />
+        <xsl:if test="item">
             <table>
                 <thead>
                     <tr>
-                        <th><xsl:value-of select="/docs/type-locale/header/name" /></th>
-                        <th><xsl:value-of select="/docs/type-locale/header/type" /></th>
-                        <th><xsl:value-of select="/docs/type-locale/header/required" /></th>
-                        <th><xsl:value-of select="/docs/type-locale/header/description" /></th>
+                        <th><xsl:copy-of select="$header-locale/name" /></th>
+                        <th><xsl:copy-of select="$header-locale/type" /></th>
+                        <th><xsl:copy-of select="$header-locale/required" /></th>
+                        <th><xsl:copy-of select="$header-locale/description" /></th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <xsl:for-each select="item">
+                    <xsl:for-each select="$type/item">
+                    <xsl:variable name="name" select="@name" />
                     <tr>
                         <th><xsl:value-of select="@name" /></th>
                         <td><xsl:value-of select="@type" /></td>
@@ -150,7 +164,7 @@
                                 <xsl:with-param name="chk" select="@required" />
                             </xsl:call-template>
                         </td>
-                        <td><xsl:copy-of select="." /></td>
+                        <td><xsl:copy-of select="$type-locale/item[@name=$name]/node()" /></td>
                     </tr>
                     </xsl:for-each>
                 </tbody>
