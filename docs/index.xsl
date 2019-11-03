@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
-<xsl:output
-    method="html"
-    encoding="utf-8"
-    indent="yes"
-    version="5.0"
-    doctype-system="about:legacy-compat" />
+<xsl:output method="html" encoding="utf-8" indent="yes" version="5.0" doctype-system="about:legacy-compat" />
 
 <xsl:variable name="curr-lang">
     <xsl:value-of select="/docs/@lang" />
@@ -20,12 +14,8 @@
     </xsl:variable>
 
     <xsl:choose>
-        <xsl:when test="$title=''">
-            <xsl:value-of select="$curr-lang" />
-        </xsl:when>
-        <xsl:otherwise>
-            <xsl:value-of select="$title" />
-        </xsl:otherwise>
+        <xsl:when test="$title=''"><xsl:value-of select="$curr-lang" /></xsl:when>
+        <xsl:otherwise><xsl:value-of select="$title" /></xsl:otherwise>
     </xsl:choose>
 </xsl:variable>
 
@@ -73,7 +63,7 @@
             </header>
 
             <main>
-                <xsl:for-each select="docs/doc[not(@parent)]">
+                <xsl:for-each select="docs/doc[not(@parent)]"> <!-- 不存在 @parent，表示是顶级的 doc 元素 -->
                     <xsl:call-template name="article">
                         <xsl:with-param name="doc" select="." />
                     </xsl:call-template>
@@ -93,7 +83,9 @@
 <xsl:template name="article">
     <xsl:param name="doc" />
 
-    <article id="{$doc/@id}">
+    <xsl:variable name="id" select="$doc/@id" />
+
+    <article id="{$id}">
         <xsl:choose> <!-- 根据是否存在 $parent，决定是用 h3 还是 h2 标签 -->
             <xsl:when test="$doc/@parent">
                 <h3>
@@ -111,21 +103,22 @@
 
         <xsl:copy-of select="$doc/node()" />
 
-        <xsl:for-each select="/docs/doc[@parent=$doc/@id]">
+        <xsl:for-each select="/docs/doc[@parent=$id]">
             <xsl:call-template name="article">
                 <xsl:with-param name="doc" select="." />
             </xsl:call-template>
         </xsl:for-each>
 
-        <xsl:for-each select="document('types.xml')/types/types[@parent=$doc/@id]/type">
+        <xsl:for-each select="document('types.xml')/types/types[@parent=$id]/type">
             <xsl:call-template name="type">
                 <xsl:with-param name="type" select="." />
-                <xsl:with-param name="parent" select="$doc/@id" />
+                <xsl:with-param name="parent" select="$id" />
             </xsl:call-template>
         </xsl:for-each>
     </article>
 </xsl:template>
 
+<!-- 以下两个变量仅用于 type 模板，在模板中无法直接使用 /docs 元素，所以使用变量引用 -->
 <xsl:variable name="header-locale" select="/docs/type-locale/header" />
 <xsl:variable name="doc-types" select="/docs/types" />
 

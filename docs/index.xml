@@ -11,13 +11,7 @@
     <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
-    <!--
-    type-locale 定义了类型结构在渲染为表格时，表格头的本地化内容。
-    类型结构的定义如下：
-    <type name="apidoc">
-        <item name="version" type="string" required="true">版本信息</item>
-    </type>
-    -->
+    <!-- 类型描述中表格的相关本化地信息 -->
     <type-locale>
         <header>
             <name>名称</name>
