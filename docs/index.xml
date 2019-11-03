@@ -66,7 +66,7 @@
 
         <p>具体的示例代码可以参考：<a href="./example/index.xml">example</a></p>
 
-        <p>以下是对各个 XML 元素以及参数介绍，其中以 <code>@</code> 开头的表示 XML 属性，其它表示子元素。</p>
+        <p>以下是对各个 XML 元素以及参数介绍，其中以 <code>@</code> 开头的表示 XML 属性；<code>.</code>表示为当前元素的内容；其它表示子元素。</p>
     </doc>
 
     <doc id="install" title="安装" parent="usage">
