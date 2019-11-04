@@ -64,7 +64,7 @@
 
         <p>文檔被從註釋中提取之後，最終會被合並成壹個 XML 文件，在該文件中 <code>api</code> 作為 <code>apidoc</code> 的壹個子元素存在，如果妳的項目不想把文檔寫在註釋中，也可以直接編寫壹個完整的 XML 文件，將 <code>api</code> 作為 <code>apidoc</code> 的壹個子元素。</p>
 
-        <p>具體的示例代碼可以參考：<a href="./example/index.xml">example</a></p>
+        <p>具體可參考<a href="./example/index.xml">示例代碼。</p>
 
         <p>以下是對各個 XML 元素以及參數介紹，其中以 <code>@</code> 開頭的表示 XML 屬性；<code>.</code>表示為當前元素的內容；其它表示子元素。</p>
     </doc>
@@ -107,6 +107,7 @@
             <item name="inputs">指定輸入的數據，同壹項目只能解析壹種語言。</item>
             <item name="inputs.dir">需要解析的源文件所在目錄</item>
             <item name="inputs.recursive">是否解析子目錄下的源文件</item>
+            <item name="inputs.encoding">編碼，默認為 <code>utf-8</code>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</item>
             <item name="inputs.lang">源文件類型。具體支持的類型可通過 -l 參數進行查找</item>
             <item name="output">控制輸出行為</item>
             <item name="output.path">指定輸出的文件名，包含路徑信息。</item>

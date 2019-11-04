@@ -9,6 +9,7 @@
             <item name="inputs" type="object[]" required="true" />
             <item name="inputs.dir" type="string" required="true" />
             <item name="inputs.recursive" type="bool" required="false" />
+            <item name="inputs.encoding" type="string" required="false" />
             <item name="inputs.lang" type="string" required="true" />
             <item name="output" type="object" required="true" />
             <item name="output.path" type="string" required="true" />

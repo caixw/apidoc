@@ -123,16 +123,18 @@ func langs(w io.Writer, color colors.Color, tail int) {
 	}
 	langs = append(langs, ls...)
 
+	// 计算各列的最大长度值
 	var maxDisplay, maxName int
 	for _, l := range langs {
-		if len(l.DisplayName) > maxDisplay {
-			maxDisplay = len(l.DisplayName)
+		width := len(l.DisplayName)
+		if width > maxDisplay {
+			maxDisplay = width
 		}
-		if len(l.Name) > maxName {
-			maxName = len(l.Name)
+		width = len(l.Name)
+		if width > maxName {
+			maxName = width
 		}
 	}
-
 	maxDisplay += tail
 	maxName += tail
 
