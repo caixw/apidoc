@@ -29,13 +29,19 @@ archives:
     - apidoc
     replacements:
       amd64: x86_64
+      darwin: macOS
     format_overrides:
     - goos: windows
       format: zip
     files:
-    - LICENCE
-    - README.md
-    - CHANGELOG.md
+    - licence*
+    - LICENCE*
+    - license*
+    - LICENSE*
+    - readme*
+    - README*
+    - changelog*
+    - CHANGELOG*
 
 checksum:
   name_template: checksums.txt
