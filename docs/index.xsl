@@ -36,7 +36,7 @@
             <link rel="canonical" href="{document('config.xml')/config/url}" />
             <link rel="stylesheet" type="text/css" href="./index.css" />
             <link rel="license" href="{/docs/liense/@url}" />
-            <script src="./index.js"></script>
+            <script src="./index.js" />
         </head>
 
         <body>
@@ -86,7 +86,7 @@
                     <xsl:value-of select="docs/footer/license/p[3]" />
                 </p>
                 </div>
-                <a href="#" class="goto-top"></a>
+                <a href="#" class="goto-top" />
             </footer>
         </body>
     </html>
