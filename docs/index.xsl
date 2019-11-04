@@ -40,33 +40,7 @@
         </head>
 
         <body>
-            <header>
-                <div class="wrap">
-                    <h1>
-                        <img src="./icon.svg" />
-                        <xsl:value-of select="document('config.xml')/config/name" />
-                        <span class="version">&#160;(<xsl:value-of select="document('config.xml')/config/version" />)</span>
-                    </h1>
-
-                    <div class="menus" role="navigation">
-                        <xsl:for-each select="docs/doc[not(@parent)]">
-                            <a class="menu" href="#{@id}"><xsl:value-of select="@title" /></a>
-                        </xsl:for-each>
-
-                        <span class="drop-menus" role="menu">
-                            <a class="menu">
-                            <xsl:value-of select="$curr-lang-title" />
-                            <span aria-hiddren="true">&#160;&#x25bc;</span>
-                            </a>
-                            <ul>
-                            <xsl:for-each select="document('locales.xml')/locales/locale">
-                                <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
-                            </xsl:for-each>
-                            </ul>
-                        </span>
-                    </div>
-                </div>
-            </header>
+            <xsl:call-template name="header" />
 
             <main>
                 <xsl:for-each select="docs/doc[not(@parent)]"> <!-- 不存在 @parent，表示是顶级的 doc 元素 -->
@@ -92,6 +66,37 @@
     </html>
 </xsl:template>
 
+<xsl:template name="header">
+    <header>
+        <div class="wrap">
+            <h1>
+                <img src="./icon.svg" />
+                <xsl:value-of select="document('config.xml')/config/name" />
+                <span class="version">&#160;(<xsl:value-of select="document('config.xml')/config/version" />)</span>
+            </h1>
+
+            <div class="menus" role="navigation">
+                <xsl:for-each select="docs/doc[not(@parent)]">
+                    <a class="menu" href="#{@id}"><xsl:value-of select="@title" /></a>
+                </xsl:for-each>
+
+                <span class="drop-menus" role="menu">
+                    <a class="menu">
+                        <xsl:value-of select="$curr-lang-title" />
+                        <span aria-hiddren="true">&#160;&#x25bc;</span>
+                    </a>
+                    <ul>
+                        <xsl:for-each select="document('locales.xml')/locales/locale">
+                            <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
+                        </xsl:for-each>
+                    </ul>
+                </span>
+            </div>
+        </div>
+    </header>
+</xsl:template>
+
+<!-- 将 doc 元素转换成 article HTML -->
 <xsl:template name="article">
     <xsl:param name="doc" />
 
