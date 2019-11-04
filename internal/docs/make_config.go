@@ -9,31 +9,44 @@ import (
 	"encoding/xml"
 	"os"
 
+	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
 const (
-	fileHeader = "\n<!-- 该文件由 /internal/docs/make.go 生成，请勿手动修改 -->\n\n"
-	target     = "../../docs/config.xml"
+	fileHeader = `
+<!--
+	该文件由 /internal/docs/make.go 生成，请勿手动修改。
+
+	主要包含了项目的一些基础配置项。
+-->
+`
+	target = "../../docs/config.xml"
 )
 
 type config struct {
 	XMLName struct{} `xml:"config"`
 
-	Name    string `xml:"name"`
-	Version string `xml:"version"`
-	Repo    string `xml:"repo"`
-	URL     string `xml:"url"`
+	Name      string   `xml:"name"`
+	Version   string   `xml:"version"`
+	Repo      string   `xml:"repo"`
+	URL       string   `xml:"url"`
+	Languages []string `xml:"languages>language"`
 }
 
 var defaultConfig = &config{
-	Name:    vars.Name,
-	Version: vars.DocVersion(),
-	Repo:    vars.RepoURL,
-	URL:     vars.OfficialURL,
+	Name:      vars.Name,
+	Version:   vars.DocVersion(),
+	Repo:      vars.RepoURL,
+	URL:       vars.OfficialURL,
+	Languages: make([]string, 0, len(lang.Langs())),
 }
 
 func main() {
+	for _, lang := range lang.Langs() {
+		defaultConfig.Languages = append(defaultConfig.Languages, lang.DisplayName)
+	}
+
 	data, err := xml.MarshalIndent(defaultConfig, "", "\t")
 	if err != nil {
 		panic(err)

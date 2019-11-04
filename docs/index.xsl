@@ -19,12 +19,19 @@
     </xsl:choose>
 </xsl:variable>
 
+<xsl:variable name="keywords">
+    <xsl:for-each select="document('config.xml')/config/languages/language">
+        <xsl:value-of select="." /><xsl:value-of select="','" />
+    </xsl:for-each>
+</xsl:variable>
+
 <xsl:template match="/">
     <html>
         <head>
             <title><xsl:value-of select="docs/title" /></title>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+            <meta name="keywords" content="{$keywords}RESTful API,document,apidoc" />
             <link rel="icon" type="image/png" href="./icon.png" />
             <link rel="canonical" href="{document('config.xml')/config/url}" />
             <link rel="stylesheet" type="text/css" href="./index.css" />
@@ -45,7 +52,6 @@
                         <xsl:for-each select="docs/doc[not(@parent)]">
                             <a class="menu" href="#{@id}"><xsl:value-of select="@title" /></a>
                         </xsl:for-each>
-                        <a class="menu" href="{document('config.xml')/config/repo}">Github</a>
 
                         <span class="drop-menus" role="menu">
                             <a class="menu">
@@ -72,7 +78,13 @@
 
             <footer>
                 <div class="wrap">
-                <xsl:copy-of select="docs/footer/node()" />
+                <p>
+                    <xsl:value-of select="docs/footer/license/p[1]" />
+                    <a href="{document('config.xml')/config/repo}">Github</a>
+                    <xsl:value-of select="docs/footer/license/p[2]" />
+                    <a href="{docs/license/@url}"><xsl:value-of select="docs/license" /></a>
+                    <xsl:value-of select="docs/footer/license/p[3]" />
+                </p>
                 </div>
                 <a href="#" class="goto-top"></a>
             </footer>
@@ -90,7 +102,7 @@
             <xsl:when test="$doc/@parent">
                 <h3>
                     <xsl:value-of select="$doc/@title" />
-                    <a class="link" href="#{$doc/@id}">&#160;&#160;&#128279;</a>
+                    <a class="link" href="#{$id}">&#160;&#160;&#128279;</a>
                 </h3>
             </xsl:when>
             <xsl:otherwise>

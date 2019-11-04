@@ -11,6 +11,7 @@
     <title>apidoc | RESTful API 文檔處理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 國際 (CC BY 4.0)</license>
 
+    <!-- 類型描述中表格的相關本化地信息 -->
     <type-locale>
         <header>
             <name>名稱</name>
@@ -21,7 +22,7 @@
     </type-locale>
 
     <doc id="about" title="關於">
-        <p>apidoc 是壹個簡單的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文檔生成工具，它從代碼註釋中提取特定格式的內容，生成文檔。目前已支持以下語言：C#、C/C++、D、Erlang、Go、Groovy、Java、Javascript、Pascal/Delphi、Perl、PHP、Python、Rust、Ruby、Scala 和 Swift。</p>
+        <p>apidoc 是壹個簡單的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文檔生成工具，它從代碼註釋中提取特定格式的內容，生成文檔。支持諸如 Go、Java、C++、Rust 等大部分開發語言，具體可使用 <code>apidoc -l</code> 命令行查看所有的支持列表。</p>
 
         <p>apidoc 擁有以下特點：</p>
         <ol>
@@ -56,7 +57,7 @@
         <p>多行註釋中，每壹行中以<code>空白字符+symbol+空白字符</code>開頭的，這些字符將會被過濾，symbol 表示該註釋塊的起始字符中的任意字符。比如以上代碼中，所有的 <var>*</var> 將被過濾。</p>
     </doc>
 
-    <doc id="usage" title="使用"></doc>
+    <doc id="usage" title="使用" />
 
     <doc id="spec" title="文檔格式">
         <p>文檔采用 XML 格式。存在兩個頂級標簽：<code>apidoc</code> 和 <code>api</code>，用於描述整體內容和具體接口信息。</p>
@@ -253,6 +254,8 @@
     </types>
 
     <footer>
-        <p>本頁面內容采用 <a href="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 國際 (CC BY 4.0)</a> 進行許可。</p>
+        <license>
+            <p>當前頁面內容托管於 </p><p>，並采用</p><p>進行許可。</p>
+        </license>
     </footer>
 </docs>
