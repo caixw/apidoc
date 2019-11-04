@@ -6,9 +6,6 @@ release:
     name: apidoc
   name_template: '{{.Tag}}'
 
-changelog:
-  skip: true
-
 builds:
   - id: apidoc
 
@@ -36,15 +33,13 @@ archives:
     - goos: windows
       format: zip
     files:
-    - licence*
-    - LICENCE*
-    - license*
-    - LICENSE*
-    - readme*
-    - README*
-    - changelog*
-    - CHANGELOG*
+    - LICENCE
+    - README.md
+    - CHANGELOG.md
 
 checksum:
-  name_template: 'checksums.txt'
+  name_template: checksums.txt
   algorithm: sha256
+
+changelog:
+  skip: true
