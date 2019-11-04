@@ -1,15 +1,24 @@
-# goreleaser 配置文件
+project_name: apidoc
+
+release:
+  github:
+    owner: caixw
+    name: apidoc
+  name_template: '{{.Tag}}'
+
+changelog:
+  skip: true
 
 builds:
   - id: apidoc
 
     goos:
-      - darwin
-      - linux
-      - windows
+    - darwin
+    - linux
+    - windows
 
     goarch:
-      - amd64
+    - amd64
 
     main: ./cmd/apidoc
 
@@ -20,12 +29,22 @@ builds:
 
 archives:
   - builds:
-      - binary
+    - binary
     replacements:
       amd64: x86_64
     format_overrides:
-      - goos: windows
-        format: zip
+    - goos: windows
+      format: zip
+    files:
+    - licence*
+    - LICENCE*
+    - license*
+    - LICENSE*
+    - readme*
+    - README*
+    - changelog*
+    - CHANGELOG*
 
 checksum:
   name_template: 'checksums.txt'
+  algorithm: sha256

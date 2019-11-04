@@ -29,6 +29,9 @@ _testmain.go
 # osx
 .DS_Store
 
+# goreleaser
+dist
+
 # project
 .apidoc.yaml
 .apidoc.yml
