@@ -10,19 +10,14 @@ jobs:
 
   release:
     name: Release
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [macOS-10.14, windows-2016, ubuntu-18.04]
-        go: ['1.13.x']
+    runs-on: ubuntu-latest
 
     steps:
 
       - name: setup Go
         uses: actions/setup-go@v1
         with:
-          go-version: ${{ matrix.go }}
+          go-version: 1.13.x
         id: go
 
       - name: Check out code into the Go module directory
@@ -34,4 +29,7 @@ jobs:
           version: latest
           args: release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          # 如果需要操作其它仓库，比如将 brew 写入其它仓库中，
+          # 则不能使用默认的 GITHUB_TOKEN，需要自行创建。
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

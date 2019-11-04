@@ -70,7 +70,7 @@
     </doc>
 
     <doc id="install" title="安裝" parent="usage">
-        <p>目前僅支持從源代碼編譯：</p>
+          <p>可以直接從 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找妳需要的版本下載，放入 <code>PATH</code> 中即可使用。如果沒有妳需要的平臺文件，則需要從源代碼編譯：</p>
         <ul>
             <li>下載 Go 編譯工具</li>
             <li>下載源代碼</li>
