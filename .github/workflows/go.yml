@@ -9,7 +9,7 @@ jobs:
     
     strategy:
       matrix:
-        os: [macOS-10.14, windows-2016, ubuntu-18.04]
+        os: [macOS-latest, windows-latest, ubuntu-latest]
         go: ['1.13.x']
         
     steps:
@@ -30,11 +30,10 @@ jobs:
         run: go vet -v ./...
         
       - name: Test
-        run: |
-          go test -v -coverprofile=coverage.txt -covermode=atomic ./...
-          bash <(curl -s https://codecov.io/bash)
+        run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
 
       - name: Upload Coverage report
+        if: matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v1.0.3
         with:
           token: ${{secrets.CODECOV_TOKEN}}

@@ -22,7 +22,7 @@
     </type-locale>
 
     <doc id="about" title="关于">
-        <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。支持诸如 Go、Java、C++、Rust 等大部分开发语言，具体可使用 <code>apidoc -l</code> 命令行查看所有的支持列表。</p>
+        <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容生成文档。支持诸如 Go、Java、C++、Rust 等大部分开发语言，具体可使用 <code>apidoc -l</code> 命令行查看所有的支持列表。</p>
 
         <p>apidoc 拥有以下特点：</p>
         <ol>
