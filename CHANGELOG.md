@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Added
+- 添加保存文档至内存的功能；
+
 ## [v5.0.0]
 
 ### Changed

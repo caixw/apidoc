@@ -48,12 +48,12 @@ func (o *Options) contains(tags ...string) bool {
 	return false
 }
 
-func (o *Options) sanitize() *message.SyntaxError {
+func (o *Options) sanitize(buf bool) *message.SyntaxError {
 	if o == nil {
 		return message.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
 
-	if o.Path == "" {
+	if o.Path == "" && !buf {
 		return message.NewLocaleError("", "path", 0, locale.ErrRequired)
 	}
 

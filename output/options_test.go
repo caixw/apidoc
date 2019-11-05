@@ -30,13 +30,15 @@ func TestOptions_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	var o *Options
-	a.Error(o.sanitize())
+	a.Error(o.sanitize(false))
 
 	o = &Options{}
-	a.Error(o.sanitize())
+	a.Error(o.sanitize(false))
+
+	a.NotError(o.sanitize(true))
 
 	o.Path = "./testdir/apidoc.json"
-	a.NotError(o.sanitize())
+	a.NotError(o.sanitize(false))
 	a.Equal(o.Style, stylesheetURL).
 		Equal(2, len(o.procInst)).
 		Contains(o.procInst[1], stylesheetURL)

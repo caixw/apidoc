@@ -7,6 +7,7 @@
 package apidoc
 
 import (
+	"bytes"
 	"net/http"
 	"time"
 
@@ -53,19 +54,19 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	return output.Render(doc, o)
 }
 
-// Site 将 dir 作为静态文件服务内容
-//
-// 默认页为 index.xml，同时会过滤 CNAME，
-// 如果将 dir 指同 docs 目录，相当于本地版本的 https://apidoc.tools
-//
-// 用户可以通过诸如：
-//  http.Handle("/apidoc", apidoc.Site("./docs"))
-// 的代码搭建一个简易的 https://apidoc.tools 网站。
-func Site(dir string) http.Handler {
-	return docs.Handler(dir)
+// Buffer 生成文档内容，并保存在内存。
+func Buffer(h *message.Handler, o *output.Options, i ...*input.Options) (*bytes.Buffer, error) {
+	doc, err := input.Parse(h, i...)
+	if err != nil {
+		return nil, err
+	}
+
+	return output.Buffer(doc, o)
 }
 
-// Make 加载 wd 下的配置文件，生成文档内容。
+// Make 根据 wd 目录下的配置文件生成文档
+//
+// test 表示是否仅测试该配置文件和文档的正确性。
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息。
 func Make(h *message.Handler, wd string, test bool) {
@@ -77,22 +78,55 @@ func Make(h *message.Handler, wd string, test bool) {
 		return
 	}
 
-	if !test {
-		if err := Do(h, cfg.Output, cfg.Inputs...); err != nil {
-			h.Error(message.Erro, err)
-			return
-		}
-		h.Message(message.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(now))
-	} else {
+	if test {
 		if _, err := input.Parse(h, cfg.Inputs...); err != nil {
 			h.Error(message.Erro, err)
 			return
 		}
 		h.Message(message.Succ, locale.TestSuccess)
+	} else {
+		if err := Do(h, cfg.Output, cfg.Inputs...); err != nil {
+			h.Error(message.Erro, err)
+			return
+		}
+		h.Message(message.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(now))
 	}
+}
+
+// MakeBuffer 根据 wd 目录下的配置文件生成文档内容并保存至内存
+//
+// NOTE: 需要先调用 Init() 初始化本地化信息。
+func MakeBuffer(h *message.Handler, wd string) (*bytes.Buffer, time.Duration) {
+	now := time.Now()
+
+	cfg, err := config.Load(wd)
+	if err != nil {
+		h.Error(message.Erro, err)
+		return nil, 0
+	}
+
+	buf, err := Buffer(h, cfg.Output, cfg.Inputs...)
+	if err != nil {
+		h.Error(message.Erro, err)
+		return nil, 0
+	}
+
+	return buf, time.Now().Sub(now)
 }
 
 // Detect 检测 wd 目录，并根据目录情况写入配置文件到该目录。
 func Detect(wd string, recursive bool) error {
 	return config.Write(wd, recursive)
+}
+
+// Site 将 dir 作为静态文件服务内容
+//
+// 默认页为 index.xml，同时会过滤 CNAME，
+// 如果将 dir 指同 docs 目录，相当于本地版本的 https://apidoc.tools
+//
+// 用户可以通过诸如：
+//  http.Handle("/apidoc", apidoc.Site("./docs"))
+// 的代码搭建一个简易的 https://apidoc.tools 网站。
+func Site(dir string) http.Handler {
+	return docs.Handler(dir)
 }

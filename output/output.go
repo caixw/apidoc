@@ -14,32 +14,50 @@ import (
 
 // Render 渲染 doc 的内容
 func Render(d *doc.Doc, opt *Options) error {
-	if err := opt.sanitize(); err != nil {
+	if err := opt.sanitize(false); err != nil {
 		return err
 	}
 
+	buf, err := buffer(d, opt)
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(opt.Path, buf.Bytes(), os.ModePerm)
+}
+
+// Buffer 将内容导出到内存
+func Buffer(d *doc.Doc, opt *Options) (*bytes.Buffer, error) {
+	if err := opt.sanitize(true); err != nil {
+		return nil, err
+	}
+
+	return buffer(d, opt)
+}
+
+func buffer(d *doc.Doc, opt *Options) (*bytes.Buffer, error) {
 	filterDoc(d, opt)
 
 	buf := new(bytes.Buffer)
 	for _, v := range opt.procInst {
 		if _, err := buf.WriteString(v); err != nil {
-			return err
+			return nil, err
 		}
 
 		if err := buf.WriteByte('\n'); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	data, err := xml.MarshalIndent(d, "", "\t")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if _, err = buf.Write(data); err != nil {
-		return err
+		return nil, err
 	}
 
-	return ioutil.WriteFile(opt.Path, buf.Bytes(), os.ModePerm)
+	return buf, nil
 }
 
 func filterDoc(d *doc.Doc, o *Options) {
