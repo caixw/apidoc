@@ -9,7 +9,7 @@ jobs:
     
     strategy:
       matrix:
-        os: [macOS-latest, windows-latest, ubuntu-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
         go: ['1.13.x']
         
     steps:

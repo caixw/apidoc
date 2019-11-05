@@ -20,6 +20,21 @@ const (
 	Succ
 )
 
+func (t Type) String() string {
+	switch t {
+	case Erro:
+		return "ERRO"
+	case Warn:
+		return "WARN"
+	case Info:
+		return "INFO"
+	case Succ:
+		return "SUCC"
+	default:
+		return "<unknown>"
+	}
+}
+
 // Message 输出消息的具体结构
 type Message struct {
 	Type    Type

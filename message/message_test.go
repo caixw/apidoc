@@ -4,6 +4,7 @@ package message
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 	"time"
 
@@ -11,6 +12,8 @@ import (
 
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
+
+var _ fmt.Stringer = Erro
 
 func TestHandler(t *testing.T) {
 	a := assert.New(t)

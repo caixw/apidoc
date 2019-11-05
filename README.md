@@ -85,7 +85,7 @@ inputs := []*input.Options{
     &input.Options{},
 }
 
-apidoc.Do(h, output, inputs...)
+apidoc.Buffer(h, output, inputs...)
 ```
 
 
