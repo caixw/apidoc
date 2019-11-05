@@ -12,12 +12,17 @@ import (
 
 const indexPage = "index.xml"
 
+var filterFiles = []string{
+	"CNAME",
+	"README.md",
+}
+
 // Handler 将 docs 当作一个网站进行管理
 func Handler(docs string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
 
-		if len(pp) > 0 && path.Base(pp) == "CNAME" {
+		if len(pp) > 0 && isFilterFile(path.Base(pp)) {
 			errStatus(w, http.StatusNotFound)
 			return
 		}
@@ -52,4 +57,14 @@ func Handler(docs string) http.Handler {
 
 func errStatus(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
+}
+
+func isFilterFile(filename string) bool {
+	for _, file := range filterFiles {
+		if file == filename {
+			return true
+		}
+	}
+
+	return false
 }
