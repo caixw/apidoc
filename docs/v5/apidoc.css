@@ -167,6 +167,7 @@ header .menu ul li label {
     display: inline-flex;
     align-items: baseline;
     word-break: keep-all;
+    white-space: nowrap;
 }
 
 header .menu ul li:last-of-type {
