@@ -40,7 +40,9 @@ func TestInit(t *testing.T) {
 
 	// 设置为系统语言
 	systag, err := syslocale.Get()
-	a.NotError(err).
-		NotError(Init(language.Und)).
+	a.NotError(err)
+
+	// 设置为 Und，依然会采用系统语言
+	a.NotError(Init(language.Und)).
 		Equal(systag, localeTag)
 }
