@@ -47,7 +47,6 @@ func parseType(val string) (Type, error) {
 	}
 
 	return None, locale.Errorf(locale.ErrInvalidFormat)
-
 }
 
 // UnmarshalXMLAttr xml.UnmarshalerAttr
@@ -96,7 +95,6 @@ func (t Type) MarshalXMLAttr(name xml.Name) (attr xml.Attr, err error) {
 	return attr, err
 }
 
-// fmtString
 func (t Type) fmtString() (string, error) {
 	if v, found := typeStringMap[t]; found {
 		return v, nil
