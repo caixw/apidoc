@@ -389,4 +389,7 @@ footer {
 footer .wrap {
     margin: 0 auto;
     max-width: var(--max-width);
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-between;
 }

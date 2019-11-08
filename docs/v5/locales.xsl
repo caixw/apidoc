@@ -244,21 +244,36 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 </xsl:variable>
 
-<!-- footer -->
-<xsl:variable name="locale-footer">
+<!-- license -->
+<xsl:variable name="locale-license">
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hans'" />
         <xsl:with-param name="text">
-            文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>。
-            由 <a href="{document('../config.xml')/config/url}"><xsl:value-of select="document('../config.xml')/config/name" /></a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>。
+            文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>
         </xsl:with-param>
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hant'" />
         <xsl:with-param name="text">
-            文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>。
-            由 <a href="{document('../config.xml')/config/url}"><xsl:value-of select="document('../config.xml')/config/name" /></a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>。
+            文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>
+        </xsl:with-param>
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- generator -->
+<xsl:variable name="locale-generator">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text">
+            由 <a href="{document('../config.xml')/config/url}"><xsl:value-of select="document('../config.xml')/config/name" /></a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>
+        </xsl:with-param>
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+            由 <a href="{document('../config.xml')/config/url}"><xsl:value-of select="document('../config.xml')/config/name" /></a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>
+        <xsl:with-param name="text">
         </xsl:with-param>
     </xsl:call-template>
 </xsl:variable>
