@@ -12,7 +12,7 @@
             <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
             <meta name="generator" content="{document('../config.xml')/config/url}" />
             <link rel="icon" type="image/png" href="{$icon}" />
-            <link rel="license" href="{apidoc/license/@url}" />
+            <xsl:if test="apidoc/license"><link rel="license" href="{apidoc/license/@url}" /></xsl:if>
             <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />
             <script src="{$base-url}apidoc.js"></script>
         </head>
