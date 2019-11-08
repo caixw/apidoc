@@ -10,7 +10,7 @@ apidoc 是一个简单的 RESTful API 文档生成工具，它从代码注释中
 目前支持支持以下语言：C#、C/C++、D、Erlang、Go、Groovy、Java、JavaScript、Pascal/Delphi、
 Perl、PHP、Python、Ruby、Rust、Scala 和 Swift。
 
-具体文档可参考：https://apidoc.tools
+具体文档可参考：<https://apidoc.tools>
 
 ```go
 /**
@@ -50,9 +50,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-
-
-### 安装
+安装
+----
 
 ```shell
 go get github.com/caixw/apidoc
@@ -67,9 +66,8 @@ LANG=lang apidoc
 
 将其中的 lang 设置为你需要的语言。
 
-
-
-### 集成
+集成
+----
 
 若需要将 apidoc 当作包集成到其它 Go 程序中，可参考以下代码：
 
@@ -88,17 +86,14 @@ inputs := []*input.Options{
 apidoc.Buffer(h, output, inputs...)
 ```
 
-
-
-### 参与开发
+参与开发
+--------
 
 请阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 文件的相关内容。
 
-
-
-### 版权
+版权
+----
 
 本项目源码采用 [MIT](https://opensource.org/licenses/MIT) 开源授权许可证，完整的授权说明可在 [LICENSE](LICENSE) 文件中找到。
-
 
 文档内容的版权由各个文档各自表述。

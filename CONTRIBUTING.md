@@ -3,21 +3,19 @@
 apidoc 是一个基于 [MIT](https://opensource.org/licenses/MIT) 的开源软件。
 欢迎大家共同参与开发。**若需要新功能，请先开 issue 讨论。**
 
-
 ## 本地化
 
 本地化包含以下几个部分：
+
 - `internal/locale` 主要包含了程序内各种语法错误以及命令行的提示信息；
 - `docs/vx/locales.xsl` 包含展示界面中的本化元素；`vx` 表示版本信息，比如 `v5`、`v6` 等；
-- `docs/index.*.xml` https://apidoc.tools 网站的内容，* 表示语言 ID，同时需要修改 `docs\locales.xml` 文件；
-
+- `docs/index.*.xml` <https://apidoc.tools> 网站的内容，* 表示语言 ID，同时需要修改 `docs\locales.xml` 文件；
 
 ## 文档
 
 可以通过 /cmd/site 将 docs 作为一个本地的 web 服务，方便 XSL 相关功能的调试；
 
 文档应该尽可能的保证在非 Javascript 环境下，也有基本的功能。
-
 
 ## 添加新编程语言支持
 
