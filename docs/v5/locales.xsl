@@ -48,7 +48,6 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 </xsl:variable>
 
-
 <!-- tag -->
 <xsl:variable name="locale-tag">
     <xsl:call-template name="build-locale">
@@ -266,13 +265,13 @@ exclude-result-prefixes="l">
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hans'" />
         <xsl:with-param name="text">
-            由 <a href="{document('../config.xml')/config/url}"><xsl:value-of select="document('../config.xml')/config/name" /></a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>
+            由 <a href="https://apidoc.tools">apidoc</a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>
         </xsl:with-param>
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hant'" />
-            由 <a href="{document('../config.xml')/config/url}"><xsl:value-of select="document('../config.xml')/config/name" /></a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>
+            由 <a href="https://apidoc.tools">apidoc</a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>
         <xsl:with-param name="text">
         </xsl:with-param>
     </xsl:call-template>
@@ -306,9 +305,7 @@ exclude-result-prefixes="l">
 
     <xsl:variable name="r1">
         <xsl:for-each select="document('')/xsl:stylesheet/l:locales/locale">
-            <xsl:if test="@id=$curr">
-                <xsl:value-of select="$curr" />
-            </xsl:if>
+            <xsl:if test="@id=$curr"><xsl:value-of select="$curr" /></xsl:if>
         </xsl:for-each>
     </xsl:variable>
 
