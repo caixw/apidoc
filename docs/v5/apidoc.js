@@ -11,6 +11,9 @@ window.onload = function () {
 
 function registerFilter(type) {
     const menu = document.querySelector('.' + type + '-selector');
+    if (menu === null) { // 可能为空，表示不存在该过滤项
+        return;
+    }
 
     menu.style.display = 'block'; // 有 JS 的情况下，展示过滤菜单
 

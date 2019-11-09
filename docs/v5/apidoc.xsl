@@ -60,6 +60,7 @@
     </h1>
 
     <div class="menus">
+        <xsl:if test="apidoc/server">
         <div class="menu server-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-server" />
             <span aria-hiddren="true">&#160;&#x25bc;</span>
@@ -73,7 +74,9 @@
                 </xsl:for-each>
             </ul>
         </div>
+        </xsl:if>
 
+        <xsl:if test="apidoc/tag">
         <div class="menu tag-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-tag" />
             <span aria-hiddren="true">&#160;&#x25bc;</span>
@@ -87,6 +90,7 @@
                 </xsl:for-each>
             </ul>
         </div>
+        </xsl:if>
 
         <div class="menu method-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-method" />
