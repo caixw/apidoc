@@ -20,14 +20,17 @@ func TestEnum_UnmarshalXML(t *testing.T) {
 		Value:       "text",
 		Description: "<a><p>desc</p></a>",
 	}
-	str := `<Enum value="text"><a><p>desc</p></a></Enum>`
+	str := `<Enum value="text"><![CDATA[<a><p>desc</p></a>]]></Enum>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
 
 	obj1 := &Enum{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
-	a.Equal(obj1, obj)
+	a.Equal(obj1.Description, obj.Description).
+		Equal(obj1.Value, obj.Value).
+		NotEmpty(obj1.TextType).
+		Empty(obj.TextType)
 
 	// 正常
 	obj1 = &Enum{}

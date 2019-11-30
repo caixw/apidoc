@@ -53,18 +53,19 @@ func TestServer_UnmarshalXML(t *testing.T) {
 		Deprecated:  "1.1.1",
 		Description: "<a>test</a>",
 	}
-	str := `<Server name="srv1" url="https://api.example.com/srv1" deprecated="1.1.1"><a>test</a></Server>`
+	str := `<Server name="srv1" url="https://api.example.com/srv1" deprecated="1.1.1"><![CDATA[<a>test</a>]]></Server>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
 
 	obj1 := &Server{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
-	a.Equal(obj1, obj)
+	a.Equal(obj1.Description, obj.Description).
+		NotEqual(obj1.TextType, obj.TextType) // textType 在 marshal 是会能默认址
 
 	// 正常，带 description
 	obj1 = &Server{}
-	str = `<Server name="tag1" url="https://example.com">text</Server>`
+	str = `<Server name="tag1" url="https://example.com"><![CDATA[text]]></Server>`
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj1.Description, "text")
 

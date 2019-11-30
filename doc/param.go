@@ -68,7 +68,7 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"/items", locale.ErrDuplicateValue)
 	}
 
-	if p.Summary == "" && p.Description.String() == "" {
+	if p.Summary == "" && p.Description.Text == "" {
 		return newSyntaxError(field+"/summary", locale.ErrRequired)
 	}
 

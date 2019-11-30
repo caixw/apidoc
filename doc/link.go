@@ -11,9 +11,9 @@ import (
 )
 
 // Link 表示一个链接
-//  <link url="https://example.com">text</link>
+//  <link url="https://example.com" text="text" />
 type Link struct {
-	Text string `xml:",innerxml"`
+	Text string `xml:"text,attr"`
 	URL  string `xml:"url,attr"`
 }
 
@@ -46,7 +46,7 @@ func (l *Link) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Text == "" {
-		return newSyntaxError(field, locale.ErrRequired)
+		return newSyntaxError(field+"#text", locale.ErrRequired)
 	}
 
 	return nil

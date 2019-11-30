@@ -12,10 +12,12 @@ import (
 //  <enum value="male">男性</enum>
 //  <enum value="female">女性</enum>
 type Enum struct {
-	Deprecated  Version `xml:"deprecated,attr,omitempty"`
-	Value       string  `xml:"value,attr"`
-	Summary     string  `xml:"summary,attr,omitempty"`
-	Description string  `xml:",innerxml"`
+	Deprecated Version `xml:"deprecated,attr,omitempty"`
+	Value      string  `xml:"value,attr"`
+	Summary    string  `xml:"summary,attr,omitempty"`
+
+	TextType    string `xml:"textType,attr,omitempty"` // 文档类型，可以是 html 或是 markdown
+	Description string `xml:",cdata"`
 }
 
 type shadowEnum Enum
@@ -34,6 +36,10 @@ func (e *Enum) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	if shadow.Description == "" && shadow.Summary == "" {
 		return newSyntaxError(field+"/summary", locale.ErrRequired)
+	}
+
+	if shadow.TextType == "" {
+		shadow.TextType = RichtextTypeMarkdown
 	}
 
 	return nil

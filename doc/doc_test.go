@@ -56,7 +56,7 @@ func TestDoc(t *testing.T) {
 
 	a.NotEmpty(doc.Description.Text).
 		Contains(doc.Description.Text, "<h2>h2</h2>").
-		NotContains(doc.Description.String(), "</description>")
+		NotContains(doc.Description.Text, "</description>")
 
 	a.True(doc.tagExists("tag1")).
 		False(doc.tagExists("not-exists"))

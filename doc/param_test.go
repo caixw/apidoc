@@ -34,7 +34,7 @@ func TestParam_UnmarshalXML(t *testing.T) {
 
 	// 正常
 	str = `<Param name="user" deprecated="1.1.1" type="object" array="true">
-		<description><a>user</a></description>
+		<description><![CDATA[<a>user</a>]]></description>
 		<param name="name" type="string" summary="name" />
 		<param name="sex" type="string" summary="sex">
 			<enum value="male">Male</enum>
@@ -44,7 +44,7 @@ func TestParam_UnmarshalXML(t *testing.T) {
 	</Param>`
 	a.NotError(xml.Unmarshal([]byte(str), obj1)).
 		True(obj1.Array).
-		Equal(obj1.Description.String(), "<a>user</a>").
+		Equal(obj1.Description.Text, "<a>user</a>").
 		Equal(obj1.Type, Object).
 		Equal(obj1.Deprecated, "1.1.1").
 		Equal(3, len(obj1.Items)).

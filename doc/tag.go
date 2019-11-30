@@ -22,10 +22,12 @@ type Tag struct {
 // Server 服务信息
 //  <server name="tag1" deprecated="1.1.1" url="api.example.com/admin">description</server>
 type Server struct {
-	Name        string  `xml:"name,attr"` // 字面名称，需要唯一
-	URL         string  `xml:"url,attr"`
-	Deprecated  Version `xml:"deprecated,attr,omitempty"`
-	Description string  `xml:",innerxml"`
+	Name       string  `xml:"name,attr"` // 字面名称，需要唯一
+	URL        string  `xml:"url,attr"`
+	Deprecated Version `xml:"deprecated,attr,omitempty"`
+
+	TextType    string `xml:"textType,attr,omitempty"` // 文档类型，可以是 html 或是 markdown
+	Description string `xml:",cdata"`
 }
 
 type (
@@ -56,24 +58,28 @@ func (t *Tag) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 // UnmarshalXML xml.Unmarshaler
 func (srv *Server) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
-	var ss shadowServer
-	if err := d.DecodeElement(&ss, &start); err != nil {
+	var shadow shadowServer
+	if err := d.DecodeElement(&shadow, &start); err != nil {
 		return fixedSyntaxError(err, "", field, 0)
 	}
 
-	if ss.Name == "" {
+	if shadow.Name == "" {
 		return newSyntaxError(field+"#name", locale.ErrRequired)
 	}
 
-	if ss.Description == "" {
-		return newSyntaxError(field, locale.ErrRequired)
-	}
-
-	if !is.URL(ss.URL) {
+	if !is.URL(shadow.URL) {
 		return newSyntaxError(field+"#url", locale.ErrInvalidFormat)
 	}
 
-	*srv = Server(ss)
+	if shadow.Description == "" {
+		return newSyntaxError(field, locale.ErrRequired)
+	}
+
+	if shadow.TextType == "" {
+		shadow.TextType = RichtextTypeMarkdown
+	}
+
+	*srv = Server(shadow)
 	return nil
 }
 

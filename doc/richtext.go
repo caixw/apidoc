@@ -4,9 +4,16 @@ package doc
 
 import "encoding/xml"
 
+// 富文本可用的类型
+const (
+	RichtextTypeHTML     = "html"
+	RichtextTypeMarkdown = "markdown"
+)
+
 // Richtext 富文本内容
 type Richtext struct {
-	Text string `xml:",innerxml"`
+	Type string `xml:"textType,attr,omitempty"` // 文档类型，可以是 html 或是 markdown
+	Text string `xml:",cdata"`
 }
 
 type shadowRichtext Richtext
@@ -17,11 +24,9 @@ func (text Richtext) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		return nil
 	}
 
+	if text.Type == "" {
+		text.Type = RichtextTypeMarkdown
+	}
 	shadow := shadowRichtext(text)
 	return e.EncodeElement(shadow, start)
-}
-
-// String 返回 Richtext 的文本内容
-func (text Richtext) String() string {
-	return text.Text
 }

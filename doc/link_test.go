@@ -21,7 +21,7 @@ func TestLink_UnmarshalXML(t *testing.T) {
 		Text: "text",
 		URL:  "https://example.com",
 	}
-	str := `<Link url="https://example.com">text</Link>`
+	str := `<Link text="text" url="https://example.com"></Link>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
@@ -32,7 +32,7 @@ func TestLink_UnmarshalXML(t *testing.T) {
 
 	obj1 = &Link{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
-	str = `<Link url="url">text</Link>`
+	str = `<Link url="url" text="text"></Link>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	obj1 = &Link{}

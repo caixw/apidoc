@@ -82,20 +82,22 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 //
 // NOTE: 需要保证 doc 已经初始化
 func (api *API) sanitize(field string) error {
+	if api.doc == nil {
+		panic("api.doc 未获取正确的值")
+	}
+
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag) {
-			if api.doc == nil {
-				return newSyntaxError(field+"/tag#name", locale.ErrInvalidValue)
-			}
 			return message.NewLocaleError(api.file, field+"/tag#name", api.line, locale.ErrInvalidValue)
 		}
 	}
 
+	if len(api.Servers) == 0 {
+		return message.NewLocaleError(api.file, field+"/server", api.line, locale.ErrRequired)
+	}
+
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv) {
-			if api.doc == nil {
-				return newSyntaxError(field+"/server#name", locale.ErrInvalidValue)
-			}
 			return message.NewLocaleError(api.file, field+"/server#name", api.line, locale.ErrInvalidValue)
 		}
 	}

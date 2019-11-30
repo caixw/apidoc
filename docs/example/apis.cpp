@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 
 // <api method="GET" summary="获取用户日志">
+//     <server>client</server>
 //     <description>
 // 这是关于接口的详细说明文档<br />
 // ===<br />
 // 可以是一个 HTML 内容
-// </description>
+//     </description>
 //     <path path="/users/{id}/logs">
 //         <param name="id" type="number"><description>用户 ID</description></param>
 //         <query name="page" type="number" default="0" summary="页码" />

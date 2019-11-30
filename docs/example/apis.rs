@@ -79,10 +79,11 @@ fn getList() {}
 fn post() {}
 
 // <api method="DELETE" summary="删除用户">
+//     <server>admin</server>
 //     <description>
 // 这是关于接口的详细说明文档<br />
 // 可以是一个 HTML 内容<br />
-// </description>
+//     </description>
 //     <path path="/users/{id}">
 //         <param name="id" type="number" summary="用户 ID" />
 //     </path>
@@ -90,15 +91,16 @@ fn post() {}
 fn delete() {}
 
 // <api method="GET" summary="获取用户详情">
+//     <server>old-client</server>
 //     <description>
 // 这是关于接口的详细说明文档
 // 可以是一个 HTML 内容
-// </description>
+//     </description>
 //     <path path="/users/{id}">
 //         <param name="id" type="number" summary="用户 ID" />
 //         <query name="state" type="string" array="true" default="[normal,lock]" summary="state">
 //              <enum value="normal" summary="正常" />
-//              <enum value="lock"><span style="color:red">锁定</span></enum>
+//              <enum value="lock"><![CDATA[<span style="color:red">锁定</span>]]></enum>
 //         </query>
 //     </path>
 //

@@ -12,8 +12,10 @@
     <server>s1</server>
     <server>s2</server>
 
-    <description>
+    <description textType="html">
+    <![CDATA[
         <p>这是描述信息</p>
+    ]]>
     </description>
 
     <request mimetype="json,xml" type="number" summary="请求内容">
