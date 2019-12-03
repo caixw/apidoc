@@ -10,9 +10,10 @@ import (
 
 // Example 示例代码
 type Example struct {
-	Description string `xml:"description,omitempty"`
-	Mimetype    string `xml:"mimetype,attr"`
-	Content     string `xml:",cdata"`
+	Mimetype string `xml:"mimetype,attr"`
+	Content  string `xml:",cdata"`
+	Summary  string `xml:"summary,attr,omitempty"`
+	Description Richtext `xml:"description,omitempty"`
 }
 
 type shadowExample Example

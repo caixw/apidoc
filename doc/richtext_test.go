@@ -9,7 +9,10 @@ import (
 	"github.com/issue9/assert"
 )
 
-var _ xml.Marshaler = Richtext{}
+var (
+	_ xml.Marshaler = Richtext{}
+	_ xml.Unmarshaler = &Richtext{}
+)
 
 func TestRichtext_Marshal(t *testing.T) {
 	a := assert.New(t)

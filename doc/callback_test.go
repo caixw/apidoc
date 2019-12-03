@@ -34,7 +34,7 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 		<path path="/users/{id}/orders">
 			<param name="id" type="number" summary="用户 ID" />
 			<query name="size" type="number" summary="size" />
-			<query name="page" type="number" deprecated="0.1.1"><description>page</description></query>
+			<query name="page" type="number" deprecated="0.1.1"><description><![CDATA[page]]></description></query>
 		</path>
 		<request status="200" mimetype="json" type="object">
 			<param name="name" type="string" summary="name" />

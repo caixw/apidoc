@@ -9,9 +9,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-var (
-	_ xml.Unmarshaler = &Example{}
-)
+var _ xml.Unmarshaler = &Example{}
 
 func TestExample_UnmarshalXML(t *testing.T) {
 	a := assert.New(t)
@@ -31,11 +29,13 @@ func TestExample_UnmarshalXML(t *testing.T) {
 
 	// 正常
 	obj1 = &Example{}
-	str = `<Example mimetype="json">text<description>desc</description></Example>`
+	str = `<Example mimetype="json" summary="summary"><![CDATA[text]]><description>desc</description></Example>`
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
-	a.Equal(obj1.Description, "desc")
+	a.Equal(obj1.Summary, "summary")
+	a.Equal(obj1.Content, "text")
+	a.Equal(obj1.Description.Text, "desc")
 
-	// 少 value
+	// 少 mimetype
 	obj1 = &Example{}
 	str = `<Example url="url">desc</Example>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
