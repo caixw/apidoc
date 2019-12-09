@@ -16,7 +16,7 @@
             <title><xsl:value-of select="apidoc/title" /></title>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-            <meta name="generator" content="{document('../config.xml')/config/url}" />
+            <meta name="generator" content="apidoc" />
             <link rel="icon" type="image/png" href="{$icon}" />
             <xsl:if test="apidoc/license"><link rel="license" href="{apidoc/license/@url}" /></xsl:if>
             <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />

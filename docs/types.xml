@@ -23,7 +23,7 @@
             <item name="@version" type="version" required="true" />
             <item name="@lang" type="string" required="false" />
             <item name="@logo" type="string" required="false" />
-            <!-- created 由代码生成时间，所以这里不需要展示 -->
+            <item name="@created" type="string" required="false" />
             <item name="title" type="string" required="true" />
             <item name="description" type="string" required="true" />
             <item name="contract" type="contract" required="false" />
