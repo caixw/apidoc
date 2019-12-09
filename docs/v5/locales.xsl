@@ -271,8 +271,8 @@ exclude-result-prefixes="l">
 
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hant'" />
-            由 <a href="https://apidoc.tools">apidoc</a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>
         <xsl:with-param name="text">
+            由 <a href="https://apidoc.tools">apidoc</a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>
         </xsl:with-param>
     </xsl:call-template>
 </xsl:variable>

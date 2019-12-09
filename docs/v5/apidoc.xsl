@@ -2,7 +2,13 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:import href="./locales.xsl" />
-<xsl:output method="html" encoding="utf-8" indent="yes" version="5.0" doctype-system="about:legacy-compat" />
+<xsl:output
+    method="html"
+    encoding="utf-8"
+    indent="yes"
+    version="5.0"
+    doctype-system="about:legacy-compat"
+/>
 
 <xsl:template match="/">
     <html lang="{$curr-lang}">
@@ -20,7 +26,9 @@
             <xsl:call-template name="header" />
 
             <main>
-                <div class="content"><xsl:copy-of select="apidoc/description/node()" /></div>
+                <div class="content" data-type="{description/@textType}">
+                    <pre><xsl:copy-of select="apidoc/description/node()" /></pre>
+                </div>
                 <div class="servers"><xsl:apply-templates select="apidoc/server" /></div>
                 <xsl:apply-templates select="apidoc/api" />
             </main>
@@ -144,7 +152,9 @@
         </summary>
 
         <xsl:if test="description">
-            <div class="description"><xsl:copy-of select="description" /></div>
+            <div class="description" data-type="{description/@textType}">
+                <pre><xsl:copy-of select="description/node()" /></pre>
+            </div>
         </xsl:if>
 
         <div class="body">
@@ -179,14 +189,16 @@
 
 <!-- 回调内容 -->
 <xsl:template match="/apidoc/api/callback">
-    <div class="callback" data-method="{./@method}">
-        <h3><xsl:copy-of select="$locale-callback" /></h3>
-        <div class="description">
-            <xsl:value-of select="@summary" />
-            <xsl:if test="description">
-                <br /><xsl:copy-of select="description" />
-            </xsl:if>
-        </div>
+    <div class="callback" data-method="{./@method},">
+        <h3>
+            <xsl:copy-of select="$locale-callback" />
+            <span class="summary"><xsl:value-of select="@summary" /></span>
+        </h3>
+        <xsl:if test="not(description/node()='')">
+            <div class="description" data-type="{description/@textType}">
+                <pre><xsl:copy-of select="description/node()" /></pre>
+            </div>
+        </xsl:if>
 
         <div class="body">
             <div class="requests">
@@ -412,7 +424,11 @@
 
             <td>
                 <xsl:choose>
-                    <xsl:when test="description"><xsl:value-of select="description" /></xsl:when>
+                    <xsl:when test="description">
+                        <div data-type="{description/@textType}">
+                            <pre><xsl:copy-of select="description" /></pre>
+                        </div>
+                    </xsl:when>
                     <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
                 </xsl:choose>
                 <xsl:call-template name="enum">

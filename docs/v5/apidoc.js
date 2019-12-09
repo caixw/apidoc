@@ -6,7 +6,9 @@ window.onload = function () {
     registerFilter('tag');
 
     registerLanguageFilter();
-    initExample()
+    initExample();
+
+    prettyDescription();
 };
 
 function registerFilter(type) {
@@ -87,5 +89,19 @@ function initExample() {
                 pre.style.display = 'block';
             }
         });
+    });
+}
+
+// 美化描述内容
+//
+// 即将 html 内容转换成真的 HTML 格式，而 markdown 则依然是 pre 显示。
+function prettyDescription() {
+    document.querySelectorAll('[data-type]').forEach((elem) => {
+        const type = elem.getAttribute('data-type');
+        if (type !== 'html') {
+            return;
+        }
+
+        elem.innerHTML = elem.getElementsByTagName('pre')[0].innerText;
     });
 }

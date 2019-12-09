@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.1.0" created="2019-12-01T00:09:14+08:00" version="1.1.1">
+<apidoc apidoc="5.1.0" created="2019-12-09T23:26:49+08:00" version="1.1.1">
 	<title>示例文档</title>
-	<description textType="markdown"><![CDATA[
-    
+	<description textType="html"><![CDATA[
+
+    <p>这是一个用于测试的文档用例</p>
     状态码：
-    
+    <ul>
+        <li>40300:xxx</li>
+        <li>40301:xxx</li>
+    </ul>
+
     ]]></description>
 	<contact name="name">
 		<url>https://example.com</url>
@@ -29,7 +34,9 @@
 		</path>
 		<description textType="markdown"><![CDATA[
 
+<p>这是关于接口的详细说明文档</p><br />
 可以是一个 HTML 内容
+
 ]]></description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="count" type="number" summary="summary"></param>
@@ -53,8 +60,10 @@
 	<api method="POST" summary="添加用户">
 		<path path="/users"></path>
 		<description textType="markdown"><![CDATA[
-这是关于接口的详细说明文档
+
+这是关于接口的详细说明文档<br />
 可以是一个 HTML 内容
+
 ]]></description>
 		<request type="object" mimetype="application/json">
 			<param name="count" type="number" summary="summary"></param>
@@ -97,8 +106,10 @@
 			<param name="id" type="number" summary="用户 ID"></param>
 		</path>
 		<description textType="markdown"><![CDATA[
-这是关于接口的详细说明文档
-可以是一个 HTML 内容
+
+这是关于接口的详细说明文档<br />
+可以是一个 HTML 内容<br />
+
     ]]></description>
 		<server>admin</server>
 	</api>
@@ -111,8 +122,10 @@
 			</query>
 		</path>
 		<description textType="markdown"><![CDATA[
+
 这是关于接口的详细说明文档
 可以是一个 HTML 内容
+
     ]]></description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="id" type="number" summary="用户 ID"></param>
@@ -134,10 +147,11 @@
 				<description textType="markdown"><![CDATA[数量]]></description>
 			</query>
 		</path>
-		<description textType="markdown"><![CDATA[
-这是关于接口的详细说明文档
-===
-可以是一个 HTML 内容
+		<description textType="html"><![CDATA[
+
+<p>这是关于接口的详细说明文档</p>
+<p style="color:red">可以是一个 HTML 内容</p>
+
     ]]></description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="count" type="number" optional="true" summary="summary"></param>
@@ -162,9 +176,11 @@
 			<header name="name1" type="string" summary="desc1"></header>
 		</response>
 		<callback method="POST" summary="回调函数">
-			<description textType="markdown"><![CDATA[
-        
-        
+			<description textType="html"><![CDATA[
+
+        <p style="color:red">这是一个回调函数的详细说明</p>
+        <p>为一个 html 文档</p>
+
     ]]></description>
 			<response type="string" status="200" mimetype="text/plain"></response>
 			<request type="object" mimetype="application/json">

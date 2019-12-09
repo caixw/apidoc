@@ -248,6 +248,7 @@ main .api summary .link {
     text-decoration: none;
 }
 
+main .api .callback .summary,
 main .api summary .summary {
     float: right;
     font-weight: 400;
