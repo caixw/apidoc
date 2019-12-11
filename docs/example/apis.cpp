@@ -2,7 +2,7 @@
 
 // <api method="GET" summary="获取用户日志">
 //     <server>client</server>
-//     <description textType="html">
+//     <description doctype="html">
 // <![CDATA[
 // <p>这是关于接口的详细说明文档</p>
 // <p style="color:red">可以是一个 HTML 内容</p>
@@ -38,7 +38,7 @@
 //     </response>
 //
 //     <callback schema="https" summary="回调函数" method="POST">
-//     <description textType="html">
+//     <description doctype="html">
 // <![CDATA[
 //         <p style="color:red">这是一个回调函数的详细说明</p>
 //         <p>为一个 html 文档</p>

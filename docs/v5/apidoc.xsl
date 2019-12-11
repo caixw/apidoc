@@ -26,7 +26,7 @@
             <xsl:call-template name="header" />
 
             <main>
-                <div class="content" data-type="{description/@textType}">
+                <div class="content" data-type="{description/@doctype}">
                     <pre><xsl:copy-of select="apidoc/description/node()" /></pre>
                 </div>
                 <div class="servers"><xsl:apply-templates select="apidoc/server" /></div>
@@ -152,7 +152,7 @@
         </summary>
 
         <xsl:if test="description">
-            <div class="description" data-type="{description/@textType}">
+            <div class="description" data-type="{description/@doctype}">
                 <pre><xsl:copy-of select="description/node()" /></pre>
             </div>
         </xsl:if>
@@ -195,7 +195,7 @@
             <span class="summary"><xsl:value-of select="@summary" /></span>
         </h3>
         <xsl:if test="not(description/node()='')">
-            <div class="description" data-type="{description/@textType}">
+            <div class="description" data-type="{description/@doctype}">
                 <pre><xsl:copy-of select="description/node()" /></pre>
             </div>
         </xsl:if>
@@ -425,7 +425,7 @@
             <td>
                 <xsl:choose>
                     <xsl:when test="description">
-                        <div data-type="{description/@textType}">
+                        <div data-type="{description/@doctype}">
                             <pre><xsl:copy-of select="description" /></pre>
                         </div>
                     </xsl:when>

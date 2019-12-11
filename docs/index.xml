@@ -136,7 +136,7 @@
         <type name="link">
             <description><p>用于描述链接，一般转换为 HTML 的 a 标签。</p></description>
             <item name="@url">链接指向的 URL</item>
-            <item name=".">链接的文本内容</item>
+            <item name="@text">链接的文本内容</item>
         </type>
 
         <type name="contact">

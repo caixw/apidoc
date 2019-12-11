@@ -16,7 +16,7 @@ type Enum struct {
 	Value      string  `xml:"value,attr"`
 	Summary    string  `xml:"summary,attr,omitempty"`
 
-	TextType    string `xml:"textType,attr,omitempty"` // 文档类型，可以是 html 或是 markdown
+	DocType     string `xml:"doctype,attr,omitempty"` // 文档类型，可以是 html 或是 markdown
 	Description string `xml:",cdata"`
 }
 
@@ -38,8 +38,8 @@ func (e *Enum) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"/summary", locale.ErrRequired)
 	}
 
-	if shadow.TextType == "" {
-		shadow.TextType = RichtextTypeMarkdown
+	if shadow.DocType == "" {
+		shadow.DocType = RichtextTypeMarkdown
 	}
 
 	return nil

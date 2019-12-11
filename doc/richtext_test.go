@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	_ xml.Marshaler = Richtext{}
+	_ xml.Marshaler   = Richtext{}
 	_ xml.Unmarshaler = &Richtext{}
 )
 
@@ -25,7 +25,7 @@ func TestRichtext_Marshal(t *testing.T) {
 	obj := &Object{
 		Value: Richtext{Text: "<a>test</a>"},
 	}
-	str := `<xml><value textType="markdown"><![CDATA[<a>test</a>]]></value></xml>`
+	str := `<xml><value doctype="markdown"><![CDATA[<a>test</a>]]></value></xml>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)

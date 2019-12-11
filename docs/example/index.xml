@@ -3,7 +3,7 @@
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
 <apidoc apidoc="5.1.0" created="2019-12-09T23:26:49+08:00" version="1.1.1">
 	<title>示例文档</title>
-	<description textType="html"><![CDATA[
+	<description doctype="html"><![CDATA[
 
     <p>这是一个用于测试的文档用例</p>
     状态码：
@@ -20,19 +20,19 @@
 	<license text="MIT" url="https://opensource.org/licenses/MIT"></license>
 	<tag name="t1" title="标签1"></tag>
 	<tag name="t2" title="标签2"></tag>
-	<server name="admin" url="https://api.example.com/admin" textType="markdown"><![CDATA[
+	<server name="admin" url="https://api.example.com/admin" doctype="markdown"><![CDATA[
     后台管理接口，
     ]]></server>
-	<server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" textType="markdown"><![CDATA[客户端接口]]></server>
-	<server name="client" url="https://api.example.com" textType="markdown"><![CDATA[客户端接口]]></server>
+	<server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" doctype="markdown"><![CDATA[客户端接口]]></server>
+	<server name="client" url="https://api.example.com" doctype="markdown"><![CDATA[客户端接口]]></server>
 	<api method="GET" summary="获取用户" deprecated="1.1.11">
 		<path path="/users">
 			<query name="page" type="number" default="0" summary="页码"></query>
 			<query name="size" type="number" default="20">
-				<description textType="markdown"><![CDATA[数量]]></description>
+				<description doctype="markdown"><![CDATA[数量]]></description>
 			</query>
 		</path>
-		<description textType="markdown"><![CDATA[
+		<description doctype="markdown"><![CDATA[
 
 <p>这是关于接口的详细说明文档</p><br />
 可以是一个 HTML 内容
@@ -50,7 +50,7 @@
 			</param>
 		</response>
 		<header name="name" type="string">
-			<description textType="markdown"><![CDATA[desc]]></description>
+			<description doctype="markdown"><![CDATA[desc]]></description>
 		</header>
 		<header name="name1" type="string" summary="name1 desc"></header>
 		<tag>t1</tag>
@@ -59,7 +59,7 @@
 	</api>
 	<api method="POST" summary="添加用户">
 		<path path="/users"></path>
-		<description textType="markdown"><![CDATA[
+		<description doctype="markdown"><![CDATA[
 
 这是关于接口的详细说明文档<br />
 可以是一个 HTML 内容
@@ -105,7 +105,7 @@
 		<path path="/users/{id}">
 			<param name="id" type="number" summary="用户 ID"></param>
 		</path>
-		<description textType="markdown"><![CDATA[
+		<description doctype="markdown"><![CDATA[
 
 这是关于接口的详细说明文档<br />
 可以是一个 HTML 内容<br />
@@ -117,11 +117,11 @@
 		<path path="/users/{id}">
 			<param name="id" type="number" summary="用户 ID"></param>
 			<query name="state" type="string" default="[normal,lock]" array="true" summary="state">
-				<enum value="normal" summary="正常" textType="markdown"></enum>
-				<enum value="lock" textType="markdown"><![CDATA[<span style="color:red">锁定</span>]]></enum>
+				<enum value="normal" summary="正常" doctype="markdown"></enum>
+				<enum value="lock" doctype="markdown"><![CDATA[<span style="color:red">锁定</span>]]></enum>
 			</query>
 		</path>
-		<description textType="markdown"><![CDATA[
+		<description doctype="markdown"><![CDATA[
 
 这是关于接口的详细说明文档
 可以是一个 HTML 内容
@@ -140,14 +140,14 @@
 	<api method="GET" summary="获取用户日志">
 		<path path="/users/{id}/logs">
 			<param name="id" type="number">
-				<description textType="markdown"><![CDATA[用户 ID]]></description>
+				<description doctype="markdown"><![CDATA[用户 ID]]></description>
 			</param>
 			<query name="page" type="number" default="0" summary="页码"></query>
 			<query name="size" type="number" default="20">
-				<description textType="markdown"><![CDATA[数量]]></description>
+				<description doctype="markdown"><![CDATA[数量]]></description>
 			</query>
 		</path>
-		<description textType="html"><![CDATA[
+		<description doctype="html"><![CDATA[
 
 <p>这是关于接口的详细说明文档</p>
 <p style="color:red">可以是一个 HTML 内容</p>
@@ -159,8 +159,8 @@
 				<param name="id" type="number" optional="true" summary="desc"></param>
 				<param name="name" type="string" optional="true" summary="desc"></param>
 				<param name="groups" type="string" optional="true" array="true" summary="desc">
-					<enum value="xx1" textType="markdown"><![CDATA[xx]]></enum>
-					<enum value="xx2" textType="markdown"><![CDATA[xx]]></enum>
+					<enum value="xx1" doctype="markdown"><![CDATA[xx]]></enum>
+					<enum value="xx2" doctype="markdown"><![CDATA[xx]]></enum>
 				</param>
 			</param>
 			<example mimetype="application/json"><![CDATA[
@@ -176,7 +176,7 @@
 			<header name="name1" type="string" summary="desc1"></header>
 		</response>
 		<callback method="POST" summary="回调函数">
-			<description textType="html"><![CDATA[
+			<description doctype="html"><![CDATA[
 
         <p style="color:red">这是一个回调函数的详细说明</p>
         <p>为一个 html 文档</p>

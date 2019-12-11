@@ -45,7 +45,7 @@
 //     </response>
 //     <response status="404" type="none" mimetype="application/json application/xml" summary="not found" />
 //
-//     <description textType="html">
+//     <description doctype="html">
 // <![CDATA[
 //     <p>这是一个用于测试的文档用例</p>
 //     状态码：

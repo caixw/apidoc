@@ -36,7 +36,7 @@
 
         <type name="link">
             <item name="@url" type="string" required="true" />
-            <item name="." type="string" required="true" />
+            <item name="@text" type="string" required="true" />
         </type>
 
         <type name="contact">

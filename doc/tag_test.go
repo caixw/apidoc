@@ -61,7 +61,7 @@ func TestServer_UnmarshalXML(t *testing.T) {
 	obj1 := &Server{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj1.Description, obj.Description).
-		NotEqual(obj1.TextType, obj.TextType) // textType 在 marshal 是会能默认址
+		NotEqual(obj1.DocType, obj.DocType) // doctype 在 marshal 是会能默认址
 
 	// 正常，带 description
 	obj1 = &Server{}

@@ -39,12 +39,10 @@ func Version() string {
 
 // Do 解析文档并输出文档内容
 //
-// 如果需要控制详细的操作步骤，可以自行调用 input 和 output 的相关函数实现。
-//
 // 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
 // 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
 //
-// NOTE: 需要先调用 Init() 初始化本地化信息。
+// NOTE: 需要先调用 Init() 初始化本地化信息
 func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	doc, err := input.Parse(h, i...)
 	if err != nil {
@@ -54,7 +52,12 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	return output.Render(doc, o)
 }
 
-// Buffer 生成文档内容，并保存在内存。
+// Buffer 生成文档内容并返回
+//
+// 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
+// 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
+//
+// NOTE: 需要先调用 Init() 初始化本地化信息
 func Buffer(h *message.Handler, o *output.Options, i ...*input.Options) (*bytes.Buffer, error) {
 	doc, err := input.Parse(h, i...)
 	if err != nil {

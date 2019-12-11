@@ -248,14 +248,14 @@ exclude-result-prefixes="l">
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hans'" />
         <xsl:with-param name="text">
-            文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>
+            文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>
         </xsl:with-param>
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hant'" />
         <xsl:with-param name="text">
-            文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license" /></a>
+            文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>
         </xsl:with-param>
     </xsl:call-template>
 </xsl:variable>

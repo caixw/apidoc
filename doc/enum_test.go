@@ -29,8 +29,8 @@ func TestEnum_UnmarshalXML(t *testing.T) {
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj1.Description, obj.Description).
 		Equal(obj1.Value, obj.Value).
-		NotEmpty(obj1.TextType).
-		Empty(obj.TextType)
+		NotEmpty(obj1.DocType).
+		Empty(obj.DocType)
 
 	// 正常
 	obj1 = &Enum{}

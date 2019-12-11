@@ -19,7 +19,7 @@
         client api
     </server>
 
-    <description textType="html">
+    <description doctype="html">
     <![CDATA[
         <h2>h2</h2>
         <h3>h3</h3>

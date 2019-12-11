@@ -12,7 +12,7 @@
     <server>s1</server>
     <server>s2</server>
 
-    <description textType="html">
+    <description docype="html">
     <![CDATA[
         <p>这是描述信息</p>
     ]]>

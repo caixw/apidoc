@@ -36,7 +36,7 @@ func TestMake(t *testing.T) {
 	out, f := buildMessageHandle()
 	h := message.NewHandler(f)
 	Make(h, "./docs/example", true)
-	a.Empty(out.Bytes())
+	a.Empty(out.String())
 }
 
 func TestMakeBuffer(t *testing.T) {
@@ -45,7 +45,7 @@ func TestMakeBuffer(t *testing.T) {
 	out, f := buildMessageHandle()
 	h := message.NewHandler(f)
 	buf, dur := MakeBuffer(h, "./docs/example")
-	a.Empty(out.Bytes()).
+	a.Empty(out.String()).
 		True(dur > 0).
 		True(buf.Len() > 0)
 }
