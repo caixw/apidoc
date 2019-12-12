@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package config
+package path
 
 import (
 	"path/filepath"
@@ -34,7 +34,7 @@ func TestRel(t *testing.T) {
 	}
 
 	for index, item := range data {
-		result := filepath.Clean(rel(item.path, item.wd))
+		result := filepath.Clean(Rel(item.path, item.wd))
 		a.Equal(result, item.result, "not equal @%d,v1=%s,v2=%s", index, result, item.result)
 	}
 }

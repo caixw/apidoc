@@ -14,7 +14,6 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/input"
-	"github.com/caixw/apidoc/v5/internal/config"
 	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
@@ -67,59 +66,32 @@ func Buffer(h *message.Handler, o *output.Options, i ...*input.Options) (*bytes.
 	return output.Buffer(doc, o)
 }
 
-// Make 根据 wd 目录下的配置文件生成文档
-//
-// test 表示是否仅测试该配置文件和文档的正确性。
-//
-// NOTE: 需要先调用 Init() 初始化本地化信息。
-func Make(h *message.Handler, wd string, test bool) {
-	now := time.Now()
-
-	cfg, err := config.Load(wd)
-	if err != nil {
+// Test 测试文档语法，并将结果输出到 h
+func Test(h *message.Handler, i ...*input.Options) {
+	if _, err := input.Parse(h, i...); err != nil {
 		h.Error(message.Erro, err)
 		return
 	}
-
-	if test {
-		if _, err := input.Parse(h, cfg.Inputs...); err != nil {
-			h.Error(message.Erro, err)
-			return
-		}
-		h.Message(message.Succ, locale.TestSuccess)
-	} else {
-		if err := Do(h, cfg.Output, cfg.Inputs...); err != nil {
-			h.Error(message.Erro, err)
-			return
-		}
-		h.Message(message.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(now))
-	}
+	h.Message(message.Succ, locale.TestSuccess)
 }
 
-// MakeBuffer 根据 wd 目录下的配置文件生成文档内容并保存至内存
-//
-// NOTE: 需要先调用 Init() 初始化本地化信息。
-func MakeBuffer(h *message.Handler, wd string) (*bytes.Buffer, time.Duration) {
-	now := time.Now()
-
-	cfg, err := config.Load(wd)
+// Pack 同时将生成的文档内容与 docs 之下的内容打包
+func Pack(h *message.Handler, url string, contentType, pkgName, path string, o *output.Options, i ...*input.Options) error {
+	buf, err := Buffer(h, o, i...)
 	if err != nil {
-		h.Error(message.Erro, err)
-		return nil, 0
+		return err
+	}
+	data := buf.Bytes()
+
+	if contentType == "" {
+		contentType = http.DetectContentType(data)
 	}
 
-	buf, err := Buffer(h, cfg.Output, cfg.Inputs...)
-	if err != nil {
-		h.Error(message.Erro, err)
-		return nil, 0
-	}
-
-	return buf, time.Now().Sub(now)
-}
-
-// Detect 检测 wd 目录，并根据目录情况写入配置文件到该目录。
-func Detect(wd string, recursive bool) error {
-	return config.Write(wd, recursive)
+	return docs.Pack(pkgName, path, nil, &docs.FileInfo{
+		Name:        url,
+		Content:     data,
+		ContentType: contentType,
+	})
 }
 
 // Site 将 dir 作为静态文件服务内容
@@ -132,4 +104,26 @@ func Detect(wd string, recursive bool) error {
 // 的代码搭建一个简易的 https://apidoc.tools 网站。
 func Site(dir string) http.Handler {
 	return docs.Handler(dir)
+}
+
+// Make 根据 wd 目录下的配置文件生成文档
+//
+// Deprecated: 下个版本将弃用，请使用 Config.Do 方法
+func Make(h *message.Handler, wd string, test bool) {
+	now := time.Now()
+
+	cfg := LoadConfig(h, wd)
+	if test {
+		cfg.Test()
+		return
+	}
+	cfg.Do(now)
+}
+
+// MakeBuffer 根据 wd 目录下的配置文件生成文档内容并保存至内存
+//
+// Deprecated: 下个版本将弃用，请使用 Config.Buffer 方法
+func MakeBuffer(h *message.Handler, wd string) *bytes.Buffer {
+	cfg := LoadConfig(h, wd)
+	return cfg.Buffer()
 }

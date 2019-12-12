@@ -8,7 +8,9 @@ import (
 	"bufio"
 	"encoding/xml"
 	"os"
+	"path/filepath"
 
+	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
@@ -21,7 +23,7 @@ const (
 	主要包含了项目的一些基础配置项。
 -->
 `
-	target = "../../docs/config.xml"
+	target = "config.xml"
 )
 
 type config struct {
@@ -52,7 +54,7 @@ func main() {
 		panic(err)
 	}
 
-	file, err := os.Create(target)
+	file, err := os.Create(filepath.Join(docs.RootDir, target))
 	if err != nil {
 		panic(err)
 	}

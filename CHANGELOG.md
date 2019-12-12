@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Added
+
+- 添加 Test 全局函数，用于对文档语言进行测试；
+- 添加 Config 对象，用于处理配置文件；
+- 添加 Pack 系列函数，用于将内容打包成一个文件；
+
+### Changed
+
+- Make、MakeBuffer 标记为过时函数，不再推荐使用；
+
 ## [v5.1.0]
 
 ### Added

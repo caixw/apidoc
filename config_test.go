@@ -1,16 +1,29 @@
 // SPDX-License-Identifier: MIT
 
-package config
+package apidoc
 
 import (
+	"bytes"
 	"path/filepath"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/message"
 )
+
+func buildMessageHandle() (*bytes.Buffer, message.HandlerFunc) {
+	buf := new(bytes.Buffer)
+
+	return buf, func(msg *message.Message) {
+		buf.WriteString(strconv.Itoa(int(msg.Type)))
+		buf.WriteString(msg.Message)
+	}
+}
 
 func TestLoadFile(t *testing.T) {
 	a := assert.New(t)
@@ -22,16 +35,16 @@ func TestLoadFile(t *testing.T) {
 	a.Error(err).Nil(cfg)
 }
 
-func TestWrite_Load(t *testing.T) {
+func TestDetect_Load(t *testing.T) {
 	a := assert.New(t)
 
 	wd, err := filepath.Abs("./")
 	a.NotError(err).NotEmpty(wd)
-	a.NotError(Write(wd, true))
+	a.NotError(Detect(wd, true))
 
-	cfg, err := Load(wd)
-	a.NotError(err).
-		NotNil(cfg)
+	out, f := buildMessageHandle()
+	cfg := LoadConfig(message.NewHandler(f), wd)
+	a.Empty(out.String()).NotNil(cfg)
 
 	a.Equal(cfg.Version, vars.Version()).
 		Equal(cfg.Inputs[0].Lang, "go")
@@ -63,4 +76,23 @@ func TestConfig_sanitize(t *testing.T) {
 	err = conf.sanitize("./apidoc.yaml")
 	a.Error(err).
 		Equal(err.Field, "output")
+}
+
+func TestConfig_Do(t *testing.T) {
+	a := assert.New(t)
+
+	out, f := buildMessageHandle()
+	h := message.NewHandler(f)
+	LoadConfig(h, "./docs/example").Do(time.Now())
+	a.Empty(out.String())
+}
+
+func TestConfig_Buffer(t *testing.T) {
+	a := assert.New(t)
+
+	out, f := buildMessageHandle()
+	h := message.NewHandler(f)
+	buf := LoadConfig(h, "./docs/example").Buffer()
+	a.Empty(out.String()).
+		True(buf.Len() > 0)
 }

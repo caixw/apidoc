@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/issue9/term/colors"
 	"golang.org/x/text/language"
@@ -107,7 +108,12 @@ func parse(test bool) {
 		return
 	}
 	for _, path := range paths {
-		apidoc.Make(h, path, test)
+		if test {
+			apidoc.LoadConfig(h, path).Test()
+			continue
+		}
+
+		apidoc.LoadConfig(h, path).Do(time.Now())
 	} // end for paths
 
 	h.Stop()

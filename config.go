@@ -1,0 +1,204 @@
+// SPDX-License-Identifier: MIT
+
+package apidoc
+
+import (
+	"bytes"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strconv"
+	"time"
+
+	"github.com/issue9/utils"
+	"github.com/issue9/version"
+	"gopkg.in/yaml.v2"
+
+	"github.com/caixw/apidoc/v5/input"
+	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/path"
+	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v5/output"
+)
+
+// 允许的配置文件名称
+var allowConfigFilenames = []string{".apidoc.yaml", ".apidoc.yml"}
+
+// Config 项目的配置内容
+type Config struct {
+	// 产生此配置文件的程序版本号
+	//
+	// 程序会用此来判断程序的兼容性。
+	Version string `yaml:"version"`
+
+	// 输入的配置项，可以指定多个项目
+	//
+	// 多语言项目，可能需要用到多个输入面。
+	Inputs []*input.Options `yaml:"inputs"`
+
+	// 输出配置项
+	Output *output.Options `yaml:"output"`
+
+	// 配置文件所在的目录
+	//
+	// 如果 input 和 output 中涉及到地址为非绝对目录，则使用此值作为基地址。
+	wd string
+
+	h *message.Handler
+}
+
+// LoadConfig 加载指定目录下的配置文件
+//
+// 所有的错误信息会输出到 h
+func LoadConfig(h *message.Handler, wd string) *Config {
+	for _, filename := range allowConfigFilenames {
+		p := filepath.Join(wd, filename)
+		if utils.FileExists(p) {
+			cfg, err := loadFile(wd, p)
+			if err != nil {
+				h.Error(message.Erro, err)
+				return nil
+			}
+			cfg.h = h
+			return cfg
+		}
+	}
+
+	msg := message.NewLocaleError("", filepath.Join(wd, allowConfigFilenames[0]), 0, locale.ErrRequired)
+	h.Error(message.Erro, msg)
+	return nil
+}
+
+func loadFile(wd, path string) (*Config, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, message.WithError(path, "", 0, err)
+	}
+
+	cfg := &Config{}
+	if err = yaml.Unmarshal(data, cfg); err != nil {
+		return nil, message.WithError(path, "", 0, err)
+	}
+	cfg.wd = wd
+
+	if err := cfg.sanitize(path); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+func (cfg *Config) sanitize(file string) *message.SyntaxError {
+	// 比较版本号兼容问题
+	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
+	if err != nil {
+		return message.WithError(file, "version", 0, err)
+	}
+	if !compatible {
+		return message.NewLocaleError(file, "version", 0, locale.VersionInCompatible)
+	}
+
+	if len(cfg.Inputs) == 0 {
+		return message.NewLocaleError(file, "inputs", 0, locale.ErrRequired)
+	}
+
+	if cfg.Output == nil {
+		return message.NewLocaleError(file, "output", 0, locale.ErrRequired)
+	}
+
+	for index, i := range cfg.Inputs {
+		field := "inputs[" + strconv.Itoa(index) + "]"
+
+		if i.Dir, err = path.Abs(i.Dir, cfg.wd); err != nil {
+			return message.WithError(file, field+".path", 0, err)
+		}
+	}
+
+	if cfg.Output.Path, err = path.Abs(cfg.Output.Path, cfg.wd); err != nil {
+		return message.WithError(file, "output.path", 0, err)
+	}
+
+	return nil
+}
+
+func detectConfig(wd string, recursive bool) (*Config, error) {
+	inputs, err := input.Detect(wd, recursive)
+	if err != nil {
+		return nil, err
+	}
+	if len(inputs) == 0 {
+		return nil, message.NewLocaleError("", "", 0, locale.ErrNotFoundSupportedLang)
+	}
+
+	for _, i := range inputs {
+		i.Dir = path.Rel(i.Dir, wd)
+	}
+
+	return &Config{
+		Version: vars.Version(),
+		Inputs:  inputs,
+		Output: &output.Options{
+			Path: path.Rel(filepath.Join(wd, "apidoc.xml"), wd),
+		},
+	}, nil
+}
+
+// Detect 根据 wd 所在目录的内容生成一个配置文件，并写入到该目录配置文件中。
+//
+// wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
+func Detect(wd string, recursive bool) error {
+	cfg, err := detectConfig(wd, recursive)
+	if err != nil {
+		return err
+	}
+
+	data, err := yaml.Marshal(cfg)
+	if err != nil {
+		return err
+	}
+
+	p, err := path.Abs(allowConfigFilenames[0], wd)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(p, data, os.ModePerm)
+}
+
+// Do 解析文档并输出文档内容
+//
+// 具体信息可参考 Do 函数的相关文档。
+func (cfg *Config) Do(start time.Time) {
+	if err := Do(cfg.h, cfg.Output, cfg.Inputs...); err != nil {
+		cfg.h.Error(message.Erro, err)
+		return
+	}
+
+	cfg.h.Message(message.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(start))
+}
+
+// Buffer 根据 wd 目录下的配置文件生成文档内容并保存至内存
+//
+// 具体信息可参考 Buffer 函数的相关文档。
+func (cfg *Config) Buffer() *bytes.Buffer {
+	buf, err := Buffer(cfg.h, cfg.Output, cfg.Inputs...)
+	if err != nil {
+		cfg.h.Error(message.Erro, err)
+		return nil
+	}
+
+	return buf
+}
+
+// Test 执行对语法内容的测试
+func (cfg *Config) Test() {
+	Test(cfg.h, cfg.Inputs...)
+}
+
+// Pack 同时将生成的文档内容与 docs 之下的内容打包
+func (cfg *Config) Pack(pkgName, path, url, contentType string) {
+	err := Pack(cfg.h, url, contentType, pkgName, path, cfg.Output, cfg.Inputs...)
+	if err !=nil{
+		cfg.h.Error(message.Erro, err)
+	}
+}

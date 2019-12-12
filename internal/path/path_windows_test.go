@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package config
+package path
 
 import (
 	"os"

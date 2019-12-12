@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package config
+package path
 
 import (
 	"os"
@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-// abs 获取 path 的绝对路径
+// Abs 获取 path 的绝对路径
 //
 // 如果 path 是相对路径的，则将其设置为相对于 wd 的路径
-func abs(path, wd string) (p string, err error) {
+func Abs(path, wd string) (p string, err error) {
 	if filepath.IsAbs(path) {
 		return filepath.Clean(path), nil
 	}
@@ -42,8 +42,8 @@ func isBeginHome(path string) bool {
 	return strings.HasPrefix(path, "~/") || strings.HasPrefix(path, "~\\")
 }
 
-// 尽可能地返回 path 相对于 wd 的路径，如果不存在相对关系，则原因返回 path
-func rel(path, wd string) string {
+// Rel 尽可能地返回 path 相对于 wd 的路径，如果不存在相对关系，则原因返回 path。
+func Rel(path, wd string) string {
 	p, err := filepath.Rel(wd, path)
 	if err != nil { // 不能转换不算错误，直接返回原值
 		return path

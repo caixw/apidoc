@@ -2,7 +2,7 @@
 
 // +build !windows
 
-package config
+package path
 
 import (
 	"os"
@@ -118,7 +118,7 @@ func TestAbs(t *testing.T) {
 	}
 
 	for index, item := range data {
-		result, err := abs(item.path, item.wd)
+		result, err := Abs(item.path, item.wd)
 		a.NotError(err, "err @%d,%s", index, err).
 			Equal(result, item.result, "not equal @%d,v1=%s,v2=%s", index, result, item.result)
 	}

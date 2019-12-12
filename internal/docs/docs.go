@@ -10,6 +10,9 @@ import (
 	"path/filepath"
 )
 
+// RootDir 表示 /docs 的路径
+const RootDir = "../../docs"
+
 const indexPage = "index.xml"
 
 var filterFiles = []string{
