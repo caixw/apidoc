@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.1.0" created="2019-12-12T21:45:59+08:00" version="1.1.1">
+<apidoc apidoc="5.1.0" created="2019-12-14T00:20:07+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description doctype="html"><![CDATA[
 
@@ -100,6 +100,18 @@
 		<tag>t2</tag>
 		<server>admin</server>
 		<server>old-client</server>
+	</api>
+	<api method="DELETE" summary="删除用户">
+		<path path="/users/{id}">
+			<param name="id" type="number" summary="用户 ID"></param>
+		</path>
+		<description doctype="markdown"><![CDATA[
+
+这是关于接口的详细说明文档<br />
+可以是一个 HTML 内容<br />
+
+    ]]></description>
+		<server>admin</server>
 	</api>
 	<api method="GET" summary="获取用户详情">
 		<path path="/users/{id}">

@@ -22,9 +22,6 @@ import (
 	"github.com/caixw/apidoc/v5/output"
 )
 
-// 允许的配置文件名称
-var allowConfigFilenames = []string{".apidoc.yaml", ".apidoc.yml"}
-
 // Config 项目的配置内容
 type Config struct {
 	// 产生此配置文件的程序版本号
@@ -52,7 +49,7 @@ type Config struct {
 //
 // 所有的错误信息会输出到 h
 func LoadConfig(h *message.Handler, wd string) *Config {
-	for _, filename := range allowConfigFilenames {
+	for _, filename := range vars.AllowConfigFilenames {
 		p := filepath.Join(wd, filename)
 		if utils.FileExists(p) {
 			cfg, err := loadFile(wd, p)
@@ -65,7 +62,7 @@ func LoadConfig(h *message.Handler, wd string) *Config {
 		}
 	}
 
-	msg := message.NewLocaleError("", filepath.Join(wd, allowConfigFilenames[0]), 0, locale.ErrRequired)
+	msg := message.NewLocaleError("", filepath.Join(wd, vars.AllowConfigFilenames[0]), 0, locale.ErrRequired)
 	h.Error(message.Erro, msg)
 	return nil
 }
@@ -158,7 +155,7 @@ func Detect(wd string, recursive bool) error {
 		return err
 	}
 
-	p, err := path.Abs(allowConfigFilenames[0], wd)
+	p, err := path.Abs(vars.AllowConfigFilenames[0], wd)
 	if err != nil {
 		return err
 	}
@@ -196,9 +193,9 @@ func (cfg *Config) Test() {
 }
 
 // Pack 同时将生成的文档内容与 docs 之下的内容打包
-func (cfg *Config) Pack(pkgName, path, url, contentType string) {
-	err := Pack(cfg.h, url, contentType, pkgName, path, cfg.Output, cfg.Inputs...)
-	if err !=nil{
+func (cfg *Config) Pack(pkgName, varName, path, url, contentType string) {
+	err := Pack(cfg.h, url, contentType, pkgName, varName, path, cfg.Output, cfg.Inputs...)
+	if err != nil {
 		cfg.h.Error(message.Erro, err)
 	}
 }

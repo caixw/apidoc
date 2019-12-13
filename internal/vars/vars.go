@@ -14,3 +14,14 @@ const (
 	// 官网
 	OfficialURL = "https://apidoc.tools"
 )
+
+// AllowConfigFilenames 允许的配置文件名
+//
+// apidoc 会按此列表的顺序在目录中查找配置文件，
+// 直到找到第一个相符的文件，或是在没有时出错。
+//
+// 在生成配置文件时，会直接拿第一个元素的值作为文件名。
+var AllowConfigFilenames = []string{
+	".apidoc.yaml",
+	".apidoc.yml",
+}

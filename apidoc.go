@@ -14,11 +14,11 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/input"
-	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/output"
+	"github.com/caixw/apidoc/v5/static"
 )
 
 // Init 初始化包
@@ -76,7 +76,7 @@ func Test(h *message.Handler, i ...*input.Options) {
 }
 
 // Pack 同时将生成的文档内容与 docs 之下的内容打包
-func Pack(h *message.Handler, url string, contentType, pkgName, path string, o *output.Options, i ...*input.Options) error {
+func Pack(h *message.Handler, url string, contentType, pkgName, varName, path string, o *output.Options, i ...*input.Options) error {
 	buf, err := Buffer(h, o, i...)
 	if err != nil {
 		return err
@@ -87,23 +87,30 @@ func Pack(h *message.Handler, url string, contentType, pkgName, path string, o *
 		contentType = http.DetectContentType(data)
 	}
 
-	return docs.Pack(pkgName, path, nil, &docs.FileInfo{
+	return static.Pack("./docs", pkgName, varName, path, nil, &static.FileInfo{
 		Name:        url,
 		Content:     data,
 		ContentType: contentType,
 	})
 }
 
-// Site 将 dir 作为静态文件服务内容
+// Site 返回文件服务中间件
 //
-// 默认页为 index.xml，同时会过滤 CNAME，
-// 如果将 dir 指同 docs 目录，相当于本地版本的 https://apidoc.tools
+// 相当于本地版本的 https://apidoc.tools，默认页为 index.xml。
 //
 // 用户可以通过诸如：
-//  http.Handle("/apidoc", apidoc.Site("./docs"))
+//  http.Handle("/apidoc", apidoc.Site(...))
 // 的代码搭建一个简易的 https://apidoc.tools 网站。
-func Site(dir string) http.Handler {
-	return docs.Handler(dir)
+//
+// dir 表示文档的根目录，当 embedded 为空时，dir 才启作用；
+// embedded 表示通过 Pack 打包之后的内容；
+// stylesheet 表示是否只启用 xsl-stylesheet 的相关内容，即不展示首页内容；
+func Site(dir string, embedded []*static.FileInfo, stylesheet bool) http.Handler {
+	if len(embedded) > 0 {
+		return static.EmbeddedHandler(embedded, stylesheet)
+	}
+
+	return static.FolderHandler(dir, stylesheet)
 }
 
 // Make 根据 wd 目录下的配置文件生成文档
