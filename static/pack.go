@@ -62,9 +62,9 @@ func Pack(root, pkgName, varName, path string, stylesheet bool, addTo ...*FileIn
 	if err != nil {
 		return err
 	}
-	ws("import \"", goMod+"/pack", "\"\n\n")
+	ws("import \"", goMod+"/static", "\"\n\n")
 
-	ws("var ", varName, "= []*pack.FileInfo{")
+	ws("var ", varName, "= []*static.FileInfo{")
 	for _, info := range fis {
 		if err = dump(buf, info); err != nil {
 			return err
