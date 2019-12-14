@@ -20,6 +20,7 @@ import (
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/output"
+	"github.com/caixw/apidoc/v5/static"
 )
 
 // Config 配置文件映身的结构
@@ -193,8 +194,8 @@ func (cfg *Config) Test() {
 }
 
 // Pack 同时将生成的文档内容与 docs 之下的内容打包
-func (cfg *Config) Pack(pkgName, varName, path, url, contentType string, stylesheet bool) {
-	err := Pack(cfg.h, url, contentType, pkgName, varName, path, stylesheet, cfg.Output, cfg.Inputs...)
+func (cfg *Config) Pack(pkgName, varName, path, url, contentType string, t static.Type) {
+	err := Pack(cfg.h, url, contentType, pkgName, varName, path, t, cfg.Output, cfg.Inputs...)
 	if err != nil {
 		cfg.h.Error(message.Erro, err)
 	}

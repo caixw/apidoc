@@ -37,10 +37,10 @@ type FileInfo struct {
 // pkgName 输出的包名；
 // varName 输出的变量名；
 // path 内容保存的文件名；
-// stylesheet 是否只打包 xsl 相关的内容；
+// t 打包的文件类型，如果为 TypeNone，则只打包 addTo 的内容；
 // addTo 追加的打包内容；
-func Pack(root, pkgName, varName, path string, stylesheet bool, addTo ...*FileInfo) error {
-	fis, err := getFileInfos(root, stylesheet)
+func Pack(root, pkgName, varName, path string, t Type, addTo ...*FileInfo) error {
+	fis, err := getFileInfos(root, t)
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,11 @@ func Pack(root, pkgName, varName, path string, stylesheet bool, addTo ...*FileIn
 	return utils.DumpGoFile(path, buf.String())
 }
 
-func getFileInfos(root string, stylesheet bool) ([]*FileInfo, error) {
+func getFileInfos(root string, t Type) ([]*FileInfo, error) {
+	if t == TypeNone {
+		return nil, nil
+	}
+
 	paths := []string{}
 
 	walk := func(path string, info os.FileInfo, err error) error {
@@ -94,7 +98,7 @@ func getFileInfos(root string, stylesheet bool) ([]*FileInfo, error) {
 			return err
 		}
 
-		if !stylesheet || isStylesheetFile(relpath) {
+		if t != TypeStylesheet || isStylesheetFile(relpath) {
 			paths = append(paths, relpath)
 		}
 

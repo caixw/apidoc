@@ -88,14 +88,14 @@ func Test(h *message.Handler, i ...*input.Options) {
 // pkgName 打包的内容输出到 Go 文件时，该文件的包名；
 // varName 内容保存的变量名；
 // path 输出的 Go 文件地址；
-// stylesheet 是否只打包 xsl 相关的内容。
+// t 表示需要打包的文件类型；
 //
 // chrome 浏览器限制了 XLS 与 XML 必须要遵守同源策略的限制，
 // 这就限制了文档直接引用 https://apidoc.tools/v5/apidoc.xsl 文件的使用。
 //
 // Pack() 可以将 XML 文档与 XSL 等内容打包为一个 Go 源码文件，
 // 之后通过 Site() 建立文件服务，方便用户在二进制文件中直接建议文档服务。
-func Pack(h *message.Handler, url string, contentType, pkgName, varName, path string, stylesheet bool, o *output.Options, i ...*input.Options) error {
+func Pack(h *message.Handler, url string, contentType, pkgName, varName, path string, t static.Type, o *output.Options, i ...*input.Options) error {
 	buf, err := Buffer(h, o, i...)
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func Pack(h *message.Handler, url string, contentType, pkgName, varName, path st
 		contentType = http.DetectContentType(data)
 	}
 
-	return static.Pack("./docs", pkgName, varName, path, stylesheet, nil, &static.FileInfo{
+	return static.Pack("./docs", pkgName, varName, path, t, nil, &static.FileInfo{
 		Name:        url,
 		Content:     data,
 		ContentType: contentType,
@@ -125,16 +125,15 @@ func Pack(h *message.Handler, url string, contentType, pkgName, varName, path st
 // 则在传递的内容中查找用户请求的内容；
 // dir 表示文档的根目录，当 embedded 为空时，dir 才启作用，dir 应该始终指向
 // /docs 目录，如果是普通的文件静态服务，可以直接采用 http.FileServer 会更通用；
-// stylesheet 表示是否只查询 dir 中的与 xsl 相关的内容，embedded 的 stylesheet
-// 属性在 Pack 中已经指定；
+// t 表示可以访问的文件类型。
 //
 // NOTE: 只要 embedded 不为空，则只会采用 embedded 作为文件服务的主体内容。
 // dir 与 embedded 的区别在于：dir 指同一个本地目录，方便在运行时进行修改；
 // 而 embedded 则直接将 /docs 内容内嵌到代码中，如果需要修改，则要重新编译代码才有效果。
-func Site(embedded []*static.FileInfo, dir string, stylesheet bool) http.Handler {
+func Site(embedded []*static.FileInfo, dir string, t static.Type) http.Handler {
 	if len(embedded) > 0 {
 		return static.EmbeddedHandler(embedded)
 	}
 
-	return static.FolderHandler(dir, stylesheet)
+	return static.FolderHandler(dir, t)
 }

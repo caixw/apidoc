@@ -11,6 +11,16 @@ import (
 	"strings"
 )
 
+// Type 表示文件的类型
+type Type int8
+
+// 几种文件类型的定义
+const (
+	TypeNone = iota
+	TypeAll
+	TypeStylesheet
+)
+
 // 默认页面
 const indexPage = "index.xml"
 
@@ -46,8 +56,13 @@ func EmbeddedHandler(data []*FileInfo) http.Handler {
 }
 
 // FolderHandler 将 folder 当作文件服务中间件
-func FolderHandler(folder string, stylesheet bool) http.Handler {
+func FolderHandler(folder string, t Type) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if t == TypeNone {
+			errStatus(w, http.StatusNotFound)
+			return
+		}
+
 		path := r.URL.Path
 
 		if len(path) > 0 && path[0] == '/' {
@@ -55,7 +70,7 @@ func FolderHandler(folder string, stylesheet bool) http.Handler {
 			r.URL.Path = path
 		}
 
-		if stylesheet && !isStylesheetFile(path) {
+		if t == TypeStylesheet && !isStylesheetFile(path) {
 			errStatus(w, http.StatusNotFound)
 			return
 		}

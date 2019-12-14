@@ -9,10 +9,11 @@ import (
 	"net/http"
 
 	"github.com/caixw/apidoc/v5"
+	"github.com/caixw/apidoc/v5/static"
 )
 
 func main() {
-	http.Handle("/", apidoc.Site(nil, "../../docs", false))
+	http.Handle("/", apidoc.Site(nil, "../../docs", static.TypeAll))
 	err := http.ListenAndServe(":8080", nil)
 	panic(err)
 }
