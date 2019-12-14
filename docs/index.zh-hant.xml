@@ -33,7 +33,7 @@
         </ol>
 
         <p>以下是壹段簡短的 C 語言風格代碼下的示例：</p>
-        <pre><![CDATA[/**
+        <pre><code class="language-markup"><![CDATA[/**
  * <api method="GET" summary="獲取所有的用戶信息">
  *     <path path="/users">
  *         <query name="page" type="number" default="0">顯示第幾頁的內容</query>
@@ -53,7 +53,7 @@
  *         <param name="msg" type="string" summary="錯誤內容" />
  *     </response>
  * </api>
- */]]></pre>
+ */]]></code></pre>
         <p>多行註釋中，每壹行中以<code>空白字符+symbol+空白字符</code>開頭的，這些字符將會被過濾，symbol 表示該註釋塊的起始字符中的任意字符。比如以上代碼中，所有的 <var>*</var> 將被過濾。</p>
     </doc>
 
