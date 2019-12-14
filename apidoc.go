@@ -4,12 +4,18 @@
 //
 // 可以从代码文件的注释中提取文档内容，生成 API 文档，
 // 支持大部分的主流的编程语言。
+//
+// 在生成文档之前，请确保已经调用 Init() 用于初始化环境，
+// Init() 可以确保能以你指定的本地化信息显示提示信息。
+//
+// 生成的文档，可以调用 Do() 输出为文件；也可以通过 Buffer()
+// 返回 bytes.Buffer 实例；或者通过 Pack() 直接将文档与其依赖的 XSL
+// 打包成一个 Go 源码文件，这样可以直接编译在二进制文件中。
 package apidoc
 
 import (
 	"bytes"
 	"net/http"
-	"time"
 
 	"golang.org/x/text/language"
 
@@ -76,7 +82,20 @@ func Test(h *message.Handler, i ...*input.Options) {
 }
 
 // Pack 同时将生成的文档内容与 docs 之下的内容打包
-func Pack(h *message.Handler, url string, contentType, pkgName, varName, path string, o *output.Options, i ...*input.Options) error {
+//
+// url 为文档的地址；
+// contentType 为文档的类型，如果不指定，由 http.DetectContentType 获取；
+// pkgName 打包的内容输出到 Go 文件时，该文件的包名；
+// varName 内容保存的变量名；
+// path 输出的 Go 文件地址；
+// stylesheet 是否只打包 xsl 相关的内容。
+//
+// chrome 浏览器限制了 XLS 与 XML 必须要遵守同源策略的限制，
+// 这就限制了文档直接引用 https://apidoc.tools/v5/apidoc.xsl 文件的使用。
+//
+// Pack() 可以将 XML 文档与 XSL 等内容打包为一个 Go 源码文件，
+// 之后通过 Site() 建立文件服务，方便用户在二进制文件中直接建议文档服务。
+func Pack(h *message.Handler, url string, contentType, pkgName, varName, path string, stylesheet bool, o *output.Options, i ...*input.Options) error {
 	buf, err := Buffer(h, o, i...)
 	if err != nil {
 		return err
@@ -87,7 +106,7 @@ func Pack(h *message.Handler, url string, contentType, pkgName, varName, path st
 		contentType = http.DetectContentType(data)
 	}
 
-	return static.Pack("./docs", pkgName, varName, path, nil, &static.FileInfo{
+	return static.Pack("./docs", pkgName, varName, path, stylesheet, nil, &static.FileInfo{
 		Name:        url,
 		Content:     data,
 		ContentType: contentType,
@@ -102,35 +121,20 @@ func Pack(h *message.Handler, url string, contentType, pkgName, varName, path st
 //  http.Handle("/apidoc", apidoc.Site(...))
 // 的代码搭建一个简易的 https://apidoc.tools 网站。
 //
-// dir 表示文档的根目录，当 embedded 为空时，dir 才启作用；
-// embedded 表示通过 Pack 打包之后的内容；
-// stylesheet 表示是否只启用 xsl-stylesheet 的相关内容，即不展示首页内容；
-func Site(dir string, embedded []*static.FileInfo, stylesheet bool) http.Handler {
+// embedded 表示通过 Pack 打包之后的内容，如果该值不为空，
+// 则在传递的内容中查找用户请求的内容；
+// dir 表示文档的根目录，当 embedded 为空时，dir 才启作用，dir 应该始终指向
+// /docs 目录，如果是普通的文件静态服务，可以直接采用 http.FileServer 会更通用；
+// stylesheet 表示是否只查询 dir 中的与 xsl 相关的内容，embedded 的 stylesheet
+// 属性在 Pack 中已经指定；
+//
+// NOTE: 只要 embedded 不为空，则只会采用 embedded 作为文件服务的主体内容。
+// dir 与 embedded 的区别在于：dir 指同一个本地目录，方便在运行时进行修改；
+// 而 embedded 则直接将 /docs 内容内嵌到代码中，如果需要修改，则要重新编译代码才有效果。
+func Site(embedded []*static.FileInfo, dir string, stylesheet bool) http.Handler {
 	if len(embedded) > 0 {
-		return static.EmbeddedHandler(embedded, stylesheet)
+		return static.EmbeddedHandler(embedded)
 	}
 
 	return static.FolderHandler(dir, stylesheet)
-}
-
-// Make 根据 wd 目录下的配置文件生成文档
-//
-// Deprecated: 下个版本将弃用，请使用 Config.Do 方法
-func Make(h *message.Handler, wd string, test bool) {
-	now := time.Now()
-
-	cfg := LoadConfig(h, wd)
-	if test {
-		cfg.Test()
-		return
-	}
-	cfg.Do(now)
-}
-
-// MakeBuffer 根据 wd 目录下的配置文件生成文档内容并保存至内存
-//
-// Deprecated: 下个版本将弃用，请使用 Config.Buffer 方法
-func MakeBuffer(h *message.Handler, wd string) *bytes.Buffer {
-	cfg := LoadConfig(h, wd)
-	return cfg.Buffer()
 }

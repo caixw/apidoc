@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-// Package static 用于打包静态文件内容
+// Package static 提供了对 docs 中内容的处理方式
 package static
 
 import (
@@ -11,15 +11,19 @@ import (
 	"strings"
 )
 
+// 默认页面
 const indexPage = "index.xml"
 
+// 指定了 xml 文档所需的 xsl 内容。
+//
+// 可以以前缀的方式指定，比如：v5/ 表示以 v5/ 开头的所有文件。
 var styles = []string{
 	"icon.svg",
 	"v5/",
 }
 
-// EmbeddedHandler 将 data 作为一个静态文件服务内容进行管理
-func EmbeddedHandler(data []*FileInfo, stylesheet bool) http.Handler {
+// EmbeddedHandler 将由 Pack 打包的内容当作一个文件服务中间件
+func EmbeddedHandler(data []*FileInfo) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
 
@@ -28,11 +32,6 @@ func EmbeddedHandler(data []*FileInfo, stylesheet bool) http.Handler {
 		}
 		r.URL.Path = pp
 		indexPath := path.Join(pp, indexPage)
-
-		if stylesheet && !isStylesheetFile(pp) {
-			errStatus(w, http.StatusNotFound)
-			return
-		}
 
 		for _, info := range data {
 			if info.Name == pp || info.Name == indexPath {
@@ -46,7 +45,7 @@ func EmbeddedHandler(data []*FileInfo, stylesheet bool) http.Handler {
 	})
 }
 
-// FolderHandler 将 folder 当作一个网站进行管理
+// FolderHandler 将 folder 当作文件服务中间件
 func FolderHandler(folder string, stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path

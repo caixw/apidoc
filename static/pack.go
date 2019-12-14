@@ -37,9 +37,10 @@ type FileInfo struct {
 // pkgName 输出的包名；
 // varName 输出的变量名；
 // path 内容保存的文件名；
+// stylesheet 是否只打包 xsl 相关的内容；
 // addTo 追加的打包内容；
-func Pack(root, pkgName, varName, path string, addTo ...*FileInfo) error {
-	fis, err := getFileInfos(root)
+func Pack(root, pkgName, varName, path string, stylesheet bool, addTo ...*FileInfo) error {
+	fis, err := getFileInfos(root, stylesheet)
 	if err != nil {
 		return err
 	}
@@ -49,10 +50,9 @@ func Pack(root, pkgName, varName, path string, addTo ...*FileInfo) error {
 
 	ws := func(str ...string) {
 		for _, s := range str {
-			if err != nil {
-				return
+			if err == nil {
+				_, err = buf.WriteString(s)
 			}
-			_, err = buf.WriteString(s)
 		}
 	}
 
@@ -77,15 +77,25 @@ func Pack(root, pkgName, varName, path string, addTo ...*FileInfo) error {
 	return utils.DumpGoFile(path, buf.String())
 }
 
-func getFileInfos(root string) ([]*FileInfo, error) {
-	var paths []string
+func getFileInfos(root string, stylesheet bool) ([]*FileInfo, error) {
+	paths := []string{}
+
 	walk := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if !info.IsDir() {
-			paths = append(paths, path)
+		if info.IsDir() {
+			return nil
+		}
+
+		relpath, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+
+		if !stylesheet || isStylesheetFile(relpath) {
+			paths = append(paths, relpath)
 		}
 
 		return nil
@@ -97,7 +107,7 @@ func getFileInfos(root string) ([]*FileInfo, error) {
 
 	fis := make([]*FileInfo, 0, len(paths))
 	for _, path := range paths {
-		content, err := ioutil.ReadFile(path)
+		content, err := ioutil.ReadFile(filepath.Join(root, path))
 		if err != nil {
 			return nil, err
 		}
@@ -111,15 +121,12 @@ func getFileInfos(root string) ([]*FileInfo, error) {
 	return fis, nil
 }
 
-func dump(buf *bytes.Buffer, file *FileInfo) error {
-	content, err := ioutil.ReadFile(file.Name)
-
+func dump(buf *bytes.Buffer, file *FileInfo) (err error) {
 	ws := func(str ...string) {
 		for _, s := range str {
-			if err != nil {
-				return
+			if err == nil {
+				_, err = buf.WriteString(s)
 			}
-			_, err = buf.WriteString(s)
 		}
 	}
 
@@ -127,7 +134,7 @@ func dump(buf *bytes.Buffer, file *FileInfo) error {
 
 	ws("Name:\"", file.Name, "\",\n")
 	ws("ContentType:\"", file.ContentType, "\",\n")
-	ws("Content:[]byte(`", string(content), "`),\n")
+	ws("Content:[]byte(`", string(file.Content), "`),\n")
 
 	ws("},\n")
 	return err

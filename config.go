@@ -22,7 +22,7 @@ import (
 	"github.com/caixw/apidoc/v5/output"
 )
 
-// Config 项目的配置内容
+// Config 配置文件映身的结构
 type Config struct {
 	// 产生此配置文件的程序版本号
 	//
@@ -193,8 +193,8 @@ func (cfg *Config) Test() {
 }
 
 // Pack 同时将生成的文档内容与 docs 之下的内容打包
-func (cfg *Config) Pack(pkgName, varName, path, url, contentType string) {
-	err := Pack(cfg.h, url, contentType, pkgName, varName, path, cfg.Output, cfg.Inputs...)
+func (cfg *Config) Pack(pkgName, varName, path, url, contentType string, stylesheet bool) {
+	err := Pack(cfg.h, url, contentType, pkgName, varName, path, stylesheet, cfg.Output, cfg.Inputs...)
 	if err != nil {
 		cfg.h.Error(message.Erro, err)
 	}

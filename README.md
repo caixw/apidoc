@@ -50,12 +50,11 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-安装
+使用
 ----
 
-```shell
-go get github.com/caixw/apidoc
-```
+在 <https://github.com/caixw/apidoc/releases> 提供了主流系统下可用软件，可直接下载使用。
+如果你使用的系统不在此列，则需要手动下载编译。
 
 支持多种本地化语言，默认情况下会根据当前系统所使用的语言进行调整。
 也可以通过设置环境变更 `LANG` 指定一个本地化信息。*nix 系统也可以使用以下命令：
@@ -83,11 +82,11 @@ inputs := []*input.Options{
     &input.Options{},
 }
 
-apidoc.Buffer(h, output, inputs...)
+apidoc.Do(h, output, inputs...)
 ```
 
 参与开发
---------
+----
 
 请阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 文件的相关内容。
 

@@ -4,8 +4,10 @@ package static
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 
+	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/issue9/assert"
 	"github.com/issue9/assert/rest"
 )
@@ -45,10 +47,24 @@ var embedData = []*FileInfo{
 	},
 }
 
+// 保证 styles 中保存着最新的 xml-stylesheet 内容
+func TestStyles(t *testing.T) {
+	a := assert.New(t)
+
+	v := vars.DocVersion()
+	found := false
+	for _, file := range styles {
+		if strings.HasPrefix(file, v) {
+			found = true
+		}
+	}
+	a.True(found)
+}
+
 func TestEmbeddedHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, EmbeddedHandler(embedData, false), nil)
+	srv := rest.NewServer(t, EmbeddedHandler(embedData), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -71,38 +87,6 @@ func TestEmbeddedHandler(t *testing.T) {
 	srv.Get("/").
 		Do().
 		Status(http.StatusOK)
-
-	srv.Get("/icon.svg").
-		Do().
-		Status(http.StatusOK)
-}
-
-func TestEmbeddedHandler_stylesheet(t *testing.T) {
-	a := assert.New(t)
-
-	srv := rest.NewServer(t, EmbeddedHandler(embedData, true), nil)
-	a.NotNil(srv)
-	defer srv.Close()
-
-	srv.Get("/not-exists").
-		Do().
-		Status(http.StatusNotFound)
-
-	srv.Get("/v5/").
-		Do().
-		Status(http.StatusOK)
-
-	srv.Get("/v5/apidoc.xsl").
-		Do().
-		Status(http.StatusOK)
-
-	srv.Get("/example").
-		Do().
-		Status(http.StatusNotFound)
-
-	srv.Get("/").
-		Do().
-		Status(http.StatusNotFound)
 
 	srv.Get("/icon.svg").
 		Do().
@@ -112,7 +96,7 @@ func TestEmbeddedHandler_stylesheet(t *testing.T) {
 func TestEmbeddedHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", EmbeddedHandler(embedData, true))
+	h := http.StripPrefix("/prefix/", EmbeddedHandler(embedData))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()
@@ -131,11 +115,11 @@ func TestEmbeddedHandler_prefix(t *testing.T) {
 
 	srv.Get("/prefix/example").
 		Do().
-		Status(http.StatusNotFound)
+		Status(http.StatusOK)
 
 	srv.Get("/prefix/").
 		Do().
-		Status(http.StatusNotFound)
+		Status(http.StatusOK)
 
 	srv.Get("/prefix/icon.svg").
 		Do().

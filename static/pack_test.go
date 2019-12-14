@@ -10,15 +10,24 @@ import (
 
 func TestPack(t *testing.T) {
 	a := assert.New(t)
-	a.NotError(Pack("./testdir", "testdata", "Data", "./testdata/testdata.go"))
+	a.NotError(Pack("./testdir", "testdata", "Data", "./testdata/testdata.go", false))
 }
 
 func TestGetFileInfos(t *testing.T) {
 	a := assert.New(t)
 
-	info, err := getFileInfos("./testdir")
+	info, err := getFileInfos("./testdir", false)
 	a.NotError(err).NotNil(info)
-	a.Equal(5, len(info))
+	a.Equal(6, len(info))
+}
+
+func TestGetFileInfos_stylesheet(t *testing.T) {
+	a := assert.New(t)
+
+	info, err := getFileInfos("./testdir", true)
+	a.NotError(err).NotNil(info)
+	a.Equal(1, len(info)).
+		Equal(info[0].Name, "icon.svg")
 }
 
 func TestGetPkgPath(t *testing.T) {
