@@ -3,6 +3,7 @@
 package static
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -17,6 +18,13 @@ func TestGetFileInfos(t *testing.T) {
 	a := assert.New(t)
 
 	info, err := getFileInfos("./testdir", TypeAll)
+	a.NotError(err).NotNil(info)
+	a.Equal(6, len(info))
+
+	// 采有绝对路径
+	dir, err := filepath.Abs("./testdir")
+	a.NotError(err).NotEmpty(dir)
+	info, err = getFileInfos(dir, TypeAll)
 	a.NotError(err).NotNil(info)
 	a.Equal(6, len(info))
 }

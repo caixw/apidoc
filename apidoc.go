@@ -113,24 +113,25 @@ func Pack(h *message.Handler, url string, contentType, pkgName, varName, path st
 	})
 }
 
-// Site 返回文件服务中间件
+// Static 返回文件服务中间件
 //
 // 相当于本地版本的 https://apidoc.tools，默认页为 index.xml。
 //
 // 用户可以通过诸如：
-//  http.Handle("/apidoc", apidoc.Site(...))
+//  http.Handle("/apidoc", apidoc.Static(...))
 // 的代码搭建一个简易的 https://apidoc.tools 网站。
 //
 // embedded 表示通过 Pack 打包之后的内容，如果该值不为空，
-// 则在传递的内容中查找用户请求的内容；
-// dir 表示文档的根目录，当 embedded 为空时，dir 才启作用，dir 应该始终指向
-// /docs 目录，如果是普通的文件静态服务，可以直接采用 http.FileServer 会更通用；
-// t 表示可以访问的文件类型。
+// 则在 embedded 中查找用户请求的内容；
+// dir 表示文档的根目录，会在该目录下查找用户请求的文档内容。
+// 当 embedded 为空时，dir 才启作用，dir 应该始终指向 /docs 目录，
+// 如果是普通的文件静态服务，可以直接采用 http.FileServer 会更通用；
+// t 表示可以访问的文件类型，仅对 dir 参数启作用。
 //
 // NOTE: 只要 embedded 不为空，则只会采用 embedded 作为文件服务的主体内容。
 // dir 与 embedded 的区别在于：dir 指同一个本地目录，方便在运行时进行修改；
 // 而 embedded 则直接将 /docs 内容内嵌到代码中，如果需要修改，则要重新编译代码才有效果。
-func Site(embedded []*static.FileInfo, dir string, t static.Type) http.Handler {
+func Static(embedded []*static.FileInfo, dir string, t static.Type) http.Handler {
 	if len(embedded) > 0 {
 		return static.EmbeddedHandler(embedded)
 	}

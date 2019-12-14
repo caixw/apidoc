@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	http.Handle("/", apidoc.Site(nil, "../../docs", static.TypeAll))
+	http.Handle("/", apidoc.Static(nil, "../../docs", static.TypeAll))
 	err := http.ListenAndServe(":8080", nil)
 	panic(err)
 }
