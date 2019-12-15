@@ -16,8 +16,6 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
-// TODO 扩展字段未加
-
 // LatestVersion openapi 最新的版本号
 const LatestVersion = "3.0.1"
 
@@ -126,7 +124,12 @@ func (oa *OpenAPI) Sanitize() *message.SyntaxError {
 	if len(oa.Paths) == 0 {
 		return message.NewLocaleError("", "paths", 0, locale.ErrRequired)
 	}
-	// TODO 验证 paths
+	for k, path := range oa.Paths {
+		if err := path.Sanitize(); err != nil {
+			err.Field = "paths[" + k + "]." + err.Field
+			return err
+		}
+	}
 
 	if oa.Components != nil {
 		if err := oa.Components.Sanitize(); err != nil {

@@ -12,7 +12,7 @@ const (
 	ParameterINPath   = "path"
 	ParameterINQuery  = "query"
 	ParameterINHeader = "header"
-	ParameterINcookie = "cookie"
+	ParameterINCookie = "cookie"
 )
 
 // Header 即 Parameter 的别名，但 Name 字段必须不能存在。
@@ -43,12 +43,10 @@ func (p *Parameter) Sanitize() *message.SyntaxError {
 	}
 
 	switch p.IN {
-	case ParameterINcookie, ParameterINHeader, ParameterINPath, ParameterINQuery:
+	case ParameterINCookie, ParameterINHeader, ParameterINPath, ParameterINQuery:
 	default:
 		return message.NewLocaleError("", "in", 0, locale.ErrInvalidValue)
 	}
-
-	// TODO 其它字段检测
 
 	return nil
 }

@@ -72,7 +72,7 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 				}
 
 				content[r.Mimetype] = &MediaType{
-					// TODO Schema:   &Schema{Schema: *r.Type},
+					Schema:   newSchemaFromRequest(r, true),
 					Examples: examples,
 				}
 			}
@@ -119,7 +119,7 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 				}
 			}
 			r.Content[resp.Mimetype] = &MediaType{
-				// TODO Schema:   &Schema{Schema: *resp.Type},
+				Schema:   newSchemaFromRequest(resp, true),
 				Examples: examples,
 			}
 		}
@@ -137,7 +137,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 			IN:          ParameterINPath,
 			Description: param.Summary,
 			Required:    !param.Optional,
-			// TODO Schema:      &Schema{Schema: *param.Type},
+			Schema:      newSchema(param, true),
 		})
 	}
 
@@ -147,7 +147,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 			IN:          ParameterINQuery,
 			Description: param.Summary,
 			Required:    !param.Optional,
-			// TODO Schema:      &Schema{Schema: *param.Type},
+			Schema:      newSchema(param, true),
 		})
 	}
 

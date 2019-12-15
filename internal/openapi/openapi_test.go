@@ -23,7 +23,13 @@ func TestOpenAPI_Sanitize(t *testing.T) {
 		Version: "3.3.3",
 	},
 		Paths: map[string]*PathItem{
-			"/api": {},
+			"/api": {
+				Get: &Operation{
+					Responses: map[string]*Response{
+						"json": {},
+					},
+				},
+			},
 		},
 	}
 	a.NotError(oa.Sanitize())

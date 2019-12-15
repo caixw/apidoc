@@ -81,6 +81,46 @@ type Response struct {
 	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
+func (path *PathItem) Sanitize() *message.SyntaxError {
+	var o *Operation
+	switch {
+	case path.Get != nil:
+		o = path.Get
+	case path.Put != nil:
+		o = path.Put
+	case path.Post != nil:
+		o = path.Post
+	case path.Delete != nil:
+		o = path.Delete
+	case path.Options != nil:
+		o = path.Options
+	case path.Head != nil:
+		o = path.Head
+	case path.Patch != nil:
+		o = path.Patch
+	case path.Trace != nil:
+		o = path.Trace
+	}
+
+	if o == nil {
+		return message.NewLocaleError("", "operation", 0, locale.ErrRequired)
+
+	}
+
+	if err := o.Sanitize(); err != nil {
+		err.Field = "method." + err.Field
+		return err
+	}
+	return nil
+}
+
+func (o *Operation) Sanitize() *message.SyntaxError {
+	if len(o.Responses) == 0 {
+		return message.NewLocaleError("", "responses", 0, locale.ErrRequired)
+	}
+	return nil
+}
+
 // Sanitize 数据检测
 func (req *RequestBody) Sanitize() *message.SyntaxError {
 	if len(req.Content) == 0 {

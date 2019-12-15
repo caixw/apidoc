@@ -3,6 +3,7 @@
 package openapi
 
 import (
+	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/message"
 )
 
@@ -15,6 +16,7 @@ const (
 	TypeString   = "string"
 	TypeBool     = "bool"
 	TypePassword = "password"
+	TypeArray    = "array"
 )
 
 // IsWellDataType 是否为一个正常的数据类型
@@ -109,4 +111,81 @@ func (s *Schema) Sanitize() *message.SyntaxError {
 		}
 	}
 	return nil
+}
+
+// chkArray 是否需要检测当前类型是否为数组
+func newSchema(p *doc.Param, chkArray bool) *Schema {
+	if chkArray && p.Array {
+		return &Schema{
+			Type:  TypeArray,
+			Items: newSchema(p, false),
+		}
+	}
+
+	s := &Schema{
+		Type:        p.Type.String(),
+		Properties:  nil,
+		Definitions: nil,
+		Title:       p.Summary,
+		Description: p.Description.Text,
+		Default:     p.Default,
+		Deprecated:  p.Deprecated != "",
+		Required:    make([]string, 0, len(p.Items)),
+	}
+
+	// enum
+	if len(p.Enums) > 0 {
+		s.Enum = make([]interface{}, 0, len(p.Enums))
+		for _, e := range p.Enums {
+			s.Enum = append(s.Enum, e.Value)
+		}
+	}
+
+	// Properties / Required
+	for _, item := range p.Items {
+		s.Properties[item.Name] = newSchema(item, true)
+		if !item.Optional {
+			s.Required = append(s.Required, item.Name)
+		}
+	}
+
+	return s
+}
+
+// chkArray 是否需要检测当前类型是否为数组
+func newSchemaFromRequest(p *doc.Request, chkArray bool) *Schema {
+	if chkArray && p.Array {
+		return &Schema{
+			Type:  TypeArray,
+			Items: newSchemaFromRequest(p, false),
+		}
+	}
+
+	s := &Schema{
+		Type:        p.Type.String(),
+		Properties:  nil,
+		Definitions: nil,
+		Title:       p.Summary,
+		Description: p.Description.Text,
+		Deprecated:  p.Deprecated != "",
+		Required:    make([]string, 0, len(p.Items)),
+	}
+
+	// enum
+	if len(p.Enums) > 0 {
+		s.Enum = make([]interface{}, 0, len(p.Enums))
+		for _, e := range p.Enums {
+			s.Enum = append(s.Enum, e.Value)
+		}
+	}
+
+	// Properties / Required
+	for _, item := range p.Items {
+		s.Properties[item.Name] = newSchema(item, true)
+		if !item.Optional {
+			s.Required = append(s.Required, item.Name)
+		}
+	}
+
+	return s
 }

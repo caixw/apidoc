@@ -99,3 +99,7 @@ func (t Type) fmtString() (string, error) {
 	}
 	return "", locale.Errorf(locale.ErrInvalidValue)
 }
+
+func (t Type) String() string {
+	return typeStringMap[t]
+}
