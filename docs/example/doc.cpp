@@ -3,10 +3,12 @@
 // <apidoc version="1.1.1">
 //     <title>示例文档</title>
 //     <server name="admin" url="https://api.example.com/admin">
+//     <description type="html">
 //     后台管理接口，<br /><br /><br /><br /><p style="color:red">admin</p>
+//     </description>
 //     </server>
-//     <server name="old-client" url="https://api.example.com/client" deprecated="1.1.1">客户端接口</server>
-//     <server name="client" url="https://api.example.com">客户端接口</server>
+//     <server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" summary="客户端接口" />
+//     <server name="client" url="https://api.example.com" summary="客户端接口" />
 //     <tag name="t1" title="标签1" />
 //     <tag name="t2" title="标签2" />
 //     <license url="https://opensource.org/licenses/MIT" text="MIT" />
@@ -45,7 +47,7 @@
 //     </response>
 //     <response status="404" type="none" mimetype="application/json application/xml" summary="not found" />
 //
-//     <description doctype="html">
+//     <description type="html">
 // <![CDATA[
 //     <p>这是一个用于测试的文档用例</p>
 //     状态码：

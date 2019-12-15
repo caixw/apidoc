@@ -12,7 +12,7 @@ const (
 
 // Richtext 富文本内容
 type Richtext struct {
-	Type string `xml:"doctype,attr,omitempty"` // 文档类型，可以是 html 或是 markdown
+	Type string `xml:"type,attr,omitempty"` // 文档类型，可以是 html 或是 markdown
 	Text string `xml:",cdata"`
 }
 

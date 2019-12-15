@@ -20,7 +20,7 @@ func TestEnum_UnmarshalXML(t *testing.T) {
 		Value:       "text",
 		Description: Richtext{Text: "<a><p>desc</p></a>"},
 	}
-	str := `<Enum value="text"><description doctype="markdown"><![CDATA[<a><p>desc</p></a>]]></description></Enum>`
+	str := `<Enum value="text"><description type="markdown"><![CDATA[<a><p>desc</p></a>]]></description></Enum>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)

@@ -53,7 +53,7 @@ func TestServer_UnmarshalXML(t *testing.T) {
 		Deprecated:  "1.1.1",
 		Description: Richtext{Text: "<a>test</a>"},
 	}
-	str := `<Server name="srv1" url="https://api.example.com/srv1" deprecated="1.1.1"><description doctype="markdown"><![CDATA[<a>test</a>]]></description></Server>`
+	str := `<Server name="srv1" url="https://api.example.com/srv1" deprecated="1.1.1"><description type="markdown"><![CDATA[<a>test</a>]]></description></Server>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
@@ -61,7 +61,7 @@ func TestServer_UnmarshalXML(t *testing.T) {
 	obj1 := &Server{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj1.Description.Text, obj.Description.Text).
-		NotEqual(obj1.Description.Type, obj.Description.Type) // doctype 在 marshal 是会能默认址
+		NotEqual(obj1.Description.Type, obj.Description.Type) // type 在 marshal 是会能默认址
 
 	// 正常，带 description
 	obj1 = &Server{}

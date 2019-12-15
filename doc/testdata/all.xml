@@ -21,7 +21,7 @@
         </description>
     </server>
 
-    <description doctype="html">
+    <description type="html">
     <![CDATA[
         <h2>h2</h2>
         <h3>h3</h3>
@@ -40,7 +40,7 @@
         <server>s1</server>
         <server>s2</server>
 
-        <description doctype="html">
+        <description type="html">
         <![CDATA[
         description xxx
         ]]>

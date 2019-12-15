@@ -26,7 +26,7 @@
             <xsl:call-template name="header" />
 
             <main>
-                <div class="content" data-type="{description/@doctype}">
+                <div class="content" data-type="{description/@type}">
                     <pre><xsl:copy-of select="apidoc/description/node()" /></pre>
                 </div>
                 <div class="servers"><xsl:apply-templates select="apidoc/server" /></div>
@@ -152,7 +152,7 @@
         </summary>
 
         <xsl:if test="description">
-            <div class="description" data-type="{description/@doctype}">
+            <div class="description" data-type="{description/@type}">
                 <pre><xsl:copy-of select="description/node()" /></pre>
             </div>
         </xsl:if>
@@ -195,7 +195,7 @@
             <span class="summary"><xsl:value-of select="@summary" /></span>
         </h3>
         <xsl:if test="not(description/node()='')">
-            <div class="description" data-type="{description/@doctype}">
+            <div class="description" data-type="{description/@type}">
                 <pre><xsl:copy-of select="description/node()" /></pre>
             </div>
         </xsl:if>
@@ -382,7 +382,7 @@
             <td>
                 <xsl:choose>
                     <xsl:when test="description">
-                        <div data-type="{description/@doctype}">
+                        <div data-type="{description/@type}">
                             <pre><xsl:copy-of select="description/node()" /></pre>
                         </div>
                     </xsl:when>
@@ -429,7 +429,7 @@
             <td>
                 <xsl:choose>
                     <xsl:when test="description">
-                        <div data-type="{description/@doctype}">
+                        <div data-type="{description/@type}">
                             <pre><xsl:copy-of select="description/node()" /></pre>
                         </div>
                     </xsl:when>
@@ -471,7 +471,7 @@
             <xsl:value-of select="@value" />:
             <xsl:choose>
                 <xsl:when test="description">
-                    <div data-type="{description/@doctype}">
+                    <div data-type="{description/@type}">
                         <pre><xsl:copy-of select="description/node()" /></pre>
                     </div>
                 </xsl:when>

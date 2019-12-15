@@ -40,7 +40,7 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 			<param name="name" type="string" summary="name" />
 			<param name="sex" type="string" summary="sex">
 				<enum value="male" summary="male" />
-				<enum value="female"><description doctype="markdown">Female</description></enum>
+				<enum value="female"><description type="markdown">Female</description></enum>
 			</param>
 			<param name="age" type="number" summary="age" />
 		</request>
