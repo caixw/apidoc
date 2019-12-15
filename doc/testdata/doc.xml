@@ -11,12 +11,14 @@
     <tag name="tag1" title="tag description" />
     <tag name="tag2" deprecated="1.0.1" title="tag description" />
 
-    <server name="admin" url="https://api.example.com/admin">
-        admin api
-    </server>
+    <server name="admin" url="https://api.example.com/admin" summary="admin api" />
 
     <server name="client" url="https://api.example.com/client" deprecated="1.0.1">
-        client api
+        <description type="html">
+        <![CDATA[
+        <p>client api</p>
+        ]]>
+        </description>
     </server>
 
     <description doctype="html">

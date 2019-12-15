@@ -114,10 +114,10 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	a.Equal(serr.Line, 11).
 		Equal(serr.File, "file")
 
-		// 重得的 server
+		// 重复得的 server
 	data = `<apidoc version="1.1.1">
-		<server name="s1" url="https://example.com/s1">tet</server>
-		<server name="s1" url="https://example.com/s2">tet</server>
+		<server name="s1" url="https://example.com/s1" summary="tet" />
+		<server name="s1" url="https://example.com/s2" summary="tet" />
 	</apidoc>`
 	doc = New()
 	a.NotNil(doc)

@@ -20,14 +20,13 @@ type Tag struct {
 }
 
 // Server 服务信息
-//  <server name="tag1" deprecated="1.1.1" url="api.example.com/admin">description</server>
+//  <server name="tag1" deprecated="1.1.1" url="api.example.com/admin" summary="description" />
 type Server struct {
-	Name       string  `xml:"name,attr"` // 字面名称，需要唯一
-	URL        string  `xml:"url,attr"`
-	Deprecated Version `xml:"deprecated,attr,omitempty"`
-
-	DocType     string `xml:"doctype,attr,omitempty"` // 文档类型，可以是 html 或是 markdown
-	Description string `xml:",cdata"`
+	Name        string   `xml:"name,attr"` // 字面名称，需要唯一
+	URL         string   `xml:"url,attr"`
+	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
+	Summary     string   `xml:"summary,attr,omitempty"`
+	Description Richtext `xml:"description,omitempty"`
 }
 
 type (
@@ -71,12 +70,8 @@ func (srv *Server) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"#url", locale.ErrInvalidFormat)
 	}
 
-	if shadow.Description == "" {
-		return newSyntaxError(field, locale.ErrRequired)
-	}
-
-	if shadow.DocType == "" {
-		shadow.DocType = RichtextTypeMarkdown
+	if shadow.Summary == "" && shadow.Description.Text == "" {
+		return newSyntaxError(field+"/summary", locale.ErrRequired)
 	}
 
 	*srv = Server(shadow)
