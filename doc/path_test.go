@@ -38,8 +38,8 @@ func TestPath_UnmarshalXML(t *testing.T) {
 		<query name="text" type="string" summary="text" />
 		<query name="sex" type="string">
 			<description>sex</description>
-			<enum value="male">male</enum>
-			<enum value="female">female</enum>
+			<enum value="male" summary="male" />
+			<enum value="female" summary="female" />
 		</query>
 	</Path>`
 	a.NotError(xml.Unmarshal([]byte(str), obj1)).

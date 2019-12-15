@@ -39,8 +39,8 @@ func TestCallback_UnmarshalXML(t *testing.T) {
 		<request status="200" mimetype="json" type="object">
 			<param name="name" type="string" summary="name" />
 			<param name="sex" type="string" summary="sex">
-				<enum value="male">Male</enum>
-				<enum value="female">Female</enum>
+				<enum value="male" summary="male" />
+				<enum value="female"><description doctype="markdown">Female</description></enum>
 			</param>
 			<param name="age" type="number" summary="age" />
 		</request>

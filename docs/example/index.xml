@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.1.0" created="2019-12-14T23:35:39+08:00" version="1.1.1">
+<apidoc apidoc="5.1.0" created="2019-12-15T22:00:48+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description doctype="html"><![CDATA[
 
@@ -117,8 +117,10 @@
 		<path path="/users/{id}">
 			<param name="id" type="number" summary="用户 ID"></param>
 			<query name="state" type="string" default="[normal,lock]" array="true" summary="state">
-				<enum value="normal" summary="正常" doctype="markdown"></enum>
-				<enum value="lock" doctype="markdown"><![CDATA[<span style="color:red">锁定</span>]]></enum>
+				<enum value="normal" summary="正常"></enum>
+				<enum value="lock">
+					<description doctype="markdown"><![CDATA[<span style="color:red">锁定</span>]]></description>
+				</enum>
 			</query>
 		</path>
 		<description doctype="markdown"><![CDATA[
@@ -159,8 +161,10 @@
 				<param name="id" type="number" optional="true" summary="desc"></param>
 				<param name="name" type="string" optional="true" summary="desc"></param>
 				<param name="groups" type="string" optional="true" array="true" summary="desc">
-					<enum value="xx1" doctype="markdown"><![CDATA[xx]]></enum>
-					<enum value="xx2" doctype="markdown"><![CDATA[xx]]></enum>
+					<enum value="xx1">
+						<description doctype="markdown"><![CDATA[xx]]></description>
+					</enum>
+					<enum value="xx2" summary="xx"></enum>
 				</param>
 			</param>
 			<example mimetype="application/json"><![CDATA[

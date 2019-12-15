@@ -32,8 +32,8 @@ func TestRequest_UnmarshalXML(t *testing.T) {
 	str = `<Request deprecated="1.1.1" type="object" array="true" mimetype="json">
 		<param name="name" type="string" summary="name" />
 		<param name="sex" type="string" summary="sex">
-			<enum value="male">Male</enum>
-			<enum value="female">Female</enum>
+			<enum value="male" summary="male" />
+			<enum value="female" summary="female" />
 		</param>
 		<param name="age" type="number" summary="age" />
 	</Request>`
@@ -72,8 +72,8 @@ func TestRequest_UnmarshalXML_enum(t *testing.T) {
 
 	obj := &Request{}
 	str := `<Request name="sex" type="string" mimetype="json">
-			<enum value="male">Male</enum>
-			<enum value="female">Female</enum>
+			<enum value="male" summary="male" />
+			<enum value="female" summary="female" />
 	</Request>`
 	a.NotError(xml.Unmarshal([]byte(str), obj)).
 		False(obj.Array).
@@ -84,8 +84,8 @@ func TestRequest_UnmarshalXML_enum(t *testing.T) {
 	// 枚举中存在相同值
 	obj = &Request{}
 	str = `<Request name="sex" type="string" mimetype="json">
-			<enum value="female">Male</enum>
-			<enum value="female">Female</enum>
+			<enum value="female" summary="male" />
+			<enum value="female" summary="female" />
 	</Request>`
 	a.Error(xml.Unmarshal([]byte(str), obj))
 }

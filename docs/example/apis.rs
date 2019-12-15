@@ -108,7 +108,7 @@ fn delete() {}
 //         <param name="id" type="number" summary="用户 ID" />
 //         <query name="state" type="string" array="true" default="[normal,lock]" summary="state">
 //              <enum value="normal" summary="正常" />
-//              <enum value="lock"><![CDATA[<span style="color:red">锁定</span>]]></enum>
+//              <enum value="lock"><description><![CDATA[<span style="color:red">锁定</span>]]></description></enum>
 //         </query>
 //     </path>
 //

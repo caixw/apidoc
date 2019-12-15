@@ -37,8 +37,8 @@ func TestParam_UnmarshalXML(t *testing.T) {
 		<description><![CDATA[<a>user</a>]]></description>
 		<param name="name" type="string" summary="name" />
 		<param name="sex" type="string" summary="sex">
-			<enum value="male">Male</enum>
-			<enum value="female">Female</enum>
+			<enum value="male" summary="Male" />
+			<enum value="female" summary="female" />
 		</param>
 		<param name="age" type="number" summary="age" />
 	</Param>`
@@ -90,8 +90,8 @@ func TestParam_UnmarshalXML_enum(t *testing.T) {
 	obj := &Param{}
 	str := `<Param name="sex" type="string">
 			<description>sex</description>
-			<enum value="male">Male</enum>
-			<enum value="female">Female</enum>
+			<enum value="male" summary="Male" />
+			<enum value="female" summary="female" />
 	</Param>`
 	a.NotError(xml.Unmarshal([]byte(str), obj)).
 		False(obj.Array).
@@ -103,8 +103,8 @@ func TestParam_UnmarshalXML_enum(t *testing.T) {
 	obj = &Param{}
 	str = `<Param name="sex" type="string">
 			<description>sex</description>
-			<enum value="female">Male</enum>
-			<enum value="female">Female</enum>
+			<enum value="male" summary="Male" />
+			<enum value="male" summary="female" />
 	</Param>`
 	a.Error(xml.Unmarshal([]byte(str), obj))
 }

@@ -18,28 +18,28 @@ func TestEnum_UnmarshalXML(t *testing.T) {
 
 	obj := &Enum{
 		Value:       "text",
-		Description: "<a><p>desc</p></a>",
+		Description: Richtext{Text: "<a><p>desc</p></a>"},
 	}
-	str := `<Enum value="text"><![CDATA[<a><p>desc</p></a>]]></Enum>`
+	str := `<Enum value="text"><description doctype="markdown"><![CDATA[<a><p>desc</p></a>]]></description></Enum>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).Equal(string(data), str)
 
 	obj1 := &Enum{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
-	a.Equal(obj1.Description, obj.Description).
-		Equal(obj1.Value, obj.Value).
-		NotEmpty(obj1.DocType).
-		Empty(obj.DocType)
+	a.Equal(obj1.Value, obj.Value).
+		NotEmpty(obj1.Description.Type).
+		Empty(obj.Description.Type).
+		Equal(obj.Description.Text, obj1.Description.Text)
 
 	// 正常
 	obj1 = &Enum{}
-	str = `<Enum value="url" deprecated="1.1.1">text</Enum>`
+	str = `<Enum value="url" deprecated="1.1.1"><description>text</description></Enum>`
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 
 	// 少 value
 	obj1 = &Enum{}
-	str = `<Enum url="url">desc</Enum>`
+	str = `<Enum url="url"><description>desc</description></Enum>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
 	// 少 description 和 summary
@@ -49,6 +49,6 @@ func TestEnum_UnmarshalXML(t *testing.T) {
 
 	// 语法错误
 	obj1 = &Enum{}
-	str = `<Enum value="url" deprecated="x.1.1">text</Enum>`
+	str = `<Enum value="url" deprecated="x.1.1"><description>text</description></Enum>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 }

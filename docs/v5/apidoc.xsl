@@ -381,7 +381,11 @@
 
             <td>
                 <xsl:choose>
-                    <xsl:when test="not(.='')"><xsl:value-of select="." /></xsl:when>
+                    <xsl:when test="description">
+                        <div data-type="{description/@doctype}">
+                            <pre><xsl:copy-of select="description/node()" /></pre>
+                        </div>
+                    </xsl:when>
                     <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
                 </xsl:choose>
                 <xsl:call-template name="enum">
@@ -426,7 +430,7 @@
                 <xsl:choose>
                     <xsl:when test="description">
                         <div data-type="{description/@doctype}">
-                            <pre><xsl:copy-of select="description" /></pre>
+                            <pre><xsl:copy-of select="description/node()" /></pre>
                         </div>
                     </xsl:when>
                     <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
@@ -466,7 +470,11 @@
 
             <xsl:value-of select="@value" />:
             <xsl:choose>
-                <xsl:when test="not(.='')"><xsl:copy-of select="." /></xsl:when>
+                <xsl:when test="description">
+                    <div data-type="{description/@doctype}">
+                        <pre><xsl:copy-of select="description/node()" /></pre>
+                    </div>
+                </xsl:when>
                 <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
             </xsl:choose>
             </li>
