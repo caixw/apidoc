@@ -17,7 +17,7 @@ exclude-result-prefixes="l">
 <xsl:template name="languages">
     <xsl:for-each select="document('')/xsl:stylesheet/l:locales/locale">
     <li lang="{@id}" role="menuitemradio">
-        <label><input type="radio" name="lang" checked="{$curr-lang=@id}" /><xsl:value-of select="." /></label>
+        <label><input type="radio" name="lang" checked="{$curr-lang=@id}" />&#160;<xsl:value-of select="." /></label>
     </li>
     </xsl:for-each>
 </xsl:template>

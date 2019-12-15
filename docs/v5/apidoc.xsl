@@ -76,7 +76,7 @@
                 <xsl:for-each select="apidoc/server">
                 <li data-server="{@name}" role="menuitemcheckbox">
                     <label>
-                        <input type="checkbox" checked="checked" /><xsl:value-of select="@name" />
+                        <input type="checkbox" checked="checked" />&#160;<xsl:value-of select="@name" />
                     </label>
                 </li>
                 </xsl:for-each>
@@ -92,7 +92,7 @@
                 <xsl:for-each select="apidoc/tag">
                 <li data-tag="{@name}" role="menuitemcheckbox">
                     <label>
-                        <input type="checkbox" checked="checked" /><xsl:value-of select="@title" />
+                        <input type="checkbox" checked="checked" />&#160;<xsl:value-of select="@title" />
                     </label>
                 </li>
                 </xsl:for-each>
@@ -108,7 +108,7 @@
                 <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
                 <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
                 <li data-method="{.}" role="menuitemcheckbox">
-                    <label><input type="checkbox" checked="true" /><xsl:value-of select="." /></label>
+                    <label><input type="checkbox" checked="checked" />&#160;<xsl:value-of select="." /></label>
                 </li>
                 </xsl:for-each>
             </ul>
