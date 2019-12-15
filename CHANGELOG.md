@@ -32,6 +32,7 @@
 - 添加 Pack 系列函数，用于将内容打包成一个文件；
 - 添加 static 包，管理所有与 docs 下静态文件相关的功能；
 - 添加 static.Type 类型，用于指定 static.Pack 和 static.FolderHandler 的文件类型；
+- 添加导出为 openapi 的功能；
 
 ### Changed
 
