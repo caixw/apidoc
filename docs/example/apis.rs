@@ -21,6 +21,7 @@
 //     <response status="200" array="true" type="object" mimetype="application/json">
 //         <param name="count" type="number" optional="false" summary="summary" />
 //         <param name="list" type="object" array="true" summary="list">
+//             <description type="html"><![CDATA[<span style="color:red">list description</span>]]></description>
 //             <param name="id" type="number" summary="用户 ID" />
 //             <param name="name" type="string" summary="用户名" />
 //             <param name="groups" type="string" array="true" optional="true" summary="用户所在的权限组">
@@ -108,7 +109,7 @@ fn delete() {}
 //         <param name="id" type="number" summary="用户 ID" />
 //         <query name="state" type="string" array="true" default="[normal,lock]" summary="state">
 //              <enum value="normal" summary="正常" />
-//              <enum value="lock"><description><![CDATA[<span style="color:red">锁定</span>]]></description></enum>
+//              <enum value="lock"><description type="html"><![CDATA[<span style="color:red">锁定</span>]]></description></enum>
 //         </query>
 //     </path>
 //

@@ -194,7 +194,7 @@
             <xsl:copy-of select="$locale-callback" />
             <span class="summary"><xsl:value-of select="@summary" /></span>
         </h3>
-        <xsl:if test="not(description/node()='')">
+        <xsl:if test="description">
             <div class="description" data-type="{description/@type}">
                 <pre><xsl:copy-of select="description/node()" /></pre>
             </div>
@@ -359,44 +359,11 @@
     <xsl:param name="param" />
 
     <xsl:for-each select="$param">
-        <tr>
-            <xsl:call-template name="deprecated">
-                <xsl:with-param name="deprecated" select="@deprecated" />
-            </xsl:call-template>
-
-            <th><xsl:value-of select="@name" /></th>
-
-            <td>
-                <xsl:value-of select="@type" />
-                <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
-            </td>
-
-            <td>
-                <xsl:choose>
-                    <xsl:when test="@optional='true'"><xsl:value-of select="'O'" /></xsl:when>
-                    <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
-                </xsl:choose>
-                <xsl:value-of select="concat(' ', @default)" />
-            </td>
-
-            <td>
-                <xsl:choose>
-                    <xsl:when test="description">
-                        <div data-type="{description/@type}">
-                            <pre><xsl:copy-of select="description/node()" /></pre>
-                        </div>
-                    </xsl:when>
-                    <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
-                </xsl:choose>
-                <xsl:call-template name="enum">
-                    <xsl:with-param name="enum" select="enum"/>
-                </xsl:call-template>
-
-            </td>
-        </tr>
+        <xsl:call-template name="param-list-tr">
+            <xsl:with-param name="param" select="." />
+        </xsl:call-template>
     </xsl:for-each>
 </xsl:template>
-
 
 <!-- 列顺序必须要与 param 中的相同 -->
 <xsl:template name="param-list">
@@ -404,42 +371,10 @@
     <xsl:param name="parent" select="''" /> <!-- 上一级的名称，嵌套对象时可用 -->
 
     <xsl:for-each select="$param">
-        <tr>
-            <xsl:call-template name="deprecated">
-                <xsl:with-param name="deprecated" select="@deprecated" />
-            </xsl:call-template>
-            <th>
-                <span class="parent-type"><xsl:value-of select="$parent" /></span>
-                <xsl:value-of select="@name" />
-            </th>
-
-            <td>
-                <xsl:value-of select="@type" />
-                <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
-            </td>
-
-            <td>
-                <xsl:choose>
-                    <xsl:when test="@optional='true'"><xsl:value-of select="'O'" /></xsl:when>
-                    <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
-                </xsl:choose>
-                <xsl:value-of select="concat(' ', @default)" />
-            </td>
-
-            <td>
-                <xsl:choose>
-                    <xsl:when test="description">
-                        <div data-type="{description/@type}">
-                            <pre><xsl:copy-of select="description/node()" /></pre>
-                        </div>
-                    </xsl:when>
-                    <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
-                </xsl:choose>
-                <xsl:call-template name="enum">
-                    <xsl:with-param name="enum" select="enum"/>
-                </xsl:call-template>
-            </td>
-        </tr>
+        <xsl:call-template name="param-list-tr">
+            <xsl:with-param name="param" select="." />
+            <xsl:with-param name="parent" select="$parent" />
+        </xsl:call-template>
 
         <xsl:if test="param">
             <xsl:variable name="p">
@@ -453,6 +388,50 @@
             </xsl:call-template>
         </xsl:if>
     </xsl:for-each>
+</xsl:template>
+
+<!-- 显示第一行的参数数据 -->
+<xsl:template name="param-list-tr">
+    <xsl:param name="param" />
+    <xsl:param name="parent" select="''" />
+
+    <tr>
+        <xsl:call-template name="deprecated">
+            <xsl:with-param name="deprecated" select="$param/@deprecated" />
+        </xsl:call-template>
+        <th>
+            <span class="parent-type"><xsl:value-of select="$parent" /></span>
+            <xsl:value-of select="$param/@name" />
+        </th>
+
+        <td>
+            <xsl:value-of select="$param/@type" />
+            <xsl:if test="$param/@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+        </td>
+
+        <td>
+            <xsl:choose>
+                <xsl:when test="$param/@optional='true'"><xsl:value-of select="'O'" /></xsl:when>
+                <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
+            </xsl:choose>
+            <xsl:value-of select="concat(' ', $param/@default)" />
+        </td>
+
+        <td>
+            <xsl:choose>
+                <xsl:when test="description">
+                    <xsl:attribute name="data-type">
+                        <xsl:value-of select="description/@type" />
+                    </xsl:attribute>
+                    <pre><xsl:copy-of select="description/node()" /></pre>
+                </xsl:when>
+                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+            </xsl:choose>
+            <xsl:call-template name="enum">
+                <xsl:with-param name="enum" select="$param/enum"/>
+            </xsl:call-template>
+        </td>
+    </tr>
 </xsl:template>
 
 <!-- 显示枚举类型的内容 -->
@@ -475,7 +454,7 @@
                         <pre><xsl:copy-of select="description/node()" /></pre>
                     </div>
                 </xsl:when>
-                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+                <xsl:otherwise><xsl:value-of select="summary" /></xsl:otherwise>
             </xsl:choose>
             </li>
         </xsl:for-each>
