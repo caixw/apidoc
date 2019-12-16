@@ -8,15 +8,15 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestStyle_Sanitize(t *testing.T) {
+func TestStyle_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	s := &Style{}
-	a.Error(s.Sanitize())
+	a.Error(s.sanitize())
 
 	s.Style = StyleDeepObject
-	a.NotError(s.Sanitize())
+	a.NotError(s.sanitize())
 
 	s.Style = "invalid-value..."
-	a.Error(s.Sanitize())
+	a.Error(s.sanitize())
 }

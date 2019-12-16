@@ -30,6 +30,20 @@ func TestRender(t *testing.T) {
 	a.NotError(Render(doc, o))
 }
 
+func TestBuffer(t *testing.T) {
+	a := assert.New(t)
+	doc := getTestDoc()
+
+	o := &Options{}
+	buf, err := Buffer(doc, o)
+	a.NotError(err).NotNil(buf)
+
+	// 返回错误
+	o = &Options{Type: "not-exists"}
+	buf, err = Buffer(doc, o)
+	a.Error(err).Nil(buf)
+}
+
 func TestFilterDoc(t *testing.T) {
 	a := assert.New(t)
 

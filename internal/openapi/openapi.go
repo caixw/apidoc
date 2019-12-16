@@ -89,8 +89,7 @@ func newTag(tag *doc.Tag) *Tag {
 	}
 }
 
-// Sanitize 数据检测
-func (oa *OpenAPI) Sanitize() *message.SyntaxError {
+func (oa *OpenAPI) sanitize() *message.SyntaxError {
 	if oa.OpenAPI == "" {
 		oa.OpenAPI = LatestVersion
 	}
@@ -102,7 +101,7 @@ func (oa *OpenAPI) Sanitize() *message.SyntaxError {
 	if oa.Info == nil {
 		return message.NewLocaleError("", "info", 0, locale.ErrRequired)
 	}
-	if err := oa.Info.Sanitize(); err != nil {
+	if err := oa.Info.sanitize(); err != nil {
 		err.Field = "info." + err.Field
 		return err
 	}
@@ -115,7 +114,7 @@ func (oa *OpenAPI) Sanitize() *message.SyntaxError {
 	}
 
 	for index, srv := range oa.Servers {
-		if err := srv.Sanitize(); err != nil {
+		if err := srv.sanitize(); err != nil {
 			err.Field = "servers[" + strconv.Itoa(index) + "]."
 			return err
 		}
@@ -125,28 +124,28 @@ func (oa *OpenAPI) Sanitize() *message.SyntaxError {
 		return message.NewLocaleError("", "paths", 0, locale.ErrRequired)
 	}
 	for k, path := range oa.Paths {
-		if err := path.Sanitize(); err != nil {
+		if err := path.sanitize(); err != nil {
 			err.Field = "paths[" + k + "]." + err.Field
 			return err
 		}
 	}
 
 	if oa.Components != nil {
-		if err := oa.Components.Sanitize(); err != nil {
+		if err := oa.Components.sanitize(); err != nil {
 			err.Field = "components." + err.Field
 			return err
 		}
 	}
 
 	for index, item := range oa.Tags {
-		if err := item.Sanitize(); err != nil {
+		if err := item.sanitize(); err != nil {
 			err.Field = "tags[" + strconv.Itoa(index) + "]." + err.Field
 			return err
 		}
 	}
 
 	if oa.ExternalDocs != nil {
-		if err := oa.ExternalDocs.Sanitize(); err != nil {
+		if err := oa.ExternalDocs.sanitize(); err != nil {
 			err.Field = "externalDocs." + err.Field
 			return err
 		}
@@ -155,45 +154,44 @@ func (oa *OpenAPI) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 数据检测
-func (c *Components) Sanitize() *message.SyntaxError {
+func (c *Components) sanitize() *message.SyntaxError {
 	for key, item := range c.Schemas {
-		if err := item.Sanitize(); err != nil {
+		if err := item.sanitize(); err != nil {
 			err.Field = "schemas[" + key + "]." + err.Field
 			return err
 		}
 	}
 
 	for key, item := range c.Responses {
-		if err := item.Sanitize(); err != nil {
+		if err := item.sanitize(); err != nil {
 			err.Field = "response[" + key + "]." + err.Field
 			return err
 		}
 	}
 
 	for key, item := range c.Parameters {
-		if err := item.Sanitize(); err != nil {
+		if err := item.sanitize(); err != nil {
 			err.Field = "parameters[" + key + "]." + err.Field
 			return err
 		}
 	}
 
 	for key, item := range c.RequestBodies {
-		if err := item.Sanitize(); err != nil {
+		if err := item.sanitize(); err != nil {
 			err.Field = "requestBodies[" + key + "]." + err.Field
 			return err
 		}
 	}
 
 	for key, item := range c.Headers {
-		if err := item.Sanitize(); err != nil {
+		if err := item.sanitize(); err != nil {
 			err.Field = "headers[" + key + "]." + err.Field
 			return err
 		}
 	}
 
 	for key, item := range c.Links {
-		if err := item.Sanitize(); err != nil {
+		if err := item.sanitize(); err != nil {
 			err.Field = "links[" + key + "]." + err.Field
 			return err
 		}
@@ -202,8 +200,7 @@ func (c *Components) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 数据检测
-func (ext *ExternalDocumentation) Sanitize() *message.SyntaxError {
+func (ext *ExternalDocumentation) sanitize() *message.SyntaxError {
 	if !is.URL(ext.URL) {
 		return message.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
 	}
@@ -211,9 +208,8 @@ func (ext *ExternalDocumentation) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 数据检测
-func (l *Link) Sanitize() *message.SyntaxError {
-	if err := l.Server.Sanitize(); err != nil {
+func (l *Link) sanitize() *message.SyntaxError {
+	if err := l.Server.sanitize(); err != nil {
 		err.Field = "server." + err.Field
 		return err
 	}
@@ -221,14 +217,13 @@ func (l *Link) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 数据检测
-func (tag *Tag) Sanitize() *message.SyntaxError {
+func (tag *Tag) sanitize() *message.SyntaxError {
 	if tag.Name == "" {
 		return message.NewLocaleError("", "name", 0, locale.ErrInvalidFormat)
 	}
 
 	if tag.ExternalDocs != nil {
-		if err := tag.ExternalDocs.Sanitize(); err != nil {
+		if err := tag.ExternalDocs.sanitize(); err != nil {
 			err.Field = "externalDocs." + err.Field
 			return err
 		}

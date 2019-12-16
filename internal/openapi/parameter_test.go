@@ -8,36 +8,36 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestParameter_Sanitize(t *testing.T) {
+func TestParameter_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	p := &Parameter{}
-	a.Error(p.Sanitize())
+	a.Error(p.sanitize())
 
 	p.Style = Style{Style: StyleDeepObject}
-	a.Error(p.Sanitize())
+	a.Error(p.sanitize())
 
 	p.IN = ParameterINPath
-	a.NotError(p.Sanitize())
+	a.NotError(p.sanitize())
 }
 
-func TestHeader_Sanitize(t *testing.T) {
+func TestHeader_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	p := &Header{}
-	a.Error(p.Sanitize())
+	a.Error(p.sanitize())
 
 	p.Style = Style{Style: StyleDeepObject}
-	a.NotError(p.Sanitize())
+	a.NotError(p.sanitize())
 
 	// IN 只能为空
 	p.IN = ParameterINPath
-	a.Error(p.Sanitize())
+	a.Error(p.sanitize())
 
 	p.IN = ""
 	p.Name = "test"
-	a.Error(p.Sanitize())
+	a.Error(p.sanitize())
 
 	p.Name = ""
-	a.NotError(p.Sanitize())
+	a.NotError(p.sanitize())
 }

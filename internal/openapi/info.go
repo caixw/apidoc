@@ -34,8 +34,7 @@ type License struct {
 	URL  string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
-// Sanitize 数据检测
-func (info *Info) Sanitize() *message.SyntaxError {
+func (info *Info) sanitize() *message.SyntaxError {
 	if info.Title == "" {
 		return message.NewLocaleError("", "title", 0, locale.ErrRequired)
 	}
@@ -49,14 +48,14 @@ func (info *Info) Sanitize() *message.SyntaxError {
 	}
 
 	if info.Contact != nil {
-		if err := info.Contact.Sanitize(); err != nil {
+		if err := info.Contact.sanitize(); err != nil {
 			err.Field = "contact." + err.Field
 			return err
 		}
 	}
 
 	if info.License != nil {
-		if err := info.License.Sanitize(); err != nil {
+		if err := info.License.sanitize(); err != nil {
 			err.Field = "license." + err.Field
 			return err
 		}
@@ -65,8 +64,7 @@ func (info *Info) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 数据检测
-func (l *License) Sanitize() *message.SyntaxError {
+func (l *License) sanitize() *message.SyntaxError {
 	if l.URL != "" && !is.URL(l.URL) {
 		return message.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
 	}
@@ -89,8 +87,7 @@ func newContact(c *doc.Contact) *Contact {
 	}
 }
 
-// Sanitize 数据检测
-func (c *Contact) Sanitize() *message.SyntaxError {
+func (c *Contact) sanitize() *message.SyntaxError {
 	if c.URL != "" && !is.URL(c.URL) {
 		return message.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
 	}

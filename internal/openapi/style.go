@@ -27,8 +27,7 @@ type Style struct {
 	AllowReserved bool   `json:"allowReserved,omitempty" yaml:"allowReserved,omitempty"`
 }
 
-// Sanitize 对数据进行验证
-func (style *Style) Sanitize() *message.SyntaxError {
+func (style *Style) sanitize() *message.SyntaxError {
 	switch style.Style {
 	case StyleMatrix, StyleLabel, StyleForm, StyleSimple, StyleSpaceDelimited, StylePipeDelimited, StyleDeepObject:
 	default:

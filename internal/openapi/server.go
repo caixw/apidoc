@@ -39,15 +39,14 @@ func newServer(srv *doc.Server) *Server {
 	}
 }
 
-// Sanitize 数据检测
-func (srv *Server) Sanitize() *message.SyntaxError {
+func (srv *Server) sanitize() *message.SyntaxError {
 	url := urlreplace.Replace(srv.URL)
 	if url == "" { // 可以是 / 未必是一个 URL
 		return message.NewLocaleError("", "url", 0, locale.ErrRequired)
 	}
 
 	for key, val := range srv.Variables {
-		if err := val.Sanitize(); err != nil {
+		if err := val.sanitize(); err != nil {
 			err.Field = "variables[" + key + "]." + err.Field
 			return err
 		}
@@ -61,8 +60,7 @@ func (srv *Server) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 数据检测
-func (v *ServerVariable) Sanitize() *message.SyntaxError {
+func (v *ServerVariable) sanitize() *message.SyntaxError {
 	if v.Default == "" {
 		return message.NewLocaleError("", "default", 0, locale.ErrRequired)
 	}

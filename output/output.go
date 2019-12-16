@@ -5,7 +5,6 @@ package output
 
 import (
 	"bytes"
-	"encoding/xml"
 	"io/ioutil"
 	"os"
 
@@ -39,17 +38,20 @@ func buffer(d *doc.Doc, opt *Options) (*bytes.Buffer, error) {
 	filterDoc(d, opt)
 
 	buf := new(bytes.Buffer)
-	for _, v := range opt.procInst {
-		if _, err := buf.WriteString(v); err != nil {
-			return nil, err
-		}
 
-		if err := buf.WriteByte('\n'); err != nil {
-			return nil, err
-		}
+	if opt.xml {
+		for _, v := range opt.procInst {
+			if _, err := buf.WriteString(v); err != nil {
+				return nil, err
+			}
+
+			if err := buf.WriteByte('\n'); err != nil {
+				return nil, err
+			}
+		} // end range opt.procInst
 	}
 
-	data, err := xml.MarshalIndent(d, "", "\t")
+	data, err := opt.marshal(d)
 	if err != nil {
 		return nil, err
 	}

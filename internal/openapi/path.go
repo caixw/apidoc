@@ -81,7 +81,7 @@ type Response struct {
 	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
-func (path *PathItem) Sanitize() *message.SyntaxError {
+func (path *PathItem) sanitize() *message.SyntaxError {
 	var o *Operation
 	switch {
 	case path.Get != nil:
@@ -107,28 +107,27 @@ func (path *PathItem) Sanitize() *message.SyntaxError {
 
 	}
 
-	if err := o.Sanitize(); err != nil {
+	if err := o.sanitize(); err != nil {
 		err.Field = "method." + err.Field
 		return err
 	}
 	return nil
 }
 
-func (o *Operation) Sanitize() *message.SyntaxError {
+func (o *Operation) sanitize() *message.SyntaxError {
 	if len(o.Responses) == 0 {
 		return message.NewLocaleError("", "responses", 0, locale.ErrRequired)
 	}
 	return nil
 }
 
-// Sanitize 数据检测
-func (req *RequestBody) Sanitize() *message.SyntaxError {
+func (req *RequestBody) sanitize() *message.SyntaxError {
 	if len(req.Content) == 0 {
 		return message.NewLocaleError("", "content", 0, locale.ErrRequired)
 	}
 
 	for key, mt := range req.Content {
-		if err := mt.Sanitize(); err != nil {
+		if err := mt.sanitize(); err != nil {
 			err.Field = "content[" + key + "]." + err.Field
 			return err
 		}
@@ -137,28 +136,27 @@ func (req *RequestBody) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 数据检测
-func (resp *Response) Sanitize() *message.SyntaxError {
+func (resp *Response) sanitize() *message.SyntaxError {
 	if resp.Description == "" {
 		return message.NewLocaleError("", "description", 0, locale.ErrRequired)
 	}
 
 	for key, header := range resp.Headers {
-		if err := header.Sanitize(); err != nil {
+		if err := header.sanitize(); err != nil {
 			err.Field = "headers[" + key + "]." + err.Field
 			return err
 		}
 	}
 
 	for key, mt := range resp.Content {
-		if err := mt.Sanitize(); err != nil {
+		if err := mt.sanitize(); err != nil {
 			err.Field = "content[" + key + "]." + err.Field
 			return err
 		}
 	}
 
 	for key, link := range resp.Links {
-		if err := link.Sanitize(); err != nil {
+		if err := link.sanitize(); err != nil {
 			err.Field = "links[" + key + "]." + err.Field
 			return err
 		}
@@ -167,17 +165,16 @@ func (resp *Response) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 数据检测
-func (mt *MediaType) Sanitize() *message.SyntaxError {
+func (mt *MediaType) sanitize() *message.SyntaxError {
 	if mt.Schema != nil {
-		if err := mt.Sanitize(); err != nil {
+		if err := mt.sanitize(); err != nil {
 			err.Field = "schema." + err.Field
 			return err
 		}
 	}
 
 	for key, en := range mt.Encoding {
-		if err := en.Sanitize(); err != nil {
+		if err := en.sanitize(); err != nil {
 			err.Field = "encoding[" + key + "]." + err.Field
 			return err
 		}
@@ -185,14 +182,13 @@ func (mt *MediaType) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 数据检测
-func (en *Encoding) Sanitize() *message.SyntaxError {
-	if err := en.Style.Sanitize(); err != nil {
+func (en *Encoding) sanitize() *message.SyntaxError {
+	if err := en.Style.sanitize(); err != nil {
 		return err
 	}
 
 	for key, header := range en.Headers {
-		if err := header.Sanitize(); err != nil {
+		if err := header.sanitize(); err != nil {
 			err.Field = "headers[" + key + "]." + err.Field
 			return err
 		}

@@ -36,9 +36,8 @@ type Parameter struct {
 	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
-// Sanitize 对数据进行验证
-func (p *Parameter) Sanitize() *message.SyntaxError {
-	if err := p.Style.Sanitize(); err != nil {
+func (p *Parameter) sanitize() *message.SyntaxError {
+	if err := p.Style.sanitize(); err != nil {
 		return err
 	}
 
@@ -51,9 +50,8 @@ func (p *Parameter) Sanitize() *message.SyntaxError {
 	return nil
 }
 
-// Sanitize 对数据进行验证
-func (h *Header) Sanitize() *message.SyntaxError {
-	if err := h.Style.Sanitize(); err != nil {
+func (h *Header) sanitize() *message.SyntaxError {
+	if err := h.Style.sanitize(); err != nil {
 		return err
 	}
 
