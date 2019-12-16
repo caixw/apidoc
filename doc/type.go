@@ -9,44 +9,26 @@ import (
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-// Type 表示数据类型
-type Type uint8
+// Type 表示参数类型
+type Type string
 
 // 表示支持的各种数据类型
 const (
-	None Type = iota
-	Bool
-	Object
-	Number
-	String
-)
-
-var (
-	typeStringMap = map[Type]string{
-		None:   "none",
-		Bool:   "bool",
-		Object: "object",
-		Number: "number",
-		String: "string",
-	}
-
-	stringTypeMap = map[string]Type{
-		"none":   None,
-		"bool":   Bool,
-		"object": Object,
-		"number": Number,
-		"int":    Number,
-		"string": String,
-	}
+	None   Type = "none"
+	Bool        = "bool"
+	Object      = "object"
+	Number      = "number"
+	String      = "string"
 )
 
 func parseType(val string) (Type, error) {
 	val = strings.ToLower(val)
-	if t, found := stringTypeMap[val]; found {
-		return t, nil
+	switch Type(val) {
+	case None, Bool, Object, Number, String:
+		return Type(val), nil
+	default:
+		return None, locale.Errorf(locale.ErrInvalidFormat)
 	}
-
-	return None, locale.Errorf(locale.ErrInvalidFormat)
 }
 
 // UnmarshalXMLAttr xml.UnmarshalerAttr
@@ -91,14 +73,24 @@ func (t Type) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 func (t Type) MarshalXMLAttr(name xml.Name) (attr xml.Attr, err error) {
 	attr = xml.Attr{Name: name}
 
-	attr.Value, err = t.fmtString()
-	return attr, err
+	val, err := t.fmtString()
+	if err != nil {
+		return attr, err
+	}
+
+	attr.Value = val
+	return attr, nil
 }
 
 func (t Type) fmtString() (string, error) {
-	if v, found := typeStringMap[t]; found {
-		return v, nil
-	}
+	valid := t == None ||
+		t == Bool ||
+		t == Object ||
+		t == Number ||
+		t == String
 
+	if valid {
+		return string(t), nil
+	}
 	return "", locale.Errorf(locale.ErrInvalidValue)
 }
