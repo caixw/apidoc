@@ -29,6 +29,19 @@ func IsWellDataType(typ string) bool {
 	}
 }
 
+func fromDocType(t doc.Type) string {
+	switch string(t) {
+	case doc.Number:
+		return TypeInt
+	case doc.String:
+		return TypeString
+	case doc.Bool:
+		return TypeBool
+	default:
+		return ""
+	}
+}
+
 // Schema 定义了输出和输出的数据类型
 type Schema struct {
 	Type string        `json:"type,omitempty" yaml:"type,omitempty"`
@@ -123,7 +136,7 @@ func newSchema(p *doc.Param, chkArray bool) *Schema {
 	}
 
 	s := &Schema{
-		Type:        p.Type.String(),
+		Type:        fromDocType(p.Type),
 		Properties:  nil,
 		Definitions: nil,
 		Title:       p.Summary,
@@ -162,7 +175,7 @@ func newSchemaFromRequest(p *doc.Request, chkArray bool) *Schema {
 	}
 
 	s := &Schema{
-		Type:        p.Type.String(),
+		Type:        fromDocType(p.Type),
 		Properties:  nil,
 		Definitions: nil,
 		Title:       p.Summary,
