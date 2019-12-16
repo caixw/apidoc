@@ -68,6 +68,12 @@
     </h1>
 
     <div class="menus">
+        <!-- expand -->
+        <label class="menu expand-selector" role="checkbox">
+            <input type="checkbox" /><xsl:copy-of select="$locale-expand" />
+        </label>
+
+        <!-- server -->
         <xsl:if test="apidoc/server">
         <div class="menu server-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-server" />
@@ -84,6 +90,7 @@
         </div>
         </xsl:if>
 
+        <!-- tag -->
         <xsl:if test="apidoc/tag">
         <div class="menu tag-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-tag" />
@@ -100,6 +107,7 @@
         </div>
         </xsl:if>
 
+        <!-- method -->
         <div class="menu method-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-method" />
             <span aria-hiddren="true">&#160;&#x25bc;</span>
@@ -114,6 +122,7 @@
             </ul>
         </div>
 
+        <!-- language -->
         <div class="menu languages-selector" role="menu" aria-haspopup="true">
             <xsl:copy-of select="$locale-language" />
             <span aria-hiddren="true">&#160;&#x25bc;</span>

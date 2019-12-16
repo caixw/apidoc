@@ -61,6 +61,19 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 </xsl:variable>
 
+<!-- expand -->
+<xsl:variable name="locale-expand">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'展开'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'展開'" />
+    </xsl:call-template>
+</xsl:variable>
+
 <!-- method -->
 <xsl:variable name="locale-method">
     <xsl:call-template name="build-locale">

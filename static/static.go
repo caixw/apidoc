@@ -9,6 +9,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
 // Type 表示文件的类型
@@ -29,7 +31,7 @@ const indexPage = "index.xml"
 // 可以以前缀的方式指定，比如：v5/ 表示以 v5/ 开头的所有文件。
 var styles = []string{
 	"icon.svg",
-	"v5/",
+	vars.DocVersion() + "/", // v5/ 仅支持当前的文档版本
 }
 
 // EmbeddedHandler 将由 Pack 打包的内容当作一个文件服务中间件

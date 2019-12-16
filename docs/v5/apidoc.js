@@ -4,8 +4,9 @@ window.onload = function () {
     registerFilter('method');
     registerFilter('server');
     registerFilter('tag');
-
+    registerExpand();
     registerLanguageFilter();
+
     initExample();
 
     prettyDescription();
@@ -60,6 +61,22 @@ function registerLanguageFilter() {
             });
         }); // end addEventListener('change')
     }); // end forEach('li input')
+}
+
+function registerExpand() {
+    const expand = document.querySelector('.expand-selector');
+    if (expand === null) {
+        return;
+    }
+
+    expand.style.display = 'block';
+
+    expand.querySelector('input').addEventListener('change', (event) => {
+        const chk = event.target.checked;
+        document.querySelectorAll('details').forEach((elem) => {
+            elem.open = chk;
+        });
+    });
 }
 
 function initExample() {

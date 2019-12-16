@@ -247,9 +247,21 @@
             <item name="response">定義可能的返回信息</item>
         </type>
 
+        <type name="richtext">
+            <description><p>富文本信息，可以以不同的格式展示數據。</p></description>
+            <item name="@type">富文本的格式，目前可以是 <var>html</var> 或是 <var>markdown</var></item>
+            <item name=".">實際的文本內容，根據 <code>@type</code> 屬性確定渲染的方式。</item>
+        </type>
+
         <type name="version">
             <description>
                 <p>版本號格式，遵循 <a href="https://semver.org/lang/zh-CN/">semver</a> 的規則。比如 <samp>1.1.1</samp>、<samp>0.1.0</samp> 等。</p>
+            </description>
+        </type>
+
+        <type name="date">
+            <description>
+                <p>采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp></p>>
             </description>
         </type>
     </types>
