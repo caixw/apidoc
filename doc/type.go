@@ -101,5 +101,5 @@ func (t Type) fmtString() (string, error) {
 }
 
 func (t Type) String() string {
-	return typeStringMap[t]
+	return string(t)
 }

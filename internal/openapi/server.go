@@ -28,9 +28,14 @@ type ServerVariable struct {
 }
 
 func newServer(srv *doc.Server) *Server {
+	desc := srv.Summary
+	if srv.Description.Text != "" {
+		desc = srv.Description.Text
+	}
+
 	return &Server{
 		URL:         srv.URL,
-		Description: srv.Description,
+		Description: desc,
 	}
 }
 
