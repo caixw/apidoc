@@ -120,7 +120,7 @@
         <type name="apidoc">
             <description><p>用于描述整个文档的相关内容，只能出现一次。</p></description>
             <item name="@version">文档的版本</item>
-            <item name="@lang">内容的本地化 ID，比如 <code>zh-hans</code> 等。</item>
+            <item name="@lang">内容的本地化 ID，比如 <samp><var>zh-hans</var></samp> 等。</item>
             <item name="@logo">图标</item>
             <item name="@created">文档的生成时间</item>
             <item name="title">文档的标题</item>
@@ -188,7 +188,7 @@
         <type name="request">
             <description><p>定义了请求和返回的相关内容</p></description>
             <item name="@name">当 mimetype XML 时，此值表示 XML 的顶层元素名称，否则无用。</item>
-            <item name="@type">值的类型，可以是 string、number、bool 和 object</item>
+            <item name="@type">值的类型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
             <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
             <item name="@summary">简要介绍</item>
             <item name="@array">是否为数组</item>
@@ -204,7 +204,7 @@
         <type name="param">
             <description>参数类型</description>
             <item name="@name">值的名称</item>
-            <item name="@type">值的类型，可以是 string、number、bool 和 object</item>
+            <item name="@type">值的类型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
             <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
             <item name="@default">默认值</item>
             <item name="@optional">是否为可选的参数</item>
