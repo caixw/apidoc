@@ -53,7 +53,17 @@
         </h4>
 
         <p><xsl:value-of select="@url" /></p>
-        <div><xsl:copy-of select="." /></div>
+        <div>
+            <xsl:choose>
+                <xsl:when test="description">
+                    <xsl:attribute name="data-type">
+                        <xsl:value-of select="description/@type" />
+                    </xsl:attribute>
+                    <pre><xsl:copy-of select="description/node()" /></pre>
+                </xsl:when>
+                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+            </xsl:choose>
+        </div>
     </div>
 </xsl:template>
 
