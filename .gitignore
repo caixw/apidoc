@@ -22,6 +22,8 @@ dist
 apidoc.json
 apidoc.yaml
 apidoc.xml
+openapi.json
+openapi.yaml
 
 .vscode
 .idea

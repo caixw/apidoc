@@ -122,6 +122,21 @@ func (s *Schema) sanitize() *message.SyntaxError {
 			return err
 		}
 	}
+
+	if s.Items != nil {
+		if err := s.Items.sanitize(); err != nil {
+			err.Field = "items." + err.Field
+			return err
+		}
+	}
+
+	for name, obj := range s.Properties {
+		if err := obj.sanitize(); err != nil {
+			err.Field = "[" + name + "]." + err.Field
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -136,8 +151,6 @@ func newSchema(p *doc.Param, chkArray bool) *Schema {
 
 	s := &Schema{
 		Type:        fromDocType(p.Type),
-		Properties:  nil,
-		Definitions: nil,
 		Title:       p.Summary,
 		Description: p.Description.Text,
 		Default:     p.Default,
@@ -154,10 +167,15 @@ func newSchema(p *doc.Param, chkArray bool) *Schema {
 	}
 
 	// Properties / Required
-	for _, item := range p.Items {
-		s.Properties[item.Name] = newSchema(item, true)
-		if !item.Optional {
-			s.Required = append(s.Required, item.Name)
+	if len(p.Items) > 0 { // 如果是对象，类型改为空
+		s.Type = ""
+		s.Properties = make(map[string]*Schema, len(p.Items))
+
+		for _, item := range p.Items {
+			s.Properties[item.Name] = newSchema(item, true)
+			if !item.Optional {
+				s.Required = append(s.Required, item.Name)
+			}
 		}
 	}
 
@@ -175,8 +193,6 @@ func newSchemaFromRequest(p *doc.Request, chkArray bool) *Schema {
 
 	s := &Schema{
 		Type:        fromDocType(p.Type),
-		Properties:  nil,
-		Definitions: nil,
 		Title:       p.Summary,
 		Description: p.Description.Text,
 		Deprecated:  p.Deprecated != "",
@@ -192,10 +208,15 @@ func newSchemaFromRequest(p *doc.Request, chkArray bool) *Schema {
 	}
 
 	// Properties / Required
-	for _, item := range p.Items {
-		s.Properties[item.Name] = newSchema(item, true)
-		if !item.Optional {
-			s.Required = append(s.Required, item.Name)
+	if len(p.Items) > 0 { // 如果是对象，类型改为空
+		s.Type = ""
+		s.Properties = make(map[string]*Schema, len(p.Items))
+
+		for _, item := range p.Items {
+			s.Properties[item.Name] = newSchema(item, true)
+			if !item.Optional {
+				s.Required = append(s.Required, item.Name)
+			}
 		}
 	}
 

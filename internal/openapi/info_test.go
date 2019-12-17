@@ -6,7 +6,25 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/v5/doc"
 )
+
+func TestNewContact(t *testing.T) {
+	a := assert.New(t)
+
+	input := &doc.Contact{
+		Email: "user@example.com",
+		URL:   "https://example.com",
+		Name:  "name",
+	}
+
+	output := newContact(input)
+	a.Equal(output.Email, input.Email)
+
+	output = newContact(nil)
+	a.Nil(output)
+}
 
 func TestInfo_sanitize(t *testing.T) {
 	a := assert.New(t)

@@ -10,12 +10,19 @@ import (
 
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 )
 
-func parse(doc *doc.Doc) (*OpenAPI, error) {
+// 将 doc.Doc 转换成 openapi
+func convert(doc *doc.Doc) (*OpenAPI, error) {
+	langID := doc.Lang
+	if langID == "" {
+		langID = "und"
+	}
+
 	openapi := &OpenAPI{
-		OpenAPI: doc.APIDoc,
+		OpenAPI: LatestVersion,
 		Info: &Info{
 			Title:       doc.Title,
 			Description: doc.Description.Text,
@@ -25,6 +32,11 @@ func parse(doc *doc.Doc) (*OpenAPI, error) {
 		},
 		Servers: make([]*Server, 0, len(doc.Servers)),
 		Tags:    make([]*Tag, 0, len(doc.Tags)),
+		Paths:   make(map[string]*PathItem, len(doc.Apis)),
+		ExternalDocs: &ExternalDocumentation{
+			Description: locale.Translate(langID, locale.GeneratorBy, vars.Name),
+			URL:         vars.OfficialURL,
+		},
 	}
 
 	for _, srv := range doc.Servers {
@@ -57,10 +69,37 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 		}
 
 		operation.Tags = api.Tags
-		operation.Description = api.Description.Text
 		operation.Deprecated = api.Deprecated != ""
+		operation.OperationID = api.ID
+		operation.Summary = api.Summary
+		operation.Description = api.Description.Text
 		setOperationParams(operation, api)
 
+		// servers
+		// 不为 PathItem 设置 servers，直接写在 operation
+		operation.Servers = make([]*Server, 0, len(api.Servers))
+		for _, srv := range api.Servers {
+			// 找到对应的 doc.Server.URL 值，之后根据此值从 openapi 中取 Server 对象
+			var srvURL string
+			for _, docSrv := range d.Servers {
+				if docSrv.Name == srv {
+					srvURL = docSrv.URL
+					break
+				}
+			}
+
+			if srvURL == "" {
+				continue
+			}
+
+			for _, ss := range openapi.Servers {
+				if ss.URL == srvURL {
+					operation.Servers = append(operation.Servers, ss)
+				}
+			}
+		}
+
+		// requests
 		if len(api.Requests) > 0 {
 			content := make(map[string]*MediaType, len(api.Requests))
 			for _, r := range api.Requests {
@@ -82,6 +121,7 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 			}
 		}
 
+		// responses
 		operation.Responses = make(map[string]*Response, len(api.Responses))
 		for _, resp := range api.Responses {
 			status := resp.Status.String()
@@ -129,7 +169,8 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 }
 
 func setOperationParams(operation *Operation, api *doc.API) {
-	operation.Parameters = make([]*Parameter, 0, len(api.Path.Params)+len(api.Path.Queries)+len(api.Requests[0].Headers))
+	l := len(api.Path.Params) + len(api.Path.Queries)
+	operation.Parameters = make([]*Parameter, 0, l)
 
 	for _, param := range api.Path.Params {
 		operation.Parameters = append(operation.Parameters, &Parameter{
@@ -151,8 +192,9 @@ func setOperationParams(operation *Operation, api *doc.API) {
 		})
 	}
 
-	if len(api.Requests) > 0 {
-		for _, param := range api.Requests[0].Headers {
+	// 将各个类型的 Request 中的报头都集中到 operation.Parameters
+	for _, r := range api.Requests {
+		for _, param := range r.Headers {
 			desc := param.Description.Text
 			if desc == "" {
 				desc = param.Summary
@@ -217,17 +259,17 @@ func setOperation(path *PathItem, method string) (*Operation, *message.SyntaxErr
 
 // JSON 输出 JSON 格式数据
 func JSON(doc *doc.Doc) ([]byte, error) {
-	openapi, err := parse(doc)
+	openapi, err := convert(doc)
 	if err != nil {
 		return nil, err
 	}
 
-	return json.Marshal(openapi)
+	return json.MarshalIndent(openapi, "", "\t")
 }
 
 // YAML 输出 YAML 格式数据
 func YAML(doc *doc.Doc) ([]byte, error) {
-	openapi, err := parse(doc)
+	openapi, err := convert(doc)
 	if err != nil {
 		return nil, err
 	}

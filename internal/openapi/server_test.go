@@ -5,8 +5,30 @@ package openapi
 import (
 	"testing"
 
+	"github.com/caixw/apidoc/v5/doc"
 	"github.com/issue9/assert"
 )
+
+func TestNewServer(t *testing.T) {
+	a := assert.New(t)
+
+	input := &doc.Server{
+		URL:     "https://example.com",
+		Name:    "name",
+		Summary: "summary",
+	}
+
+	output := newServer(input)
+	a.NotNil(output).
+		Equal(output.URL, "https://example.com").
+		Equal(output.Description, "summary")
+
+	input.Description = doc.Richtext{Text: "desc"}
+	output = newServer(input)
+	a.NotNil(output).
+		Equal(output.URL, "https://example.com").
+		Equal(output.Description, "desc")
+}
 
 func TestServer_sanitize(t *testing.T) {
 	a := assert.New(t)

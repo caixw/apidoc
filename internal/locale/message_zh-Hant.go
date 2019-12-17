@@ -31,6 +31,7 @@ apidoc [options] [path]
 	LangID:              "ID",
 	LangName:            "名稱",
 	LangExts:            "擴展名",
+	GeneratorBy:         "當前文檔由 %s 生成",
 
 	// 錯誤信息，可能在地方用到
 	ErrRequired:              "不能為空",

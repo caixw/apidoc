@@ -73,6 +73,10 @@ func (l *License) sanitize() *message.SyntaxError {
 }
 
 func newLicense(l *doc.Link) *License {
+	if l == nil {
+		return nil
+	}
+
 	return &License{
 		Name: l.Text,
 		URL:  l.URL,
@@ -80,6 +84,10 @@ func newLicense(l *doc.Link) *License {
 }
 
 func newContact(c *doc.Contact) *Contact {
+	if c == nil {
+		return nil
+	}
+
 	return &Contact{
 		Name:  c.Name,
 		URL:   c.URL,
