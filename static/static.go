@@ -13,20 +13,20 @@ import (
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
-// Type 表示文件的类型
+// Type 表示对打包文件的分类
 type Type int8
 
 // 几种文件类型的定义
 const (
-	TypeNone = iota
-	TypeAll
-	TypeStylesheet
+	TypeNone       Type = iota // 不包含任何文件
+	TypeAll                    // 所有文件
+	TypeStylesheet             // 仅与 xsl 相关的文件
 )
 
 // 默认页面
 const indexPage = "index.xml"
 
-// 指定了 xml 文档所需的 xsl 内容。
+// 指定在 TypeStylesheet 下需要的文件列表。
 //
 // 可以以前缀的方式指定，比如：v5/ 表示以 v5/ 开头的所有文件。
 var styles = []string{

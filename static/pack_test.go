@@ -3,11 +3,23 @@
 package static
 
 import (
+	"path"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/v5/internal/vars"
 )
+
+// 保证 modulePath 的值正确性
+func TestModulePath(t *testing.T) {
+	a := assert.New(t)
+
+	suffix := path.Join(vars.DocVersion(), "static")
+	a.True(strings.HasSuffix(modulePath, suffix))
+}
 
 func TestPack(t *testing.T) {
 	a := assert.New(t)
@@ -19,14 +31,14 @@ func TestGetFileInfos(t *testing.T) {
 
 	info, err := getFileInfos("./testdir", TypeAll)
 	a.NotError(err).NotNil(info)
-	a.Equal(6, len(info))
+	a.Equal(3, len(info))
 
-	// 采有绝对路径
+	// 采用绝对路径
 	dir, err := filepath.Abs("./testdir")
 	a.NotError(err).NotEmpty(dir)
 	info, err = getFileInfos(dir, TypeAll)
 	a.NotError(err).NotNil(info)
-	a.Equal(6, len(info))
+	a.Equal(3, len(info))
 }
 
 func TestGetFileInfos_TypeStylesheet(t *testing.T) {
@@ -44,20 +56,4 @@ func TestGetFileInfos_TypeNone(t *testing.T) {
 	info, err := getFileInfos("./testdir", TypeNone)
 	a.NotError(err).Nil(info)
 	a.Equal(0, len(info))
-}
-
-func TestGetPkgPath(t *testing.T) {
-	a := assert.New(t)
-
-	p, err := getPkgPath("")
-	a.Error(err).Empty(p)
-
-	p, err = getPkgPath("./testdir/go.mod1")
-	a.NotError(err).Equal(p, "test/v6")
-
-	p, err = getPkgPath("./testdir/go.mod2")
-	a.Error(err).Empty(p)
-
-	p, err = getPkgPath("./testdir/go.mod3")
-	a.Error(err).Empty(p)
 }

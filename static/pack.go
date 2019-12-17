@@ -3,24 +3,23 @@
 package static
 
 import (
-	"bufio"
 	"bytes"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
-	"unicode"
 
 	"github.com/issue9/utils"
-
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
 )
 
-const goModPath = "../go.mod"
+const modulePath = "github.com/caixw/apidoc/v5/static"
 
 const header = "// 当前文件由工具自动生成，请勿手动修改！\n\n"
+
+var allowPackExts = []string{
+	".xml", ".xsl", ".svg",
+	".css", ".js", ".html", ".htm",
+}
 
 // FileInfo 被打包文件的信息
 type FileInfo struct {
@@ -39,6 +38,8 @@ type FileInfo struct {
 // path 内容保存的文件名；
 // t 打包的文件类型，如果为 TypeNone，则只打包 addTo 的内容；
 // addTo 追加的打包内容；
+//
+// NOTE: 隐藏文件不会被打包
 func Pack(root, pkgName, varName, path string, t Type, addTo ...*FileInfo) error {
 	fis, err := getFileInfos(root, t)
 	if err != nil {
@@ -58,11 +59,7 @@ func Pack(root, pkgName, varName, path string, t Type, addTo ...*FileInfo) error
 
 	ws("package ", pkgName, "\n\n")
 
-	goMod, err := getPkgPath(goModPath)
-	if err != nil {
-		return err
-	}
-	ws("import \"", goMod+"/static", "\"\n\n")
+	ws("import \"", modulePath, "\"\n\n")
 
 	ws("var ", varName, "= []*static.FileInfo{")
 	for _, info := range fis {
@@ -82,24 +79,25 @@ func getFileInfos(root string, t Type) ([]*FileInfo, error) {
 		return nil, nil
 	}
 
-	paths := []string{}
+	var paths []string
 
 	walk := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if info.IsDir() {
+		// 过滤各类未知的隐藏文件
+		if info.IsDir() || !isAllowPackFile(filepath.Ext(info.Name())) {
 			return nil
 		}
 
-		relpath, err := filepath.Rel(root, path)
+		relPath, err := filepath.Rel(root, path)
 		if err != nil {
 			return err
 		}
 
-		if t != TypeStylesheet || isStylesheetFile(relpath) {
-			paths = append(paths, relpath)
+		if t != TypeStylesheet || isStylesheetFile(relPath) {
+			paths = append(paths, relPath)
 		}
 
 		return nil
@@ -144,30 +142,11 @@ func dump(buf *bytes.Buffer, file *FileInfo) (err error) {
 	return err
 }
 
-const modulePrefix = "module"
-
-// 分析 go.mod 文件，获取其中的 module 值
-func getPkgPath(path string) (string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return "", err
-	}
-
-	s := bufio.NewScanner(bufio.NewReader(file))
-	s.Split(bufio.ScanLines)
-	for s.Scan() {
-		line := strings.TrimSpace(s.Text())
-		if !strings.HasPrefix(line, modulePrefix) {
-			continue
+func isAllowPackFile(ext string) bool {
+	for _, e := range allowPackExts {
+		if e == ext {
+			return true
 		}
-
-		line = line[len(modulePrefix):]
-		if line == "" || !unicode.IsSpace(rune(line[0])) {
-			continue
-		}
-
-		return strings.TrimSpace(line), nil
 	}
-
-	return "", message.NewLocaleError(goModPath, "", 0, locale.ErrInvalidFormat)
+	return false
 }

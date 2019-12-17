@@ -121,7 +121,7 @@
             <description><p>用於描述整個文檔的相關內容，只能出現壹次。</p></description>
             <item name="@version">文檔的版本</item>
             <item name="@lang">內容的本地化 ID，比如 <samp><var>zh-hans</var></samp> 等。</item>
-            <item name="@logo">圖標</item>
+            <item name="@logo">圖標，默認采用官網的 <var>https://apidoc.tools/icon.svg</var>，同時作用於 favicon 和 logo，只支持 SVG 格式。</item>
             <item name="@created">文檔的生成時間</item>
             <item name="title">文檔的標題</item>
             <item name="description">文檔的整體介紹，可以是使用 HTML 內容。</item>

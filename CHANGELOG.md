@@ -1,6 +1,14 @@
 # CHANGELOG
 
-## [Unreleased]
+## [v5.2.1]
+
+### Changed
+
+- favicon 现在只支持 SVG 格式的图片；
+
+### Fixed
+
+- 修正 Pack 可能将二进制等文件进行打包的错误；
 
 ## [v5.2.0]
 

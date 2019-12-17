@@ -48,7 +48,7 @@ type Config struct {
 
 // LoadConfig 加载指定目录下的配置文件
 //
-// 所有的错误信息会输出到 h
+// 所有的错误信息会输出到 h，在出错时，会返回 nil
 func LoadConfig(h *message.Handler, wd string) *Config {
 	for _, filename := range vars.AllowConfigFilenames {
 		p := filepath.Join(wd, filename)

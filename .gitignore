@@ -19,10 +19,11 @@ dist
 # project
 .apidoc.yaml
 .apidoc.yml
-/.vscode
 apidoc.json
 apidoc.yaml
 apidoc.xml
 
 .vscode
 .idea
+
+.testdata

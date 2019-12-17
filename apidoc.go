@@ -106,7 +106,7 @@ func Pack(h *message.Handler, url string, contentType, pkgName, varName, path st
 		contentType = http.DetectContentType(data)
 	}
 
-	return static.Pack("./docs", pkgName, varName, path, t, nil, &static.FileInfo{
+	return static.Pack("./docs", pkgName, varName, path, t, &static.FileInfo{
 		Name:        url,
 		Content:     data,
 		ContentType: contentType,

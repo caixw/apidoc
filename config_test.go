@@ -5,7 +5,6 @@ package apidoc
 import (
 	"bytes"
 	"path/filepath"
-	"strconv"
 	"testing"
 	"time"
 
@@ -14,15 +13,40 @@ import (
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v5/static"
 )
 
-func buildMessageHandle() (*bytes.Buffer, message.HandlerFunc) {
-	buf := new(bytes.Buffer)
+func buildMessageHandle() (erro, succ *bytes.Buffer, h *message.Handler) {
+	erro = new(bytes.Buffer)
+	succ = new(bytes.Buffer)
 
-	return buf, func(msg *message.Message) {
-		buf.WriteString(strconv.Itoa(int(msg.Type)))
-		buf.WriteString(msg.Message)
+	f := func(msg *message.Message) {
+		switch msg.Type {
+		case message.Erro:
+			erro.WriteString(msg.Message)
+		default:
+			succ.WriteString(msg.Message)
+		}
 	}
+
+	return erro, succ, message.NewHandler(f)
+}
+
+func TestLoadConfig(t *testing.T) {
+	a := assert.New(t)
+
+	erro, succ, h := buildMessageHandle()
+	cfg := LoadConfig(h, "./")
+	a.NotNil(cfg).
+		Empty(erro.String())
+
+	erro, succ, h = buildMessageHandle()
+	cfg = LoadConfig(h, "./docs") // 不存在 apidoc 的配置文件
+
+	h.Stop()
+	a.Nil(cfg).
+		NotEmpty(erro.String()).
+		Empty(succ.String())
 }
 
 func TestLoadFile(t *testing.T) {
@@ -42,9 +66,9 @@ func TestDetect_Load(t *testing.T) {
 	a.NotError(err).NotEmpty(wd)
 	a.NotError(Detect(wd, true))
 
-	out, f := buildMessageHandle()
-	cfg := LoadConfig(message.NewHandler(f), wd)
-	a.Empty(out.String()).NotNil(cfg)
+	erro, _, h := buildMessageHandle()
+	cfg := LoadConfig(h, wd)
+	a.Empty(erro.String()).NotNil(cfg)
 
 	a.Equal(cfg.Version, vars.Version()).
 		Equal(cfg.Inputs[0].Lang, "go")
@@ -78,21 +102,55 @@ func TestConfig_sanitize(t *testing.T) {
 		Equal(err.Field, "output")
 }
 
+func TestConfig_Test(t *testing.T) {
+	a := assert.New(t)
+
+	erro, succ, h := buildMessageHandle()
+	cfg := LoadConfig(h, "./docs/example")
+	a.NotNil(cfg)
+	cfg.Test()
+
+	h.Stop()
+	a.Empty(erro.String()).
+		NotEmpty(succ.String()) // 有成功提示
+}
+
+func TestConfig_Pack(t *testing.T) {
+	a := assert.New(t)
+
+	erro, succ, h := buildMessageHandle()
+	cfg := LoadConfig(h, "./docs/example")
+	a.NotNil(cfg)
+	cfg.Pack("testdata", "Data", "./.testdata", "apidoc.xml", "application/xml", static.TypeAll)
+
+	h.Stop()
+	a.Empty(erro.String()).
+		Empty(succ.String())
+}
+
 func TestConfig_Do(t *testing.T) {
 	a := assert.New(t)
 
-	out, f := buildMessageHandle()
-	h := message.NewHandler(f)
-	LoadConfig(h, "./docs/example").Do(time.Now())
-	a.Empty(out.String())
+	erro, succ, h := buildMessageHandle()
+	cfg := LoadConfig(h, "./docs/example")
+	a.NotNil(cfg)
+	cfg.Do(time.Now())
+
+	h.Stop()
+	a.NotEmpty(succ.String()). // 有成功提示
+					Empty(erro.String())
 }
 
 func TestConfig_Buffer(t *testing.T) {
 	a := assert.New(t)
 
-	out, f := buildMessageHandle()
-	h := message.NewHandler(f)
-	buf := LoadConfig(h, "./docs/example").Buffer()
-	a.Empty(out.String()).
+	erro, succ, h := buildMessageHandle()
+	cfg := LoadConfig(h, "./docs/example")
+	a.NotNil(cfg)
+
+	buf := cfg.Buffer()
+	h.Stop()
+	a.Empty(erro.String()).
+		Empty(succ.String()).
 		True(buf.Len() > 0)
 }
