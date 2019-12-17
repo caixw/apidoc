@@ -7,6 +7,7 @@
 - 添加 Valid 方法，用于验证文档是否正确；
 - 为 Request 和 Param 添加了五个用于描述 XML 数据的字段；
 - 为 apidoc 元素添加 mimetype，用于指定全局可用的 mimetype 值；
+- 添加导出为 openapi 的功能；
 
 ### Changed
 
