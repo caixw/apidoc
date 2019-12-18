@@ -7,21 +7,29 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/caixw/apidoc/v5/doc"
 	"github.com/issue9/mux/v2"
+
+	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/message"
 )
 
 // Mock 管理 mock 数据
 type Mock struct {
+	h       *message.Handler
 	doc     *doc.Doc
-	prefix  string
+	prefix  string // 生成的所有路由中的路径前缀
 	mux     *mux.Mux
 	servers map[string]string
 }
 
 // New 声明 Mock 对象
-func New(d *doc.Doc, prefix string, servers map[string]string) (*Mock, error) {
+//
+// h 用于处理各类输出消息，仅在 ServeHTTP 中的消息才输出到 h；
+// prefix 所有路由的前缀；
+// servers 用于指定 d.Server 中每一个服务对应的路由前缀
+func New(h *message.Handler, d *doc.Doc, prefix string, servers map[string]string) (*Mock, error) {
 	m := &Mock{
+		h:       h,
 		doc:     d,
 		prefix:  prefix,
 		mux:     mux.New(false, false, true, nil, nil),
@@ -35,8 +43,8 @@ func New(d *doc.Doc, prefix string, servers map[string]string) (*Mock, error) {
 	return m, nil
 }
 
-// NewWithPath 加 xml 文档用以初始化 Mock 对象
-func NewWithPath(path, prefix string, servers map[string]string) (*Mock, error) {
+// NewWithPath 加载 XML 文档用以初始化 Mock 对象
+func NewWithPath(h *message.Handler, path, prefix string, servers map[string]string) (*Mock, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -47,7 +55,7 @@ func NewWithPath(path, prefix string, servers map[string]string) (*Mock, error) 
 		return nil, err
 	}
 
-	return New(d, prefix, servers)
+	return New(h, d, prefix, servers)
 }
 
 func (m *Mock) parse() error {
@@ -57,11 +65,12 @@ func (m *Mock) parse() error {
 		prefix := p.Prefix(prefix)
 
 		for _, api := range m.doc.Apis {
-			if !hasTag(api.Tags, name) {
+			if !hasServer(api.Servers, name) {
 				continue
 			}
 
-			err := prefix.Handle(api.Path.Path, build(api), string(api.Method))
+			handler := m.build(api)
+			err := prefix.Handle(api.Path.Path, handler, string(api.Method))
 			if err != nil {
 				return err
 			}
@@ -75,7 +84,7 @@ func (m *Mock) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	m.mux.ServeHTTP(w, r)
 }
 
-func hasTag(tags []string, key string) bool {
+func hasServer(tags []string, key string) bool {
 	for _, tag := range tags {
 		if key == tag {
 			return true
