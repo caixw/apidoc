@@ -36,6 +36,29 @@ type Param struct {
 	Description Richtext `xml:"description,omitempty"`
 }
 
+// ToParam 转换成 Param 对象
+//
+// Request 可以说是 Param 的超级，两者在大部分情况下能用。
+func (r *Request) ToParam() *Param {
+	if r == nil {
+		return nil
+	}
+
+	return &Param{
+		Name:        r.Name,
+		Type:        r.Type,
+		Deprecated:  r.Deprecated,
+		Default:     "",
+		Optional:    true,
+		Array:       r.Array,
+		Items:       r.Items,
+		Reference:   r.Reference,
+		Summary:     r.Summary,
+		Enums:       r.Enums,
+		Description: r.Description,
+	}
+}
+
 // IsEnum 是否为一个枚举类型
 func (p *Param) IsEnum() bool {
 	return len(p.Enums) > 0

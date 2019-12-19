@@ -12,6 +12,8 @@ github.com/issue9/middleware v1.0.0/go.mod h1:gmx9k2nnC1O4yg9xK3liaanThZedNw37ci
 github.com/issue9/mux v1.2.0 h1:HNAzORN/Xkc1iHwlo/kYfSkimfQHE2AGCXGvQ9fBg0c=
 github.com/issue9/mux/v2 v2.3.2 h1:dPovq3NUoE/5OIC1qrXAim6o7EXP+AxwhWXAme+DtV4=
 github.com/issue9/mux/v2 v2.3.2/go.mod h1:VX+9EkwwAz8IfFNJj67BgAFa48D7IipqVxz5z3ke4c8=
+github.com/issue9/rands v1.1.4 h1:Wx1PzxTF57aao5Xq2/Q0nzRGBuRKWw6nw2emWfwl4hE=
+github.com/issue9/rands v1.1.4/go.mod h1:aCnoDR8ukczytaW+9FXuWS7YhhAK/5f+w8sM7P6UXqs=
 github.com/issue9/term v1.1.0 h1:vKTjD4c0rxw+B7LLfwSypMaVTkyP9DrqyLLgFWsVTVw=
 github.com/issue9/term v1.1.0/go.mod h1:9/YTi/aRSKOIy44Wso2xDWXJvMLAEYWskjutTkyUBN0=
 github.com/issue9/utils v1.0.0/go.mod h1:M/m1msOXz9GHESoAvzxpBe4jar/QGDKcGXDhKsZJAKE=

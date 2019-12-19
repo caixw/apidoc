@@ -14,65 +14,82 @@ import (
 
 func (m *Mock) build(api *doc.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch api.Method {
-		case http.MethodGet:
-			m.buildGet(api, w, r)
-		case http.MethodOptions:
-			// TODO
-		case http.MethodHead:
-			// TODO
-		case http.MethodPatch:
-			// TODO
-		case http.MethodPut:
-			// TODO
-		case http.MethodPost:
-			// TODO
-		case http.MethodDelete:
-			// TODO
-		default:
-			// TODO
+		for _, query := range api.Path.Queries {
+			if err := validParam(query, r.FormValue(query.Name)); err != nil {
+				m.handleError(api, w, "queries["+query.Name+"]", err)
+				return
+			}
+		}
+
+		for _, header := range api.Headers {
+			if err := validParam(header, r.Header.Get(header.Name)); err != nil {
+				m.handleError(api, w, "headers["+header.Name+"]", err)
+				return
+			}
+		}
+
+		for _, header := range api.Requests[0].Headers {
+			if err := validParam(header, r.Header.Get(header.Name)); err != nil {
+				m.handleError(api, w, "headers["+header.Name+"]", err)
+				return
+			}
+		}
+
+		req := findRequestByContentType(api.Requests, r.Header.Get("Content-Type"))
+		if req == nil {
+			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
+			return
+		}
+
+		if err := validRequest(req, r); err != nil {
+			m.handleError(api, w, "request.body", err)
+			return
+		}
+
+		resp := findRequestByContentType(api.Responses, r.Header.Get("Accept"))
+		if resp == nil {
+			m.handleError(api, w, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
+			return
+		}
+
+		data, err := buildResponse(resp, r)
+		if err != nil {
+			m.handleError(api, w, "respose.body", err)
+			return
+		}
+
+		w.WriteHeader(int(resp.Status))
+		if _, err := w.Write(data); err != nil {
+			m.h.Error(message.Erro, err) // 此时状态码已经输出
 		}
 	})
 }
 
-// 处理 serveHTTP 中的错误
-func (m *Mock) handleError(w http.ResponseWriter, err error) {
-	m.h.Error(message.Erro, err)
-	if status, ok := err.(*Error); ok {
-		w.WriteHeader(status.Status)
+// 查找第一个符合条件的 Request 实例，如果用户定义了多个相同 mimetype 的实例，也只返回第一符合要求的
+func findRequestByContentType(request []*doc.Request, ct string) *doc.Request {
+	for _, req := range request {
+		if req.Mimetype == ct {
+			return req
+		}
 	}
+
+	return nil
 }
 
-func (m *Mock) buildGet(api *doc.API, w http.ResponseWriter, r *http.Request) {
-	for _, header := range api.Requests[0].Headers {
-		if err := validParam(header, r.Header.Get(header.Name)); err != nil {
-			m.handleError(w, err)
-			return
+// 处理 serveHTTP 中的错误
+func (m *Mock) handleError(api *doc.API, w http.ResponseWriter, field string, err error) {
+	file := string(api.Method) + " " + api.Path.Path
+
+	if serr, ok := err.(*message.SyntaxError); ok {
+		if serr.Field == "" {
+			serr.Field = field
 		}
+		serr.File = file
+	} else {
+		err = message.WithError(file, field, 0, err)
 	}
 
-	for _, query := range api.Path.Queries {
-		if err := validParam(query, r.FormValue(query.Name)); err != nil {
-			m.handleError(w, err)
-			return
-		}
-	}
-
-	if err := validRequest(api.Requests[0], r); err != nil {
-		m.handleError(w, err)
-		return
-	}
-
-	data, err := buildResponse(api.Responses[0])
-	if err != nil {
-		m.handleError(w, err)
-		return
-	}
-
-	w.WriteHeader(int(api.Responses[0].Status))
-	if _, err := w.Write(data); err != nil {
-		m.h.Error(message.Erro, err) // 此时状态码已经输出
-	}
+	m.h.Error(message.Erro, err)
 }
 
 // 验证单个参数
@@ -82,7 +99,7 @@ func validParam(p *doc.Param, val string) error {
 			return nil
 		}
 
-		return newError(http.StatusBadRequest, locale.ErrRequired)
+		return message.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
 
 	switch p.Type {
@@ -109,7 +126,7 @@ func validParam(p *doc.Param, val string) error {
 		}
 
 		if !found {
-			return newError(http.StatusBadRequest, locale.ErrInvalidValue)
+			return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 		}
 	}
 
@@ -128,12 +145,22 @@ func validRequest(p *doc.Request, r *http.Request) error {
 	contentType := r.Header.Get("Content-Type")
 	switch contentType {
 	case "application/json":
-	case "application/xml":
+		return validJSON(p, content)
+	case "application/xml", "text/xml":
+		return validXML(p, content)
 	default:
-		// TODO
+		return message.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
 	}
 }
 
-func buildResponse(p *doc.Request) ([]byte, error) {
-	// TODO
+func buildResponse(p *doc.Request, r *http.Request) ([]byte, error) {
+	contentType := r.Header.Get("Accept")
+	switch contentType {
+	case "application/json":
+		return buildJSON(p)
+	case "application/xml", "text/xml":
+		return buildXML(p)
+	default:
+		return nil, message.NewLocaleError("", "headers[accept]", 0, locale.ErrInvalidValue)
+	}
 }
