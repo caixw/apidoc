@@ -184,41 +184,5 @@ func newSchema(p *doc.Param, chkArray bool) *Schema {
 
 // chkArray 是否需要检测当前类型是否为数组
 func newSchemaFromRequest(p *doc.Request, chkArray bool) *Schema {
-	if chkArray && p.Array {
-		return &Schema{
-			Type:  TypeArray,
-			Items: newSchemaFromRequest(p, false),
-		}
-	}
-
-	s := &Schema{
-		Type:        fromDocType(p.Type),
-		Title:       p.Summary,
-		Description: p.Description.Text,
-		Deprecated:  p.Deprecated != "",
-		Required:    make([]string, 0, len(p.Items)),
-	}
-
-	// enum
-	if len(p.Enums) > 0 {
-		s.Enum = make([]interface{}, 0, len(p.Enums))
-		for _, e := range p.Enums {
-			s.Enum = append(s.Enum, e.Value)
-		}
-	}
-
-	// Properties / Required
-	if len(p.Items) > 0 { // 如果是对象，类型改为空
-		s.Type = ""
-		s.Properties = make(map[string]*Schema, len(p.Items))
-
-		for _, item := range p.Items {
-			s.Properties[item.Name] = newSchema(item, true)
-			if !item.Optional {
-				s.Required = append(s.Required, item.Name)
-			}
-		}
-	}
-
-	return s
+	return newSchema(p.ToParam(), chkArray)
 }
