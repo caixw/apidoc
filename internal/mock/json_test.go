@@ -43,7 +43,7 @@ func TestBuildJSON(t *testing.T) {
 			input:  &doc.Request{},
 			output: "",
 		},
-		{
+		{ // array
 			input: &doc.Request{
 				Type:  doc.Bool,
 				Array: true,
@@ -82,7 +82,7 @@ func TestBuildJSON(t *testing.T) {
 }`,
 		},
 
-		{ // object nest object
+		{ // 各类型混合
 			input: &doc.Request{
 				Type: doc.Object,
 				Items: []*doc.Param{
@@ -106,8 +106,23 @@ func TestBuildJSON(t *testing.T) {
 								Type: doc.Number,
 								Name: "id",
 							},
+							{
+								Name:  "tags",
+								Array: true,
+								Type:  doc.Object,
+								Items: []*doc.Param{
+									{
+										Type: doc.String,
+										Name: "name",
+									},
+									{
+										Type: doc.Number,
+										Name: "id",
+									},
+								},
+							}, // end tags
 						},
-					},
+					}, // end group
 				},
 			},
 			output: `{
@@ -115,7 +130,29 @@ func TestBuildJSON(t *testing.T) {
     "id": 1024,
     "group": {
         "name": "1024",
-        "id": 1024
+        "id": 1024,
+        "tags": [
+            {
+                "name": "1024",
+                "id": 1024
+            },
+            {
+                "name": "1024",
+                "id": 1024
+            },
+            {
+                "name": "1024",
+                "id": 1024
+            },
+            {
+                "name": "1024",
+                "id": 1024
+            },
+            {
+                "name": "1024",
+                "id": 1024
+            }
+        ]
     }
 }`,
 		},
