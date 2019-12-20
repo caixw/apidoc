@@ -55,6 +55,10 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"/enum", locale.ErrDuplicateValue)
 	}
 
+	if err := chkEnumsType(shadow.Type, shadow.Enums, field); err != nil {
+		return err
+	}
+
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
 		return newSyntaxError(field+"/param", locale.ErrDuplicateValue)

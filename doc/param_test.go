@@ -107,4 +107,51 @@ func TestParam_UnmarshalXML_enum(t *testing.T) {
 			<enum value="male" summary="female" />
 	</Param>`
 	a.Error(xml.Unmarshal([]byte(str), obj))
+
+	// 枚举类型与父类型不相同
+	obj = &Param{}
+	str = `<Param name="sex" type="number">
+			<description>sex</description>
+			<enum value="1" summary="Male" />
+			<enum value="male" summary="female" />
+	</Param>`
+	a.Error(xml.Unmarshal([]byte(str), obj))
+}
+
+func TestChkEnumsType(t *testing.T) {
+	a := assert.New(t)
+
+	boolEnums := []*Enum{
+		{Value: "true"},
+		{Value: "false"},
+	}
+	numberEnums := []*Enum{
+		{Value: "1"},
+		{Value: "2"},
+	}
+	stringEnums := []*Enum{
+		{Value: "1"},
+		{Value: "true"},
+		{Value: "string"},
+	}
+
+	a.NotError(chkEnumsType(Bool, boolEnums, ""))
+	a.Error(chkEnumsType(Bool, numberEnums, ""))
+	a.Error(chkEnumsType(Bool, stringEnums, ""))
+
+	a.NotError(chkEnumsType(Number, numberEnums, ""))
+	a.Error(chkEnumsType(Number, boolEnums, ""))
+	a.Error(chkEnumsType(Number, stringEnums, ""))
+
+	a.NotError(chkEnumsType(String, numberEnums, ""))
+	a.NotError(chkEnumsType(String, boolEnums, ""))
+	a.NotError(chkEnumsType(String, stringEnums, ""))
+
+	a.Error(chkEnumsType(None, numberEnums, ""))
+	a.Error(chkEnumsType(None, boolEnums, ""))
+	a.Error(chkEnumsType(None, stringEnums, ""))
+
+	a.Error(chkEnumsType(Object, numberEnums, ""))
+	a.Error(chkEnumsType(Object, boolEnums, ""))
+	a.Error(chkEnumsType(Object, stringEnums, ""))
 }

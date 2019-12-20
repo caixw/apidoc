@@ -5,6 +5,9 @@ package doc
 import (
 	"encoding/xml"
 	"sort"
+	"strconv"
+
+	"github.com/issue9/is"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
@@ -63,6 +66,10 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"/enum", locale.ErrDuplicateValue)
 	}
 
+	if err := chkEnumsType(shadow.Type, shadow.Enums, field); err != nil {
+		return err
+	}
+
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
 		return newSyntaxError(field+"/items", locale.ErrDuplicateValue)
@@ -70,6 +77,32 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	if p.Summary == "" && p.Description.Text == "" {
 		return newSyntaxError(field+"/summary", locale.ErrRequired)
+	}
+
+	return nil
+}
+
+// 检测 enums 中的类型是否符合 t 的标准，比如 Number 要求枚举值也都是数值
+func chkEnumsType(t Type, enums []*Enum, field string) error {
+	if len(enums) == 0 {
+		return nil
+	}
+
+	switch t {
+	case Number:
+		for _, enum := range enums {
+			if !is.Number(enum.Value) {
+				return newSyntaxError(field+"/enum/#"+enum.Value, locale.ErrInvalidFormat)
+			}
+		}
+	case Bool:
+		for _, enum := range enums {
+			if _, err := strconv.ParseBool(enum.Value); err != nil {
+				return newSyntaxError(field+"/enum/#"+enum.Value, locale.ErrInvalidFormat)
+			}
+		}
+	case Object, None:
+		return newSyntaxError(field+"/enum", locale.ErrInvalidValue)
 	}
 
 	return nil
