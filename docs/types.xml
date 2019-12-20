@@ -83,7 +83,7 @@
 
         <type name="request">
             <item name="@name" type="string" required="true" />
-            <item name="@type" type="string" required="true" />
+            <item name="@type" type="string" required="false" />
             <item name="@deprecated" type="version" required="false" />
             <item name="@summary" type="string" required="true" />
             <item name="@array" type="bool" required="false" />

@@ -188,7 +188,7 @@
         <type name="request">
             <description><p>定義了請求和返回的相關內容</p></description>
             <item name="@name">當 mimetype XML 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
-            <item name="@type">值的類型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
+            <item name="@type">值的類型，可以是 <del title="建議使用空值代替"><var>none</var></del>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和 空值</item> 
             <item name="@deprecated">表示在大於等於該版本號時不再啟作用</item>
             <item name="@summary">簡要介紹</item>
             <item name="@array">是否為數組</item>
@@ -204,7 +204,7 @@
         <type name="param">
             <description>參數類型</description>
             <item name="@name">值的名稱</item>
-            <item name="@type">值的類型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
+            <item name="@type">值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item> 
             <item name="@deprecated">表示在大於等於該版本號時不再啟作用</item>
             <item name="@default">默認值</item>
             <item name="@optional">是否為可選的參數</item>
