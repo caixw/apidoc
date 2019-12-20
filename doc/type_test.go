@@ -55,3 +55,33 @@ func TestTypeXML(t *testing.T) {
 	data, err = xml.Marshal(obj)
 	a.Error(err).Nil(data)
 }
+
+func TestType_None(t *testing.T) {
+	a := assert.New(t)
+
+	type Object struct {
+		XMLName struct{} `xml:"type"`
+		Attr    Type     `xml:"attr,attr,omitempty"`
+		Value   Type     `xml:"value"`
+	}
+
+	obj := &Object{
+		Attr:  None,
+		Value: Number,
+	}
+	str := `<type><value>number</value></type>`
+
+	data, err := xml.Marshal(obj)
+	a.NotError(err)
+	a.Equal(string(data), str)
+
+	obj1 := &Object{}
+	a.NotError(xml.Unmarshal([]byte(str), obj1))
+	a.Equal(obj, obj1)
+
+	// unmarshal
+	str = `<type attr="none"><value>number</value></type>`
+	obj1 = &Object{}
+	a.NotError(xml.Unmarshal([]byte(str), obj1))
+	a.Equal(obj1.Attr, None)
+}

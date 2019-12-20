@@ -14,7 +14,7 @@ type Type string
 
 // 表示支持的各种数据类型
 const (
-	None   Type = "none"
+	None   Type = ""
 	Bool        = "bool"
 	Object      = "object"
 	Number      = "number"
@@ -22,6 +22,10 @@ const (
 )
 
 func parseType(val string) (Type, error) {
+	if val == "none" {
+		return None, nil
+	}
+
 	val = strings.ToLower(val)
 	switch Type(val) {
 	case None, Bool, Object, Number, String:

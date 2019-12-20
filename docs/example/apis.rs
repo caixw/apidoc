@@ -78,7 +78,7 @@ fn getList() {}
 //         </example>
 //     </request>
 //
-//     <response status="200" array="true" type="none" mimetype="application/json">
+//     <response status="200" array="true" mimetype="application/json">
 //     </response>
 // </api>
 fn post() {}
