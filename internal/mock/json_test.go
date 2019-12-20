@@ -39,6 +39,28 @@ var jsonTestData = []*jsonTester{
 		Type:  &doc.Request{Type: doc.Number},
 		Data:  "1024",
 	},
+	{
+		Title: "enum number",
+		Type: &doc.Request{
+			Type: doc.Number,
+			Enums: []*doc.Enum{
+				{Value: "1024"},
+				{Value: "1025"},
+			},
+		},
+		Data: "1024",
+	},
+	{
+		Title: "enum string",
+		Type: &doc.Request{
+			Type: doc.String,
+			Enums: []*doc.Enum{
+				{Value: "1024"},
+				{Value: "1025"},
+			},
+		},
+		Data: `"1024"`,
+	},
 	{ // array
 		Title: "[bool]",
 		Type: &doc.Request{
@@ -51,6 +73,25 @@ var jsonTestData = []*jsonTester{
     true,
     true,
     true
+]`,
+	},
+	{
+		Title: "array with enum",
+		Type: &doc.Request{
+			Type:  doc.Number,
+			Array: true,
+			Enums: []*doc.Enum{
+				{Value: "1"},
+				{Value: "2"},
+				{Value: "3"},
+			},
+		},
+		Data: `[
+    1,
+    1,
+    1,
+    1,
+    1
 ]`,
 	},
 	{
