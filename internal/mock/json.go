@@ -51,7 +51,7 @@ func validJSON(p *doc.Request, content []byte) error {
 	validator := &jsonValidator{
 		param:   p.ToParam(),
 		decoder: json.NewDecoder(bytes.NewReader(content)),
-		states:  []byte{},
+		states:  []byte{' '}, // 状态有默认值
 		names:   []string{},
 	}
 
@@ -128,7 +128,7 @@ func (validator *jsonValidator) valid() error {
 
 // 如果 t == "" 表示不需要验证类型，比如 null 可以赋值给任何类型
 func (validator *jsonValidator) validValue(t doc.Type, v interface{}) error {
-	field := strings.Join(validator.names, ">")
+	field := strings.Join(validator.names, ".")
 
 	p := validator.find()
 	if p == nil {
@@ -303,9 +303,9 @@ func writeJSON(builder *jsonBuilder, p *doc.Param, chkArray bool) error {
 	case doc.Bool:
 		builder.writeValue(generateBool())
 	case doc.Number:
-		builder.writeValue(generateNumber())
+		builder.writeValue(generateNumber(p))
 	case doc.String:
-		builder.writeValue(generateString())
+		builder.writeValue(generateString(p))
 	case doc.Object:
 		builder.writeStrings("{\n").incrIndent()
 
