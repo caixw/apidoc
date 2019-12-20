@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Added
+
+- 添加 Valid 方法，用于验证文档是否正确；
+
 ## [v5.2.1]
 
 ### Changed

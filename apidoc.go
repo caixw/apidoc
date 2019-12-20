@@ -19,6 +19,7 @@ import (
 
 	"golang.org/x/text/language"
 
+	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/vars"
@@ -137,4 +138,10 @@ func Static(embedded []*static.FileInfo, dir string, t static.Type) http.Handler
 	}
 
 	return static.FolderHandler(dir, t)
+}
+
+// Valid 验证文档内容的正确性
+func Valid(content []byte) error {
+	d := doc.New()
+	return d.FromXML("", 0, content)
 }
