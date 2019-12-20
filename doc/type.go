@@ -22,6 +22,7 @@ const (
 )
 
 func parseType(val string) (Type, error) {
+	// Deprecated: 下个版本移除对 none 的支持
 	if val == "none" {
 		return None, nil
 	}

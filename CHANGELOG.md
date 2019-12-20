@@ -6,6 +6,10 @@
 
 - 添加 Valid 方法，用于验证文档是否正确；
 
+### Changed
+
+- 现在使用空值表示 doc.None，而不是字符串 `none`；
+
 ## [v5.2.1]
 
 ### Changed
