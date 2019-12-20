@@ -44,6 +44,7 @@ apidoc [options] [path]
 	ErrPathNotMatchParams:    "地址參數不匹配",
 	ErrDuplicateValue:        "重復的值",
 	ErrMessage:               "%s 位於 %s",
+	ErrNotFound:              "未找到該值",
 
 	// logs
 	InfoPrefix:    "[信息] ",

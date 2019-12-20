@@ -5,6 +5,7 @@ package mock
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"strings"
 
@@ -15,6 +16,18 @@ import (
 
 const indent = 4
 
+type jsonValidator struct {
+	param   *doc.Param
+	decoder *json.Decoder
+
+	// 按顺序表示的状态
+	// 可以是 [ 表示在数组中，{ 表示在对象，: 表示下一个值必须是属性，空格表示其它状态
+	states []byte
+
+	// 按顺序保存变量名称
+	names []string
+}
+
 type jsonBuilder struct {
 	buf          *bytes.Buffer
 	err          error
@@ -23,17 +36,37 @@ type jsonBuilder struct {
 }
 
 func validJSON(p *doc.Request, content []byte) error {
+	if p == nil && bytes.Equal(content, []byte("null")) {
+		return nil
+	}
+
+	if (p.Type == doc.None || p.Type == "") && len(content) == 0 {
+		return nil
+	}
+
 	if !json.Valid(content) {
 		return message.NewLocaleError("", "request.body", 0, locale.ErrInvalidFormat)
 	}
 
-	r := bytes.NewReader(content)
-	d := json.NewDecoder(r)
+	validator := &jsonValidator{
+		param:   p.ToParam(),
+		decoder: json.NewDecoder(bytes.NewReader(content)),
+		states:  []byte{},
+		names:   []string{},
+	}
 
+	err := validator.valid()
+	if err == io.EOF {
+		return nil
+	}
+	return err
+}
+
+func (validator *jsonValidator) valid() error {
 	for {
-		token, err := d.Token()
-		if err == io.EOF && token == nil { // 结束
-			break
+		token, err := validator.decoder.Token()
+		if err == io.EOF && token == nil { // 正常结束
+			return io.EOF
 		}
 
 		if err != nil {
@@ -41,25 +74,135 @@ func validJSON(p *doc.Request, content []byte) error {
 		}
 
 		if token == nil { // 对应 JSON null
-			//
+			if err = validator.validValue("", nil); err != nil {
+				return err
+			}
+			validator.popState()
+			validator.popName()
 		}
 
 		switch v := token.(type) {
-		case string: // string
-		case bool: // bool
+		case string: // json string
+			switch validator.state() {
+			case ':': // 字符串类型的值
+				err = validator.validValue(doc.String, v)
+				validator.popState()
+				validator.popName()
+			case '[':
+				err = validator.validValue(doc.String, v)
+			default: // 属性名
+				validator.pushState(':')
+				validator.pushName(v)
+			}
+
+			if err != nil {
+				return err
+			}
 		case json.Delim: // [、]、{、}
 			switch v {
 			case '[':
+				validator.pushState('[')
 			case ']':
+				validator.popState()
 			case '{':
+				validator.pushState('{')
 			case '}':
+				validator.popState()
+				validator.popName()
 			}
-		case float64: // number
-		case json.Number: // number
+		case bool: // json bool
+			err = validator.validValue(doc.Bool, v)
+			validator.popState()
+			validator.popName()
+		case float64, json.Number: // json number
+			err = validator.validValue(doc.Number, v)
+			validator.popState()
+			validator.popName()
 		}
+
+		if err != nil {
+			return err
+		}
+	}
+}
+
+// 如果 t == "" 表示不需要验证类型，比如 null 可以赋值给任何类型
+func (validator *jsonValidator) validValue(t doc.Type, v interface{}) error {
+	field := strings.Join(validator.names, ">")
+
+	p := validator.find()
+	if p == nil {
+		return message.NewLocaleError("", field, 0, locale.ErrNotFound)
+	}
+
+	if t == "" {
+		return nil
+	}
+
+	if p.Type != t {
+		return message.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
+	}
+
+	if p.IsEnum() {
+		for _, enum := range p.Enums {
+			if enum.Value == fmt.Sprint(v) {
+				return nil
+			}
+		}
+		return message.NewLocaleError("", field, 0, locale.ErrInvalidValue)
 	}
 
 	return nil
+}
+
+// 返回当前的状态
+func (validator *jsonValidator) state() byte {
+	return validator.states[len(validator.states)-1]
+}
+
+func (validator *jsonValidator) pushState(state byte) *jsonValidator {
+	validator.states = append(validator.states, state)
+	return validator
+}
+
+func (validator *jsonValidator) popState() *jsonValidator {
+	if len(validator.states) > 0 {
+		validator.states = validator.states[:len(validator.states)-1]
+	}
+	return validator
+}
+
+func (validator *jsonValidator) pushName(name string) *jsonValidator {
+	validator.names = append(validator.names, name)
+	return validator
+}
+
+func (validator *jsonValidator) popName() *jsonValidator {
+	if len(validator.names) > 0 {
+		validator.names = validator.names[:len(validator.names)-1]
+	}
+	return validator
+}
+
+// 如果 names 为空，返回 validator.param
+func (validator *jsonValidator) find() *doc.Param {
+	p := validator.param
+	for _, name := range validator.names {
+		found := false
+		for _, pp := range p.Items {
+			if pp.Name == name {
+				p = pp
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			return nil
+		}
+	}
+
+	return p
 }
 
 func (builder *jsonBuilder) writeIndent() *jsonBuilder {
