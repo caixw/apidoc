@@ -158,7 +158,8 @@
             <item name="@name">唯一 ID，推荐采用英文字母表示。</item>
             <item name="@url">服务基地址</item>
             <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
-            <item name=".">对该服务的具体描述，可以使用 HTML 内容</item>
+            <item name="@summary">简要的描述内容，或者通过 <code>description</code> 提供一份富文本内容。</item>
+            <item name="description">对该服务的具体描述，可以使用 HTML 内容</item>
         </type>
 
         <type name="api">
@@ -187,13 +188,14 @@
 
         <type name="request">
             <description><p>定义了请求和返回的相关内容</p></description>
-            <item name="@name">当 mimetype XML 时，此值表示 XML 的顶层元素名称，否则无用。</item>
-            <item name="@type">值的类型，可以是 <del title="建议使用空值代替"><var>none</var></del>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和 空值</item>
+            <item name="@name">当 mimetype 为 <var>application/xml</var> 时，此值表示 XML 的顶层元素名称，否则无用。</item>
+            <item name="@type">值的类型，可以是 <del title="建议使用空值代替"><var>none</var></del>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和 空值；如果 mimetype 的值为 <var>application/xml</var> 时，此值只能是 <var>object</var></item>
             <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
             <item name="@summary">简要介绍</item>
             <item name="@array">是否为数组</item>
+            <item name="@attr">是否为父元素的属性，仅用于 mimetype 什为 xml 的请求。</item>
             <item name="@status">状态码。在 request 中，该值不可用，否则为必填项。</item>
-            <item name="@mimetype">媒体类型，比如 <code>application/json</code> 等。</item>
+            <item name="@mimetype">媒体类型，比如 <var>application/json</var> 等。</item>
             <item name="description">详细介绍，为 HTML 内容。</item>
             <item name="enum">当前参数可用的枚举值</item>
             <item name="param">子类型，比如对象的子元素。</item>
@@ -202,7 +204,7 @@
         </type>
 
         <type name="param">
-            <description>参数类型</description>
+            <description><p>参数类型，基本上可以作为 <code>request</code> 的子集使用。</p></description>
             <item name="@name">值的名称</item>
             <item name="@type">值的类型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
             <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
@@ -210,6 +212,7 @@
             <item name="@optional">是否为可选的参数</item>
             <item name="@summary">简要介绍</item>
             <item name="@array">是否为数组</item>
+            <item name="@attr">是否为父元素的属性，仅用于 mimetype 什为 xml 的请求。</item>
             <item name="description">详细介绍，为 HTML 内容。</item>
             <item name="enum">当前参数可用的枚举值</item>
             <item name="param">子类型，比如对象的子元素。</item>

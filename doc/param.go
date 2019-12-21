@@ -28,6 +28,7 @@ type Param struct {
 	Default     string   `xml:"default,attr,omitempty"`
 	Optional    bool     `xml:"optional,attr,omitempty"`
 	Array       bool     `xml:"array,attr,omitempty"`
+	Attr        bool     `xml:"attr,attr,omitempty"` // 作为父元素的一个属性，仅针对 xml 有效果
 	Items       []*Param `xml:"param,omitempty"`
 	Reference   string   `xml:"ref,attr,omitempty"`
 	Summary     string   `xml:"summary,attr,omitempty"`

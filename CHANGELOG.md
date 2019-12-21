@@ -5,6 +5,7 @@
 ### Added
 
 - 添加 Valid 方法，用于验证文档是否正确；
+- 为 Request 和 Param 添加 attr 字段，用于在 content-type 为 xml 的请求中表示属性。
 
 ### Changed
 
