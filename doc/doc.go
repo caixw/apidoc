@@ -77,12 +77,12 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	// Tag.Name 查重
 	if key := findDupTag(shadow.Tags); key != "" {
-		return message.NewLocaleError(doc.file, "doc/tag#name", doc.line, locale.ErrDuplicateValue)
+		return message.NewLocaleError(doc.file, "doc/tag/@name", doc.line, locale.ErrDuplicateValue)
 	}
 
 	// Server.Name 查重
 	if key := findDupServer(shadow.Servers); key != "" {
-		return message.NewLocaleError(doc.file, "doc/server#name", doc.line, locale.ErrDuplicateValue)
+		return message.NewLocaleError(doc.file, "doc/server/@name", doc.line, locale.ErrDuplicateValue)
 	}
 
 	apis := doc.Apis

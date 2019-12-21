@@ -9,8 +9,8 @@ import (
 )
 
 // Enum 表示枚举值
-//  <enum value="male">男性</enum>
-//  <enum value="female">女性</enum>
+//  <enum value="male" summary="男性" />
+//  <enum value="female"><description type="html"><p>女性</p></description></enum>
 type Enum struct {
 	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 	Value       string   `xml:"value,attr"`
@@ -29,11 +29,11 @@ func (e *Enum) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Value == "" {
-		return newSyntaxError(field+"#value", locale.ErrRequired)
+		return newSyntaxError(field+"/@value", locale.ErrRequired)
 	}
 
 	if shadow.Description.Text == "" && shadow.Summary == "" {
-		return newSyntaxError(field+"/summary", locale.ErrRequired)
+		return newSyntaxError(field+"/@summary", locale.ErrRequired)
 	}
 
 	return nil

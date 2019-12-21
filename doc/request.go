@@ -48,7 +48,7 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Mimetype == "" {
-		return newSyntaxError(field+"#mimetype", locale.ErrRequired)
+		return newSyntaxError(field+"/@mimetype", locale.ErrRequired)
 	}
 
 	// 判断 enums 的值是否相同

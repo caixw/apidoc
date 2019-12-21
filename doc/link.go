@@ -42,11 +42,11 @@ func (l *Link) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if !is.URL(shadow.URL) {
-		return newSyntaxError(field+"#url", locale.ErrInvalidFormat)
+		return newSyntaxError(field+"/@url", locale.ErrInvalidFormat)
 	}
 
 	if shadow.Text == "" {
-		return newSyntaxError(field+"#text", locale.ErrRequired)
+		return newSyntaxError(field+"/@text", locale.ErrRequired)
 	}
 
 	return nil
@@ -61,19 +61,19 @@ func (c *Contact) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Name == "" {
-		return newSyntaxError(field+"#name", locale.ErrRequired)
+		return newSyntaxError(field+"/@name", locale.ErrRequired)
 	}
 
 	if shadow.URL == "" && shadow.Email == "" {
-		return newSyntaxError(field+"#url|email", locale.ErrRequired)
+		return newSyntaxError(field+"/@url|email", locale.ErrRequired)
 	}
 
 	if shadow.URL != "" && !is.URL(shadow.URL) {
-		return newSyntaxError(field+"#url", locale.ErrInvalidFormat)
+		return newSyntaxError(field+"/@url", locale.ErrInvalidFormat)
 	}
 
 	if shadow.Email != "" && !is.Email(shadow.Email) {
-		return newSyntaxError(field+"#email", locale.ErrInvalidFormat)
+		return newSyntaxError(field+"/@email", locale.ErrInvalidFormat)
 	}
 
 	return nil

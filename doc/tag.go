@@ -12,7 +12,7 @@ import (
 )
 
 // Tag 标签内容
-//  <tag name="tag1" deprecated="1.1.1">description</tag>
+//  <tag name="tag1" deprecated="1.1.1" />
 type Tag struct {
 	Name       string  `xml:"name,attr"`  // 标签的唯一 ID
 	Title      string  `xml:"title,attr"` // 显示的名称
@@ -43,11 +43,11 @@ func (t *Tag) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Name == "" {
-		return newSyntaxError(field+"#name", locale.ErrRequired)
+		return newSyntaxError(field+"/@name", locale.ErrRequired)
 	}
 
 	if shadow.Title == "" {
-		return newSyntaxError(field+"#title", locale.ErrRequired)
+		return newSyntaxError(field+"/@title", locale.ErrRequired)
 	}
 
 	*t = Tag(shadow)
@@ -63,11 +63,11 @@ func (srv *Server) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Name == "" {
-		return newSyntaxError(field+"#name", locale.ErrRequired)
+		return newSyntaxError(field+"/@name", locale.ErrRequired)
 	}
 
 	if !is.URL(shadow.URL) {
-		return newSyntaxError(field+"#url", locale.ErrInvalidFormat)
+		return newSyntaxError(field+"/@url", locale.ErrInvalidFormat)
 	}
 
 	if shadow.Summary == "" && shadow.Description.Text == "" {

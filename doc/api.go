@@ -88,7 +88,7 @@ func (api *API) sanitize(field string) error {
 
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag) {
-			return message.NewLocaleError(api.file, field+"/tag#name", api.line, locale.ErrInvalidValue)
+			return message.NewLocaleError(api.file, field+"/tag/@name", api.line, locale.ErrInvalidValue)
 		}
 	}
 
@@ -98,7 +98,7 @@ func (api *API) sanitize(field string) error {
 
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv) {
-			return message.NewLocaleError(api.file, field+"/server#name", api.line, locale.ErrInvalidValue)
+			return message.NewLocaleError(api.file, field+"/server/@name", api.line, locale.ErrInvalidValue)
 		}
 	}
 

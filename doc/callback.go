@@ -13,8 +13,8 @@ import (
 //       <request status="200" mimetype="json" type="object">
 //           <param name="name" type="string" />
 //           <param name="sex" type="string">
-//               <enum value="male">Male</enum>
-//               <enum value="female">Female</enum>
+//               <enum value="male" summary="male" />
+//               <enum value="female" summary="female" />
 //           </param>
 //           <param name="age" type="number" />
 //       </request>
@@ -43,7 +43,7 @@ func (c *Callback) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Method == "" {
-		return newSyntaxError(field+"#method", locale.ErrRequired)
+		return newSyntaxError(field+"/@method", locale.ErrRequired)
 	}
 
 	if len(shadow.Requests) == 0 {

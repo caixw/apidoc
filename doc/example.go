@@ -10,9 +10,9 @@ import (
 
 // Example 示例代码
 type Example struct {
-	Mimetype string `xml:"mimetype,attr"`
-	Content  string `xml:",cdata"`
-	Summary  string `xml:"summary,attr,omitempty"`
+	Mimetype    string   `xml:"mimetype,attr"`
+	Content     string   `xml:",cdata"`
+	Summary     string   `xml:"summary,attr,omitempty"`
 	Description Richtext `xml:"description,omitempty"`
 }
 
@@ -27,7 +27,7 @@ func (e *Example) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Mimetype == "" {
-		return newSyntaxError(field+"#mimetype", locale.ErrRequired)
+		return newSyntaxError(field+"/@mimetype", locale.ErrRequired)
 	}
 
 	if shadow.Content == "" {

@@ -16,8 +16,8 @@ import (
 //  <param name="user" deprecated="1.1.1" type="object" array="true">
 //      <param name="name" type="string" />
 //      <param name="sex" type="string">
-//          <enum value="male">Male</enum>
-//          <enum value="female">Female</enum>
+//          <enum value="male" summary="male" />
+//          <enum value="female" summary="female" />
 //      </param>
 //      <param name="age" type="number" />
 //  </param>

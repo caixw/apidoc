@@ -31,19 +31,19 @@ func (p *Path) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Path == "" {
-		return newSyntaxError(field+"#path", locale.ErrRequired)
+		return newSyntaxError(field+"/@path", locale.ErrRequired)
 	}
 
 	params, err := parsePath(shadow.Path)
 	if err != nil {
-		return fixedSyntaxError(err, "", field+"#path", 0)
+		return fixedSyntaxError(err, "", field+"/@path", 0)
 	}
 	if len(params) != len(shadow.Params) {
-		return newSyntaxError(field+"#path", locale.ErrPathNotMatchParams)
+		return newSyntaxError(field+"/@path", locale.ErrPathNotMatchParams)
 	}
 	for _, param := range shadow.Params {
 		if _, found := params[param.Name]; !found {
-			return newSyntaxError(field+"#path", locale.ErrPathNotMatchParams)
+			return newSyntaxError(field+"/@path", locale.ErrPathNotMatchParams)
 		}
 	}
 
