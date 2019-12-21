@@ -56,7 +56,7 @@ func (validator *xmlValidator) valid() error {
 			return err
 		}
 
-		switch v := token.(type) {
+		switch token.(type) {
 		case xml.StartElement:
 			// TODO
 		case xml.EndElement:
