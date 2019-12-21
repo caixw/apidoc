@@ -20,8 +20,9 @@ func TestParam_UnmarshalXML(t *testing.T) {
 		Name:    "text",
 		Type:    String,
 		Summary: "text",
+		XML:     XML{XMLAttr: true},
 	}
-	str := `<Param name="text" type="string" summary="text"></Param>`
+	str := `<Param xml-attr="true" name="text" type="string" summary="text"></Param>`
 
 	data, err := xml.Marshal(obj)
 	a.NotError(err).

@@ -10,6 +10,8 @@ import (
 
 // Request 请求内容
 type Request struct {
+	XML
+
 	// 一般无用，但是用于描述 XML 对象时，可以用来表示顶层元素的名称
 	Name string `xml:"name,attr,omitempty"`
 
@@ -17,7 +19,6 @@ type Request struct {
 	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
 	Enums       []*Enum    `xml:"enum,omitempty"`
 	Array       bool       `xml:"array,attr,omitempty"`
-	Attr        bool       `xml:"attr,attr,omitempty"` // 作为父元素的一个属性，仅针对 xml 有效果
 	Items       []*Param   `xml:"param,omitempty"`
 	Reference   string     `xml:"ref,attr,omitempty"`
 	Summary     string     `xml:"summary,attr,omitempty"`
@@ -57,6 +58,10 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if err := chkEnumsType(shadow.Type, shadow.Enums, field); err != nil {
+		return err
+	}
+
+	if err := checkXML(&shadow.XML, field); err != nil {
 		return err
 	}
 

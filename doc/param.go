@@ -22,13 +22,13 @@ import (
 //      <param name="age" type="number" />
 //  </param>
 type Param struct {
+	XML
 	Name        string   `xml:"name,attr"`
 	Type        Type     `xml:"type,attr"`
 	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 	Default     string   `xml:"default,attr,omitempty"`
 	Optional    bool     `xml:"optional,attr,omitempty"`
 	Array       bool     `xml:"array,attr,omitempty"`
-	Attr        bool     `xml:"attr,attr,omitempty"` // 作为父元素的一个属性，仅针对 xml 有效果
 	Items       []*Param `xml:"param,omitempty"`
 	Reference   string   `xml:"ref,attr,omitempty"`
 	Summary     string   `xml:"summary,attr,omitempty"`
@@ -74,6 +74,10 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
 		return newSyntaxError(field+"/items", locale.ErrDuplicateValue)
+	}
+
+	if err := checkXML(&shadow.XML, field); err != nil {
+		return err
 	}
 
 	if p.Summary == "" && p.Description.Text == "" {
