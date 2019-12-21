@@ -55,18 +55,14 @@ func validJSON(p *doc.Request, content []byte) error {
 		names:   []string{},
 	}
 
-	err := validator.valid()
-	if err == io.EOF {
-		return nil
-	}
-	return err
+	return validator.valid()
 }
 
 func (validator *jsonValidator) valid() error {
 	for {
 		token, err := validator.decoder.Token()
 		if err == io.EOF && token == nil { // 正常结束
-			return io.EOF
+			return nil
 		}
 
 		if err != nil {
