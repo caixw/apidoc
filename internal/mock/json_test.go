@@ -16,6 +16,7 @@ type jsonTester struct {
 	Title string
 	Type  *doc.Request
 	Data  string
+	Err   bool
 }
 
 var jsonTestData = []*jsonTester{
@@ -27,7 +28,7 @@ var jsonTestData = []*jsonTester{
 	{
 		Title: "doc.None",
 		Type:  &doc.Request{Type: doc.None},
-		Data:  "null",
+		Data:  "",
 	},
 	{
 		Title: "doc.Request{}",
@@ -240,7 +241,11 @@ func TestValidJSON(t *testing.T) {
 
 	for _, item := range jsonTestData {
 		err := validJSON(item.Type, []byte(item.Data))
-		a.NotError(err, "测试 %s 时返回错误值 %s", item.Title, err)
+		if item.Err {
+			a.Error(err)
+		} else {
+			a.NotError(err, "测试 %s 时返回错误值 %s", item.Title, err)
+		}
 	}
 }
 
@@ -250,7 +255,11 @@ func TestBuildJSON(t *testing.T) {
 	for _, item := range jsonTestData {
 		data, err := buildJSON(item.Type)
 
-		a.NotError(err, "测试 %s 返回了错误值 %s", item.Title, err).
-			Equal(string(data), item.Data)
+		if item.Err {
+			a.Error(err).Nil(data)
+		} else {
+			a.NotError(err, "测试 %s 返回了错误值 %s", item.Title, err).
+				Equal(string(data), item.Data, "测试 %s 失败 v1:%s,v2:%s", item.Title, string(data), item.Data)
+		}
 	}
 }

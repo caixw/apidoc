@@ -253,6 +253,10 @@ func (builder *jsonBuilder) writeValue(v interface{}) *jsonBuilder {
 }
 
 func buildJSON(p *doc.Request) ([]byte, error) {
+	if p != nil && p.Type == doc.None {
+		return nil, nil
+	}
+
 	builder := &jsonBuilder{
 		buf: new(bytes.Buffer),
 	}
