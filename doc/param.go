@@ -52,11 +52,11 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Name == "" {
-		return newSyntaxError(field+"#name", locale.ErrRequired)
+		return newSyntaxError(field+"/@name", locale.ErrRequired)
 	}
 
 	if shadow.Type == None {
-		return newSyntaxError(field+"#type", locale.ErrRequired)
+		return newSyntaxError(field+"/@type", locale.ErrRequired)
 	}
 	if shadow.Type == Object && len(shadow.Items) == 0 {
 		return newSyntaxError(field+"/items", locale.ErrRequired)
@@ -93,13 +93,13 @@ func chkEnumsType(t Type, enums []*Enum, field string) error {
 	case Number:
 		for _, enum := range enums {
 			if !is.Number(enum.Value) {
-				return newSyntaxError(field+"/enum/#"+enum.Value, locale.ErrInvalidFormat)
+				return newSyntaxError(field+"/enum/@"+enum.Value, locale.ErrInvalidFormat)
 			}
 		}
 	case Bool:
 		for _, enum := range enums {
 			if _, err := strconv.ParseBool(enum.Value); err != nil {
-				return newSyntaxError(field+"/enum/#"+enum.Value, locale.ErrInvalidFormat)
+				return newSyntaxError(field+"/enum/@"+enum.Value, locale.ErrInvalidFormat)
 			}
 		}
 	case Object, None:
