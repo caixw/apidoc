@@ -38,6 +38,11 @@ table thead tr {
     height: 2.5rem;
 }
 
+table th {
+    white-space: nowrap;
+    padding-right: .5rem;
+}
+
 table th, table td {
     text-align: left;
     border-bottom: 1px solid var(--border-color);

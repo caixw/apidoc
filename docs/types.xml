@@ -82,12 +82,15 @@
         </type>
 
         <type name="request">
+            <item name="@xml-attr" type="bool" required="false" />
+            <item name="@xml-extract" type="bool" required="false" />
+            <item name="@xml-ns" type="bool" required="false" />
+            <item name="@xml-ns-prefix" type="bool" required="false" />
             <item name="@name" type="string" required="true" />
             <item name="@type" type="string" required="false" />
             <item name="@deprecated" type="version" required="false" />
             <item name="@summary" type="string" required="true" />
             <item name="@array" type="bool" required="false" />
-            <item name="@attr" type="bool" required="false" />
             <item name="@status" type="number" required="true" />
             <item name="@mimetype" type="string" required="false" />
             <item name="description" type="richtext" required="false" />
@@ -98,6 +101,10 @@
         </type>
 
         <type name="param">
+            <item name="@xml-attr" type="bool" required="false" />
+            <item name="@xml-extract" type="bool" required="false" />
+            <item name="@xml-ns" type="bool" required="false" />
+            <item name="@xml-ns-prefix" type="bool" required="false" />
             <item name="@name" type="string" required="true" />
             <item name="@type" type="string" required="true" />
             <item name="@deprecated" type="version" required="false" />
@@ -105,7 +112,6 @@
             <item name="@optional" type="bool" required="false" />
             <item name="@summary" type="string" required="true" />
             <item name="@array" type="bool" required="false" />
-            <item name="@attr" type="bool" required="false" />
             <item name="description" type="richtext" required="false" />
             <item name="enum" type="enum[]" required="false" />
             <item name="param" type="param[]" required="false" />
