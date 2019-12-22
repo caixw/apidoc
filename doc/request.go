@@ -23,7 +23,7 @@ type Request struct {
 	Reference   string     `xml:"ref,attr,omitempty"`
 	Summary     string     `xml:"summary,attr,omitempty"`
 	Status      Status     `xml:"status,attr,omitempty"`
-	Mimetype    string     `xml:"mimetype,attr"`
+	Mimetype    string     `xml:"mimetype,attr,omitempty"`
 	Examples    []*Example `xml:"example,omitempty"`
 	Headers     []*Param   `xml:"header,omitempty"` // 当前独有的报头，公用的可以放在 API 中
 	Description Richtext   `xml:"description,omitempty"`
@@ -46,10 +46,6 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	if shadow.Type == Object && len(shadow.Items) == 0 {
 		return newSyntaxError(field+"/param", locale.ErrRequired)
-	}
-
-	if shadow.Mimetype == "" {
-		return newSyntaxError(field+"/@mimetype", locale.ErrRequired)
 	}
 
 	// 判断 enums 的值是否相同

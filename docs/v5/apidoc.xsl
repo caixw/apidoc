@@ -11,62 +11,64 @@
 />
 
 <xsl:template match="/">
-    <html lang="{$curr-lang}">
-        <head>
-            <title><xsl:value-of select="apidoc/title" /></title>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-            <meta name="generator" content="apidoc" />
-            <link rel="icon" type="image/svg+xml" href="{$icon}" />
-            <link rel="mask-icon" type="image/svg+xml" href="{$icon}" color="black" />
-            <xsl:if test="apidoc/license"><link rel="license" href="{apidoc/license/@url}" /></xsl:if>
-            <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />
-            <script src="{$base-url}apidoc.js"></script>
-        </head>
-        <body>
-            <xsl:call-template name="header" />
+<html lang="{$curr-lang}">
+    <head>
+        <title><xsl:value-of select="apidoc/title" /></title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+        <meta name="generator" content="apidoc" />
+        <link rel="icon" type="image/svg+xml" href="{$icon}" />
+        <link rel="mask-icon" type="image/svg+xml" href="{$icon}" color="black" />
+        <xsl:if test="apidoc/license"><link rel="license" href="{apidoc/license/@url}" /></xsl:if>
+        <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />
+        <script src="{$base-url}apidoc.js"></script>
+    </head>
+    <body>
+        <xsl:call-template name="header" />
 
-            <main>
-                <div class="content" data-type="{description/@type}">
-                    <pre><xsl:copy-of select="apidoc/description/node()" /></pre>
-                </div>
-                <div class="servers"><xsl:apply-templates select="apidoc/server" /></div>
-                <xsl:apply-templates select="apidoc/api" />
-            </main>
-
-            <footer>
-            <div class="wrap">
-                <xsl:if test="apidoc/license"><xsl:copy-of select="$locale-license" /></xsl:if>
-                <xsl:copy-of select="$locale-generator" />
+        <main>
+            <div class="content" data-type="{description/@type}">
+                <pre><xsl:copy-of select="apidoc/description/node()" /></pre>
             </div>
-            </footer>
-        </body>
-    </html>
+            <div class="servers"><xsl:apply-templates select="apidoc/server" /></div>
+            <xsl:apply-templates select="apidoc/api" />
+        </main>
+
+        <footer>
+        <div class="wrap">
+            <xsl:if test="apidoc/license"><xsl:copy-of select="$locale-license" /></xsl:if>
+            <xsl:copy-of select="$locale-generator" />
+        </div>
+        </footer>
+    </body>
+</html>
 </xsl:template>
+
 
 <xsl:template match="/apidoc/server">
-    <div class="server">
-        <h4>
-            <xsl:call-template name="deprecated">
-                <xsl:with-param name="deprecated" select="@deprecated" />
-            </xsl:call-template>
-            <xsl:value-of select="@name" />
-        </h4>
+<div class="server">
+    <h4>
+        <xsl:call-template name="deprecated">
+            <xsl:with-param name="deprecated" select="@deprecated" />
+        </xsl:call-template>
+        <xsl:value-of select="@name" />
+    </h4>
 
-        <p><xsl:value-of select="@url" /></p>
-        <div>
-            <xsl:choose>
-                <xsl:when test="description">
-                    <xsl:attribute name="data-type">
-                        <xsl:value-of select="description/@type" />
-                    </xsl:attribute>
-                    <pre><xsl:copy-of select="description/node()" /></pre>
-                </xsl:when>
-                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
-            </xsl:choose>
-        </div>
+    <p><xsl:value-of select="@url" /></p>
+    <div>
+        <xsl:choose>
+            <xsl:when test="description">
+                <xsl:attribute name="data-type">
+                    <xsl:value-of select="description/@type" />
+                </xsl:attribute>
+                <pre><xsl:copy-of select="description/node()" /></pre>
+            </xsl:when>
+            <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+        </xsl:choose>
     </div>
+</div>
 </xsl:template>
+
 
 <!-- header 界面元素 -->
 <xsl:template name="header">
@@ -144,112 +146,103 @@
 </header>
 </xsl:template>
 
+
 <!-- api 界面元素 -->
 <xsl:template match="/apidoc/api">
-    <xsl:variable name="id" select="concat(@method, translate(path/@path, $id-from, $id-to))" />
+<xsl:variable name="id" select="concat(@method, translate(path/@path, $id-from, $id-to))" />
 
-    <details id="{$id}" class="api" data-method="{@method},">
-    <xsl:attribute name="data-tag">
-        <xsl:for-each select="tag"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
-    </xsl:attribute>
-    <xsl:attribute name="data-server">
-        <xsl:for-each select="server"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
-    </xsl:attribute>
+<details id="{$id}" class="api" data-method="{@method},">
+<xsl:attribute name="data-tag">
+    <xsl:for-each select="tag"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
+</xsl:attribute>
+<xsl:attribute name="data-server">
+    <xsl:for-each select="server"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
+</xsl:attribute>
 
-        <summary>
-            <a class="link" href="#{$id}">&#128279;</a> <!-- 链接符号 -->
+    <summary>
+        <a class="link" href="#{$id}">&#128279;</a> <!-- 链接符号 -->
 
-            <span class="action"><xsl:value-of select="@method" /></span>
-            <span>
-                <xsl:call-template name="deprecated">
-                    <xsl:with-param name="deprecated" select="@deprecated" />
-                </xsl:call-template>
+        <span class="action"><xsl:value-of select="@method" /></span>
+        <span>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
 
-                <xsl:value-of select="path/@path" />
-            </span>
+            <xsl:value-of select="path/@path" />
+        </span>
 
-            <span class="summary"><xsl:value-of select="@summary" /></span>
-        </summary>
+        <span class="summary"><xsl:value-of select="@summary" /></span>
+    </summary>
 
-        <xsl:if test="description">
-            <div class="description" data-type="{description/@type}">
-                <pre><xsl:copy-of select="description/node()" /></pre>
-            </div>
-        </xsl:if>
-
-        <div class="body">
-            <div class="requests">
-                <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
-                <xsl:call-template name="requests">
-                    <xsl:with-param name="requests" select="request" />
-                    <xsl:with-param name="path" select="path" />
-                    <xsl:with-param name="headers" select="header" />
-                </xsl:call-template>
-            </div>
-            <div class="responses">
-                <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
-
-                <xsl:for-each select="response">
-                    <xsl:call-template name="response">
-                        <xsl:with-param name="response" select="." />
-                    </xsl:call-template>
-                </xsl:for-each>
-
-                <xsl:for-each select="/apidoc/response"><!-- 公有的 response -->
-                    <xsl:call-template name="response">
-                        <xsl:with-param name="response" select="." />
-                    </xsl:call-template>
-                </xsl:for-each>
-            </div>
+    <xsl:if test="description">
+        <div class="description" data-type="{description/@type}">
+            <pre><xsl:copy-of select="description/node()" /></pre>
         </div>
+    </xsl:if>
 
-        <xsl:if test="./callback"><xsl:apply-templates select="./callback" /></xsl:if>
-    </details>
+    <div class="body">
+        <div class="requests">
+            <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
+            <xsl:call-template name="requests">
+                <xsl:with-param name="requests" select="request" />
+                <xsl:with-param name="path" select="path" />
+                <xsl:with-param name="headers" select="header" />
+            </xsl:call-template>
+        </div>
+        <div class="responses">
+            <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
+            <xsl:call-template name="responses">
+                <xsl:with-param name="responses" select="response | /apidoc/response" />
+            </xsl:call-template>
+        </div>
+    </div>
+
+    <xsl:if test="./callback"><xsl:apply-templates select="./callback" /></xsl:if>
+</details>
 </xsl:template>
+
 
 <!-- 回调内容 -->
 <xsl:template match="/apidoc/api/callback">
-    <div class="callback" data-method="{./@method},">
-        <h3>
-            <xsl:copy-of select="$locale-callback" />
-            <span class="summary"><xsl:value-of select="@summary" /></span>
-        </h3>
-        <xsl:if test="description">
-            <div class="description" data-type="{description/@type}">
-                <pre><xsl:copy-of select="description/node()" /></pre>
-            </div>
-        </xsl:if>
+<div class="callback" data-method="{./@method},">
+    <h3>
+        <xsl:copy-of select="$locale-callback" />
+        <span class="summary"><xsl:value-of select="@summary" /></span>
+    </h3>
+    <xsl:if test="description">
+        <div class="description" data-type="{description/@type}">
+            <pre><xsl:copy-of select="description/node()" /></pre>
+        </div>
+    </xsl:if>
 
-        <div class="body">
-            <div class="requests">
-                <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
-                <xsl:call-template name="requests">
-                    <xsl:with-param name="requests" select="request" />
-                    <xsl:with-param name="path" select="path" />
-                    <xsl:with-param name="headers" select="header" />
+    <div class="body">
+        <div class="requests">
+            <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
+            <xsl:call-template name="requests">
+                <xsl:with-param name="requests" select="request" />
+                <xsl:with-param name="path" select="path" />
+                <xsl:with-param name="headers" select="header" />
+            </xsl:call-template>
+        </div>
+
+        <xsl:if test="response">
+            <div class="responses">
+                <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
+                <xsl:call-template name="responses">
+                    <xsl:with-param name="responses" select="response" />
                 </xsl:call-template>
             </div>
-
-            <xsl:if test="response">
-                <div class="responses">
-                    <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
-                    <xsl:for-each select="response">
-                        <xsl:call-template name="response">
-                            <xsl:with-param name="response" select="." />
-                        </xsl:call-template>
-                    </xsl:for-each>
-                </div>
-            </xsl:if>
-        </div> <!-- end .body -->
-    </div> <!-- end .callback -->
+        </xsl:if>
+    </div> <!-- end .body -->
+</div> <!-- end .callback -->
 </xsl:template>
+
 
 <!-- api/request 的界面元素 -->
 <xsl:template name="requests">
 <xsl:param name="requests" />
 <xsl:param name="path" />
 <xsl:param name="headers" /> <!-- 公用的报头 -->
-
 <div class="request">
     <xsl:if test="$path/param">
         <xsl:call-template name="param">
@@ -281,206 +274,256 @@
         </xsl:call-template>
     </xsl:if>
 
-    <xsl:for-each select="$requests">
-        <h5 class="status"><xsl:value-of select="@mimetype" /></h5>
-
-        <xsl:if test="header">
-            <xsl:call-template name="param">
-                <xsl:with-param name="title">
-                    <xsl:copy-of select="$locale-header" />
-                </xsl:with-param>
-                <xsl:with-param name="param" select="header" />
-                <xsl:with-param name="simple" select="'true'" />
+    <xsl:variable name="request-any" select="$requests[not(@mimetype)]" />
+    <xsl:for-each select="/apidoc/mimetype | $requests/@mimetype[not(/apidoc/mimetype=.)]">
+        <xsl:variable name="mimetype" select="." />
+        <xsl:variable name="request" select="$requests[@mimetype=$mimetype]" />
+        <xsl:if test="$request">
+            <xsl:call-template name="request-body">
+                <xsl:with-param name="mimetype" select="$mimetype" />
+                <xsl:with-param name="request" select="$request" />
             </xsl:call-template>
         </xsl:if>
-
-        <xsl:call-template name="param">
-            <xsl:with-param name="title"><xsl:copy-of select="$locale-body" /></xsl:with-param>
-            <xsl:with-param name="param" select="." />
-        </xsl:call-template>
+        <xsl:if test="not($request) and $request-any">
+            <xsl:call-template name="request-body">
+                <xsl:with-param name="mimetype" select="$mimetype" />
+                <xsl:with-param name="request" select="$request-any" />
+            </xsl:call-template>
+        </xsl:if>
     </xsl:for-each>
 </div>
 </xsl:template>
 
-<!-- api/response 的界面 -->
-<xsl:template name="response">
-    <xsl:param name="response" />
 
-    <h5 class="status">
-        <xsl:value-of select="$response/@status" />
-        <span class="mimetype">&#160;(<xsl:value-of select="$response/@mimetype" />)</span>
-    </h5>
-
-    <xsl:if test="$response/header">
+<xsl:template name="request-body">
+<xsl:param name="mimetype" />
+<xsl:param name="request" />
+<details>
+    <summary><xsl:value-of select="$mimetype" /></summary>
+    <xsl:if test="$request/header">
         <xsl:call-template name="param">
             <xsl:with-param name="title">
                 <xsl:copy-of select="$locale-header" />
             </xsl:with-param>
-            <xsl:with-param name="param" select="$response/header" />
+            <xsl:with-param name="param" select="$request/header" />
             <xsl:with-param name="simple" select="'true'" />
         </xsl:call-template>
     </xsl:if>
 
     <xsl:call-template name="param">
         <xsl:with-param name="title"><xsl:copy-of select="$locale-body" /></xsl:with-param>
-        <xsl:with-param name="param" select="$response" />
+        <xsl:with-param name="param" select="$request" />
     </xsl:call-template>
+</details>
 </xsl:template>
+
+
+<xsl:template name="responses">
+<xsl:param name="responses" />
+<xsl:for-each select="/apidoc/mimetype | $responses/@mimetype[not(/apidoc/mimetype=.)]">
+    <xsl:variable name="mimetype" select="." />
+    <xsl:if test="$responses[@mimetype=$mimetype] | $responses[not(@mimetype)]">
+        <details>
+        <summary><xsl:value-of select="$mimetype" /></summary>
+        <xsl:for-each select="$responses">
+            <xsl:variable name="resp" select=".[@mimetype=$mimetype]" />
+            <xsl:variable name="resp-any" select=".[not(@mimetype)]" />
+            <xsl:if test="$resp"><!-- 可能同时存在符合 resp 和 resp-any 的数据，优先取 resp -->
+                <xsl:call-template name="response">
+                    <xsl:with-param name="response" select="$resp" />
+                </xsl:call-template>
+            </xsl:if>
+            <xsl:if test="not($resp) and $resp-any">
+                <xsl:call-template name="response">
+                    <xsl:with-param name="response" select="$resp-any" />
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:for-each>
+        </details>
+    </xsl:if>
+</xsl:for-each>
+</xsl:template>
+
+
+<!-- api/response 的界面 -->
+<xsl:template name="response">
+<xsl:param name="response" />
+
+<h5 class="status"><xsl:value-of select="$response/@status" /></h5>
+
+<xsl:if test="$response/header">
+    <xsl:call-template name="param">
+        <xsl:with-param name="title">
+            <xsl:copy-of select="$locale-header" />
+        </xsl:with-param>
+        <xsl:with-param name="param" select="$response/header" />
+        <xsl:with-param name="simple" select="'true'" />
+    </xsl:call-template>
+</xsl:if>
+
+<xsl:call-template name="param">
+    <xsl:with-param name="title"><xsl:copy-of select="$locale-body" /></xsl:with-param>
+    <xsl:with-param name="param" select="$response" />
+</xsl:call-template>
+</xsl:template>
+
 
 <!-- path param, path query, header 等的界面 -->
 <xsl:template name="param">
-    <xsl:param name="title" />
-    <xsl:param name="param" />
-    <xsl:param name="simple" select="'false'" /> <!-- 简单的类型，不存在嵌套类型，也不会有示例代码 -->
+<xsl:param name="title" />
+<xsl:param name="param" />
+<xsl:param name="simple" select="'false'" /> <!-- 简单的类型，不存在嵌套类型，也不会有示例代码 -->
 
-    <xsl:if test="not($param/@type='none')">
-        <div class="param">
-            <h4 class="title">
-                &#x27a4;&#160;<xsl:copy-of select="$title" />
-                <xsl:if test="$param/example">
-                    &#160;(<a class="toggle-example"><xsl:copy-of select="$locale-example" /></a>)
-                </xsl:if>
-            </h4>
-
-            <table class="param-list" data-visible="true">
-                <thead>
-                    <tr>
-                        <th><xsl:copy-of select="$locale-var" /></th>
-                        <th><xsl:copy-of select="$locale-type" /></th>
-                        <th><xsl:copy-of select="$locale-value" /></th>
-                        <th><xsl:copy-of select="$locale-description" /></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <xsl:choose>
-                        <xsl:when test="$simple='true'">
-                            <xsl:call-template name="simple-param-list">
-                                <xsl:with-param name="param" select="$param" />
-                            </xsl:call-template>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:call-template name="param-list">
-                                <xsl:with-param name="param" select="$param" />
-                            </xsl:call-template>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </tbody>
-            </table>
-
+<xsl:if test="not($param/@type='none')">
+    <div class="param">
+        <h4 class="title">
+            &#x27a4;&#160;<xsl:copy-of select="$title" />
             <xsl:if test="$param/example">
-            <pre class="example" data-visible="false" data-mimetype="{$param/example/@mimetype}"><xsl:copy-of select="$param/example/node()" /></pre>
+                &#160;(<a class="toggle-example"><xsl:copy-of select="$locale-example" /></a>)
             </xsl:if>
-        </div>
-    </xsl:if>
+        </h4>
+
+        <table class="param-list" data-visible="true">
+            <thead>
+                <tr>
+                    <th><xsl:copy-of select="$locale-var" /></th>
+                    <th><xsl:copy-of select="$locale-type" /></th>
+                    <th><xsl:copy-of select="$locale-value" /></th>
+                    <th><xsl:copy-of select="$locale-description" /></th>
+                </tr>
+            </thead>
+            <tbody>
+                <xsl:choose>
+                    <xsl:when test="$simple='true'">
+                        <xsl:call-template name="simple-param-list">
+                            <xsl:with-param name="param" select="$param" />
+                        </xsl:call-template>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:call-template name="param-list">
+                            <xsl:with-param name="param" select="$param" />
+                        </xsl:call-template>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </tbody>
+        </table>
+
+        <xsl:if test="$param/example">
+        <pre class="example" data-visible="false" data-mimetype="{$param/example/@mimetype}"><xsl:copy-of select="$param/example/node()" /></pre>
+        </xsl:if>
+    </div>
+</xsl:if>
 </xsl:template>
+
 
 <!-- 列顺序必须要与 param 中的相同 -->
 <xsl:template name="simple-param-list">
-    <xsl:param name="param" />
+<xsl:param name="param" />
 
-    <xsl:for-each select="$param">
-        <xsl:call-template name="param-list-tr">
-            <xsl:with-param name="param" select="." />
-        </xsl:call-template>
-    </xsl:for-each>
+<xsl:for-each select="$param">
+    <xsl:call-template name="param-list-tr">
+        <xsl:with-param name="param" select="." />
+    </xsl:call-template>
+</xsl:for-each>
 </xsl:template>
 
 <!-- 列顺序必须要与 param 中的相同 -->
 <xsl:template name="param-list">
-    <xsl:param name="param" />
-    <xsl:param name="parent" select="''" /> <!-- 上一级的名称，嵌套对象时可用 -->
+<xsl:param name="param" />
+<xsl:param name="parent" select="''" /> <!-- 上一级的名称，嵌套对象时可用 -->
 
-    <xsl:for-each select="$param">
-        <xsl:call-template name="param-list-tr">
-            <xsl:with-param name="param" select="." />
-            <xsl:with-param name="parent" select="$parent" />
+<xsl:for-each select="$param">
+    <xsl:call-template name="param-list-tr">
+        <xsl:with-param name="param" select="." />
+        <xsl:with-param name="parent" select="$parent" />
+    </xsl:call-template>
+
+    <xsl:if test="param">
+        <xsl:variable name="p">
+                <xsl:value-of select="concat($parent, @name)" />
+                <xsl:if test="@name"><xsl:value-of select="'.'" /></xsl:if>
+        </xsl:variable>
+
+        <xsl:call-template name="param-list">
+            <xsl:with-param name="param" select="param" />
+            <xsl:with-param name="parent" select="$p" />
         </xsl:call-template>
-
-        <xsl:if test="param">
-            <xsl:variable name="p">
-                    <xsl:value-of select="concat($parent, @name)" />
-                    <xsl:if test="@name"><xsl:value-of select="'.'" /></xsl:if>
-            </xsl:variable>
-
-            <xsl:call-template name="param-list">
-                <xsl:with-param name="param" select="param" />
-                <xsl:with-param name="parent" select="$p" />
-            </xsl:call-template>
-        </xsl:if>
-    </xsl:for-each>
+    </xsl:if>
+</xsl:for-each>
 </xsl:template>
 
-<!-- 显示第一行的参数数据 -->
+
+<!-- 显示一行参数数据 -->
 <xsl:template name="param-list-tr">
-    <xsl:param name="param" />
-    <xsl:param name="parent" select="''" />
+<xsl:param name="param" />
+<xsl:param name="parent" select="''" />
+<tr>
+    <xsl:call-template name="deprecated">
+        <xsl:with-param name="deprecated" select="$param/@deprecated" />
+    </xsl:call-template>
+    <th>
+        <span class="parent-type"><xsl:value-of select="$parent" /></span>
+        <xsl:value-of select="$param/@name" />
+    </th>
 
-    <tr>
-        <xsl:call-template name="deprecated">
-            <xsl:with-param name="deprecated" select="$param/@deprecated" />
+    <td>
+        <xsl:value-of select="$param/@type" />
+        <xsl:if test="$param/@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+    </td>
+
+    <td>
+        <xsl:choose>
+            <xsl:when test="$param/@optional='true'"><xsl:value-of select="'O'" /></xsl:when>
+            <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
+        </xsl:choose>
+        <xsl:value-of select="concat(' ', $param/@default)" />
+    </td>
+
+    <td>
+        <xsl:choose>
+            <xsl:when test="description">
+                <xsl:attribute name="data-type">
+                    <xsl:value-of select="description/@type" />
+                </xsl:attribute>
+                <pre><xsl:copy-of select="description/node()" /></pre>
+            </xsl:when>
+            <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+        </xsl:choose>
+        <xsl:call-template name="enum">
+            <xsl:with-param name="enum" select="$param/enum"/>
         </xsl:call-template>
-        <th>
-            <span class="parent-type"><xsl:value-of select="$parent" /></span>
-            <xsl:value-of select="$param/@name" />
-        </th>
-
-        <td>
-            <xsl:value-of select="$param/@type" />
-            <xsl:if test="$param/@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
-        </td>
-
-        <td>
-            <xsl:choose>
-                <xsl:when test="$param/@optional='true'"><xsl:value-of select="'O'" /></xsl:when>
-                <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
-            </xsl:choose>
-            <xsl:value-of select="concat(' ', $param/@default)" />
-        </td>
-
-        <td>
-            <xsl:choose>
-                <xsl:when test="description">
-                    <xsl:attribute name="data-type">
-                        <xsl:value-of select="description/@type" />
-                    </xsl:attribute>
-                    <pre><xsl:copy-of select="description/node()" /></pre>
-                </xsl:when>
-                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
-            </xsl:choose>
-            <xsl:call-template name="enum">
-                <xsl:with-param name="enum" select="$param/enum"/>
-            </xsl:call-template>
-        </td>
-    </tr>
+    </td>
+</tr>
 </xsl:template>
+
 
 <!-- 显示枚举类型的内容 -->
 <xsl:template name="enum">
-    <xsl:param name="enum" />
+<xsl:param name="enum" />
+<xsl:if test="$enum">
+    <p><xsl:copy-of select="$locale-enum" /></p>
+    <ul>
+    <xsl:for-each select="$enum">
+        <li>
+        <xsl:call-template name="deprecated">
+            <xsl:with-param name="deprecated" select="@deprecated" />
+        </xsl:call-template>
 
-    <xsl:if test="$enum">
-        <p><xsl:copy-of select="$locale-enum" /></p>
-        <ul>
-        <xsl:for-each select="$enum">
-            <li>
-            <xsl:call-template name="deprecated">
-                <xsl:with-param name="deprecated" select="@deprecated" />
-            </xsl:call-template>
-
-            <xsl:value-of select="@value" />:
-            <xsl:choose>
-                <xsl:when test="description">
-                    <div data-type="{description/@type}">
-                        <pre><xsl:copy-of select="description/node()" /></pre>
-                    </div>
-                </xsl:when>
-                <xsl:otherwise><xsl:value-of select="summary" /></xsl:otherwise>
-            </xsl:choose>
-            </li>
-        </xsl:for-each>
-        </ul>
-    </xsl:if>
+        <xsl:value-of select="@value" />:
+        <xsl:choose>
+            <xsl:when test="description">
+                <div data-type="{description/@type}">
+                    <pre><xsl:copy-of select="description/node()" /></pre>
+                </div>
+            </xsl:when>
+            <xsl:otherwise><xsl:value-of select="summary" /></xsl:otherwise>
+        </xsl:choose>
+        </li>
+    </xsl:for-each>
+    </ul>
+</xsl:if>
 </xsl:template>
+
 
 <!--
 给指定的元素添加已弃用的标记
@@ -489,14 +532,13 @@
 所以必须要在父元素的任何子元素之前，否则 chrome 和 safari 可能无法正常解析。
 -->
 <xsl:template name="deprecated">
-    <xsl:param name="deprecated" />
-
-    <xsl:if test="$deprecated">
-        <xsl:attribute name="class"><xsl:value-of select="'del'" /></xsl:attribute>
-        <xsl:attribute name="title">
-            <xsl:value-of select="$deprecated" />
-        </xsl:attribute>
-    </xsl:if>
+<xsl:param name="deprecated" />
+<xsl:if test="$deprecated">
+    <xsl:attribute name="class"><xsl:value-of select="'del'" /></xsl:attribute>
+    <xsl:attribute name="title">
+        <xsl:value-of select="$deprecated" />
+    </xsl:attribute>
+</xsl:if>
 </xsl:template>
 
 <!-- 用于将 API 地址转换成合法的 ID 标记 -->

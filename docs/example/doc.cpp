@@ -47,7 +47,7 @@
 //         ]]>
 //         </example>
 //     </response>
-//     <response status="404" mimetype="application/json application/xml" summary="not found" />
+//     <response status="404" summary="not found" />
 //
 //     <description type="html">
 // <![CDATA[
