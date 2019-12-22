@@ -142,10 +142,18 @@ func (s *Schema) sanitize() *message.SyntaxError {
 
 // chkArray 是否需要检测当前类型是否为数组
 func newSchema(p *doc.Param, chkArray bool) *Schema {
+	xml := &XML{
+		Name:      p.Name,
+		Namespace: p.XMLNS,
+		Prefix:    p.XMLNSPrefix,
+		Attribute: p.XMLAttr,
+	}
+
 	if chkArray && p.Array {
 		return &Schema{
 			Type:  TypeArray,
 			Items: newSchema(p, false),
+			XML:   xml,
 		}
 	}
 
@@ -156,6 +164,7 @@ func newSchema(p *doc.Param, chkArray bool) *Schema {
 		Default:     p.Default,
 		Deprecated:  p.Deprecated != "",
 		Required:    make([]string, 0, len(p.Items)),
+		XML:         xml,
 	}
 
 	// enum
