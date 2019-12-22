@@ -30,6 +30,7 @@
             <item name="license" type="link" required="false" />
             <item name="tag" type="tag[]" required="false" />
             <item name="server" type="server[]" required="true" />
+            <item name="mimetype" type="string[]" required="true" />
             <item name="response" type="request[]" required="false" />
             <item name="api" type="api[]" required="false" />
         </type>

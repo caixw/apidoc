@@ -11,6 +11,9 @@
     <tag name="tag1" title="tag description" />
     <tag name="tag2" deprecated="1.0.1" title="tag description" />
 
+    <mimetype>application/xml</mimetype>
+    <mimetype>application/json</mimetype>
+
     <server name="admin" url="https://api.example.com/admin" summary="admin api" />
 
     <server name="client" url="https://api.example.com/client" deprecated="1.0.1">

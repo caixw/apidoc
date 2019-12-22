@@ -50,6 +50,9 @@ type Doc struct {
 	// 表示所有 API 都有可能返回的内容
 	Responses []*Request `xml:"response,omitempty"`
 
+	// 表示所有接口都支持的文档类型
+	Mimetypes []string `xml:"mimetype"`
+
 	file string
 	line int
 	data []byte
@@ -83,6 +86,20 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	// Server.Name 查重
 	if key := findDupServer(shadow.Servers); key != "" {
 		return message.NewLocaleError(doc.file, "doc/server/@name", doc.line, locale.ErrDuplicateValue)
+	}
+
+	if len(shadow.Mimetypes) == 0 {
+		return message.NewLocaleError(doc.file, "doc/mimetype", doc.line, locale.ErrRequired)
+	}
+
+	// 操作 clone 进行比较，不影响原文档的排序
+	clone := make([]string, len(shadow.Mimetypes))
+	copy(clone, shadow.Mimetypes)
+	sort.Strings(clone)
+	for index := 1; index < len(clone); index++ {
+		if clone[index] == clone[index-1] {
+			return message.NewLocaleError(doc.file, "doc/mimetype", doc.line, locale.ErrDuplicateValue)
+		}
 	}
 
 	apis := doc.Apis

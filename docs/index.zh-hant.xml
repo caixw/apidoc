@@ -129,6 +129,7 @@
             <item name="license">內容的版權信息</item>
             <item name="tag">可以用的標簽列表</item>
             <item name="server">API 基地址列表，每個 API 最少應該有壹個 server。</item>
+            <item name="mimetype">接口所支持的 mimetype 類型</item>
             <item name="response">表示所有 API 都有可能返回的內容</item>
             <item name="api">API 文檔內容</item>
         </type>

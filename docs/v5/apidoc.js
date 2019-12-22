@@ -73,7 +73,7 @@ function registerExpand() {
 
     expand.querySelector('input').addEventListener('change', (event) => {
         const chk = event.target.checked;
-        document.querySelectorAll('details').forEach((elem) => {
+        document.querySelectorAll('details.api').forEach((elem) => {
             elem.open = chk;
         });
     });
