@@ -5,6 +5,7 @@ package mock
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"strconv"
 	"strings"
@@ -161,6 +162,124 @@ func (validator *xmlValidator) find(name string) *doc.Param {
 }
 
 func buildXML(p *doc.Request) ([]byte, error) {
-	// TODO
-	return nil, nil
+	if p == nil || (p != nil && p.Type == doc.None) {
+		return nil, nil
+	}
+
+	if p.Array {
+		return nil, message.NewLocaleError("", "array", 0, locale.ErrInvalidValue)
+	}
+
+	buf := new(bytes.Buffer)
+	e := xml.NewEncoder(buf)
+
+	if err := writeXML(e, p.ToParam(), true, "", xml.Name{}); err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+func writeXML(e *xml.Encoder, p *doc.Param, chkArray bool, field string, parent xml.Name) (err error) {
+	if p == nil {
+		return nil
+	}
+
+	field += "/"
+	if p.XMLAttr {
+		field += "@"
+	}
+	field += p.Name
+
+	if parent.Local != "" {
+		if err := e.EncodeToken(xml.StartElement{Name: parent}); err != nil {
+			return err
+		}
+	}
+
+	name := xml.Name{
+		Local: p.Name,
+		Space: p.XMLNSPrefix,
+	}
+
+	var v interface{}
+	start := xml.StartElement{Name: name}
+
+	if p.Array && chkArray {
+		size := generateSliceSize()
+		for i := 0; i < size; i++ {
+			if err := writeXML(e, p, false, field, xml.Name{}); err != nil {
+				return err
+			}
+		}
+		goto END
+	}
+
+	if p.Type == doc.Object {
+		for _, item := range p.Items {
+			if item.XMLAttr {
+				if err := getXMLAttr(&start, item, field); err != nil {
+					return err
+				}
+			} else if item.XMLExtract { // TODO 判断，如果存在 Extract，就不应该再有子元素
+				v, err = getXMLValue(item)
+				if err != nil {
+					return err
+				}
+			} else {
+				if err := writeXML(e, item, true, field, name); err != nil {
+					return err
+				}
+			}
+		}
+	} else {
+		v, err = getXMLValue(p)
+		if err != nil {
+			return err
+		}
+	}
+
+	if err := e.EncodeElement(v, start); err != nil {
+		return err
+	}
+
+END:
+	if parent.Local != "" {
+		return e.EncodeToken(xml.EndElement{Name: parent})
+	}
+	return nil
+}
+
+func getXMLValue(p *doc.Param) (interface{}, error) {
+	switch p.Type {
+	case doc.None:
+		return "", nil
+	case doc.Bool:
+		return generateBool(), nil
+	case doc.Number:
+		return generateNumber(p), nil
+	case doc.String:
+		return generateString(p), nil
+	default: // doc.Object:
+		return nil, message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
+	}
+}
+
+func getXMLAttr(start *xml.StartElement, p *doc.Param, field string) (err error) {
+	attr := xml.Attr{
+		Name: xml.Name{
+			Local: p.Name,
+			Space: p.XMLNSPrefix,
+		},
+	}
+
+	v, err := getXMLValue(p)
+	if err != nil {
+		return err
+	}
+
+	attr.Value = fmt.Sprint(v)
+
+	start.Attr = append(start.Attr, attr)
+	return nil
 }

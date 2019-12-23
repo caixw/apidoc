@@ -204,7 +204,7 @@ func TestValidXML(t *testing.T) {
 	}
 }
 
-func testBuildXML(t *testing.T) {
+func TestBuildXML(t *testing.T) {
 	a := assert.New(t)
 
 	for _, item := range xmlTestData {
