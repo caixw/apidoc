@@ -14,42 +14,42 @@ func TestCheckXML(t *testing.T) {
 	xml := &XML{
 		XMLAttr: true,
 	}
-	a.NotError(checkXML(xml, ""))
+	a.NotError(checkXML(false, false, xml, ""))
 
 	xml.XMLExtract = true
-	a.Error(checkXML(xml, ""))
+	a.Error(checkXML(false, false, xml, ""))
 
 	xml.XMLExtract = false
 	xml.XMLNS = "https://example.com"
-	a.Error(checkXML(xml, ""))
+	a.Error(checkXML(false, false, xml, ""))
 
 	xml.XMLExtract = false
 	xml.XMLNS = ""
 	xml.XMLNSPrefix = "ns"
-	a.Error(checkXML(xml, ""))
+	a.Error(checkXML(false, false, xml, ""))
 
 	xml = &XML{
 		XMLExtract: true,
 	}
-	a.NotError(checkXML(xml, ""))
+	a.NotError(checkXML(false, false, xml, ""))
 
 	xml.XMLNS = "https://example.com"
-	a.Error(checkXML(xml, ""))
+	a.Error(checkXML(false, false, xml, ""))
 
 	xml.XMLNS = ""
 	xml.XMLNSPrefix = "ns"
-	a.Error(checkXML(xml, ""))
+	a.Error(checkXML(false, false, xml, ""))
 
 	xml = &XML{}
-	a.NotError(checkXML(xml, ""))
+	a.NotError(checkXML(false, false, xml, ""))
 
 	xml.XMLNSPrefix = "ns"
-	a.NotError(checkXML(xml, ""))
+	a.NotError(checkXML(false, false, xml, ""))
 
 	xml.XMLNSPrefix = "ns"
 	xml.XMLNS = "https://example.com"
-	a.NotError(checkXML(xml, ""))
+	a.NotError(checkXML(false, false, xml, ""))
 
 	xml.XMLNSPrefix = ""
-	a.Error(checkXML(xml, ""))
+	a.Error(checkXML(false, false, xml, ""))
 }

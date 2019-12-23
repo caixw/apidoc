@@ -43,6 +43,7 @@ func TestParam_UnmarshalXML(t *testing.T) {
 		</param>
 		<param name="age" type="number" summary="age" />
 	</Param>`
+	obj1 = &Param{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1)).
 		True(obj1.Array).
 		Equal(obj1.Description.Text, "<a>user</a>").

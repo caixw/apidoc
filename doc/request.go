@@ -57,7 +57,7 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return err
 	}
 
-	if err := checkXML(&shadow.XML, field); err != nil {
+	if err := checkXML(shadow.Array, len(shadow.Items) > 0, &shadow.XML, field); err != nil {
 		return err
 	}
 

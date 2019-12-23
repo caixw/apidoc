@@ -76,7 +76,7 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"/items", locale.ErrDuplicateValue)
 	}
 
-	if err := checkXML(&shadow.XML, field); err != nil {
+	if err := checkXML(shadow.Array, len(shadow.Items) > 0, &shadow.XML, field); err != nil {
 		return err
 	}
 
