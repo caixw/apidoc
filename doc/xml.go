@@ -10,7 +10,7 @@ type XML struct {
 	XMLExtract  bool   `xml:"xml-extract,attr,omitempty"`   // 提取当前内容作为父元素的内容
 	XMLNS       string `xml:"xml-ns,attr,omitempty"`        // 命名空间
 	XMLNSPrefix string `xml:"xml-ns-prefix,attr,omitempty"` // 命名空间前缀
-	Wrapped     string `xml:"xml-wrapped,attr,omitempty"`   // 如果当前元素是数组，是否将其包含在 wrapped 中
+	XMLWrapped  string `xml:"xml-wrapped,attr,omitempty"`   // 如果当前元素是数组，是否将其包含在 wrapped 中
 }
 
 func checkXML(isArray, hasItems bool, xml *XML, field string) error {
@@ -23,7 +23,7 @@ func checkXML(isArray, hasItems bool, xml *XML, field string) error {
 			return newSyntaxError(field+"/@xml-attr", locale.ErrInvalidValue)
 		}
 
-		if xml.Wrapped != "" {
+		if xml.XMLWrapped != "" {
 			return newSyntaxError(field+"/@wrapped", locale.ErrInvalidValue)
 		}
 
@@ -40,7 +40,7 @@ func checkXML(isArray, hasItems bool, xml *XML, field string) error {
 		}
 	}
 
-	if xml.Wrapped != "" && !isArray {
+	if xml.XMLWrapped != "" && !isArray {
 		return newSyntaxError(field+"/@xml-rapped", locale.ErrInvalidValue)
 	}
 

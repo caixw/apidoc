@@ -147,6 +147,7 @@ func newSchema(p *doc.Param, chkArray bool) *Schema {
 		Namespace: p.XMLNS,
 		Prefix:    p.XMLNSPrefix,
 		Attribute: p.XMLAttr,
+		Wrapped:   p.XMLWrapped != "",
 	}
 
 	if chkArray && p.Array {
@@ -181,7 +182,12 @@ func newSchema(p *doc.Param, chkArray bool) *Schema {
 		s.Properties = make(map[string]*Schema, len(p.Items))
 
 		for _, item := range p.Items {
-			s.Properties[item.Name] = newSchema(item, true)
+			name := item.Name
+			if item.Array && item.XMLWrapped != "" {
+				name = item.XMLWrapped
+			}
+
+			s.Properties[name] = newSchema(item, true)
 			if !item.Optional {
 				s.Required = append(s.Required, item.Name)
 			}
