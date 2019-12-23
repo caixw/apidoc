@@ -103,7 +103,7 @@ var xmlTestData = []*jsonTester{
 		Title: "array with enum",
 		Type: &doc.Request{
 			Name: "root",
-			Type: doc.Number,
+			Type: doc.Object,
 			Items: []*doc.Param{
 				{
 					Name:  "arr",

@@ -184,12 +184,11 @@ func writeXML(e *xml.Encoder, p *doc.Param, chkArray bool, field string, parent 
 	if p == nil {
 		return nil
 	}
+	field += "/" + p.Name
 
-	field += "/"
-	if p.XMLAttr {
-		field += "@"
+	if p.Array && chkArray {
+		return writeArrayXML(e, p, field, parent)
 	}
-	field += p.Name
 
 	if parent.Local != "" {
 		if err := e.EncodeToken(xml.StartElement{Name: parent}); err != nil {
@@ -204,16 +203,6 @@ func writeXML(e *xml.Encoder, p *doc.Param, chkArray bool, field string, parent 
 
 	var v interface{}
 	start := xml.StartElement{Name: name}
-
-	if p.Array && chkArray {
-		size := generateSliceSize()
-		for i := 0; i < size; i++ {
-			if err := writeXML(e, p, false, field, xml.Name{}); err != nil {
-				return err
-			}
-		}
-		goto END
-	}
 
 	if p.Type == doc.Object {
 		for _, item := range p.Items {
@@ -243,7 +232,41 @@ func writeXML(e *xml.Encoder, p *doc.Param, chkArray bool, field string, parent 
 		return err
 	}
 
-END:
+	if parent.Local != "" {
+		return e.EncodeToken(xml.EndElement{Name: parent})
+	}
+	return nil
+}
+
+func writeArrayXML(e *xml.Encoder, p *doc.Param, field string, parent xml.Name) error {
+	if parent.Local != "" {
+		if err := e.EncodeToken(xml.StartElement{Name: parent}); err != nil {
+			return err
+		}
+	}
+
+	var wrapped xml.Name
+	if p.Wrapped != "" {
+		wrapped.Local = p.Wrapped
+		wrapped.Space = p.XMLNSPrefix
+		if err := e.EncodeToken(xml.StartElement{Name: wrapped}); err != nil {
+			return err
+		}
+	}
+
+	size := generateSliceSize()
+	for i := 0; i < size; i++ {
+		if err := writeXML(e, p, false, field, xml.Name{}); err != nil {
+			return err
+		}
+	}
+
+	if wrapped.Local != "" {
+		if err := e.EncodeToken(xml.EndElement{Name: wrapped}); err != nil {
+			return err
+		}
+	}
+
 	if parent.Local != "" {
 		return e.EncodeToken(xml.EndElement{Name: parent})
 	}
@@ -265,7 +288,7 @@ func getXMLValue(p *doc.Param) (interface{}, error) {
 	}
 }
 
-func getXMLAttr(start *xml.StartElement, p *doc.Param, field string) (err error) {
+func getXMLAttr(start *xml.StartElement, p *doc.Param, field string) error {
 	attr := xml.Attr{
 		Name: xml.Name{
 			Local: p.Name,
