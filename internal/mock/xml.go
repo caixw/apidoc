@@ -167,6 +167,31 @@ type xmlBuilder struct {
 	items    []*xmlBuilder
 }
 
+func buildXML(p *doc.Request) ([]byte, error) {
+	if p == nil || p.Type == doc.None {
+		return nil, nil
+	}
+
+	builder, err := parseXML(p.ToParam())
+	if err != nil {
+		return nil, err
+	}
+
+	buf := new(bytes.Buffer)
+	e := xml.NewEncoder(buf)
+	e.Indent("", strings.Repeat(" ", indent))
+
+	if err = builder.encode(e); err != nil {
+		return nil, err
+	}
+
+	if err := e.Flush(); err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
 func parseXML(p *doc.Param) (*xmlBuilder, error) {
 	if p == nil || p.Type == doc.None {
 		return nil, nil
@@ -264,29 +289,6 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 	}
 
 	return e.EncodeToken(xml.EndElement{Name: builder.start.Name})
-}
-
-func buildXML(p *doc.Request) ([]byte, error) {
-	if p == nil || p.Type == doc.None {
-		return nil, nil
-	}
-
-	builder, err := parseXML(p.ToParam())
-	if err != nil {
-		return nil, err
-	}
-
-	buf := new(bytes.Buffer)
-	e := xml.NewEncoder(buf)
-	if err = builder.encode(e); err != nil {
-		return nil, err
-	}
-
-	if err := e.Flush(); err != nil {
-		return nil, err
-	}
-
-	return buf.Bytes(), nil
 }
 
 func getXMLValue(p *doc.Param) (interface{}, error) {

@@ -67,7 +67,13 @@ var xmlTestData = []*jsonTester{
 				},
 			},
 		},
-		Data: `<root><arr>true</arr><arr>true</arr><arr>true</arr><arr>true</arr><arr>true</arr></root>`,
+		Data: `<root>
+    <arr>true</arr>
+    <arr>true</arr>
+    <arr>true</arr>
+    <arr>true</arr>
+    <arr>true</arr>
+</root>`,
 	},
 	{
 		Title: "array with enum",
@@ -87,7 +93,13 @@ var xmlTestData = []*jsonTester{
 				},
 			},
 		},
-		Data: `<root><arr>1</arr><arr>1</arr><arr>1</arr><arr>1</arr><arr>1</arr></root>`,
+		Data: `<root>
+    <arr>1</arr>
+    <arr>1</arr>
+    <arr>1</arr>
+    <arr>1</arr>
+    <arr>1</arr>
+</root>`,
 	},
 	{ // Object
 		Title: "Object",
@@ -106,7 +118,9 @@ var xmlTestData = []*jsonTester{
 				},
 			},
 		},
-		Data: `<root id="1024"><name>1024</name></root>`,
+		Data: `<root id="1024">
+    <name>1024</name>
+</root>`,
 	},
 	{ // 各类型混合
 		Title: "Object with array",
@@ -157,7 +171,26 @@ var xmlTestData = []*jsonTester{
 				}, // end group
 			},
 		},
-		Data: `<root id="1024"><name>1024</name><group id="1024" name="1024"><tags id="1024"><name>1024</name></tags><tags id="1024"><name>1024</name></tags><tags id="1024"><name>1024</name></tags><tags id="1024"><name>1024</name></tags><tags id="1024"><name>1024</name></tags></group></root>`,
+		Data: `<root id="1024">
+    <name>1024</name>
+    <group id="1024" name="1024">
+        <tags id="1024">
+            <name>1024</name>
+        </tags>
+        <tags id="1024">
+            <name>1024</name>
+        </tags>
+        <tags id="1024">
+            <name>1024</name>
+        </tags>
+        <tags id="1024">
+            <name>1024</name>
+        </tags>
+        <tags id="1024">
+            <name>1024</name>
+        </tags>
+    </group>
+</root>`,
 	},
 }
 
