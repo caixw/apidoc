@@ -22,6 +22,7 @@ apidoc [options] [path]
 	FlagLUsage:  "顯示所有支持的語言",
 	FlagDUsage:  "根據目錄下的內容生成配置文件",
 	FlagTUsage:  "測試語法的正確性",
+	FlagMUsage:  "啟用 Mock 服務",
 	FlagVersion: "版本：%s\n文檔：%s\n提交：%s\nGo：%s",
 
 	VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",

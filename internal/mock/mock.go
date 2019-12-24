@@ -17,7 +17,6 @@ import (
 type Mock struct {
 	h       *message.Handler
 	doc     *doc.Doc
-	prefix  string // 生成的所有路由中的路径前缀
 	mux     *mux.Mux
 	servers map[string]string
 }
@@ -26,13 +25,11 @@ type Mock struct {
 //
 // h 用于处理各类输出消息，仅在 ServeHTTP 中的消息才输出到 h；
 // d doc.Doc 实例，调用方需要保证该数据类型的正确性；
-// prefix 所有路由的前缀；
 // servers 用于指定 d.Servers 中每一个服务对应的路由前缀
-func New(h *message.Handler, d *doc.Doc, prefix string, servers map[string]string) (*Mock, error) {
+func New(h *message.Handler, d *doc.Doc, servers map[string]string) (*Mock, error) {
 	m := &Mock{
 		h:       h,
 		doc:     d,
-		prefix:  prefix,
 		mux:     mux.New(false, false, true, nil, nil),
 		servers: servers,
 	}
@@ -45,7 +42,7 @@ func New(h *message.Handler, d *doc.Doc, prefix string, servers map[string]strin
 }
 
 // NewWithPath 加载 XML 文档用以初始化 Mock 对象
-func NewWithPath(h *message.Handler, path, prefix string, servers map[string]string) (*Mock, error) {
+func NewWithPath(h *message.Handler, path string, servers map[string]string) (*Mock, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -57,11 +54,11 @@ func NewWithPath(h *message.Handler, path, prefix string, servers map[string]str
 		return nil, err
 	}
 
-	return New(h, d, prefix, servers)
+	return New(h, d, servers)
 }
 
 // NewWithURL 从远程 URL 加载文档并初始化为 Mock 对象
-func NewWithURL(h *message.Handler, url, prefix string, servers map[string]string) (*Mock, error) {
+func NewWithURL(h *message.Handler, url string, servers map[string]string) (*Mock, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -79,14 +76,12 @@ func NewWithURL(h *message.Handler, url, prefix string, servers map[string]strin
 		return nil, err
 	}
 
-	return New(h, d, prefix, servers)
+	return New(h, d, servers)
 }
 
 func (m *Mock) parse() error {
-	p := m.mux.Prefix(m.prefix)
-
 	for name, prefix := range m.servers {
-		prefix := p.Prefix(prefix)
+		prefix := m.mux.Prefix(prefix)
 
 		for _, api := range m.doc.Apis {
 			if !hasServer(api.Servers, name) {

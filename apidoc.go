@@ -16,12 +16,14 @@ package apidoc
 import (
 	"bytes"
 	"net/http"
+	"strings"
 
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/mock"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/output"
@@ -143,4 +145,14 @@ func Static(embedded []*static.FileInfo, dir string, t static.Type) http.Handler
 // Valid 验证文档内容的正确性
 func Valid(content []byte) error {
 	return doc.Valid(content)
+}
+
+// Mock 生成 Mock 中间件
+func Mock(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
+	isURL := strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://")
+
+	if isURL {
+		return mock.NewWithURL(h, path, servers)
+	}
+	return mock.NewWithPath(h, path, servers)
 }

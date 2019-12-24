@@ -13,6 +13,7 @@ package main
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -57,6 +58,7 @@ func main() {
 	d := flag.Bool("d", false, locale.Sprintf(locale.FlagDUsage))
 	t := flag.Bool("t", false, locale.Sprintf(locale.FlagTUsage))
 	l := flag.Bool("l", false, locale.Sprintf(locale.FlagLUsage))
+	m := flag.Bool("m", false, locale.Sprintf(locale.FlagMUsage))
 	flag.Usage = usage
 	flag.Parse()
 
@@ -77,6 +79,9 @@ func main() {
 	case *d:
 		detect()
 		return
+	case *m:
+		mock()
+		return
 	}
 
 	parse(false)
@@ -96,6 +101,11 @@ func detect() {
 		}
 		printLocale(succOut, succColor, locale.ConfigWriteSuccess, dir)
 	}
+}
+
+func mock() {
+	// TODO
+	fmt.Println("TODO")
 }
 
 // 参数 test 表示是否只作语法检测，不输出内容。
