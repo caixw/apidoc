@@ -25,8 +25,9 @@ type Mock struct {
 // New 声明 Mock 对象
 //
 // h 用于处理各类输出消息，仅在 ServeHTTP 中的消息才输出到 h；
+// d doc.Doc 实例，调用方需要保证该数据类型的正确性；
 // prefix 所有路由的前缀；
-// servers 用于指定 d.Server 中每一个服务对应的路由前缀
+// servers 用于指定 d.Servers 中每一个服务对应的路由前缀
 func New(h *message.Handler, d *doc.Doc, prefix string, servers map[string]string) (*Mock, error) {
 	m := &Mock{
 		h:       h,
@@ -50,8 +51,31 @@ func NewWithPath(h *message.Handler, path, prefix string, servers map[string]str
 		return nil, err
 	}
 
+	// 加载并验证
 	d := doc.New()
 	if err = d.FromXML(path, 0, data); err != nil {
+		return nil, err
+	}
+
+	return New(h, d, prefix, servers)
+}
+
+// NewWithURL 从远程 URL 加载文档并初始化为 Mock 对象
+func NewWithURL(h *message.Handler, url, prefix string, servers map[string]string) (*Mock, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	d := doc.New()
+	if err = d.FromXML(url, 0, data); err != nil {
 		return nil, err
 	}
 
