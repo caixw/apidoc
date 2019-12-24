@@ -161,116 +161,132 @@ func (validator *xmlValidator) find(name string) *doc.Param {
 	return p
 }
 
-func buildXML(p *doc.Request) ([]byte, error) {
-	if p == nil || (p != nil && p.Type == doc.None) {
+type xmlBuilder struct {
+	start    xml.StartElement
+	charData string
+	items    []*xmlBuilder
+}
+
+func parseXML(p *doc.Param) (*xmlBuilder, error) {
+	if p == nil || p.Type == doc.None {
 		return nil, nil
 	}
 
-	if p.Array {
-		return nil, message.NewLocaleError("", "array", 0, locale.ErrInvalidValue)
+	builder := &xmlBuilder{
+		start: xml.StartElement{
+			Name: xml.Name{
+				Space: p.XMLNSPrefix,
+				Local: p.Name,
+			},
+			Attr: make([]xml.Attr, 0, len(p.Items)),
+		},
+		items: []*xmlBuilder{},
+	}
+
+	if p.Type != doc.Object {
+		switch p.Type {
+		case doc.Bool:
+			builder.charData = fmt.Sprint(generateBool())
+		case doc.Number:
+			builder.charData = fmt.Sprint(generateNumber(p))
+		case doc.String:
+			builder.charData = fmt.Sprint(generateString(p))
+		}
+		return builder, nil
+	}
+
+	for _, item := range p.Items {
+		switch {
+		case item.XMLAttr:
+			v, err := getXMLValue(item)
+			if err != nil {
+				return nil, err
+			}
+
+			builder.start.Attr = append(builder.start.Attr, xml.Attr{
+				Name: xml.Name{
+					Space: item.XMLNSPrefix,
+					Local: item.Name,
+				},
+				Value: fmt.Sprint(v),
+			})
+		case item.XMLExtract:
+			builder.charData = fmt.Sprint(getXMLValue(item))
+		case item.Array:
+			b := builder
+			if item.Wrapped != "" {
+				b = &xmlBuilder{
+					start: xml.StartElement{
+						Name: xml.Name{
+							Space: item.XMLNSPrefix,
+							Local: item.Wrapped,
+						},
+					},
+				}
+			}
+
+			size := generateSliceSize()
+			for i := 0; i < size; i++ {
+				bb, err := parseXML(item)
+				if err != nil {
+					return nil, err
+				}
+				b.items = append(b.items, bb)
+			}
+		default:
+			b, err := parseXML(item)
+			if err != nil {
+				return nil, err
+			}
+			builder.items = append(builder.items, b)
+		}
+	} // end for
+
+	return builder, nil
+}
+
+func (builder *xmlBuilder) encode(e *xml.Encoder) error {
+	if builder == nil {
+		return nil
+	}
+
+	if builder.charData != "" {
+		return e.EncodeElement(builder.charData, builder.start)
+	}
+
+	if err := e.EncodeToken(builder.start); err != nil {
+		return err
+	}
+	for _, item := range builder.items {
+		if err := item.encode(e); err != nil {
+			return err
+		}
+	}
+
+	return e.EncodeToken(xml.EndElement{Name: builder.start.Name})
+}
+
+func buildXML(p *doc.Request) ([]byte, error) {
+	if p == nil || p.Type == doc.None {
+		return nil, nil
+	}
+
+	builder, err := parseXML(p.ToParam())
+	if err != nil {
+		return nil, err
 	}
 
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
+	if err = builder.encode(e); err != nil {
+		return nil, err
+	}
 
-	if err := writeXML(e, p.ToParam(), true, "", xml.Name{}); err != nil {
+	if err := e.Flush(); err != nil {
 		return nil, err
 	}
 
 	return buf.Bytes(), nil
-}
-
-func writeXML(e *xml.Encoder, p *doc.Param, chkArray bool, field string, parent xml.Name) (err error) {
-	if p == nil {
-		return nil
-	}
-	field += "/" + p.Name
-
-	if p.Array && chkArray {
-		return writeArrayXML(e, p, field, parent)
-	}
-
-	if parent.Local != "" {
-		if err := e.EncodeToken(xml.StartElement{Name: parent}); err != nil {
-			return err
-		}
-	}
-
-	name := xml.Name{
-		Local: p.Name,
-		Space: p.XMLNSPrefix,
-	}
-
-	var v interface{}
-	start := xml.StartElement{Name: name}
-
-	if p.Type == doc.Object {
-		for _, item := range p.Items {
-			if item.XMLAttr {
-				if err := getXMLAttr(&start, item, field); err != nil {
-					return err
-				}
-			} else if item.XMLExtract { // TODO 判断，如果存在 Extract，就不应该再有子元素
-				v, err = getXMLValue(item)
-				if err != nil {
-					return err
-				}
-			} else {
-				if err := writeXML(e, item, true, field, name); err != nil {
-					return err
-				}
-			}
-		}
-	} else {
-		v, err = getXMLValue(p)
-		if err != nil {
-			return err
-		}
-	}
-
-	if err := e.EncodeElement(v, start); err != nil {
-		return err
-	}
-
-	if parent.Local != "" {
-		return e.EncodeToken(xml.EndElement{Name: parent})
-	}
-	return nil
-}
-
-func writeArrayXML(e *xml.Encoder, p *doc.Param, field string, parent xml.Name) error {
-	if parent.Local != "" {
-		if err := e.EncodeToken(xml.StartElement{Name: parent}); err != nil {
-			return err
-		}
-	}
-
-	var wrapped xml.Name
-	if p.Wrapped != "" {
-		wrapped.Local = p.Wrapped
-		wrapped.Space = p.XMLNSPrefix
-		if err := e.EncodeToken(xml.StartElement{Name: wrapped}); err != nil {
-			return err
-		}
-	}
-
-	size := generateSliceSize()
-	for i := 0; i < size; i++ {
-		if err := writeXML(e, p, false, field, xml.Name{}); err != nil {
-			return err
-		}
-	}
-
-	if wrapped.Local != "" {
-		if err := e.EncodeToken(xml.EndElement{Name: wrapped}); err != nil {
-			return err
-		}
-	}
-
-	if parent.Local != "" {
-		return e.EncodeToken(xml.EndElement{Name: parent})
-	}
-	return nil
 }
 
 func getXMLValue(p *doc.Param) (interface{}, error) {
@@ -286,23 +302,4 @@ func getXMLValue(p *doc.Param) (interface{}, error) {
 	default: // doc.Object:
 		return nil, message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 	}
-}
-
-func getXMLAttr(start *xml.StartElement, p *doc.Param, field string) error {
-	attr := xml.Attr{
-		Name: xml.Name{
-			Local: p.Name,
-			Space: p.XMLNSPrefix,
-		},
-	}
-
-	v, err := getXMLValue(p)
-	if err != nil {
-		return err
-	}
-
-	attr.Value = fmt.Sprint(v)
-
-	start.Attr = append(start.Attr, attr)
-	return nil
 }

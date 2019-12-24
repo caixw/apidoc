@@ -25,11 +25,6 @@ var xmlTestData = []*jsonTester{
 		Title: "doc.Request{}",
 		Type:  &doc.Request{},
 	},
-	{ // 未指定 name
-		Title: "doc.Request{Type:doc.Object}",
-		Type:  &doc.Request{Type: doc.Object},
-		Err:   true,
-	},
 	{
 		Title: "number",
 		Type:  &doc.Request{Type: doc.Number, Name: "root"},
@@ -58,31 +53,6 @@ var xmlTestData = []*jsonTester{
 			},
 		},
 		Data: `<root>1024</root>`,
-	},
-	{ // 顶层元素不能是数组
-		Title: "array at root element",
-		Type: &doc.Request{
-			Name:  "root",
-			Type:  doc.Bool,
-			Array: true,
-		},
-		Err: true,
-	},
-	{ // 数组不能是属性值
-		Title: "array with XMLAttr",
-		Type: &doc.Request{
-			Name: "root",
-			Type: doc.Object,
-			Items: []*doc.Param{
-				{
-					Array: true,
-					Name:  "arr",
-					Type:  doc.Bool,
-					XML:   doc.XML{XMLAttr: true},
-				},
-			},
-		},
-		Err: true,
 	},
 	{ // array
 		Title: "[bool]",
@@ -158,13 +128,13 @@ var xmlTestData = []*jsonTester{
 					Name: "group",
 					Items: []*doc.Param{
 						{
-							Type: doc.String,
-							Name: "name",
+							Type: doc.Number,
+							Name: "id",
 							XML:  doc.XML{XMLAttr: true},
 						},
 						{
-							Type: doc.Number,
-							Name: "id",
+							Type: doc.String,
+							Name: "name",
 							XML:  doc.XML{XMLAttr: true},
 						},
 						{
