@@ -214,12 +214,12 @@ func parseXML(p *doc.Param) (*xmlBuilder, error) {
 			builder.charData = fmt.Sprint(getXMLValue(item))
 		case item.Array:
 			b := builder
-			if item.Wrapped != "" {
+			if item.XMLWrapped != "" {
 				b = &xmlBuilder{
 					start: xml.StartElement{
 						Name: xml.Name{
 							Space: item.XMLNSPrefix,
-							Local: item.Wrapped,
+							Local: item.XMLWrapped,
 						},
 					},
 				}
