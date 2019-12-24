@@ -46,7 +46,7 @@ fn getList() {}
 //     <server>admin</server>
 //     <server>old-client</server>
 //
-//     <request type="object" mimetype="application/json">
+//     <request type="object">
 //         <header name="content-type" summary="application/json" type="string" />
 //         <param name="count" type="number" optional="false" summary="summary" />
 //         <param name="list" type="object" array="true" summary="list">

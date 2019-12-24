@@ -21,6 +21,9 @@
         </description>
     </server>
 
+    <mimetype>application/xml</mimetype>
+    <mimetype>application/json</mimetype>
+
     <description type="html">
     <![CDATA[
         <h2>h2</h2>

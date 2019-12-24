@@ -10,6 +10,8 @@ import (
 
 // Request 请求内容
 type Request struct {
+	XML
+
 	// 一般无用，但是用于描述 XML 对象时，可以用来表示顶层元素的名称
 	Name string `xml:"name,attr,omitempty"`
 
@@ -17,12 +19,11 @@ type Request struct {
 	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
 	Enums       []*Enum    `xml:"enum,omitempty"`
 	Array       bool       `xml:"array,attr,omitempty"`
-	Attr        bool       `xml:"attr,attr,omitempty"` // 作为父元素的一个属性，仅针对 xml 有效果
 	Items       []*Param   `xml:"param,omitempty"`
 	Reference   string     `xml:"ref,attr,omitempty"`
 	Summary     string     `xml:"summary,attr,omitempty"`
 	Status      Status     `xml:"status,attr,omitempty"`
-	Mimetype    string     `xml:"mimetype,attr"`
+	Mimetype    string     `xml:"mimetype,attr,omitempty"`
 	Examples    []*Example `xml:"example,omitempty"`
 	Headers     []*Param   `xml:"header,omitempty"` // 当前独有的报头，公用的可以放在 API 中
 	Description Richtext   `xml:"description,omitempty"`
@@ -47,16 +48,16 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"/param", locale.ErrRequired)
 	}
 
-	if shadow.Mimetype == "" {
-		return newSyntaxError(field+"/@mimetype", locale.ErrRequired)
-	}
-
 	// 判断 enums 的值是否相同
 	if key := getDuplicateEnum(shadow.Enums); key != "" {
 		return newSyntaxError(field+"/enum", locale.ErrDuplicateValue)
 	}
 
 	if err := chkEnumsType(shadow.Type, shadow.Enums, field); err != nil {
+		return err
+	}
+
+	if err := checkXML(shadow.Array, len(shadow.Items) > 0, &shadow.XML, field); err != nil {
 		return err
 	}
 

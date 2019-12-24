@@ -9,6 +9,8 @@
 //     </server>
 //     <server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" summary="客户端接口" />
 //     <server name="client" url="https://api.example.com" summary="客户端接口" />
+//     <mimetype>application/xml</mimetype>
+//     <mimetype>application/json</mimetype>
 //     <tag name="t1" title="标签1" />
 //     <tag name="t2" title="标签2" />
 //     <license url="https://opensource.org/licenses/MIT" text="MIT" />
@@ -45,7 +47,7 @@
 //         ]]>
 //         </example>
 //     </response>
-//     <response status="404" mimetype="application/json application/xml" summary="not found" />
+//     <response status="404" summary="not found" />
 //
 //     <description type="html">
 // <![CDATA[

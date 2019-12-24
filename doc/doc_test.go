@@ -63,6 +63,9 @@ func TestDoc(t *testing.T) {
 
 	a.True(doc.serverExists("admin")).
 		False(doc.serverExists("not-exists"))
+
+	a.Equal(2, len(doc.Mimetypes)).
+		Equal("application/xml", doc.Mimetypes[0])
 }
 
 func TestDoc_all(t *testing.T) {
@@ -93,6 +96,9 @@ func TestDoc_all(t *testing.T) {
 
 	a.True(doc.serverExists("admin")).
 		False(doc.serverExists("not-exists"))
+
+	a.Equal(2, len(doc.Mimetypes)).
+		Equal("application/xml", doc.Mimetypes[0])
 
 	// api
 	a.Equal(1, len(doc.Apis))

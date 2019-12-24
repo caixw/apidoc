@@ -49,7 +49,7 @@
 //
 //             <param name="id" type="number" default="1" summary="id" />
 //             <param name="age" type="number" summary="age" />
-//             <example mimetype="json">
+//             <example mimetype="application/json">
 //             <![CDATA[
 //             {
 //                 id:1,

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.2.1" created="2019-12-20T23:46:40+08:00" version="1.1.1">
+<apidoc apidoc="5.2.1" created="2019-12-23T00:08:52+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 
@@ -68,7 +68,7 @@
 可以是一个 HTML 内容
 
 ]]></description>
-		<request type="object" mimetype="application/json">
+		<request type="object">
 			<param name="count" type="number" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" summary="用户 ID"></param>
@@ -193,7 +193,7 @@
 			<request type="object" mimetype="application/json">
 				<param name="id" type="number" default="1" summary="id"></param>
 				<param name="age" type="number" summary="age"></param>
-				<example mimetype="json"><![CDATA[
+				<example mimetype="application/json"><![CDATA[
             
             {
                 id:1,
@@ -233,5 +233,7 @@
         
         ]]></example>
 	</response>
-	<response type="" summary="not found" status="404" mimetype="application/json application/xml"></response>
+	<response type="" summary="not found" status="404"></response>
+	<mimetype>application/xml</mimetype>
+	<mimetype>application/json</mimetype>
 </apidoc>

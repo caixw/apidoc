@@ -43,10 +43,9 @@ func TestRequest_UnmarshalXML(t *testing.T) {
 		Equal(obj1.Deprecated, "1.1.1").
 		Equal(3, len(obj1.Items))
 
-	// 少 mimetype
 	obj1 = &Request{}
 	str = `<Request type="string"></Request>`
-	a.Error(xml.Unmarshal([]byte(str), obj1))
+	a.NotError(xml.Unmarshal([]byte(str), obj1))
 
 	// type=object，且没有子项
 	obj1 = &Request{}

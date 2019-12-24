@@ -22,13 +22,13 @@ import (
 //      <param name="age" type="number" />
 //  </param>
 type Param struct {
+	XML
 	Name        string   `xml:"name,attr"`
 	Type        Type     `xml:"type,attr"`
 	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
 	Default     string   `xml:"default,attr,omitempty"`
 	Optional    bool     `xml:"optional,attr,omitempty"`
 	Array       bool     `xml:"array,attr,omitempty"`
-	Attr        bool     `xml:"attr,attr,omitempty"` // 作为父元素的一个属性，仅针对 xml 有效果
 	Items       []*Param `xml:"param,omitempty"`
 	Reference   string   `xml:"ref,attr,omitempty"`
 	Summary     string   `xml:"summary,attr,omitempty"`
@@ -75,11 +75,11 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Name == "" {
-		return newSyntaxError(field+"#name", locale.ErrRequired)
+		return newSyntaxError(field+"/@name", locale.ErrRequired)
 	}
 
 	if shadow.Type == None {
-		return newSyntaxError(field+"#type", locale.ErrRequired)
+		return newSyntaxError(field+"/@type", locale.ErrRequired)
 	}
 	if shadow.Type == Object && len(shadow.Items) == 0 {
 		return newSyntaxError(field+"/items", locale.ErrRequired)
@@ -99,6 +99,10 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"/items", locale.ErrDuplicateValue)
 	}
 
+	if err := checkXML(shadow.Array, len(shadow.Items) > 0, &shadow.XML, field); err != nil {
+		return err
+	}
+
 	if p.Summary == "" && p.Description.Text == "" {
 		return newSyntaxError(field+"/summary", locale.ErrRequired)
 	}
@@ -116,13 +120,13 @@ func chkEnumsType(t Type, enums []*Enum, field string) error {
 	case Number:
 		for _, enum := range enums {
 			if !is.Number(enum.Value) {
-				return newSyntaxError(field+"/enum/#"+enum.Value, locale.ErrInvalidFormat)
+				return newSyntaxError(field+"/enum/@"+enum.Value, locale.ErrInvalidFormat)
 			}
 		}
 	case Bool:
 		for _, enum := range enums {
 			if _, err := strconv.ParseBool(enum.Value); err != nil {
-				return newSyntaxError(field+"/enum/#"+enum.Value, locale.ErrInvalidFormat)
+				return newSyntaxError(field+"/enum/@"+enum.Value, locale.ErrInvalidFormat)
 			}
 		}
 	case Object, None:
