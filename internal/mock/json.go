@@ -14,7 +14,8 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
-const indent = 4
+// 缩进的字符串
+const indent = "    "
 
 type jsonValidator struct {
 	param   *doc.Param
@@ -211,13 +212,13 @@ func (builder *jsonBuilder) writeIndent() *jsonBuilder {
 
 func (builder *jsonBuilder) incrIndent() *jsonBuilder {
 	builder.deep++
-	builder.indentString = strings.Repeat(" ", builder.deep*indent)
+	builder.indentString = strings.Repeat(indent, builder.deep)
 	return builder
 }
 
 func (builder *jsonBuilder) decrIndent() *jsonBuilder {
 	builder.deep--
-	builder.indentString = strings.Repeat(" ", builder.deep*indent)
+	builder.indentString = strings.Repeat(indent, builder.deep)
 	return builder
 }
 

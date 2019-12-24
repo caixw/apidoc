@@ -12,14 +12,14 @@ import (
 	"github.com/caixw/apidoc/v5/doc"
 )
 
-type jsonTester struct {
+type tester struct {
 	Title string
 	Type  *doc.Request
 	Data  string
 	Err   bool
 }
 
-var jsonTestData = []*jsonTester{
+var jsonTestData = []*tester{
 	{
 		Title: "nil",
 		Type:  nil,

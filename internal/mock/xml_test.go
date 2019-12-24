@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/apidoc/v5/doc"
 )
 
-var xmlTestData = []*jsonTester{
+var xmlTestData = []*tester{
 	{ // 无法获取根元素，出错
 		Title: "nil",
 		Type:  nil,

@@ -179,7 +179,7 @@ func buildXML(p *doc.Request) ([]byte, error) {
 
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
-	e.Indent("", strings.Repeat(" ", indent))
+	e.Indent("", indent)
 
 	if err = builder.encode(e); err != nil {
 		return nil, err
