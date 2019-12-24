@@ -142,6 +142,5 @@ func Static(embedded []*static.FileInfo, dir string, t static.Type) http.Handler
 
 // Valid 验证文档内容的正确性
 func Valid(content []byte) error {
-	d := doc.New()
-	return d.FromXML("", 0, content)
+	return doc.Valid(content)
 }

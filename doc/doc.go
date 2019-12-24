@@ -58,6 +58,11 @@ type Doc struct {
 	data []byte
 }
 
+// Valid 验证文档内容的正确性
+func Valid(content []byte) error {
+	return New().FromXML("", 0, content)
+}
+
 // New 返回 Doc 实例
 func New() *Doc {
 	return &Doc{

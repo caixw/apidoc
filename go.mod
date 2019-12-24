@@ -2,7 +2,7 @@ module github.com/caixw/apidoc/v5
 
 require (
 	github.com/issue9/assert v1.3.4
-	github.com/issue9/is v1.3.2
+	github.com/issue9/is v1.3.3
 	github.com/issue9/term v1.1.0
 	github.com/issue9/utils v1.1.1
 	github.com/issue9/version v1.0.3
