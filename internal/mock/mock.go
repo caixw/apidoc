@@ -26,7 +26,7 @@ type Mock struct {
 // h 用于处理各类输出消息，仅在 ServeHTTP 中的消息才输出到 h；
 // d doc.Doc 实例，调用方需要保证该数据类型的正确性；
 // servers 用于指定 d.Servers 中每一个服务对应的路由前缀
-func New(h *message.Handler, d *doc.Doc, servers map[string]string) (*Mock, error) {
+func New(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handler, error) {
 	m := &Mock{
 		h:       h,
 		doc:     d,
@@ -42,7 +42,7 @@ func New(h *message.Handler, d *doc.Doc, servers map[string]string) (*Mock, erro
 }
 
 // NewWithPath 加载 XML 文档用以初始化 Mock 对象
-func NewWithPath(h *message.Handler, path string, servers map[string]string) (*Mock, error) {
+func NewWithPath(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func NewWithPath(h *message.Handler, path string, servers map[string]string) (*M
 }
 
 // NewWithURL 从远程 URL 加载文档并初始化为 Mock 对象
-func NewWithURL(h *message.Handler, url string, servers map[string]string) (*Mock, error) {
+func NewWithURL(h *message.Handler, url string, servers map[string]string) (http.Handler, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (m *Mock) parse() error {
 				continue
 			}
 
-			handler := m.build(api)
+			handler := m.buildAPI(api)
 			err := prefix.Handle(api.Path.Path, handler, string(api.Method))
 			if err != nil {
 				return err

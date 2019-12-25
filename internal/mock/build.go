@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/issue9/is"
+
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
 )
 
-func (m *Mock) build(api *doc.API) http.Handler {
+func (m *Mock) buildAPI(api *doc.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		for _, query := range api.Path.Queries {
 			if err := validParam(query, r.FormValue(query.Name)); err != nil {
@@ -22,13 +24,6 @@ func (m *Mock) build(api *doc.API) http.Handler {
 		}
 
 		for _, header := range api.Headers {
-			if err := validParam(header, r.Header.Get(header.Name)); err != nil {
-				m.handleError(api, w, "headers["+header.Name+"]", err)
-				return
-			}
-		}
-
-		for _, header := range api.Requests[0].Headers {
 			if err := validParam(header, r.Header.Get(header.Name)); err != nil {
 				m.handleError(api, w, "headers["+header.Name+"]", err)
 				return
@@ -54,7 +49,7 @@ func (m *Mock) build(api *doc.API) http.Handler {
 
 		data, err := buildResponse(resp, r)
 		if err != nil {
-			m.handleError(api, w, "respose.body", err)
+			m.handleError(api, w, "response.body", err)
 			return
 		}
 
@@ -83,7 +78,10 @@ func (m *Mock) handleError(api *doc.API, w http.ResponseWriter, field string, er
 	if serr, ok := err.(*message.SyntaxError); ok {
 		if serr.Field == "" {
 			serr.Field = field
+		} else {
+			serr.Field = field + serr.Field
 		}
+
 		serr.File = file
 	} else {
 		err = message.WithError(file, field, 0, err)
@@ -94,6 +92,10 @@ func (m *Mock) handleError(api *doc.API, w http.ResponseWriter, field string, er
 
 // 验证单个参数
 func validParam(p *doc.Param, val string) error {
+	if p == nil {
+		return nil
+	}
+
 	if val == "" && p.Type != doc.String { // 字符串的默认值可以为 “”
 		if p.Optional {
 			return nil
@@ -102,18 +104,23 @@ func validParam(p *doc.Param, val string) error {
 		return message.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
 
+	// TODO 如何验证数组的值？
+
 	switch p.Type {
 	case doc.Bool:
 		if _, err := strconv.ParseBool(val); err != nil {
-			return err
+			return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 		}
 	case doc.Number:
-		if _, err := strconv.ParseInt(val, 10, 32); err != nil {
-			return err
+		if !is.Number(val) {
+			return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 		}
 	case doc.String:
 	case doc.Object:
 	case doc.None:
+		if val != "" {
+			return message.NewLocaleError("", "", 0, locale.ErrInvalidValue)
+		}
 	}
 
 	if p.IsEnum() {
@@ -126,7 +133,7 @@ func validParam(p *doc.Param, val string) error {
 		}
 
 		if !found {
-			return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
+			return message.NewLocaleError("", "", 0, locale.ErrInvalidValue)
 		}
 	}
 
@@ -134,6 +141,16 @@ func validParam(p *doc.Param, val string) error {
 }
 
 func validRequest(p *doc.Request, r *http.Request) error {
+	if p == nil {
+		return nil
+	}
+
+	for _, header := range p.Headers {
+		if err := validParam(header, r.Header.Get(header.Name)); err != nil {
+			return err
+		}
+	}
+
 	content, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return err
@@ -154,6 +171,12 @@ func validRequest(p *doc.Request, r *http.Request) error {
 }
 
 func buildResponse(p *doc.Request, r *http.Request) ([]byte, error) {
+	for _, header := range p.Headers {
+		if err := validParam(header, r.Header.Get(header.Name)); err != nil {
+			return nil, err
+		}
+	}
+
 	contentType := r.Header.Get("Accept")
 	switch contentType {
 	case "application/json":

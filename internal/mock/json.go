@@ -37,22 +37,25 @@ type jsonBuilder struct {
 }
 
 func validJSON(p *doc.Request, content []byte) error {
-	if p == nil && bytes.Equal(content, []byte("null")) {
-		return nil
+	if p == nil {
+		if bytes.Equal(content, []byte("null")) {
+			return nil
+		}
+		return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 	}
 
-	if (p.Type == doc.None || p.Type == "") && len(content) == 0 {
+	if (p.Type == doc.None) && len(content) == 0 {
 		return nil
 	}
 
 	if !json.Valid(content) {
-		return message.NewLocaleError("", "request.body", 0, locale.ErrInvalidFormat)
+		return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 	}
 
 	validator := &jsonValidator{
 		param:   p.ToParam(),
 		decoder: json.NewDecoder(bytes.NewReader(content)),
-		states:  []byte{' '}, // 状态有默认值
+		states:  []byte{}, // 状态有默认值
 		names:   []string{},
 	}
 
@@ -100,12 +103,21 @@ func (validator *jsonValidator) valid() error {
 			case '[':
 				validator.pushState('[')
 			case ']':
+				validator.popName()
+
 				validator.popState()
+				if validator.state() == ':' { // {xx: [] } 类似这种格式，需要同时弹出两个状态
+					validator.popState()
+				}
 			case '{':
 				validator.pushState('{')
 			case '}':
-				validator.popState()
 				validator.popName()
+
+				validator.popState()
+				if validator.state() == ':' {
+					validator.popState()
+				}
 			}
 		case bool: // json bool
 			err = validator.validValue(doc.Bool, v)
@@ -154,7 +166,10 @@ func (validator *jsonValidator) validValue(t doc.Type, v interface{}) error {
 
 // 返回当前的状态
 func (validator *jsonValidator) state() byte {
-	return validator.states[len(validator.states)-1]
+	if len(validator.states) > 0 {
+		return validator.states[len(validator.states)-1]
+	}
+	return 0
 }
 
 func (validator *jsonValidator) pushState(state byte) *jsonValidator {

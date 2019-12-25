@@ -96,6 +96,41 @@ var jsonTestData = []*tester{
 ]`,
 	},
 	{
+		Title: "object with item",
+		Type: &doc.Request{
+			Name: "root",
+			Type: doc.Object,
+			Items: []*doc.Param{
+				{
+					Type: doc.Object,
+					Name: "name",
+					Items: []*doc.Param{
+						{
+							Type: doc.String,
+							Name: "last",
+						},
+						{
+							Type:     doc.String,
+							Name:     "first",
+							Optional: true,
+						},
+					},
+				},
+				{
+					Type: doc.Number,
+					Name: "age",
+				},
+			},
+		},
+		Data: `{
+    "name": {
+        "last": "1024",
+        "first": "1024"
+    },
+    "age": 1024
+}`,
+	},
+	{
 		Title: "bool",
 		Type:  &doc.Request{Type: doc.Bool},
 		Data:  "true",
