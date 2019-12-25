@@ -121,12 +121,16 @@ func (validator *jsonValidator) valid() error {
 			}
 		case bool: // json bool
 			err = validator.validValue(doc.Bool, v)
-			validator.popState()
-			validator.popName()
+			if validator.state() != '[' {
+				validator.popState()
+				validator.popName()
+			}
 		case float64, json.Number: // json number
 			err = validator.validValue(doc.Number, v)
-			validator.popState()
-			validator.popName()
+			if validator.state() != '[' { // 只有键值对结束时，才弹出键名
+				validator.popState()
+				validator.popName()
+			}
 		}
 
 		if err != nil {

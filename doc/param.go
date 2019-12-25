@@ -45,6 +45,7 @@ func (r *Request) ToParam() *Param {
 	}
 
 	return &Param{
+		XML:         r.XML,
 		Name:        r.Name,
 		Type:        r.Type,
 		Deprecated:  r.Deprecated,

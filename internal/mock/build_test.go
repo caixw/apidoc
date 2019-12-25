@@ -13,6 +13,60 @@ import (
 	"github.com/caixw/apidoc/v5/doc"
 )
 
+var (
+	testRequest = &doc.Request{
+		Name: "root",
+		Type: doc.Object,
+		Headers: []*doc.Param{
+			{
+				Type: doc.String,
+				Name: "content-type",
+			},
+			{
+				Type: doc.String,
+				Name: "encoding",
+			},
+		},
+		Items: []*doc.Param{
+			{
+				Type: doc.Object,
+				Name: "name",
+				Items: []*doc.Param{
+					{
+						Type: doc.String,
+						Name: "last",
+					},
+					{
+						Type:     doc.String,
+						Name:     "first",
+						Optional: true,
+					},
+				},
+			},
+			{
+				Type: doc.Number,
+				Name: "age",
+				XML:  doc.XML{XMLAttr: true},
+			},
+		},
+	}
+
+	testJSON = `{
+    "name": {
+        "last": "1024",
+        "first": "1024"
+    },
+    "age": 1024
+}`
+
+	testXML = `<root age="1024">
+    <name>
+        <last>1024</last>
+        <first>1024</first>
+    </name>
+</root>`
+)
+
 func TestValidParam(t *testing.T) {
 	a := assert.New(t)
 
@@ -112,63 +166,26 @@ func TestValidRequest(t *testing.T) {
 	a := assert.New(t)
 	a.NotError(validRequest(nil, nil, ""))
 
-	p := &doc.Request{
-		Name: "root",
-		Type: doc.Object,
-		Headers: []*doc.Param{
-			{
-				Type: doc.String,
-				Name: "content-type",
-			},
-			{
-				Type: doc.String,
-				Name: "encoding",
-			},
-		},
-		Items: []*doc.Param{
-			{
-				Type: doc.Object,
-				Name: "name",
-				Items: []*doc.Param{
-					{
-						Type: doc.String,
-						Name: "last",
-					},
-					{
-						Type:     doc.String,
-						Name:     "first",
-						Optional: true,
-					},
-				},
-			},
-			{
-				Type: doc.Number,
-				Name: "age",
-				XML:  doc.XML{XMLAttr: true},
-			},
-		},
-	}
-
 	// 匹配 json
-	body := bytes.NewBufferString(`{"name":{"last":"l","first":"f"},"age":1}`)
+	body := bytes.NewBufferString(testJSON)
 	r := httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "application/json")
 	r.Header.Set("encoding", "xxx")
-	a.NotError(validRequest(p, r, "application/json"))
+	a.NotError(validRequest(testRequest, r, "application/json"))
 
 	// 匹配 xml
-	body = bytes.NewBufferString(`<root age="1"><name><last>l</last><first>f</first></name></root>`)
+	body = bytes.NewBufferString(testXML)
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "application/xml")
 	r.Header.Set("encoding", "yyy")
-	a.NotError(validRequest(p, r, "application/xml"))
+	a.NotError(validRequest(testRequest, r, "application/xml"))
 
 	// 无法匹配 content-type
 	body = bytes.NewBufferString(`{"name":{"last":"l","first":"f"},"age":1}`)
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "not-exists")
 	r.Header.Set("encoding", "xxx")
-	a.Error(validRequest(p, r, "not-exists"))
+	a.Error(validRequest(testRequest, r, "not-exists"))
 }
 
 func TestBuildResponse(t *testing.T) {
@@ -177,72 +194,24 @@ func TestBuildResponse(t *testing.T) {
 	data, err := buildResponse(nil, nil)
 	a.NotError(err).Nil(data)
 
-	p := &doc.Request{
-		Name: "root",
-		Type: doc.Object,
-		Headers: []*doc.Param{
-			{
-				Type: doc.String,
-				Name: "content-type",
-			},
-			{
-				Type: doc.String,
-				Name: "encoding",
-			},
-		},
-		Items: []*doc.Param{
-			{
-				Type: doc.Object,
-				Name: "name",
-				Items: []*doc.Param{
-					{
-						Type: doc.String,
-						Name: "last",
-					},
-					{
-						Type:     doc.String,
-						Name:     "first",
-						Optional: true,
-					},
-				},
-			},
-			{
-				Type: doc.Number,
-				Name: "age",
-				XML:  doc.XML{XMLAttr: true},
-			},
-		},
-	}
-
 	// 匹配 json
 	r := httptest.NewRequest(http.MethodGet, "/path", nil)
 	r.Header.Set("accept", "application/json")
 	r.Header.Set("encoding", "xxx")
-	data, err = buildResponse(p, r)
-	a.NotError(err).Equal(string(data), `{
-    "name": {
-        "last": "1024",
-        "first": "1024"
-    },
-    "age": 1024
-}`)
+	data, err = buildResponse(testRequest, r)
+	a.NotError(err).Equal(string(data), testJSON)
 
 	// 匹配 xml
 	r = httptest.NewRequest(http.MethodGet, "/path", nil)
 	r.Header.Set("accept", "application/xml")
 	r.Header.Set("encoding", "yyy")
-	data, err = buildResponse(p, r)
-	a.NotError(err).Equal(string(data), `<root age="1024">
-    <name>
-        <last>1024</last>
-        <first>1024</first>
-    </name>
-</root>`)
+	data, err = buildResponse(testRequest, r)
+	a.NotError(err).Equal(string(data), testXML)
 
 	// 无法匹配 content-type
 	r = httptest.NewRequest(http.MethodGet, "/path", nil)
 	r.Header.Set("content-type", "not-exists")
 	r.Header.Set("encoding", "xxx")
-	data, err = buildResponse(p, r)
+	data, err = buildResponse(testRequest, r)
 	a.Error(err).Nil(data)
 }

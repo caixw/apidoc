@@ -134,7 +134,7 @@ func (validator *xmlValidator) popName() *xmlValidator {
 func (validator *xmlValidator) find(name string) *doc.Param {
 	names := make([]string, len(validator.names))
 	copy(names, validator.names)
-	if name != "" {
+	if len(name) > 0 {
 		names = append(names, name)
 	}
 
@@ -143,19 +143,24 @@ func (validator *xmlValidator) find(name string) *doc.Param {
 	}
 
 	p := validator.param
-	for _, name := range names[1:] {
-		found := false
+LOOP:
+	for i := 1; i < len(names); i++ {
+		name := names[i]
+
 		for _, pp := range p.Items {
 			if pp.Name == name {
 				p = pp
-				found = true
-				break
+				continue LOOP
+			}
+
+			if pp.Array && pp.XMLWrapped == name {
+				i--
+				p = pp
+				continue LOOP
 			}
 		}
 
-		if !found {
-			return nil
-		}
+		return nil
 	}
 
 	return p
@@ -172,7 +177,7 @@ func buildXML(p *doc.Request) ([]byte, error) {
 		return nil, nil
 	}
 
-	builder, err := parseXML(p.ToParam())
+	builder, err := parseXML(p.ToParam(), true, true)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +197,7 @@ func buildXML(p *doc.Request) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func parseXML(p *doc.Param) (*xmlBuilder, error) {
+func parseXML(p *doc.Param, chkArray, root bool) (*xmlBuilder, error) {
 	if p == nil || p.Type == doc.None {
 		return nil, nil
 	}
@@ -206,6 +211,16 @@ func parseXML(p *doc.Param) (*xmlBuilder, error) {
 			Attr: make([]xml.Attr, 0, len(p.Items)),
 		},
 		items: []*xmlBuilder{},
+	}
+
+	if p.Array && chkArray {
+		if err := parseArray(p, builder); err != nil {
+			return nil, err
+		}
+		if root {
+			return builder.items[0], nil
+		}
+		return builder, nil
 	}
 
 	if p.Type != doc.Object {
@@ -238,28 +253,11 @@ func parseXML(p *doc.Param) (*xmlBuilder, error) {
 		case item.XMLExtract:
 			builder.charData = fmt.Sprint(getXMLValue(item))
 		case item.Array:
-			b := builder
-			if item.XMLWrapped != "" {
-				b = &xmlBuilder{
-					start: xml.StartElement{
-						Name: xml.Name{
-							Space: item.XMLNSPrefix,
-							Local: item.XMLWrapped,
-						},
-					},
-				}
-			}
-
-			size := generateSliceSize()
-			for i := 0; i < size; i++ {
-				bb, err := parseXML(item)
-				if err != nil {
-					return nil, err
-				}
-				b.items = append(b.items, bb)
+			if err := parseArray(item, builder); err != nil {
+				return nil, err
 			}
 		default:
-			b, err := parseXML(item)
+			b, err := parseXML(item, true, false)
 			if err != nil {
 				return nil, err
 			}
@@ -268,6 +266,33 @@ func parseXML(p *doc.Param) (*xmlBuilder, error) {
 	} // end for
 
 	return builder, nil
+}
+
+func parseArray(p *doc.Param, parent *xmlBuilder) error {
+	b := parent
+	if p.XMLWrapped != "" {
+		b = &xmlBuilder{
+			start: xml.StartElement{
+				Name: xml.Name{
+					Space: p.XMLNSPrefix,
+					Local: p.XMLWrapped,
+				},
+			},
+			items: []*xmlBuilder{},
+		}
+		parent.items = append(parent.items, b)
+	}
+
+	size := generateSliceSize()
+	for i := 0; i < size; i++ {
+		bb, err := parseXML(p, false, false)
+		if err != nil {
+			return err
+		}
+		b.items = append(b.items, bb)
+	}
+
+	return nil
 }
 
 func (builder *xmlBuilder) encode(e *xml.Encoder) error {
