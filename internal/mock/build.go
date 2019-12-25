@@ -30,18 +30,19 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 			}
 		}
 
-		req := findRequestByContentType(api.Requests, r.Header.Get("Content-Type"))
+		// TODO 获取 content-type 的方式有点问题，可能有多个值需要过滤
+		req, ct := findRequestByContentType(api.Requests, r.Header.Get("Content-Type"))
 		if req == nil {
 			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
 			return
 		}
 
-		if err := validRequest(req, r); err != nil {
+		if err := validRequest(req, r, ct); err != nil {
 			m.handleError(api, w, "request.body", err)
 			return
 		}
 
-		resp := findRequestByContentType(api.Responses, r.Header.Get("Accept"))
+		resp, accept := findRequestByContentType(api.Responses, r.Header.Get("Accept"))
 		if resp == nil {
 			m.handleError(api, w, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
 			return
@@ -54,6 +55,20 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 		}
 
 		w.WriteHeader(int(resp.Status))
+		w.Header().Set("Content-Type", accept)
+		for _, item := range resp.Headers {
+			switch item.Type {
+			case doc.Bool:
+				w.Header().Set(item.Name, strconv.FormatBool(generateBool()))
+			case doc.Number:
+				w.Header().Set(item.Name, strconv.FormatInt(generateNumber(item), 10))
+			case doc.String:
+				w.Header().Set(item.Name, generateString(item))
+			default:
+				m.handleError(api, w, "response.headers", locale.Errorf(locale.ErrInvalidFormat))
+				return
+			}
+		}
 		if _, err := w.Write(data); err != nil {
 			m.h.Error(message.Erro, err) // 此时状态码已经输出
 		}
@@ -61,14 +76,14 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 }
 
 // 查找第一个符合条件的 Request 实例，如果用户定义了多个相同 mimetype 的实例，也只返回第一符合要求的
-func findRequestByContentType(request []*doc.Request, ct string) *doc.Request {
+func findRequestByContentType(request []*doc.Request, ct string) (*doc.Request, string) {
 	for _, req := range request {
 		if req.Mimetype == ct {
-			return req
+			return req, ct
 		}
 	}
 
-	return nil
+	return nil, ""
 }
 
 // 处理 serveHTTP 中的错误
@@ -140,7 +155,7 @@ func validParam(p *doc.Param, val string) error {
 	return nil
 }
 
-func validRequest(p *doc.Request, r *http.Request) error {
+func validRequest(p *doc.Request, r *http.Request, contentType string) error {
 	if p == nil {
 		return nil
 	}
@@ -159,7 +174,6 @@ func validRequest(p *doc.Request, r *http.Request) error {
 		return err
 	}
 
-	contentType := r.Header.Get("Content-Type")
 	switch contentType {
 	case "application/json":
 		return validJSON(p, content)
@@ -171,6 +185,10 @@ func validRequest(p *doc.Request, r *http.Request) error {
 }
 
 func buildResponse(p *doc.Request, r *http.Request) ([]byte, error) {
+	if p == nil {
+		return nil, nil
+	}
+
 	for _, header := range p.Headers {
 		if err := validParam(header, r.Header.Get(header.Name)); err != nil {
 			return nil, err
