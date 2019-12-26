@@ -41,42 +41,30 @@ func TestXMLValidator_find(t *testing.T) {
 	}
 
 	v.names = []string{}
-	p := v.find("")
+	p := v.find()
 	a.Nil(p)
 
 	v.names = nil
-	p = v.find("")
+	p = v.find()
 	a.Nil(p)
 
-	v.names = []string{""}
-	p = v.find("")
+	v.names = []string{}
+	p = v.find()
 	a.Nil(p)
 
 	v.names = []string{"root"}
-	p = v.find("")
-	a.NotNil(p).Equal(p.Type, doc.Object)
-
-	v.names = []string{}
-	p = v.find("root")
+	p = v.find()
 	a.NotNil(p).Equal(p.Type, doc.Object)
 
 	v.names = []string{"not-exists"}
-	p = v.find("")
+	p = v.find()
 	a.Nil(p)
 
 	v.names = []string{"root", "group", "id"}
-	p = v.find("")
-	a.NotNil(p).Equal(p.Type, doc.Number)
-
-	v.names = []string{"root", "group"}
-	p = v.find("id")
+	p = v.find()
 	a.NotNil(p).Equal(p.Type, doc.Number)
 
 	v.names = []string{"root", "group", "tags", "id"}
-	p = v.find("")
-	a.NotNil(p).Equal(p.Type, doc.Number)
-
-	v.names = []string{"root", "group", "tags"}
-	p = v.find("id")
+	p = v.find()
 	a.NotNil(p).Equal(p.Type, doc.Number)
 }

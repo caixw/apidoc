@@ -55,14 +55,20 @@ func (validator *xmlValidator) valid() error {
 		case xml.StartElement:
 			validator.pushName(v.Name.Local)
 			for _, attr := range v.Attr {
-				if err := validator.validValue(attr.Name.Local, attr.Value); err != nil {
+				validator.pushName(attr.Name.Local)
+				if err := validator.validValue(attr.Value); err != nil {
 					return err
 				}
+				validator.popName()
 			}
 		case xml.EndElement:
 			validator.popName()
 		case xml.CharData:
-			if err := validator.validValue("", string(v)); err != nil {
+			if len(v) > 0 && v[0] == '\n' && (len(v[1:])%len(indent) == 0) {
+				continue
+			}
+
+			if err := validator.validValue(string(v)); err != nil {
 				return err
 			}
 		case xml.Comment, xml.ProcInst, xml.Directive:
@@ -71,19 +77,12 @@ func (validator *xmlValidator) valid() error {
 }
 
 // 如果 t == "" 表示不需要验证类型，比如 null 可以赋值给任何类型
-func (validator *xmlValidator) validValue(k, v string) error {
+func (validator *xmlValidator) validValue(v string) error {
 	field := strings.Join(validator.names, "/")
 
-	p := validator.find(k)
+	p := validator.find()
 	if p == nil {
-		if k != "" {
-			field += "/" + k
-		}
 		return message.NewLocaleError("", field, 0, locale.ErrNotFound)
-	}
-
-	if p.XMLAttr {
-		field += "/@" + k
 	}
 
 	switch p.Type {
@@ -128,33 +127,44 @@ func (validator *xmlValidator) popName() *xmlValidator {
 	return validator
 }
 
-// 如果 names 为空，返回 validator.param
-//
-// name 会被附加在 validator.names 之后，进行查询，如果为空，则只查询 validator.names 的值。
-func (validator *xmlValidator) find(name string) *doc.Param {
-	names := make([]string, len(validator.names))
-	copy(names, validator.names)
-	if len(name) > 0 {
-		names = append(names, name)
-	}
+// 如果 names 为空，返回 nil
+func (validator *xmlValidator) find() *doc.Param {
+	p := validator.param
 
-	if len(names) == 0 || validator.param == nil || names[0] != validator.param.Name {
+	if len(validator.names) == 0 || p == nil {
 		return nil
 	}
 
-	p := validator.param
+	var start int
+	if p.Array && p.XMLWrapped == validator.names[0] {
+		if len(validator.names) > 1 && validator.names[1] == p.Name {
+			start = 2
+		} else {
+			return nil
+		}
+	} else if p.Name == validator.names[0] {
+		start = 1
+	} else {
+		return nil
+	}
+
+	names := validator.names[start:]
+
 LOOP:
-	for i := 1; i < len(names); i++ {
+	for i := 0; i < len(names); i++ {
 		name := names[i]
 
 		for _, pp := range p.Items {
-			if pp.Name == name {
-				p = pp
-				continue LOOP
+			if pp.Array && pp.XMLWrapped == name {
+				i++
+				if i < len(names) && pp.Name == names[i] {
+					p = pp
+					continue LOOP
+				}
+				return nil
 			}
 
-			if pp.Array && pp.XMLWrapped == name {
-				i--
+			if pp.Name == name {
 				p = pp
 				continue LOOP
 			}
@@ -313,7 +323,7 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 		}
 	}
 
-	return e.EncodeToken(xml.EndElement{Name: builder.start.Name})
+	return e.EncodeToken(builder.start.End())
 }
 
 func getXMLValue(p *doc.Param) (interface{}, error) {
