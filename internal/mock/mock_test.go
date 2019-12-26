@@ -17,6 +17,7 @@ type tester struct {
 	XML   string
 }
 
+// 提供了测试 validJSON/buildXML 和 buildJSON/buildXML 的数据
 var data = []*tester{
 	{
 		Title: "nil",
@@ -120,48 +121,6 @@ var data = []*tester{
 </root>`,
 	},
 	{
-		Title: "object with item",
-		Type: &doc.Request{
-			Name: "root",
-			Type: doc.Object,
-			Items: []*doc.Param{
-				{
-					Type: doc.Object,
-					Name: "name",
-					Items: []*doc.Param{
-						{
-							Type: doc.String,
-							Name: "last",
-						},
-						{
-							Type:     doc.String,
-							Name:     "first",
-							Optional: true,
-						},
-					},
-				},
-				{
-					Type: doc.Number,
-					Name: "age",
-					XML:  doc.XML{XMLAttr: true},
-				},
-			},
-		},
-		JSON: `{
-    "name": {
-        "last": "1024",
-        "first": "1024"
-    },
-    "age": 1024
-}`,
-		XML: `<root age="1024">
-    <name>
-        <last>1024</last>
-        <first>1024</first>
-    </name>
-</root>`,
-	},
-	{
 		Title: "bool",
 		Type:  &doc.Request{Type: doc.Bool, Name: "root"},
 		JSON:  "true",
@@ -213,6 +172,61 @@ var data = []*tester{
 </root>`,
 	},
 
+	// NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第二的位置。
+	{
+		Title: "object with item",
+		Type: &doc.Request{
+			Name: "root",
+			Type: doc.Object,
+			Headers: []*doc.Param{
+				{
+					Type: doc.String,
+					Name: "content-type",
+				},
+				{
+					Type: doc.String,
+					Name: "encoding",
+				},
+			},
+			Items: []*doc.Param{
+				{
+					Type: doc.Object,
+					Name: "name",
+					Items: []*doc.Param{
+						{
+							Type: doc.String,
+							Name: "last",
+						},
+						{
+							Type:     doc.String,
+							Name:     "first",
+							Optional: true,
+						},
+					},
+				},
+				{
+					Type: doc.Number,
+					Name: "age",
+					XML:  doc.XML{XMLAttr: true},
+				},
+			},
+		},
+		JSON: `{
+    "name": {
+        "last": "1024",
+        "first": "1024"
+    },
+    "age": 1024
+}`,
+		XML: `<root age="1024">
+    <name>
+        <last>1024</last>
+        <first>1024</first>
+    </name>
+</root>`,
+	},
+
+	// NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第一的位置。
 	{ // 各类型混合
 		Title: "Object with array",
 		Type: &doc.Request{
