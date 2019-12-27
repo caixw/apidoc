@@ -20,12 +20,15 @@ func isValidStatus(status int) bool {
 
 // UnmarshalXMLAttr xml.UnmarshalerAttr
 func (s *Status) UnmarshalXMLAttr(attr xml.Attr) error {
+	field := "/@" + attr.Name.Local
+
 	v, err := strconv.Atoi(attr.Value)
 	if err != nil {
-		return err
+		return fixedSyntaxError(err, "", field, 0)
 	}
+
 	if !isValidStatus(v) {
-		return locale.Errorf(locale.ErrInvalidFormat, v)
+		return newSyntaxError(field, locale.ErrInvalidFormat)
 	}
 
 	*s = Status(v)

@@ -16,7 +16,8 @@ type Version string
 // UnmarshalXMLAttr xml.UnmarshalerAttr
 func (v *Version) UnmarshalXMLAttr(attr xml.Attr) error {
 	if !version.SemVerValid(attr.Value) {
-		return locale.Errorf(locale.ErrInvalidFormat)
+		field := "/@" + attr.Name.Local
+		return newSyntaxError(field, locale.ErrInvalidFormat)
 	}
 
 	*v = Version(attr.Value)
