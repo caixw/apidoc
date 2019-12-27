@@ -25,7 +25,7 @@
             <item name="@logo" type="string" required="false" />
             <item name="@created" type="date" required="false" />
             <item name="title" type="string" required="true" />
-            <item name="description" type="richtext" required="true" />
+            <item name="description" type="richtext" required="false" />
             <item name="contract" type="contract" required="false" />
             <item name="license" type="link" required="false" />
             <item name="tag" type="tag[]" required="false" />
