@@ -3,7 +3,6 @@
 package apidoc
 
 import (
-	"bytes"
 	"path/filepath"
 	"testing"
 	"time"
@@ -12,35 +11,19 @@ import (
 
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/vars"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v5/message/messagetest"
 	"github.com/caixw/apidoc/v5/static"
 )
-
-func buildMessageHandle() (erro, succ *bytes.Buffer, h *message.Handler) {
-	erro = new(bytes.Buffer)
-	succ = new(bytes.Buffer)
-
-	f := func(msg *message.Message) {
-		switch msg.Type {
-		case message.Erro:
-			erro.WriteString(msg.Message)
-		default:
-			succ.WriteString(msg.Message)
-		}
-	}
-
-	return erro, succ, message.NewHandler(f)
-}
 
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	erro, succ, h := buildMessageHandle()
+	erro, succ, h := messagetest.MessageHandler()
 	cfg := LoadConfig(h, "./")
 	a.NotNil(cfg).
 		Empty(erro.String())
 
-	erro, succ, h = buildMessageHandle()
+	erro, succ, h = messagetest.MessageHandler()
 	cfg = LoadConfig(h, "./docs") // 不存在 apidoc 的配置文件
 
 	h.Stop()
@@ -66,7 +49,7 @@ func TestDetect_Load(t *testing.T) {
 	a.NotError(err).NotEmpty(wd)
 	a.NotError(Detect(wd, true))
 
-	erro, _, h := buildMessageHandle()
+	erro, _, h := messagetest.MessageHandler()
 	cfg := LoadConfig(h, wd)
 	a.Empty(erro.String()).NotNil(cfg)
 
@@ -105,7 +88,7 @@ func TestConfig_sanitize(t *testing.T) {
 func TestConfig_Test(t *testing.T) {
 	a := assert.New(t)
 
-	erro, succ, h := buildMessageHandle()
+	erro, succ, h := messagetest.MessageHandler()
 	cfg := LoadConfig(h, "./docs/example")
 	a.NotNil(cfg)
 	cfg.Test()
@@ -118,7 +101,7 @@ func TestConfig_Test(t *testing.T) {
 func TestConfig_Pack(t *testing.T) {
 	a := assert.New(t)
 
-	erro, succ, h := buildMessageHandle()
+	erro, succ, h := messagetest.MessageHandler()
 	cfg := LoadConfig(h, "./docs/example")
 	a.NotNil(cfg)
 	cfg.Pack("testdata", "Data", "./.testdata", "apidoc.xml", "application/xml", static.TypeAll)
@@ -131,7 +114,7 @@ func TestConfig_Pack(t *testing.T) {
 func TestConfig_Do(t *testing.T) {
 	a := assert.New(t)
 
-	erro, succ, h := buildMessageHandle()
+	erro, succ, h := messagetest.MessageHandler()
 	cfg := LoadConfig(h, "./docs/example")
 	a.NotNil(cfg)
 	cfg.Do(time.Now())
@@ -144,7 +127,7 @@ func TestConfig_Do(t *testing.T) {
 func TestConfig_Buffer(t *testing.T) {
 	a := assert.New(t)
 
-	erro, succ, h := buildMessageHandle()
+	erro, succ, h := messagetest.MessageHandler()
 	cfg := LoadConfig(h, "./docs/example")
 	a.NotNil(cfg)
 
