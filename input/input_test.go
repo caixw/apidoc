@@ -9,13 +9,13 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/simplifiedchinese"
 
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v5/message/messagetest"
 )
 
 func TestParse(t *testing.T) {
 	a := assert.New(t)
-	h := message.NewHandler(func(*message.Message) {})
-	a.NotNil(h)
+
+	erro, _, h := messagetest.MessageHandler()
 
 	php := &Options{
 		Lang:      "php",
@@ -36,6 +36,8 @@ func TestParse(t *testing.T) {
 		Equal(doc.Version, "1.1.1")
 	api := doc.Apis[0]
 	a.Equal(api.Method, "GET")
+	h.Stop()
+	a.Empty(erro.String())
 }
 
 func TestReadFile(t *testing.T) {

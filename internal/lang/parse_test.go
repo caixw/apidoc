@@ -8,7 +8,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v5/message/messagetest"
 )
 
 var (
@@ -29,9 +29,9 @@ printf("hello world!")
 )
 
 func TestParse(t *testing.T) {
-	h := message.NewHandler(func(*message.Message) {})
 	a := assert.New(t)
 
+	erro, _, h := messagetest.MessageHandler()
 	ret := Parse("", nil, nil, nil)
 	a.NotNil(ret).
 		Equal(0, len(ret))
@@ -39,18 +39,25 @@ func TestParse(t *testing.T) {
 	ret = Parse("", nil, cStyle, h)
 	a.NotNil(ret).
 		Equal(0, len(ret))
+	h.Stop()
+	a.Empty(erro.String())
 
+	erro, _, h = messagetest.MessageHandler()
 	ret = Parse("", []byte(code1), cStyle, h)
 	a.NotNil(ret).
 		Equal(1, len(ret)). // 字符串直接被过滤，不再返回
 		True(strings.Contains(string(ret[4]), "注释代码"))
+	h.Stop()
+	a.Empty(erro.String())
 
 	// 注释缺少结束符
 	//
 	// 但依然会返回内容
+	erro, _, h = messagetest.MessageHandler()
 	ret = Parse("", []byte(code2), cStyle, h)
 	a.NotNil(ret).
 		Equal(0, len(ret))
+	a.Empty(erro.String())
 }
 
 func TestMergeLines(t *testing.T) {
