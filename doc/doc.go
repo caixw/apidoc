@@ -80,21 +80,21 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	shadow := (*shadowDoc)(doc)
 	if err := d.DecodeElement(shadow, &start); err != nil {
 		line := bytes.Count(doc.data[:d.InputOffset()], []byte{'\n'})
-		return fixedSyntaxError(err, doc.file, "doc", doc.line+line)
+		return fixedSyntaxError(err, doc.file, "apidoc", doc.line+line)
 	}
 
 	// Tag.Name 查重
 	if key := findDupTag(shadow.Tags); key != "" {
-		return message.NewLocaleError(doc.file, "doc/tag/@name", doc.line, locale.ErrDuplicateValue)
+		return message.NewLocaleError(doc.file, "apidoc/tag/@name", doc.line, locale.ErrDuplicateValue)
 	}
 
 	// Server.Name 查重
 	if key := findDupServer(shadow.Servers); key != "" {
-		return message.NewLocaleError(doc.file, "doc/server/@name", doc.line, locale.ErrDuplicateValue)
+		return message.NewLocaleError(doc.file, "apidoc/server/@name", doc.line, locale.ErrDuplicateValue)
 	}
 
 	if len(shadow.Mimetypes) == 0 {
-		return message.NewLocaleError(doc.file, "doc/mimetype", doc.line, locale.ErrRequired)
+		return message.NewLocaleError(doc.file, "apidoc/mimetype", doc.line, locale.ErrRequired)
 	}
 
 	// 操作 clone 进行比较，不影响原文档的排序
@@ -103,7 +103,7 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	sort.Strings(clone)
 	for index := 1; index < len(clone); index++ {
 		if clone[index] == clone[index-1] {
-			return message.NewLocaleError(doc.file, "doc/mimetype", doc.line, locale.ErrDuplicateValue)
+			return message.NewLocaleError(doc.file, "apidoc/mimetype", doc.line, locale.ErrDuplicateValue)
 		}
 	}
 
