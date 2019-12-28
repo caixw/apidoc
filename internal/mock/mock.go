@@ -80,15 +80,24 @@ func NewWithURL(h *message.Handler, url string, servers map[string]string) (http
 }
 
 func (m *Mock) parse() error {
-	for name, prefix := range m.servers {
-		prefix := m.mux.Prefix(prefix)
+	for _, api := range m.doc.Apis {
+		handler := m.buildAPI(api)
 
-		for _, api := range m.doc.Apis {
+		if len(api.Servers) == 0 {
+			err := m.mux.Handle(api.Path.Path, handler, string(api.Method))
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		for name, prefix := range m.servers {
+			prefix := m.mux.Prefix(prefix)
+
 			if !hasServer(api.Servers, name) {
 				continue
 			}
 
-			handler := m.buildAPI(api)
 			err := prefix.Handle(api.Path.Path, handler, string(api.Method))
 			if err != nil {
 				return err

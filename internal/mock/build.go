@@ -31,18 +31,28 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 		}
 
 		// TODO 获取 content-type 的方式有点问题，可能有多个值需要过滤
-		req, ct := findRequestByContentType(api.Requests, r.Header.Get("Content-Type"))
+		ct := r.Header.Get("Content-Type")
+		if ct == "" {
+			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrRequired))
+			return
+		}
+		req := m.findRequestByContentType(api.Requests, ct)
 		if req == nil {
 			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
 			return
 		}
 
 		if err := validRequest(req, r, ct); err != nil {
-			m.handleError(api, w, "request.body", err)
+			m.handleError(api, w, "request.body.", err)
 			return
 		}
 
-		resp, accept := findRequestByContentType(api.Responses, r.Header.Get("Accept"))
+		accept := r.Header.Get("Accept")
+		if accept == "" {
+			m.handleError(api, w, "headers[Accept]", locale.Errorf(locale.ErrRequired))
+			return
+		}
+		resp := m.findRequestByContentType(api.Responses, accept)
 		if resp == nil {
 			m.handleError(api, w, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
 			return
@@ -50,12 +60,12 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 
 		data, err := buildResponse(resp, r)
 		if err != nil {
-			m.handleError(api, w, "response.body", err)
+			m.handleError(api, w, "response.body.", err)
 			return
 		}
 
+		w.Header().Set("Content-Type", accept) // 需要在输出状态码之前
 		w.WriteHeader(int(resp.Status))
-		w.Header().Set("Content-Type", accept)
 		for _, item := range resp.Headers {
 			switch item.Type {
 			case doc.Bool:
@@ -76,14 +86,27 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 }
 
 // 查找第一个符合条件的 Request 实例，如果用户定义了多个相同 mimetype 的实例，也只返回第一符合要求的
-func findRequestByContentType(request []*doc.Request, ct string) (*doc.Request, string) {
+func (m *Mock) findRequestByContentType(request []*doc.Request, ct string) *doc.Request {
+	var none *doc.Request
 	for _, req := range request {
 		if req.Mimetype == ct {
-			return req, ct
+			return req
+		}
+
+		if req.Mimetype == "" {
+			none = req
 		}
 	}
 
-	return nil, ""
+	if none != nil {
+		for _, mt := range m.doc.Mimetypes {
+			if mt == ct {
+				return none
+			}
+		}
+	}
+
+	return nil
 }
 
 // 处理 serveHTTP 中的错误
@@ -103,6 +126,7 @@ func (m *Mock) handleError(api *doc.API, w http.ResponseWriter, field string, er
 	}
 
 	m.h.Error(message.Erro, err)
+	w.WriteHeader(http.StatusBadRequest)
 }
 
 // 验证单个参数

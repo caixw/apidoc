@@ -4,8 +4,13 @@ package mock
 
 import (
 	"net/http"
+	"testing"
+
+	"github.com/issue9/assert"
+	"github.com/issue9/assert/rest"
 
 	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/message/messagetest"
 )
 
 var _ http.Handler = &Mock{}
@@ -172,6 +177,70 @@ var data = []*tester{
 </root>`,
 	},
 
+	{
+		Title: "object array",
+		Type: &doc.Request{
+			XML:   doc.XML{XMLWrapped: "root"},
+			Name:  "user",
+			Type:  doc.Object,
+			Array: true,
+			Items: []*doc.Param{
+				{
+					Name: "id",
+					Type: doc.Number,
+				},
+				{
+					Name: "name",
+					Type: doc.String,
+				},
+			},
+		},
+		JSON: `[
+    {
+        "id": 1024,
+        "name": "1024"
+    },
+    {
+        "id": 1024,
+        "name": "1024"
+    },
+    {
+        "id": 1024,
+        "name": "1024"
+    },
+    {
+        "id": 1024,
+        "name": "1024"
+    },
+    {
+        "id": 1024,
+        "name": "1024"
+    }
+]`,
+		XML: `<root>
+    <user>
+        <id>1024</id>
+        <name>1024</name>
+    </user>
+    <user>
+        <id>1024</id>
+        <name>1024</name>
+    </user>
+    <user>
+        <id>1024</id>
+        <name>1024</name>
+    </user>
+    <user>
+        <id>1024</id>
+        <name>1024</name>
+    </user>
+    <user>
+        <id>1024</id>
+        <name>1024</name>
+    </user>
+</root>`,
+	},
+
 	// NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第二的位置。
 	{
 		Title: "object with item",
@@ -327,4 +396,76 @@ var data = []*tester{
     </group>
 </root>`,
 	},
+}
+
+const testAPIDoc = `<apidoc version="1.0.1">
+	<title>title</title>
+	<server url="https://example.com" name="test" summary="test summary" />
+	<mimetype>application/json</mimetype>
+	<mimetype>application/xml</mimetype>
+
+	<api method="GET" summary="get users">
+		<path path="/users" />
+		<response type="object" array="true" xml-wrapped="root" name="user" status="200">
+			<param name="id" type="number" summary="id summary" />
+			<param name="name" type="string" summary="name summary" />
+		</response>
+	</api>
+	<api method="post" summary="post user">
+		<server>test</server>
+		<path path="/users" />
+		<request type="object" array="true" xml-wrapped="root" name="user">
+			<param name="id" type="number" summary="id summary" />
+			<param name="name" type="string" summary="name summary" />
+		</request>
+		<response status="201">
+			<header type="string" name="location" summary="新资源的地址" />
+		</response>
+	</api>
+</apidoc>`
+
+func TestNew(t *testing.T) {
+	a := assert.New(t)
+	d := doc.New()
+	a.NotError(d.FromXML("memory.file", 0, []byte(testAPIDoc)))
+
+	erro, _, h := messagetest.MessageHandler()
+	mock, err := New(h, d, map[string]string{"test": "/test"})
+	a.NotError(err).NotNil(mock)
+	srv := rest.NewServer(t, mock, nil)
+
+	// 测试路由是否正常
+	srv.Get("/users").Do().Status(http.StatusBadRequest)
+	srv.Post("/users", nil).Do().Status(http.StatusMethodNotAllowed)
+	srv.Get("/not-found").Do().Status(http.StatusNotFound)
+
+	srv.Post("/test/users", nil).Do().Status(http.StatusBadRequest)
+	srv.Get("/test/users").Do().Status(http.StatusMethodNotAllowed)
+
+	h.Stop()
+	a.NotEmpty(erro.String())
+	srv.Close()
+
+	erro, _, h = messagetest.MessageHandler()
+	mock, err = New(h, d, map[string]string{"test": "/test"})
+	a.NotError(err).NotNil(mock)
+	srv = rest.NewServer(t, mock, nil)
+
+	//
+	srv.Post("/test/users", nil).
+		Header("accept", "application/json").
+		Header("content-type", "application/xml").
+		Body([]byte(`<root>
+    <user>
+        <id>1</id>
+        <name>n</name>
+    </user>
+</root>`)).
+		Do().
+		Status(http.StatusCreated).
+		Header("content-type", "application/json").
+		BodyEmpty()
+
+	h.Stop()
+	a.Empty(erro.String())
 }
