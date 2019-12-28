@@ -16,8 +16,8 @@ Perl、PHP、Python、Ruby、Rust、Scala 和 Swift。
 /**
  * <api method="GET" summary="获取所有的用户信息">
  *     <path path="/users">
- *         <query name="page" type="number" default="0">显示第几页的内容</query>
- *         <query name="size" type="number" default="20">每页显示的数量</query>
+ *         <query name="page" type="number" default="0" summary="显示第几页的内容" />
+ *         <query name="size" type="number" default="20" summary="每页显示的数量" />
  *     </path>
  *     <tag>user</tag>
  *     <server>users</server>
@@ -39,7 +39,7 @@ Perl、PHP、Python、Ruby、Rust、Scala 和 Swift。
  *         ]]>
  *         </example>
  *     </response>
- *     <response status="500" mimetype="application/json" type="obj">
+ *     <response status="500" mimetype="application/json" type="object">
  *         <param name="code" type="int" summary="错误代码" />
  *         <param name="msg" type="string" summary="错误内容" />
  *     </response>
