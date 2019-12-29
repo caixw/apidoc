@@ -62,6 +62,31 @@ var data = []*tester{
 		XML:  `<root>1024</root>`,
 	},
 	{
+		Title: "xml-extract",
+		Type: &doc.Request{
+			Name: "root",
+			Type: doc.Object,
+			Items: []*doc.Param{
+				{
+					Name: "id",
+					Type: doc.Number,
+					XML:  doc.XML{XMLAttr: true},
+				},
+				{
+					Name: "desc",
+					Type: doc.String,
+					XML:  doc.XML{XMLExtract: true},
+				},
+			},
+		},
+		JSON: `{
+    "id": 1024,
+    "desc": "1024"
+}`,
+		XML: `<root id="1024">1024</root>`,
+	},
+
+	{
 		Title: "enum string",
 		Type: &doc.Request{
 			Name: "root",
@@ -132,7 +157,7 @@ var data = []*tester{
 		XML:   "<root>true</root>",
 	},
 	{ // Object
-		Title: "Object",
+		Title: "Object with wrapped",
 		Type: &doc.Request{
 			Name: "root",
 			Type: doc.Object,

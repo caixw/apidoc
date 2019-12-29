@@ -19,6 +19,25 @@ func TestValidXML(t *testing.T) {
 		err := validXML(item.Type, []byte(item.XML))
 		a.NotError(err, "测试 %s 时返回错误 %s", item.Title, err)
 	}
+
+	p := &doc.Request{
+		Name: "root",
+		Type: doc.Object,
+		Items: []*doc.Param{
+			{
+				Name: "id",
+				Type: doc.Number,
+				XML:  doc.XML{XMLAttr: true},
+			},
+			{
+				Name: "desc",
+				Type: doc.String,
+				XML:  doc.XML{XMLExtract: true},
+			},
+		},
+	}
+	content := `<root id="1024"><desc>1024</desc></root>`
+	a.Error(validXML(p, []byte(content)))
 }
 
 func TestBuildXML(t *testing.T) {

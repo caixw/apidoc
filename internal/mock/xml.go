@@ -100,7 +100,8 @@ func (validator *xmlValidator) validValue(v string) error {
 		if v != "" {
 			return message.NewLocaleError("", field, 0, locale.ErrInvalidValue)
 		}
-	case doc.Object:
+	default: // case doc.Object:
+		return message.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
 	}
 
 	if p.IsEnum() {
@@ -171,6 +172,21 @@ LOOP:
 		}
 
 		return nil
+	}
+
+	// 如果根据 names 查找出来的实例带 XMLExtract，则肯定有问题。
+	if p.XMLExtract {
+		return nil
+	}
+
+	// 从子项中查找带 XMLExtract 的项
+	if p.Type == doc.Object {
+		for _, pp := range p.Items {
+			if pp.XMLExtract {
+				p = pp
+				break
+			}
+		}
 	}
 
 	return p
@@ -261,7 +277,12 @@ func parseXML(p *doc.Param, chkArray, root bool) (*xmlBuilder, error) {
 				Value: fmt.Sprint(v),
 			})
 		case item.XMLExtract:
-			builder.charData = fmt.Sprint(getXMLValue(item))
+			v, err := getXMLValue(item)
+			if err != nil {
+				return nil, err
+			}
+
+			builder.charData = fmt.Sprint(v)
 		case item.Array:
 			if err := parseArray(item, builder); err != nil {
 				return nil, err
