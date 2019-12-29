@@ -189,11 +189,8 @@
 
         <type name="request">
             <description><p>定义了请求和返回的相关内容</p></description>
-            <item name="@xml-attr">是否作为父元素的属性，仅作用于 XML 元素。</item>
-            <item name="@xml-extract">将当前元素的内容作为父元素的内容</item>
             <item name="@xml-ns">XML 标签的命名空间</item>
             <item name="@xml-ns-prefix">XML 标签的命名空间名称前缀</item>
-            <item name="@xml-attr">是否作为父元素的属性，仅用于 XML 的请求。</item>
             <item name="@xml-wrapped">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
             <item name="@name">当 mimetype 为 <var>application/xml</var> 时，此值表示 XML 的顶层元素名称，否则无用。</item>
             <item name="@type">值的类型，可以是 <del title="建议使用空值代替"><var>none</var></del>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和 空值；空值表示不输出任何内容。</item>
@@ -212,7 +209,7 @@
         <type name="param">
             <description><p>参数类型，基本上可以作为 <code>request</code> 的子集使用。</p></description>
             <item name="@xml-attr">是否作为父元素的属性，仅作用于 XML 元素。</item>
-            <item name="@xml-extract">将当前元素的内容作为父元素的内容</item>
+            <item name="@xml-extract">将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。</item>
             <item name="@xml-ns">XML 标签的命名空间</item>
             <item name="@xml-ns-prefix">XML 标签的命名空间名称前缀</item>
             <item name="@xml-attr">是否作为父元素的属性，仅用于 XML 的请求。</item>
