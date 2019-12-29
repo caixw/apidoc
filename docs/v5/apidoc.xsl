@@ -374,7 +374,7 @@
 <xsl:param name="param" />
 <xsl:param name="simple" select="'false'" /> <!-- 简单的类型，不存在嵌套类型，也不会有示例代码 -->
 
-<xsl:if test="not($param/@type='none')">
+<xsl:if test="$param/@type">
     <div class="param">
         <h4 class="title">
             &#x27a4;&#160;<xsl:copy-of select="$title" />
