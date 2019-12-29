@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/issue9/is"
 	"github.com/issue9/qheader"
@@ -33,8 +34,8 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 		}
 
 		ct := r.Header.Get("Content-Type")
-		if ct == "" || ct == "*/*" {
-			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrRequired))
+		if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") {
+			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
 			return
 		}
 		req, ct := m.findRequestByContentType(api.Requests, []*qheader.Header{{Value: ct}})
@@ -65,9 +66,8 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 			return
 		}
 
-		w.Header().Set("Content-Type", accept) // 需要在输出状态码之前
+		w.Header().Set("Content-Type", accept)
 		w.Header().Set("Server", vars.Name)
-		w.WriteHeader(int(resp.Status))
 		for _, item := range resp.Headers {
 			switch item.Type {
 			case doc.Bool:
@@ -81,6 +81,8 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 				return
 			}
 		}
+
+		w.WriteHeader(int(resp.Status))
 		if _, err := w.Write(data); err != nil {
 			m.h.Error(message.Erro, err) // 此时状态码已经输出
 		}
