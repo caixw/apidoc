@@ -60,7 +60,7 @@ func LoadFromPath(h *message.Handler, path string, servers map[string]string) (h
 	if err != nil {
 		return nil, err
 	}
-	return loadFromReader(h, path, r, servers)
+	return loadContent(h, path, r, servers)
 }
 
 // LoadFromURL 从远程 URL 加载文档并初始化为 Mock 对象
@@ -69,13 +69,13 @@ func LoadFromURL(h *message.Handler, url string, servers map[string]string) (htt
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
-	return loadFromReader(h, url, resp.Body, servers)
+	return loadContent(h, url, resp.Body, servers)
 }
 
 // path 仅用于定位错误，内容存在于 r 中。
-func loadFromReader(h *message.Handler, path string, r io.Reader, servers map[string]string) (http.Handler, error) {
+func loadContent(h *message.Handler, path string, r io.ReadCloser, servers map[string]string) (http.Handler, error) {
+	defer r.Close()
+
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err

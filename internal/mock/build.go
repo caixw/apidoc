@@ -88,15 +88,18 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 }
 
 // 查找第一个符合条件的 Request 实例，如果用户定义了多个相同 mimetype 的实例，也只返回第一符合要求的
-func (m *Mock) findRequestByContentType(request []*doc.Request, accepts []*qheader.Header) (*doc.Request, string) {
+func (m *Mock) findRequestByContentType(requests []*doc.Request, accepts []*qheader.Header) (*doc.Request, string) {
 	var none *doc.Request // 未指定任何 mimetype 值的 doc.Request
-	var canMatchAny bool
+	var canMatchAny bool  // 表示 accepts 不挑食，可匹配任意值的 content-type
 
-	for _, req := range request {
+	// 从 requests 中查找是否有符合 accepts 的内容，
+	// 同时也获取 requests 中 mimetype 为空值项赋予 none，
+	// 以及根据 accepts 内容是否可以匹配任意项。
+	for _, req := range requests {
 		for _, accept := range accepts {
 			if accept.Value != "*/*" && accept.Value == req.Mimetype {
 				return req, accept.Value
-			} else if accept.Value == "*" {
+			} else if accept.Value == "*/*" {
 				canMatchAny = true
 			}
 		}
@@ -106,6 +109,8 @@ func (m *Mock) findRequestByContentType(request []*doc.Request, accepts []*qhead
 		}
 	}
 
+	// 如果存在 none，则从 doc.mimetypes 中查找同时存在于 doc.mimetypes
+	// 与 accepts 的 content-type 作为 none 的 content-type 值返回。
 	if none != nil {
 		for _, mt := range m.doc.Mimetypes {
 			for _, accept := range accepts {
@@ -116,12 +121,17 @@ func (m *Mock) findRequestByContentType(request []*doc.Request, accepts []*qhead
 		}
 	}
 
+	// accepts 表示可接受任意值，则获取 requests[0] 作为 content-type 返回
 	if canMatchAny {
-		mimetype := request[0].Mimetype
+		mimetype := requests[0].Mimetype
 		if mimetype == "" {
 			mimetype = m.doc.Mimetypes[0]
 		}
-		return request[0], mimetype
+
+		if none != nil {
+			return none, mimetype
+		}
+		return requests[0], mimetype
 	}
 
 	return nil, ""
