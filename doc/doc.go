@@ -116,6 +116,9 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 }
 
 // FromXML 从 XML 字符串初始化当前的实例
+//
+// file 和 line 仅用于在出错时定位错误的位置，并无其它用处；
+// data 表示 XML 内容。
 func (doc *Doc) FromXML(file string, line int, data []byte) error {
 	doc.file = file
 	doc.line = line

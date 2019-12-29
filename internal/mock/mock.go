@@ -4,8 +4,11 @@
 package mock
 
 import (
+	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/issue9/mux/v2"
 
@@ -41,9 +44,39 @@ func New(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handle
 	return m, nil
 }
 
-// NewWithPath 加载 XML 文档用以初始化 Mock 对象
-func NewWithPath(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
-	data, err := ioutil.ReadFile(path)
+// Load 从本地或是远程加载文档内容
+func Load(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
+	isURL := strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://")
+
+	if isURL {
+		return LoadFromURL(h, path, servers)
+	}
+	return LoadFromPath(h, path, servers)
+}
+
+// LoadFromPath 加载 XML 文档用以初始化 Mock 对象
+func LoadFromPath(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
+	r, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	return loadFromReader(h, path, r, servers)
+}
+
+// LoadFromURL 从远程 URL 加载文档并初始化为 Mock 对象
+func LoadFromURL(h *message.Handler, url string, servers map[string]string) (http.Handler, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return loadFromReader(h, url, resp.Body, servers)
+}
+
+// path 仅用于定位错误，内容存在于 r 中。
+func loadFromReader(h *message.Handler, path string, r io.Reader, servers map[string]string) (http.Handler, error) {
+	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
@@ -51,28 +84,6 @@ func NewWithPath(h *message.Handler, path string, servers map[string]string) (ht
 	// 加载并验证
 	d := doc.New()
 	if err = d.FromXML(path, 0, data); err != nil {
-		return nil, err
-	}
-
-	return New(h, d, servers)
-}
-
-// NewWithURL 从远程 URL 加载文档并初始化为 Mock 对象
-func NewWithURL(h *message.Handler, url string, servers map[string]string) (http.Handler, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	d := doc.New()
-	if err = d.FromXML(url, 0, data); err != nil {
 		return nil, err
 	}
 

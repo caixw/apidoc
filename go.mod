@@ -4,6 +4,7 @@ require (
 	github.com/issue9/assert v1.3.4
 	github.com/issue9/is v1.3.3
 	github.com/issue9/mux/v2 v2.3.2
+	github.com/issue9/qheader v0.3.0
 	github.com/issue9/rands v1.1.4
 	github.com/issue9/term v1.1.0
 	github.com/issue9/utils v1.1.1

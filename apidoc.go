@@ -16,7 +16,6 @@ package apidoc
 import (
 	"bytes"
 	"net/http"
-	"strings"
 
 	"golang.org/x/text/language"
 
@@ -149,10 +148,5 @@ func Valid(content []byte) error {
 
 // Mock 生成 Mock 中间件
 func Mock(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
-	isURL := strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://")
-
-	if isURL {
-		return mock.NewWithURL(h, path, servers)
-	}
-	return mock.NewWithPath(h, path, servers)
+	return mock.Load(h, path, servers)
 }

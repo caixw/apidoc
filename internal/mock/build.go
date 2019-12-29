@@ -8,9 +8,11 @@ import (
 	"strconv"
 
 	"github.com/issue9/is"
+	"github.com/issue9/qheader"
 
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 )
 
@@ -30,13 +32,12 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 			}
 		}
 
-		// TODO 获取 content-type 的方式有点问题，可能有多个值需要过滤
 		ct := r.Header.Get("Content-Type")
-		if ct == "" {
+		if ct == "" || ct == "*/*" {
 			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrRequired))
 			return
 		}
-		req := m.findRequestByContentType(api.Requests, ct)
+		req, ct := m.findRequestByContentType(api.Requests, []*qheader.Header{{Value: ct}})
 		if req == nil {
 			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
 			return
@@ -47,12 +48,12 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 			return
 		}
 
-		accept := r.Header.Get("Accept")
-		if accept == "" {
-			m.handleError(api, w, "headers[Accept]", locale.Errorf(locale.ErrRequired))
+		accepts, err := qheader.Accept(r)
+		if err != nil {
+			m.handleError(api, w, "request.headers[Accept]", err)
 			return
 		}
-		resp := m.findRequestByContentType(api.Responses, accept)
+		resp, accept := m.findRequestByContentType(api.Responses, accepts)
 		if resp == nil {
 			m.handleError(api, w, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
 			return
@@ -65,6 +66,7 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 		}
 
 		w.Header().Set("Content-Type", accept) // 需要在输出状态码之前
+		w.Header().Set("Server", vars.Name)
 		w.WriteHeader(int(resp.Status))
 		for _, item := range resp.Headers {
 			switch item.Type {
@@ -86,11 +88,17 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 }
 
 // 查找第一个符合条件的 Request 实例，如果用户定义了多个相同 mimetype 的实例，也只返回第一符合要求的
-func (m *Mock) findRequestByContentType(request []*doc.Request, ct string) *doc.Request {
-	var none *doc.Request
+func (m *Mock) findRequestByContentType(request []*doc.Request, accepts []*qheader.Header) (*doc.Request, string) {
+	var none *doc.Request // 未指定任何 mimetype 值的 doc.Request
+	var canMatchAny bool
+
 	for _, req := range request {
-		if req.Mimetype == ct {
-			return req
+		for _, accept := range accepts {
+			if accept.Value != "*/*" && accept.Value == req.Mimetype {
+				return req, accept.Value
+			} else if accept.Value == "*" {
+				canMatchAny = true
+			}
 		}
 
 		if req.Mimetype == "" {
@@ -100,13 +108,23 @@ func (m *Mock) findRequestByContentType(request []*doc.Request, ct string) *doc.
 
 	if none != nil {
 		for _, mt := range m.doc.Mimetypes {
-			if mt == ct {
-				return none
+			for _, accept := range accepts {
+				if accept.Value != "*/*" && accept.Value == mt {
+					return none, accept.Value
+				}
 			}
 		}
 	}
 
-	return nil
+	if canMatchAny {
+		mimetype := request[0].Mimetype
+		if mimetype == "" {
+			mimetype = m.doc.Mimetypes[0]
+		}
+		return request[0], mimetype
+	}
+
+	return nil, ""
 }
 
 // 处理 serveHTTP 中的错误
