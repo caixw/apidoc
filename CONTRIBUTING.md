@@ -25,4 +25,5 @@ apidoc 是一个基于 [MIT](https://opensource.org/licenses/MIT) 的开源软�
 
 ## Git
 
-Git 的编写规则参照 <https://www.conventionalcommits.org/zh-hans/>
+Git 的编写规则参照 <https://www.conventionalcommits.org/zh-hans/>，
+scope 值可直接写包名，或是文件名，比如 `internal/mock`、`README.md`。
