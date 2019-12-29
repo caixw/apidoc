@@ -3,6 +3,7 @@
 package apidoc
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -19,9 +20,11 @@ func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, "./")
+	cfg := LoadConfig(h, "./docs/example")
+	h.Stop()
 	a.NotNil(cfg).
-		Empty(erro.String())
+		Empty(erro.String()).
+		Empty(succ.String())
 
 	erro, succ, h = messagetest.MessageHandler()
 	cfg = LoadConfig(h, "./docs") // 不存在 apidoc 的配置文件
@@ -48,6 +51,11 @@ func TestDetect_Load(t *testing.T) {
 	wd, err := filepath.Abs("./")
 	a.NotError(err).NotEmpty(wd)
 	a.NotError(Detect(wd, true))
+
+	// 删除生成的文件
+	defer func() {
+		a.NotError(os.Remove("./.apidoc.yaml"))
+	}()
 
 	erro, _, h := messagetest.MessageHandler()
 	cfg := LoadConfig(h, wd)
