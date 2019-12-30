@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -46,8 +45,7 @@ func language(w io.Writer) error {
 }
 
 func langUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdLangUsage))
-	return err
+	return cmdUsage(w, locale.CmdLangUsage)
 }
 
 func calcMaxWidth(content string, max *int) {

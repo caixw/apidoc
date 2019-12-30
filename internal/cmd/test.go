@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
 	"io"
 
 	"github.com/caixw/apidoc/v5"
@@ -26,6 +25,5 @@ func test(w io.Writer) error {
 }
 
 func testUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdTestUsage))
-	return err
+	return cmdUsage(w, locale.CmdTestUsage)
 }

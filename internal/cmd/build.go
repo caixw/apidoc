@@ -27,8 +27,7 @@ func build(w io.Writer) error {
 }
 
 func buildUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdBuildUsage))
-	return err
+	return cmdUsage(w, locale.CmdBuildUsage)
 }
 
 // 人命令行尾部获取路径参数，或是在未指定的情况下，采用当前目录。
@@ -37,4 +36,9 @@ func getPath(fs *flag.FlagSet) string {
 		return fs.Arg(0)
 	}
 	return "./"
+}
+
+func cmdUsage(w io.Writer, key string) error {
+	_, err := fmt.Fprintln(w, locale.Sprintf(key))
+	return err
 }

@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -37,6 +36,5 @@ func doLocale(w io.Writer) error {
 }
 
 func localeUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdLocaleUsage))
-	return err
+	return cmdUsage(w, locale.CmdLocaleUsage)
 }

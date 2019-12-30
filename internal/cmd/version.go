@@ -23,6 +23,5 @@ func version(w io.Writer) error {
 }
 
 func versionUsage(w io.Writer) error {
-	printLocale(w, infoColor, locale.CmdVersionUsage)
-	return nil
+	return cmdUsage(w, locale.CmdVersionUsage)
 }
