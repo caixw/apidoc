@@ -32,6 +32,6 @@ func test(w io.Writer) error {
 }
 
 func testUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdTest))
+	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdTestUsage))
 	return err
 }

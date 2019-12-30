@@ -33,6 +33,6 @@ func build(w io.Writer) error {
 }
 
 func buildUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdBuild))
+	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdBuildUsage))
 	return err
 }

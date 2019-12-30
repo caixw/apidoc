@@ -36,7 +36,7 @@ var command = cmdopt.New(os.Stdout, flag.ContinueOnError, usage, func(name strin
 })
 
 func init() {
-	command.Help("help", locale.Sprintf(locale.CmdHelp))
+	command.Help("help", locale.Sprintf(locale.CmdHelpUsage))
 }
 
 // Exec 执行程序

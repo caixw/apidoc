@@ -36,6 +36,6 @@ func detect(w io.Writer) error {
 }
 
 func detectUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdDetect))
+	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdDetectUsage))
 	return err
 }

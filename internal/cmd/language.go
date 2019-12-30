@@ -55,6 +55,6 @@ func language(w io.Writer) error {
 }
 
 func langUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.FlagLUsage))
+	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdLangUsage))
 	return err
 }
