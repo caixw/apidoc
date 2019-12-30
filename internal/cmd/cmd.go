@@ -3,10 +3,10 @@
 package cmd
 
 import (
-	"bytes"
 	"flag"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/issue9/cmdopt"
 	"github.com/issue9/term/colors"
@@ -47,12 +47,8 @@ func Exec() {
 }
 
 func usage(w io.Writer) error {
-	buf := new(bytes.Buffer)
-	flag.CommandLine.SetOutput(buf)
-	flag.PrintDefaults()
-
-	printLocale(w, infoColor, locale.FlagUsage, vars.Name, buf.String(), vars.RepoURL, vars.OfficialURL)
-
+	cmds := strings.Join(command.Commands(), ",")
+	printLocale(w, infoColor, locale.CmdUsage, vars.Name, cmds, vars.RepoURL, vars.OfficialURL)
 	return nil
 }
 

@@ -6,12 +6,12 @@ import "golang.org/x/text/language"
 
 var zhHant = map[string]string{
 	// 與 flag 包相關的處理
-	FlagUsage: `%s 是壹個 RESTful API 文檔生成工具
+	CmdUsage: `%s 是壹個 RESTful API 文檔生成工具
 
 用法：
-apidoc [options] [path]
+apidoc cmd [args]
 
-參數：
+cmd 為子命令，args 為傳遞給子命令的參數，目前支持以下子命令。
 %s
 
 源代碼采用 MIT 開源許可證，發布於 %s
