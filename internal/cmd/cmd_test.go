@@ -2,6 +2,20 @@
 
 package cmd
 
-import "github.com/issue9/cmdopt"
+import (
+	"bytes"
+	"testing"
 
-var _ cmdopt.DoFunc = usage
+	"github.com/issue9/assert"
+	"github.com/issue9/term/colors"
+
+	"github.com/caixw/apidoc/v5/internal/locale"
+)
+
+func TestPrintLocale(t *testing.T) {
+	a := assert.New(t)
+
+	buf := new(bytes.Buffer)
+	printLocale(buf, colors.Default, locale.ErrRequired)
+	a.Contains(buf.String(), locale.ErrRequired)
+}
