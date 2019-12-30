@@ -20,6 +20,7 @@ apidoc [options] [path]
 	CmdHelpUsage:    "顯示幫助信息",
 	CmdVersionUsage: "顯示版本信息",
 	CmdLangUsage:    "顯示所有支持的語言",
+	CmdLocaleUsage:  "顯示所有支持的本地化內容",
 	CmdDetectUsage:  "根據目錄下的內容生成配置文件",
 	CmdTestUsage:    "測試語法的正確性",
 	CmdMockUsage:    "啟用 Mock 服務",

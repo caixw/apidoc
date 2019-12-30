@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"strings"
@@ -12,10 +11,8 @@ import (
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-var langFlagSet *flag.FlagSet
-
 func init() {
-	langFlagSet = command.New("lang", language, langUsage)
+	command.New("lang", language, langUsage)
 }
 
 func language(w io.Writer) error {
