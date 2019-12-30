@@ -14,7 +14,7 @@ import (
 	"github.com/caixw/apidoc/v5/internal/lang"
 )
 
-func TestLangs(t *testing.T) {
+func TestLanguage(t *testing.T) {
 	a := assert.New(t)
 	w := new(bytes.Buffer)
 
