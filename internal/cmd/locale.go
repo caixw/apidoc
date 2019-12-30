@@ -3,25 +3,36 @@
 package cmd
 
 import (
-	"flag"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-var localeFlagSet *flag.FlagSet
-
 func init() {
-	localeFlagSet = command.New("locale", doLocale, localeUsage)
+	command.New("locale", doLocale, localeUsage)
 }
 
 func doLocale(w io.Writer) error {
-	for tag, name := range locale.DisplayNames() {
-		if _, err := fmt.Fprintln(w, tag, name); err != nil {
-			return err
-		}
+	tail := 3
+
+	locales := make(map[string]string, len(locale.DisplayNames()))
+
+	// 计算各列的最大长度值
+	var maxID int
+	for k, v := range locale.DisplayNames() {
+		id := k.String()
+		calcMaxWidth(id, &maxID)
+		locales[id] = v
 	}
+	maxID += tail
+
+	for k, v := range locales {
+		id := k + strings.Repeat(" ", maxID-len(k))
+		printLine(w, infoColor, id, v)
+	}
+
 	return nil
 }
 

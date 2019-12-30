@@ -28,7 +28,7 @@ func TestLangs(t *testing.T) {
 		return lines
 	}
 
-	language(w)
+	a.NotError(language(w))
 	ls := lines(w)
 	a.Equal(len(ls), len(lang.Langs())+1)
 	for _, l := range ls {

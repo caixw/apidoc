@@ -30,14 +30,8 @@ func language(w io.Writer) error {
 	// 计算各列的最大长度值
 	var maxDisplay, maxName int
 	for _, l := range langs {
-		width := len(l.DisplayName)
-		if width > maxDisplay {
-			maxDisplay = width
-		}
-		width = len(l.Name)
-		if width > maxName {
-			maxName = width
-		}
+		calcMaxWidth(l.DisplayName, &maxDisplay)
+		calcMaxWidth(l.Name, &maxName)
 	}
 	maxDisplay += tail
 	maxName += tail
@@ -54,4 +48,11 @@ func language(w io.Writer) error {
 func langUsage(w io.Writer) error {
 	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdLangUsage))
 	return err
+}
+
+func calcMaxWidth(content string, max *int) {
+	width := len(content)
+	if width > *max {
+		*max = width
+	}
 }

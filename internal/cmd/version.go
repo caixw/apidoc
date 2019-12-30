@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"flag"
 	"io"
 	"runtime"
 	"strings"
@@ -13,10 +12,8 @@ import (
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
-var versionFlagSet *flag.FlagSet
-
 func init() {
-	versionFlagSet = command.New("version", version, versionUsage)
+	command.New("version", version, versionUsage)
 }
 
 func version(w io.Writer) error {
