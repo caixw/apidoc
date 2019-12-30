@@ -19,14 +19,8 @@ func init() {
 }
 
 func test(w io.Writer) error {
-	var path = "./"
-	if 0 != testFlagSet.NArg() {
-		path = testFlagSet.Arg(0)
-	}
-
 	h := message.NewHandler(newHandlerFunc())
-	apidoc.LoadConfig(h, path).Test()
-
+	apidoc.LoadConfig(h, getPath(testFlagSet)).Test()
 	h.Stop()
 	return nil
 }

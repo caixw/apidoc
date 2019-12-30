@@ -20,14 +20,8 @@ func init() {
 }
 
 func build(w io.Writer) error {
-	var path = "./"
-	if 0 != buildFlagSet.NArg() {
-		path = buildFlagSet.Arg(0)
-	}
-
 	h := message.NewHandler(newHandlerFunc())
-	apidoc.LoadConfig(h, path).Do(time.Now())
-
+	apidoc.LoadConfig(h, getPath(buildFlagSet)).Do(time.Now())
 	h.Stop()
 	return nil
 }
@@ -35,4 +29,12 @@ func build(w io.Writer) error {
 func buildUsage(w io.Writer) error {
 	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdBuildUsage))
 	return err
+}
+
+// 人命令行尾部获取路径参数，或是在未指定的情况下，采用当前目录。
+func getPath(fs *flag.FlagSet) string {
+	if fs != nil && 0 != fs.NArg() {
+		return fs.Arg(0)
+	}
+	return "./"
 }

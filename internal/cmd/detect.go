@@ -19,12 +19,9 @@ func init() {
 }
 
 func detect(w io.Writer) error {
-	var path = "./"
-	if 0 != detectFlagSet.NArg() {
-		path = detectFlagSet.Arg(0)
-	}
-
+	path := getPath(detectFlagSet)
 	h := message.NewHandler(newHandlerFunc())
+
 	if err := apidoc.Detect(path, true); err != nil {
 		printLine(erroOut, erroColor, err)
 		return nil
