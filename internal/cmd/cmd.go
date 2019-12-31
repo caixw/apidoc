@@ -31,12 +31,20 @@ var (
 	erroOut = os.Stderr
 )
 
-var command = cmdopt.New(os.Stdout, flag.ContinueOnError, usage, func(name string) string {
-	return locale.Sprintf(locale.CmdNotFound, name)
-})
+var command *cmdopt.CmdOpt
 
 func init() {
+	command = cmdopt.New(os.Stdout, flag.ContinueOnError, usage, func(name string) string {
+		return locale.Sprintf(locale.CmdNotFound, name) + "\n"
+	})
+
 	command.Help("help", locale.Sprintf(locale.CmdHelpUsage))
+	initBuild()
+	initDetect()
+	initLang()
+	initLocale()
+	initTest()
+	initVersion()
 }
 
 // Exec 执行程序

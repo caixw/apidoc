@@ -13,7 +13,7 @@ import (
 
 var detectFlagSet *flag.FlagSet
 
-func init() {
+func initDetect() {
 	detectFlagSet = command.New("detect", detect, detectUsage)
 }
 

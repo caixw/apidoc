@@ -26,7 +26,7 @@ cmd 为子命令，args 为传递给子命令的参数，目前支持以下子�
 	CmdMockUsage:    "启用 Mock 服务",
 	CmdBuildUsage:   "生成文档内容",
 	Version:         "版本：%s\n文档：%s\n提交：%s\nGo：%s",
-	CmdNotFound:     "子命令 %s 未找到",
+	CmdNotFound:     "子命令 %s 未找到\n",
 
 	VersionInCompatible: "当前程序与配置文件中指定的版本号不兼容",
 	Complete:            "完成！文档保存在：%s，总用时：%v",

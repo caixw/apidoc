@@ -15,7 +15,7 @@ import (
 
 var buildFlagSet *flag.FlagSet
 
-func init() {
+func initBuild() {
 	buildFlagSet = command.New("build", build, buildUsage)
 }
 

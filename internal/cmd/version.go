@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
-func init() {
+func initVersion() {
 	command.New("version", version, versionUsage)
 }
 

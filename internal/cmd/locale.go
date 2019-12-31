@@ -9,7 +9,7 @@ import (
 	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-func init() {
+func initLocale() {
 	command.New("locale", doLocale, localeUsage)
 }
 

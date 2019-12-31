@@ -13,7 +13,7 @@ import (
 
 var testFlagSet *flag.FlagSet
 
-func init() {
+func initTest() {
 	testFlagSet = command.New("test", test, testUsage)
 }
 
