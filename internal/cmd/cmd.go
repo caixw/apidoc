@@ -35,10 +35,13 @@ var command *cmdopt.CmdOpt
 
 func init() {
 	command = cmdopt.New(os.Stdout, flag.ContinueOnError, usage, func(name string) string {
-		return locale.Sprintf(locale.CmdNotFound, name) + "\n"
+		return locale.Sprintf(locale.CmdNotFound, name) 
 	})
 
-	command.Help("help", locale.Sprintf(locale.CmdHelpUsage))
+	command.Help("help",func(w io.Writer)error {
+		fmt.Fprintln(w, locale.Sprintf(locale.CmdHelpUsage))
+	})
+
 	initBuild()
 	initDetect()
 	initLang()
