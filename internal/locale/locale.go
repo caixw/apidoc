@@ -60,5 +60,5 @@ func Sprintf(key message.Reference, v ...interface{}) string {
 
 // Errorf 类似 fmt.Errorf，与特定的本地化绑定。
 func Errorf(key message.Reference, v ...interface{}) error {
-	return errors.New(localePrinter.Sprintf(key, v...))
+	return errors.New(Sprintf(key, v...))
 }

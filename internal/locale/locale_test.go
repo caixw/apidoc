@@ -24,19 +24,22 @@ func TestInit(t *testing.T) {
 	a.NotError(Init(tag)).
 		Equal(localeTag, tag).
 		NotEqual(Sprintf(ErrRequired), zhHant[ErrRequired]).
-		Equal(Sprintf(ErrRequired), zhHans[ErrRequired])
+		Equal(Sprintf(ErrRequired), zhHans[ErrRequired]).
+		Equal(Errorf(ErrRequired).Error(), zhHans[ErrRequired])
 
 	// zh-cn 应该会转换到 zh-hans
 	tag = language.MustParse("zh-CN")
 	a.NotError(Init(tag)).
 		Equal(localeTag, tag).
 		NotEqual(Sprintf(ErrRequired), zhHant[ErrRequired]).
-		Equal(Sprintf(ErrRequired), zhHans[ErrRequired])
+		Equal(Sprintf(ErrRequired), zhHans[ErrRequired]).
+		Equal(Errorf(ErrRequired).Error(), zhHans[ErrRequired])
 
 	tag = language.MustParse("zh-Hant")
 	a.NotError(Init(tag)).
 		Equal(localeTag, tag).
-		Equal(Sprintf(ErrRequired), zhHant[ErrRequired])
+		Equal(Sprintf(ErrRequired), zhHant[ErrRequired]).
+		Equal(Errorf(ErrRequired).Error(), zhHant[ErrRequired])
 
 	// 设置为系统语言
 	systag, err := syslocale.Get()
