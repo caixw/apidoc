@@ -13,6 +13,7 @@ import (
 	"github.com/issue9/mux/v2"
 
 	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
 )
 
@@ -114,6 +115,10 @@ func (m *Mock) parse() error {
 				return err
 			}
 		}
+	}
+
+	for path, methods := range m.mux.All(true, true) {
+		m.h.Message(message.Info, locale.LoadAPI, path, strings.Join(methods, ","))
 	}
 
 	return nil

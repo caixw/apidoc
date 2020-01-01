@@ -36,6 +36,7 @@ cmd 为子命令，args 为传递给子命令的参数，目前支持以下子�
 	LangID              = "ID"
 	LangName            = "名称"
 	LangExts            = "扩展名"
+	LoadAPI             = "加载 API：%s %s"
 
 	// 错误信息，可能在地方用到
 	ErrRequired              = "不能为空"
