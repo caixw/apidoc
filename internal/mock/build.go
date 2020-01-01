@@ -19,6 +19,8 @@ import (
 
 func (m *Mock) buildAPI(api *doc.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		m.h.Message(message.Succ, locale.RequestAPI, api.Method, api.Path.Path)
+
 		for _, query := range api.Path.Queries {
 			if err := validParam(query, r.FormValue(query.Name)); err != nil {
 				m.handleError(api, w, "queries["+query.Name+"]", err)

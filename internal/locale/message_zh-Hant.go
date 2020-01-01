@@ -38,6 +38,7 @@ cmd 為子命令，args 為傳遞給子命令的參數，目前支持以下子�
 	LangName:            "名稱",
 	LangExts:            "擴展名",
 	LoadAPI:             "加載 API：%s %s",
+	RequestAPI:          "訪問 API：%s %s",
 
 	// 錯誤信息，可能在地方用到
 	ErrRequired:              "不能為空",
