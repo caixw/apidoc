@@ -17,6 +17,11 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
+const (
+	allowHead    = true
+	allowOptions = true
+)
+
 // Mock 管理 mock 数据
 type Mock struct {
 	h       *message.Handler
@@ -34,7 +39,7 @@ func New(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handle
 	m := &Mock{
 		h:       h,
 		doc:     d,
-		mux:     mux.New(false, false, true, nil, nil),
+		mux:     mux.New(!allowOptions, !allowHead, true, nil, nil),
 		servers: servers,
 	}
 
@@ -117,7 +122,7 @@ func (m *Mock) parse() error {
 		}
 	}
 
-	for path, methods := range m.mux.All(true, true) {
+	for path, methods := range m.mux.All(!allowHead, !allowOptions) {
 		m.h.Message(message.Info, locale.LoadAPI, path, strings.Join(methods, ","))
 	}
 
