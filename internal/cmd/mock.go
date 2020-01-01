@@ -72,7 +72,7 @@ func initMock() {
 	mockFlagSet.Var(mockServers, "s", locale.Sprintf(locale.FlagMockServersUsage))
 }
 
-func doMock(w io.Writer) error {
+func doMock(io.Writer) error {
 	path := getPath(mockFlagSet)
 	if !utils.FileExists(path) {
 		return fmt.Errorf("未指定文档地址：%s", path)
@@ -81,7 +81,7 @@ func doMock(w io.Writer) error {
 	h := message.NewHandler(newHandlerFunc())
 	defer h.Stop()
 
-	handler, err := mock.Load(h, path, nil)
+	handler, err := mock.Load(h, path, mockServers)
 	if err != nil {
 		return err
 	}
