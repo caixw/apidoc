@@ -494,3 +494,16 @@ func TestNew(t *testing.T) {
 	h.Stop()
 	a.Empty(erro.String())
 }
+
+func TestLoad(t *testing.T) {
+	a := assert.New(t)
+	_, _, h := messagetest.MessageHandler()
+	mock, err := Load(h, "./not-exists", nil)
+	h.Stop()
+	a.Error(err).Nil(mock)
+
+	_, _, h = messagetest.MessageHandler()
+	mock, err = Load(h, "../../docs/example/index.xml", map[string]string{"admin": "admin"})
+	h.Stop()
+	a.NotError(err).NotNil(mock)
+}
