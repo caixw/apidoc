@@ -84,15 +84,18 @@
     </doc>
 
     <doc id="cli" title="命令行" parent="usage">
-        <p>可以通過 <samp>apidoc -h</samp> 查看命令行支持的參數。主要包含了以下幾個參數：</p>
+        <p>可以通過 <samp>apidoc help</samp> 查看命令行支持的子命令。主要包含了以下幾個：</p>
         <table>
-            <thead><tr><th>參數</th><th>描述</th></tr></thead>
+            <thead><tr><th>子命令</th><th>描述</th></tr></thead>
             <tbody>
-                <tr><td>-h</td><td>顯示幫助信息</td></tr>
-                <tr><td>-v</td><td>顯示版本信息</td></tr>
-                <tr><td>-l</td><td>列出當前支持的語言</td></tr>
-                <tr><td>-d</td><td>根據指定的目錄生成配置文件</td></tr>
-                <tr><td>-t</td><td>檢測語法是否準確</td></tr>
+                <tr><td>help</td><td>顯示子命令的描述信息</td></tr>
+                <tr><td>build</td><td>生成文檔內容</td></tr>
+                <tr><td>mock</td><td>根據文檔提供 mock 服務</td></tr>
+                <tr><td>version</td><td>顯示版本信息</td></tr>
+                <tr><td>lang</td><td>列出當前支持的語言</td></tr>
+                <tr><td>locale</td><td>列出當前支持的本地化內容</td></tr>
+                <tr><td>detect</td><td>根據指定的目錄生成配置文件</td></tr>
+                <tr><td>test</td><td>檢測語法是否準確</td></tr>
             </tbody>
         </table>
     </doc>
