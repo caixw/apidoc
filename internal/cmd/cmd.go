@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -49,6 +50,7 @@ func init() {
 	initLocale()
 	initTest()
 	initVersion()
+	initMock()
 }
 
 // Exec 执行程序

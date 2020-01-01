@@ -16,16 +16,18 @@ cmd 为子命令，args 为传递给子命令的参数，目前支持以下子�
 源代码采用 MIT 开源许可证，发布于 %s
 详细信息可访问官网 %s
 `
-	CmdHelpUsage    = "显示帮助信息"
-	CmdVersionUsage = "显示版本信息"
-	CmdLangUsage    = "显示所有支持的语言"
-	CmdLocaleUsage  = "显示所有支持的本地化内容"
-	CmdDetectUsage  = "根据目录下的内容生成配置文件"
-	CmdTestUsage    = "测试语法的正确性"
-	CmdMockUsage    = "启用 Mock 服务"
-	CmdBuildUsage   = "生成文档内容"
-	Version         = "版本：%s\n文档：%s\n提交：%s\nGo：%s"
-	CmdNotFound     = "子命令 %s 未找到\n"
+	CmdHelpUsage         = "显示帮助信息"
+	CmdVersionUsage      = "显示版本信息"
+	CmdLangUsage         = "显示所有支持的语言"
+	CmdLocaleUsage       = "显示所有支持的本地化内容"
+	CmdDetectUsage       = "根据目录下的内容生成配置文件"
+	CmdTestUsage         = "测试语法的正确性"
+	CmdMockUsage         = "启用 mock 服务"
+	CmdBuildUsage        = "生成文档内容"
+	Version              = "版本：%s\n文档：%s\n提交：%s\nGo：%s"
+	CmdNotFound          = "子命令 %s 未找到\n"
+	FlagMockPortUsage    = "指定 mock 服务的端口号"
+	FlagMockServersUsage = "指定 mock 服务时，文档中 server 变量对应的路由前缀"
 
 	VersionInCompatible = "当前程序与配置文件中指定的版本号不兼容"
 	Complete            = "完成！文档保存在：%s，总用时：%v"
