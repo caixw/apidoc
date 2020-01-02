@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.2.1" created="2020-01-03T01:29:32+08:00" version="1.1.1">
+<apidoc apidoc="5.2.1" created="2020-01-03T01:44:57+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 
@@ -40,11 +40,11 @@
 可以是一个 HTML 内容
 
 ]]></description>
-		<response type="object" array="true" status="200" mimetype="application/json">
-			<param name="count" type="number" summary="summary"></param>
+		<response name="user" type="object" array="true" status="200">
+			<param xml-attr="true" name="count" type="number" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
-				<param name="id" type="number" summary="用户 ID"></param>
-				<param name="name" type="string" summary="用户名"></param>
+				<param xml-attr="true" name="id" type="number" summary="用户 ID"></param>
+				<param xml-attr="true" name="name" type="string" summary="用户名"></param>
 				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
 					<param name="id" type="string" summary="权限组 ID"></param>
 					<param name="name" type="string" summary="权限组名称"></param>

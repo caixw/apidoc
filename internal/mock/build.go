@@ -90,16 +90,14 @@ func (m *Mock) renderResponse(api *doc.API, w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	responses := make([]*doc.Request, len(api.Responses), len(api.Responses)+len(m.doc.Responses))
-	copy(responses, api.Responses)
-	for _, resp := range m.doc.Responses {
-		responses = append(responses, resp)
-	}
-
-	resp, accept := findResponseByAccept(m.doc.Mimetypes, responses, accepts)
+	resp, accept := findResponseByAccept(m.doc.Mimetypes, api.Responses, accepts)
 	if resp == nil {
-		m.handleError(w, r, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
-		return
+		// 仅在 api.Responses 无法匹配任何内容的时候，才从 doc.Responses 中查找内容
+		resp, accept = findResponseByAccept(m.doc.Mimetypes, m.doc.Responses, accepts)
+		if resp == nil {
+			m.handleError(w, r, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
+			return
+		}
 	}
 
 	data, err := buildResponse(resp, r)

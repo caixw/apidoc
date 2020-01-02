@@ -18,12 +18,12 @@
 //     <header name="name" type="string"><description><![CDATA[desc]]></description></header>
 //     <header name="name1" type="string" summary="name1 desc" />
 //
-//     <response status="200" array="true" type="object" mimetype="application/json">
-//         <param name="count" type="number" optional="false" summary="summary" />
+//     <response status="200" array="true" type="object" name="user">
+//         <param name="count" type="number" xml-attr="true" optional="false" summary="summary" />
 //         <param name="list" type="object" array="true" summary="list">
 //             <description type="html"><![CDATA[<span style="color:red">list description</span>]]></description>
-//             <param name="id" type="number" summary="用户 ID" />
-//             <param name="name" type="string" summary="用户名" />
+//             <param name="id" type="number" summary="用户 ID" xml-attr="true" />
+//             <param name="name" type="string" summary="用户名" xml-attr="true" />
 //             <param name="groups" type="string" array="true" optional="true" summary="用户所在的权限组">
 //                 <param name="id" type="string" summary="权限组 ID" />
 //                 <param name="name" type="string" summary="权限组名称" />

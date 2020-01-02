@@ -81,6 +81,10 @@ func TestFindResponseByAccept(t *testing.T) {
 			index: -1,
 		},
 		{
+			requests: []*doc.Request{},
+			index:    -1,
+		},
+		{
 			requests: []*doc.Request{{Mimetype: "text/xml"}},
 			accepts:  []*qheader.Header{{Value: "text/xml"}},
 			index:    0,
@@ -98,13 +102,13 @@ func TestFindResponseByAccept(t *testing.T) {
 			index:    0,
 			ct:       "text/xml",
 		},
-		{
+		{ // 5
 			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
 			accepts:  []*qheader.Header{{Value: "application/*"}},
 			index:    1,
 			ct:       "application/json",
 		},
-		{ // 5
+		{
 			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
 			accepts:  []*qheader.Header{{Value: "*/*"}},
 			index:    0,
