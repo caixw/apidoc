@@ -47,6 +47,7 @@ path 表示文檔路徑，或不指定，則使用當前工作目錄 ./ 代替�
 	LangExts:            "擴展名",
 	LoadAPI:             "加載 API：%s %s",
 	RequestAPI:          "訪問 API：%s %s",
+	DeprecatedWarn:      "%s 將於 %s 被廢棄",
 
 	// 錯誤信息，可能在地方用到
 	ErrRequired:              "不能為空",

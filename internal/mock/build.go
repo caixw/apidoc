@@ -19,7 +19,10 @@ import (
 
 func (m *Mock) buildAPI(api *doc.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m.h.Message(message.Succ, locale.RequestAPI, api.Method, api.Path.Path)
+		m.h.Message(message.Succ, locale.RequestAPI, r.Method, r.URL.Path)
+		if api.Deprecated != "" {
+			m.h.Message(message.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated)
+		}
 
 		for _, query := range api.Path.Queries {
 			if err := validParam(query, r.FormValue(query.Name)); err != nil {
