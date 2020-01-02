@@ -11,9 +11,11 @@ import (
 	"strings"
 
 	"github.com/issue9/mux/v2"
+	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 )
 
@@ -36,6 +38,14 @@ type Mock struct {
 // d doc.Doc 实例，调用方需要保证该数据类型的正确性；
 // servers 用于指定 d.Servers 中每一个服务对应的路由前缀
 func New(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handler, error) {
+	c, err := version.SemVerCompatible(d.APIDoc, vars.Version())
+	if err != nil {
+		return nil, err
+	}
+	if !c {
+		return nil, locale.Errorf(locale.VersionInCompatible)
+	}
+
 	m := &Mock{
 		h:       h,
 		doc:     d,

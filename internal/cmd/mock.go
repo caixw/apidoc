@@ -11,8 +11,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/issue9/utils"
-
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/mock"
 	"github.com/caixw/apidoc/v5/message"
@@ -74,9 +72,6 @@ func initMock() {
 
 func doMock(io.Writer) error {
 	path := getPath(mockFlagSet)
-	if !utils.FileExists(path) {
-		return fmt.Errorf("未指定文档地址：%s", path)
-	}
 
 	h := message.NewHandler(newHandlerFunc())
 	defer h.Stop()

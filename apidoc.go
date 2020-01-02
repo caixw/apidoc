@@ -147,6 +147,16 @@ func Valid(content []byte) error {
 }
 
 // Mock 生成 Mock 中间件
-func Mock(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
+func Mock(h *message.Handler, data []byte, servers map[string]string) (http.Handler, error) {
+	d := doc.New()
+	if err := d.FromXML("", 0, data); err != nil {
+		return nil, err
+	}
+
+	return mock.New(h, d, servers)
+}
+
+// MockFile 生成 Mock 中间件
+func MockFile(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
 	return mock.Load(h, path, servers)
 }
