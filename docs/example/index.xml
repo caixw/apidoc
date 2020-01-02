@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.2.1" created="2020-01-03T01:15:29+08:00" version="1.1.1">
+<apidoc apidoc="5.2.1" created="2020-01-03T01:29:32+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 
@@ -99,7 +99,7 @@
         
         ]]></example>
 		</request>
-		<response type="" array="true" status="200" mimetype="application/json"></response>
+		<response array="true" status="200" mimetype="application/json"></response>
 		<tag>t2</tag>
 		<server>admin</server>
 		<server>old-client</server>
@@ -205,35 +205,15 @@
 		</callback>
 		<server>client</server>
 	</api>
-	<response type="object" status="400" mimetype="application/json">
-		<param name="code" type="number" summary="状态码"></param>
+	<response name="result" type="object" status="400">
+		<param xml-attr="true" name="code" type="number" summary="状态码"></param>
 		<param name="message" type="string" summary="错误信息"></param>
 		<param name="detail" type="object" array="true" summary="错误明细">
 			<param name="id" type="string" summary="id"></param>
 			<param name="message" type="string" summary="message"></param>
 		</param>
 	</response>
-	<response name="result" type="object" status="400" mimetype="application/xml">
-		<param name="code" type="number" summary="状态码"></param>
-		<param name="message" type="string" summary="错误信息"></param>
-		<param name="detail" type="object" array="true" summary="错误明细列表">
-			<param name="msg" type="object" summary="message">
-				<param name="@id" type="string" summary="id"></param>
-			</param>
-		</param>
-		<example mimetype="application/xml"><![CDATA[
-        
-        <result code="40001">
-            <message>错误信息内容</message>
-            <detail>
-                <msg id="name">不能为空</msg>
-                <msg id="id">不能为空</msg>
-            </detail>
-        </result>
-        
-        ]]></example>
-	</response>
-	<response type="" summary="not found" status="404"></response>
+	<response summary="not found" status="404"></response>
 	<mimetype>application/xml</mimetype>
 	<mimetype>application/json</mimetype>
 </apidoc>
