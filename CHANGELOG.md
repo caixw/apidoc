@@ -9,6 +9,7 @@
 - 为 apidoc 元素添加 mimetype，用于指定全局可用的 mimetype 值；
 - 为 Request 和 Param 添加 attr 字段，用于在 content-type 为 xml 的请求中表示属性。
 - 生成 mock 数据的功能；
+- 添加导出为 openapi 的功能；
 
 ### Changed
 
@@ -34,6 +35,7 @@
 - 添加 Pack 系列函数，用于将内容打包成一个文件；
 - 添加 static 包，管理所有与 docs 下静态文件相关的功能；
 - 添加 static.Type 类型，用于指定 static.Pack 和 static.FolderHandler 的文件类型；
+- 添加导出为 openapi 的功能；
 
 ### Changed
 

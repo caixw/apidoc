@@ -48,6 +48,7 @@ path 表示文档路径，或不指定，则使用当前工作目录 ./ 代替�
 	LoadAPI:             "加载 API：%s %s",
 	RequestAPI:          "访问 API：%s %s",
 	DeprecatedWarn:      "%s %s 将于 %s 被废弃",
+	GeneratorBy:         "当前文档由 %s 生成",
 
 	// 错误信息，可能在地方用到
 	ErrRequired:              "不能为空",

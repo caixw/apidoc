@@ -32,9 +32,15 @@ func TestOptions_sanitize(t *testing.T) {
 	var o *Options
 	a.Error(o.sanitize(false))
 
+	// 默认的 Type
 	o = &Options{}
 	a.Error(o.sanitize(false))
+	a.Equal(o.marshal, marshaler(apidocMarshaler))
 
+	o = &Options{Type: "invalid-type"}
+	a.Error(o.sanitize(false))
+
+	o = &Options{}
 	a.NotError(o.sanitize(true))
 
 	o.Path = "./testdir/apidoc.json"
