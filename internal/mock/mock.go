@@ -20,8 +20,8 @@ import (
 )
 
 const (
-	allowHead    = true
-	allowOptions = true
+	disableHead    = false
+	disableOptions = false
 )
 
 // Mock 管理 mock 数据
@@ -49,7 +49,7 @@ func New(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handle
 	m := &Mock{
 		h:       h,
 		doc:     d,
-		mux:     mux.New(!allowOptions, !allowHead, true, nil, nil),
+		mux:     mux.New(disableOptions, disableHead, true, nil, nil),
 		servers: servers,
 	}
 
@@ -132,7 +132,7 @@ func (m *Mock) parse() error {
 		}
 	}
 
-	for path, methods := range m.mux.All(!allowHead, !allowOptions) {
+	for path, methods := range m.mux.All(disableHead, disableOptions) {
 		m.h.Message(message.Info, locale.LoadAPI, path, strings.Join(methods, ","))
 	}
 
