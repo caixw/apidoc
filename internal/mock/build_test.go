@@ -9,9 +9,124 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+	"github.com/issue9/qheader"
 
 	"github.com/caixw/apidoc/v5/doc"
 )
+
+func TestFindRequestByAccept(t *testing.T) {
+	a := assert.New(t)
+	data := []*struct {
+		// 输入参数
+		mimetypes []string
+		requests  []*doc.Request
+		accepts   []*qheader.Header
+
+		// 返回参数
+		index int
+		ct    string
+	}{
+		{ // 0
+			index: -1,
+		},
+		{
+			requests: []*doc.Request{{Mimetype: "text/xml"}},
+			accepts:  []*qheader.Header{{Value: "text/xml"}},
+			index:    0,
+			ct:       "text/xml",
+		},
+		{
+			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			accepts:  []*qheader.Header{{Value: "text/xml"}},
+			index:    0,
+			ct:       "text/xml",
+		},
+		{
+			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			accepts:  []*qheader.Header{{Value: "text/*"}},
+			index:    0,
+			ct:       "text/xml",
+		},
+		{
+			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			accepts:  []*qheader.Header{{Value: "application/*"}},
+			index:    1,
+			ct:       "application/json",
+		},
+		{ // 5
+			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			accepts:  []*qheader.Header{{Value: "*/*"}},
+			index:    0,
+			ct:       "text/xml",
+		},
+		{
+			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			accepts:  []*qheader.Header{{Value: "*/*"}, {Value: "application/*"}},
+			index:    0,
+			ct:       "text/xml", // 第一个元素，匹配 */*
+		},
+		{
+			mimetypes: []string{"text/xml"},
+			requests:  []*doc.Request{},
+			accepts:   []*qheader.Header{{Value: "*/*"}},
+			index:     -1,
+			ct:        "",
+		},
+		{
+			mimetypes: []string{"text/xml"},
+			requests:  []*doc.Request{{}},
+			accepts:   []*qheader.Header{{Value: "*/*"}},
+			index:     0,
+			ct:        "text/xml",
+		},
+		{
+			mimetypes: []string{"text/xml", "application/json"},
+			requests:  []*doc.Request{{}},
+			accepts:   []*qheader.Header{{Value: "application/*"}},
+			index:     0,
+			ct:        "application/json",
+		},
+		{
+			mimetypes: []string{"text/xml", "application/json"},
+			requests:  []*doc.Request{{}},
+			accepts:   []*qheader.Header{{Value: "application/json"}},
+			index:     0,
+			ct:        "application/json",
+		},
+		{
+			mimetypes: []string{"text/xml", "application/json"},
+			requests:  []*doc.Request{{}},
+			accepts:   []*qheader.Header{{Value: "application/*"}, {Value: "text/xml"}},
+			index:     0,
+			ct:        "text/xml",
+		},
+		{
+			mimetypes: []string{"text/xml", "application/json"},
+			requests:  []*doc.Request{{Mimetype: "application/json"}},
+			accepts:   []*qheader.Header{{Value: "application/*"}},
+			index:     0,
+			ct:        "application/json",
+		},
+		{ // 任意值，匹配 mimetypes
+			mimetypes: []string{"text/xml", "application/json"},
+			requests:  []*doc.Request{{}},
+			accepts:   []*qheader.Header{{Value: "font/*"}, {Value: "*/*"}},
+			index:     0,
+			ct:        "text/xml",
+		},
+	}
+
+	for index, item := range data {
+		req, ct := findRequestByAccept(item.mimetypes, item.requests, item.accepts)
+
+		a.Equal(ct, item.ct, "not equal at %d,v1: %s,v2:%s", index, ct, item.ct)
+		if item.index == -1 {
+			a.Nil(req, "not nil at %d", index)
+		} else {
+			a.Equal(req, item.requests[item.index], "not equal at %d", index)
+		}
+	}
+}
 
 func TestValidRequest(t *testing.T) {
 	a := assert.New(t)

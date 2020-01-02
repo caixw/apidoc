@@ -110,23 +110,38 @@ func findRequestByContentType(requests []*doc.Request, ct string) *doc.Request {
 	return nil
 }
 
+// 查看 ct1 是否与 ct2 匹配，ct2 可以是模糊匹配，比如 text/* 或是 */*
+func matchContentType(ct1, ct2 string) string {
+	switch {
+	case ct1 == ct2:
+		return ct1
+	case ct2 == "*/*":
+		return ct1
+	case strings.HasSuffix(ct2, "/*"):
+		ct2 = ct2[:len(ct2)-1]
+		if strings.HasPrefix(ct1, ct2) {
+			return ct1
+		}
+	}
+	return ""
+}
+
+// accepts 必须是已经按权重进行排序的。
 func findRequestByAccept(mimetypes []string, requests []*doc.Request, accepts []*qheader.Header) (*doc.Request, string) {
 	if len(requests) == 0 {
 		return nil, ""
 	}
 
 	var none *doc.Request // 表示 requests 中 mimetype 值为空的第一个子项
-	var canMatchAny bool  // 表示 accepts 中有 Value 的值为 */* 的子项
 
 	// 从 requests 中查找是否有符合 accepts 的内容，
 	// 同时也获取 requests 中 mimetype 为空值项赋予 none，
 	// 以及根据 accepts 内容是否可以匹配任意项。
 	for _, req := range requests {
 		for _, accept := range accepts {
-			if accept.Value != "*/*" && accept.Value == req.Mimetype {
-				return req, accept.Value
-			} else if accept.Value == "*/*" {
-				canMatchAny = true
+			ct := matchContentType(req.Mimetype, accept.Value)
+			if ct != "" {
+				return req, ct
 			}
 		}
 
@@ -140,24 +155,12 @@ func findRequestByAccept(mimetypes []string, requests []*doc.Request, accepts []
 	if none != nil {
 		for _, mt := range mimetypes {
 			for _, accept := range accepts {
-				if accept.Value != "*/*" && accept.Value == mt {
-					return none, accept.Value
+				ct := matchContentType(mt, accept.Value)
+				if ct != "" {
+					return none, ct
 				}
 			}
 		}
-	}
-
-	// accepts 表示可接受任意值，则获取 requests[0] 作为 content-type 返回
-	if canMatchAny {
-		mimetype := requests[0].Mimetype
-		if mimetype == "" {
-			mimetype = mimetypes[0]
-		}
-
-		if none != nil {
-			return none, mimetype
-		}
-		return requests[0], mimetype
 	}
 
 	return nil, ""
