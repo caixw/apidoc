@@ -14,6 +14,57 @@ import (
 	"github.com/caixw/apidoc/v5/doc"
 )
 
+func TestFindRequestByContentType(t *testing.T) {
+	a := assert.New(t)
+	data := []*struct {
+		// 输入参数
+		requests []*doc.Request
+		ct       string
+
+		// 返回参数
+		index int
+	}{
+		{
+			index: -1,
+		},
+		{
+			requests: []*doc.Request{{Mimetype: "application/json"}},
+			ct:       "application/json",
+			index:    0,
+		},
+		{
+			requests: []*doc.Request{{Mimetype: "application/json"}},
+			ct:       "not/exists",
+			index:    -1,
+		},
+		{
+			requests: []*doc.Request{{Mimetype: "application/json"}, {Mimetype: "text/xml"}},
+			ct:       "text/xml",
+			index:    1,
+		},
+		{
+			requests: []*doc.Request{{}, {Mimetype: "text/xml"}},
+			ct:       "text/xml",
+			index:    1,
+		},
+		{ // 没有明确匹配，则匹配 none
+			requests: []*doc.Request{{}, {Mimetype: "application/json"}},
+			ct:       "text/xml",
+			index:    0,
+		},
+	}
+
+	for index, item := range data {
+		req := findRequestByContentType(item.requests, item.ct)
+
+		if item.index == -1 {
+			a.Nil(req, "not nil at %d", index)
+		} else {
+			a.Equal(req, item.requests[item.index], "not equal at %d", index)
+		}
+	}
+}
+
 func TestFindRequestByAccept(t *testing.T) {
 	a := assert.New(t)
 	data := []*struct {
@@ -130,30 +181,32 @@ func TestFindRequestByAccept(t *testing.T) {
 
 func TestValidRequest(t *testing.T) {
 	a := assert.New(t)
-	a.NotError(validRequest(nil, nil, ""))
+
+	r := httptest.NewRequest(http.MethodGet, "/path", nil)
+	a.Error(validRequest(nil, r))
 
 	item := data[len(data)-2]
 
 	// 匹配 json
 	body := bytes.NewBufferString(item.JSON)
-	r := httptest.NewRequest(http.MethodGet, "/path", body)
+	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "application/json")
 	r.Header.Set("encoding", "xxx")
-	a.NotError(validRequest(item.Type, r, "application/json"))
+	a.NotError(validRequest([]*doc.Request{item.Type}, r))
 
 	// 匹配 xml
 	body = bytes.NewBufferString(item.XML)
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "application/xml")
 	r.Header.Set("encoding", "yyy")
-	a.NotError(validRequest(item.Type, r, "application/xml"))
+	a.NotError(validRequest([]*doc.Request{item.Type}, r))
 
 	// 无法匹配 content-type
 	body = bytes.NewBufferString(`{"name":{"last":"l","first":"f"},"age":1}`)
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "not-exists")
 	r.Header.Set("encoding", "xxx")
-	a.Error(validRequest(item.Type, r, "not-exists"))
+	a.Error(validRequest([]*doc.Request{item.Type}, r))
 }
 
 func TestBuildResponse(t *testing.T) {

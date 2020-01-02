@@ -38,60 +38,89 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 			}
 		}
 
-		ct := r.Header.Get("Content-Type")
-		if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") { // 用户提交的 content-type 必须是明确的值
-			m.handleError(w, r, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
-			return
-		}
-		req := findRequestByContentType(api.Requests, ct)
-		if req == nil {
-			m.handleError(w, r, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
-			return
-		}
-
-		if err := validRequest(req, r, ct); err != nil {
-			m.handleError(w, r, "request.body.", err)
-			return
-		}
-
-		accepts, err := qheader.Accept(r)
-		if err != nil {
-			m.handleError(w, r, "request.headers[Accept]", err)
-			return
-		}
-		resp, accept := findRequestByAccept(m.doc.Mimetypes, api.Responses, accepts)
-		if resp == nil {
-			m.handleError(w, r, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
-			return
-		}
-
-		data, err := buildResponse(resp, r)
-		if err != nil {
-			m.handleError(w, r, "response.body.", err)
-			return
-		}
-
-		w.Header().Set("Content-Type", accept)
-		w.Header().Set("Server", vars.Name)
-		for _, item := range resp.Headers {
-			switch item.Type {
-			case doc.Bool:
-				w.Header().Set(item.Name, strconv.FormatBool(generateBool()))
-			case doc.Number:
-				w.Header().Set(item.Name, strconv.FormatInt(generateNumber(item), 10))
-			case doc.String:
-				w.Header().Set(item.Name, generateString(item))
-			default:
-				m.handleError(w, r, "response.headers", locale.Errorf(locale.ErrInvalidFormat))
+		if len(api.Requests) > 0 { // GET、OPTIONS 之类的可能没有 body
+			if err := validRequest(api.Requests, r); err != nil {
+				m.handleError(w, r, "request.body.", err)
 				return
 			}
 		}
 
-		w.WriteHeader(int(resp.Status))
-		if _, err := w.Write(data); err != nil {
-			m.h.Error(message.Erro, err) // 此时状态码已经输出
-		}
+		m.renderResponse(api, w, r)
 	})
+}
+
+func validRequest(requests []*doc.Request, r *http.Request) error {
+	ct := r.Header.Get("Content-Type")
+	if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") { // 用户提交的 content-type 必须是明确的值
+		return message.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
+	}
+	req := findRequestByContentType(requests, ct)
+	if req == nil {
+		return message.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
+	}
+
+	for _, header := range req.Headers {
+		if err := validParam(header, r.Header.Get(header.Name)); err != nil {
+			return err
+		}
+	}
+
+	content, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+	if err = r.Body.Close(); err != nil {
+		return err
+	}
+
+	switch ct {
+	case "application/json":
+		return validJSON(req, content)
+	case "application/xml", "text/xml":
+		return validXML(req, content)
+	default:
+		return message.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
+	}
+}
+
+func (m *Mock) renderResponse(api *doc.API, w http.ResponseWriter, r *http.Request) {
+	accepts, err := qheader.Accept(r)
+	if err != nil {
+		m.handleError(w, r, "request.headers[Accept]", err)
+		return
+	}
+	resp, accept := findRequestByAccept(m.doc.Mimetypes, api.Responses, accepts)
+	if resp == nil {
+		m.handleError(w, r, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
+		return
+	}
+
+	data, err := buildResponse(resp, r)
+	if err != nil {
+		m.handleError(w, r, "response.body.", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", accept)
+	w.Header().Set("Server", vars.Name)
+	for _, item := range resp.Headers {
+		switch item.Type {
+		case doc.Bool:
+			w.Header().Set(item.Name, strconv.FormatBool(generateBool()))
+		case doc.Number:
+			w.Header().Set(item.Name, strconv.FormatInt(generateNumber(item), 10))
+		case doc.String:
+			w.Header().Set(item.Name, generateString(item))
+		default:
+			m.handleError(w, r, "response.headers", locale.Errorf(locale.ErrInvalidFormat))
+			return
+		}
+	}
+
+	w.WriteHeader(int(resp.Status))
+	if _, err := w.Write(data); err != nil {
+		m.h.Error(message.Erro, err) // 此时状态码已经输出
+	}
 }
 
 func findRequestByContentType(requests []*doc.Request, ct string) *doc.Request {
@@ -237,35 +266,6 @@ func validParam(p *doc.Param, val string) error {
 	}
 
 	return nil
-}
-
-func validRequest(p *doc.Request, r *http.Request, contentType string) error {
-	if p == nil {
-		return nil
-	}
-
-	for _, header := range p.Headers {
-		if err := validParam(header, r.Header.Get(header.Name)); err != nil {
-			return err
-		}
-	}
-
-	content, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return err
-	}
-	if err = r.Body.Close(); err != nil {
-		return err
-	}
-
-	switch contentType {
-	case "application/json":
-		return validJSON(p, content)
-	case "application/xml", "text/xml":
-		return validXML(p, content)
-	default:
-		return message.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
-	}
 }
 
 func buildResponse(p *doc.Request, r *http.Request) ([]byte, error) {
