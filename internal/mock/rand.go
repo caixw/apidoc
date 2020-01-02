@@ -11,6 +11,20 @@ import (
 	"github.com/caixw/apidoc/v5/doc"
 )
 
+var randOptions = &struct {
+	maxSliceSize  int
+	maxNumber     int
+	maxStringSize int
+	minStringSize int
+	StringData    []byte
+}{
+	maxSliceSize:  100,
+	maxNumber:     10000,
+	maxStringSize: 100,
+	minStringSize: 5,
+	StringData:    rands.AlphaNumber,
+}
+
 // 当前文件提供了一些生成随机测试数据的函数
 
 // 测试数据为了方便验证正确性，生成的值是固定的，
@@ -43,7 +57,7 @@ func generateNumber(p *doc.Param) int64 {
 	if test {
 		return 1024
 	}
-	return rand.Int63()
+	return rand.Int63n(int64(randOptions.maxNumber))
 }
 
 func generateString(p *doc.Param) string {
@@ -58,7 +72,7 @@ func generateString(p *doc.Param) string {
 	if test {
 		return "1024"
 	}
-	return rands.String(10, 32, rands.AlphaNumber)
+	return rands.String(randOptions.minStringSize, randOptions.maxStringSize, randOptions.StringData)
 }
 
 // 生成随机的数组长度
@@ -66,5 +80,5 @@ func generateSliceSize() int {
 	if test {
 		return 5
 	}
-	return rand.Intn(100)
+	return rand.Intn(randOptions.maxSliceSize)
 }
