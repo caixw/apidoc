@@ -89,7 +89,14 @@ func (m *Mock) renderResponse(api *doc.API, w http.ResponseWriter, r *http.Reque
 		m.handleError(w, r, "request.headers[Accept]", err)
 		return
 	}
-	resp, accept := findRequestByAccept(m.doc.Mimetypes, api.Responses, accepts)
+
+	responses := make([]*doc.Request, len(api.Responses), len(api.Responses)+len(m.doc.Responses))
+	copy(responses, api.Responses)
+	for _, resp := range m.doc.Responses {
+		responses = append(responses, resp)
+	}
+
+	resp, accept := findResponseByAccept(m.doc.Mimetypes, responses, accepts)
 	if resp == nil {
 		m.handleError(w, r, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
 		return
@@ -159,7 +166,7 @@ func matchContentType(ct1, ct2 string) string {
 }
 
 // accepts 必须是已经按权重进行排序的。
-func findRequestByAccept(mimetypes []string, requests []*doc.Request, accepts []*qheader.Header) (*doc.Request, string) {
+func findResponseByAccept(mimetypes []string, requests []*doc.Request, accepts []*qheader.Header) (*doc.Request, string) {
 	if len(requests) == 0 {
 		return nil, ""
 	}

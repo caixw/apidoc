@@ -65,7 +65,7 @@ func TestFindRequestByContentType(t *testing.T) {
 	}
 }
 
-func TestFindRequestByAccept(t *testing.T) {
+func TestFindResponseByAccept(t *testing.T) {
 	a := assert.New(t)
 	data := []*struct {
 		// 输入参数
@@ -168,7 +168,7 @@ func TestFindRequestByAccept(t *testing.T) {
 	}
 
 	for index, item := range data {
-		req, ct := findRequestByAccept(item.mimetypes, item.requests, item.accepts)
+		req, ct := findResponseByAccept(item.mimetypes, item.requests, item.accepts)
 
 		a.Equal(ct, item.ct, "not equal at %d,v1: %s,v2:%s", index, ct, item.ct)
 		if item.index == -1 {
