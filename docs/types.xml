@@ -69,7 +69,7 @@
             <item name="description" type="richtext" required="false" />
             <item name="path" type="path" required="false" />
             <item name="request" type="request[]" required="false" />
-            <item name="response" type="request[]" required="true" />
+            <item name="response" type="request[]" required="false" />
             <item name="callback" type="callback" required="false" />
             <item name="tag" type="string[]" required="false" />
             <item name="server" type="string[]" required="false" />

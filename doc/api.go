@@ -27,8 +27,8 @@ type API struct {
 	Path        *Path      `xml:"path"`
 	Summary     string     `xml:"summary,attr"`
 	Description Richtext   `xml:"description,omitempty"`
-	Requests    []*Request `xml:"request"` // 不同的 mimetype 可能会定义不同
-	Responses   []*Request `xml:"response"`
+	Requests    []*Request `xml:"request,omitempty"` // 不同的 mimetype 可能会定义不同
+	Responses   []*Request `xml:"response,omitempty"`
 	Callback    *Callback  `xml:"callback,omitempty"`
 	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
 	Headers     []*Param   `xml:"header,omitempty"`
