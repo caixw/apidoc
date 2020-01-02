@@ -17,13 +17,21 @@ cmd 为子命令，args 为传递给子命令的参数，目前支持以下子�
 源代码采用 MIT 开源许可证，发布于 %s
 详细信息可访问官网 %s
 `,
-	CmdHelpUsage:         "显示帮助信息",
-	CmdVersionUsage:      "显示版本信息",
-	CmdLangUsage:         "显示所有支持的语言",
-	CmdLocaleUsage:       "显示所有支持的本地化内容",
-	CmdDetectUsage:       "根据目录下的内容生成配置文件",
-	CmdTestUsage:         "测试语法的正确性",
-	CmdMockUsage:         "启用 Mock 服务",
+	CmdHelpUsage:    "显示帮助信息",
+	CmdVersionUsage: "显示版本信息",
+	CmdLangUsage:    "显示所有支持的语言",
+	CmdLocaleUsage:  "显示所有支持的本地化内容",
+	CmdDetectUsage:  "根据目录下的内容生成配置文件",
+	CmdTestUsage:    "测试语法的正确性",
+	CmdMockUsage: `启用 mock 服务
+
+用法：
+apidoc mock [options] [path]
+
+options 可以是以下参数：
+%s
+
+path 表示文档路径，或不指定，则使用当前工作目录 ./ 代替。`,
 	CmdBuildUsage:        "生成文档内容",
 	Version:              "版本：%s\n文档：%s\n提交：%s\nGo：%s",
 	CmdNotFound:          "子命令 %s 未找到\n",

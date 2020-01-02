@@ -90,6 +90,11 @@ func doMock(io.Writer) error {
 }
 
 func mockUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdMockUsage))
+	buf := new(bytes.Buffer)
+	mockFlagSet.SetOutput(buf)
+	mockFlagSet.PrintDefaults()
+	mockFlagSet.SetOutput(w)
+
+	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdMockUsage, buf.String()))
 	return err
 }
