@@ -23,48 +23,48 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 
 		for _, query := range api.Path.Queries {
 			if err := validParam(query, r.FormValue(query.Name)); err != nil {
-				m.handleError(api, w, "queries["+query.Name+"]", err)
+				m.handleError(w, r, "queries["+query.Name+"]", err)
 				return
 			}
 		}
 
 		for _, header := range api.Headers {
 			if err := validParam(header, r.Header.Get(header.Name)); err != nil {
-				m.handleError(api, w, "headers["+header.Name+"]", err)
+				m.handleError(w, r, "headers["+header.Name+"]", err)
 				return
 			}
 		}
 
 		ct := r.Header.Get("Content-Type")
-		if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") {
-			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
+		if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") { // 用户提交的 content-type 必须是明确的值
+			m.handleError(w, r, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
 			return
 		}
-		req, ct := m.findRequestByContentType(api.Requests, []*qheader.Header{{Value: ct}})
+		req := findRequestByContentType(api.Requests, ct)
 		if req == nil {
-			m.handleError(api, w, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
+			m.handleError(w, r, "headers[content-type]", locale.Errorf(locale.ErrInvalidValue))
 			return
 		}
 
 		if err := validRequest(req, r, ct); err != nil {
-			m.handleError(api, w, "request.body.", err)
+			m.handleError(w, r, "request.body.", err)
 			return
 		}
 
 		accepts, err := qheader.Accept(r)
 		if err != nil {
-			m.handleError(api, w, "request.headers[Accept]", err)
+			m.handleError(w, r, "request.headers[Accept]", err)
 			return
 		}
-		resp, accept := m.findRequestByContentType(api.Responses, accepts)
+		resp, accept := findRequestByAccept(m.doc.Mimetypes, api.Responses, accepts)
 		if resp == nil {
-			m.handleError(api, w, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
+			m.handleError(w, r, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
 			return
 		}
 
 		data, err := buildResponse(resp, r)
 		if err != nil {
-			m.handleError(api, w, "response.body.", err)
+			m.handleError(w, r, "response.body.", err)
 			return
 		}
 
@@ -79,7 +79,7 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 			case doc.String:
 				w.Header().Set(item.Name, generateString(item))
 			default:
-				m.handleError(api, w, "response.headers", locale.Errorf(locale.ErrInvalidFormat))
+				m.handleError(w, r, "response.headers", locale.Errorf(locale.ErrInvalidFormat))
 				return
 			}
 		}
@@ -91,10 +91,32 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 	})
 }
 
-// 查找第一个符合条件的 Request 实例，如果用户定义了多个相同 mimetype 的实例，也只返回第一符合要求的
-func (m *Mock) findRequestByContentType(requests []*doc.Request, accepts []*qheader.Header) (*doc.Request, string) {
-	var none *doc.Request // 未指定任何 mimetype 值的 doc.Request
-	var canMatchAny bool  // 表示 accepts 不挑食，可匹配任意值的 content-type
+func findRequestByContentType(requests []*doc.Request, ct string) *doc.Request {
+	var none *doc.Request
+	for _, req := range requests {
+		if req.Mimetype == ct {
+			return req
+		}
+
+		if none == nil && req.Mimetype == "" {
+			none = req
+		}
+	}
+
+	if none != nil {
+		return none
+	}
+
+	return nil
+}
+
+func findRequestByAccept(mimetypes []string, requests []*doc.Request, accepts []*qheader.Header) (*doc.Request, string) {
+	if len(requests) == 0 {
+		return nil, ""
+	}
+
+	var none *doc.Request // 表示 requests 中 mimetype 值为空的第一个子项
+	var canMatchAny bool  // 表示 accepts 中有 Value 的值为 */* 的子项
 
 	// 从 requests 中查找是否有符合 accepts 的内容，
 	// 同时也获取 requests 中 mimetype 为空值项赋予 none，
@@ -116,7 +138,7 @@ func (m *Mock) findRequestByContentType(requests []*doc.Request, accepts []*qhea
 	// 如果存在 none，则从 doc.mimetypes 中查找同时存在于 doc.mimetypes
 	// 与 accepts 的 content-type 作为 none 的 content-type 值返回。
 	if none != nil {
-		for _, mt := range m.doc.Mimetypes {
+		for _, mt := range mimetypes {
 			for _, accept := range accepts {
 				if accept.Value != "*/*" && accept.Value == mt {
 					return none, accept.Value
@@ -129,7 +151,7 @@ func (m *Mock) findRequestByContentType(requests []*doc.Request, accepts []*qhea
 	if canMatchAny {
 		mimetype := requests[0].Mimetype
 		if mimetype == "" {
-			mimetype = m.doc.Mimetypes[0]
+			mimetype = mimetypes[0]
 		}
 
 		if none != nil {
@@ -142,8 +164,8 @@ func (m *Mock) findRequestByContentType(requests []*doc.Request, accepts []*qhea
 }
 
 // 处理 serveHTTP 中的错误
-func (m *Mock) handleError(api *doc.API, w http.ResponseWriter, field string, err error) {
-	file := string(api.Method) + " " + api.Path.Path
+func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string, err error) {
+	file := r.Method + " " + r.URL.Path
 
 	if serr, ok := err.(*message.SyntaxError); ok {
 		if serr.Field == "" {
@@ -168,7 +190,7 @@ func validParam(p *doc.Param, val string) error {
 	}
 
 	if val == "" && p.Type != doc.String { // 字符串的默认值可以为 “”
-		if p.Optional {
+		if p.Optional || p.Default != "" {
 			return nil
 		}
 
