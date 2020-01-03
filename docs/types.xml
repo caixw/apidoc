@@ -96,7 +96,7 @@
             <item name="description" type="richtext" required="false" />
             <item name="enum" type="enum[]" required="false" />
             <item name="param" type="param[]" required="false" />
-            <item name="example" type="example" required="false" />
+            <item name="example" type="example[]" required="false" />
             <item name="header" type="header[]" required="false" />
         </type>
 
