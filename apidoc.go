@@ -147,6 +147,9 @@ func Valid(content []byte) error {
 }
 
 // Mock 生成 Mock 中间件
+//
+// data 为文档内容；
+// servers 为文档中所有 server 以及对应的路由前缀。
 func Mock(h *message.Handler, data []byte, servers map[string]string) (http.Handler, error) {
 	d := doc.New()
 	if err := d.FromXML("", 0, data); err != nil {
@@ -157,6 +160,9 @@ func Mock(h *message.Handler, data []byte, servers map[string]string) (http.Hand
 }
 
 // MockFile 生成 Mock 中间件
+//
+// path 为文档路径，可以是本地路径也可以是 URL，根据是否为 http 或是 https 开头做判断；
+// servers 为文档中所有 server 以及对应的路由前缀。
 func MockFile(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
 	return mock.Load(h, path, servers)
 }
