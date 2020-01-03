@@ -182,7 +182,7 @@
 
     <div class="body">
         <div class="requests">
-            <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
+            <h4 class="header"><xsl:copy-of select="$locale-request" /></h4>
             <xsl:call-template name="requests">
                 <xsl:with-param name="requests" select="request" />
                 <xsl:with-param name="path" select="path" />
@@ -190,7 +190,7 @@
             </xsl:call-template>
         </div>
         <div class="responses">
-            <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
+            <h4 class="header"><xsl:copy-of select="$locale-response" /></h4>
             <xsl:call-template name="responses">
                 <xsl:with-param name="responses" select="response | /apidoc/response" />
             </xsl:call-template>
@@ -217,7 +217,7 @@
 
     <div class="body">
         <div class="requests">
-            <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
+            <h4 class="header"><xsl:copy-of select="$locale-request" /></h4>
             <xsl:call-template name="requests">
                 <xsl:with-param name="requests" select="request" />
                 <xsl:with-param name="path" select="path" />
@@ -227,7 +227,7 @@
 
         <xsl:if test="response">
             <div class="responses">
-                <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
+                <h4 class="header"><xsl:copy-of select="$locale-response" /></h4>
                 <xsl:call-template name="responses">
                     <xsl:with-param name="responses" select="response" />
                 </xsl:call-template>
@@ -243,55 +243,53 @@
 <xsl:param name="requests" />
 <xsl:param name="path" />
 <xsl:param name="headers" /> <!-- 公用的报头 -->
-<div class="request">
-    <xsl:if test="$path/param">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title">
-                <xsl:copy-of select="$locale-path-param" />
-            </xsl:with-param>
-            <xsl:with-param name="param" select="$path/param" />
-            <xsl:with-param name="simple" select="'true'" />
+<xsl:if test="$path/param">
+    <xsl:call-template name="param">
+        <xsl:with-param name="title">
+            <xsl:copy-of select="$locale-path-param" />
+        </xsl:with-param>
+        <xsl:with-param name="param" select="$path/param" />
+        <xsl:with-param name="simple" select="'true'" />
+    </xsl:call-template>
+</xsl:if>
+
+<xsl:if test="$path/query">
+    <xsl:call-template name="param">
+        <xsl:with-param name="title">
+            <xsl:copy-of select="$locale-query" />
+        </xsl:with-param>
+        <xsl:with-param name="param" select="$path/query" />
+        <xsl:with-param name="simple" select="'true'" />
+    </xsl:call-template>
+</xsl:if>
+
+<xsl:if test="$headers">
+    <xsl:call-template name="param">
+        <xsl:with-param name="title">
+            <xsl:copy-of select="$locale-header" />
+        </xsl:with-param>
+        <xsl:with-param name="param" select="$headers" />
+        <xsl:with-param name="simple" select="'true'" />
+    </xsl:call-template>
+</xsl:if>
+
+<xsl:variable name="request-any" select="$requests[not(@mimetype)]" />
+<xsl:for-each select="/apidoc/mimetype | $requests/@mimetype[not(/apidoc/mimetype=.)]">
+    <xsl:variable name="mimetype" select="." />
+    <xsl:variable name="request" select="$requests[@mimetype=$mimetype]" />
+    <xsl:if test="$request">
+        <xsl:call-template name="request-body">
+            <xsl:with-param name="mimetype" select="$mimetype" />
+            <xsl:with-param name="request" select="$request" />
         </xsl:call-template>
     </xsl:if>
-
-    <xsl:if test="$path/query">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title">
-                <xsl:copy-of select="$locale-query" />
-            </xsl:with-param>
-            <xsl:with-param name="param" select="$path/query" />
-            <xsl:with-param name="simple" select="'true'" />
+    <xsl:if test="not($request) and $request-any">
+        <xsl:call-template name="request-body">
+            <xsl:with-param name="mimetype" select="$mimetype" />
+            <xsl:with-param name="request" select="$request-any" />
         </xsl:call-template>
     </xsl:if>
-
-    <xsl:if test="$headers">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title">
-                <xsl:copy-of select="$locale-header" />
-            </xsl:with-param>
-            <xsl:with-param name="param" select="$headers" />
-            <xsl:with-param name="simple" select="'true'" />
-        </xsl:call-template>
-    </xsl:if>
-
-    <xsl:variable name="request-any" select="$requests[not(@mimetype)]" />
-    <xsl:for-each select="/apidoc/mimetype | $requests/@mimetype[not(/apidoc/mimetype=.)]">
-        <xsl:variable name="mimetype" select="." />
-        <xsl:variable name="request" select="$requests[@mimetype=$mimetype]" />
-        <xsl:if test="$request">
-            <xsl:call-template name="request-body">
-                <xsl:with-param name="mimetype" select="$mimetype" />
-                <xsl:with-param name="request" select="$request" />
-            </xsl:call-template>
-        </xsl:if>
-        <xsl:if test="not($request) and $request-any">
-            <xsl:call-template name="request-body">
-                <xsl:with-param name="mimetype" select="$mimetype" />
-                <xsl:with-param name="request" select="$request-any" />
-            </xsl:call-template>
-        </xsl:if>
-    </xsl:for-each>
-</div>
+</xsl:for-each>
 </xsl:template>
 
 
@@ -300,23 +298,12 @@
 <xsl:param name="request" />
 <details>
     <summary><xsl:value-of select="$mimetype" /></summary>
-    <xsl:if test="$request/header">
-        <xsl:call-template name="param">
-            <xsl:with-param name="title">
-                <xsl:copy-of select="$locale-header" />
-            </xsl:with-param>
-            <xsl:with-param name="param" select="$request/header" />
-            <xsl:with-param name="simple" select="'true'" />
-        </xsl:call-template>
-    </xsl:if>
-
-    <xsl:call-template name="param">
-        <xsl:with-param name="title"><xsl:copy-of select="$locale-body" /></xsl:with-param>
+    <xsl:call-template name="top-param">
+        <xsl:with-param name="mimetype" select="$mimetype" />
         <xsl:with-param name="param" select="$request" />
     </xsl:call-template>
 </details>
 </xsl:template>
-
 
 <xsl:template name="responses">
 <xsl:param name="responses" />
@@ -331,11 +318,13 @@
             <xsl:if test="$resp"><!-- 可能同时存在符合 resp 和 resp-any 的数据，优先取 resp -->
                 <xsl:call-template name="response">
                     <xsl:with-param name="response" select="$resp" />
+                    <xsl:with-param name="mimetype" select="$mimetype" />
                 </xsl:call-template>
             </xsl:if>
             <xsl:if test="not($resp) and $resp-any">
                 <xsl:call-template name="response">
                     <xsl:with-param name="response" select="$resp-any" />
+                    <xsl:with-param name="mimetype" select="$mimetype" />
                 </xsl:call-template>
             </xsl:if>
         </xsl:for-each>
@@ -348,23 +337,43 @@
 <!-- api/response 的界面 -->
 <xsl:template name="response">
 <xsl:param name="response" />
+<xsl:param name="mimetype" />
 
 <h5 class="status"><xsl:value-of select="$response/@status" /></h5>
+<xsl:call-template name="top-param">
+    <xsl:with-param name="mimetype" select="$mimetype" />
+    <xsl:with-param name="param" select="$response" />
+</xsl:call-template>
+</xsl:template>
 
-<xsl:if test="$response/header">
+<!-- request 和 response 参数的顶层元素调用模板 -->
+<xsl:template name="top-param">
+<xsl:param name="mimetype" />
+<xsl:param name="param" />
+<xsl:if test="$param/header">
     <xsl:call-template name="param">
         <xsl:with-param name="title">
             <xsl:copy-of select="$locale-header" />
         </xsl:with-param>
-        <xsl:with-param name="param" select="$response/header" />
+        <xsl:with-param name="param" select="$param/header" />
         <xsl:with-param name="simple" select="'true'" />
     </xsl:call-template>
 </xsl:if>
 
+
 <xsl:call-template name="param">
     <xsl:with-param name="title"><xsl:copy-of select="$locale-body" /></xsl:with-param>
-    <xsl:with-param name="param" select="$response" />
+    <xsl:with-param name="param" select="$param" />
 </xsl:call-template>
+
+<xsl:if test="$param/example">
+    <h4 class="title">&#x27a4;&#160;<xsl:copy-of select="$locale-example" /></h4>
+    <xsl:for-each select="$param/example">
+        <xsl:if test="not(@mimetype) or @mimetype=$mimetype">
+            <pre class="example"><xsl:copy-of select="node()" /></pre>
+        </xsl:if>
+    </xsl:for-each>
+</xsl:if>
 </xsl:template>
 
 
@@ -402,13 +411,6 @@
                 </xsl:choose>
             </tbody>
         </table>
-
-        <xsl:if test="$param/example">
-        <h4 class="title">&#x27a4;&#160;<xsl:copy-of select="$locale-example" /></h4>
-        <xsl:for-each select="$param/example">
-            <pre class="example"><xsl:copy-of select="node()" /></pre>
-        </xsl:for-each>
-        </xsl:if>
     </div>
 </xsl:if>
 </xsl:template>

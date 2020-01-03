@@ -329,19 +329,14 @@ main .api .body {
     flex-flow: wrap;
 }
 
-main .api .param {
-    margin-top: var(--padding);
-}
-
-main .api .param .title,
-main .api .param .title {
-    margin: 0;
-    opacity: 1 !important;
+main .api .title,
+main .api .title {
+    margin: var(--article-padding) 0 0;
     font-weight: normal;
 }
 
 main .api .body .responses .status {
-    margin: calc(var(--padding) + var(--article-padding)) 0 var(--article-padding);
+    margin: var(--padding) 0 var(--article-padding);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 3px;
 }
@@ -360,8 +355,8 @@ main .api .body .requests {
     border-right: 1px dotted var(--border-color);
 }
 
-main .api .body .requests .title,
-main .api .body .responses .title {
+main .api .body .requests .header,
+main .api .body .responses .header {
     margin: 0;
     opacity: .5;
     padding: var(--article-padding);
@@ -372,9 +367,10 @@ main .api .body .responses details:not([open]) {
     margin-bottom: var(--article-padding);
 }
 
+main .api .body .requests>.param,
 main .api .body .requests details summary ~ *,
 main .api .body .responses details summary ~ * {
-    padding: var(--article-padding);
+    padding: 0 var(--article-padding);
 }
 
 main .api .responses details summary,

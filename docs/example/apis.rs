@@ -46,6 +46,9 @@ fn getList() {}
 //     <server>admin</server>
 //     <server>old-client</server>
 //
+//     <header name="name" type="string"><description><![CDATA[desc]]></description></header>
+//     <header name="name1" type="string" summary="name1 desc" />
+//
 //     <request type="object">
 //         <header name="content-type" summary="application/json" type="string" />
 //         <param name="count" type="number" optional="false" summary="summary" />
