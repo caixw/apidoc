@@ -61,6 +61,14 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return err
 	}
 
+	if shadow.Mimetype != "" {
+		for _, exp := range shadow.Examples {
+			if exp.Mimetype != shadow.Mimetype {
+				return newSyntaxError(field+"/example/@"+exp.Mimetype, locale.ErrInvalidValue)
+			}
+		}
+	}
+
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
 		return newSyntaxError(field+"/param", locale.ErrDuplicateValue)

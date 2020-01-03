@@ -18,11 +18,11 @@
     ]]>
     </description>
 
-    <request mimetype="json,xml" type="number" summary="请求内容">
+    <request mimetype="json" type="number" summary="请求内容">
         <header name="authorization" type="string" summary="token" />
     </request>
 
-    <response status="200" mimetype="json,xml" type="object">
+    <response status="200" mimetype="json" type="object">
         <param name="id" type="number" default="1" summary="id" />
         <param name="sex" type="string" default="male" summary="sex">
             <enum value="male"><description>男性</description></enum>
@@ -41,7 +41,7 @@
         </example>
     </response>
 
-    <response status="400" mimetype="json/xml" type="string">
+    <response status="400" mimetype="json" type="string">
     </response>
 
     <callback method="post">

@@ -60,6 +60,14 @@ func TestRequest_UnmarshalXML(t *testing.T) {
 	</Request>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
+	// example 不匹配
+	obj1 = &Request{}
+	str = `<Request type="Object" mimetype="json">
+		<param name="n1" type="string" summary="n1" />
+		<example mimetype="xml"><![CDATA[xx]]></example>
+	</Request>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
 	// 语法错误
 	obj1 = &Request{}
 	str = `<Request deprecated="x.1.1" mimetype="json">text</Request>`

@@ -30,7 +30,7 @@ func TestAPI(t *testing.T) {
 
 	a.Equal(len(api.Responses), 2)
 	resp := api.Responses[0]
-	a.Equal(resp.Mimetype, "json,xml").
+	a.Equal(resp.Mimetype, "json").
 		Equal(resp.Status, 200).
 		Equal(resp.Type, Object).
 		Equal(len(resp.Items), 3)
@@ -44,7 +44,7 @@ func TestAPI(t *testing.T) {
 
 	a.Equal(1, len(api.Requests))
 	req := api.Requests[0]
-	a.Equal(req.Mimetype, "json,xml").
+	a.Equal(req.Mimetype, "json").
 		Equal(req.Headers[0].Name, "authorization")
 
 	// callback
