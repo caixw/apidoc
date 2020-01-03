@@ -329,23 +329,6 @@ main .api .body {
     flex-flow: wrap;
 }
 
-main .api .body .requests,
-main .api .body .responses {
-    flex: 1 1 50%;
-    box-sizing: border-box;
-    min-width: var(--min-width);
-    padding: var(--article-padding);
-}
-main .api .body .requests {
-    border-right: 1px dotted var(--border-color);
-}
-
-main .api .body .requests .title,
-main .api .body .responses .title {
-    margin: 0;
-    opacity: .5;
-}
-
 main .api .param {
     margin-top: var(--padding);
 }
@@ -376,11 +359,46 @@ main .api .param .parent-type {
     opacity: .5;
 }
 
+main .api .body .requests,
+main .api .body .responses {
+    flex: 1 1 50%;
+    box-sizing: border-box;
+    min-width: var(--min-width);
+}
+main .api .body .requests {
+    border-right: 1px dotted var(--border-color);
+}
+
+main .api .body .requests .title,
+main .api .body .responses .title {
+    margin: 0;
+    opacity: .5;
+    padding: var(--article-padding);
+}
+
+main .api .body .requests details:not([open]),
+main .api .body .responses details:not([open]) {
+    margin-bottom: var(--article-padding);
+}
+
+main .api .body .requests details summary ~ *,
+main .api .body .responses details summary ~ * {
+    padding: var(--article-padding);
+}
+
 main .api .responses details summary,
 main .api .requests details summary {
     cursor: pointer;
-    margin: .5rem 0;
-    line-height: 1;
+    padding: var(--article-padding);
+}
+
+main .api .responses details[open] summary,
+main .api .requests details[open] summary,
+main .api .responses details summary:hover,
+main .api .requests details summary:hover {
+    cursor: pointer;
+    background-color: var(--border-color);
+    padding: var(--article-padding);
 }
 
 /*************************** footer ***********************/
