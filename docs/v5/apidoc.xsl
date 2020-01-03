@@ -376,14 +376,9 @@
 
 <xsl:if test="$param/@type">
     <div class="param">
-        <h4 class="title">
-            &#x27a4;&#160;<xsl:copy-of select="$title" />
-            <xsl:if test="$param/example">
-                &#160;(<a class="toggle-example"><xsl:copy-of select="$locale-example" /></a>)
-            </xsl:if>
-        </h4>
+        <h4 class="title">&#x27a4;&#160;<xsl:copy-of select="$title" /></h4>
 
-        <table class="param-list" data-visible="true">
+        <table class="param-list">
             <thead>
                 <tr>
                     <th><xsl:copy-of select="$locale-var" /></th>
@@ -409,7 +404,10 @@
         </table>
 
         <xsl:if test="$param/example">
-        <pre class="example" data-visible="false" data-mimetype="{$param/example/@mimetype}"><xsl:copy-of select="$param/example/node()" /></pre>
+        <h4 class="title">&#x27a4;&#160;<xsl:copy-of select="$locale-example" /></h4>
+        <xsl:for-each select="$param/example">
+            <pre class="example"><xsl:copy-of select="node()" /></pre>
+        </xsl:for-each>
         </xsl:if>
     </div>
 </xsl:if>

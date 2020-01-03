@@ -340,15 +340,6 @@ main .api .param .title {
     font-weight: normal;
 }
 
-main .api .param .example {
-    display: none;
-    margin: 0;
-}
-
-main .api .param .toggle-example {
-    cursor: pointer;
-}
-
 main .api .body .responses .status {
     margin: calc(var(--padding) + var(--article-padding)) 0 var(--article-padding);
     border-bottom: 1px solid var(--border-color);
