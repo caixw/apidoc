@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"bytes"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -26,18 +25,22 @@ func (srv servers) Get() interface{} {
 }
 
 func (srv servers) Set(v string) error {
+	if index := strings.IndexByte(v, ','); index <= 0 {
+		return locale.Errorf(locale.ErrInvalidFormat)
+	}
+
 	pairs := strings.Split(v, ",")
 	for _, pair := range pairs {
 		index := strings.IndexByte(pair, '=')
 		if index <= 0 {
-			return errors.New("无效的参数值")
+			return locale.Errorf(locale.ErrInvalidValue)
 		}
 
 		var v string
 		if index < len(pair) {
 			v = pair[index+1:]
 		}
-		srv[pair[:index]] = v
+		srv[strings.TrimSpace(pair[:index])] = v
 	}
 
 	return nil
@@ -56,8 +59,7 @@ func (srv servers) String() string {
 		buf.WriteString(v)
 		buf.WriteByte(',')
 	}
-	buf.Truncate(1)
-
+	buf.Truncate(buf.Len() - 1)
 	return buf.String()
 }
 

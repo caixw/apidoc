@@ -20,13 +20,12 @@ func initDetect() {
 func detect(w io.Writer) error {
 	path := getPath(detectFlagSet)
 	h := message.NewHandler(newHandlerFunc())
+	defer h.Stop()
 
 	if err := apidoc.Detect(path, true); err != nil {
-		printLine(erroOut, erroColor, err)
-		return nil
+		return err
 	}
-	printLocale(succOut, succColor, locale.ConfigWriteSuccess, path)
 
-	h.Stop()
+	h.Message(message.Succ, locale.ConfigWriteSuccess, path)
 	return nil
 }

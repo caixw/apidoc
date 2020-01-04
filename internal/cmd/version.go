@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io"
 	"runtime"
 	"strings"
@@ -18,6 +19,7 @@ func initVersion() {
 
 func version(w io.Writer) error {
 	goVersion := strings.TrimLeft(runtime.Version(), "go")
-	printLocale(w, infoColor, locale.Version, apidoc.Version(), vars.DocVersion(), vars.CommitHash(), goVersion)
-	return nil
+	msg := locale.Sprintf(locale.Version, apidoc.Version(), vars.DocVersion(), vars.CommitHash(), goVersion)
+	_, err := fmt.Fprintln(w, msg)
+	return err
 }

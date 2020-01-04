@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
@@ -29,7 +30,9 @@ func doLocale(w io.Writer) error {
 
 	for k, v := range locales {
 		id := k + strings.Repeat(" ", maxID-len(k))
-		printLine(w, infoColor, id, v)
+		if _, err := fmt.Fprintln(w, id, v); err != nil {
+			return err
+		}
 	}
 
 	return nil

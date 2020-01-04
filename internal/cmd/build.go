@@ -20,8 +20,9 @@ func initBuild() {
 
 func build(w io.Writer) error {
 	h := message.NewHandler(newHandlerFunc())
+	defer h.Stop()
+
 	apidoc.LoadConfig(h, getPath(buildFlagSet)).Do(time.Now())
-	h.Stop()
 	return nil
 }
 

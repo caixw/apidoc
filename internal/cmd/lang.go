@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
@@ -38,7 +39,9 @@ func language(w io.Writer) error {
 	for _, l := range langs {
 		n := l.Name + strings.Repeat(" ", maxName-len(l.Name))
 		d := l.DisplayName + strings.Repeat(" ", maxDisplay-len(l.DisplayName))
-		printLine(w, infoColor, n, d, strings.Join(l.Exts, " "))
+		if _, err := fmt.Fprintln(w, n, d, strings.Join(l.Exts, " ")); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -56,14 +56,15 @@ func init() {
 // Exec 执行程序
 func Exec() {
 	if err := command.Exec(os.Args[1:]); err != nil {
-		printLine(erroOut, erroColor, err)
+		panic(err)
 	}
 }
 
 func usage(w io.Writer) error {
 	cmds := strings.Join(command.Commands(), ",")
-	printLocale(w, infoColor, locale.CmdUsage, vars.Name, cmds, vars.RepoURL, vars.OfficialURL)
-	return nil
+	msg := locale.Sprintf(locale.CmdUsage, vars.Name, cmds, vars.RepoURL, vars.OfficialURL)
+	_, err := fmt.Fprintln(w, msg)
+	return err
 }
 
 func newHandlerFunc() message.HandlerFunc {
@@ -90,18 +91,8 @@ func printMessage(out io.Writer, color colors.Color, prefix, msg string) {
 	if _, err := colors.Fprint(out, color, colors.Default, prefix); err != nil {
 		panic(err)
 	}
-	printLine(out, colors.Default, msg)
-}
 
-// 向控制台输出一行本地化的内容
-func printLocale(out io.Writer, color colors.Color, key xmessage.Reference, v ...interface{}) {
-	l := locale.Sprintf(key, v...)
-	printLine(out, color, l)
-}
-
-// 向控制台输出一行内容
-func printLine(out io.Writer, color colors.Color, v ...interface{}) {
-	if _, err := colors.Fprintln(out, color, colors.Default, v...); err != nil {
+	if _, err := colors.Fprintln(out, color, colors.Default, msg); err != nil {
 		panic(err)
 	}
 }

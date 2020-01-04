@@ -15,8 +15,7 @@ cmd 為子命令，args 為傳遞給子命令的參數，目前支持以下子�
 %s
 
 源代碼采用 MIT 開源許可證，發布於 %s
-詳細信息可訪問官網 %s
-`,
+詳細信息可訪問官網 %s`,
 	CmdHelpUsage:    "顯示幫助信息",
 	CmdVersionUsage: "顯示版本信息",
 	CmdLangUsage:    "顯示所有支持的語言",
