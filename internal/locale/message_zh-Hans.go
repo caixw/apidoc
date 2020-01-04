@@ -20,8 +20,16 @@ cmd 为子命令，args 为传递给子命令的参数，目前支持以下子�
 	CmdVersionUsage: "显示版本信息",
 	CmdLangUsage:    "显示所有支持的语言",
 	CmdLocaleUsage:  "显示所有支持的本地化内容",
-	CmdDetectUsage:  "根据目录下的内容生成配置文件",
-	CmdTestUsage:    "测试语法的正确性",
+	CmdDetectUsage: `根据目录下的内容生成配置文件
+
+用法：
+apidoc detect [options] [path]
+
+options 可以是以下参数：
+%s
+
+path 表示目录的路径，或不指定，表示使用当前工作目录 ./ 代替。`,
+	CmdTestUsage: "测试语法的正确性",
 	CmdMockUsage: `启用 mock 服务
 
 用法：
@@ -36,6 +44,7 @@ path 表示文档路径，或不指定，则使用当前工作目录 ./ 代替�
 	CmdNotFound:          "子命令 %s 未找到\n",
 	FlagMockPortUsage:    "指定 mock 服务的端口号",
 	FlagMockServersUsage: "指定 mock 服务时，文档中 server 变量对应的路由前缀",
+	FlagDetectRecursive:  "detect 子命令是否检测子目录的值",
 
 	VersionInCompatible: "当前程序与配置文件中指定的版本号不兼容",
 	Complete:            "完成！文档保存在：%s，总用时：%v",
