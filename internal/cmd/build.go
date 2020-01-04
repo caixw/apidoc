@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
 	"io"
 	"time"
 
@@ -16,7 +15,7 @@ import (
 var buildFlagSet *flag.FlagSet
 
 func initBuild() {
-	buildFlagSet = command.New("build", build, buildUsage)
+	buildFlagSet = command.New("build", build, buildUsage(locale.CmdBuildUsage))
 }
 
 func build(w io.Writer) error {
@@ -26,19 +25,10 @@ func build(w io.Writer) error {
 	return nil
 }
 
-func buildUsage(w io.Writer) error {
-	return cmdUsage(w, locale.CmdBuildUsage)
-}
-
 // 人命令行尾部获取路径参数，或是在未指定的情况下，采用当前目录。
 func getPath(fs *flag.FlagSet) string {
 	if fs != nil && 0 != fs.NArg() {
 		return fs.Arg(0)
 	}
 	return "./"
-}
-
-func cmdUsage(w io.Writer, key string) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(key))
-	return err
 }

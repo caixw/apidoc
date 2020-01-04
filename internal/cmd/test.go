@@ -14,7 +14,7 @@ import (
 var testFlagSet *flag.FlagSet
 
 func initTest() {
-	testFlagSet = command.New("test", test, testUsage)
+	testFlagSet = command.New("test", test, buildUsage(locale.CmdTestUsage))
 }
 
 func test(w io.Writer) error {
@@ -22,8 +22,4 @@ func test(w io.Writer) error {
 	apidoc.LoadConfig(h, getPath(testFlagSet)).Test()
 	h.Stop()
 	return nil
-}
-
-func testUsage(w io.Writer) error {
-	return cmdUsage(w, locale.CmdTestUsage)
 }

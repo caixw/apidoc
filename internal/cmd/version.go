@@ -13,15 +13,11 @@ import (
 )
 
 func initVersion() {
-	command.New("version", version, versionUsage)
+	command.New("version", version, buildUsage(locale.CmdVersionUsage))
 }
 
 func version(w io.Writer) error {
 	goVersion := strings.TrimLeft(runtime.Version(), "go")
 	printLocale(w, infoColor, locale.Version, apidoc.Version(), vars.DocVersion(), vars.CommitHash(), goVersion)
 	return nil
-}
-
-func versionUsage(w io.Writer) error {
-	return cmdUsage(w, locale.CmdVersionUsage)
 }

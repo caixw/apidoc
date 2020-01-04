@@ -105,3 +105,10 @@ func printLine(out io.Writer, color colors.Color, v ...interface{}) {
 		panic(err)
 	}
 }
+
+func buildUsage(key xmessage.Reference, v ...interface{}) cmdopt.DoFunc {
+	return func(w io.Writer) error {
+		_, err := fmt.Fprintln(w, locale.Sprintf(key, v...))
+		return err
+	}
+}

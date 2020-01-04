@@ -10,7 +10,7 @@ import (
 )
 
 func initLocale() {
-	command.New("locale", doLocale, localeUsage)
+	command.New("locale", doLocale, buildUsage(locale.CmdLocaleUsage))
 }
 
 func doLocale(w io.Writer) error {
@@ -33,8 +33,4 @@ func doLocale(w io.Writer) error {
 	}
 
 	return nil
-}
-
-func localeUsage(w io.Writer) error {
-	return cmdUsage(w, locale.CmdLocaleUsage)
 }

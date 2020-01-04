@@ -11,7 +11,7 @@ import (
 )
 
 func initLang() {
-	command.New("lang", language, langUsage)
+	command.New("lang", language, buildUsage(locale.CmdLangUsage))
 }
 
 func language(w io.Writer) error {
@@ -42,10 +42,6 @@ func language(w io.Writer) error {
 	}
 
 	return nil
-}
-
-func langUsage(w io.Writer) error {
-	return cmdUsage(w, locale.CmdLangUsage)
 }
 
 func calcMaxWidth(content string, max *int) {

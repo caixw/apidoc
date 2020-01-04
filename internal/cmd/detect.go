@@ -14,7 +14,7 @@ import (
 var detectFlagSet *flag.FlagSet
 
 func initDetect() {
-	detectFlagSet = command.New("detect", detect, detectUsage)
+	detectFlagSet = command.New("detect", detect, buildUsage(locale.CmdDetectUsage))
 }
 
 func detect(w io.Writer) error {
@@ -29,8 +29,4 @@ func detect(w io.Writer) error {
 
 	h.Stop()
 	return nil
-}
-
-func detectUsage(w io.Writer) error {
-	return cmdUsage(w, locale.CmdDetectUsage)
 }
