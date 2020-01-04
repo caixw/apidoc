@@ -19,7 +19,8 @@ func initTest() {
 
 func test(w io.Writer) error {
 	h := message.NewHandler(newHandlerFunc())
+	defer h.Stop()
+
 	apidoc.LoadConfig(h, getPath(testFlagSet)).Test()
-	h.Stop()
 	return nil
 }

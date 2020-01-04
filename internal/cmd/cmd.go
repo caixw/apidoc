@@ -26,10 +26,10 @@ const (
 )
 
 var (
-	succOut = os.Stdout
-	infoOut = os.Stdout
-	warnOut = os.Stderr
-	erroOut = os.Stderr
+	succOut io.Writer = os.Stdout
+	infoOut io.Writer = os.Stdout
+	warnOut io.Writer = os.Stderr
+	erroOut io.Writer = os.Stderr
 )
 
 var command *cmdopt.CmdOpt
@@ -39,10 +39,7 @@ func init() {
 		return locale.Sprintf(locale.CmdNotFound, name)
 	})
 
-	command.Help("help", func(w io.Writer) error {
-		_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdHelpUsage))
-		return err
-	})
+	command.Help("help", buildUsage(locale.CmdHelpUsage))
 
 	initBuild()
 	initDetect()
