@@ -17,6 +17,16 @@ func TestDisplayNames(t *testing.T) {
 	a.Equal(len(DisplayNames()), 3)
 }
 
+func TestTranslate(t *testing.T) {
+	a := assert.New(t)
+	a.Equal(Translate("zh-hans", ErrRequired), zhHans[ErrRequired])
+	a.Equal(Translate("zh-hant", ErrRequired), zhHant[ErrRequired])
+	a.NotEqual(Translate("zh-hant", ErrRequired), zhHans[ErrRequired])
+	a.Panic(func() {
+		Translate("not-well-format", ErrRequired)
+	})
+}
+
 func TestInit(t *testing.T) {
 	a := assert.New(t)
 

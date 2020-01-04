@@ -65,6 +65,5 @@ func Errorf(key message.Reference, v ...interface{}) error {
 
 // Translate 功能与 Sprintf 类似，但是可以指定本地化 ID 值。
 func Translate(localeID string, key message.Reference, v ...interface{}) string {
-	p := message.NewPrinter(language.MustParse(localeID))
-	return p.Sprintf(key, v...)
+	return message.NewPrinter(language.MustParse(localeID)).Sprintf(key, v...)
 }
