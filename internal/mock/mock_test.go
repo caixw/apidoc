@@ -4,6 +4,7 @@ package mock
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -493,6 +494,12 @@ func TestNew(t *testing.T) {
 
 	h.Stop()
 	a.Empty(erro.String())
+
+	// 版本号兼容性
+	_, _, h = messagetest.MessageHandler()
+	mock, err = New(h, &doc.Doc{APIDoc: "1.0.1"}, nil)
+	a.Error(err).Nil(mock)
+	h.Stop()
 }
 
 func TestLoad(t *testing.T) {
@@ -504,6 +511,16 @@ func TestLoad(t *testing.T) {
 
 	_, _, h = messagetest.MessageHandler()
 	mock, err = Load(h, "../../docs/example/index.xml", map[string]string{"admin": "admin"})
+	h.Stop()
+	a.NotError(err).NotNil(mock)
+
+	// load url
+	static := http.FileServer(http.Dir("../../docs/example"))
+	srv := httptest.NewServer(static)
+	defer srv.Close()
+
+	_, _, h = messagetest.MessageHandler()
+	mock, err = Load(h, srv.URL+"/index.xml", map[string]string{"admin": "admin"})
 	h.Stop()
 	a.NotError(err).NotNil(mock)
 }

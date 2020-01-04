@@ -85,6 +85,12 @@ func (validator *xmlValidator) validValue(v string) error {
 		return message.NewLocaleError("", field, 0, locale.ErrNotFound)
 	}
 
+	return validXMLParamValue(p, field, v)
+}
+
+// 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
+// field 表示 p 在整个对象中的位置信息。
+func validXMLParamValue(p *doc.Param, field, v string) error {
 	switch p.Type {
 	case doc.Number:
 		if !is.Number(v) {
@@ -224,10 +230,6 @@ func buildXML(p *doc.Request) ([]byte, error) {
 }
 
 func parseXML(p *doc.Param, chkArray, root bool) (*xmlBuilder, error) {
-	if p == nil || p.Type == doc.None {
-		return nil, nil
-	}
-
 	builder := &xmlBuilder{
 		start: xml.StartElement{
 			Name: xml.Name{
