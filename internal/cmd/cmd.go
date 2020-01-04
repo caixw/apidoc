@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io"
@@ -99,4 +100,13 @@ func buildUsage(key xmessage.Reference, v ...interface{}) cmdopt.DoFunc {
 		_, err := fmt.Fprintln(w, locale.Sprintf(key, v...))
 		return err
 	}
+}
+
+func getFlagSetUsage(fs *flag.FlagSet) string {
+	buf := new(bytes.Buffer)
+	origin := fs.Output()
+	fs.SetOutput(buf)
+	fs.PrintDefaults()
+	fs.SetOutput(origin)
+	return buf.String()
 }

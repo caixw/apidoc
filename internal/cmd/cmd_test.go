@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"bytes"
+	"flag"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -50,4 +51,14 @@ func TestBuildUsage(t *testing.T) {
 	a.NotNil(f)
 	a.NotError(f(w))
 	a.Equal(w.String(), locale.Sprintf(locale.CmdHelpUsage)+"\n")
+}
+
+func TestGetFlagSetUsage(t *testing.T) {
+	a := assert.New(t)
+
+	fs := flag.NewFlagSet("test", flag.ContinueOnError)
+	fs.Bool("b", false, "xx")
+	output := fs.Output()
+	a.NotEmpty(getFlagSetUsage(fs))
+	a.Equal(output, fs.Output())
 }

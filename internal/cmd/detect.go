@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"io"
@@ -36,11 +35,6 @@ func detect(w io.Writer) error {
 }
 
 func detectUsage(w io.Writer) error {
-	buf := new(bytes.Buffer)
-	detectFlagSet.SetOutput(buf)
-	detectFlagSet.PrintDefaults()
-	detectFlagSet.SetOutput(w)
-
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdDetectUsage, buf.String()))
+	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdDetectUsage, getFlagSetUsage(detectFlagSet)))
 	return err
 }
