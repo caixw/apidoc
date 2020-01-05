@@ -3,35 +3,16 @@
 package output
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/doc/doctest"
 )
-
-func getTestDoc() *doc.Doc {
-	return &doc.Doc{
-		Tags: []*doc.Tag{{Name: "t1"}, {Name: "t2"}},
-		Apis: []*doc.API{
-			{ // GET /users
-				Method: http.MethodGet,
-				Tags:   []string{"t1", "tag1"},
-				Path:   &doc.Path{Path: "/users"},
-			},
-			{ // POST /users
-				Method: http.MethodPost,
-				Tags:   []string{"t2", "tag2"},
-				Path:   &doc.Path{Path: "/users"},
-			},
-		},
-	}
-}
 
 func TestRender(t *testing.T) {
 	a := assert.New(t)
-	doc := getTestDoc()
+	doc := doctest.Get()
 	o := &Options{
 		Path: "./apidoc.xml",
 	}
@@ -41,7 +22,7 @@ func TestRender(t *testing.T) {
 
 func TestRender_openapiJSON(t *testing.T) {
 	a := assert.New(t)
-	doc := getTestDoc()
+	doc := doctest.Get()
 
 	o := &Options{
 		Type: OpenapiJSON,
@@ -53,7 +34,7 @@ func TestRender_openapiJSON(t *testing.T) {
 
 func TestBuffer(t *testing.T) {
 	a := assert.New(t)
-	doc := getTestDoc()
+	doc := doctest.Get()
 
 	o := &Options{}
 	buf, err := Buffer(doc, o)
@@ -68,20 +49,20 @@ func TestBuffer(t *testing.T) {
 func TestFilterDoc(t *testing.T) {
 	a := assert.New(t)
 
-	d := getTestDoc()
+	d := doctest.Get()
 	o := &Options{}
 	filterDoc(d, o)
-	a.Equal(2, len(d.Tags))
+	a.Equal(3, len(d.Tags))
 
-	d = getTestDoc()
+	d = doctest.Get()
 	o = &Options{
 		Tags: []string{"t1"},
 	}
 	filterDoc(d, o)
 	a.Equal(1, len(d.Tags)).
-		Equal(1, len(d.Apis))
+		Equal(2, len(d.Apis))
 
-	d = getTestDoc()
+	d = doctest.Get()
 	o = &Options{
 		Tags: []string{"t1", "t2"},
 	}
@@ -89,15 +70,15 @@ func TestFilterDoc(t *testing.T) {
 	a.Equal(2, len(d.Tags)).
 		Equal(2, len(d.Apis))
 
-	d = getTestDoc()
+	d = doctest.Get()
 	o = &Options{
 		Tags: []string{"tag1"},
 	}
 	filterDoc(d, o)
-	a.Equal(0, len(d.Tags)).
+	a.Equal(1, len(d.Tags)).
 		Equal(1, len(d.Apis))
 
-	d = getTestDoc()
+	d = doctest.Get()
 	o = &Options{
 		Tags: []string{"not-exists"},
 	}
