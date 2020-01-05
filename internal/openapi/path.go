@@ -3,6 +3,8 @@
 package openapi
 
 import (
+	"net/http"
+
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/message"
 )
@@ -67,8 +69,6 @@ type Encoding struct {
 }
 
 // Callback Object
-//
-// NOTE: 暂时未用到
 type Callback PathItem
 
 // Response 每个 API 的返回信息
@@ -83,23 +83,32 @@ type Response struct {
 
 func (path *PathItem) sanitize() *message.SyntaxError {
 	var o *Operation
+	var method string
 	switch {
 	case path.Get != nil:
 		o = path.Get
+		method = http.MethodGet
 	case path.Put != nil:
 		o = path.Put
+		method = http.MethodPut
 	case path.Post != nil:
 		o = path.Post
+		method = http.MethodPost
 	case path.Delete != nil:
 		o = path.Delete
+		method = http.MethodDelete
 	case path.Options != nil:
 		o = path.Options
+		method = http.MethodOptions
 	case path.Head != nil:
 		o = path.Head
+		method = http.MethodHead
 	case path.Patch != nil:
 		o = path.Patch
+		method = http.MethodPatch
 	case path.Trace != nil:
 		o = path.Trace
+		method = http.MethodTrace
 	}
 
 	if o == nil {
@@ -108,7 +117,7 @@ func (path *PathItem) sanitize() *message.SyntaxError {
 	}
 
 	if err := o.sanitize(); err != nil {
-		err.Field = "method." + err.Field
+		err.Field = method + "." + err.Field
 		return err
 	}
 	return nil
@@ -118,6 +127,28 @@ func (o *Operation) sanitize() *message.SyntaxError {
 	if len(o.Responses) == 0 {
 		return message.NewLocaleError("", "responses", 0, locale.ErrRequired)
 	}
+	for name, resp := range o.Responses {
+		if err := resp.sanitize(); err != nil {
+			err.Field = "responses[" + name + "]." + err.Field
+			return err
+		}
+	}
+
+	for name, call := range o.Callbacks {
+		p := (*PathItem)(call)
+		if err := p.sanitize(); err != nil {
+			err.Field = "callbacks[" + name + "]." + err.Field
+			return err
+		}
+	}
+
+	if o.RequestBody != nil {
+		if serr := o.RequestBody.sanitize(); serr != nil {
+			serr.Field = "request." + serr.Field
+			return serr
+		}
+	}
+
 	return nil
 }
 
@@ -167,7 +198,7 @@ func (resp *Response) sanitize() *message.SyntaxError {
 
 func (mt *MediaType) sanitize() *message.SyntaxError {
 	if mt.Schema != nil {
-		if err := mt.sanitize(); err != nil {
+		if err := mt.Schema.sanitize(); err != nil {
 			err.Field = "schema." + err.Field
 			return err
 		}

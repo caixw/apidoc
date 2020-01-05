@@ -51,6 +51,9 @@ func convert(doc *doc.Doc) (*OpenAPI, error) {
 		return nil, err
 	}
 
+	if err := openapi.sanitize(); err != nil {
+		return nil, err
+	}
 	return openapi, nil
 }
 
@@ -127,34 +130,25 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 			status := resp.Status.String()
 			r, found := operation.Responses[status]
 			if !found {
-				r = &Response{}
+				r = &Response{
+					Description: getDescription(resp.Description.Text, resp.Summary),
+					Headers:     make(map[string]*Header, 10),
+					Content:     make(map[string]*MediaType, 10),
+				}
 				operation.Responses[status] = r
 			}
 
-			if r.Headers == nil {
-				r.Headers = make(map[string]*Header, 10)
-			}
 			for _, h := range resp.Headers {
-				desc := h.Description.Text
-				if desc == "" {
-					desc = h.Summary
-				}
 				r.Headers[h.Name] = &Header{
-					Description: desc,
+					Style:       Style{Style: StyleSimple},
+					Description: getDescription(h.Description.Text, h.Summary),
 				}
 			}
 
-			if r.Content == nil {
-				r.Content = make(map[string]*MediaType, 10)
-			}
 			examples := make(map[string]*Example, len(resp.Examples))
 			for _, exp := range resp.Examples {
-				desc := exp.Description.Text
-				if desc == "" {
-					desc = exp.Summary
-				}
 				examples[exp.Mimetype] = &Example{
-					Summary: desc,
+					Summary: getDescription(exp.Description.Text, exp.Summary),
 					Value:   ExampleValue(exp.Content),
 				}
 			}
@@ -176,7 +170,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 		operation.Parameters = append(operation.Parameters, &Parameter{
 			Name:        param.Name,
 			IN:          ParameterINPath,
-			Description: param.Summary,
+			Description: getDescription(param.Description.Text, param.Summary),
 			Required:    !param.Optional,
 			Schema:      newSchema(param, true),
 		})
@@ -186,7 +180,7 @@ func setOperationParams(operation *Operation, api *doc.API) {
 		operation.Parameters = append(operation.Parameters, &Parameter{
 			Name:        param.Name,
 			IN:          ParameterINQuery,
-			Description: param.Summary,
+			Description: getDescription(param.Description.Text, param.Summary),
 			Required:    !param.Optional,
 			Schema:      newSchema(param, true),
 		})
@@ -195,17 +189,21 @@ func setOperationParams(operation *Operation, api *doc.API) {
 	// 将各个类型的 Request 中的报头都集中到 operation.Parameters
 	for _, r := range api.Requests {
 		for _, param := range r.Headers {
-			desc := param.Description.Text
-			if desc == "" {
-				desc = param.Summary
-			}
 			operation.Parameters = append(operation.Parameters, &Parameter{
+				Style:       Style{Style: StyleSimple},
 				Name:        param.Name,
 				IN:          ParameterINHeader,
-				Description: desc,
+				Description: getDescription(param.Description.Text, param.Summary),
 			})
 		}
 	}
+}
+
+func getDescription(desc, summary string) string {
+	if desc != "" {
+		return desc
+	}
+	return summary
 }
 
 func setOperation(path *PathItem, method string) (*Operation, *message.SyntaxError) {

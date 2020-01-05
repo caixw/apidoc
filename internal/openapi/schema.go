@@ -19,16 +19,6 @@ const (
 	TypeArray    = "array"
 )
 
-// IsWellDataType 是否为一个正常的数据类型
-func IsWellDataType(typ string) bool {
-	switch typ {
-	case TypeInt, TypeLong, TypeFloat, TypeDouble, TypeString, TypeBool, TypePassword:
-		return true
-	default:
-		return false
-	}
-}
-
 func fromDocType(t doc.Type) string {
 	switch string(t) {
 	case doc.Number:

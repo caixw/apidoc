@@ -26,7 +26,9 @@ func TestOpenAPI_sanitize(t *testing.T) {
 			"/api": {
 				Get: &Operation{
 					Responses: map[string]*Response{
-						"json": {},
+						"json": {
+							Description: "desc",
+						},
 					},
 				},
 			},
@@ -34,4 +36,32 @@ func TestOpenAPI_sanitize(t *testing.T) {
 	}
 	a.NotError(oa.sanitize())
 	a.Equal(oa.OpenAPI, LatestVersion)
+}
+
+func TestExternalDocumentation_sanitize(t *testing.T) {
+	a := assert.New(t)
+
+	ed := &ExternalDocumentation{}
+	a.Error(ed.sanitize())
+
+	ed.URL = "url"
+	a.Error(ed.sanitize())
+
+	ed.URL = "https://example.com"
+	a.NotError(ed.sanitize())
+}
+
+func TestTag_sanitize(t *testing.T) {
+	a := assert.New(t)
+
+	tag := &Tag{
+		ExternalDocs: &ExternalDocumentation{},
+	}
+	a.Error(tag.sanitize())
+
+	tag.Name = "name"
+	a.Error(tag.sanitize())
+
+	tag.ExternalDocs.URL = "https://example.com"
+	a.NotError(tag.sanitize())
 }
