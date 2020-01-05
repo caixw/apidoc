@@ -19,6 +19,9 @@ import (
 	"github.com/caixw/apidoc/v5/message"
 )
 
+// 命令行输出的表格中，每一列为了对齐填补的空格数量。
+const tail = 3
+
 const (
 	succColor = colors.Green
 	infoColor = colors.Default

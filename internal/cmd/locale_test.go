@@ -11,10 +11,10 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/internal/lang"
+	"github.com/caixw/apidoc/v5/internal/locale"
 )
 
-func TestLanguage(t *testing.T) {
+func TestLocale(t *testing.T) {
 	a := assert.New(t)
 	w := new(bytes.Buffer)
 
@@ -28,11 +28,11 @@ func TestLanguage(t *testing.T) {
 		return lines
 	}
 
-	a.NotError(language(w))
+	a.NotError(doLocale(w))
 	ls := lines(w)
-	a.Equal(len(ls), len(lang.Langs())+1)
+	a.Equal(len(ls), len(locale.DisplayNames()))
 	for _, l := range ls {
 		cnt := strings.Count(l, strings.Repeat(" ", tail))
-		a.True(cnt >= 2) // 至少三列
+		a.True(cnt >= 1) // 至少两列
 	}
 }

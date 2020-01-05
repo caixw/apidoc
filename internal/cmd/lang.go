@@ -16,8 +16,6 @@ func initLang() {
 }
 
 func language(w io.Writer) error {
-	tail := 3
-
 	ls := lang.Langs()
 	langs := make([]*lang.Language, 1, len(ls)+1)
 	langs[0] = &lang.Language{

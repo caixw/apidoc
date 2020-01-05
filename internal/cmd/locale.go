@@ -15,8 +15,6 @@ func initLocale() {
 }
 
 func doLocale(w io.Writer) error {
-	tail := 3
-
 	locales := make(map[string]string, len(locale.DisplayNames()))
 
 	// 计算各列的最大长度值

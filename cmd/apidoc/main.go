@@ -5,7 +5,7 @@
 // 大致的使用方法为：
 //  apidoc cmd [args]
 // 具体的参数说明，可以使用 help 参数查看：
-//  apidoc help
+//  apidoc help cmd
 package main
 
 import "github.com/caixw/apidoc/v5/internal/cmd"
