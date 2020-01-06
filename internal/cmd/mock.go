@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/caixw/apidoc/v5"
 	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/internal/mock"
 	"github.com/caixw/apidoc/v5/message"
 )
 
@@ -78,7 +78,7 @@ func doMock(io.Writer) error {
 	h := message.NewHandler(newHandlerFunc())
 	defer h.Stop()
 
-	handler, err := mock.Load(h, path, mockServers)
+	handler, err := apidoc.MockFile(h, path, mockServers)
 	if err != nil {
 		return err
 	}
