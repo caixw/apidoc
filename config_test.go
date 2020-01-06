@@ -13,7 +13,6 @@ import (
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message/messagetest"
-	"github.com/caixw/apidoc/v5/static"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -104,19 +103,6 @@ func TestConfig_Test(t *testing.T) {
 	h.Stop()
 	a.Empty(erro.String()).
 		NotEmpty(succ.String()) // 有成功提示
-}
-
-func TestConfig_Pack(t *testing.T) {
-	a := assert.New(t)
-
-	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, "./docs/example")
-	a.NotNil(cfg)
-	cfg.Pack("testdata", "Data", "./.testdata", "apidoc.xml", "application/xml", static.TypeAll)
-
-	h.Stop()
-	a.Empty(erro.String()).
-		Empty(succ.String())
 }
 
 func TestConfig_Do(t *testing.T) {

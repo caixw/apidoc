@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+// Package cmd 提供子命令的相关功能
 package cmd
 
 import (

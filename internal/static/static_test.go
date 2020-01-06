@@ -7,45 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/issue9/assert"
 	"github.com/issue9/assert/rest"
+
+	"github.com/caixw/apidoc/v5/internal/vars"
 )
-
-var embedData = []*FileInfo{
-	{
-		Name:        "icon.svg",
-		ContentType: "image/svg+xml",
-		Content:     []byte{' ', ' '},
-	},
-	{
-		Name:        "index.xml",
-		ContentType: "image/svg+xml",
-		Content:     []byte{' ', ' '},
-	},
-
-	{
-		Name:        "example/index.xml",
-		ContentType: "image/svg+xml",
-		Content:     []byte{' ', ' '},
-	},
-	{
-		Name:        "example/test.xml",
-		ContentType: "image/svg+xml",
-		Content:     []byte{' ', ' '},
-	},
-
-	{
-		Name:        "v5/index.xml",
-		ContentType: "image/svg+xml",
-		Content:     []byte{' ', ' '},
-	},
-	{
-		Name:        "v5/apidoc.xsl",
-		ContentType: "image/svg+xml",
-		Content:     []byte{' ', ' '},
-	},
-}
 
 // 保证 styles 中保存着最新的 xml-stylesheet 内容
 func TestStyles(t *testing.T) {
@@ -64,7 +30,7 @@ func TestStyles(t *testing.T) {
 func TestEmbeddedHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, EmbeddedHandler(embedData), nil)
+	srv := rest.NewServer(t, Handler("", false), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -74,7 +40,7 @@ func TestEmbeddedHandler(t *testing.T) {
 
 	srv.Get("/v5/").
 		Do().
-		Status(http.StatusOK)
+		Status(http.StatusNotFound)
 
 	srv.Get("/v5/apidoc.xsl").
 		Do().
@@ -93,10 +59,42 @@ func TestEmbeddedHandler(t *testing.T) {
 		Status(http.StatusOK)
 }
 
+func TestEmbeddedHandler_stylesheet(t *testing.T) {
+	a := assert.New(t)
+
+	srv := rest.NewServer(t, Handler("", true), nil)
+	a.NotNil(srv)
+	defer srv.Close()
+
+	srv.Get("/not-exists").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/v5/").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/v5/apidoc.xsl").
+		Do().
+		Status(http.StatusOK)
+
+	srv.Get("/example").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/icon.svg").
+		Do().
+		Status(http.StatusOK)
+}
+
 func TestEmbeddedHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", EmbeddedHandler(embedData))
+	h := http.StripPrefix("/prefix/", Handler("", false))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()
@@ -107,7 +105,7 @@ func TestEmbeddedHandler_prefix(t *testing.T) {
 
 	srv.Get("/prefix/v5/").
 		Do().
-		Status(http.StatusOK)
+		Status(http.StatusNotFound)
 
 	srv.Get("/prefix/v5/apidoc.xsl").
 		Do().
@@ -129,7 +127,7 @@ func TestEmbeddedHandler_prefix(t *testing.T) {
 func TestFolderHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, FolderHandler("../docs", TypeAll), nil)
+	srv := rest.NewServer(t, Handler(docsDir, false), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -154,10 +152,10 @@ func TestFolderHandler(t *testing.T) {
 		Status(http.StatusOK)
 }
 
-func TestFolderHandler_TypeStylesheet(t *testing.T) {
+func TestFolderHandler_stylesheet(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, FolderHandler("../docs", TypeStylesheet), nil)
+	srv := rest.NewServer(t, Handler(docsDir, true), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -186,30 +184,6 @@ func TestFolderHandler_TypeStylesheet(t *testing.T) {
 		Status(http.StatusNotFound)
 
 	srv.Get("/index.xml").
-		Do().
-		Status(http.StatusNotFound)
-}
-
-func TestFolderHandler_TypeNone(t *testing.T) {
-	a := assert.New(t)
-
-	srv := rest.NewServer(t, FolderHandler("../docs", TypeNone), nil)
-	a.NotNil(srv)
-	defer srv.Close()
-
-	srv.Get("/icon.svg").
-		Do().
-		Status(http.StatusNotFound)
-
-	srv.Get("/v5/apidoc.xsl").
-		Do().
-		Status(http.StatusNotFound)
-
-	srv.Get("/not-exists").
-		Do().
-		Status(http.StatusNotFound)
-
-	srv.Get("/").
 		Do().
 		Status(http.StatusNotFound)
 }
@@ -217,7 +191,7 @@ func TestFolderHandler_TypeNone(t *testing.T) {
 func TestFolderHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", FolderHandler("../docs", TypeAll))
+	h := http.StripPrefix("/prefix/", folderHandler(docsDir, false))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()

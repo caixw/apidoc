@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-// Package static 提供了对 docs 中内容的处理方式
+// Package static 打包文档内容
 package static
 
 import (
@@ -13,15 +13,19 @@ import (
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
-// Type 表示对打包文件的分类
-type Type int8
+// docsDir 文档目录
+//
+// 此值为相对路径，仅相对于当前目录正确，不能外放给其它包引用。
+const docsDir = "../../docs"
 
-// 几种文件类型的定义
-const (
-	TypeNone       Type = iota // 不包含任何文件
-	TypeAll                    // 所有文件
-	TypeStylesheet             // 仅与 xsl 相关的文件
-)
+// FileInfo 被打包文件的信息
+type FileInfo struct {
+	// 相对于打包根目录的地址，同时也会被作为路由地址
+	Name string
+
+	ContentType string
+	Content     []byte
+}
 
 // 默认页面
 const indexPage = "index.xml"
@@ -34,8 +38,15 @@ var styles = []string{
 	vars.DocVersion() + "/", // v5/ 仅支持当前的文档版本
 }
 
-// EmbeddedHandler 将由 Pack 打包的内容当作一个文件服务中间件
-func EmbeddedHandler(data []*FileInfo) http.Handler {
+// Handler 返回文件服务中间件
+func Handler(folder string, stylesheet bool) http.Handler {
+	if folder == "" {
+		return embeddedHandler(stylesheet)
+	}
+	return folderHandler(folder, stylesheet)
+}
+
+func embeddedHandler(stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
 
@@ -47,6 +58,11 @@ func EmbeddedHandler(data []*FileInfo) http.Handler {
 
 		for _, info := range data {
 			if info.Name == pp || info.Name == indexPath {
+				if stylesheet && !isStylesheetFile(info.Name) {
+					errStatus(w, http.StatusNotFound)
+					return
+				}
+
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", info.ContentType)
 				w.Write(info.Content)
@@ -57,28 +73,22 @@ func EmbeddedHandler(data []*FileInfo) http.Handler {
 	})
 }
 
-// FolderHandler 将 folder 当作文件服务中间件
-func FolderHandler(folder string, t Type) http.Handler {
+func folderHandler(folder string, stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if t == TypeNone {
+		p := r.URL.Path
+
+		if len(p) > 0 && p[0] == '/' {
+			p = p[1:]
+			r.URL.Path = p
+		}
+
+		if stylesheet && !isStylesheetFile(p) {
 			errStatus(w, http.StatusNotFound)
 			return
 		}
 
-		path := r.URL.Path
-
-		if len(path) > 0 && path[0] == '/' {
-			path = path[1:]
-			r.URL.Path = path
-		}
-
-		if t == TypeStylesheet && !isStylesheetFile(path) {
-			errStatus(w, http.StatusNotFound)
-			return
-		}
-
-		path = filepath.Clean(filepath.Join(folder, path))
-		info, err := os.Stat(path)
+		p = filepath.Clean(filepath.Join(folder, p))
+		info, err := os.Stat(p)
 		if err != nil {
 			if os.IsNotExist(err) {
 				errStatus(w, http.StatusNotFound)
@@ -93,10 +103,10 @@ func FolderHandler(folder string, t Type) http.Handler {
 			return
 		}
 		if info.IsDir() {
-			path = filepath.Clean(filepath.Join(path, indexPage))
+			p = filepath.Clean(filepath.Join(p, indexPage))
 		}
 
-		http.ServeFile(w, r, path)
+		http.ServeFile(w, r, p)
 	})
 }
 
