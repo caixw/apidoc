@@ -20,7 +20,7 @@ const (
 	pkgName   = "static"
 	varName   = "data"
 	distPath  = "./data.go"
-	sourceDir = static.DocsDir
+	sourceDir = "../../docs"
 )
 
 // 允许打包的文件后缀名，以及对应的 mime type 值。
