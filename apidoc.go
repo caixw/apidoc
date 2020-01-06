@@ -106,14 +106,13 @@ func Static(dir string, stylesheet bool) http.Handler {
 // 与 Buffer 结合，可以提供一个完整的文档查看功能。
 //
 // status 是新文档的返回的状态码；
-// url 表示文档在路由中的地址；
+// url 表示文档在路由中的地址，必须以 / 开头；
 // data 表示文档的实际内容；
 // contentType 表示文档的 Content-Type 报头值；
 // dir 和 stylesheet 则和 Static 相同。
 func View(status int, url string, data []byte, contentType, dir string, stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		p := r.URL.Path
-		if p == url {
+		if r.URL.Path == url {
 			w.Header().Set("Content-Type", contentType)
 			w.WriteHeader(status)
 			w.Write(data)

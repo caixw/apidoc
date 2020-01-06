@@ -4,6 +4,7 @@
 package doctest
 
 import (
+	"encoding/xml"
 	"net/http"
 
 	"github.com/caixw/apidoc/v5/doc"
@@ -93,4 +94,9 @@ func Get() *doc.Doc {
 			},
 		},
 	}
+}
+
+// XML 获取 Get 返回对象的 XML 编码
+func XML() ([]byte, error) {
+	return xml.Marshal(Get())
 }
