@@ -1,6 +1,6 @@
 // 当前文件由工具自动生成，请勿手动修改！
 
-package static
+package docs
 
 var data = []*FileInfo{{
 	Name:        "config.xml",
@@ -45,7 +45,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.2.1" created="2020-01-07T01:26:25+08:00" version="1.1.1">
+<apidoc apidoc="5.2.1" created="2020-01-07T02:40:16+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 

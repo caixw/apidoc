@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package static
+package docs
 
 import (
 	"net/http"

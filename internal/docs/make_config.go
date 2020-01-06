@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"encoding/xml"
 	"os"
+	"path/filepath"
 
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/vars"
@@ -21,8 +22,9 @@ const (
 	主要包含了项目的一些基础配置项。
 -->
 `
-	target = "../../docs/config.xml"
 )
+
+var target = filepath.Join(vars.DocsDir(), "config.xml")
 
 type config struct {
 	XMLName struct{} `xml:"config"`

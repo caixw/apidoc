@@ -20,9 +20,9 @@ import (
 
 	"github.com/caixw/apidoc/v5/doc"
 	"github.com/caixw/apidoc/v5/input"
+	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/mock"
-	"github.com/caixw/apidoc/v5/internal/static"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/output"
@@ -97,7 +97,7 @@ func Test(h *message.Handler, i ...*input.Options) {
 // 如果指向了自定义的目录，需要保证目录结构和文件名与 /docs 相同。
 // stylesheet 则指定了是否需要根目录的内容，如果为 true，只会提供转换工具的代码。
 func Static(dir string, stylesheet bool) http.Handler {
-	return static.Handler(dir, stylesheet)
+	return docs.Handler(dir, stylesheet)
 }
 
 // View 返回查看文档的中间件

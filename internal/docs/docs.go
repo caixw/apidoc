@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
-// Package static 打包文档内容
-package static
+// Package docs 打包文档内容
+package docs
 
 import (
 	"net/http"

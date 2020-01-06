@@ -12,15 +12,15 @@ import (
 
 	"github.com/issue9/utils"
 
-	"github.com/caixw/apidoc/v5/internal/static"
+	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
 const (
 	header   = "// 当前文件由工具自动生成，请勿手动修改！\n\n"
-	pkgName  = "static"
+	pkgName  = "docs"
 	varName  = "data"
-	distPath = "./data.go"
+	distPath = "./static.go"
 )
 
 // 允许打包的文件后缀名，以及对应的 mime type 值。
@@ -77,7 +77,7 @@ func pack() error {
 	return utils.DumpGoFile(distPath, buf.String())
 }
 
-func getFileInfos(root string) ([]*static.FileInfo, error) {
+func getFileInfos(root string) ([]*docs.FileInfo, error) {
 	var paths []string
 
 	walk := func(path string, info os.FileInfo, err error) error {
@@ -104,13 +104,13 @@ func getFileInfos(root string) ([]*static.FileInfo, error) {
 		return nil, err
 	}
 
-	fis := make([]*static.FileInfo, 0, len(paths))
+	fis := make([]*docs.FileInfo, 0, len(paths))
 	for _, path := range paths {
 		content, err := ioutil.ReadFile(filepath.Join(root, path))
 		if err != nil {
 			return nil, err
 		}
-		fis = append(fis, &static.FileInfo{
+		fis = append(fis, &docs.FileInfo{
 			Name:        filepath.ToSlash(path),
 			Content:     content,
 			ContentType: allowFiles[filepath.Ext(path)],
@@ -120,7 +120,7 @@ func getFileInfos(root string) ([]*static.FileInfo, error) {
 	return fis, nil
 }
 
-func dump(buf *bytes.Buffer, file *static.FileInfo) (err error) {
+func dump(buf *bytes.Buffer, file *docs.FileInfo) (err error) {
 	ws := func(str ...string) {
 		for _, s := range str {
 			if err == nil {
