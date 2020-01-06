@@ -7,15 +7,14 @@
 //
 // 在生成文档之前，请确保已经调用 Init() 用于初始化环境，
 // Init() 可以确保能以你指定的本地化信息显示提示信息。
-//
-// 生成的文档，可以调用 Do() 输出为文件；也可以通过 Buffer()
-// 返回 bytes.Buffer 实例；或者通过 Pack() 直接将文档与其依赖的 XSL
-// 打包成一个 Go 源码文件，这样可以直接编译在二进制文件中。
 package apidoc
 
 import (
 	"bytes"
+	"io/ioutil"
+	"mime"
 	"net/http"
+	"path/filepath"
 
 	"golang.org/x/text/language"
 
@@ -51,12 +50,12 @@ func Version() string {
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
 func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
-	doc, err := input.Parse(h, i...)
+	d, err := input.Parse(h, i...)
 	if err != nil {
 		return err
 	}
 
-	return output.Render(doc, o)
+	return output.Render(d, o)
 }
 
 // Buffer 生成文档内容并返回
@@ -66,12 +65,12 @@ func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
 func Buffer(h *message.Handler, o *output.Options, i ...*input.Options) (*bytes.Buffer, error) {
-	doc, err := input.Parse(h, i...)
+	d, err := input.Parse(h, i...)
 	if err != nil {
 		return nil, err
 	}
 
-	return output.Buffer(doc, o)
+	return output.Buffer(d, o)
 }
 
 // Test 测试文档语法，并将结果输出到 h
@@ -99,6 +98,46 @@ func Test(h *message.Handler, i ...*input.Options) {
 // stylesheet 则指定了是否需要根目录的内容，如果为 true，只会提供转换工具的代码。
 func Static(dir string, stylesheet bool) http.Handler {
 	return static.Handler(dir, stylesheet)
+}
+
+// View 返回查看文档的中间件
+//
+// 提供了与 Static 相同的功能，同时又可以额外添加一个文件。
+// 与 Buffer 结合，可以提供一个完整的文档查看功能。
+//
+// status 是新文档的返回的状态码；
+// url 表示文档在路由中的地址；
+// data 表示文档的实际内容；
+// contentType 表示文档的 Content-Type 报头值；
+// dir 和 stylesheet 则和 Static 相同。
+func View(status int, url string, data []byte, contentType, dir string, stylesheet bool) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		p := r.URL.Path
+		if p == url {
+			w.Header().Set("Content-Type", contentType)
+			w.WriteHeader(status)
+			w.Write(data)
+			return
+		}
+
+		Static(dir, stylesheet).ServeHTTP(w, r)
+	})
+}
+
+// ViewFile 返回查看文件的中间件
+//
+// 功能等同于 View，但是将 data 参数换成了文件地址。
+func ViewFile(status int, url, path, contentType, dir string, stylesheet bool) (http.Handler, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if contentType == "" {
+		contentType = mime.TypeByExtension(filepath.Ext(path))
+	}
+
+	return View(status, url, data, contentType, dir, stylesheet), nil
 }
 
 // Valid 验证文档内容的正确性

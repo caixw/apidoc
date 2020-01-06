@@ -23,6 +23,8 @@ const (
 	sourceDir = static.DocsDir
 )
 
+// 允许打包的文件后缀名，以及对应的 mime type 值。
+// 不采用 mimetype.TypeByExtension，防止出现空值的可能性。
 var allowFiles = map[string]string{
 	".xml":  "application/xml",
 	".xsl":  "text/xsl",
