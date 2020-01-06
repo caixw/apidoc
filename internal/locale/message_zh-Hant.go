@@ -39,12 +39,24 @@ options 可以是以下參數：
 %s
 
 path 表示文檔路徑，或不指定，則使用當前工作目錄 ./ 代替。`,
-	CmdBuildUsage:        "生成文檔內容",
-	Version:              "版本：%s\n文檔：%s\n提交：%s\nGo：%s",
-	CmdNotFound:          "子命令 %s 未找到\n",
-	FlagMockPortUsage:    "指定 mock 服務的端口號",
-	FlagMockServersUsage: "指定 mock 服務時，文檔中 server 變量對應的路由前綴",
-	FlagDetectRecursive:  "detect 子命令是否檢測子目錄的值",
+	CmdBuildUsage: "生成文檔內容",
+	CmdStaticUsage: `啟用靜態文件服務
+
+用法：
+apidoc static [options] [path]
+
+options 可以是以下參數：
+%s
+
+path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔。`,
+	Version:                   "版本：%s\n文檔：%s\n提交：%s\nGo：%s",
+	CmdNotFound:               "子命令 %s 未找到\n",
+	FlagMockPortUsage:         "指定 mock 服務的端口號",
+	FlagMockServersUsage:      "指定 mock 服務時，文檔中 server 變量對應的路由前綴",
+	FlagDetectRecursive:       "detect 子命令是否檢測子目錄的值",
+	FlagStaticPortUsage:       "指定 static 服務的端口號",
+	FlagStaticDocsUsage:       "指定 static 服務的文件夾",
+	FlagStaticStylesheetUsage: "指定 static 是否只啟用樣式文件內容",
 
 	VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
 	Complete:            "完成！文檔保存在：%s，總用時：%v",
