@@ -126,10 +126,15 @@ func View(status int, url string, data []byte, contentType, dir string, styleshe
 // ViewFile 返回查看文件的中间件
 //
 // 功能等同于 View，但是将 data 参数换成了文件地址。
+// url 可以为空值，表示接受 path 的文件名部分作为其值。
 func ViewFile(status int, url, path, contentType, dir string, stylesheet bool) (http.Handler, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
+	}
+
+	if url == "" {
+		url = "/" + filepath.Base(path)
 	}
 
 	if contentType == "" {

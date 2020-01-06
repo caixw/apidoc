@@ -86,6 +86,13 @@ func TestViewFile(t *testing.T) {
 	srv.Get("/apidoc.xml").Do().
 		Status(http.StatusAccepted)
 	srv.Close()
+
+	h, err = ViewFile(http.StatusAccepted, "", doctest.Path(a), "", "", false)
+	a.NotError(err).NotNil(h)
+	srv = rest.NewServer(t, h, nil)
+	srv.Get("/index.xml").Do().
+		Status(http.StatusAccepted)
+	srv.Close()
 }
 
 func TestMockFile(t *testing.T) {

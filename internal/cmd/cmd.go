@@ -53,6 +53,7 @@ func init() {
 	initTest()
 	initVersion()
 	initMock()
+	initStatic()
 }
 
 // Exec 执行程序
