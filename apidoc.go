@@ -91,15 +91,14 @@ func Test(h *message.Handler, i ...*input.Options) {
 //  http.Handle("/apidoc", apidoc.Static(...))
 // 的代码搭建一个简易的 https://apidoc.tools 网站。
 //
-// dir 表示文档的所在的目录，一般指向 /docs，如果为空值，
-// 则使用内置的文件。除非你需要自定义 /docs 之下的内容，
-// 否则可以使用内置的文件。
+// /docs 存放了整个项目的文档内容。其中根目录中包含网站的相关内容，
+// 而 /v5 这些以版本号开头的则是查看 xml 文档的工具代码。
+// 同时这一份代码也被编译在代码中。如果你不需要修改文档内容，
+// 则可以直接传递空的 dir，表示采用内置的文档，否则指向指定的目录，
+// 如果指向了自定义的目录，需要保证目录结构和文件名与 /docs 相同。
+// stylesheet 则指定了是否需要根目录的内容，如果为 true，只会提供转换工具的代码。
 func Static(dir string, stylesheet bool) http.Handler {
-	if dir == "" {
-		return static.EmbeddedHandler(stylesheet)
-	}
-
-	return static.FolderHandler(dir, stylesheet)
+	return static.Handler(dir, stylesheet)
 }
 
 // Valid 验证文档内容的正确性

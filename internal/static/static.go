@@ -36,8 +36,15 @@ var styles = []string{
 	vars.DocVersion() + "/", // v5/ 仅支持当前的文档版本
 }
 
-// EmbeddedHandler 将由 Pack 打包的内容当作一个文件服务中间件
-func EmbeddedHandler(stylesheet bool) http.Handler {
+// Handler 返回文件服务中间件
+func Handler(folder string, stylesheet bool) http.Handler {
+	if folder == "" {
+		return embeddedHandler(stylesheet)
+	}
+	return folderHandler(folder, stylesheet)
+}
+
+func embeddedHandler(stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
 
@@ -64,8 +71,7 @@ func EmbeddedHandler(stylesheet bool) http.Handler {
 	})
 }
 
-// FolderHandler 将 folder 当作文件服务中间件
-func FolderHandler(folder string, stylesheet bool) http.Handler {
+func folderHandler(folder string, stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		p := r.URL.Path
 
