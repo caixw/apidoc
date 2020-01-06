@@ -40,7 +40,12 @@ func Get() *doc.Doc {
 				Summary: "client",
 			},
 		},
-		Tags: []*doc.Tag{{Name: "t1"}, {Name: "t2"}, {Name: "tag1"}},
+		Tags: []*doc.Tag{
+			{Name: "t1", Title: "t1"},
+			{Name: "t2", Title: "t2"},
+			{Name: "tag1", Title: "tag1"},
+		},
+		Mimetypes: []string{"application/json", "application/xml"},
 		Apis: []*doc.API{
 			{
 				Method:  http.MethodGet,
@@ -50,7 +55,7 @@ func Get() *doc.Doc {
 				Requests: []*doc.Request{
 					{
 						Summary: "request",
-						Type:    doc.Object,
+						Type:    doc.None,
 						Headers: []*doc.Param{
 							{
 								Type:    doc.String,
@@ -84,6 +89,13 @@ func Get() *doc.Doc {
 								Content:  "xxx",
 							},
 						},
+						Items: []*doc.Param{
+							{
+								Summary: "summary",
+								Type:    doc.String,
+								Name:    "name",
+							},
+						},
 					},
 				},
 			},
@@ -97,7 +109,7 @@ func Get() *doc.Doc {
 				Responses: []*doc.Request{
 					{
 						Description: doc.Richtext{Type: "html", Text: "<p>desc</p>"},
-						Type:        doc.Object,
+						Type:        doc.None,
 					},
 				},
 			},

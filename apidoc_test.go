@@ -13,6 +13,7 @@ import (
 
 	"github.com/caixw/apidoc/v5/doc/doctest"
 	"github.com/caixw/apidoc/v5/internal/vars"
+	"github.com/caixw/apidoc/v5/message/messagetest"
 )
 
 func TestVersion(t *testing.T) {
@@ -41,9 +42,9 @@ func TestView(t *testing.T) {
 	a := assert.New(t)
 
 	data := doctest.XML(a)
-	h := View(http.StatusCreated, "/apidoc.xml", data, "text/xml", "", false)
+	h := View(http.StatusCreated, "/test/apidoc.xml", data, "text/xml", "", false)
 	srv := rest.NewServer(t, h, nil)
-	srv.Get("/apidoc.xml").Do().
+	srv.Get("/test/apidoc.xml").Do().
 		Status(http.StatusCreated).
 		Header("content-type", "text/xml")
 
@@ -85,4 +86,23 @@ func TestViewFile(t *testing.T) {
 	srv.Get("/apidoc.xml").Do().
 		Status(http.StatusAccepted)
 	srv.Close()
+}
+
+func TestMockFile(t *testing.T) {
+	a := assert.New(t)
+
+	_, _, h := messagetest.MessageHandler()
+	mock, err := MockFile(h, doctest.Path(a), map[string]string{"admin": "/admin"})
+	a.NotError(err).NotNil(h)
+
+	srv := rest.NewServer(t, mock, nil)
+	defer srv.Close()
+
+	srv.Get("/admin/users").
+		Header("authorization", "xxx").
+		Header("content-type", "application/json").
+		Header("Accept", "application/json").
+		Do().Status(http.StatusOK)
+	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
+	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
 }

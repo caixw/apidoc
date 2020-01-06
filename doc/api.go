@@ -25,7 +25,7 @@ type API struct {
 	Method      Method     `xml:"method,attr"`
 	ID          string     `xml:"id,attr,omitempty"`
 	Path        *Path      `xml:"path"`
-	Summary     string     `xml:"summary,attr"`
+	Summary     string     `xml:"summary,attr,omitempty"`
 	Description Richtext   `xml:"description,omitempty"`
 	Requests    []*Request `xml:"request,omitempty"` // 不同的 mimetype 可能会定义不同
 	Responses   []*Request `xml:"response,omitempty"`
@@ -62,7 +62,7 @@ type shadowAPI API
 
 // UnmarshalXML 实现 xml.Unmarshaler 接口
 func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	field := start.Name.Local
+	field := "/" + start.Name.Local
 	shadow := (*shadowAPI)(api)
 	if err := d.DecodeElement(shadow, &start); err != nil {
 		// API 可能是嵌套在 apidoc 里的一个子标签。
