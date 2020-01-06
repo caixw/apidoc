@@ -5,6 +5,7 @@ package path
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -49,4 +50,10 @@ func Rel(path, wd string) string {
 		return path
 	}
 	return p
+}
+
+// Dir 获取调用者文件所在的目录，相当于 PHP 的 __DIR__
+func Dir() string {
+	_, fi, _, _ := runtime.Caller(1)
+	return filepath.Dir(fi)
 }

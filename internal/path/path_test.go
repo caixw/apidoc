@@ -38,3 +38,15 @@ func TestRel(t *testing.T) {
 		a.Equal(result, item.result, "not equal @%d,v1=%s,v2=%s", index, result, item.result)
 	}
 }
+
+func TestDir(t *testing.T) {
+	a := assert.New(t)
+
+	dir, err := filepath.Abs("./")
+	a.NotError(err).NotEmpty(dir)
+
+	d, err := filepath.Abs(Dir())
+	a.NotError(err).NotEmpty(d)
+
+	a.Equal(d, dir)
+}
