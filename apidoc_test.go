@@ -31,7 +31,7 @@ func TestValid(t *testing.T) {
 }
 
 func TestStatic(t *testing.T) {
-	srv := rest.NewServer(t, Static("./docs", false), nil)
+	srv := rest.NewServer(t, Static(vars.DocsDir(), false), nil)
 	defer srv.Close()
 
 	srv.Get("/icon.svg").Do().Status(http.StatusOK)

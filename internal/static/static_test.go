@@ -127,7 +127,7 @@ func TestEmbeddedHandler_prefix(t *testing.T) {
 func TestFolderHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, Handler(docsDir, false), nil)
+	srv := rest.NewServer(t, Handler(vars.DocsDir(), false), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -155,7 +155,7 @@ func TestFolderHandler(t *testing.T) {
 func TestFolderHandler_stylesheet(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, Handler(docsDir, true), nil)
+	srv := rest.NewServer(t, Handler(vars.DocsDir(), true), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -191,7 +191,7 @@ func TestFolderHandler_stylesheet(t *testing.T) {
 func TestFolderHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", folderHandler(docsDir, false))
+	h := http.StripPrefix("/prefix/", folderHandler(vars.DocsDir(), false))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()

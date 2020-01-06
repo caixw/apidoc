@@ -13,11 +13,6 @@ import (
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
-// docsDir 文档目录
-//
-// 此值为相对路径，仅相对于当前目录正确，不能外放给其它包引用。
-const docsDir = "../../docs"
-
 // FileInfo 被打包文件的信息
 type FileInfo struct {
 	// 相对于打包根目录的地址，同时也会被作为路由地址

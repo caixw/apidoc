@@ -13,14 +13,14 @@ import (
 	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v5/internal/static"
+	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
 const (
-	header    = "// 当前文件由工具自动生成，请勿手动修改！\n\n"
-	pkgName   = "static"
-	varName   = "data"
-	distPath  = "./data.go"
-	sourceDir = "../../docs"
+	header   = "// 当前文件由工具自动生成，请勿手动修改！\n\n"
+	pkgName  = "static"
+	varName  = "data"
+	distPath = "./data.go"
 )
 
 // 允许打包的文件后缀名，以及对应的 mime type 值。
@@ -43,7 +43,7 @@ func main() {
 
 // NOTE: 隐藏文件不会被打包
 func pack() error {
-	fis, err := getFileInfos(sourceDir)
+	fis, err := getFileInfos(vars.DocsDir())
 	if err != nil {
 		return err
 	}

@@ -26,7 +26,7 @@ func TestLoadConfig(t *testing.T) {
 		Empty(succ.String())
 
 	erro, succ, h = messagetest.MessageHandler()
-	cfg = LoadConfig(h, "./docs") // 不存在 apidoc 的配置文件
+	cfg = LoadConfig(h, vars.DocsDir()) // 不存在 apidoc 的配置文件
 
 	h.Stop()
 	a.Nil(cfg).
@@ -96,7 +96,7 @@ func TestConfig_Test(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, "./docs/example")
+	cfg := LoadConfig(h, filepath.Join(vars.DocsDir(), "/example"))
 	a.NotNil(cfg)
 	cfg.Test()
 
@@ -109,7 +109,7 @@ func TestConfig_Do(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, "./docs/example")
+	cfg := LoadConfig(h, filepath.Join(vars.DocsDir(), "/example"))
 	a.NotNil(cfg)
 	cfg.Do(time.Now())
 
@@ -122,7 +122,7 @@ func TestConfig_Buffer(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, "./docs/example")
+	cfg := LoadConfig(h, filepath.Join(vars.DocsDir(), "/example"))
 	a.NotNil(cfg)
 
 	buf := cfg.Buffer()
