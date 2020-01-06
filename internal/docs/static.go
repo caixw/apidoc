@@ -7,11 +7,8 @@ var data = []*FileInfo{{
 	ContentType: "application/xml",
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-	该文件由 /internal/docs/make.go 生成，请勿手动修改。
+<!-- 该文件由工具自动生成，请勿手动修改！-->
 
-	主要包含了项目的一些基础配置项。
--->
 <config>
 	<name>apidoc</name>
 	<version>v5</version>
@@ -45,7 +42,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.2.1" created="2020-01-07T02:40:16+08:00" version="1.1.1">
+<apidoc apidoc="5.2.1" created="2020-01-07T02:44:59+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 

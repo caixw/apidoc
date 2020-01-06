@@ -14,15 +14,7 @@ import (
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
-const (
-	fileHeader = `
-<!--
-	该文件由 /internal/docs/make.go 生成，请勿手动修改。
-
-	主要包含了项目的一些基础配置项。
--->
-`
-)
+const fileHeader = "\n<!-- 该文件由工具自动生成，请勿手动修改！-->\n\n"
 
 var target = filepath.Join(vars.DocsDir(), "config.xml")
 
