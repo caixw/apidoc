@@ -83,7 +83,7 @@ func Test(h *message.Handler, i ...*input.Options) {
 	h.Message(message.Succ, locale.TestSuccess)
 }
 
-// Static 返回文件服务中间件
+// Static 为 /docs 搭建一个静态文件服务
 //
 // 相当于本地版本的 https://apidoc.tools，默认页为 index.xml。
 //
@@ -91,20 +91,15 @@ func Test(h *message.Handler, i ...*input.Options) {
 //  http.Handle("/apidoc", apidoc.Static(...))
 // 的代码搭建一个简易的 https://apidoc.tools 网站。
 //
-// dir 表示文档的根目录，会在该目录下查找用户请求的文档内容。
-// 当 dir 为空时，表示使用内置的静态文件作为文件服务的内容 ，
-// 如果是普通的文件静态服务，可以直接采用 http.FileServer 会更通用；
-// t 表示可以访问的文件类型。
-//
-// NOTE: 只要 dir 不为空，则只会采用 dir 文件夹的内容作为文件服务的主体内容。
-// dir 是否为空的区别在于：dir 指同一个本地目录，方便在运行时进行修改；
-// 而 dir 为空则直接将 /docs 内容内嵌到代码中，无法修改。
-func Static(dir string, t static.Type) http.Handler {
+// dir 表示文档的所在的目录，一般指向 /docs，如果为空值，
+// 则使用内置的文件。除非你需要自定义 /docs 之下的内容，
+// 否则可以使用内置的文件。
+func Static(dir string, stylesheet bool) http.Handler {
 	if dir == "" {
-		return static.EmbeddedHandler(t)
+		return static.EmbeddedHandler(stylesheet)
 	}
 
-	return static.FolderHandler(dir, t)
+	return static.FolderHandler(dir, stylesheet)
 }
 
 // Valid 验证文档内容的正确性

@@ -30,7 +30,7 @@ func TestStyles(t *testing.T) {
 func TestEmbeddedHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, EmbeddedHandler(TypeAll), nil)
+	srv := rest.NewServer(t, EmbeddedHandler(false), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -62,7 +62,7 @@ func TestEmbeddedHandler(t *testing.T) {
 func TestEmbeddedHandler_stylesheet(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, EmbeddedHandler(TypeStylesheet), nil)
+	srv := rest.NewServer(t, EmbeddedHandler(true), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -94,7 +94,7 @@ func TestEmbeddedHandler_stylesheet(t *testing.T) {
 func TestEmbeddedHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", EmbeddedHandler(TypeAll))
+	h := http.StripPrefix("/prefix/", EmbeddedHandler(false))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()
@@ -127,7 +127,7 @@ func TestEmbeddedHandler_prefix(t *testing.T) {
 func TestFolderHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, FolderHandler(DocsDir, TypeAll), nil)
+	srv := rest.NewServer(t, FolderHandler(DocsDir, false), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -152,10 +152,10 @@ func TestFolderHandler(t *testing.T) {
 		Status(http.StatusOK)
 }
 
-func TestFolderHandler_TypeStylesheet(t *testing.T) {
+func TestFolderHandler_stylesheet(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, FolderHandler(DocsDir, TypeStylesheet), nil)
+	srv := rest.NewServer(t, FolderHandler(DocsDir, true), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -184,30 +184,6 @@ func TestFolderHandler_TypeStylesheet(t *testing.T) {
 		Status(http.StatusNotFound)
 
 	srv.Get("/index.xml").
-		Do().
-		Status(http.StatusNotFound)
-}
-
-func TestFolderHandler_TypeNone(t *testing.T) {
-	a := assert.New(t)
-
-	srv := rest.NewServer(t, FolderHandler(DocsDir, TypeNone), nil)
-	a.NotNil(srv)
-	defer srv.Close()
-
-	srv.Get("/icon.svg").
-		Do().
-		Status(http.StatusNotFound)
-
-	srv.Get("/v5/apidoc.xsl").
-		Do().
-		Status(http.StatusNotFound)
-
-	srv.Get("/not-exists").
-		Do().
-		Status(http.StatusNotFound)
-
-	srv.Get("/").
 		Do().
 		Status(http.StatusNotFound)
 }
@@ -215,7 +191,7 @@ func TestFolderHandler_TypeNone(t *testing.T) {
 func TestFolderHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", FolderHandler(DocsDir, TypeAll))
+	h := http.StripPrefix("/prefix/", FolderHandler(DocsDir, false))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()

@@ -16,16 +16,6 @@ import (
 // DocsDir 文档目录
 const DocsDir = "../../docs"
 
-// Type 表示对打包文件的分类
-type Type int8
-
-// 几种文件类型的定义
-const (
-	TypeNone       Type = iota // 不包含任何文件
-	TypeAll                    // 所有文件
-	TypeStylesheet             // 仅与 xsl 相关的文件
-)
-
 // FileInfo 被打包文件的信息
 type FileInfo struct {
 	// 相对于打包根目录的地址，同时也会被作为路由地址
@@ -47,7 +37,7 @@ var styles = []string{
 }
 
 // EmbeddedHandler 将由 Pack 打包的内容当作一个文件服务中间件
-func EmbeddedHandler(t Type) http.Handler {
+func EmbeddedHandler(stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
 
@@ -59,7 +49,7 @@ func EmbeddedHandler(t Type) http.Handler {
 
 		for _, info := range data {
 			if info.Name == pp || info.Name == indexPath {
-				if t == TypeStylesheet && !isStylesheetFile(info.Name) {
+				if stylesheet && !isStylesheetFile(info.Name) {
 					errStatus(w, http.StatusNotFound)
 					return
 				}
@@ -75,13 +65,8 @@ func EmbeddedHandler(t Type) http.Handler {
 }
 
 // FolderHandler 将 folder 当作文件服务中间件
-func FolderHandler(folder string, t Type) http.Handler {
+func FolderHandler(folder string, stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if t == TypeNone {
-			errStatus(w, http.StatusNotFound)
-			return
-		}
-
 		p := r.URL.Path
 
 		if len(p) > 0 && p[0] == '/' {
@@ -89,7 +74,7 @@ func FolderHandler(folder string, t Type) http.Handler {
 			r.URL.Path = p
 		}
 
-		if t == TypeStylesheet && !isStylesheetFile(p) {
+		if stylesheet && !isStylesheetFile(p) {
 			errStatus(w, http.StatusNotFound)
 			return
 		}

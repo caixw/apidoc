@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/caixw/apidoc/v5/internal/static"
 	"github.com/caixw/apidoc/v5/message"
 )
 
@@ -37,5 +36,5 @@ func MakeBuffer(h *message.Handler, wd string) *bytes.Buffer {
 //
 // Deprecated: 下个版本弃用，请使用 Static 代替。
 func Site(dir string) http.Handler {
-	return Static(dir, static.TypeAll)
+	return Static(dir, false)
 }
