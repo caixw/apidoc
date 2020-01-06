@@ -11,6 +11,7 @@ import (
 	"github.com/issue9/assert/rest"
 
 	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v5/doc/doctest"
 	"github.com/caixw/apidoc/v5/message/messagetest"
 )
 
@@ -509,18 +510,19 @@ func TestLoad(t *testing.T) {
 	h.Stop()
 	a.Error(err).Nil(mock)
 
+	// LoadFromPath
 	_, _, h = messagetest.MessageHandler()
-	mock, err = Load(h, "../../docs/example/index.xml", map[string]string{"admin": "admin"})
+	mock, err = Load(h, doctest.Path(a), map[string]string{"admin": "/admin"})
 	h.Stop()
 	a.NotError(err).NotNil(mock)
 
-	// load url
-	static := http.FileServer(http.Dir("../../docs/example"))
+	// loadFromURL
+	static := http.FileServer(http.Dir(doctest.Dir(a)))
 	srv := httptest.NewServer(static)
 	defer srv.Close()
 
 	_, _, h = messagetest.MessageHandler()
-	mock, err = Load(h, srv.URL+"/index.xml", map[string]string{"admin": "admin"})
+	mock, err = Load(h, srv.URL+"/index.xml", map[string]string{"admin": "/admin"})
 	h.Stop()
 	a.NotError(err).NotNil(mock)
 }

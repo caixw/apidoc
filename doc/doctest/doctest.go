@@ -129,7 +129,16 @@ func XML(a *assert.Assertion) []byte {
 //
 // NOTE: 该文件与 Get() 对象的内容是相同的。
 func Path(a *assert.Assertion) string {
-	p := path.CurrPath(Filename)
+	return pp(a, Filename)
+}
+
+// Dir 返回测试文件所在的目录
+func Dir(a *assert.Assertion) string {
+	return pp(a, "")
+}
+
+func pp(a *assert.Assertion, p string) string {
+	p = path.CurrPath(p)
 	p, err := filepath.Abs(p)
 	a.NotError(err).NotEmpty(p)
 	return p
