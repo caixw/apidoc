@@ -52,8 +52,8 @@ func Rel(path, wd string) string {
 	return p
 }
 
-// Dir 获取调用者文件所在的目录，相当于 PHP 的 __DIR__
-func Dir() string {
+// CurrPath 获取相当于调用者所在目录的路径列表，相当于 PHP 的 __DIR__ + "/" + path
+func CurrPath(path string) string {
 	_, fi, _, _ := runtime.Caller(1)
-	return filepath.Dir(fi)
+	return filepath.Join(filepath.Dir(fi), path)
 }

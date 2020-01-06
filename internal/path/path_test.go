@@ -39,13 +39,13 @@ func TestRel(t *testing.T) {
 	}
 }
 
-func TestDir(t *testing.T) {
+func TestCurrPath(t *testing.T) {
 	a := assert.New(t)
 
 	dir, err := filepath.Abs("./")
 	a.NotError(err).NotEmpty(dir)
 
-	d, err := filepath.Abs(Dir())
+	d, err := filepath.Abs(CurrPath("./"))
 	a.NotError(err).NotEmpty(d)
 
 	a.Equal(d, dir)

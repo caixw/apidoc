@@ -1,0 +1,34 @@
+<apidoc version="1.0.1">
+	<title>test</title>
+	<description type="html"><![CDATA[<p>desc</p>]]></description>
+	<tag name="t1" title=""></tag>
+	<tag name="t2" title=""></tag>
+	<tag name="tag1" title=""></tag>
+	<server name="admin" url="https://example.com/admin" summary="admin"></server>
+	<server name="client" url="https://example.com" summary="client"></server>
+	<api method="GET" summary="">
+		<path path="/users"></path>
+		<request type="object" summary="request">
+			<example mimetype="application/json"><![CDATA[xxx]]></example>
+			<header name="authorization" type="string" summary="authorization"></header>
+		</request>
+		<response type="object" status="200">
+			<example mimetype="application/json"><![CDATA[xxx]]></example>
+			<header name="authorization" type="string" summary="authorization"></header>
+			<description type="html"><![CDATA[<p>desc</p>]]></description>
+		</response>
+		<tag>t1</tag>
+		<tag>t2</tag>
+		<server>admin</server>
+		<server>client</server>
+	</api>
+	<api method="POST" summary="summary" deprecated="1.0.1">
+		<path path="/users"></path>
+		<response type="object">
+			<description type="html"><![CDATA[<p>desc</p>]]></description>
+		</response>
+		<tag>t1</tag>
+		<tag>tag1</tag>
+		<server>admin</server>
+	</api>
+</apidoc>

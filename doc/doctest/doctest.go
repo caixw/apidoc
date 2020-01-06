@@ -6,12 +6,20 @@ package doctest
 import (
 	"encoding/xml"
 	"net/http"
+	"path/filepath"
+
+	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v5/doc"
-	"github.com/issue9/assert"
+	"github.com/caixw/apidoc/v5/internal/path"
 )
 
+// Filename 文档的文件名
+const Filename = "index.xml"
+
 // Get 返回 doc.Doc 对象
+//
+// 同时当前目录下的 index.xml 文件与此返回对象内容是相同的。
 func Get() *doc.Doc {
 	return &doc.Doc{
 		Version: "1.0.1",
@@ -103,4 +111,14 @@ func XML(a *assert.Assertion) []byte {
 	a.NotError(err).NotNil(data)
 
 	return data
+}
+
+// Path 返回测试文件的绝对路径
+//
+// NOTE: 该文件与 Get() 对象的内容是相同的。
+func Path(a *assert.Assertion) string {
+	p := path.CurrPath(Filename)
+	p, err := filepath.Abs(p)
+	a.NotError(err).NotEmpty(p)
+	return p
 }
