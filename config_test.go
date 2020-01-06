@@ -19,7 +19,7 @@ func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, "./docs/example")
+	cfg := LoadConfig(h, filepath.Join(vars.DocsDir(), "example"))
 	h.Stop()
 	a.NotNil(cfg).
 		Empty(erro.String()).

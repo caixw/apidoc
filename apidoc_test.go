@@ -26,7 +26,7 @@ func TestVersion(t *testing.T) {
 func TestValid(t *testing.T) {
 	a := assert.New(t)
 
-	data, err := ioutil.ReadFile("./docs/example/index.xml")
+	data, err := ioutil.ReadFile(doctest.Path(a))
 	a.NotError(err).NotNil(data)
 	a.NotError(Valid(data))
 }
