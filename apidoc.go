@@ -23,10 +23,10 @@ import (
 	"github.com/caixw/apidoc/v5/input"
 	"github.com/caixw/apidoc/v5/internal/locale"
 	"github.com/caixw/apidoc/v5/internal/mock"
+	"github.com/caixw/apidoc/v5/internal/static"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message"
 	"github.com/caixw/apidoc/v5/output"
-	"github.com/caixw/apidoc/v5/static"
 )
 
 // Init 初始化包
@@ -83,38 +83,6 @@ func Test(h *message.Handler, i ...*input.Options) {
 	h.Message(message.Succ, locale.TestSuccess)
 }
 
-// Pack 同时将生成的文档内容与 docs 之下的内容打包
-//
-// url 为文档的地址；
-// contentType 为文档的类型，如果不指定，由 http.DetectContentType 获取；
-// pkgName 打包的内容输出到 Go 文件时，该文件的包名；
-// varName 内容保存的变量名；
-// path 输出的 Go 文件地址；
-// t 表示需要打包的文件类型；
-//
-// chrome 浏览器限制了 XLS 与 XML 必须要遵守同源策略的限制，
-// 这就限制了文档直接引用 https://apidoc.tools/v5/apidoc.xsl 文件的使用。
-//
-// Pack() 可以将 XML 文档与 XSL 等内容打包为一个 Go 源码文件，
-// 之后通过 Site() 建立文件服务，方便用户在二进制文件中直接建议文档服务。
-func Pack(h *message.Handler, url string, contentType, pkgName, varName, path string, t static.Type, o *output.Options, i ...*input.Options) error {
-	buf, err := Buffer(h, o, i...)
-	if err != nil {
-		return err
-	}
-	data := buf.Bytes()
-
-	if contentType == "" {
-		contentType = http.DetectContentType(data)
-	}
-
-	return static.Pack("./docs", pkgName, varName, path, t, &static.FileInfo{
-		Name:        url,
-		Content:     data,
-		ContentType: contentType,
-	})
-}
-
 // Static 返回文件服务中间件
 //
 // 相当于本地版本的 https://apidoc.tools，默认页为 index.xml。
@@ -123,19 +91,17 @@ func Pack(h *message.Handler, url string, contentType, pkgName, varName, path st
 //  http.Handle("/apidoc", apidoc.Static(...))
 // 的代码搭建一个简易的 https://apidoc.tools 网站。
 //
-// embedded 表示通过 Pack 打包之后的内容，如果该值不为空，
-// 则在 embedded 中查找用户请求的内容；
 // dir 表示文档的根目录，会在该目录下查找用户请求的文档内容。
-// 当 embedded 为空时，dir 才启作用，dir 应该始终指向 /docs 目录，
+// 当 dir 为空时，表示使用内置的静态文件作为文件服务的内容 ，
 // 如果是普通的文件静态服务，可以直接采用 http.FileServer 会更通用；
-// t 表示可以访问的文件类型，仅对 dir 参数启作用。
+// t 表示可以访问的文件类型。
 //
-// NOTE: 只要 embedded 不为空，则只会采用 embedded 作为文件服务的主体内容。
-// dir 与 embedded 的区别在于：dir 指同一个本地目录，方便在运行时进行修改；
-// 而 embedded 则直接将 /docs 内容内嵌到代码中，如果需要修改，则要重新编译代码才有效果。
-func Static(embedded []*static.FileInfo, dir string, t static.Type) http.Handler {
-	if len(embedded) > 0 {
-		return static.EmbeddedHandler(embedded)
+// NOTE: 只要 dir 不为空，则只会采用 dir 文件夹的内容作为文件服务的主体内容。
+// dir 是否为空的区别在于：dir 指同一个本地目录，方便在运行时进行修改；
+// 而 dir 为空则直接将 /docs 内容内嵌到代码中，无法修改。
+func Static(dir string, t static.Type) http.Handler {
+	if dir == "" {
+		return static.EmbeddedHandler(t)
 	}
 
 	return static.FolderHandler(dir, t)

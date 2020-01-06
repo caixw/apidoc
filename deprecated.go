@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/caixw/apidoc/v5/internal/static"
 	"github.com/caixw/apidoc/v5/message"
-	"github.com/caixw/apidoc/v5/static"
 )
 
 // Make 根据 wd 目录下的配置文件生成文档
@@ -37,5 +37,5 @@ func MakeBuffer(h *message.Handler, wd string) *bytes.Buffer {
 //
 // Deprecated: 下个版本弃用，请使用 Static 代替。
 func Site(dir string) http.Handler {
-	return Static(nil, dir, static.TypeAll)
+	return Static(dir, static.TypeAll)
 }
