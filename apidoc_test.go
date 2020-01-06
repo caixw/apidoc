@@ -40,9 +40,7 @@ func TestStatic(t *testing.T) {
 func TestView(t *testing.T) {
 	a := assert.New(t)
 
-	data, err := doctest.XML()
-	a.NotError(err).NotNil(data)
-
+	data := doctest.XML(a)
 	h := View(http.StatusCreated, "/apidoc.xml", data, "text/xml", "", false)
 	srv := rest.NewServer(t, h, nil)
 	defer srv.Close()

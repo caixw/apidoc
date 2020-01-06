@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/caixw/apidoc/v5/doc"
+	"github.com/issue9/assert"
 )
 
 // Get 返回 doc.Doc 对象
@@ -97,6 +98,9 @@ func Get() *doc.Doc {
 }
 
 // XML 获取 Get 返回对象的 XML 编码
-func XML() ([]byte, error) {
-	return xml.Marshal(Get())
+func XML(a *assert.Assertion) []byte {
+	data, err := xml.Marshal(Get())
+	a.NotError(err).NotNil(data)
+
+	return data
 }
