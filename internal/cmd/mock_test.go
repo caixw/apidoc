@@ -22,6 +22,11 @@ func TestServers(t *testing.T) {
 	a.Equal(0, len(srv))
 	a.Equal(srv.String(), "")
 
+	a.NotError(srv.Set("k1=v1"))
+	a.Equal(1, len(srv))
+	a.Equal(srv["k1"], "v1")
+	a.NotEmpty(srv.String())
+
 	a.NotError(srv.Set("k1=v1,k2=v2"))
 	a.Equal(2, len(srv))
 	a.Equal(srv["k1"], "v1")

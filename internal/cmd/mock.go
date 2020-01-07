@@ -25,10 +25,6 @@ func (srv servers) Get() interface{} {
 }
 
 func (srv servers) Set(v string) error {
-	if index := strings.IndexByte(v, ','); index <= 0 {
-		return locale.Errorf(locale.ErrInvalidFormat)
-	}
-
 	pairs := strings.Split(v, ",")
 	for _, pair := range pairs {
 		index := strings.IndexByte(pair, '=')
