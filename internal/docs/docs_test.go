@@ -4,27 +4,35 @@ package docs
 
 import (
 	"net/http"
-	"strings"
+	"path/filepath"
 	"testing"
 
 	"github.com/issue9/assert"
 	"github.com/issue9/assert/rest"
-
-	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
-// 保证 styles 中保存着最新的 xml-stylesheet 内容
-func TestStyles(t *testing.T) {
+func TestDir(t *testing.T) {
 	a := assert.New(t)
 
-	v := vars.DocVersion()
-	found := false
-	for _, file := range styles {
-		if strings.HasPrefix(file, v) {
-			found = true
-		}
-	}
-	a.True(found)
+	p1, err := filepath.Abs("../../docs")
+	a.NotError(err).NotEmpty(p1)
+
+	p2, err := filepath.Abs(Dir())
+	a.NotError(err).NotEmpty(p2)
+
+	a.Equal(p1, p2)
+}
+
+func TestPath(t *testing.T) {
+	a := assert.New(t)
+
+	p1, err := filepath.Abs("../../docs/example")
+	a.NotError(err).NotEmpty(p1)
+
+	p2, err := filepath.Abs(Path("example"))
+	a.NotError(err).NotEmpty(p2)
+
+	a.Equal(p1, p2)
 }
 
 func TestEmbeddedHandler(t *testing.T) {
@@ -127,7 +135,7 @@ func TestEmbeddedHandler_prefix(t *testing.T) {
 func TestFolderHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, Handler(vars.DocsDir(), false), nil)
+	srv := rest.NewServer(t, Handler(Dir(), false), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -155,7 +163,7 @@ func TestFolderHandler(t *testing.T) {
 func TestFolderHandler_stylesheet(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, Handler(vars.DocsDir(), true), nil)
+	srv := rest.NewServer(t, Handler(Dir(), true), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -191,7 +199,7 @@ func TestFolderHandler_stylesheet(t *testing.T) {
 func TestFolderHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", folderHandler(vars.DocsDir(), false))
+	h := http.StripPrefix("/prefix/", folderHandler(Dir(), false))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()

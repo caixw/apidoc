@@ -13,7 +13,6 @@ import (
 	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v5/internal/docs"
-	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
 const (
@@ -43,7 +42,7 @@ func main() {
 
 // NOTE: 隐藏文件不会被打包
 func pack() error {
-	fis, err := getFileInfos(vars.DocsDir())
+	fis, err := getFileInfos(docs.Dir())
 	if err != nil {
 		return err
 	}

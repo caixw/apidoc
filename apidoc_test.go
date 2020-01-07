@@ -12,6 +12,7 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v5/doc/doctest"
+	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message/messagetest"
 )
@@ -32,7 +33,7 @@ func TestValid(t *testing.T) {
 }
 
 func TestStatic(t *testing.T) {
-	srv := rest.NewServer(t, Static(vars.DocsDir(), false), nil)
+	srv := rest.NewServer(t, Static(docs.Dir(), false), nil)
 	defer srv.Close()
 
 	srv.Get("/icon.svg").Do().Status(http.StatusOK)

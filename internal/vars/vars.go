@@ -3,8 +3,6 @@
 // Package vars 提供了一些公共的函数、结构体及代码级别的设置项。
 package vars
 
-import "github.com/caixw/apidoc/v5/internal/path"
-
 // 一些公用的常量
 const (
 	// 程序的正式名称
@@ -26,9 +24,4 @@ const (
 var AllowConfigFilenames = []string{
 	".apidoc.yaml",
 	".apidoc.yml",
-}
-
-// DocsDir 返回 /docs 目录的路径
-func DocsDir() string {
-	return path.CurrPath("../../docs")
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v5/input"
+	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/vars"
 	"github.com/caixw/apidoc/v5/message/messagetest"
 )
@@ -19,14 +20,14 @@ func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, filepath.Join(vars.DocsDir(), "example"))
+	cfg := LoadConfig(h, docs.Path("example"))
 	h.Stop()
 	a.NotNil(cfg).
 		Empty(erro.String()).
 		Empty(succ.String())
 
 	erro, succ, h = messagetest.MessageHandler()
-	cfg = LoadConfig(h, vars.DocsDir()) // 不存在 apidoc 的配置文件
+	cfg = LoadConfig(h, docs.Dir()) // 不存在 apidoc 的配置文件
 
 	h.Stop()
 	a.Nil(cfg).
@@ -96,7 +97,7 @@ func TestConfig_Test(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, filepath.Join(vars.DocsDir(), "/example"))
+	cfg := LoadConfig(h, docs.Path("example"))
 	a.NotNil(cfg)
 	cfg.Test()
 
@@ -109,7 +110,7 @@ func TestConfig_Do(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, filepath.Join(vars.DocsDir(), "/example"))
+	cfg := LoadConfig(h, docs.Path("example"))
 	a.NotNil(cfg)
 	cfg.Do(time.Now())
 
@@ -122,7 +123,7 @@ func TestConfig_Buffer(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, filepath.Join(vars.DocsDir(), "/example"))
+	cfg := LoadConfig(h, docs.Path("example"))
 	a.NotNil(cfg)
 
 	buf := cfg.Buffer()

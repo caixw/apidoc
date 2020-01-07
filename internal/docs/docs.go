@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	xpath "github.com/caixw/apidoc/v5/internal/path"
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
@@ -31,6 +32,16 @@ const indexPage = "index.xml"
 var styles = []string{
 	"icon.svg",
 	vars.DocVersion() + "/", // v5/ 仅支持当前的文档版本
+}
+
+// Dir 指向 /docs 的路径
+func Dir() string {
+	return Path("")
+}
+
+// Path 指赂 /docs 下的 p 路径
+func Path(p string) string {
+	return filepath.Join(xpath.CurrPath("../../docs"), p)
 }
 
 // Handler 返回文件服务中间件

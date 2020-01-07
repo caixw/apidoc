@@ -8,15 +8,15 @@ import (
 	"bufio"
 	"encoding/xml"
 	"os"
-	"path/filepath"
 
+	"github.com/caixw/apidoc/v5/internal/docs"
 	"github.com/caixw/apidoc/v5/internal/lang"
 	"github.com/caixw/apidoc/v5/internal/vars"
 )
 
 const fileHeader = "\n<!-- 该文件由工具自动生成，请勿手动修改！-->\n\n"
 
-var target = filepath.Join(vars.DocsDir(), "config.xml")
+var target = docs.Path("config.xml")
 
 type config struct {
 	XMLName struct{} `xml:"config"`
