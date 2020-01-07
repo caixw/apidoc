@@ -5,6 +5,7 @@
 ## Fixed
 
 - 修正 Chrome 与 Safari 无法正确显示文档的错误；
+- 修正命令行 `apidoc static` 导致 panic 的错误；
 
 ## [v6.0.0]
 

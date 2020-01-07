@@ -32,15 +32,24 @@ func initStatic() {
 	staticFlagSet.BoolVar(&staticStylesheet, "stylesheet", false, locale.Sprintf(locale.FlagStaticStylesheetUsage))
 }
 
-func static(io.Writer) error {
-	path := getPath(staticFlagSet)
+func static(io.Writer) (err error) {
+	var path string
+	if staticFlagSet.NArg() != 0 {
+		path = getPath(staticFlagSet)
+	}
 
 	h := message.NewHandler(newHandlerFunc())
 	defer h.Stop()
 
-	handler, err := apidoc.ViewFile(http.StatusOK, staticURL, path, staticContentType, staticDocs, staticStylesheet)
-	if err != nil {
-		return err
+	var handler http.Handler
+
+	if path == "" {
+		handler = apidoc.Static(staticDocs, staticStylesheet)
+	} else {
+		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, path, staticContentType, staticDocs, staticStylesheet)
+		if err != nil {
+			return err
+		}
 	}
 
 	url := "http://localhost" + staticPort
