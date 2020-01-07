@@ -17,7 +17,7 @@ func TestJSONValidator_find(t *testing.T) {
 
 	a := assert.New(t)
 	v := &jsonValidator{
-		param:   item.Type.ToParam(),
+		param:   item.Type.Param(),
 		decoder: json.NewDecoder(strings.NewReader(item.JSON)),
 	}
 

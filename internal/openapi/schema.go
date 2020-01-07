@@ -189,5 +189,5 @@ func newSchema(p *doc.Param, chkArray bool) *Schema {
 
 // chkArray 是否需要检测当前类型是否为数组
 func newSchemaFromRequest(p *doc.Request, chkArray bool) *Schema {
-	return newSchema(p.ToParam(), chkArray)
+	return newSchema(p.Param(), chkArray)
 }

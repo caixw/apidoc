@@ -53,7 +53,7 @@ func validJSON(p *doc.Request, content []byte) error {
 	}
 
 	validator := &jsonValidator{
-		param:   p.ToParam(),
+		param:   p.Param(),
 		decoder: json.NewDecoder(bytes.NewReader(content)),
 		states:  []byte{}, // 状态有默认值
 		names:   []string{},
@@ -281,7 +281,7 @@ func buildJSON(p *doc.Request) ([]byte, error) {
 		buf: new(bytes.Buffer),
 	}
 
-	if err := writeJSON(builder, p.ToParam(), true); err != nil {
+	if err := writeJSON(builder, p.Param(), true); err != nil {
 		return nil, err
 	}
 

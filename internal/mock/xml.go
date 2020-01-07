@@ -32,7 +32,7 @@ func validXML(p *doc.Request, content []byte) error {
 	}
 
 	validator := &xmlValidator{
-		param:   p.ToParam(),
+		param:   p.Param(),
 		decoder: xml.NewDecoder(bytes.NewReader(content)),
 		names:   []string{},
 	}
@@ -209,7 +209,7 @@ func buildXML(p *doc.Request) ([]byte, error) {
 		return nil, nil
 	}
 
-	builder, err := parseXML(p.ToParam(), true, true)
+	builder, err := parseXML(p.Param(), true, true)
 	if err != nil {
 		return nil, err
 	}

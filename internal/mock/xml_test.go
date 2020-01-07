@@ -55,7 +55,7 @@ func TestXMLValidator_find(t *testing.T) {
 
 	a := assert.New(t)
 	v := &xmlValidator{
-		param:   item.Type.ToParam(),
+		param:   item.Type.Param(),
 		decoder: xml.NewDecoder(strings.NewReader(item.XML)),
 	}
 

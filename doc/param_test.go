@@ -9,9 +9,22 @@ import (
 	"github.com/issue9/assert"
 )
 
-var (
-	_ xml.Unmarshaler = &Param{}
-)
+var _ xml.Unmarshaler = &Param{}
+
+func TestRequest_ToParam(t *testing.T) {
+	a := assert.New(t)
+
+	var r *Request
+	a.Nil(r.Param())
+
+	r = &Request{
+		XML:  XML{XMLAttr: true},
+		Name: "name",
+	}
+	p := r.Param()
+
+	a.True(p.XMLAttr).Equal(p.Name, r.Name)
+}
 
 func TestParam_UnmarshalXML(t *testing.T) {
 	a := assert.New(t)

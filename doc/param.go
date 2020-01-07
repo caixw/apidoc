@@ -36,10 +36,10 @@ type Param struct {
 	Description Richtext `xml:"description,omitempty"`
 }
 
-// ToParam 转换成 Param 对象
+// Param 转换成 Param 对象
 //
 // Request 可以说是 Param 的超级，两者在大部分情况下能用。
-func (r *Request) ToParam() *Param {
+func (r *Request) Param() *Param {
 	if r == nil {
 		return nil
 	}
