@@ -43,13 +43,13 @@ func Version() string {
 	return vars.Version()
 }
 
-// Do 解析文档并输出文档内容
+// Build 解析文档并输出文档内容
 //
 // 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
 // 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
-func Do(h *message.Handler, o *output.Options, i ...*input.Options) error {
+func Build(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	d, err := input.Parse(h, i...)
 	if err != nil {
 		return err

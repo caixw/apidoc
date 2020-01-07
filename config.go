@@ -162,11 +162,11 @@ func Detect(wd string, recursive bool) error {
 	return ioutil.WriteFile(p, data, os.ModePerm)
 }
 
-// Do 解析文档并输出文档内容
+// Build 解析文档并输出文档内容
 //
-// 具体信息可参考 Do 函数的相关文档。
-func (cfg *Config) Do(start time.Time) {
-	if err := Do(cfg.h, cfg.Output, cfg.Inputs...); err != nil {
+// 具体信息可参考 Build 函数的相关文档。
+func (cfg *Config) Build(start time.Time) {
+	if err := Build(cfg.h, cfg.Output, cfg.Inputs...); err != nil {
 		cfg.h.Error(message.Erro, err)
 		return
 	}

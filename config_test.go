@@ -112,7 +112,7 @@ func TestConfig_Do(t *testing.T) {
 	erro, succ, h := messagetest.MessageHandler()
 	cfg := LoadConfig(h, docs.Path("example"))
 	a.NotNil(cfg)
-	cfg.Do(time.Now())
+	cfg.Build(time.Now())
 
 	h.Stop()
 	a.NotEmpty(succ.String()). // 有成功提示

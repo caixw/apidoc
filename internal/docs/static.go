@@ -42,7 +42,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.0.0" created="2020-01-08T00:52:46+08:00" version="1.1.1">
+<apidoc apidoc="6.0.0" created="2020-01-08T01:11:21+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 
@@ -531,7 +531,7 @@ function initGotoTop() {
     </type-locale>
 
     <doc id="about" title="关于">
-        <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容生成文档。支持诸如 Go、Java、C++、Rust 等大部分开发语言，具体可使用 <code>apidoc -l</code> 命令行查看所有的支持列表。</p>
+        <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容生成文档。支持诸如 Go、Java、C++、Rust 等大部分开发语言，具体可使用 <code>apidoc lang</code> 命令行查看所有的支持列表。</p>
 
         <p>apidoc 拥有以下特点：</p>
         <ol>
@@ -601,6 +601,7 @@ function initGotoTop() {
                 <tr><td>help</td><td>显示子命令的描述信息</td></tr>
                 <tr><td>build</td><td>生成文档内容</td></tr>
                 <tr><td>mock</td><td>根据文档提供 mock 服务</td></tr>
+                <tr><td>static</td><td>提供查看文档的本地服务</td></tr>
                 <tr><td>version</td><td>显示版本信息</td></tr>
                 <tr><td>lang</td><td>列出当前支持的语言</td></tr>
                 <tr><td>locale</td><td>列出当前支持的本地化内容</td></tr>
@@ -1034,7 +1035,7 @@ function initGotoTop() {
     </type-locale>
 
     <doc id="about" title="關於">
-        <p>apidoc 是壹個簡單的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文檔生成工具，它從代碼註釋中提取特定格式的內容生成文檔。支持諸如 Go、Java、C++、Rust 等大部分開發語言，具體可使用 <code>apidoc -l</code> 命令行查看所有的支持列表。</p>
+        <p>apidoc 是壹個簡單的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文檔生成工具，它從代碼註釋中提取特定格式的內容生成文檔。支持諸如 Go、Java、C++、Rust 等大部分開發語言，具體可使用 <code>apidoc lang</code> 命令行查看所有的支持列表。</p>
 
         <p>apidoc 擁有以下特點：</p>
         <ol>
@@ -1104,6 +1105,7 @@ function initGotoTop() {
                 <tr><td>help</td><td>顯示子命令的描述信息</td></tr>
                 <tr><td>build</td><td>生成文檔內容</td></tr>
                 <tr><td>mock</td><td>根據文檔提供 mock 服務</td></tr>
+                <tr><td>static</td><td>提供查看文檔的本地服務</td></tr>
                 <tr><td>version</td><td>顯示版本信息</td></tr>
                 <tr><td>lang</td><td>列出當前支持的語言</td></tr>
                 <tr><td>locale</td><td>列出當前支持的本地化內容</td></tr>

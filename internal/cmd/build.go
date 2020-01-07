@@ -22,7 +22,7 @@ func build(w io.Writer) error {
 	h := message.NewHandler(newHandlerFunc())
 	defer h.Stop()
 
-	apidoc.LoadConfig(h, getPath(buildFlagSet)).Do(time.Now())
+	apidoc.LoadConfig(h, getPath(buildFlagSet)).Build(time.Now())
 	return nil
 }
 
