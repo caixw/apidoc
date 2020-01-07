@@ -151,15 +151,22 @@ func Valid(content []byte) error {
 
 // Mock 生成 Mock 中间件
 //
+// 调用者需要保证 d 的正确性。
+func Mock(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handler, error) {
+	return mock.New(h, d, servers)
+}
+
+// MockBuffer 生成 Mock 中间件
+//
 // data 为文档内容；
 // servers 为文档中所有 server 以及对应的路由前缀。
-func Mock(h *message.Handler, data []byte, servers map[string]string) (http.Handler, error) {
+func MockBuffer(h *message.Handler, data []byte, servers map[string]string) (http.Handler, error) {
 	d := doc.New()
 	if err := d.FromXML("", 0, data); err != nil {
 		return nil, err
 	}
 
-	return mock.New(h, d, servers)
+	return Mock(h, d, servers)
 }
 
 // MockFile 生成 Mock 中间件

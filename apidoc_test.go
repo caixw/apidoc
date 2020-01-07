@@ -96,6 +96,31 @@ func TestViewFile(t *testing.T) {
 	srv.Close()
 }
 
+func TestMockBuffer(t *testing.T) {
+	a := assert.New(t)
+
+	_, _, h := messagetest.MessageHandler()
+	mock, err := MockBuffer(h, doctest.XML(a), map[string]string{"admin": "/admin"})
+	a.NotError(err).NotNil(h)
+	srv := rest.NewServer(t, mock, nil)
+
+	srv.Get("/admin/users").
+		Header("authorization", "xxx").
+		Header("content-type", "application/json").
+		Header("Accept", "application/json").
+		Do().Status(http.StatusOK)
+
+	// 不存在 client
+	srv.Get("/client/users").Do().Status(http.StatusNotFound)
+
+	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
+	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
+
+	h.Stop()
+	srv.Close()
+
+}
+
 func TestMockFile(t *testing.T) {
 	a := assert.New(t)
 
