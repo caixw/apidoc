@@ -95,7 +95,7 @@ func printMessage(out io.Writer, color colors.Color, prefix, msg string) {
 		panic(err)
 	}
 
-	if _, err := colors.Fprintln(out, color, colors.Default, msg); err != nil {
+	if _, err := fmt.Fprintln(out, msg); err != nil {
 		panic(err)
 	}
 }
