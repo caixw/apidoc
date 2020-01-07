@@ -78,10 +78,4 @@ func TestType_None(t *testing.T) {
 	obj1 := &Object{}
 	a.NotError(xml.Unmarshal([]byte(str), obj1))
 	a.Equal(obj, obj1)
-
-	// unmarshal
-	str = `<type attr="none"><value>number</value></type>`
-	obj1 = &Object{}
-	a.NotError(xml.Unmarshal([]byte(str), obj1))
-	a.Equal(obj1.Attr, None)
 }

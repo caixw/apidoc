@@ -9,7 +9,7 @@ import (
 	"github.com/issue9/assert"
 	"golang.org/x/text/encoding/simplifiedchinese"
 
-	"github.com/caixw/apidoc/v5/internal/lang"
+	"github.com/caixw/apidoc/v6/internal/lang"
 )
 
 func TestOptions_Sanitize(t *testing.T) {

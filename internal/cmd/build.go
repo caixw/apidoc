@@ -7,9 +7,9 @@ import (
 	"io"
 	"time"
 
-	"github.com/caixw/apidoc/v5"
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 var buildFlagSet *flag.FlagSet

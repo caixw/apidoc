@@ -3,8 +3,8 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 // Schema.Type 需要的一些预定义数据类型

@@ -46,11 +46,11 @@ func TestEmbeddedHandler(t *testing.T) {
 		Do().
 		Status(http.StatusNotFound)
 
-	srv.Get("/v5/").
+	srv.Get("/v6/").
 		Do().
 		Status(http.StatusNotFound)
 
-	srv.Get("/v5/apidoc.xsl").
+	srv.Get("/v6/apidoc.xsl").
 		Do().
 		Status(http.StatusOK)
 
@@ -78,11 +78,11 @@ func TestEmbeddedHandler_stylesheet(t *testing.T) {
 		Do().
 		Status(http.StatusNotFound)
 
-	srv.Get("/v5/").
+	srv.Get("/v6/").
 		Do().
 		Status(http.StatusNotFound)
 
-	srv.Get("/v5/apidoc.xsl").
+	srv.Get("/v6/apidoc.xsl").
 		Do().
 		Status(http.StatusOK)
 
@@ -111,11 +111,11 @@ func TestEmbeddedHandler_prefix(t *testing.T) {
 		Do().
 		Status(http.StatusNotFound)
 
-	srv.Get("/prefix/v5/").
+	srv.Get("/prefix/v6/").
 		Do().
 		Status(http.StatusNotFound)
 
-	srv.Get("/prefix/v5/apidoc.xsl").
+	srv.Get("/prefix/v6/apidoc.xsl").
 		Do().
 		Status(http.StatusOK)
 
@@ -171,7 +171,7 @@ func TestFolderHandler_stylesheet(t *testing.T) {
 		Do().
 		Status(http.StatusOK)
 
-	srv.Get("/v5/apidoc.xsl").
+	srv.Get("/v6/apidoc.xsl").
 		Do().
 		Status(http.StatusOK)
 
@@ -224,7 +224,7 @@ func TestFolderHandler_prefix(t *testing.T) {
 		Do().
 		Status(http.StatusOK)
 
-	srv.Get("/prefix/v5/apidoc.xsl").
+	srv.Get("/prefix/v6/apidoc.xsl").
 		Do().
 		Status(http.StatusOK)
 }

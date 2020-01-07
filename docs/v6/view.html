@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+    :root {
+        --background: white;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --background: black;
+        }
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background: var(--background);
+    }
+
+    iframe {
+        border: none;
+        width: 100%;
+        background: var(--background);
+    }
+    </style>
+</head>
+
+<body>
+    <!--
+    NOTE: xslt 中引用的 js，只有在 iframe 中才能执行，
+    直接用 document.replace() 替换当前内容，不会执行引用的 JS 代码。
+    -->
+    <iframe id="apidoc"></iframe>
+    <script>
+    async function loadXML(path) {
+        const obj = await fetch(path);
+        return (new DOMParser()).parseFromString(await obj.text(), "text/xml");
+    }
+
+    function changeFrameHeight() {
+        const iframe = document.getElementById("apidoc");
+        iframe.height = document.documentElement.clientHeight;
+    }
+
+    window.onresize = function () {
+        changeFrameHeight();
+    } 
+
+    const queries = new URLSearchParams(window.location.search);
+    const url = queries.get('url');
+
+    async function init() {
+        const processor = new XSLTProcessor();
+        processor.importStylesheet(await loadXML('./apidoc.xsl'));
+
+        const xml = await loadXML(url);
+        const doc = processor.transformToDocument(xml);
+        const html = (new XMLSerializer()).serializeToString(doc);
+        const blob = new Blob([html], { type: 'text/html' })
+        const obj = URL.createObjectURL(blob)
+
+        const iframe = document.getElementById('apidoc');
+        iframe.src = obj;
+        iframe.addEventListener('load', (e) => {
+            changeFrameHeight();
+        });
+    }
+
+    try{
+        init()
+    } catch (e) {
+        console.error(e)
+    }
+    </script>
+</body>
+
+</html>

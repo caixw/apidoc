@@ -4,7 +4,7 @@
 
 <config>
 	<name>apidoc</name>
-	<version>v5</version>
+	<version>v6</version>
 	<repo>https://github.com/caixw/apidoc</repo>
 	<url>https://apidoc.tools</url>
 	<languages>

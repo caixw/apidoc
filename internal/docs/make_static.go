@@ -12,7 +12,7 @@ import (
 
 	"github.com/issue9/utils"
 
-	"github.com/caixw/apidoc/v5/internal/docs"
+	"github.com/caixw/apidoc/v6/internal/docs"
 )
 
 const (

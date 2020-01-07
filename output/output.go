@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v6/doc"
 )
 
 // Render 渲染 doc 的内容

@@ -9,8 +9,8 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 func TestNewHandlerFunc(t *testing.T) {

@@ -10,9 +10,9 @@ import (
 	"github.com/issue9/assert"
 	"github.com/issue9/assert/rest"
 
-	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/doc/doctest"
-	"github.com/caixw/apidoc/v5/message/messagetest"
+	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/doc/doctest"
+	"github.com/caixw/apidoc/v6/message/messagetest"
 )
 
 var _ http.Handler = &Mock{}

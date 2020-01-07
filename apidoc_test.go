@@ -11,10 +11,10 @@ import (
 	"github.com/issue9/assert/rest"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v5/doc/doctest"
-	"github.com/caixw/apidoc/v5/internal/docs"
-	"github.com/caixw/apidoc/v5/internal/vars"
-	"github.com/caixw/apidoc/v5/message/messagetest"
+	"github.com/caixw/apidoc/v6/doc/doctest"
+	"github.com/caixw/apidoc/v6/internal/docs"
+	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/message/messagetest"
 )
 
 func TestVersion(t *testing.T) {
@@ -52,7 +52,7 @@ func TestView(t *testing.T) {
 	srv.Get("/index.xml").Do().
 		Status(http.StatusOK)
 
-	srv.Get("/v5/apidoc.xsl").Do().
+	srv.Get("/v6/apidoc.xsl").Do().
 		Status(http.StatusOK)
 
 	srv.Close()
@@ -64,7 +64,7 @@ func TestView(t *testing.T) {
 		Status(http.StatusCreated).
 		Header("content-type", "text/css")
 
-	srv.Get("/v5/apidoc.xsl").Do().
+	srv.Get("/v6/apidoc.xsl").Do().
 		Status(http.StatusOK)
 
 	srv.Close()

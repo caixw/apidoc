@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	xpath "github.com/caixw/apidoc/v5/internal/path"
-	"github.com/caixw/apidoc/v5/internal/vars"
+	xpath "github.com/caixw/apidoc/v6/internal/path"
+	"github.com/caixw/apidoc/v6/internal/vars"
 )
 
 // FileInfo 被打包文件的信息

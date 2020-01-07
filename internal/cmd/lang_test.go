@@ -11,7 +11,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/internal/lang"
+	"github.com/caixw/apidoc/v6/internal/lang"
 )
 
 func TestLanguage(t *testing.T) {

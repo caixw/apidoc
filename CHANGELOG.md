@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v6.0.0]
+
 ### Added
 
 - 添加 Valid 方法，用于验证文档是否正确；

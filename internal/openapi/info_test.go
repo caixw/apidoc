@@ -7,7 +7,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v6/doc"
 )
 
 func TestNewContact(t *testing.T) {

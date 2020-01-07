@@ -5,7 +5,7 @@ package doc
 import (
 	"encoding/xml"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 // Enum 表示枚举值

@@ -10,7 +10,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 var _ fmt.Stringer = Erro

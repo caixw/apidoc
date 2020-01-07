@@ -15,9 +15,9 @@ import (
 	"github.com/issue9/term/colors"
 	xmessage "golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/internal/vars"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 // 命令行输出的表格中，每一列为了对齐填补的空格数量。

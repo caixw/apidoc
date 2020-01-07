@@ -11,7 +11,7 @@ var data = []*FileInfo{{
 
 <config>
 	<name>apidoc</name>
-	<version>v5</version>
+	<version>v6</version>
 	<repo>https://github.com/caixw/apidoc</repo>
 	<url>https://apidoc.tools</url>
 	<languages>
@@ -41,8 +41,8 @@ var data = []*FileInfo{{
 		ContentType: "application/xml",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
-<?xml-stylesheet type="text/xsl" href="../v5/apidoc.xsl"?>
-<apidoc apidoc="5.2.1" created="2020-01-07T23:17:06+08:00" version="1.1.1">
+<?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
+<apidoc apidoc="6.0.0" created="2020-01-07T23:39:48+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 
@@ -1704,6 +1704,1511 @@ main .api {
     border: 1px solid var(--border-color);
 }
 
+main .api summary {
+    margin: 0;
+    padding: var(--article-padding);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    line-height: 1;
+}
+
+
+main details.api:not([open]) summary {
+    border: none;
+}
+
+main .api summary .action {
+    min-width: 4rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+main .api summary .link {
+    margin-right: 10px;
+    text-decoration: none;
+}
+
+main .api .callback .summary,
+main .api summary .summary {
+    float: right;
+    font-weight: 400;
+    opacity: .5;
+}
+
+main .api .description {
+    padding: var(--article-padding);
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+main .api[data-method='GET,'][open],
+main .api[data-method='GET,']:hover,
+main .callback[data-method='GET,'] h3 {
+    border: 1px solid var(--method-get-color);
+}
+main .api[data-method='GET,'] summary {
+    border-bottom: 1px solid var(--method-get-color);
+}
+
+main .api[data-method='POST,'][open],
+main .api[data-method='POST,']:hover,
+main .callback[data-method='POST,'] h3 {
+    border: 1px solid var(--method-post-color);
+}
+main .api[data-method='POST,'] summary {
+    border-bottom: 1px solid var(--method-post-color);
+}
+
+main .api[data-method='PUT,'][open],
+main .api[data-method='PUT,']:hover,
+main .callback[data-method='PUT,'] h3 {
+    border: 1px solid var(--method-put-color);
+}
+main .api[data-method='PUT,'] summary {
+    border-bottom: 1px solid var(--method-put-color);
+}
+
+main .api[data-method='PATCH,'][open],
+main .api[data-method='PATCH,']:hover,
+main .callback[data-method='PATCH,'] h3 {
+    border: 1px solid var(--method-patch-color);
+}
+main .api[data-method='PATCH,'] summary {
+    border-bottom: 1px solid var(--method-patch-color);
+}
+
+main .api[data-method='DELETE,'][open],
+main .api[data-method='DELETE,']:hover,
+main .callback[data-method='DELETE,'] h3 {
+    border: 1px solid var(--method-delete-color);
+}
+main .api[data-method='DELETE,'] summary {
+    border-bottom: 1px solid var(--method-delete-color);
+}
+
+main .api[data-method='OPTIONS,'][open],
+main .api[data-method='OPTIONS,']:hover,
+main .callback[data-method='OPTIONS,'] h3 {
+    border: 1px solid var(--method-options-color);
+}
+main .api[data-method='OPTIONS,'] summary {
+    border-bottom: 1px solid var(--method-options-color);
+}
+
+main .callback h3 {
+    padding: var(--article-padding) var(--padding);
+    margin: 0;
+    border-left: none !important;
+    border-right: none !important;
+    cursor: pointer;
+    line-height: 1;
+}
+
+main .api .body {
+    display: flex;
+    flex-flow: wrap;
+}
+
+main .api .body .requests,
+main .api .body .responses {
+    flex: 1 1 50%;
+    box-sizing: border-box;
+    min-width: var(--min-width);
+    padding: var(--article-padding);
+}
+main .api .body .requests {
+    border-right: 1px dotted var(--border-color);
+}
+
+main .api .body .requests .title,
+main .api .body .responses .title {
+    margin: 0;
+    opacity: .5;
+}
+
+main .api .param {
+    margin-top: var(--padding);
+}
+
+main .api .param .title,
+main .api .param .title {
+    margin: 0;
+    opacity: 1 !important;
+    font-weight: normal;
+}
+
+main .api .param .example {
+    display: none;
+    margin: 0;
+}
+
+main .api .param .toggle-example {
+    cursor: pointer;
+}
+
+main .api .body .responses .status,
+main .api .body .requests .status {
+    margin: calc(var(--padding) + var(--article-padding)) 0 var(--article-padding);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 3px;
+}
+
+main .api .param .parent-type,
+main .api .status .mimetype {
+    opacity: .5;
+}
+
+/*************************** footer ***********************/
+
+footer {
+    border-top: 1px solid var(--border-color);
+    padding: var(--padding) var(--padding);
+    text-align: left;
+    margin-top: var(--padding);
+}
+
+footer .wrap {
+    margin: 0 auto;
+    max-width: var(--max-width);
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-between;
+}
+`),
+	},
+	{
+		Name:        "v5/apidoc.js",
+		ContentType: "application/javascript",
+		Content: []byte(`'use strict';
+
+window.onload = function () {
+    registerFilter('method');
+    registerFilter('server');
+    registerFilter('tag');
+    registerExpand();
+    registerLanguageFilter();
+
+    initExample();
+
+    prettyDescription();
+};
+
+function registerFilter(type) {
+    const menu = document.querySelector('.' + type + '-selector');
+    if (menu === null) { // 可能为空，表示不存在该过滤项
+        return;
+    }
+
+    menu.style.display = 'block'; // 有 JS 的情况下，展示过滤菜单
+
+    menu.querySelectorAll('li input').forEach((val) => {
+        val.addEventListener('change', (event) => {
+            if (event.target === null) {
+                return;
+            }
+
+            const chk = event.target.checked;
+            const tag = event.target.parentNode.parentNode.getAttribute('data-' + type);
+            document.querySelectorAll('.api').forEach((api) => {
+                if (!api.getAttribute('data-' + type).includes(tag + ',')) {
+                    return;
+                }
+
+                api.setAttribute("data-hidden-" + type, chk ? "" : "true");
+
+                const hidden = api.getAttribute('data-hidden-tag') === 'true' ||
+                    api.getAttribute('data-hidden-server') === 'true' ||
+                    api.getAttribute('data-hidden-method') === 'true';
+                api.style.display = hidden ? 'none' : 'block';
+            });
+        }); // end addEventListener('change')
+    }); // end forEach('li input')
+}
+
+function registerLanguageFilter() {
+    const menu = document.querySelector('.languages-selector');
+
+    menu.style.display = 'block';
+
+    menu.querySelectorAll('li input').forEach((val) => {
+        val.addEventListener('change', (event) => {
+            if (event.target === null || !event.target.checked) {
+                return;
+            }
+
+            const lang = event.target.parentNode.parentNode.getAttribute('lang');
+            document.querySelectorAll('[data-locale]').forEach((elem) => {
+                elem.className = elem.getAttribute('lang') === lang ? '' : 'hidden';
+            });
+        }); // end addEventListener('change')
+    }); // end forEach('li input')
+}
+
+function registerExpand() {
+    const expand = document.querySelector('.expand-selector');
+    if (expand === null) {
+        return;
+    }
+
+    expand.style.display = 'block';
+
+    expand.querySelector('input').addEventListener('change', (event) => {
+        const chk = event.target.checked;
+        document.querySelectorAll('details').forEach((elem) => {
+            elem.open = chk;
+        });
+    });
+}
+
+function initExample() {
+    document.querySelectorAll('.toggle-example').forEach((btn) => {
+        btn.addEventListener('click', (event) => {
+            if (event.target === null) {
+                return;
+            }
+
+            const parent = event.target.parentNode.parentNode.parentNode;
+            const table = parent.querySelector('table');
+            const pre = parent.querySelector('pre');
+
+            if (table.getAttribute('data-visible') === 'true') {
+                table.setAttribute('data-visible', 'false');
+                table.style.display = 'none';
+            } else {
+                table.setAttribute('data-visible', 'true');
+                table.style.display = 'table';
+            }
+
+            if (pre.getAttribute('data-visible') === 'true') {
+                pre.setAttribute('data-visible', 'false');
+                pre.style.display = 'none';
+            } else {
+                pre.setAttribute('data-visible', 'true');
+                pre.style.display = 'block';
+            }
+        });
+    });
+}
+
+// 美化描述内容
+//
+// 即将 html 内容转换成真的 HTML 格式，而 markdown 则依然是 pre 显示。
+function prettyDescription() {
+    document.querySelectorAll('[data-type]').forEach((elem) => {
+        const type = elem.getAttribute('data-type');
+        if (type !== 'html') {
+            return;
+        }
+
+        elem.innerHTML = elem.getElementsByTagName('pre')[0].innerText;
+    });
+}
+`),
+	},
+	{
+		Name:        "v5/apidoc.xsl",
+		ContentType: "text/xsl",
+		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:import href="./locales.xsl" />
+<xsl:output
+    method="html"
+    encoding="utf-8"
+    indent="yes"
+    version="5.0"
+    doctype-system="about:legacy-compat"
+/>
+
+<xsl:template match="/">
+    <html lang="{$curr-lang}">
+        <head>
+            <title><xsl:value-of select="apidoc/title" /></title>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+            <meta name="generator" content="apidoc" />
+            <link rel="icon" type="image/svg+xml" href="{$icon}" />
+            <link rel="mask-icon" type="image/svg+xml" href="{$icon}" color="black" />
+            <xsl:if test="apidoc/license"><link rel="license" href="{apidoc/license/@url}" /></xsl:if>
+            <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />
+            <script src="{$base-url}apidoc.js"></script>
+        </head>
+        <body>
+            <xsl:call-template name="header" />
+
+            <main>
+                <div class="content" data-type="{description/@type}">
+                    <pre><xsl:copy-of select="apidoc/description/node()" /></pre>
+                </div>
+                <div class="servers"><xsl:apply-templates select="apidoc/server" /></div>
+                <xsl:apply-templates select="apidoc/api" />
+            </main>
+
+            <footer>
+            <div class="wrap">
+                <xsl:if test="apidoc/license"><xsl:copy-of select="$locale-license" /></xsl:if>
+                <xsl:copy-of select="$locale-generator" />
+            </div>
+            </footer>
+        </body>
+    </html>
+</xsl:template>
+
+<xsl:template match="/apidoc/server">
+    <div class="server">
+        <h4>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
+            <xsl:value-of select="@name" />
+        </h4>
+
+        <p><xsl:value-of select="@url" /></p>
+        <div>
+            <xsl:choose>
+                <xsl:when test="description">
+                    <xsl:attribute name="data-type">
+                        <xsl:value-of select="description/@type" />
+                    </xsl:attribute>
+                    <pre><xsl:copy-of select="description/node()" /></pre>
+                </xsl:when>
+                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+            </xsl:choose>
+        </div>
+    </div>
+</xsl:template>
+
+<!-- header 界面元素 -->
+<xsl:template name="header">
+<header>
+<div class="wrap">
+    <h1>
+        <img src="{$icon}" />
+        <xsl:value-of select="/apidoc/title" />
+        <span class="version">&#160;(<xsl:value-of select="/apidoc/@version" />)</span>
+    </h1>
+
+    <div class="menus">
+        <!-- expand -->
+        <label class="menu expand-selector" role="checkbox">
+            <input type="checkbox" /><xsl:copy-of select="$locale-expand" />
+        </label>
+
+        <!-- server -->
+        <xsl:if test="apidoc/server">
+        <div class="menu server-selector" role="menu" aria-haspopup="true">
+            <xsl:copy-of select="$locale-server" />
+            <span aria-hiddren="true">&#160;&#x25bc;</span>
+            <ul role="menu" aria-hiddren="true">
+                <xsl:for-each select="apidoc/server">
+                <li data-server="{@name}" role="menuitemcheckbox">
+                    <label>
+                        <input type="checkbox" checked="checked" />&#160;<xsl:value-of select="@name" />
+                    </label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
+        </xsl:if>
+
+        <!-- tag -->
+        <xsl:if test="apidoc/tag">
+        <div class="menu tag-selector" role="menu" aria-haspopup="true">
+            <xsl:copy-of select="$locale-tag" />
+            <span aria-hiddren="true">&#160;&#x25bc;</span>
+            <ul role="menu" aria-hiddren="true">
+                <xsl:for-each select="apidoc/tag">
+                <li data-tag="{@name}" role="menuitemcheckbox">
+                    <label>
+                        <input type="checkbox" checked="checked" />&#160;<xsl:value-of select="@title" />
+                    </label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
+        </xsl:if>
+
+        <!-- method -->
+        <div class="menu method-selector" role="menu" aria-haspopup="true">
+            <xsl:copy-of select="$locale-method" />
+            <span aria-hiddren="true">&#160;&#x25bc;</span>
+            <ul role="menu" aria-hiddren="true">
+                <!-- 浏览器好像都不支持 xpath 2.0，所以无法使用 distinct-values -->
+                <!-- xsl:for-each select="distinct-values(/apidoc/api/@method)" -->
+                <xsl:for-each select="/apidoc/api/@method[not(../preceding-sibling::api/@method = .)]">
+                <li data-method="{.}" role="menuitemcheckbox">
+                    <label><input type="checkbox" checked="checked" />&#160;<xsl:value-of select="." /></label>
+                </li>
+                </xsl:for-each>
+            </ul>
+        </div>
+
+        <!-- language -->
+        <div class="menu languages-selector" role="menu" aria-haspopup="true">
+            <xsl:copy-of select="$locale-language" />
+            <span aria-hiddren="true">&#160;&#x25bc;</span>
+            <ul role="menu" aria-hiddren="true"><xsl:call-template name="languages" /></ul>
+        </div>
+    </div> <!-- end .menus -->
+</div> <!-- end .wrap -->
+</header>
+</xsl:template>
+
+<!-- api 界面元素 -->
+<xsl:template match="/apidoc/api">
+    <xsl:variable name="id" select="concat(@method, translate(path/@path, $id-from, $id-to))" />
+
+    <details id="{$id}" class="api" data-method="{@method},">
+    <xsl:attribute name="data-tag">
+        <xsl:for-each select="tag"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
+    </xsl:attribute>
+    <xsl:attribute name="data-server">
+        <xsl:for-each select="server"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
+    </xsl:attribute>
+
+        <summary>
+            <a class="link" href="#{$id}">&#128279;</a> <!-- 链接符号 -->
+
+            <span class="action"><xsl:value-of select="@method" /></span>
+            <span>
+                <xsl:call-template name="deprecated">
+                    <xsl:with-param name="deprecated" select="@deprecated" />
+                </xsl:call-template>
+
+                <xsl:value-of select="path/@path" />
+            </span>
+
+            <span class="summary"><xsl:value-of select="@summary" /></span>
+        </summary>
+
+        <xsl:if test="description">
+            <div class="description" data-type="{description/@type}">
+                <pre><xsl:copy-of select="description/node()" /></pre>
+            </div>
+        </xsl:if>
+
+        <div class="body">
+            <div class="requests">
+                <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
+                <xsl:call-template name="requests">
+                    <xsl:with-param name="requests" select="request" />
+                    <xsl:with-param name="path" select="path" />
+                    <xsl:with-param name="headers" select="header" />
+                </xsl:call-template>
+            </div>
+            <div class="responses">
+                <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
+
+                <xsl:for-each select="response">
+                    <xsl:call-template name="response">
+                        <xsl:with-param name="response" select="." />
+                    </xsl:call-template>
+                </xsl:for-each>
+
+                <xsl:for-each select="/apidoc/response"><!-- 公有的 response -->
+                    <xsl:call-template name="response">
+                        <xsl:with-param name="response" select="." />
+                    </xsl:call-template>
+                </xsl:for-each>
+            </div>
+        </div>
+
+        <xsl:if test="./callback"><xsl:apply-templates select="./callback" /></xsl:if>
+    </details>
+</xsl:template>
+
+<!-- 回调内容 -->
+<xsl:template match="/apidoc/api/callback">
+    <div class="callback" data-method="{./@method},">
+        <h3>
+            <xsl:copy-of select="$locale-callback" />
+            <span class="summary"><xsl:value-of select="@summary" /></span>
+        </h3>
+        <xsl:if test="description">
+            <div class="description" data-type="{description/@type}">
+                <pre><xsl:copy-of select="description/node()" /></pre>
+            </div>
+        </xsl:if>
+
+        <div class="body">
+            <div class="requests">
+                <h4 class="title"><xsl:copy-of select="$locale-request" /></h4>
+                <xsl:call-template name="requests">
+                    <xsl:with-param name="requests" select="request" />
+                    <xsl:with-param name="path" select="path" />
+                    <xsl:with-param name="headers" select="header" />
+                </xsl:call-template>
+            </div>
+
+            <xsl:if test="response">
+                <div class="responses">
+                    <h4 class="title"><xsl:copy-of select="$locale-response" /></h4>
+                    <xsl:for-each select="response">
+                        <xsl:call-template name="response">
+                            <xsl:with-param name="response" select="." />
+                        </xsl:call-template>
+                    </xsl:for-each>
+                </div>
+            </xsl:if>
+        </div> <!-- end .body -->
+    </div> <!-- end .callback -->
+</xsl:template>
+
+<!-- api/request 的界面元素 -->
+<xsl:template name="requests">
+<xsl:param name="requests" />
+<xsl:param name="path" />
+<xsl:param name="headers" /> <!-- 公用的报头 -->
+
+<div class="request">
+    <xsl:if test="$path/param">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title">
+                <xsl:copy-of select="$locale-path-param" />
+            </xsl:with-param>
+            <xsl:with-param name="param" select="$path/param" />
+            <xsl:with-param name="simple" select="'true'" />
+        </xsl:call-template>
+    </xsl:if>
+
+    <xsl:if test="$path/query">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title">
+                <xsl:copy-of select="$locale-query" />
+            </xsl:with-param>
+            <xsl:with-param name="param" select="$path/query" />
+            <xsl:with-param name="simple" select="'true'" />
+        </xsl:call-template>
+    </xsl:if>
+
+    <xsl:if test="$headers">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title">
+                <xsl:copy-of select="$locale-header" />
+            </xsl:with-param>
+            <xsl:with-param name="param" select="$headers" />
+            <xsl:with-param name="simple" select="'true'" />
+        </xsl:call-template>
+    </xsl:if>
+
+    <xsl:for-each select="$requests">
+        <h5 class="status"><xsl:value-of select="@mimetype" /></h5>
+
+        <xsl:if test="header">
+            <xsl:call-template name="param">
+                <xsl:with-param name="title">
+                    <xsl:copy-of select="$locale-header" />
+                </xsl:with-param>
+                <xsl:with-param name="param" select="header" />
+                <xsl:with-param name="simple" select="'true'" />
+            </xsl:call-template>
+        </xsl:if>
+
+        <xsl:call-template name="param">
+            <xsl:with-param name="title"><xsl:copy-of select="$locale-body" /></xsl:with-param>
+            <xsl:with-param name="param" select="." />
+        </xsl:call-template>
+    </xsl:for-each>
+</div>
+</xsl:template>
+
+<!-- api/response 的界面 -->
+<xsl:template name="response">
+    <xsl:param name="response" />
+
+    <h5 class="status">
+        <xsl:value-of select="$response/@status" />
+        <span class="mimetype">&#160;(<xsl:value-of select="$response/@mimetype" />)</span>
+    </h5>
+
+    <xsl:if test="$response/header">
+        <xsl:call-template name="param">
+            <xsl:with-param name="title">
+                <xsl:copy-of select="$locale-header" />
+            </xsl:with-param>
+            <xsl:with-param name="param" select="$response/header" />
+            <xsl:with-param name="simple" select="'true'" />
+        </xsl:call-template>
+    </xsl:if>
+
+    <xsl:call-template name="param">
+        <xsl:with-param name="title"><xsl:copy-of select="$locale-body" /></xsl:with-param>
+        <xsl:with-param name="param" select="$response" />
+    </xsl:call-template>
+</xsl:template>
+
+<!-- path param, path query, header 等的界面 -->
+<xsl:template name="param">
+    <xsl:param name="title" />
+    <xsl:param name="param" />
+    <xsl:param name="simple" select="'false'" /> <!-- 简单的类型，不存在嵌套类型，也不会有示例代码 -->
+
+    <xsl:if test="not($param/@type='none')">
+        <div class="param">
+            <h4 class="title">
+                &#x27a4;&#160;<xsl:copy-of select="$title" />
+                <xsl:if test="$param/example">
+                    &#160;(<a class="toggle-example"><xsl:copy-of select="$locale-example" /></a>)
+                </xsl:if>
+            </h4>
+
+            <table class="param-list" data-visible="true">
+                <thead>
+                    <tr>
+                        <th><xsl:copy-of select="$locale-var" /></th>
+                        <th><xsl:copy-of select="$locale-type" /></th>
+                        <th><xsl:copy-of select="$locale-value" /></th>
+                        <th><xsl:copy-of select="$locale-description" /></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <xsl:choose>
+                        <xsl:when test="$simple='true'">
+                            <xsl:call-template name="simple-param-list">
+                                <xsl:with-param name="param" select="$param" />
+                            </xsl:call-template>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:call-template name="param-list">
+                                <xsl:with-param name="param" select="$param" />
+                            </xsl:call-template>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </tbody>
+            </table>
+
+            <xsl:if test="$param/example">
+            <pre class="example" data-visible="false" data-mimetype="{$param/example/@mimetype}"><xsl:copy-of select="$param/example/node()" /></pre>
+            </xsl:if>
+        </div>
+    </xsl:if>
+</xsl:template>
+
+<!-- 列顺序必须要与 param 中的相同 -->
+<xsl:template name="simple-param-list">
+    <xsl:param name="param" />
+
+    <xsl:for-each select="$param">
+        <xsl:call-template name="param-list-tr">
+            <xsl:with-param name="param" select="." />
+        </xsl:call-template>
+    </xsl:for-each>
+</xsl:template>
+
+<!-- 列顺序必须要与 param 中的相同 -->
+<xsl:template name="param-list">
+    <xsl:param name="param" />
+    <xsl:param name="parent" select="''" /> <!-- 上一级的名称，嵌套对象时可用 -->
+
+    <xsl:for-each select="$param">
+        <xsl:call-template name="param-list-tr">
+            <xsl:with-param name="param" select="." />
+            <xsl:with-param name="parent" select="$parent" />
+        </xsl:call-template>
+
+        <xsl:if test="param">
+            <xsl:variable name="p">
+                    <xsl:value-of select="concat($parent, @name)" />
+                    <xsl:if test="@name"><xsl:value-of select="'.'" /></xsl:if>
+            </xsl:variable>
+
+            <xsl:call-template name="param-list">
+                <xsl:with-param name="param" select="param" />
+                <xsl:with-param name="parent" select="$p" />
+            </xsl:call-template>
+        </xsl:if>
+    </xsl:for-each>
+</xsl:template>
+
+<!-- 显示第一行的参数数据 -->
+<xsl:template name="param-list-tr">
+    <xsl:param name="param" />
+    <xsl:param name="parent" select="''" />
+
+    <tr>
+        <xsl:call-template name="deprecated">
+            <xsl:with-param name="deprecated" select="$param/@deprecated" />
+        </xsl:call-template>
+        <th>
+            <span class="parent-type"><xsl:value-of select="$parent" /></span>
+            <xsl:value-of select="$param/@name" />
+        </th>
+
+        <td>
+            <xsl:value-of select="$param/@type" />
+            <xsl:if test="$param/@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+        </td>
+
+        <td>
+            <xsl:choose>
+                <xsl:when test="$param/@optional='true'"><xsl:value-of select="'O'" /></xsl:when>
+                <xsl:otherwise><xsl:value-of select="'R'" /></xsl:otherwise>
+            </xsl:choose>
+            <xsl:value-of select="concat(' ', $param/@default)" />
+        </td>
+
+        <td>
+            <xsl:choose>
+                <xsl:when test="description">
+                    <xsl:attribute name="data-type">
+                        <xsl:value-of select="description/@type" />
+                    </xsl:attribute>
+                    <pre><xsl:copy-of select="description/node()" /></pre>
+                </xsl:when>
+                <xsl:otherwise><xsl:value-of select="@summary" /></xsl:otherwise>
+            </xsl:choose>
+            <xsl:call-template name="enum">
+                <xsl:with-param name="enum" select="$param/enum"/>
+            </xsl:call-template>
+        </td>
+    </tr>
+</xsl:template>
+
+<!-- 显示枚举类型的内容 -->
+<xsl:template name="enum">
+    <xsl:param name="enum" />
+
+    <xsl:if test="$enum">
+        <p><xsl:copy-of select="$locale-enum" /></p>
+        <ul>
+        <xsl:for-each select="$enum">
+            <li>
+            <xsl:call-template name="deprecated">
+                <xsl:with-param name="deprecated" select="@deprecated" />
+            </xsl:call-template>
+
+            <xsl:value-of select="@value" />:
+            <xsl:choose>
+                <xsl:when test="description">
+                    <div data-type="{description/@type}">
+                        <pre><xsl:copy-of select="description/node()" /></pre>
+                    </div>
+                </xsl:when>
+                <xsl:otherwise><xsl:value-of select="summary" /></xsl:otherwise>
+            </xsl:choose>
+            </li>
+        </xsl:for-each>
+        </ul>
+    </xsl:if>
+</xsl:template>
+
+<!--
+给指定的元素添加已弃用的标记
+
+该模板会给父元素添加 class 和 title 属性，
+所以必须要在父元素的任何子元素之前，否则 chrome 和 safari 可能无法正常解析。
+-->
+<xsl:template name="deprecated">
+    <xsl:param name="deprecated" />
+
+    <xsl:if test="$deprecated">
+        <xsl:attribute name="class"><xsl:value-of select="'del'" /></xsl:attribute>
+        <xsl:attribute name="title">
+            <xsl:value-of select="$deprecated" />
+        </xsl:attribute>
+    </xsl:if>
+</xsl:template>
+
+<!-- 用于将 API 地址转换成合法的 ID 标记 -->
+<xsl:variable name="id-from" select="'{}/'" />
+<xsl:variable name="id-to" select="'__-'" />
+
+<!-- 根据情况获取相应的图标 -->
+<xsl:variable name="icon">
+    <xsl:choose>
+        <xsl:when test="/apidoc/@logo">
+            <xsl:value-of select="/apidoc/@logo" />
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="concat($base-url, '../icon.svg')" />
+        </xsl:otherwise>
+    </xsl:choose>
+</xsl:variable>
+
+<!--
+获取相对于当前 xsl 文件的基地址
+xsl 2.0 可以直接采用 base-uri(document(''))
+-->
+<xsl:variable name="base-url">
+    <xsl:apply-templates select="processing-instruction('xml-stylesheet')" />
+</xsl:variable>
+
+<xsl:template match="processing-instruction('xml-stylesheet')">
+    <xsl:variable name="v1" select="substring-after(., 'href=&quot;')" />
+    <!-- NOTE: 此处假定当前文件叫作 apidoc.xsl，如果不是的话，需要另外处理此代码 -->
+    <xsl:variable name="v2" select="substring-before($v1, 'apidoc.xsl&quot;')" />
+    <xsl:value-of select="$v2" />
+</xsl:template>
+
+</xsl:stylesheet>
+`),
+	},
+	{
+		Name:        "v5/locales.xsl",
+		ContentType: "text/xsl",
+		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 当前文件实现了简单的翻译功能 -->
+
+<xsl:stylesheet
+version="1.0"
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:l="urn:locale"
+exclude-result-prefixes="l">
+
+<!-- 当前支持的本地化列表，其中第一个会被当作默认值。 -->
+<l:locales>
+    <locale id="zh-hans">简体中文</locale>
+    <locale id="zh-hant">繁體中文</locale>
+</l:locales>
+
+<xsl:template name="languages">
+    <xsl:for-each select="document('')/xsl:stylesheet/l:locales/locale">
+    <li lang="{@id}" role="menuitemradio">
+        <label><input type="radio" name="lang" checked="{$curr-lang=@id}" />&#160;<xsl:value-of select="." /></label>
+    </li>
+    </xsl:for-each>
+</xsl:template>
+
+<!-- language -->
+<xsl:variable name="locale-language">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="document('')/xsl:stylesheet/l:locales/locale[@id='zh-hans']" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="document('')/xsl:stylesheet/l:locales/locale[@id='zh-hant']" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- server -->
+<xsl:variable name="locale-server">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'服务'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'服務'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- tag -->
+<xsl:variable name="locale-tag">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'标签'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'標簽'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- expand -->
+<xsl:variable name="locale-expand">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'展开'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'展開'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- method -->
+<xsl:variable name="locale-method">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'请求方法'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'請求方法'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- request -->
+<xsl:variable name="locale-request">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'请求'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'請求'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- response -->
+<xsl:variable name="locale-response">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'返回'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'返回'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- callback -->
+<xsl:variable name="locale-callback">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'回调'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'回調'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- path param -->
+<xsl:variable name="locale-path-param">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'路径参数'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'路徑參數'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- query -->
+<xsl:variable name="locale-query">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'查询参数'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'查詢參數'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- header -->
+<xsl:variable name="locale-header">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'报头'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'報頭'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- body -->
+<xsl:variable name="locale-body">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'报文'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'報文'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- example -->
+<xsl:variable name="locale-example">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'示例代码'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'示例代碼'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- var -->
+<xsl:variable name="locale-var">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'变量'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'變量'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- type -->
+<xsl:variable name="locale-type">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'类型'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'類型'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- value -->
+<xsl:variable name="locale-value">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'值'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'值'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- description -->
+<xsl:variable name="locale-description">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'描述'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'描述'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- enum -->
+<xsl:variable name="locale-enum">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text" select="'枚举'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text" select="'枚舉'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- license -->
+<xsl:variable name="locale-license">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text">
+            文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>
+        </xsl:with-param>
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text">
+            文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>
+        </xsl:with-param>
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- generator -->
+<xsl:variable name="locale-generator">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="text">
+            由 <a href="https://apidoc.tools">apidoc</a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>
+        </xsl:with-param>
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="text">
+            由 <a href="https://apidoc.tools">apidoc</a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>
+        </xsl:with-param>
+    </xsl:call-template>
+</xsl:variable>
+
+<xsl:template name="build-locale">
+    <xsl:param name="lang" />
+    <xsl:param name="text" />
+
+    <xsl:variable name="class">
+        <xsl:choose>
+            <xsl:when test="$curr-lang=translate($lang, $uppercase, $lowercase)">
+                <xsl:value-of select="''" />
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="'hidden'" />
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
+    <!-- data-locale 属性表示该元素是一个本地化信息元素，JS 代码通过该标记切换语言。 -->
+    <span data-locale="true" lang="{$lang}" class="{$class}"><xsl:copy-of select="$text" /></span>
+</xsl:template>
+
+<!--
+返回当前文档的语言，会转换为小写，_ 也会被转换成 -
+如果文档指定的语言不存在，则会采取 l:locales 中的第一个元素作为默认语言。
+-->
+<xsl:variable name="curr-lang">
+    <xsl:variable name="curr" select="translate(/apidoc/@lang, $uppercase, $lowercase)" />
+
+    <xsl:variable name="r1">
+        <xsl:for-each select="document('')/xsl:stylesheet/l:locales/locale">
+            <xsl:if test="@id=$curr"><xsl:value-of select="$curr" /></xsl:if>
+        </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:variable name="r2">
+    <xsl:choose>
+        <xsl:when test="$r1 and not($r1='')"> 
+            <xsl:value-of select="$r1" />
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="document('')/xsl:stylesheet/l:locales/locale[1]/@id" />
+        </xsl:otherwise>
+    </xsl:choose>
+    </xsl:variable>
+
+    <xsl:value-of select="$r2" />
+</xsl:variable>
+
+<!-- 用于实现 lower-case 和 upper-case，如果将来某天浏览器支持 xsl 2.0 了，可以直接采用相关函数 -->
+<xsl:variable name="lowercase" select="'abcdefghijklmnopqrstuvwxyz-'" />
+<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'" />
+
+</xsl:stylesheet>
+`),
+	},
+	{
+		Name:        "v5/view.html",
+		ContentType: "text/html",
+		Content: []byte(`<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+    :root {
+        --background: white;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --background: black;
+        }
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background: var(--background);
+    }
+
+    iframe {
+        border: none;
+        width: 100%;
+        background: var(--background);
+    }
+    </style>
+</head>
+
+<body>
+    <!--
+    NOTE: xslt 中引用的 js，只有在 iframe 中才能执行，
+    直接用 document.replace() 替换当前内容，不会执行引用的 JS 代码。
+    -->
+    <iframe id="apidoc"></iframe>
+    <script>
+    async function loadXML(path) {
+        const obj = await fetch(path);
+        return (new DOMParser()).parseFromString(await obj.text(), "text/xml");
+    }
+
+    function changeFrameHeight() {
+        const iframe = document.getElementById("apidoc");
+        iframe.height = document.documentElement.clientHeight;
+    }
+
+    window.onresize = function () {
+        changeFrameHeight();
+    } 
+
+    const queries = new URLSearchParams(window.location.search);
+    const url = queries.get('url');
+
+    async function init() {
+        const processor = new XSLTProcessor();
+        processor.importStylesheet(await loadXML('./apidoc.xsl'));
+
+        const xml = await loadXML(url);
+        const doc = processor.transformToDocument(xml);
+        const html = (new XMLSerializer()).serializeToString(doc);
+        const blob = new Blob([html], { type: 'text/html' })
+        const obj = URL.createObjectURL(blob)
+
+        const iframe = document.getElementById('apidoc');
+        iframe.src = obj;
+        iframe.addEventListener('load', (e) => {
+            changeFrameHeight();
+        });
+    }
+
+    try{
+        init()
+    } catch (e) {
+        console.error(e)
+    }
+    </script>
+</body>
+
+</html>
+`),
+	},
+	{
+		Name:        "v6/apidoc.css",
+		ContentType: "text/css",
+		Content: []byte(`@charset "utf-8";
+
+:root {
+    --max-width: 2048px;
+    --min-width: 200px; /* 当列的宽度小于此值时，部分行内容会被从横向改变纵向排列。 */
+    --padding: 1rem;
+    --article-padding: calc(var(--padding) / 2);
+
+    --color: black;
+    --accent-color: #0074d9;
+    --background: white;
+    --border-color: #e0e0e0;
+    --delete-color: red;
+
+    /* method */
+    --method-get-color: green;
+    --method-options-color: green;
+    --method-post-color: darkorange;
+    --method-put-color: darkorange;
+    --method-patch-color: darkorange;
+    --method-delete-color: red;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color: #b0b0b0;
+        --accent-color: #0074d9;
+        --background: black;
+        --border-color: #303030;
+        --delete-color: red;
+
+        /* method */
+        --method-get-color: green;
+        --method-options-color: green;
+        --method-post-color: darkorange;
+        --method-put-color: darkorange;
+        --method-patch-color: darkorange;
+        --method-delete-color: red;
+    }
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    color: var(--color);
+    background: var(--background);
+    text-align: center;
+}
+
+table {
+    width: 100%;
+}
+
+table th, table td {
+    font-weight: normal;
+    text-align: left;
+    border-bottom: 1px solid transparent;
+}
+
+table tr:hover th,
+table tr:hover td {
+    border-bottom: 1px solid var(--border-color);
+}
+
+ul, ol, ul li, ol li {
+    padding: 0;
+    margin: 0;
+    list-style-position: inside;
+}
+
+p {
+    margin: 0;
+}
+
+summary, input {
+    outline: none;
+}
+
+a {
+    text-decoration: none;
+    color: var(--accent-color);
+}
+
+a:hover {
+    opacity: .7;
+}
+
+.del {
+    text-decoration: line-through;
+    text-decoration-color: var(--delete-color);
+}
+
+.hidden {
+    display: none;
+}
+
+/*************************** header ***********************/
+
+header {
+    position: sticky;
+    top: 0;
+    display: block;
+    z-index: 1000;
+    box-sizing: border-box;
+    background: var(--background);
+    box-shadow: 2px 2px 2px var(--border-color);
+}
+
+header .wrap {
+    margin: 0 auto;
+    text-align: left;
+    max-width: var(--max-width);
+    padding: 0 var(--padding);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: var(--padding) 0 var(--article-padding);
+    display: inline-block;
+}
+
+header h1 .version {
+    font-size: 1rem;
+}
+
+header h1 img {
+    height: 1.5rem;
+    margin-right: .5rem;
+}
+
+
+header .menus {
+    display: flex;
+}
+
+header .menu {
+    cursor: pointer;
+    position: relative;
+    margin-left: var(--padding);
+    display: none; /* 默认不可见，只有在有 JS 的情况下，通过 JS 控制其可见性 */
+}
+
+header .menu:hover span {
+    opacity: .7;
+}
+
+header .menu ul {
+    position: absolute;
+    min-width: 4rem;
+    right: 0;
+    display: none;
+    list-style: none;
+    background: var(--background);
+    border: 1px solid var(--border-color);
+    padding: var(--article-padding);
+}
+
+header .menu ul li {
+    padding-bottom: var(--article-padding);
+}
+
+/* 可以保证 label 的内容在同一行 */
+header .menu ul li label {
+    display: inline-flex;
+    align-items: baseline;
+    word-break: keep-all;
+    white-space: nowrap;
+}
+
+header .menu ul li:last-of-type {
+    padding-bottom: 0;
+}
+
+header .menu:hover ul {
+    display: block;
+}
+
+/*************************** main ***********************/
+
+main {
+    padding: 0 var(--padding);
+    margin: 0 auto;
+    max-width: var(--max-width);
+    text-align: left;
+}
+
+main .content {
+    margin: var(--padding) 0;
+}
+
+/****************** .servers *******************/
+
+main .servers {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-between;
+    margin-bottom: var(--padding);
+}
+
+main .servers .server {
+    flex-grow: 1;
+    min-width: var(--min-width);
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    padding: var(--padding) var(--article-padding);
+}
+
+main .servers .server:hover {
+    border: 1px solid var(--accent-color);
+}
+
+main .servers .server h4 {
+    margin: 0 0 var(--padding);
+}
+
+/********************** .api **********************/
+
+main .api {
+    margin-bottom: var(--article-padding);
+    border: 1px solid var(--border-color);
+}
+
 main .api>summary {
     margin: 0;
     padding: var(--article-padding);
@@ -1888,7 +3393,7 @@ footer .wrap {
 `),
 	},
 	{
-		Name:        "v5/apidoc.js",
+		Name:        "v6/apidoc.js",
 		ContentType: "application/javascript",
 		Content: []byte(`'use strict';
 
@@ -1984,7 +3489,7 @@ function prettyDescription() {
 `),
 	},
 	{
-		Name:        "v5/apidoc.xsl",
+		Name:        "v6/apidoc.xsl",
 		ContentType: "text/xsl",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
@@ -2564,7 +4069,7 @@ xsl 2.0 可以直接采用 base-uri(document(''))
 `),
 	},
 	{
-		Name:        "v5/locales.xsl",
+		Name:        "v6/locales.xsl",
 		ContentType: "text/xsl",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
@@ -2912,7 +4417,7 @@ exclude-result-prefixes="l">
 `),
 	},
 	{
-		Name:        "v5/view.html",
+		Name:        "v6/view.html",
 		ContentType: "text/html",
 		Content: []byte(`<!DOCTYPE html>
 <html lang="en">

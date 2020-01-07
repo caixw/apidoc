@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/caixw/apidoc/v5/internal/lang"
+	"github.com/caixw/apidoc/v6/internal/lang"
 )
 
 // Detect 检测指定目录下的内容，并为其生成一个合适的 input.Options 实例。

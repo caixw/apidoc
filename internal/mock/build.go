@@ -11,10 +11,10 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/qheader"
 
-	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/internal/vars"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 func (m *Mock) buildAPI(api *doc.API) http.Handler {

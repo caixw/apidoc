@@ -6,11 +6,11 @@ import (
 	"encoding/xml"
 	"strings"
 
-	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/internal/openapi"
-	"github.com/caixw/apidoc/v5/internal/vars"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/openapi"
+	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 // 几种输出的类型
@@ -42,7 +42,7 @@ type Options struct {
 	// xslt 文件地址
 	//
 	// 默认值为 https://apidoc.tools/docs/ 下当前版本的 apidoc.xsl，比如：
-	//  https://apidoc.tools/docs/v5/apidoc.xsl
+	//  https://apidoc.tools/docs/v6/apidoc.xsl
 	Style string `yaml:"style,omitempty"`
 
 	procInst []string  // 保存所有 xml 的指令内容，包括编码信息

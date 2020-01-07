@@ -6,8 +6,8 @@ import (
 	"math"
 	"unicode"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 var minsize = len("<api />")

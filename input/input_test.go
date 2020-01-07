@@ -9,7 +9,7 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/simplifiedchinese"
 
-	"github.com/caixw/apidoc/v5/message/messagetest"
+	"github.com/caixw/apidoc/v6/message/messagetest"
 )
 
 func TestParse(t *testing.T) {

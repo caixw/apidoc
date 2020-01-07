@@ -5,9 +5,9 @@ package openapi
 import (
 	"strings"
 
-	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 // 去掉 URL 中的 {} 模板参数。使其符合 is.URL 的判断规则

@@ -1,4 +1,4 @@
-version: 5.2.0
+version: 6.0.0
 inputs:
 - lang: c++
   dir: .
@@ -11,4 +11,4 @@ inputs:
 output:
   path: ./index.xml
   type: apidoc+xml
-  style: "../v5/apidoc.xsl"
+  style: "../v6/apidoc.xsl"

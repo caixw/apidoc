@@ -9,7 +9,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 func loadDoc(a *assert.Assertion) *Doc {

@@ -2,7 +2,7 @@
 
 package doc
 
-import "github.com/caixw/apidoc/v5/internal/locale"
+import "github.com/caixw/apidoc/v6/internal/locale"
 
 // XML 仅作用于 XML 的几个属性
 type XML struct {

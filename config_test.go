@@ -10,10 +10,10 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/input"
-	"github.com/caixw/apidoc/v5/internal/docs"
-	"github.com/caixw/apidoc/v5/internal/vars"
-	"github.com/caixw/apidoc/v5/message/messagetest"
+	"github.com/caixw/apidoc/v6/input"
+	"github.com/caixw/apidoc/v6/internal/docs"
+	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/message/messagetest"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -81,7 +81,7 @@ func TestConfig_sanitize(t *testing.T) {
 		Equal(err.Field, "version")
 
 	// 未声明 inputs
-	conf.Version = "5.0.1"
+	conf.Version = "6.0.1"
 	err = conf.sanitize("./apidoc.yaml")
 	a.Error(err).
 		Equal(err.Field, "inputs")

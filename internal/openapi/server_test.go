@@ -5,7 +5,7 @@ package openapi
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/v5/doc"
+	"github.com/caixw/apidoc/v6/doc"
 	"github.com/issue9/assert"
 )
 

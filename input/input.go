@@ -16,9 +16,9 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
-	"github.com/caixw/apidoc/v5/doc"
-	"github.com/caixw/apidoc/v5/internal/lang"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/internal/lang"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 // 解析出来的注释块

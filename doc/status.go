@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 // Status 表示 HTTP 状态码

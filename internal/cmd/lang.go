@@ -7,8 +7,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/caixw/apidoc/v5/internal/lang"
-	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/lang"
+	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 func initLang() {

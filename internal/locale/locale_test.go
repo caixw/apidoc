@@ -8,7 +8,7 @@ import (
 	"github.com/issue9/assert"
 	"golang.org/x/text/language"
 
-	"github.com/caixw/apidoc/v5/internal/locale/syslocale"
+	"github.com/caixw/apidoc/v6/internal/locale/syslocale"
 )
 
 func TestDisplayNames(t *testing.T) {

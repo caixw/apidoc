@@ -14,12 +14,12 @@ import (
 	"github.com/issue9/version"
 	"gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/v5/input"
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/internal/path"
-	"github.com/caixw/apidoc/v5/internal/vars"
-	"github.com/caixw/apidoc/v5/message"
-	"github.com/caixw/apidoc/v5/output"
+	"github.com/caixw/apidoc/v6/input"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/path"
+	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/output"
 )
 
 // Config 配置文件映身的结构

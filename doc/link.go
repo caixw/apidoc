@@ -7,7 +7,7 @@ import (
 
 	"github.com/issue9/is"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 // Link 表示一个链接

@@ -7,7 +7,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/doc/doctest"
+	"github.com/caixw/apidoc/v6/doc/doctest"
 )
 
 func TestRender(t *testing.T) {

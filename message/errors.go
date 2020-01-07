@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 // SyntaxError 表示语法错误信息

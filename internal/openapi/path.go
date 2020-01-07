@@ -5,8 +5,8 @@ package openapi
 import (
 	"net/http"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 // PathItem 每一条路径的详细描述信息

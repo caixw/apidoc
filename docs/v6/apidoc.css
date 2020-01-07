@@ -223,7 +223,7 @@ main .api {
     border: 1px solid var(--border-color);
 }
 
-main .api summary {
+main .api>summary {
     margin: 0;
     padding: var(--article-padding);
     border-bottom: 1px solid var(--border-color);
@@ -232,24 +232,24 @@ main .api summary {
 }
 
 
-main details.api:not([open]) summary {
+main details.api:not([open])>summary {
     border: none;
 }
 
-main .api summary .action {
+main .api>summary .action {
     min-width: 4rem;
     font-weight: bold;
     display: inline-block;
     margin-right: 1rem;
 }
 
-main .api summary .link {
+main .api>summary .link {
     margin-right: 10px;
     text-decoration: none;
 }
 
 main .api .callback .summary,
-main .api summary .summary {
+main .api>summary .summary {
     float: right;
     font-weight: 400;
     opacity: .5;
@@ -266,7 +266,7 @@ main .api[data-method='GET,']:hover,
 main .callback[data-method='GET,'] h3 {
     border: 1px solid var(--method-get-color);
 }
-main .api[data-method='GET,'] summary {
+main .api[data-method='GET,']>summary {
     border-bottom: 1px solid var(--method-get-color);
 }
 
@@ -275,7 +275,7 @@ main .api[data-method='POST,']:hover,
 main .callback[data-method='POST,'] h3 {
     border: 1px solid var(--method-post-color);
 }
-main .api[data-method='POST,'] summary {
+main .api[data-method='POST,']>summary {
     border-bottom: 1px solid var(--method-post-color);
 }
 
@@ -284,7 +284,7 @@ main .api[data-method='PUT,']:hover,
 main .callback[data-method='PUT,'] h3 {
     border: 1px solid var(--method-put-color);
 }
-main .api[data-method='PUT,'] summary {
+main .api[data-method='PUT,']>summary {
     border-bottom: 1px solid var(--method-put-color);
 }
 
@@ -293,7 +293,7 @@ main .api[data-method='PATCH,']:hover,
 main .callback[data-method='PATCH,'] h3 {
     border: 1px solid var(--method-patch-color);
 }
-main .api[data-method='PATCH,'] summary {
+main .api[data-method='PATCH,']>summary {
     border-bottom: 1px solid var(--method-patch-color);
 }
 
@@ -302,7 +302,7 @@ main .api[data-method='DELETE,']:hover,
 main .callback[data-method='DELETE,'] h3 {
     border: 1px solid var(--method-delete-color);
 }
-main .api[data-method='DELETE,'] summary {
+main .api[data-method='DELETE,']>summary {
     border-bottom: 1px solid var(--method-delete-color);
 }
 
@@ -311,7 +311,7 @@ main .api[data-method='OPTIONS,']:hover,
 main .callback[data-method='OPTIONS,'] h3 {
     border: 1px solid var(--method-options-color);
 }
-main .api[data-method='OPTIONS,'] summary {
+main .api[data-method='OPTIONS,']>summary {
     border-bottom: 1px solid var(--method-options-color);
 }
 
@@ -329,53 +329,63 @@ main .api .body {
     flex-flow: wrap;
 }
 
+main .api .title,
+main .api .title {
+    margin: var(--article-padding) 0 0;
+    font-weight: normal;
+}
+
+main .api .body .responses .status {
+    margin: var(--padding) 0 var(--article-padding);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 3px;
+}
+
+main .api .param .parent-type {
+    opacity: .5;
+}
+
 main .api .body .requests,
 main .api .body .responses {
     flex: 1 1 50%;
     box-sizing: border-box;
     min-width: var(--min-width);
-    padding: var(--article-padding);
 }
 main .api .body .requests {
     border-right: 1px dotted var(--border-color);
 }
 
-main .api .body .requests .title,
-main .api .body .responses .title {
+main .api .body .requests .header,
+main .api .body .responses .header {
     margin: 0;
     opacity: .5;
+    padding: var(--article-padding);
 }
 
-main .api .param {
-    margin-top: var(--padding);
+main .api .body .requests details:not([open]),
+main .api .body .responses details:not([open]) {
+    margin-bottom: var(--article-padding);
 }
 
-main .api .param .title,
-main .api .param .title {
-    margin: 0;
-    opacity: 1 !important;
-    font-weight: normal;
+main .api .body .requests>.param,
+main .api .body .requests details summary ~ *,
+main .api .body .responses details summary ~ * {
+    padding: 0 var(--article-padding);
 }
 
-main .api .param .example {
-    display: none;
-    margin: 0;
-}
-
-main .api .param .toggle-example {
+main .api .responses details summary,
+main .api .requests details summary {
     cursor: pointer;
+    padding: var(--article-padding);
 }
 
-main .api .body .responses .status,
-main .api .body .requests .status {
-    margin: calc(var(--padding) + var(--article-padding)) 0 var(--article-padding);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 3px;
-}
-
-main .api .param .parent-type,
-main .api .status .mimetype {
-    opacity: .5;
+main .api .responses details[open] summary,
+main .api .requests details[open] summary,
+main .api .responses details summary:hover,
+main .api .requests details summary:hover {
+    cursor: pointer;
+    background-color: var(--border-color);
+    padding: var(--article-padding);
 }
 
 /*************************** footer ***********************/

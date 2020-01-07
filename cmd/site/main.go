@@ -8,8 +8,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/caixw/apidoc/v5"
-	"github.com/caixw/apidoc/v5/internal/docs"
+	"github.com/caixw/apidoc/v6"
+	"github.com/caixw/apidoc/v6/internal/docs"
 )
 
 func main() {

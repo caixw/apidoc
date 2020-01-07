@@ -6,9 +6,6 @@ window.onload = function () {
     registerFilter('tag');
     registerExpand();
     registerLanguageFilter();
-
-    initExample();
-
     prettyDescription();
 };
 
@@ -73,38 +70,8 @@ function registerExpand() {
 
     expand.querySelector('input').addEventListener('change', (event) => {
         const chk = event.target.checked;
-        document.querySelectorAll('details').forEach((elem) => {
+        document.querySelectorAll('details.api').forEach((elem) => {
             elem.open = chk;
-        });
-    });
-}
-
-function initExample() {
-    document.querySelectorAll('.toggle-example').forEach((btn) => {
-        btn.addEventListener('click', (event) => {
-            if (event.target === null) {
-                return;
-            }
-
-            const parent = event.target.parentNode.parentNode.parentNode;
-            const table = parent.querySelector('table');
-            const pre = parent.querySelector('pre');
-
-            if (table.getAttribute('data-visible') === 'true') {
-                table.setAttribute('data-visible', 'false');
-                table.style.display = 'none';
-            } else {
-                table.setAttribute('data-visible', 'true');
-                table.style.display = 'table';
-            }
-
-            if (pre.getAttribute('data-visible') === 'true') {
-                pre.setAttribute('data-visible', 'false');
-                pre.style.display = 'none';
-            } else {
-                pre.setAttribute('data-visible', 'true');
-                pre.style.display = 'block';
-            }
         });
     });
 }

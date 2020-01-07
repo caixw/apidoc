@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/caixw/apidoc/v5"
-	"github.com/caixw/apidoc/v5/internal/locale"
-	"github.com/caixw/apidoc/v5/message"
+	"github.com/caixw/apidoc/v6"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/message"
 )
 
 var mockFlagSet *flag.FlagSet

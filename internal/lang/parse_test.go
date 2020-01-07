@@ -8,7 +8,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v5/message/messagetest"
+	"github.com/caixw/apidoc/v6/message/messagetest"
 )
 
 var (

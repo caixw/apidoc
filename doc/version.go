@@ -7,7 +7,7 @@ import (
 
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v5/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 // Version 版本号
