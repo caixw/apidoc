@@ -9,6 +9,12 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestXML(t *testing.T) {
+	a := assert.New(t)
+	data := XML(a)
+	a.NotNil(data)
+}
+
 func TestPath(t *testing.T) {
 	a := assert.New(t)
 
