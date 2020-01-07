@@ -69,8 +69,8 @@ func embeddedHandler(stylesheet bool) http.Handler {
 					return
 				}
 
-				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", info.ContentType)
+				w.WriteHeader(http.StatusOK)
 				w.Write(info.Content)
 				return
 			}
