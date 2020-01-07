@@ -4,10 +4,7 @@
 package mock
 
 import (
-	"io"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/issue9/mux/v2"
@@ -15,6 +12,7 @@ import (
 
 	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/locale"
+	xpath "github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
 )
@@ -62,37 +60,7 @@ func New(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handle
 
 // Load 从本地或是远程加载文档内容
 func Load(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
-	isURL := strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://")
-
-	if isURL {
-		return LoadFromURL(h, path, servers)
-	}
-	return LoadFromPath(h, path, servers)
-}
-
-// LoadFromPath 加载 XML 文档用以初始化 Mock 对象
-func LoadFromPath(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
-	r, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	return loadContent(h, path, r, servers)
-}
-
-// LoadFromURL 从远程 URL 加载文档并初始化为 Mock 对象
-func LoadFromURL(h *message.Handler, url string, servers map[string]string) (http.Handler, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	return loadContent(h, url, resp.Body, servers)
-}
-
-// path 仅用于定位错误，内容存在于 r 中。
-func loadContent(h *message.Handler, path string, r io.ReadCloser, servers map[string]string) (http.Handler, error) {
-	defer r.Close()
-
-	data, err := ioutil.ReadAll(r)
+	data, err := xpath.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

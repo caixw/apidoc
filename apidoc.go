@@ -11,7 +11,6 @@ package apidoc
 
 import (
 	"bytes"
-	"io/ioutil"
 	"mime"
 	"net/http"
 	"path/filepath"
@@ -23,6 +22,7 @@ import (
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/mock"
+	xpath "github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/output"
@@ -127,8 +127,10 @@ func View(status int, url string, data []byte, contentType, dir string, styleshe
 //
 // 功能等同于 View，但是将 data 参数换成了文件地址。
 // url 可以为空值，表示接受 path 的文件名部分作为其值。
+//
+// path 可以是远程文件 (http 开头)，也可以是本地文件。
 func ViewFile(status int, url, path, contentType, dir string, stylesheet bool) (http.Handler, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := xpath.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

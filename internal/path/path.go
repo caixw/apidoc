@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: MIT
 
+// Package path 提供一些文件相关的操作
 package path
 
 import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -56,4 +60,24 @@ func Rel(path, wd string) string {
 func CurrPath(path string) string {
 	_, fi, _, _ := runtime.Caller(1)
 	return filepath.Join(filepath.Dir(fi), path)
+}
+
+// ReadFile 读取本地或是远程的文件内容
+func ReadFile(path string) ([]byte, error) {
+	if !strings.HasPrefix(path, "https://") &&
+		!strings.HasPrefix(path, "http://") {
+		return ioutil.ReadFile(path)
+	}
+
+	resp, err := http.Get(path)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode > 300 {
+		return nil, fmt.Errorf("read remote return status %d", resp.StatusCode)
+	}
+
+	return ioutil.ReadAll(resp.Body)
 }

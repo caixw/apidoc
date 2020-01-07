@@ -3,6 +3,8 @@
 package path
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
 	"testing"
 
@@ -49,4 +51,26 @@ func TestCurrPath(t *testing.T) {
 	a.NotError(err).NotEmpty(d)
 
 	a.Equal(d, dir)
+}
+
+func TestReadFile(t *testing.T) {
+	a := assert.New(t)
+
+	data, err := ReadFile("./not-exists")
+	a.Error(err).Nil(data)
+
+	data, err = ReadFile("./path.go")
+	a.NotError(err).NotNil(data)
+
+	// 测试远程读取
+	static := http.FileServer(http.Dir("./"))
+	srv := httptest.NewServer(static)
+	defer srv.Close()
+
+	data, err = ReadFile(srv.URL + "/path.go")
+	a.NotError(err).NotNil(data)
+
+	// 不存在的远程文件
+	data, err = ReadFile(srv.URL + "/not-exists")
+	a.Error(err).Nil(data)
 }
