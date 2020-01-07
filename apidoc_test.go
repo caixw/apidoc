@@ -102,15 +102,47 @@ func TestMockFile(t *testing.T) {
 	_, _, h := messagetest.MessageHandler()
 	mock, err := MockFile(h, doctest.Path(a), map[string]string{"admin": "/admin"})
 	a.NotError(err).NotNil(h)
-
 	srv := rest.NewServer(t, mock, nil)
-	defer srv.Close()
 
 	srv.Get("/admin/users").
 		Header("authorization", "xxx").
 		Header("content-type", "application/json").
 		Header("Accept", "application/json").
 		Do().Status(http.StatusOK)
+
+	// 不存在 client
+	srv.Get("/client/users").Do().Status(http.StatusNotFound)
+
 	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
 	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
+
+	h.Stop()
+	srv.Close()
+
+	// 测试多个 servers 值
+	_, _, h = messagetest.MessageHandler()
+	mock, err = MockFile(h, doctest.Path(a), map[string]string{"admin": "/admin", "client": "/c"})
+	a.NotError(err).NotNil(h)
+	srv = rest.NewServer(t, mock, nil)
+
+	srv.Get("/admin/users").
+		Header("authorization", "xxx").
+		Header("content-type", "application/json").
+		Header("Accept", "application/json").
+		Do().Status(http.StatusOK)
+
+	srv.Get("/c/users").
+		Header("authorization", "xxx").
+		Header("content-type", "application/json").
+		Header("Accept", "application/json").
+		Do().Status(http.StatusOK)
+
+	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
+	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
+
+	srv.Post("/c/users", nil).Do().Status(http.StatusMethodNotAllowed) // POST /users 未指定 client
+	srv.Delete("/c/users").Do().Status(http.StatusMethodNotAllowed)    // 不存在
+
+	h.Stop()
+	srv.Close()
 }
