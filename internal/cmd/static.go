@@ -42,6 +42,10 @@ func static(io.Writer) error {
 	if err != nil {
 		return err
 	}
+
+	url := "http://localhost" + staticPort
+	h.Message(message.Succ, locale.ServerStart, url)
+
 	return http.ListenAndServe(staticPort, handler)
 }
 

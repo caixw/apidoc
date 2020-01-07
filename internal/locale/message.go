@@ -70,6 +70,7 @@ path 表示需要展示的文档路径，为空表示没有需要展示的文档
 	RequestAPI          = "访问 API：%s %s"
 	DeprecatedWarn      = "%s %s 将于 %s 被废弃"
 	GeneratorBy         = "当前文档由 %s 生成"
+	ServerStart         = "服务启动，可通过 %s 访问"
 
 	// 错误信息，可能在地方用到
 	ErrRequired              = "不能为空"

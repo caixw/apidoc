@@ -71,6 +71,7 @@ path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔
 	RequestAPI:          "訪問 API：%s %s",
 	DeprecatedWarn:      "%s %s 將於 %s 被廢棄",
 	GeneratorBy:         "當前文檔由 %s 生成",
+	ServerStart:         "服務啟動，可通過 %s 訪問",
 
 	// 錯誤信息，可能在地方用到
 	ErrRequired:              "不能為空",
