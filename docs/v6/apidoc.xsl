@@ -21,7 +21,7 @@
         <link rel="mask-icon" type="image/svg+xml" href="{$icon}" color="black" />
         <xsl:if test="apidoc/license"><link rel="license" href="{apidoc/license/@url}" /></xsl:if>
         <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />
-        <script src="{$base-url}apidoc.js"></script>
+        <script src="{$base-url}apidoc.js" />
     </head>
     <body>
         <xsl:call-template name="header" />
@@ -313,8 +313,8 @@
         <details>
         <summary><xsl:value-of select="$mimetype" /></summary>
         <xsl:for-each select="$responses">
-            <xsl:variable name="resp" select=".[@mimetype=$mimetype]" />
-            <xsl:variable name="resp-any" select=".[not(@mimetype)]" />
+            <xsl:variable name="resp" select="current()[@mimetype=$mimetype]" />
+            <xsl:variable name="resp-any" select="current()[not(@mimetype)]" />
             <xsl:if test="$resp"><!-- 可能同时存在符合 resp 和 resp-any 的数据，优先取 resp -->
                 <xsl:call-template name="response">
                     <xsl:with-param name="response" select="$resp" />

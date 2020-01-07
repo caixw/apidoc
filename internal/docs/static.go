@@ -42,7 +42,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.0.0" created="2020-01-08T00:44:41+08:00" version="1.1.1">
+<apidoc apidoc="6.0.0" created="2020-01-08T00:52:46+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 
@@ -3514,7 +3514,7 @@ function prettyDescription() {
         <link rel="mask-icon" type="image/svg+xml" href="{$icon}" color="black" />
         <xsl:if test="apidoc/license"><link rel="license" href="{apidoc/license/@url}" /></xsl:if>
         <link rel="stylesheet" type="text/css" href="{$base-url}apidoc.css" />
-        <script src="{$base-url}apidoc.js"></script>
+        <script src="{$base-url}apidoc.js" />
     </head>
     <body>
         <xsl:call-template name="header" />
@@ -3806,8 +3806,8 @@ function prettyDescription() {
         <details>
         <summary><xsl:value-of select="$mimetype" /></summary>
         <xsl:for-each select="$responses">
-            <xsl:variable name="resp" select=".[@mimetype=$mimetype]" />
-            <xsl:variable name="resp-any" select=".[not(@mimetype)]" />
+            <xsl:variable name="resp" select="current()[@mimetype=$mimetype]" />
+            <xsl:variable name="resp-any" select="current()[not(@mimetype)]" />
             <xsl:if test="$resp"><!-- 可能同时存在符合 resp 和 resp-any 的数据，优先取 resp -->
                 <xsl:call-template name="response">
                     <xsl:with-param name="response" select="$resp" />
