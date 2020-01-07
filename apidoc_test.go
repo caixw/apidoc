@@ -88,6 +88,7 @@ func TestViewFile(t *testing.T) {
 		Status(http.StatusAccepted)
 	srv.Close()
 
+	// 覆盖现有的 index.xml
 	h, err = ViewFile(http.StatusAccepted, "", doctest.Path(a), "", "", false)
 	a.NotError(err).NotNil(h)
 	srv = rest.NewServer(t, h, nil)

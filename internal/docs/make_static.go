@@ -25,13 +25,13 @@ const (
 // 允许打包的文件后缀名，以及对应的 mime type 值。
 // 不采用 mimetype.TypeByExtension，防止出现空值的可能性。
 var allowFiles = map[string]string{
-	".xml":  "application/xml",
-	".xsl":  "text/xsl",
-	".svg":  "image/svg+xml",
-	".css":  "text/css",
-	".js":   "application/javascript",
-	".html": "text/html",
-	".htm":  "text/html",
+	".xml":  "application/xml; charset=utf-8",
+	".xsl":  "text/xsl; charset=utf-8",
+	".svg":  "image/svg+xml; charset=utf-8",
+	".css":  "text/css; charset=utf-8",
+	".js":   "application/javascript; charset=utf-8",
+	".html": "text/html; charset=utf-8",
+	".htm":  "text/html; charset=utf-8",
 }
 
 func main() {

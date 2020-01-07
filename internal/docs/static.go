@@ -4,7 +4,7 @@ package docs
 
 var data = []*FileInfo{{
 	Name:        "config.xml",
-	ContentType: "application/xml",
+	ContentType: "application/xml; charset=utf-8",
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- 该文件由工具自动生成，请勿手动修改！-->
@@ -38,11 +38,11 @@ var data = []*FileInfo{{
 },
 	{
 		Name:        "example/index.xml",
-		ContentType: "application/xml",
+		ContentType: "application/xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.0.0" created="2020-01-07T23:39:48+08:00" version="1.1.1">
+<apidoc apidoc="6.0.0" created="2020-01-08T00:44:41+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 
@@ -265,7 +265,7 @@ var data = []*FileInfo{{
 	},
 	{
 		Name:        "icon.svg",
-		ContentType: "image/svg+xml",
+		ContentType: "image/svg+xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="utf-8" ?>
 
 <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" stroke="#f60">
@@ -281,7 +281,7 @@ var data = []*FileInfo{{
 	},
 	{
 		Name:        "index.css",
-		ContentType: "text/css",
+		ContentType: "text/css; charset=utf-8",
 		Content: []byte(`@charset "utf-8";
 
 :root {
@@ -482,7 +482,7 @@ footer .wrap {
 	},
 	{
 		Name:        "index.js",
-		ContentType: "application/javascript",
+		ContentType: "application/javascript; charset=utf-8",
 		Content: []byte(`'use strict';
 
 window.onload = function() {
@@ -506,7 +506,7 @@ function initGotoTop() {
 	},
 	{
 		Name:        "index.xml",
-		ContentType: "application/xml",
+		ContentType: "application/xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="./index.xsl"?>
 
@@ -801,7 +801,7 @@ function initGotoTop() {
 	},
 	{
 		Name:        "index.xsl",
-		ContentType: "text/xsl",
+		ContentType: "text/xsl; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -1009,7 +1009,7 @@ function initGotoTop() {
 	},
 	{
 		Name:        "index.zh-hant.xml",
-		ContentType: "application/xml",
+		ContentType: "application/xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="./index.xsl"?>
 
@@ -1304,7 +1304,7 @@ function initGotoTop() {
 	},
 	{
 		Name:        "locales.xml",
-		ContentType: "application/xml",
+		ContentType: "application/xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
 
 <locales>
@@ -1315,7 +1315,7 @@ function initGotoTop() {
 	},
 	{
 		Name:        "types.xml",
-		ContentType: "application/xml",
+		ContentType: "application/xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
 
 <types>
@@ -1478,7 +1478,7 @@ function initGotoTop() {
 	},
 	{
 		Name:        "v5/apidoc.css",
-		ContentType: "text/css",
+		ContentType: "text/css; charset=utf-8",
 		Content: []byte(`@charset "utf-8";
 
 :root {
@@ -1879,7 +1879,7 @@ footer .wrap {
 	},
 	{
 		Name:        "v5/apidoc.js",
-		ContentType: "application/javascript",
+		ContentType: "application/javascript; charset=utf-8",
 		Content: []byte(`'use strict';
 
 window.onload = function () {
@@ -2008,7 +2008,7 @@ function prettyDescription() {
 	},
 	{
 		Name:        "v5/apidoc.xsl",
-		ContentType: "text/xsl",
+		ContentType: "text/xsl; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -2546,7 +2546,7 @@ xsl 2.0 可以直接采用 base-uri(document(''))
 	},
 	{
 		Name:        "v5/locales.xsl",
-		ContentType: "text/xsl",
+		ContentType: "text/xsl; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- 当前文件实现了简单的翻译功能 -->
@@ -2894,7 +2894,7 @@ exclude-result-prefixes="l">
 	},
 	{
 		Name:        "v5/view.html",
-		ContentType: "text/html",
+		ContentType: "text/html; charset=utf-8",
 		Content: []byte(`<!DOCTYPE html>
 <html lang="en">
 
@@ -2983,7 +2983,7 @@ exclude-result-prefixes="l">
 	},
 	{
 		Name:        "v6/apidoc.css",
-		ContentType: "text/css",
+		ContentType: "text/css; charset=utf-8",
 		Content: []byte(`@charset "utf-8";
 
 :root {
@@ -3394,7 +3394,7 @@ footer .wrap {
 	},
 	{
 		Name:        "v6/apidoc.js",
-		ContentType: "application/javascript",
+		ContentType: "application/javascript; charset=utf-8",
 		Content: []byte(`'use strict';
 
 window.onload = function () {
@@ -3490,7 +3490,7 @@ function prettyDescription() {
 	},
 	{
 		Name:        "v6/apidoc.xsl",
-		ContentType: "text/xsl",
+		ContentType: "text/xsl; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -4070,7 +4070,7 @@ xsl 2.0 可以直接采用 base-uri(document(''))
 	},
 	{
 		Name:        "v6/locales.xsl",
-		ContentType: "text/xsl",
+		ContentType: "text/xsl; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- 当前文件实现了简单的翻译功能 -->
@@ -4418,7 +4418,7 @@ exclude-result-prefixes="l">
 	},
 	{
 		Name:        "v6/view.html",
-		ContentType: "text/html",
+		ContentType: "text/html; charset=utf-8",
 		Content: []byte(`<!DOCTYPE html>
 <html lang="en">
 
