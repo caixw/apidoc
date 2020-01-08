@@ -82,7 +82,7 @@ inputs := []*input.Options{
     &input.Options{},
 }
 
-apidoc.Do(h, output, inputs...)
+apidoc.Build(h, output, inputs...)
 ```
 
 参与开发
