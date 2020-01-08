@@ -55,12 +55,12 @@ func (opt *Options) sanitize() *message.SyntaxError {
 	}
 
 	if len(opt.Lang) == 0 {
-		return message.NewLocaleError("", "dir", 0, locale.ErrRequired)
+		return message.NewLocaleError("", "lang", 0, locale.ErrRequired)
 	}
 
 	language := lang.Get(opt.Lang)
 	if language == nil {
-		return message.NewLocaleError("", "dir", 0, locale.ErrUnsupportedInputLang, opt.Lang)
+		return message.NewLocaleError("", "lang", 0, locale.ErrUnsupportedInputLang, opt.Lang)
 	}
 	opt.blocks = language.Blocks
 
