@@ -150,8 +150,7 @@ header .drop-menus a {
     color: var(--color);
 }
 
-header .drop-menus:hover ul,
-header .drop-menus:active ul {
+header .drop-menus:hover ul {
     display: block;
 }
 
