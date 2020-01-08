@@ -11,7 +11,7 @@ var zhHans = map[string]string{
 用法：
 apidoc cmd [args]
 
-cmd 为子命令，args 为传递给子命令的参数，目前支持以下子命令。
+cmd 为子命令，args 为传递给子命令的参数，目前支持以下子命令：
 %s
 
 源代码采用 MIT 开源许可证，发布于 %s

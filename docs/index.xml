@@ -107,7 +107,7 @@
     <types parent="usage">
         <type name=".apidoc.yaml">
             <description>
-                <p>配置文件名固定为 <code>.apidoc.yaml</code>，格式为 YAML，可参考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通过命令行参数 <code>-d</code> 生成。主要包含了以几个配置项：</p>
+                <p>配置文件名固定为 <code>.apidoc.yaml</code>，格式为 YAML，可参考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通过命令 <code>apidoc detect</code> 生成。主要包含了以几个配置项：</p>
             </description>
             <item name="version" >产生此配置文件的 apidoc 版本</item>
             <item name="inputs">指定输入的数据，同一项目只能解析一种语言。</item>
