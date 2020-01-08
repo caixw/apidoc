@@ -15,11 +15,7 @@ type XML struct {
 
 func checkXML(isArray, hasItems bool, xml *XML, field string) error {
 	if xml.XMLAttr {
-		if isArray {
-			return newSyntaxError(field+"/@xml-attr", locale.ErrInvalidValue)
-		}
-
-		if hasItems {
+		if isArray || hasItems {
 			return newSyntaxError(field+"/@xml-attr", locale.ErrInvalidValue)
 		}
 
