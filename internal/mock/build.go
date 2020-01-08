@@ -128,14 +128,13 @@ func (m *Mock) renderResponse(api *doc.API, w http.ResponseWriter, r *http.Reque
 	}
 }
 
+// 需要保证 ct 的值不能为空
 func findRequestByContentType(requests []*doc.Request, ct string) *doc.Request {
 	var none *doc.Request
 	for _, req := range requests {
 		if req.Mimetype == ct {
 			return req
-		}
-
-		if none == nil && req.Mimetype == "" {
+		} else if none == nil && req.Mimetype == "" {
 			none = req
 		}
 	}
@@ -143,24 +142,7 @@ func findRequestByContentType(requests []*doc.Request, ct string) *doc.Request {
 	if none != nil {
 		return none
 	}
-
 	return nil
-}
-
-// 查看 ct1 是否与 ct2 匹配，ct2 可以是模糊匹配，比如 text/* 或是 */*
-func matchContentType(ct1, ct2 string) string {
-	switch {
-	case ct1 == ct2:
-		return ct1
-	case ct2 == "*/*":
-		return ct1
-	case strings.HasSuffix(ct2, "/*"):
-		ct2 = ct2[:len(ct2)-1]
-		if strings.HasPrefix(ct1, ct2) {
-			return ct1
-		}
-	}
-	return ""
 }
 
 // accepts 必须是已经按权重进行排序的。
@@ -171,36 +153,38 @@ func findResponseByAccept(mimetypes []string, requests []*doc.Request, accepts [
 
 	var none *doc.Request // 表示 requests 中 mimetype 值为空的第一个子项
 
-	// 从 requests 中查找是否有符合 accepts 的内容，
-	// 同时也获取 requests 中 mimetype 为空值项赋予 none，
-	// 以及根据 accepts 内容是否可以匹配任意项。
+	// 从 requests 中查找是否有符合 accepts 的内容
 	for _, req := range requests {
-		for _, accept := range accepts {
-			ct := matchContentType(req.Mimetype, accept.Value)
-			if ct != "" {
-				return req, ct
-			}
-		}
-
-		if req.Mimetype == "" {
+		if none == nil && req.Mimetype == "" {
 			none = req
+		}
+		if req.Mimetype != "" && matchContentType(req.Mimetype, accepts) {
+			return req, req.Mimetype
 		}
 	}
 
-	// 如果存在 none，则从 doc.mimetypes 中查找同时存在于 doc.mimetypes
-	// 与 accepts 的 content-type 作为 none 的 content-type 值返回。
+	// 如果存在 none，则从 doc.mimetypes 中查找是否有与 none.Mimetype 相匹配的
 	if none != nil {
 		for _, mt := range mimetypes {
-			for _, accept := range accepts {
-				ct := matchContentType(mt, accept.Value)
-				if ct != "" {
-					return none, ct
-				}
+			if mt != "" && matchContentType(mt, accepts) {
+				return none, mt
 			}
 		}
 	}
 
 	return nil, ""
+}
+
+// 查看 ct 是否有与 accepts 相匹配的项，必须保证 ct 的值不为空。
+func matchContentType(ct string, accepts []*qheader.Header) bool {
+	for _, a := range accepts {
+		if (strings.HasSuffix(a.Value, "/*") && strings.HasPrefix(ct, a.Value[:len(a.Value)-1])) ||
+			ct == a.Value ||
+			a.Value == "*/*" {
+			return true
+		}
+	}
+	return false
 }
 
 // 处理 serveHTTP 中的错误
