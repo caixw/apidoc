@@ -60,7 +60,7 @@ func (opt *Options) sanitize() *message.SyntaxError {
 
 	language := lang.Get(opt.Lang)
 	if language == nil {
-		return message.NewLocaleError("", "lang", 0, locale.ErrUnsupportedInputLang, opt.Lang)
+		return message.NewLocaleError("", "lang", 0, locale.ErrInvalidValue)
 	}
 	opt.blocks = language.Blocks
 

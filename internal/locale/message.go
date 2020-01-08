@@ -76,7 +76,6 @@ path 表示需要展示的文档路径，为空表示没有需要展示的文档
 	ErrRequired              = "不能为空"
 	ErrInvalidFormat         = "格式不正确"
 	ErrDirNotExists          = "目录不存在"
-	ErrUnsupportedInputLang  = "不支持的输入语言：%s"
 	ErrNotFoundEndFlag       = "找不到结束符号"
 	ErrNotFoundSupportedLang = "该目录下没有支持的语言文件"
 	ErrDirIsEmpty            = "目录下没有需要解析的文件"
