@@ -250,7 +250,7 @@ func TestBuildResponse(t *testing.T) {
 	a.Error(err).Nil(resp)
 }
 
-func TestValidParam(t *testing.T) {
+func TestValidSimpleParam(t *testing.T) {
 	a := assert.New(t)
 
 	data := []*struct {
@@ -336,7 +336,7 @@ func TestValidParam(t *testing.T) {
 	}
 
 	for _, item := range data {
-		err := validParam(item.p, item.v)
+		err := validSimpleParam(item.p, item.v)
 		if item.err {
 			a.Error(err, "%s 并未返回错误值", item.title)
 		} else {

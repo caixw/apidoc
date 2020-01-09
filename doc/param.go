@@ -34,6 +34,14 @@ type Param struct {
 	Summary     string   `xml:"summary,attr,omitempty"`
 	Enums       []*Enum  `xml:"enum,omitempty"`
 	Description Richtext `xml:"description,omitempty"`
+
+	// 数组参数是否展开
+	//
+	// 数组可以有以下两种展示方式：
+	//  1. k=1&k=2
+	//  2. k=1,2
+	// 1 为默认方式，ArrayStyle 为 true，则展示为第二种方式
+	ArrayStyle bool `xml:"array-style,attr,omitempty"`
 }
 
 // Param 转换成 Param 对象

@@ -227,6 +227,7 @@
             <item name="@optional">是否為可選的參數</item>
             <item name="@summary">簡要介紹</item>
             <item name="@array">是否為數組</item>
+            <item name="@array-style">是否以數組的形式展示數據，默認采用 form 形式，僅在 <code>@array</code> 為 <var>true</var> 時有效。</item>
             <item name="description">詳細介紹，為 HTML 內容。</item>
             <item name="enum">當前參數可用的枚舉值</item>
             <item name="param">子類型，比如對象的子元素。</item>

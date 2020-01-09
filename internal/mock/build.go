@@ -24,15 +24,13 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 			m.h.Message(message.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated)
 		}
 
-		for _, query := range api.Path.Queries {
-			if err := validParam(query, r.FormValue(query.Name)); err != nil {
-				m.handleError(w, r, "queries["+query.Name+"]", err)
-				return
-			}
+		if err := validQueryArrayParam(api.Path.Queries, r); err != nil {
+			m.handleError(w, r, "", err)
+			return
 		}
 
 		for _, header := range api.Headers {
-			if err := validParam(header, r.Header.Get(header.Name)); err != nil {
+			if err := validSimpleParam(header, r.Header.Get(header.Name)); err != nil {
 				m.handleError(w, r, "headers["+header.Name+"]", err)
 				return
 			}
@@ -60,7 +58,7 @@ func validRequest(requests []*doc.Request, r *http.Request) error {
 	}
 
 	for _, header := range req.Headers {
-		if err := validParam(header, r.Header.Get(header.Name)); err != nil {
+		if err := validSimpleParam(header, r.Header.Get(header.Name)); err != nil {
 			return err
 		}
 	}
@@ -207,8 +205,48 @@ func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 	w.WriteHeader(http.StatusBadRequest)
 }
 
-// 验证单个参数
-func validParam(p *doc.Param, val string) error {
+func validQueryArrayParam(queries []*doc.Param, r *http.Request) error {
+	for _, query := range queries {
+		field := "queries[" + query.Name + "]."
+
+		if !query.Array {
+			if err := validSimpleParam(query, r.FormValue(query.Name)); err != nil {
+				if serr, ok := err.(*message.SyntaxError); ok {
+					serr.Field = field + serr.Field
+				}
+				return err
+			}
+			continue
+		}
+
+		if !query.ArrayStyle { // 默认的 form 格式
+			for _, v := range r.Form[query.Name] {
+				if err := validSimpleParam(query, v); err != nil {
+					if serr, ok := err.(*message.SyntaxError); ok {
+						serr.Field = field + serr.Field
+					}
+					return err
+				}
+			}
+			continue
+		}
+
+		values := strings.Split(r.FormValue(query.Name), ",")
+		for _, v := range values {
+			if err := validSimpleParam(query, v); err != nil {
+				if serr, ok := err.(*message.SyntaxError); ok {
+					serr.Field = field + serr.Field
+				}
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// 验证单个参数，仅支持对 query、header 等简单类型的参数验证
+func validSimpleParam(p *doc.Param, val string) error {
 	if p == nil {
 		return nil
 	}
@@ -217,11 +255,8 @@ func validParam(p *doc.Param, val string) error {
 		if p.Optional || p.Default != "" {
 			return nil
 		}
-
 		return message.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
-
-	// TODO 如何验证数组的值？
 
 	switch p.Type {
 	case doc.Bool:
@@ -263,7 +298,7 @@ func buildResponse(p *doc.Request, r *http.Request) ([]byte, error) {
 	}
 
 	for _, header := range p.Headers {
-		if err := validParam(header, r.Header.Get(header.Name)); err != nil {
+		if err := validSimpleParam(header, r.Header.Get(header.Name)); err != nil {
 			return nil, err
 		}
 	}

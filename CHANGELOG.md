@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+
+- 为 param 数据添加 array-style 字段，用以描述数组在查询参数的表现形式；
+
+## [v6.0.1]
+
 ## Fixed
 
 - 修正 Chrome 与 Safari 无法正确显示文档的错误；

@@ -114,6 +114,7 @@
             <item name="@summary" type="string" required="true" />
             <item name="@array" type="bool" required="false" />
             <item name="description" type="richtext" required="false" />
+            <item name="@array-style" type="bool" required="false" />
             <item name="enum" type="enum[]" required="false" />
             <item name="param" type="param[]" required="false" />
         </type>
