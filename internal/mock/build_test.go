@@ -344,3 +344,77 @@ func TestValidSimpleParam(t *testing.T) {
 		}
 	}
 }
+
+func TestValidQueryArrayParam(t *testing.T) {
+	a := assert.New(t)
+	data := []*struct {
+		title string
+		p     []*doc.Param
+		r     *http.Request
+		err   bool
+	}{
+		{
+			title: "nil",
+		},
+		{
+			title: "非数组",
+			p: []*doc.Param{
+				{Name: "k1", Type: doc.String},
+				{Name: "k2", Type: doc.Number},
+			},
+			r: httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2", nil),
+		},
+		{
+			title: "非数组，格式不正确",
+			p: []*doc.Param{
+				{Name: "k1", Type: doc.String},
+				{Name: "k2", Type: doc.Number},
+			},
+			r:   httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=not-number", nil),
+			err: true,
+		},
+		{
+			title: "数组-form",
+			p: []*doc.Param{
+				{Name: "k1", Type: doc.String},
+				{Name: "k2", Type: doc.Number, Array: true},
+			},
+			r: httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2&k2=3&k2=4", nil),
+		},
+		{
+			title: "数组-form，格式不正确",
+			p: []*doc.Param{
+				{Name: "k1", Type: doc.String},
+				{Name: "k2", Type: doc.Number, Array: true},
+			},
+			r:   httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2&k2=3&k2=not-number", nil),
+			err: true,
+		},
+		{
+			title: "数组-array-style",
+			p: []*doc.Param{
+				{Name: "k1", Type: doc.String},
+				{Name: "k2", Type: doc.Number, Array: true, ArrayStyle: true},
+			},
+			r: httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2,3,4", nil),
+		},
+		{
+			title: "数组-array-style，格式不正确",
+			p: []*doc.Param{
+				{Name: "k1", Type: doc.String},
+				{Name: "k2", Type: doc.Number, Array: true, ArrayStyle: true},
+			},
+			r:   httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2,3,not-number", nil),
+			err: true,
+		},
+	}
+
+	for _, item := range data {
+		err := validQueryArrayParam(item.p, item.r)
+		if item.err {
+			a.Error(err, "not error at %s", item.title)
+		} else {
+			a.NotError("err %s at %s", err, item.title)
+		}
+	}
+}

@@ -209,35 +209,33 @@ func validQueryArrayParam(queries []*doc.Param, r *http.Request) error {
 	for _, query := range queries {
 		field := "queries[" + query.Name + "]."
 
-		if !query.Array {
-			if err := validSimpleParam(query, r.FormValue(query.Name)); err != nil {
-				if serr, ok := err.(*message.SyntaxError); ok {
-					serr.Field = field + serr.Field
-				}
-				return err
+		valid := func(p *doc.Param, v string) error {
+			err := validSimpleParam(p, v)
+			if serr, ok := err.(*message.SyntaxError); ok {
+				serr.Field = field + serr.Field
 			}
-			continue
+			return err
 		}
 
-		if !query.ArrayStyle { // 默认的 form 格式
+		if !query.Array {
+			if err := valid(query, r.FormValue(query.Name)); err != nil {
+				return err
+			}
+		} else if !query.ArrayStyle { // 默认的 form 格式
+			if err := r.ParseForm(); err != nil {
+				return err
+			}
 			for _, v := range r.Form[query.Name] {
-				if err := validSimpleParam(query, v); err != nil {
-					if serr, ok := err.(*message.SyntaxError); ok {
-						serr.Field = field + serr.Field
-					}
+				if err := valid(query, v); err != nil {
 					return err
 				}
 			}
-			continue
-		}
-
-		values := strings.Split(r.FormValue(query.Name), ",")
-		for _, v := range values {
-			if err := validSimpleParam(query, v); err != nil {
-				if serr, ok := err.(*message.SyntaxError); ok {
-					serr.Field = field + serr.Field
+		} else {
+			values := strings.Split(r.FormValue(query.Name), ",")
+			for _, v := range values {
+				if err := valid(query, v); err != nil {
+					return err
 				}
-				return err
 			}
 		}
 	}
