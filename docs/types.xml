@@ -13,6 +13,7 @@
             <item name="inputs.lang" type="string" required="true" />
             <item name="output" type="object" required="true" />
             <item name="output.path" type="string" required="true" />
+            <item name="output.type" type="string" required="false" />
             <item name="output.tags" type="string[]" required="false" />
             <item name="output.style" type="string" required="false" />
         </type>

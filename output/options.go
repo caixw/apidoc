@@ -34,7 +34,7 @@ type Options struct {
 	Type string `yaml:"type,omitempty"`
 
 	// 文档的保存路径
-	Path string `yaml:"path,omitempty"`
+	Path string `yaml:"path"`
 
 	// 只输出该标签的文档，若为空，则表示所有。
 	Tags []string `yaml:"tags,omitempty"`

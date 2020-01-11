@@ -117,6 +117,7 @@
             <item name="inputs.lang">源文件類型。具體支持的類型可通過 -l 參數進行查找</item>
             <item name="output">控制輸出行為</item>
             <item name="output.path">指定輸出的文件名，包含路徑信息。</item>
+            <item name="output.type">指定輸出的文件格式，值可以是 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>，其中 <var>apidoc+xml</var> 為默認值。</item>
             <item name="output.tags">只輸出與這些標簽相關聯的文檔，默認為全部。</item>
             <item name="output.style">為 XML 文件指定的 XSL 文件。</item>
         </type>
