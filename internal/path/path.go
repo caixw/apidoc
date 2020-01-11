@@ -4,13 +4,14 @@
 package path
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 // Abs 获取 path 的绝对路径
@@ -63,6 +64,8 @@ func CurrPath(path string) string {
 }
 
 // ReadFile 读取本地或是远程的文件内容
+//
+// 根据 path 是否以 http:// 和 https:// 开头判断是否为远程文件
 func ReadFile(path string) ([]byte, error) {
 	if !strings.HasPrefix(path, "https://") &&
 		!strings.HasPrefix(path, "http://") {
@@ -76,7 +79,7 @@ func ReadFile(path string) ([]byte, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode > 300 {
-		return nil, fmt.Errorf("read remote return status %d", resp.StatusCode)
+		return nil, locale.Errorf(locale.ErrReadRemoteFile, path, resp.StatusCode)
 	}
 
 	return ioutil.ReadAll(resp.Body)

@@ -85,6 +85,7 @@ path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔
 	ErrDuplicateValue:        "重復的值",
 	ErrMessage:               "%s 位於 %s",
 	ErrNotFound:              "未找到該值",
+	ErrReadRemoteFile:        "讀取遠程文件 %s 時返回狀態碼 %d",
 
 	// logs
 	InfoPrefix:    "[信息] ",
