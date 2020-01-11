@@ -172,3 +172,35 @@ func TestMockFile(t *testing.T) {
 	h.Stop()
 	srv.Close()
 }
+
+func TestAddStylesheet(t *testing.T) {
+	a := assert.New(t)
+
+	data := []*struct {
+		input  string
+		output string
+	}{
+		{
+			input: "",
+			output: `
+<?xml-stylesheet type="text/xsl" href="./v6/apidoc.xsl"?>`,
+		},
+		{
+			input: `<?xml version="1.0"?>`,
+			output: `<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="./v6/apidoc.xsl"?>`,
+		},
+		{
+			input: `<?xml version="1.0"?>
+<?xml-stylesheet href="xxx"?>`,
+			output: `<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="./v6/apidoc.xsl"?>
+<?xml-stylesheet href="xxx"?>`,
+		},
+	}
+
+	for index, item := range data {
+		output := string(addStylesheet([]byte(item.input)))
+		a.Equal(output, item.output, "not equal at %d,want: %s,get:%s", index, item.output, output)
+	}
+}

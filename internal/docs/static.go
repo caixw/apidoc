@@ -42,7 +42,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.0.0" created="2020-01-08T01:11:21+08:00" version="1.1.1">
+<apidoc apidoc="6.0.0" created="2020-01-11T16:35:54+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
 
@@ -616,7 +616,7 @@ function initGotoTop() {
     <types parent="usage">
         <type name=".apidoc.yaml">
             <description>
-                <p>配置文件名固定为 <code>.apidoc.yaml</code>，格式为 YAML，可参考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通过命令行参数 <code>-d</code> 生成。主要包含了以几个配置项：</p>
+                <p>配置文件名固定为 <code>.apidoc.yaml</code>，格式为 YAML，可参考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通过命令 <code>apidoc detect</code> 生成。主要包含了以几个配置项：</p>
             </description>
             <item name="version" >产生此配置文件的 apidoc 版本</item>
             <item name="inputs">指定输入的数据，同一项目只能解析一种语言。</item>
@@ -736,6 +736,7 @@ function initGotoTop() {
             <item name="@optional">是否为可选的参数</item>
             <item name="@summary">简要介绍</item>
             <item name="@array">是否为数组</item>
+            <item name="@array-style">是否以数组的形式展示数据，默认采用 form 形式，仅在 <code>@array</code> 为 <var>true</var> 时有效。</item>
             <item name="description">详细介绍，为 HTML 内容。</item>
             <item name="enum">当前参数可用的枚举值</item>
             <item name="param">子类型，比如对象的子元素。</item>
@@ -1120,7 +1121,7 @@ function initGotoTop() {
     <types parent="usage">
         <type name=".apidoc.yaml">
             <description>
-                <p>配置文件名固定為 <code>.apidoc.yaml</code>，格式為 YAML，可參考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通過命令行參數 <code>-d</code> 生成。主要包含了以幾個配置項：</p>
+                <p>配置文件名固定為 <code>.apidoc.yaml</code>，格式為 YAML，可參考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通過命令 <code>apidoc detect</code> 生成。主要包含了以幾個配置項：</p>
             </description>
             <item name="version" >產生此配置文件的 apidoc 版本</item>
             <item name="inputs">指定輸入的數據，同壹項目只能解析壹種語言。</item>
@@ -1240,6 +1241,7 @@ function initGotoTop() {
             <item name="@optional">是否為可選的參數</item>
             <item name="@summary">簡要介紹</item>
             <item name="@array">是否為數組</item>
+            <item name="@array-style">是否以數組的形式展示數據，默認采用 form 形式，僅在 <code>@array</code> 為 <var>true</var> 時有效。</item>
             <item name="description">詳細介紹，為 HTML 內容。</item>
             <item name="enum">當前參數可用的枚舉值</item>
             <item name="param">子類型，比如對象的子元素。</item>
@@ -1434,6 +1436,7 @@ function initGotoTop() {
             <item name="@summary" type="string" required="true" />
             <item name="@array" type="bool" required="false" />
             <item name="description" type="richtext" required="false" />
+            <item name="@array-style" type="bool" required="false" />
             <item name="enum" type="enum[]" required="false" />
             <item name="param" type="param[]" required="false" />
         </type>

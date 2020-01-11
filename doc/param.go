@@ -41,6 +41,7 @@ type Param struct {
 	//  1. k=1&k=2
 	//  2. k=1,2
 	// 1 为默认方式，ArrayStyle 为 true，则展示为第二种方式
+	// 该参数目前仅在查询参数中启作用
 	ArrayStyle bool `xml:"array-style,attr,omitempty"`
 }
 

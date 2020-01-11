@@ -14,6 +14,7 @@ import (
 	"mime"
 	"net/http"
 	"path/filepath"
+	"regexp"
 
 	"golang.org/x/text/language"
 
@@ -107,10 +108,11 @@ func Static(dir string, stylesheet bool) http.Handler {
 //
 // status 是新文档的返回的状态码；
 // url 表示文档在路由中的地址，必须以 / 开头；
-// data 表示文档的实际内容；
+// data 表示文档的实际内容，会添加 xml-stylesheet 指令，并指向当前的 apidoc.xsl；
 // contentType 表示文档的 Content-Type 报头值；
 // dir 和 stylesheet 则和 Static 相同。
 func View(status int, url string, data []byte, contentType, dir string, stylesheet bool) http.Handler {
+	data = addStylesheet(data)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == url {
 			w.Header().Set("Content-Type", contentType)
@@ -177,4 +179,21 @@ func MockBuffer(h *message.Handler, data []byte, servers map[string]string) (htt
 // servers 为文档中所有 server 以及对应的路由前缀。
 func MockFile(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
 	return mock.Load(h, path, servers)
+}
+
+// 用于查找 <?xml 指令
+var procInst = regexp.MustCompile(`<\?xml .+ ?>`)
+
+func addStylesheet(data []byte) []byte {
+	stylesheet := "./" + vars.DocVersion() + "/apidoc.xsl"
+
+	pi := `
+<?xml-stylesheet type="text/xsl" href="` + stylesheet + `"?>`
+
+	if rslt := procInst.Find(data); len(rslt) > 0 {
+		return procInst.ReplaceAll(data, append(rslt, []byte(pi)...))
+	}
+
+	ret := make([]byte, 0, len(data)+len(pi))
+	return append(append(ret, pi...), data...)
 }
