@@ -83,13 +83,17 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return fixedSyntaxError(err, doc.file, "apidoc", doc.line+line)
 	}
 
+	if shadow.Title == "" {
+		return message.NewLocaleError(doc.file, "apidoc/title", doc.line, locale.ErrRequired)
+	}
+
 	// Tag.Name 查重
-	if key := findDupTag(shadow.Tags); key != "" {
+	if findDupTag(shadow.Tags) != "" {
 		return message.NewLocaleError(doc.file, "apidoc/tag/@name", doc.line, locale.ErrDuplicateValue)
 	}
 
 	// Server.Name 查重
-	if key := findDupServer(shadow.Servers); key != "" {
+	if findDupServer(shadow.Servers) != "" {
 		return message.NewLocaleError(doc.file, "apidoc/server/@name", doc.line, locale.ErrDuplicateValue)
 	}
 

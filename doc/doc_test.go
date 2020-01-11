@@ -111,6 +111,8 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	data := `<apidoc version="1.1.1">
 		<tag name="t1" title="tet" />
 		<tag name="t1" title="tet"></tag>
+		<mimetype>application/json</mimetype>
+		<title>title</title>
 	</apidoc>`
 	doc := New()
 	a.NotNil(doc)
@@ -120,12 +122,24 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	a.Equal(serr.Line, 11).
 		Equal(serr.File, "file")
 
-		// 重复得的 server
+	// 缺少 title
+	doc = New()
+	data = `<apidoc version="1.1.1">
+			<mimetype>application/json</mimetype>
+	</apidoc>`
+	err = doc.FromXML("file", 11, []byte(data))
+	serr, ok = err.(*message.SyntaxError)
+	a.True(ok).NotNil(serr)
+	a.Equal(serr.Line, 11)
+
+	// 重复得的 server
+	doc = New()
 	data = `<apidoc version="1.1.1">
 		<server name="s1" url="https://example.com/s1" summary="tet" />
 		<server name="s1" url="https://example.com/s2" summary="tet" />
+		<mimetype>application/json</mimetype>
+		<title>title</title>
 	</apidoc>`
-	doc = New()
 	a.NotNil(doc)
 	err = doc.FromXML("file", 12, []byte(data))
 	serr, ok = err.(*message.SyntaxError)
@@ -133,13 +147,40 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	a.Equal(serr.Line, 12).
 		Equal(serr.File, "file")
 
+	// 无效的 deprecated 值
+	doc = New()
 	data = `<apidoc version="1.1.1">
 			<tag name="t1" deprecated="x.0.1" />
+			<mimetype>application/json</mimetype>
+			<title>title</title>
 		</apidoc>`
 	err = doc.FromXML("file", 11, []byte(data))
 	serr, ok = err.(*message.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 12)
+
+	// 缺少 mimetype
+	doc = New()
+	data = `<apidoc version="1.1.1">
+			<title>title</title>
+	</apidoc>`
+	err = doc.FromXML("file", 11, []byte(data))
+	serr, ok = err.(*message.SyntaxError)
+	a.True(ok).NotNil(serr)
+	a.Equal(serr.Line, 11)
+
+	// response.header.type 错误
+	doc = New()
+	data = `<apidoc version="1.1.1">
+		<mimetype>application/json</mimetype>
+		<title>title</title>
+		<response type="number" summary="summary">
+			<header type="object" name="key1" summary="summary">
+				<param name="id" type="number" summary="summary" />
+			</header>
+		</response>
+	</apidoc>`
+	a.Error(doc.FromXML("file", 0, []byte(data)))
 }
 
 func TestDoc_Sanitize(t *testing.T) {

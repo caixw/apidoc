@@ -60,6 +60,16 @@ func TestRequest_UnmarshalXML(t *testing.T) {
 	</Request>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
+	// 报头不能为 Object
+	obj1 = &Request{}
+	str = `<Request type="number" mimetype="json">
+		<header name="k1" type="string" summary="n1" />
+		<header name="k2" type="object" summary="n2">
+			<param name="xx" type="number" summary="summary" />
+		</header>
+	</Request>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
 	// example 不匹配
 	obj1 = &Request{}
 	str = `<Request type="Object" mimetype="json">

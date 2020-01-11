@@ -47,7 +47,19 @@ func (p *Path) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		}
 	}
 
-	// queries 不作判断，同名会被当作数据处理
+	// 路径参数和查询参数不能为 object
+	for _, p := range shadow.Params {
+		if p.Type == Object {
+			field = field + "/param[" + p.Name + "].type"
+			return newSyntaxError(field, locale.ErrInvalidValue)
+		}
+	}
+	for _, q := range shadow.Queries {
+		if q.Type == Object {
+			field = field + "/query[" + q.Name + "].type"
+			return newSyntaxError(field, locale.ErrInvalidValue)
+		}
+	}
 
 	return nil
 }

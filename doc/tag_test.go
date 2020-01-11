@@ -89,6 +89,7 @@ func TestServer_UnmarshalXML(t *testing.T) {
 func TestFindDupString(t *testing.T) {
 	a := assert.New(t)
 
+	a.Equal(findDupString([]string{}), "")
 	a.Equal(findDupString([]string{"k1", "k2", "K2"}), "")
 	a.Equal(findDupString([]string{"k2", "k1", "k2"}), "k2")
 }

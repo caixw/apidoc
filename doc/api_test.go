@@ -55,6 +55,19 @@ func TestAPI(t *testing.T) {
 		Equal(cb.Responses[0].Status, 200)
 }
 
+func TestAPI_UnmarshalXML(t *testing.T) {
+	a := assert.New(t)
+
+	doc := New()
+	data := `<api version="1.1.1">
+		<header type="object" name="key1" summary="summary">
+			<param name="id" type="number" summary="summary" />
+		</header>
+		<response type="number" summary="summary" />
+	</api>`
+	a.Error(doc.NewAPI("", 0, []byte(data)))
+}
+
 // 测试错误提示的行号是否正确
 func TestAPI_lineNumber(t *testing.T) {
 	a := assert.New(t)

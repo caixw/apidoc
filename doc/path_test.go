@@ -60,6 +60,25 @@ func TestPath_UnmarshalXML(t *testing.T) {
 	</Path>`
 	a.Error(xml.Unmarshal([]byte(str), obj1))
 
+	// param.type 不能为 object
+	obj1 = &Path{}
+	str = `<Path path="/users/{id}" ref="#get-users">
+		<param type="object" name="id" summary="summary">
+			<param name="id" type="number" summary="summary" />
+		</param>
+	</Path>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
+	// query.type 不能为 object
+	obj1 = &Path{}
+	str = `<Path path="/users/{id}" ref="#get-users">
+		<param type="number" name="id" summary="summary" />
+		<query type="object" name="id" summary="summary">
+			<param name="id" type="number" summary="summary" />
+		</query>
+	</Path>`
+	a.Error(xml.Unmarshal([]byte(str), obj1))
+
 	// 少 path
 	obj1 = &Path{}
 	str = `<Path url="url">desc</Path>`

@@ -69,6 +69,14 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		}
 	}
 
+	// 报头不能为 object
+	for _, header := range shadow.Headers {
+		if header.Type == Object {
+			field = field + "/header[" + header.Name + "].type"
+			return newSyntaxError(field, locale.ErrInvalidValue)
+		}
+	}
+
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
 		return newSyntaxError(field+"/param", locale.ErrDuplicateValue)

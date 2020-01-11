@@ -75,6 +75,15 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return fixedSyntaxError(err, api.file, field, api.line+line)
 	}
 
+	// 报头不能为 object
+	for _, header := range shadow.Headers {
+		if header.Type == Object {
+			err := locale.Errorf(locale.ErrInvalidValue)
+			field = field + "/header[" + header.Name + "].type"
+			return fixedSyntaxError(err, api.file, field, api.line)
+		}
+	}
+
 	return nil
 }
 

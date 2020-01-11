@@ -92,7 +92,7 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field+"/@type", locale.ErrRequired)
 	}
 	if shadow.Type == Object && len(shadow.Items) == 0 {
-		return newSyntaxError(field+"/items", locale.ErrRequired)
+		return newSyntaxError(field+"/param", locale.ErrRequired)
 	}
 
 	// 判断 enums 的值是否相同
@@ -106,7 +106,7 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
-		return newSyntaxError(field+"/items", locale.ErrDuplicateValue)
+		return newSyntaxError(field+"/param", locale.ErrDuplicateValue)
 	}
 
 	if err := checkXML(shadow.Array, len(shadow.Items) > 0, &shadow.XML, field); err != nil {
