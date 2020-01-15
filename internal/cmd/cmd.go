@@ -54,6 +54,7 @@ func init() {
 	initVersion()
 	initMock()
 	initStatic()
+	initLSP()
 }
 
 // Exec 执行程序

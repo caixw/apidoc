@@ -49,6 +49,13 @@ options 可以是以下參數：
 %s
 
 path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔。`,
+	CmdLSPUsage: `啟動 language server protocol 服務
+
+用法：
+apidoc lsp [options]
+
+options 可以是以下參數
+%s`,
 	Version:                    "版本：%s\n文檔：%s\n提交：%s\nGo：%s",
 	CmdNotFound:                "子命令 %s 未找到\n",
 	FlagMockPortUsage:          "指定 mock 服務的端口號",
@@ -59,6 +66,7 @@ path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔
 	FlagStaticStylesheetUsage:  "指定 static 是否只啟用樣式文件內容",
 	FlagStaticContentTypeUsage: "指定 static 的 content-type 值，不指定，則根據擴展名自動獲取",
 	FlagStaticURLUsage:         "指定 static 服務中文檔的輸出地址",
+	FlagLSPPortUsage:           "指定 language server protocol 服務的端口號",
 
 	VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
 	Complete:            "完成！文檔保存在：%s，總用時：%v",

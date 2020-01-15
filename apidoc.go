@@ -23,6 +23,7 @@ import (
 	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/lsp"
 	"github.com/caixw/apidoc/v6/internal/mock"
 	"github.com/caixw/apidoc/v6/internal/vars"
 )
@@ -112,6 +113,11 @@ func View(status int, url string, data []byte, contentType string, dir core.URI,
 
 		Static(dir, stylesheet).ServeHTTP(w, r)
 	})
+}
+
+// LSP 返回提供 language server protocol 的中间件
+func LSP() (http.Handler, error) {
+	return lsp.Server()
 }
 
 // ViewFile 返回查看文件的中间件
