@@ -17,3 +17,8 @@ func TestCompletionItemKind(t *testing.T) {
 	a := assert.New(t)
 	a.Equal(25, CompletionItemKindTypeParameter)
 }
+
+func TestTextDocumentSyncKind(t *testing.T) {
+	a := assert.New(t)
+	a.Equal(2, TextDocumentSyncKindIncremental)
+}

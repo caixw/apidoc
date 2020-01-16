@@ -176,3 +176,18 @@ const (
 	CompletionItemKindOperator
 	CompletionItemKindTypeParameter
 )
+
+// TextDocumentSyncKind defines how the host (editor) should sync document changes to the language server.
+type TextDocumentSyncKind int
+
+const (
+	// Documents should not be synced at all.
+	TextDocumentSyncKindNone TextDocumentSyncKind = iota
+
+	// Documents are synced by always sending the full content of the document.
+	TextDocumentSyncKindFull
+
+	// Documents are synced by sending the full content on open.
+	// After that only incremental updates to the document are send.
+	TextDocumentSyncKindIncremental
+)

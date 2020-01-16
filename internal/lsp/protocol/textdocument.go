@@ -2,6 +2,59 @@
 
 package protocol
 
+// DocumentURI Many of the interfaces contain fields that correspond to the URI of a document.
+// For clarity, the type of such a field is declared as a DocumentUri. Over the wire, it will still
+// be transferred as a string, but this guarantees that the contents of that string can be parsed as a valid URI.
+type DocumentURI string
+
+// TextDocumentIdentifier text documents are identified using a URI.
+// On the protocol level, URIs are passed as strings.
+// The corresponding JSON structure looks like this:
+type TextDocumentIdentifier struct {
+	// The text document's URI.
+	URI DocumentURI `json:"uri"`
+}
+
+// TextDocumentItem an item to transfer a text document from the client to the server.
+type TextDocumentItem struct {
+	// The text document's URI.
+	URI DocumentURI `json:"uri"`
+
+	// The text document's language identifier.
+	LanguageID string `json:"languageId"`
+
+	// The version number of this document (it will increase after each
+	// change, including undo/redo).
+	Version int `json:"version"`
+
+	// The content of the opened text document.
+	Text string `json:"text"`
+}
+
+// VersionedTextDocumentIdentifier an identifier to denote a specific version of a text document.
+type VersionedTextDocumentIdentifier struct {
+	TextDocumentIdentifier
+
+	// The version number of this document. If a versioned text document identifier
+	// is sent from the server to the client and the file is not open in the editor
+	// (the server has not received an open notification before) the server can send
+	// `null` to indicate that the version is known and the content on disk is the
+	// truth (as speced with document content ownership).
+	//
+	// The version number of a document will increase after each change, including
+	// undo/redo. The number doesn't need to be consecutive.
+	Version int `json:"version,omitempty"`
+}
+
+// TextDocumentPositionParams a parameter literal used in requests to pass a text document and a position inside that document.
+type TextDocumentPositionParams struct {
+	// The text document.
+	TextDocument TextDocumentIdentifier `json:"textDocument"`
+
+	// The position inside the text document.
+	Position Position `json:"position"`
+}
+
 // Text document specific client capabilities.
 type TextDocumentClientCapabilities struct {
 	Synchronization struct {
@@ -266,4 +319,89 @@ type TextDocumentClientCapabilities struct {
 type DynamicRegistration struct {
 	// Whether formatting supports dynamic registration.
 	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
+}
+
+// DocumentOnTypeFormattingOptions format document on type options.
+type DocumentOnTypeFormattingOptions struct {
+	// A character on which formatting should be triggered, like `}`.
+	FirstTriggerCharacter string `json:"firstTriggerCharacter"`
+
+	// More trigger characters.
+	MoreTriggerCharacter []string `json:"moreTriggerCharacter,omitempty"`
+}
+
+// Rename options
+type RenameOptions struct {
+	// Renames should be checked and tested before being executed.
+	PrepareProvider bool `json:"prepareProvider,omitempty"`
+}
+
+// Document link options.
+type DocumentLinkOptions struct {
+	// Document links have a resolve provider as well.
+	ResolveProvider bool `json:"resolveProvider,omitempty"`
+}
+
+type TextDocumentSyncOptions struct {
+	// Open and close notifications are sent to the server.
+	// If omitted open close notification should not be sent.
+	OpenClose bool `json:"openClose,omitempty"`
+
+	// Change notifications are sent to the server. See TextDocumentSyncKind.None, TextDocumentSyncKind.Full
+	// and TextDocumentSyncKind.Incremental. If omitted it defaults to TextDocumentSyncKind.None.
+	Change int `json:"change,omitempty"`
+
+	// If present will save notifications are sent to the server.
+	// If omitted the notification should not be sent.
+	WillSave bool `json:"willSave,omitempty"`
+
+	// If present will save wait until requests are sent to the server.
+	// If omitted the request should not be sent.
+	WillSaveWaitUntil bool `json:"willSaveWaitUntil,omitempty"`
+	// If present save notifications are sent to the server.
+	// If omitted the notification should not be sent.
+	Save SaveOptions `json:"save,omitempty"`
+}
+
+type TextDocumentRegistrationOptions struct {
+	// A document selector to identify the scope of the registration. If set to null
+	// the document selector provided on the client side will be used.
+	DocumentSelector DocumentSelector `json:"documentSelector,omitempty"`
+}
+
+// DocumentSelector is the combination of one or more document filters
+type DocumentSelector []DocumentFilter
+
+// DocumentFilter denotes a document through properties like language,
+// scheme or pattern. An example is a filter that applies to TypeScript files on disk.
+// Another example is a filter the applies to JSON files with name package.json:
+//  { language: 'typescript', scheme: 'file' }
+//  { language: 'json', pattern: '**/package.json' }
+type DocumentFilter struct {
+	// A language id, like `typescript`.
+	Language string `json:"language,omitempty"`
+
+	// A Uri [scheme](#Uri.scheme), like `file` or `untitled`.
+	Scheme string `json:"scheme,omitempty"`
+
+	// A glob pattern, like `*.{ts,js}`.
+	//
+	// Glob patterns can have the following syntax:
+	// - `*` to match one or more characters in a path segment
+	// - `?` to match on one character in a path segment
+	// - `**` to match any number of path segments, including none
+	// - `{}` to group conditions (e.g. `**​/*.{ts,js}` matches all TypeScript and JavaScript files)
+	// - `[]` to declare a range of characters to match in a path segment (e.g., `example.[0-9]` to match on `example.0`, `example.1`, …)
+	// - `[!...]` to negate a range of characters to match in a path segment (e.g., `example.[!0-9]` to match on `example.a`, `example.b`, but not `example.0`)
+	Pattern string `json:"pattern,omitempty"`
+}
+
+// DidSaveTextDocumentParams textDocument/didSave 的参数
+type DidSaveTextDocumentParams struct {
+	// The document that was saved.
+	TextDocument TextDocumentIdentifier `json:"textDocument"`
+
+	// Optional the content when saved. Depends on the includeText value
+	// when the save notification was requested.
+	Text string `json:"text,omitempty"`
 }

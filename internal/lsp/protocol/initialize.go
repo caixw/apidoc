@@ -45,8 +45,7 @@ type InitializeResult struct {
 }
 
 // InitializedParams initialized 服务传递的参数
-type InitializedParams struct {
-}
+type InitializedParams struct{}
 
 type ClientCapabilities struct {
 	// Workspace specific client capabilities.
