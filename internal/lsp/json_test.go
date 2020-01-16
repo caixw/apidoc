@@ -16,4 +16,5 @@ func TestConvertMethod(t *testing.T) {
 	a.Equal(convertMethod("a.B"), "a.B")
 	a.Equal(convertMethod("a/B"), "a.B")
 	a.Equal(convertMethod("a/b"), "a.B")
+	a.Equal(convertMethod("initialize"), "Server.initialize")
 }

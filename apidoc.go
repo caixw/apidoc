@@ -117,7 +117,7 @@ func View(status int, url string, data []byte, contentType string, dir core.URI,
 
 // LSP 返回提供 language server protocol 的中间件
 func LSP() (http.Handler, error) {
-	return lsp.Server()
+	return lsp.Serve()
 }
 
 // ViewFile 返回查看文件的中间件

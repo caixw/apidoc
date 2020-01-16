@@ -38,6 +38,12 @@ type InitializeParams struct {
 	WorkspaceFolders WorkspaceFolder `json:"workspaceFolders,omitempty"`
 }
 
+// InitializeResult initialize 服务的返回结构
+type InitializeResult struct {
+	// The capabilities the language server provides.
+	Capabilities ServerCapabilities `json:"capabilities"`
+}
+
 // InitializedParams initialized 服务传递的参数
 type InitializedParams struct {
 }

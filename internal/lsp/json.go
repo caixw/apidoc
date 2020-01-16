@@ -38,12 +38,22 @@ func (r *jsonCodecRequest) Method() (string, error) {
 	return convertMethod(m), err
 }
 
+// 将 Server/method 转换成 Server.Method
+// 将 method 转换成 Server.Method
+// 即未指定服务名称的，自动映身到 Server 这个服务名称
 func convertMethod(method string) string {
+	if len(method) == 0 {
+		return method
+	}
+
 	m := []byte(method)
 	dotIndex := bytes.IndexByte(m, '/')
 	if dotIndex > 0 {
 		m[dotIndex] = '.'
 		m[dotIndex+1] = byte(unicode.ToUpper(rune(m[dotIndex+1])))
+	} else if bytes.IndexByte(m, '.') < 0 {
+		m = append([]byte("Server."), m...)
 	}
+
 	return string(m)
 }
