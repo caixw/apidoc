@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/rpc/v2"
 
+	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
 )
 
@@ -25,7 +26,7 @@ type Server struct {
 	server *rpc.Server
 
 	state    serverState
-	stateMux sync.Mutex
+	stateMux sync.RWMutex
 }
 
 // NewServer 新的 Server 实例
@@ -50,10 +51,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Initialize 执行初始化服务
 func (s *Server) Initialize(r *http.Request, args *protocol.InitializeParams, reply *protocol.InitializeResult) error {
-	s.stateMux.Lock()
-	defer s.stateMux.Unlock()
-	s.state = serverInitializing
+	if s.getState() > serverInitializing {
+		msg := locale.Sprintf(locale.ErrServerNotInitialized)
+		return protocol.NewError(protocol.ErrServerNotInitialized, msg, nil)
+	}
+
+	// TODO notify
+
+	s.setState(serverInitializing)
 
 	// TODO
 	return nil
+}
+
+func (s *Server) setState(state serverState) {
+	s.stateMux.Lock()
+	defer s.stateMux.Unlock()
+	s.state = state
+}
+
+func (s *Server) getState() serverState {
+	s.stateMux.RLock()
+	defer s.stateMux.RUnlock()
+	return s.state
 }

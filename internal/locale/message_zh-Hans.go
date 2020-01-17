@@ -215,6 +215,7 @@ options 可以是以下参数
 	ErrInvalidURIScheme:      "无效的 uri 协议",
 	ErrInvalidXML:            "无效的 XML 文档",
 	ErrIsNotAPIDoc:           "并非有效的 apidoc 的文档格式",
+	ErrServerNotInitialized:  "服务未初始化",
 
 	// logs
 	InfoPrefix:    "[信息] ",
