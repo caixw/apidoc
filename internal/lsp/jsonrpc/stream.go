@@ -4,12 +4,15 @@ package jsonrpc
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 var (
@@ -30,14 +33,14 @@ func newStream(in io.Reader, out io.Writer) *stream {
 	}
 }
 
-func (s *stream) read() ([]byte, error) {
+func (s *stream) read(req *Request) error {
 	buf := bufio.NewReader(s.in)
 	var l int
 
 	for {
 		line, err := buf.ReadString('\n')
 		if err != nil {
-			return nil, err
+			return NewError(CodeParseError, err.Error())
 		}
 		line = strings.TrimSpace(line)
 
@@ -47,7 +50,7 @@ func (s *stream) read() ([]byte, error) {
 
 		index := strings.IndexByte(line, ':')
 		if index <= 0 {
-			return nil, NewError(CodeParseError)
+			return NewError(CodeParseError, locale.Sprintf(locale.ErrInvalidFormat))
 		}
 
 		name := http.CanonicalHeaderKey(strings.TrimSpace(line[:index]))
@@ -56,26 +59,39 @@ func (s *stream) read() ([]byte, error) {
 		case contentLength:
 			l, err = strconv.Atoi(v)
 			if err != nil {
-				return nil, NewError(CodeParseError, err.Error())
+				return NewError(CodeParseError, err.Error())
 			}
 		case contentType:
 			if v != "application/vscode-jsonrpc;charset=utf-8" {
-				return nil, NewError(CodeParseError, err.Error())
+				return NewError(CodeParseError, err.Error())
 			}
 		default: // 忽略其它报头
 		}
 	}
 
 	if l == 0 {
-		return nil, NewError(CodeParseError, "TODO")
+		return NewError(CodeParseError, locale.Sprintf(locale.ErrRequired))
 	}
 
 	data := make([]byte, l)
-	n, err = io.ReadFull(buf, data)
-	return data, err
+	n, err := io.ReadFull(buf, data)
+	if err != nil {
+		return NewError(CodeParseError, err.Error())
+	}
+	if n == 0 {
+		return NewError(CodeParseError, locale.Sprintf(locale.ErrRequired))
+	}
+
+	data = data[:n]
+	return json.Unmarshal(data, req)
 }
 
-func (s *stream) write(data []byte) (int, error) {
+func (s *stream) write(resp *Response) (int, error) {
+	data, err := json.Marshal(resp)
+	if err != nil {
+		return 0, err
+	}
+
 	s.outMux.Lock()
 	defer s.outMux.Unlock()
 
