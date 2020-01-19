@@ -3,11 +3,12 @@
 package jsonrpc
 
 import (
-	"bytes"
+	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -29,19 +30,49 @@ func newStream(in io.Reader, out io.Writer) *stream {
 	}
 }
 
-func (s *stream) read() ([]byte, int, error) {
-	data, err := ioutil.ReadAll(s.in)
-	if err != nil {
-		return nil, 0, err
+func (s *stream) read() ([]byte, error) {
+	buf := bufio.NewReader(s.in)
+	var l int
+
+	for {
+		line, err := buf.ReadString('\n')
+		if err != nil {
+			return nil, err
+		}
+		line = strings.TrimSpace(line)
+
+		if line == "" {
+			break
+		}
+
+		index := strings.IndexByte(line, ':')
+		if index <= 0 {
+			return nil, NewError(CodeParseError)
+		}
+
+		name := http.CanonicalHeaderKey(strings.TrimSpace(line[:index]))
+		v := strings.TrimSpace(line[index+1:])
+		switch name {
+		case contentLength:
+			l, err = strconv.Atoi(v)
+			if err != nil {
+				return nil, NewError(CodeParseError, err.Error())
+			}
+		case contentType:
+			if v != "application/vscode-jsonrpc;charset=utf-8" {
+				return nil, NewError(CodeParseError, err.Error())
+			}
+		default: // 忽略其它报头
+		}
 	}
 
-	index := bytes.IndexByte(data, '{')
+	if l == 0 {
+		return nil, NewError(CodeParseError, "TODO")
+	}
 
-	headers := data[:index]
-	// TODO 验证报头正确性
-
-	return data[index:], len(data), nil
-
+	data := make([]byte, l)
+	n, err = io.ReadFull(buf, data)
+	return data, err
 }
 
 func (s *stream) write(data []byte) (int, error) {

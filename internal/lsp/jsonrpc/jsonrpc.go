@@ -10,6 +10,24 @@ import "encoding/json"
 // Version json-rpc 的版本
 const Version = "2.0"
 
+// LSP 定义的错误代码
+const (
+	// Defined by JSON RPC
+	CodeParseError           = -32700
+	CodeInvalidRequest       = -32600
+	CodeMethodNotFound       = -32601
+	CodeInvalidParams        = -32602
+	CodeInternalError        = -32603
+	CodeServerErrorStart     = -32099
+	CodeServerErrorEnd       = -32000
+	CodeServerNotInitialized = -32002
+	CodeUnknownErrorCode     = -32001
+
+	// Defined by the protocol.
+	CodeRequestCancelled = -32800
+	CodeContentModified  = -32801
+)
+
 // Request 请求对象
 type Request struct {
 	// 指定 JSON-RPC 协议版本的字符串
