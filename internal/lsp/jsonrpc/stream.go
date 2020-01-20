@@ -15,6 +15,9 @@ import (
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
+// content-type json-rpc 采用的字符集
+const charset = "utf-8"
+
 var (
 	contentType   = http.CanonicalHeaderKey("content-Type")
 	contentLength = http.CanonicalHeaderKey("content-length")
@@ -43,7 +46,6 @@ func (s *stream) read(req *Request) error {
 			return NewError(CodeParseError, err.Error())
 		}
 		line = strings.TrimSpace(line)
-
 		if line == "" {
 			break
 		}
@@ -53,17 +55,16 @@ func (s *stream) read(req *Request) error {
 			return NewError(CodeParseError, locale.Sprintf(locale.ErrInvalidFormat))
 		}
 
-		name := http.CanonicalHeaderKey(strings.TrimSpace(line[:index]))
 		v := strings.TrimSpace(line[index+1:])
-		switch name {
+		switch http.CanonicalHeaderKey(strings.TrimSpace(line[:index])) {
 		case contentLength:
 			l, err = strconv.Atoi(v)
 			if err != nil {
 				return NewError(CodeParseError, err.Error())
 			}
 		case contentType:
-			if v != "application/vscode-jsonrpc;charset=utf-8" {
-				return NewError(CodeParseError, err.Error())
+			if err := validContentType(v); err != nil {
+				return err
 			}
 		default: // 忽略其它报头
 		}
@@ -86,6 +87,21 @@ func (s *stream) read(req *Request) error {
 	return json.Unmarshal(data, req)
 }
 
+func validContentType(header string) error {
+	pairs := strings.Split(header, ";")
+
+	for _, pair := range pairs {
+		index := strings.IndexByte(pair, '=')
+		if index > 0 &&
+			strings.ToLower(strings.TrimSpace(pair[:index])) == "charset" &&
+			strings.ToLower(strings.TrimSpace(pair[index+1:])) != charset {
+			return NewError(CodeParseError, "TODO locale")
+		}
+	}
+
+	return nil
+}
+
 func (s *stream) write(resp *Response) (int, error) {
 	data, err := json.Marshal(resp)
 	if err != nil {
@@ -95,7 +111,7 @@ func (s *stream) write(resp *Response) (int, error) {
 	s.outMux.Lock()
 	defer s.outMux.Unlock()
 
-	n, err := fmt.Fprintf(s.out, "%s: %s\r\n%s: %d\r\n\r\n", contentType, "utf-8", contentLength, len(data))
+	n, err := fmt.Fprintf(s.out, "%s: %s\r\n%s: %d\r\n\r\n", contentType, charset, contentLength, len(data))
 	if err != nil {
 		return 0, err
 	}
