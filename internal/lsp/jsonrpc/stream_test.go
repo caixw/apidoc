@@ -94,5 +94,7 @@ func TestValidContentType(t *testing.T) {
 	a.NotError(validContentType("charset=utf-8"))
 	a.NotError(validContentType(";charset=utf-8"))
 	a.NotError(validContentType("text/xml;charset=utf-8"))
+	a.NotError(validContentType("text/xml;"))
+	a.Error(validContentType("text/xml;charset="))
 	a.Error(validContentType("text/xml;charset=utf8"))
 }

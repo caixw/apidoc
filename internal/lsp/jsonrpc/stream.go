@@ -52,7 +52,7 @@ func (s *stream) read(req *Request) error {
 
 		index := strings.IndexByte(line, ':')
 		if index <= 0 {
-			return NewError(CodeParseError, locale.Sprintf(locale.ErrInvalidFormat))
+			return NewError(CodeParseError, locale.Sprintf(locale.ErrInvalidHeaderFormat))
 		}
 
 		v := strings.TrimSpace(line[index+1:])
@@ -70,8 +70,8 @@ func (s *stream) read(req *Request) error {
 		}
 	}
 
-	if l == 0 {
-		return NewError(CodeParseError, locale.Sprintf(locale.ErrRequired))
+	if l <= 0 {
+		return NewError(CodeParseError, locale.Sprintf(locale.ErrInvalidContentLength))
 	}
 
 	data := make([]byte, l)
@@ -80,7 +80,7 @@ func (s *stream) read(req *Request) error {
 		return NewError(CodeParseError, err.Error())
 	}
 	if n == 0 {
-		return NewError(CodeParseError, locale.Sprintf(locale.ErrRequired))
+		return NewError(CodeParseError, locale.Sprintf(locale.ErrBodyIsEmpty))
 	}
 
 	data = data[:n]
@@ -95,7 +95,7 @@ func validContentType(header string) error {
 		if index > 0 &&
 			strings.ToLower(strings.TrimSpace(pair[:index])) == "charset" &&
 			strings.ToLower(strings.TrimSpace(pair[index+1:])) != charset {
-			return NewError(CodeParseError, "TODO locale")
+			return NewError(CodeParseError, locale.Sprintf(locale.ErrInvalidContentTypeCharset))
 		}
 	}
 
