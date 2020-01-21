@@ -5,7 +5,9 @@
 // https://wiki.geekdream.com/Specification/json-rpc_2.0.html
 package jsonrpc
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Version json-rpc 的版本
 const Version = "2.0"

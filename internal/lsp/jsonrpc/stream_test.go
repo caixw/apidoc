@@ -9,7 +9,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestStream_read(t *testing.T) {
+func TestStream_readRequest(t *testing.T) {
 	a := assert.New(t)
 
 	r := new(bytes.Buffer)
@@ -20,7 +20,7 @@ func TestStream_read(t *testing.T) {
 
 {"jsonrpc":"2.0","id":"1"}`)
 	rr := &Request{}
-	a.NotError(s.read(rr))
+	a.NotError(s.readRequest(rr))
 	a.Equal(rr.Version, Version).Equal(rr.ID, "1")
 
 	// 无效的 content-length
@@ -32,7 +32,7 @@ func TestStream_read(t *testing.T) {
 
 {"jsonrpc":"2.0","id":"1"}`)
 	rr = &Request{}
-	a.Error(s.read(rr))
+	a.Error(s.readRequest(rr))
 
 	// content-type 中未指定 charset
 	r = new(bytes.Buffer)
@@ -43,7 +43,7 @@ func TestStream_read(t *testing.T) {
 
 {"jsonrpc":"2.0","id":"1"}`)
 	rr = &Request{}
-	a.NotError(s.read(rr))
+	a.NotError(s.readRequest(rr))
 
 	// content-length 格式无效
 	r = new(bytes.Buffer)
@@ -54,7 +54,7 @@ func TestStream_read(t *testing.T) {
 
 {"jsonrpc":"2.0","id":"1"}`)
 	rr = &Request{}
-	a.Error(s.read(rr))
+	a.Error(s.readRequest(rr))
 
 	// content-type 是指定了非 utf-8 编码
 	r = new(bytes.Buffer)
@@ -65,7 +65,7 @@ func TestStream_read(t *testing.T) {
 
 {"jsonrpc":"2.0","id":"1"}`)
 	rr = &Request{}
-	a.Error(s.read(rr))
+	a.Error(s.readRequest(rr))
 }
 
 func TestStream_write(t *testing.T) {

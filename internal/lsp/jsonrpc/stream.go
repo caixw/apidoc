@@ -36,14 +36,33 @@ func newStream(in io.Reader, out io.Writer) *stream {
 	}
 }
 
-func (s *stream) read(req *Request) error {
+func (s *stream) readRequest(req *Request) error {
+	data, err := s.read()
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(data, req)
+}
+
+func (s *stream) readResponse(resp *Response) error {
+	data, err := s.read()
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(data, resp)
+}
+
+// 读取内容，先验证报头，并返回实际 body 的内容
+func (s *stream) read() ([]byte, error) {
 	buf := bufio.NewReader(s.in)
 	var l int
 
 	for {
 		line, err := buf.ReadString('\n')
 		if err != nil {
-			return NewError(CodeParseError, err.Error())
+			return nil, err
 		}
 		line = strings.TrimSpace(line)
 		if line == "" {
@@ -52,7 +71,7 @@ func (s *stream) read(req *Request) error {
 
 		index := strings.IndexByte(line, ':')
 		if index <= 0 {
-			return NewError(CodeParseError, locale.Sprintf(locale.ErrInvalidHeaderFormat))
+			return nil, locale.Errorf(locale.ErrInvalidHeaderFormat)
 		}
 
 		v := strings.TrimSpace(line[index+1:])
@@ -60,31 +79,30 @@ func (s *stream) read(req *Request) error {
 		case contentLength:
 			l, err = strconv.Atoi(v)
 			if err != nil {
-				return NewError(CodeParseError, err.Error())
+				return nil, err
 			}
 		case contentType:
 			if err := validContentType(v); err != nil {
-				return err
+				return nil, err
 			}
 		default: // 忽略其它报头
 		}
 	}
 
 	if l <= 0 {
-		return NewError(CodeParseError, locale.Sprintf(locale.ErrInvalidContentLength))
+		return nil, locale.Errorf(locale.ErrInvalidContentLength)
 	}
 
 	data := make([]byte, l)
 	n, err := io.ReadFull(buf, data)
 	if err != nil {
-		return NewError(CodeParseError, err.Error())
+		return nil, err
 	}
 	if n == 0 {
-		return NewError(CodeParseError, locale.Sprintf(locale.ErrBodyIsEmpty))
+		return nil, locale.Errorf(locale.ErrBodyIsEmpty)
 	}
 
-	data = data[:n]
-	return json.Unmarshal(data, req)
+	return data[:n], nil
 }
 
 func validContentType(header string) error {
@@ -95,15 +113,15 @@ func validContentType(header string) error {
 		if index > 0 &&
 			strings.ToLower(strings.TrimSpace(pair[:index])) == "charset" &&
 			strings.ToLower(strings.TrimSpace(pair[index+1:])) != charset {
-			return NewError(CodeParseError, locale.Sprintf(locale.ErrInvalidContentTypeCharset))
+			return locale.Errorf(locale.ErrInvalidContentTypeCharset)
 		}
 	}
 
 	return nil
 }
 
-func (s *stream) write(resp *Response) (int, error) {
-	data, err := json.Marshal(resp)
+func (s *stream) write(obj interface{}) (int, error) {
+	data, err := json.Marshal(obj)
 	if err != nil {
 		return 0, err
 	}
