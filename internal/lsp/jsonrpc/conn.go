@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"log"
 	"reflect"
 	"strconv"
 	"sync"
@@ -17,7 +16,6 @@ import (
 // Conn 连接对象，json-rpc 客户端和服务端是对等的，两者都使用 conn 初始化。
 type Conn struct {
 	sequence int64
-	errlog   *log.Logger
 	stream   *stream
 	servers  sync.Map
 }
@@ -28,14 +26,19 @@ type handler struct {
 }
 
 // NewConn 声明新的 Conn 实例
-func NewConn(errlog *log.Logger, in io.Reader, out io.Writer) *Conn {
+func NewConn(in io.Reader, out io.Writer) *Conn {
 	return &Conn{
-		errlog: errlog,
 		stream: newStream(in, out),
 	}
 }
 
 // Register 注册一个新的服务
+//
+// f 为处理服务的函数，其原始为以下方式：
+//  func(notify bool, params, result interface{}) error
+// 其中 notify 表示是否为通知类型的请求；params 为用户请求的对象；
+// result 为返回给用户的数据对象；error 则为处理出错是的返回值。
+// params 和 result 必须为指针类型。
 //
 // 返回值表示是否添加成功，在已经存在相同值时，会添加失败。
 func (conn *Conn) Register(method string, f interface{}) bool {
@@ -53,19 +56,20 @@ func newHandler(f interface{}) *handler {
 	t := reflect.TypeOf(f)
 
 	if t.Kind() != reflect.Func ||
-		t.NumIn() != 2 ||
-		t.In(0).Kind() != reflect.Ptr ||
+		t.NumIn() != 3 ||
+		t.In(0).Kind() != reflect.Bool ||
 		t.In(1).Kind() != reflect.Ptr ||
+		t.In(2).Kind() != reflect.Ptr ||
 		!t.Out(0).Implements(errType) {
 		panic("函数签名不正确")
 	}
 
-	in := t.In(0).Elem()
+	in := t.In(1).Elem()
 	if in.Kind() == reflect.Func || in.Kind() == reflect.Ptr || in.Kind() == reflect.Invalid {
 		panic("函数签名不正确")
 	}
 
-	out := t.In(1).Elem()
+	out := t.In(2).Elem()
 	if out.Kind() == reflect.Func || out.Kind() == reflect.Ptr || out.Kind() == reflect.Invalid {
 		panic("函数签名不正确")
 	}
@@ -153,13 +157,14 @@ func (conn *Conn) serve() error {
 	}
 	h := f.(*handler)
 
+	notify := reflect.ValueOf(req.ID == "")
 	in := reflect.New(h.in)
 	if err := json.Unmarshal([]byte(*req.Params), in.Interface()); err != nil {
 		return conn.writeError("", CodeParseError, err, nil)
 	}
 
 	out := reflect.New(h.out)
-	if errVal := h.f.Call([]reflect.Value{in, out}); !errVal[0].IsNil() {
+	if errVal := h.f.Call([]reflect.Value{notify, in, out}); !errVal[0].IsNil() {
 		return conn.writeError("", CodeInternalError, errVal[0].Interface().(error), nil)
 	}
 
