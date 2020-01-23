@@ -2,6 +2,7 @@ module github.com/caixw/apidoc/v6
 
 require (
 	github.com/issue9/assert v1.3.4
+	github.com/issue9/autoinc v1.0.6
 	github.com/issue9/cmdopt v0.5.2
 	github.com/issue9/is v1.3.4
 	github.com/issue9/mux/v2 v2.3.2

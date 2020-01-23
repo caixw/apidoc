@@ -10,14 +10,16 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/issue9/autoinc"
+
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
 // Conn 连接对象，json-rpc 客户端和服务端是对等的，两者都使用 conn 初始化。
 type Conn struct {
-	sequence int64
-	stream   *stream
-	servers  sync.Map
+	stream  *stream
+	servers sync.Map
+	autoinc *autoinc.AutoInc
 }
 
 type handler struct {
@@ -28,7 +30,8 @@ type handler struct {
 // NewConn 声明新的 Conn 实例
 func NewConn(in io.Reader, out io.Writer) *Conn {
 	return &Conn{
-		stream: newStream(in, out),
+		stream:  newStream(in, out),
+		autoinc: autoinc.New(0, 1, 1000),
 	}
 }
 
@@ -103,7 +106,7 @@ func (conn *Conn) send(notify bool, method string, in, out interface{}) error {
 		Params:  (*json.RawMessage)(&data),
 	}
 	if !notify {
-		req.ID = strconv.FormatInt(conn.sequence, 10)
+		req.ID = strconv.FormatInt(conn.autoinc.MustID(), 10)
 	}
 
 	if _, err = conn.stream.write(req); err != nil {
