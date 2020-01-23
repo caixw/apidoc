@@ -14,9 +14,6 @@ import (
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
-// ServerFunc 每个服务的函数签名
-type ServerFunc func(in, out interface{}) error
-
 // Conn 连接对象，json-rpc 客户端和服务端是对等的，两者都使用 conn 初始化。
 type Conn struct {
 	sequence int64
@@ -26,7 +23,7 @@ type Conn struct {
 }
 
 type handler struct {
-	f       ServerFunc
+	f       reflect.Value
 	in, out reflect.Type
 }
 
@@ -41,7 +38,7 @@ func NewConn(errlog *log.Logger, in io.Reader, out io.Writer) *Conn {
 // Register 注册一个新的服务
 //
 // 返回值表示是否添加成功，在已经存在相同值时，会添加失败。
-func (conn *Conn) Register(method string, f ServerFunc) bool {
+func (conn *Conn) Register(method string, f interface{}) bool {
 	if _, found := conn.servers.Load(method); found {
 		return false
 	}
@@ -50,12 +47,33 @@ func (conn *Conn) Register(method string, f ServerFunc) bool {
 	return true
 }
 
-func newHandler(f ServerFunc) *handler {
+var errType = reflect.TypeOf((*error)(nil)).Elem()
+
+func newHandler(f interface{}) *handler {
 	t := reflect.TypeOf(f)
+
+	if t.Kind() != reflect.Func ||
+		t.NumIn() != 2 ||
+		t.In(0).Kind() != reflect.Ptr ||
+		t.In(1).Kind() != reflect.Ptr ||
+		!t.Out(0).Implements(errType) {
+		panic("函数签名不正确")
+	}
+
+	in := t.In(0).Elem()
+	if in.Kind() == reflect.Func || in.Kind() == reflect.Ptr || in.Kind() == reflect.Invalid {
+		panic("函数签名不正确")
+	}
+
+	out := t.In(1).Elem()
+	if out.Kind() == reflect.Func || out.Kind() == reflect.Ptr || out.Kind() == reflect.Invalid {
+		panic("函数签名不正确")
+	}
+
 	return &handler{
-		f:   f,
-		in:  t.Method(0).Type.Elem(),
-		out: t.Method(0).Type.Elem(),
+		f:   reflect.ValueOf(f),
+		in:  in,
+		out: out,
 	}
 }
 
@@ -135,14 +153,14 @@ func (conn *Conn) serve() error {
 	}
 	h := f.(*handler)
 
-	in := reflect.New(h.in).Interface()
-	if err := json.Unmarshal([]byte(*req.Params), in); err != nil {
+	in := reflect.New(h.in)
+	if err := json.Unmarshal([]byte(*req.Params), in.Interface()); err != nil {
 		return conn.writeError("", CodeParseError, err, nil)
 	}
 
-	out := reflect.New(h.out).Interface()
-	if err := h.f(in, out); err != nil {
-		return conn.writeError("", CodeInternalError, err, nil)
+	out := reflect.New(h.out)
+	if errVal := h.f.Call([]reflect.Value{in, out}); !errVal[0].IsNil() {
+		return conn.writeError("", CodeInternalError, errVal[0].Interface().(error), nil)
 	}
 
 	data, err := json.Marshal(out)
