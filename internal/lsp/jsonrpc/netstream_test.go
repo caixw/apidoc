@@ -2,4 +2,4 @@
 
 package jsonrpc
 
-var _ Streamer = &tcpStream{}
+var _ Streamer = &netStream{}
