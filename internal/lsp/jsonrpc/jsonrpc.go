@@ -5,9 +5,7 @@
 // https://wiki.geekdream.com/Specification/json-rpc_2.0.html
 package jsonrpc
 
-import (
-	"encoding/json"
-)
+import "encoding/json"
 
 // Version json-rpc 的版本
 const Version = "2.0"
@@ -29,6 +27,12 @@ const (
 	CodeRequestCancelled = -32800
 	CodeContentModified  = -32801
 )
+
+// Streamer 用于操作 jsonrpc 的传输层接口
+type Streamer interface {
+	Read(interface{}) error
+	Write(interface{}) error
+}
 
 // Request 请求对象
 type Request struct {

@@ -5,7 +5,6 @@ package jsonrpc
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"reflect"
 	"strconv"
 	"sync"
@@ -17,7 +16,7 @@ import (
 
 // Conn 连接对象，json-rpc 客户端和服务端是对等的，两者都使用 conn 初始化。
 type Conn struct {
-	stream  *stream
+	stream  Streamer
 	servers sync.Map
 	autoinc *autoinc.AutoInc
 }
@@ -28,9 +27,9 @@ type handler struct {
 }
 
 // NewConn 声明新的 Conn 实例
-func NewConn(in io.Reader, out io.Writer) *Conn {
+func NewConn(stream Streamer) *Conn {
 	return &Conn{
-		stream:  newStream(in, out),
+		stream:  stream,
 		autoinc: autoinc.New(0, 1, 1000),
 	}
 }
@@ -109,7 +108,7 @@ func (conn *Conn) send(notify bool, method string, in, out interface{}) error {
 		req.ID = strconv.FormatInt(conn.autoinc.MustID(), 10)
 	}
 
-	if _, err = conn.stream.write(req); err != nil {
+	if err = conn.stream.Write(req); err != nil {
 		return err
 	}
 
@@ -118,7 +117,7 @@ func (conn *Conn) send(notify bool, method string, in, out interface{}) error {
 	}
 
 	resp := &Response{}
-	if err = conn.stream.readResponse(resp); err != nil {
+	if err = conn.stream.Read(resp); err != nil {
 		return err
 	}
 
@@ -150,7 +149,7 @@ func (conn *Conn) Serve(ctx context.Context) error {
 // 作为服务端，根据参数查找和执行服务
 func (conn *Conn) serve() error {
 	req := &Request{}
-	if err := conn.stream.readRequest(req); err != nil {
+	if err := conn.stream.Read(req); err != nil {
 		return conn.writeError("", CodeParseError, err, nil)
 	}
 
@@ -181,8 +180,7 @@ func (conn *Conn) serve() error {
 		Result:  (*json.RawMessage)(&data),
 		ID:      req.ID,
 	}
-	_, err = conn.stream.write(resp)
-	return err
+	return conn.stream.Write(resp)
 }
 
 func (conn *Conn) writeError(id string, code int, err error, data interface{}) error {
@@ -197,6 +195,5 @@ func (conn *Conn) writeError(id string, code int, err error, data interface{}) e
 		resp.Error = NewError(code, err.Error())
 	}
 
-	_, err = conn.stream.write(resp)
-	return err
+	return conn.stream.Write(resp)
 }

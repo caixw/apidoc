@@ -23,46 +23,29 @@ var (
 	contentLength = http.CanonicalHeaderKey("content-length")
 )
 
-type stream struct {
+type httpStream struct {
 	in     io.Reader
 	out    io.Writer
 	outMux sync.Mutex
 }
 
-func newStream(in io.Reader, out io.Writer) *stream {
-	return &stream{
+// NewHTTPStream 声明基于 HTTP 的 streamer 实例
+func NewHTTPStream(in io.Reader, out io.Writer) Streamer {
+	return &httpStream{
 		in:  in,
 		out: out,
 	}
 }
 
-func (s *stream) readRequest(req *Request) error {
-	data, err := s.read()
-	if err != nil {
-		return err
-	}
-
-	return json.Unmarshal(data, req)
-}
-
-func (s *stream) readResponse(resp *Response) error {
-	data, err := s.read()
-	if err != nil {
-		return err
-	}
-
-	return json.Unmarshal(data, resp)
-}
-
-// 读取内容，先验证报头，并返回实际 body 的内容
-func (s *stream) read() ([]byte, error) {
+// Read 读取内容，先验证报头，并返回实际 body 的内容
+func (s *httpStream) Read(v interface{}) error {
 	buf := bufio.NewReader(s.in)
 	var l int
 
 	for {
 		line, err := buf.ReadString('\n')
 		if err != nil {
-			return nil, err
+			return err
 		}
 		line = strings.TrimSpace(line)
 		if line == "" {
@@ -71,7 +54,7 @@ func (s *stream) read() ([]byte, error) {
 
 		index := strings.IndexByte(line, ':')
 		if index <= 0 {
-			return nil, locale.Errorf(locale.ErrInvalidHeaderFormat)
+			return locale.Errorf(locale.ErrInvalidHeaderFormat)
 		}
 
 		v := strings.TrimSpace(line[index+1:])
@@ -79,30 +62,30 @@ func (s *stream) read() ([]byte, error) {
 		case contentLength:
 			l, err = strconv.Atoi(v)
 			if err != nil {
-				return nil, err
+				return err
 			}
 		case contentType:
 			if err := validContentType(v); err != nil {
-				return nil, err
+				return err
 			}
 		default: // 忽略其它报头
 		}
 	}
 
 	if l <= 0 {
-		return nil, locale.Errorf(locale.ErrInvalidContentLength)
+		return locale.Errorf(locale.ErrInvalidContentLength)
 	}
 
 	data := make([]byte, l)
 	n, err := io.ReadFull(buf, data)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if n == 0 {
-		return nil, locale.Errorf(locale.ErrBodyIsEmpty)
+		return locale.Errorf(locale.ErrBodyIsEmpty)
 	}
 
-	return data[:n], nil
+	return json.Unmarshal(data[:n], v)
 }
 
 func validContentType(header string) error {
@@ -120,20 +103,20 @@ func validContentType(header string) error {
 	return nil
 }
 
-func (s *stream) write(obj interface{}) (int, error) {
+func (s *httpStream) Write(obj interface{}) error {
 	data, err := json.Marshal(obj)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	s.outMux.Lock()
 	defer s.outMux.Unlock()
 
-	n, err := fmt.Fprintf(s.out, "%s: %s\r\n%s: %d\r\n\r\n", contentType, charset, contentLength, len(data))
+	_, err = fmt.Fprintf(s.out, "%s: %s\r\n%s: %d\r\n\r\n", contentType, charset, contentLength, len(data))
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	size, err := s.out.Write(data)
-	return n + size, err
+	_, err = s.out.Write(data)
+	return err
 }
