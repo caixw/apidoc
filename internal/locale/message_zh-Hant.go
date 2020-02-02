@@ -67,6 +67,7 @@ options 可以是以下參數
 	FlagStaticContentTypeUsage: "指定 static 的 content-type 值，不指定，則根據擴展名自動獲取",
 	FlagStaticURLUsage:         "指定 static 服務中文檔的輸出地址",
 	FlagLSPPortUsage:           "指定 language server protocol 服務的端口號",
+	FlagLSPModeUsage:           "指定 language server protocol 的運行方式，可以是 http、websocket、tcp 和 udp",
 
 	VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
 	Complete:            "完成！文檔保存在：%s，總用時：%v",
@@ -203,6 +204,10 @@ options 可以是以下參數
 	ErrInvalidURIScheme:          "無效的 uri 協議",
 	ErrInvalidXML:                "无效的 XML 文檔",
 	ErrIsNotAPIDoc:               "並非有效的 apidoc 的文檔格式",
+	ErrInvalidContentTypeCharset: "報頭 ContentType 中指定的字符集無效 ",
+	ErrInvalidContentLength:      "報頭 ContentLength 無效",
+	ErrBodyIsEmpty:               "請求的報文為空",
+	ErrInvalidHeaderFormat:       "無效的報頭格式",
 	ErrRequired:                  "不能為空",
 	ErrInvalidFormat:             "格式不正確",
 	ErrDirNotExists:              "目錄不存在",
@@ -216,10 +221,6 @@ options 可以是以下參數
 	ErrNotFound:                  "未找到該值",
 	ErrReadRemoteFile:            "讀取遠程文件 %s 時返回狀態碼 %d",
 	ErrServerNotInitialized:      "服務未初始化",
-	ErrInvalidContentTypeCharset: "報頭 ContentType 中指定的字符集無效 ",
-	ErrInvalidContentLength:      "報頭 ContentLength 無效",
-	ErrBodyIsEmpty:               "請求的報文為空",
-	ErrInvalidHeaderFormat:       "無效的報頭格式",
 
 	// logs
 	InfoPrefix:    "[信息] ",

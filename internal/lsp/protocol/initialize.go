@@ -4,6 +4,8 @@ package protocol
 
 // InitializeParams 初始化请求的参数
 type InitializeParams struct {
+	WorkDoneProgressParams
+
 	// The process Id of the parent process that started
 	// the server. Is null if the process has not been started by another process.
 	// If the parent process is not alive then the server should exit (see exit notification) its process.
@@ -35,13 +37,39 @@ type InitializeParams struct {
 	// configured.
 	//
 	// Since 3.6.0
-	WorkspaceFolders WorkspaceFolder `json:"workspaceFolders,omitempty"`
+	WorkspaceFolders *WorkspaceFolder `json:"workspaceFolders,omitempty"`
+
+	// Information about the client
+	//
+	// @since 3.15.0
+	ClientInfo *ServerInfo `json:"clientInfo,omitempty"`
+}
+
+// ServerInfo information about the client or server
+//
+// @since 3.15.0
+type ServerInfo struct {
+	Name    string `json:"name"`
+	Version string `json:"version,omitempty"`
+}
+
+// WorkspaceRootPath 从 RootURI 和 RootPath 中获取正确的值
+func (p *InitializeParams) WorkspaceRootPath() string {
+	if p.RootURI != "" {
+		return string(p.RootURI)
+	}
+	return p.RootPath
 }
 
 // InitializeResult initialize 服务的返回结构
 type InitializeResult struct {
 	// The capabilities the language server provides.
 	Capabilities ServerCapabilities `json:"capabilities"`
+
+	// Information about the server.
+	//
+	// @since 3.15.0
+	ServerInfo *ServerInfo `json:"serverInfo,omitempty"`
 }
 
 // InitializedParams initialized 服务传递的参数

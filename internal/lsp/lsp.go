@@ -4,35 +4,25 @@
 package lsp
 
 import (
-	"net/http"
+	"log"
 
-	"github.com/gorilla/rpc/v2/json2"
+	"github.com/issue9/jsonrpc"
 )
 
 // Version lsp 的版本
-const Version = "3.14.0"
+const Version = "3.15.0"
 
-// Serve 执行 LSP 服务
-func Serve() (http.Handler, error) {
-	return NewServer()
-}
+// Conn 创建 jsonrpc.Conn 实例
+func Conn(errlog *log.Logger) *jsonrpc.Conn {
+	conn := jsonrpc.NewConn(errlog)
+	srv := newServer()
+	ws := newWorkspace(srv)
 
-var hello = &HelloService{}
+	conn.Registers(map[string]interface{}{
+		"initialize": srv.initialize,
 
-type HelloArgs struct {
-	Who string
-}
+		"workspace/workspaceFolders": ws.workspaceFolders,
+	})
 
-type HelloReply struct {
-	Message string
-}
-
-type HelloService struct{}
-
-func (h *HelloService) Say(r *http.Request, args *HelloArgs, reply *HelloReply) error {
-	reply.Message = "Hello, " + args.Who + "!"
-	return &json2.Error{
-		Code:    json2.E_INVALID_REQ,
-		Message: "uninitialized TODO locale",
-	}
+	return conn
 }

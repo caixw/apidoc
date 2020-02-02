@@ -36,3 +36,12 @@ type Range struct {
 	// The range's end position.
 	End Position `json:"end"`
 }
+
+// WorkDoneProgressParams a parameter literal used to pass a work done progress token.
+type WorkDoneProgressParams struct {
+	// An optional token that a server can use to report work done progress.
+	WorkDoneToken ProgressToken `json:"workDoneToken,omitempty"`
+}
+
+// ProgressToken type ProgressToken = number | string;
+type ProgressToken interface{}
