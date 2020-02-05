@@ -13,15 +13,17 @@ import (
 const Version = "3.15.0"
 
 // Conn 创建 jsonrpc.Conn 实例
-func Conn(errlog *log.Logger) *jsonrpc.Conn {
-	conn := jsonrpc.NewConn(errlog)
-	srv := newServer()
-	ws := newWorkspace(srv)
+func Conn(t jsonrpc.Transport, errlog *log.Logger) *jsonrpc.Conn {
+	jsonrpcServer := jsonrpc.NewServer()
+	conn := jsonrpcServer.NewConn(t, errlog)
+	srv := newServer(conn)
 
-	conn.Registers(map[string]interface{}{
-		"initialize": srv.initialize,
+	jsonrpcServer.Registers(map[string]interface{}{
+		"initialize":  srv.initialize,
+		"initialized": srv.initialized,
+		"shutdown":    srv.shutdown,
 
-		"workspace/workspaceFolders": ws.workspaceFolders,
+		"workspace/didChangeWorkspaceFolders": srv.workspaceDidChangeWorkspaceFolders,
 	})
 
 	return conn

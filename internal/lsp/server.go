@@ -5,6 +5,8 @@ package lsp
 import (
 	"sync"
 
+	"github.com/issue9/jsonrpc"
+
 	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
 )
 
@@ -19,14 +21,18 @@ const (
 
 // server LSP 服务实例
 type server struct {
+	*jsonrpc.Conn
 	state    serverState
 	stateMux sync.RWMutex
+
+	workspaceFolders []protocol.WorkspaceFolder
 
 	clientInfo *protocol.ServerInfo
 }
 
-func newServer() *server {
+func newServer(conn *jsonrpc.Conn) *server {
 	return &server{
+		Conn:  conn,
 		state: serverCreated,
 	}
 }

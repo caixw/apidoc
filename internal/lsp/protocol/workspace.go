@@ -73,3 +73,18 @@ type WorkspaceClientCapabilities struct {
 	// Since 3.6.0
 	Configuration bool `json:"configuration,omitempty"`
 }
+
+// DidChangeWorkspaceFoldersParams workspace/didChangeWorkspaceFolders 参数
+type DidChangeWorkspaceFoldersParams struct {
+	// The actual workspace folder change event.
+	Event WorkspaceFoldersChangeEvent `json:"event"`
+}
+
+// The workspace folder change event.
+type WorkspaceFoldersChangeEvent struct {
+	// The array of added workspace folders
+	Added []WorkspaceFolder `json:"added"`
+
+	// The array of the removed workspace folders
+	Removed []WorkspaceFolder `json:"removed"`
+}
