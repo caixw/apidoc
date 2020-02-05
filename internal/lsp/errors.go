@@ -2,7 +2,12 @@
 
 package lsp
 
-import "github.com/issue9/jsonrpc"
+import (
+	"github.com/issue9/jsonrpc"
+	"golang.org/x/text/message"
+
+	"github.com/caixw/apidoc/v6/internal/locale"
+)
 
 // 错误代码，rpc 定义并不全，全部重新定义
 const (
@@ -20,3 +25,7 @@ const (
 	ErrRequestCancelled = -32800
 	ErrContentModified  = -32801
 )
+
+func newError(code int, key message.Reference, v ...interface{}) *jsonrpc.Error {
+	return jsonrpc.NewError(code, locale.Sprintf(key, v...))
+}

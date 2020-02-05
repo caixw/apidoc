@@ -3,27 +3,25 @@
 package lsp
 
 import (
-	"github.com/issue9/jsonrpc"
-
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
 )
 
+// initialize
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#initialize
 func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *protocol.InitializeResult) error {
-	if s.getState() > serverInitializing {
-		msg := locale.Sprintf(locale.ErrServerNotInitialized)
-		return jsonrpc.NewError(ErrServerNotInitialized, msg)
+	if s.getState() != serverCreated {
+		return newError(ErrServerNotInitialized, locale.ErrInvalidLSPState)
 	}
 
 	s.setState(serverInitializing)
 
 	s.clientInfo = in.ClientInfo
+	s.clientCapabilities = &in.Capabilities
 
 	if in.Capabilities.Workspace.WorkspaceFolders {
 		out.Capabilities.Workspace.WorkspaceFolders.Supported = true
-		if err := s.workspaceWorkspaceFolders(); err != nil {
-			return err
-		}
 	}
 
 	return nil
@@ -33,7 +31,17 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#initialized
 func (s *server) initialized(bool, *protocol.InitializedParams, interface{}) error {
+	if s.getState() != serverInitializing {
+		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
+	}
 	s.setState(serverInitialized)
+
+	if s.clientCapabilities.Workspace.WorkspaceFolders {
+		if err := s.workspaceWorkspaceFolders(); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -41,11 +49,23 @@ func (s *server) initialized(bool, *protocol.InitializedParams, interface{}) err
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#shutdown
 func (s *server) shutdown(bool, interface{}, interface{}) error {
-	s.setState(serverShutDown)
+	if s.getState() != serverInitialized {
+		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
+	}
+	s.setState(serverShutdown)
+
 	return nil
 }
 
+// exit
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#exit
 func (s *server) exit(bool, interface{}, interface{}) error {
+	if s.getState() != serverShutdown {
+		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
+	}
+
 	// TODO
+
 	return nil
 }

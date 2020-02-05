@@ -16,7 +16,7 @@ const (
 	serverCreated serverState = iota
 	serverInitializing
 	serverInitialized
-	serverShutDown
+	serverShutdown
 )
 
 // server LSP 服务实例
@@ -27,7 +27,8 @@ type server struct {
 
 	workspaceFolders []protocol.WorkspaceFolder
 
-	clientInfo *protocol.ServerInfo
+	clientInfo         *protocol.ServerInfo
+	clientCapabilities *protocol.ClientCapabilities
 }
 
 func newServer(conn *jsonrpc.Conn) *server {

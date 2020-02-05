@@ -2,7 +2,10 @@
 
 package lsp
 
-import "github.com/caixw/apidoc/v6/internal/lsp/protocol"
+import (
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
+)
 
 // The workspace/workspaceFolders request is sent from the server to the client to fetch the current open
 // list of workspace folders. Returns null in the response if only a single file is open in the tool.
@@ -19,10 +22,14 @@ func (s *server) workspaceWorkspaceFolders() error {
 	return nil
 }
 
-// workspace/didChangeWorkspaceFolders 事件
+// workspace/didChangeWorkspaceFolders
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_didChangeWorkspaceFolders
 func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.DidChangeWorkspaceFoldersParams, out interface{}) error {
+	if s.getState() != serverInitialized {
+		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
+	}
+
 	for _, folder := range in.Event.Removed {
 		for index, f2 := range s.workspaceFolders {
 			if f2.Name == folder.Name && f2.URI == folder.URI {

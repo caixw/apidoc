@@ -67,7 +67,7 @@ options 可以是以下参数
 	FlagStaticContentTypeUsage: "指定 static 的 content-type 值，不指定，则根据扩展名自动获取",
 	FlagStaticURLUsage:         "指定 static 服务中文档的输出地址",
 	FlagLSPPortUsage:           "指定 language server protocol 服务的端口号",
-	FlagLSPModeUsage:           "指定 language server protocol 的运行方式，可以是 http、websocket、tcp 和 udp",
+	FlagLSPModeUsage:           "指定 language server protocol 的运行方式，可以是 websocket、tcp 和 udp",
 
 	VersionInCompatible: "当前程序与配置文件中指定的版本号不兼容",
 	Complete:            "完成！文档保存在：%s，总用时：%v",
@@ -221,6 +221,7 @@ options 可以是以下参数
 	ErrNotFound:                  "未找到该值",
 	ErrReadRemoteFile:            "读取远程文件 %s 时返回状态码 %d",
 	ErrServerNotInitialized:      "服务未初始化",
+	ErrInvalidLSPState:           "无效的 LSP 状态",
 
 	// logs
 	InfoPrefix:    "[信息] ",
