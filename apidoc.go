@@ -17,7 +17,6 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/issue9/jsonrpc"
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v6/build"
@@ -117,12 +116,11 @@ func View(status int, url string, data []byte, contentType string, dir core.URI,
 	})
 }
 
-// LSP 返回提供 language server protocol 的 JSON RPC 连接
+// ServeLSP 提供 language server protocol 服务
 //
-// 返回的是 github.com/issue9/jsonrpc.Conn 实例，
-// 用户可以根据自己的需求创建 HTTP、Socket 或是 Websocket 等链接。
-func LSP(errlog *log.Logger) *jsonrpc.Conn {
-	return lsp.Conn(errlog)
+// t 表示允许连接的类型，目前可以是 tcp、udp、stdio 和 ipc
+func ServeLSP(t, addr string, errlog *log.Logger) error {
+	return lsp.Serve(t, addr, errlog)
 }
 
 // ViewFile 返回查看文件的中间件

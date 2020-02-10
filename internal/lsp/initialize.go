@@ -30,7 +30,7 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 // initialized
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#initialized
-func (s *server) initialized(bool, *protocol.InitializedParams, interface{}) error {
+func (s *server) initialized(bool, *protocol.InitializedParams, *interface{}) error {
 	if s.getState() != serverInitializing {
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}
@@ -48,7 +48,7 @@ func (s *server) initialized(bool, *protocol.InitializedParams, interface{}) err
 // shutdown
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#shutdown
-func (s *server) shutdown(bool, interface{}, interface{}) error {
+func (s *server) shutdown(bool, *interface{}, *interface{}) error {
 	if s.getState() != serverInitialized {
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}
@@ -60,12 +60,11 @@ func (s *server) shutdown(bool, interface{}, interface{}) error {
 // exit
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#exit
-func (s *server) exit(bool, interface{}, interface{}) error {
+func (s *server) exit(bool, *interface{}, *interface{}) error {
 	if s.getState() != serverShutdown {
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}
-
-	// TODO
+	s.close()
 
 	return nil
 }

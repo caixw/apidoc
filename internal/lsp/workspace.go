@@ -25,7 +25,7 @@ func (s *server) workspaceWorkspaceFolders() error {
 // workspace/didChangeWorkspaceFolders
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_didChangeWorkspaceFolders
-func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.DidChangeWorkspaceFoldersParams, out interface{}) error {
+func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.DidChangeWorkspaceFoldersParams, out *interface{}) error {
 	if s.getState() != serverInitialized {
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}

@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
-	"strings"
 
 	"github.com/caixw/apidoc/v6"
 	"github.com/caixw/apidoc/v6/internal/locale"
@@ -26,22 +24,7 @@ func initLSP() {
 }
 
 func doLSP(io.Writer) error {
-	conn := apidoc.LSP(log.New(erroOut, "", 0))
-
-	switch strings.ToLower(lspMode) {
-	case "http":
-		return http.ListenAndServe(lspPort, conn)
-	case "tcp":
-	// TODO
-	case "udp":
-	// TODO
-	case "websocket":
-	// TODO
-	default:
-		return locale.Errorf(locale.ErrInvalidValue)
-	}
-
-	return nil
+	return apidoc.ServeLSP(lspMode, lspPort, log.New(erroOut, "", 0))
 }
 
 func lspUsage(w io.Writer) error {

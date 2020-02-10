@@ -3,6 +3,7 @@
 package lsp
 
 import (
+	"context"
 	"sync"
 
 	"github.com/issue9/jsonrpc"
@@ -22,8 +23,11 @@ const (
 // server LSP 服务实例
 type server struct {
 	*jsonrpc.Conn
+
 	state    serverState
 	stateMux sync.RWMutex
+
+	cancelFunc context.CancelFunc
 
 	workspaceFolders []protocol.WorkspaceFolder
 
@@ -31,10 +35,11 @@ type server struct {
 	clientCapabilities *protocol.ClientCapabilities
 }
 
-func newServer(conn *jsonrpc.Conn) *server {
+func newServer(conn *jsonrpc.Conn, cancel context.CancelFunc) *server {
 	return &server{
-		Conn:  conn,
-		state: serverCreated,
+		Conn:       conn,
+		state:      serverCreated,
+		cancelFunc: cancel,
 	}
 }
 
@@ -48,4 +53,10 @@ func (s *server) getState() serverState {
 	s.stateMux.RLock()
 	defer s.stateMux.RUnlock()
 	return s.state
+}
+
+func (s *server) close() {
+	if s.cancelFunc != nil {
+		s.cancelFunc()
+	}
 }
