@@ -20,29 +20,27 @@ import (
 const Version = "3.15.0"
 
 // Serve 执行 LSP 服务
-func Serve(t string, addr string, errlog *log.Logger) error {
+func Serve(t string, addr string, infolog, errlog *log.Logger) error {
 	switch strings.ToLower(t) {
 	case "pipe":
 	case "stdio":
-		return serveStdio(errlog)
+		return serveStdio(infolog, errlog)
 	case "ipc":
-		return serveStdio(errlog)
+		return serveStdio(infolog, errlog)
 	case "udp":
-		return serveUDP(addr, errlog)
+		return serveUDP(addr, infolog, errlog)
 	case "tcp", "unix":
-		return serveTCP(t, addr, errlog)
+		return serveTCP(t, addr, infolog, errlog)
 	}
 
 	return message.NewLocaleError("", "", 0, locale.ErrInvalidValue)
 }
 
-func serveStdio(errlog *log.Logger) error {
-	jsonrpcServer := jsonrpc.NewServer()
-	return serve(jsonrpcServer, jsonrpc.NewStreamTransport(os.Stdin, os.Stdout), errlog)
+func serveStdio(infolog, errlog *log.Logger) error {
+	return serve(jsonrpc.NewStreamTransport(os.Stdin, os.Stdout), infolog, errlog)
 }
 
-func serveUDP(addr string, errlog *log.Logger) error {
-	jsonrpcServer := jsonrpc.NewServer()
+func serveUDP(addr string, infolog, errlog *log.Logger) error {
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		return err
@@ -53,13 +51,11 @@ func serveUDP(addr string, errlog *log.Logger) error {
 		return err
 	}
 
-	return serve(jsonrpcServer, jsonrpc.NewSocketTransport(conn), errlog)
+	return serve(jsonrpc.NewSocketTransport(conn), infolog, errlog)
 }
 
 // t 可以是 tcp 和 unix
-func serveTCP(t string, addr string, errlog *log.Logger) error {
-	jsonrpcServer := jsonrpc.NewServer()
-
+func serveTCP(t string, addr string, infolog, errlog *log.Logger) error {
 	l, err := net.Listen(t, addr)
 	if err != nil {
 		return err
@@ -71,14 +67,25 @@ func serveTCP(t string, addr string, errlog *log.Logger) error {
 			errlog.Println(err)
 			continue
 		}
-		return serve(jsonrpcServer, jsonrpc.NewSocketTransport(conn), errlog)
+		return serve(jsonrpc.NewSocketTransport(conn), infolog, errlog)
 	}
 }
 
-func serve(jsonrpcServer *jsonrpc.Server, t jsonrpc.Transport, errlog *log.Logger) error {
-	conn := jsonrpcServer.NewConn(t, errlog)
+func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
+	jsonrpcServer := jsonrpc.NewServer()
+
+	jsonrpcServer.RegisterBefore(func(method string) error {
+		infolog.Println(locale.Sprintf(locale.RequestRPC, method))
+		return nil
+	})
+
 	ctx, cancel := context.WithCancel(context.Background())
-	srv := newServer(conn, cancel)
+
+	srv := &server{
+		Conn:       jsonrpcServer.NewConn(t, errlog),
+		state:      serverCreated,
+		cancelFunc: cancel,
+	}
 
 	jsonrpcServer.Registers(map[string]interface{}{
 		"initialize":  srv.initialize,
@@ -88,5 +95,5 @@ func serve(jsonrpcServer *jsonrpc.Server, t jsonrpc.Transport, errlog *log.Logge
 		"workspace/didChangeWorkspaceFolders": srv.workspaceDidChangeWorkspaceFolders,
 	})
 
-	return conn.Serve(ctx)
+	return srv.Serve(ctx)
 }

@@ -81,6 +81,7 @@ options 可以是以下参数
 	DeprecatedWarn:      "%s %s 将于 %s 被废弃",
 	GeneratorBy:         "当前文档由 %s 生成",
 	ServerStart:         "服务启动，可通过 %s 访问",
+	RequestRPC:          "访问 RPC：%s",
 
 	// 文档树中各个字段的介绍
 	UsageAPIDoc:            "用于描述整个文档的相关内容，只能出现一次。",

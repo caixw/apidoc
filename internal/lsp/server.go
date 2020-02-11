@@ -35,14 +35,6 @@ type server struct {
 	clientCapabilities *protocol.ClientCapabilities
 }
 
-func newServer(conn *jsonrpc.Conn, cancel context.CancelFunc) *server {
-	return &server{
-		Conn:       conn,
-		state:      serverCreated,
-		cancelFunc: cancel,
-	}
-}
-
 func (s *server) setState(state serverState) {
 	s.stateMux.Lock()
 	defer s.stateMux.Unlock()

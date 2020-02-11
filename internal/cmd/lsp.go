@@ -24,7 +24,7 @@ func initLSP() {
 }
 
 func doLSP(io.Writer) error {
-	return apidoc.ServeLSP(lspMode, lspPort, log.New(erroOut, "", 0))
+	return apidoc.ServeLSP(lspMode, lspPort, log.New(infoOut, "", 0), log.New(erroOut, "", 0))
 }
 
 func lspUsage(w io.Writer) error {
