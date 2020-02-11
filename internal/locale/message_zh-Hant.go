@@ -56,7 +56,7 @@ apidoc lsp [options]
 
 options 可以是以下參數
 %s`,
-	Version:                    "版本：%s\n文檔：%s\n提交：%s\nGo：%s",
+	Version:                    "版本：%s\n文檔：%s\n提交：%s\nLSP：%s\nGo：%s",
 	CmdNotFound:                "子命令 %s 未找到\n",
 	FlagMockPortUsage:          "指定 mock 服務的端口號",
 	FlagMockServersUsage:       "指定 mock 服務時，文檔中 server 變量對應的路由前綴",

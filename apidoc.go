@@ -47,6 +47,11 @@ func Version() string {
 	return vars.Version()
 }
 
+// LSPVersion 获取当前支持的 LSP 版本
+func LSPVersion() string {
+	return lsp.Version
+}
+
 // Build 解析文档并输出文档内容
 //
 // 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
