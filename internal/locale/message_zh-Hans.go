@@ -68,6 +68,7 @@ options 可以是以下参数
 	FlagStaticURLUsage:         "指定 static 服务中文档的输出地址",
 	FlagLSPPortUsage:           "指定 language server protocol 服务的端口号",
 	FlagLSPModeUsage:           "指定 language server protocol 的运行方式，可以是 websocket、tcp 和 udp",
+	FlagLSPHeaderUsage:         "指定 language server protocol 传递内容是否带报头信息",
 
 	VersionInCompatible: "当前程序与配置文件中指定的版本号不兼容",
 	Complete:            "完成！文档保存在：%s，总用时：%v",

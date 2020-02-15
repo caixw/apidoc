@@ -20,27 +20,27 @@ import (
 const Version = "3.15.0"
 
 // Serve 执行 LSP 服务
-func Serve(t string, addr string, infolog, errlog *log.Logger) error {
+func Serve(header bool, t string, addr string, infolog, errlog *log.Logger) error {
 	switch strings.ToLower(t) {
 	case "pipe":
 	case "stdio":
-		return serveStdio(infolog, errlog)
+		return serveStdio(header, infolog, errlog)
 	case "ipc":
-		return serveStdio(infolog, errlog)
+		return serveStdio(header, infolog, errlog)
 	case "udp":
-		return serveUDP(addr, infolog, errlog)
+		return serveUDP(header, addr, infolog, errlog)
 	case "tcp", "unix":
-		return serveTCP(t, addr, infolog, errlog)
+		return serveTCP(header, t, addr, infolog, errlog)
 	}
 
 	return message.NewLocaleError("", "", 0, locale.ErrInvalidValue)
 }
 
-func serveStdio(infolog, errlog *log.Logger) error {
-	return serve(jsonrpc.NewStreamTransport(os.Stdin, os.Stdout), infolog, errlog)
+func serveStdio(header bool, infolog, errlog *log.Logger) error {
+	return serve(jsonrpc.NewStreamTransport(header, os.Stdin, os.Stdout, nil), infolog, errlog)
 }
 
-func serveUDP(addr string, infolog, errlog *log.Logger) error {
+func serveUDP(header bool, addr string, infolog, errlog *log.Logger) error {
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		return err
@@ -51,11 +51,11 @@ func serveUDP(addr string, infolog, errlog *log.Logger) error {
 		return err
 	}
 
-	return serve(jsonrpc.NewSocketTransport(conn), infolog, errlog)
+	return serve(jsonrpc.NewSocketTransport(header, conn), infolog, errlog)
 }
 
 // t 可以是 tcp 和 unix
-func serveTCP(t string, addr string, infolog, errlog *log.Logger) error {
+func serveTCP(header bool, t string, addr string, infolog, errlog *log.Logger) error {
 	l, err := net.Listen(t, addr)
 	if err != nil {
 		return err
@@ -67,7 +67,7 @@ func serveTCP(t string, addr string, infolog, errlog *log.Logger) error {
 			errlog.Println(err)
 			continue
 		}
-		return serve(jsonrpc.NewSocketTransport(conn), infolog, errlog)
+		return serve(jsonrpc.NewSocketTransport(header, conn), infolog, errlog)
 	}
 }
 
@@ -75,6 +75,7 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 	jsonrpcServer := jsonrpc.NewServer()
 
 	jsonrpcServer.RegisterBefore(func(method string) error {
+		log.Println(locale.Sprintf(locale.RequestRPC, method))
 		infolog.Println(locale.Sprintf(locale.RequestRPC, method))
 		return nil
 	})

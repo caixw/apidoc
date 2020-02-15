@@ -123,9 +123,10 @@ func View(status int, url string, data []byte, contentType string, dir core.URI,
 
 // ServeLSP 提供 language server protocol 服务
 //
+// header 表示传递内容是否带报头；
 // t 表示允许连接的类型，目前可以是 tcp、udp、stdio 和 ipc
-func ServeLSP(t, addr string, infolog, errlog *log.Logger) error {
-	return lsp.Serve(t, addr, infolog, errlog)
+func ServeLSP(header bool, t, addr string, infolog, errlog *log.Logger) error {
+	return lsp.Serve(header, t, addr, infolog, errlog)
 }
 
 // ViewFile 返回查看文件的中间件

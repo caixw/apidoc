@@ -14,17 +14,21 @@ import (
 
 var lspFlagSet *flag.FlagSet
 
-var lspPort string
-var lspMode string
+var (
+	lspPort   string
+	lspMode   string
+	lspHeader bool
+)
 
 func initLSP() {
 	lspFlagSet = command.New("lsp", doLSP, lspUsage)
 	lspFlagSet.StringVar(&lspPort, "p", ":8080", locale.Sprintf(locale.FlagLSPPortUsage))
 	lspFlagSet.StringVar(&lspMode, "m", "http", locale.Sprintf(locale.FlagLSPModeUsage))
+	lspFlagSet.BoolVar(&lspHeader, "h", true, locale.Sprintf(locale.FlagLSPHeaderUsage))
 }
 
 func doLSP(io.Writer) error {
-	return apidoc.ServeLSP(lspMode, lspPort, log.New(infoOut, "", 0), log.New(erroOut, "", 0))
+	return apidoc.ServeLSP(lspHeader, lspMode, lspPort, log.New(infoOut, "", 0), log.New(erroOut, "", 0))
 }
 
 func lspUsage(w io.Writer) error {
