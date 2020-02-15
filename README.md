@@ -1,11 +1,12 @@
 apidoc
+======
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fcaixw%2Fapidoc%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/caixw/apidoc/goto?ref=master)
+[![Latest Release](https://img.shields.io/github/release/caixw/apidoc.svg?style=flat-square)](https://github.com/caixw/apidoc/releases/latest)
 [![Go version](https://img.shields.io/badge/Go-1.13-brightgreen.svg?style=flat)](https://golang.org)
 [![Go Report Card](https://goreportcard.com/badge/github.com/caixw/apidoc)](https://goreportcard.com/report/github.com/caixw/apidoc)
 [![codecov](https://codecov.io/gh/caixw/apidoc/branch/master/graph/badge.svg)](https://codecov.io/gh/caixw/apidoc)
-[![GoDoc](https://godoc.org/github.com/caixw/apidoc?status.svg)](https://godoc.org/github.com/caixw/apidoc)
+[![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/caixw/apidoc/v6)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://opensource.org/licenses/MIT)
-======
 
 apidoc 是一个简单的 RESTful API 文档生成工具，它从代码注释中提取特定格式的内容，生成文档。
 目前支持支持以下语言：C#、C/C++、D、Erlang、Go、Groovy、Java、JavaScript、Pascal/Delphi、
@@ -86,7 +87,7 @@ inputs := []*input.Options{
 apidoc.Build(h, output, inputs...)
 ```
 
-具体可查看文档：[![GoDoc](https://godoc.org/github.com/caixw/apidoc?status.svg)](https://godoc.org/github.com/caixw/apidoc)
+具体可查看文档：<https://pkg.go.dev/github.com/caixw/apidoc/v6>
 
 参与开发
 ----
