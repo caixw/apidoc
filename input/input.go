@@ -22,11 +22,7 @@ import (
 )
 
 // 解析出来的注释块
-type block struct {
-	File string
-	Line int
-	Data []byte
-}
+type block = doc.Block
 
 // Parse 分析从 input 中获取的代码块
 //
@@ -46,7 +42,7 @@ func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
 	for blk := range blocks {
 		wg.Add(1)
 		go func(b block) {
-			parseBlock(d, b, h)
+			parseBlock(d, &b, h)
 			wg.Done()
 		}(blk)
 	}
@@ -60,21 +56,9 @@ func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
 	return d, nil
 }
 
-var (
-	apidocBegin = []byte("<apidoc")
-	apiBegin    = []byte("<api")
-)
-
-func parseBlock(d *doc.Doc, block block, h *message.Handler) {
-	switch {
-	case bytes.HasPrefix(block.Data, apidocBegin):
-		if err := d.FromXML(block.File, block.Line, block.Data); err != nil {
-			h.Error(message.Erro, err)
-		}
-	case bytes.HasPrefix(block.Data, apiBegin):
-		if err := d.NewAPI(block.File, block.Line, block.Data); err != nil {
-			h.Error(message.Erro, err)
-		}
+func parseBlock(d *doc.Doc, block *block, h *message.Handler) {
+	if err := d.ParseBlock(block); err != nil {
+		h.Error(message.Erro, err)
 	}
 }
 
