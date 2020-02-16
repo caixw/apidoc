@@ -21,9 +21,6 @@ import (
 	"github.com/caixw/apidoc/v6/message"
 )
 
-// 解析出来的注释块
-type block = doc.Block
-
 // Parse 分析从 input 中获取的代码块
 //
 // 所有与解析有关的错误均通过 h 输出。
@@ -41,7 +38,7 @@ func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
 
 	for blk := range blocks {
 		wg.Add(1)
-		go func(b block) {
+		go func(b doc.Block) {
 			parseBlock(d, &b, h)
 			wg.Done()
 		}(blk)
@@ -56,7 +53,7 @@ func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
 	return d, nil
 }
 
-func parseBlock(d *doc.Doc, block *block, h *message.Handler) {
+func parseBlock(d *doc.Doc, block *doc.Block, h *message.Handler) {
 	if err := d.ParseBlock(block); err != nil {
 		h.Error(message.Erro, err)
 	}
@@ -65,8 +62,8 @@ func parseBlock(d *doc.Doc, block *block, h *message.Handler) {
 // 分析源代码，获取注释块。
 //
 // 当所有的代码块已经放入 Block 之后，Block 会被关闭。
-func buildBlock(h *message.Handler, opt ...*Options) chan block {
-	data := make(chan block, 500)
+func buildBlock(h *message.Handler, opt ...*Options) chan doc.Block {
+	data := make(chan doc.Block, 500)
 
 	go func() {
 		wg := &sync.WaitGroup{}
@@ -82,7 +79,7 @@ func buildBlock(h *message.Handler, opt ...*Options) chan block {
 }
 
 // 分析每个配置项对应的内容
-func parseOptions(data chan block, h *message.Handler, wg *sync.WaitGroup, o *Options) {
+func parseOptions(data chan doc.Block, h *message.Handler, wg *sync.WaitGroup, o *Options) {
 	for _, path := range o.paths {
 		wg.Add(1)
 		go func(path string) {
@@ -95,7 +92,7 @@ func parseOptions(data chan block, h *message.Handler, wg *sync.WaitGroup, o *Op
 // 分析 path 指向的文件。
 //
 // NOTE: parseFile 内部不能有协程处理代码。
-func parseFile(channel chan block, h *message.Handler, path string, o *Options) {
+func parseFile(channel chan doc.Block, h *message.Handler, path string, o *Options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
 		h.Error(message.Erro, message.WithError(path, "", 0, err))
@@ -104,7 +101,7 @@ func parseFile(channel chan block, h *message.Handler, path string, o *Options) 
 
 	ret := lang.Parse(path, data, o.blocks, h)
 	for line, data := range ret {
-		channel <- block{
+		channel <- doc.Block{
 			File: path,
 			Line: line,
 			Data: data,
