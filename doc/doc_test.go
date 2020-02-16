@@ -19,7 +19,11 @@ func loadDoc(a *assert.Assertion) *Doc {
 	doc := New()
 	a.NotNil(doc).NotEmpty(doc.APIDoc)
 
-	a.NotError(doc.FromXML("doc.xml", 0, data))
+	a.NotError(doc.FromXML(&Block{
+		File: "doc.xml",
+		Line: 0,
+		Data: data,
+	}))
 
 	return doc
 }
@@ -75,7 +79,7 @@ func TestDoc_all(t *testing.T) {
 	a.NotError(err).NotNil(data)
 	doc := New()
 	a.NotNil(doc)
-	a.NotError(doc.FromXML("all.xml", 0, data))
+	a.NotError(doc.FromXML(&Block{File: "all.xml", Line: 0, Data: data}))
 
 	a.Equal(doc.Version, "1.1.1")
 
@@ -116,7 +120,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	</apidoc>`
 	doc := New()
 	a.NotNil(doc)
-	err := doc.FromXML("file", 11, []byte(data))
+	err := doc.FromXML(&Block{File: "file", Line: 11, Data: []byte(data)})
 	serr, ok := err.(*message.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 11).
@@ -127,7 +131,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	data = `<apidoc version="1.1.1">
 			<mimetype>application/json</mimetype>
 	</apidoc>`
-	err = doc.FromXML("file", 11, []byte(data))
+	err = doc.FromXML(&Block{File: "file", Line: 11, Data: []byte(data)})
 	serr, ok = err.(*message.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 11)
@@ -141,7 +145,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 		<title>title</title>
 	</apidoc>`
 	a.NotNil(doc)
-	err = doc.FromXML("file", 12, []byte(data))
+	err = doc.FromXML(&Block{File: "file", Line: 12, Data: []byte(data)})
 	serr, ok = err.(*message.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 12).
@@ -154,7 +158,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 			<mimetype>application/json</mimetype>
 			<title>title</title>
 		</apidoc>`
-	err = doc.FromXML("file", 11, []byte(data))
+	err = doc.FromXML(&Block{File: "file", Line: 11, Data: []byte(data)})
 	serr, ok = err.(*message.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 12)
@@ -164,7 +168,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	data = `<apidoc version="1.1.1">
 			<title>title</title>
 	</apidoc>`
-	err = doc.FromXML("file", 11, []byte(data))
+	err = doc.FromXML(&Block{File: "file", Line: 11, Data: []byte(data)})
 	serr, ok = err.(*message.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 11)
@@ -180,7 +184,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 			</header>
 		</response>
 	</apidoc>`
-	a.Error(doc.FromXML("file", 0, []byte(data)))
+	a.Error(doc.FromXML(&Block{File: "file", Line: 0, Data: []byte(data)}))
 }
 
 func TestDoc_Sanitize(t *testing.T) {
@@ -243,13 +247,13 @@ func TestDoc_lineNumber(t *testing.T) {
 	a.NotNil(doc)
 
 	data := []byte(`<apidoc version="x.0.1"></apidoc>`)
-	err := doc.FromXML("file", 11, data)
+	err := doc.FromXML(&Block{File: "file", Line: 11, Data: data})
 	a.Equal(err.(*message.SyntaxError).Line, 11)
 
 	data = []byte(`<apidoc
 	
 	version="x.1.1">
 	</apidoc>`)
-	err = doc.FromXML("file", 12, data)
+	err = doc.FromXML(&Block{File: "file", Line: 12, Data: data})
 	a.Equal(err.(*message.SyntaxError).Line, 14)
 }

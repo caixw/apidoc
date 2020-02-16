@@ -58,7 +58,7 @@ type Doc struct {
 
 // Valid 验证文档内容的正确性
 func Valid(content []byte) error {
-	return New().FromXML("", 0, content)
+	return New().FromXML(&Block{Data: content})
 }
 
 // New 返回 Doc 实例
@@ -118,16 +118,9 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 }
 
 // FromXML 从 XML 字符串初始化当前的实例
-//
-// file 和 line 仅用于在出错时定位错误的位置，并无其它用处；
-// data 表示 XML 内容。
-func (doc *Doc) FromXML(file string, line int, data []byte) error {
-	doc.Block = &Block{
-		File: file,
-		Line: line,
-		Data: data,
-	}
-	return xml.Unmarshal(data, doc)
+func (doc *Doc) FromXML(b *Block) error {
+	doc.Block = b
+	return xml.Unmarshal(b.Data, doc)
 }
 
 // Sanitize 检测内容是否合法

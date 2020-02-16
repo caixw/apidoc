@@ -56,11 +56,11 @@ var (
 func (doc *Doc) ParseBlock(b *Block) error {
 	switch {
 	case bytes.HasPrefix(b.Data, apidocBegin):
-		if err := doc.FromXML(b.File, b.Line, b.Data); err != nil {
+		if err := doc.FromXML(b); err != nil {
 			return err
 		}
 	case bytes.HasPrefix(b.Data, apiBegin):
-		if err := doc.NewAPI(b.File, b.Line, b.Data); err != nil {
+		if err := doc.NewAPI(b); err != nil {
 			return err
 		}
 	}

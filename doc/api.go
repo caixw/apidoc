@@ -39,17 +39,13 @@ type API struct {
 	doc   *Doc
 }
 
-// NewAPI 从 data 中解析新的 API 对象
-func (doc *Doc) NewAPI(file string, line int, data []byte) error {
+// NewAPI 从 b.Data 中解析新的 API 对象
+func (doc *Doc) NewAPI(b *Block) error {
 	api := &API{
-		Block: &Block{
-			File: file,
-			Line: line,
-			Data: data,
-		},
-		doc: doc,
+		Block: b,
+		doc:   doc,
 	}
-	if err := xml.Unmarshal(data, api); err != nil {
+	if err := xml.Unmarshal(b.Data, api); err != nil {
 		return err
 	}
 
