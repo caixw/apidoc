@@ -53,9 +53,7 @@ type Doc struct {
 	// 表示所有接口都支持的文档类型
 	Mimetypes []string `xml:"mimetype"`
 
-	file string
-	line int
-	data []byte
+	Block *Block `xml:"-"`
 }
 
 // Valid 验证文档内容的正确性
@@ -79,26 +77,26 @@ type shadowDoc Doc
 func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	shadow := (*shadowDoc)(doc)
 	if err := d.DecodeElement(shadow, &start); err != nil {
-		line := bytes.Count(doc.data[:d.InputOffset()], []byte{'\n'})
-		return fixedSyntaxError(err, doc.file, "apidoc", doc.line+line)
+		line := bytes.Count(doc.Block.Data[:d.InputOffset()], []byte{'\n'})
+		return fixedSyntaxError(err, doc.Block.File, "apidoc", doc.Block.Line+line)
 	}
 
 	if shadow.Title == "" {
-		return message.NewLocaleError(doc.file, "apidoc/title", doc.line, locale.ErrRequired)
+		return doc.Block.NewLocaleError("apidoc/title", locale.ErrRequired)
 	}
 
 	// Tag.Name 查重
 	if findDupTag(shadow.Tags) != "" {
-		return message.NewLocaleError(doc.file, "apidoc/tag/@name", doc.line, locale.ErrDuplicateValue)
+		return doc.Block.NewLocaleError("apidoc/tag/@name", locale.ErrDuplicateValue)
 	}
 
 	// Server.Name 查重
 	if findDupServer(shadow.Servers) != "" {
-		return message.NewLocaleError(doc.file, "apidoc/server/@name", doc.line, locale.ErrDuplicateValue)
+		return doc.Block.NewLocaleError("apidoc/server/@name", locale.ErrDuplicateValue)
 	}
 
 	if len(shadow.Mimetypes) == 0 {
-		return message.NewLocaleError(doc.file, "apidoc/mimetype", doc.line, locale.ErrRequired)
+		return doc.Block.NewLocaleError("apidoc/mimetype", locale.ErrRequired)
 	}
 
 	// 操作 clone 进行比较，不影响原文档的排序
@@ -107,7 +105,7 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	sort.Strings(clone)
 	for index := 1; index < len(clone); index++ {
 		if clone[index] == clone[index-1] {
-			return message.NewLocaleError(doc.file, "apidoc/mimetype", doc.line, locale.ErrDuplicateValue)
+			return doc.Block.NewLocaleError("apidoc/mimetype", locale.ErrDuplicateValue)
 		}
 	}
 
@@ -124,9 +122,11 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 // file 和 line 仅用于在出错时定位错误的位置，并无其它用处；
 // data 表示 XML 内容。
 func (doc *Doc) FromXML(file string, line int, data []byte) error {
-	doc.file = file
-	doc.line = line
-	doc.data = data
+	doc.Block = &Block{
+		File: file,
+		Line: line,
+		Data: data,
+	}
 	return xml.Unmarshal(data, doc)
 }
 

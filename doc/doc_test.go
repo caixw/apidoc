@@ -187,6 +187,7 @@ func TestDoc_Sanitize(t *testing.T) {
 	a := assert.New(t)
 	doc := New()
 	a.NotNil(doc)
+	doc.Block = &Block{}
 
 	// api.tags 不存在于 doc
 	doc.Tags = []*Tag{
@@ -199,12 +200,14 @@ func TestDoc_Sanitize(t *testing.T) {
 			doc:    doc,
 			Path:   &Path{},
 			Method: http.MethodGet,
+			Block:  &Block{},
 		},
 		{
 			Tags:   []string{"not-exists", "tag1"},
 			doc:    doc,
 			Path:   &Path{},
 			Method: http.MethodGet,
+			Block:  &Block{},
 		},
 	}
 	a.Error(doc.Sanitize())
@@ -220,12 +223,14 @@ func TestDoc_Sanitize(t *testing.T) {
 			doc:     doc,
 			Path:    &Path{},
 			Method:  http.MethodGet,
+			Block:   &Block{},
 		},
 		{
 			Servers: []string{"not-exists", "tag1"},
 			doc:     doc,
 			Path:    &Path{},
 			Method:  http.MethodGet,
+			Block:   &Block{},
 		},
 	}
 	a.Error(doc.Sanitize())

@@ -7,7 +7,6 @@ import (
 	"encoding/xml"
 
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 // API 表示 <api> 顶层元素
@@ -36,19 +35,19 @@ type API struct {
 	Tags    []string `xml:"tag,omitempty"`
 	Servers []string `xml:"server,omitempty"`
 
-	line int
-	file string
-	data []byte
-	doc  *Doc
+	Block *Block `xml:"-"`
+	doc   *Doc
 }
 
 // NewAPI 从 data 中解析新的 API 对象
 func (doc *Doc) NewAPI(file string, line int, data []byte) error {
 	api := &API{
-		file: file,
-		line: line,
-		data: data,
-		doc:  doc,
+		Block: &Block{
+			File: file,
+			Line: line,
+			Data: data,
+		},
+		doc: doc,
 	}
 	if err := xml.Unmarshal(data, api); err != nil {
 		return err
@@ -71,8 +70,8 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return fixedSyntaxError(err, "", field, 0)
 		}
 
-		line := bytes.Count(api.data[:d.InputOffset()], []byte{'\n'})
-		return fixedSyntaxError(err, api.file, field, api.line+line)
+		line := bytes.Count(api.Block.Data[:d.InputOffset()], []byte{'\n'})
+		return fixedSyntaxError(err, api.Block.File, field, api.Block.Line+line)
 	}
 
 	// 报头不能为 object
@@ -80,7 +79,7 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		if header.Type == Object {
 			err := locale.Errorf(locale.ErrInvalidValue)
 			field = field + "/header[" + header.Name + "].type"
-			return fixedSyntaxError(err, api.file, field, api.line)
+			return fixedSyntaxError(err, api.Block.File, field, api.Block.Line)
 		}
 	}
 
@@ -97,17 +96,17 @@ func (api *API) sanitize(field string) error {
 
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag) {
-			return message.NewLocaleError(api.file, field+"/tag/@name", api.line, locale.ErrInvalidValue)
+			return api.Block.NewLocaleError(field+"/tag/@name", locale.ErrInvalidValue)
 		}
 	}
 
 	if len(api.Servers) == 0 {
-		return message.NewLocaleError(api.file, field+"/server", api.line, locale.ErrRequired)
+		return api.Block.NewLocaleError(field+"/server", locale.ErrRequired)
 	}
 
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv) {
-			return message.NewLocaleError(api.file, field+"/server/@name", api.line, locale.ErrInvalidValue)
+			return api.Block.NewLocaleError(field+"/server/@name", locale.ErrInvalidValue)
 		}
 	}
 

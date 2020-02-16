@@ -10,7 +10,7 @@ import (
 	"github.com/caixw/apidoc/v6/message"
 )
 
-var minsize = len("<api />")
+var minSize = len("<api />")
 
 // Parse 分析 data 中的内容，并以行号作为键名，代码块作为键值返回
 func Parse(file string, data []byte, blocks []Blocker, h *message.Handler) map[int][]byte {
@@ -41,7 +41,7 @@ func Parse(file string, data []byte, blocks []Blocker, h *message.Handler) map[i
 		block = nil // 重置 block
 
 		data := mergeLines(lines)
-		if len(data) > minsize {
+		if len(data) > minSize {
 			ret[ln] = data
 		}
 	} // end for
