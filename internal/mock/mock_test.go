@@ -12,6 +12,7 @@ import (
 
 	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/doc/doctest"
+	"github.com/caixw/apidoc/v6/input"
 	"github.com/caixw/apidoc/v6/message/messagetest"
 )
 
@@ -454,7 +455,7 @@ const testAPIDoc = `<apidoc version="1.0.1">
 func TestNew(t *testing.T) {
 	a := assert.New(t)
 	d := doc.New()
-	a.NotError(d.FromXML(&doc.Block{File: "memory.file", Data: []byte(testAPIDoc)}))
+	a.NotError(d.FromXML(&input.Block{File: "memory.file", Data: []byte(testAPIDoc)}))
 
 	erro, _, h := messagetest.MessageHandler()
 	mock, err := New(h, d, map[string]string{"test": "/test"})

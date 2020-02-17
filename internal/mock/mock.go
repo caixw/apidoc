@@ -11,6 +11,7 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/input"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	xpath "github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/internal/vars"
@@ -67,7 +68,7 @@ func Load(h *message.Handler, path string, servers map[string]string) (http.Hand
 
 	// 加载并验证
 	d := doc.New()
-	if err = d.FromXML(&doc.Block{File: path, Data: data}); err != nil {
+	if err = d.FromXML(&input.Block{File: path, Data: data}); err != nil {
 		return nil, err
 	}
 

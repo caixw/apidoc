@@ -1,3 +1,6 @@
+github.com/caixw/apidoc v0.0.0-20181114133446-643d18f24903 h1:rhExuy8wJ35IfgRMdAkf31ea++gsk3B6jMyZ/Q+fCS8=
+github.com/caixw/apidoc/v5 v5.2.1 h1:jY1XnsSwK2Rc+XqPC24dviL4nKk/7VlQfC8lAvPh1dU=
+github.com/caixw/apidoc/v5 v5.2.1/go.mod h1:hDNW3szwrfSGoPM0/1Rm7Uf6tCB65D8Omhw6cbl+uAo=
 github.com/issue9/assert v1.3.2 h1:IaTa37u4m1fUuTH9K9ldO5IONKVDXjLiUO1T9vj0OF0=
 github.com/issue9/assert v1.3.2/go.mod h1:9Ger+iz8X7r1zMYYwEhh++2wMGWcNN2oVI+zIQXxcio=
 github.com/issue9/assert v1.3.3 h1:3Xz5rGafXcaOpz7x6X2X3kBQVYxs1l9HFHSwmuDQ3KM=
@@ -6,6 +9,7 @@ github.com/issue9/assert v1.3.4 h1:m9O+Nmi0ejRsLaTfQa349WTQtryQYHynBn6DFv6+sNY=
 github.com/issue9/assert v1.3.4/go.mod h1:9Ger+iz8X7r1zMYYwEhh++2wMGWcNN2oVI+zIQXxcio=
 github.com/issue9/cmdopt v0.5.2 h1:bjOru1KKC5o4fh5ulI22HoNzt+CcMsJshNGzjh/ZZcY=
 github.com/issue9/cmdopt v0.5.2/go.mod h1:quFf4x/qMmizqoWHLeJ0m8UIPSgltJIU5B6Y6leXZVk=
+github.com/issue9/is v1.3.2/go.mod h1:iXrXkWWpWSzimHQen3Oas/Gu4E7EQWBmALkPZtPSmS0=
 github.com/issue9/is v1.3.4 h1:+CtW/9EUGOyKSjwMemYm4ISFKO3wOH0rsgX3r0w8Ups=
 github.com/issue9/is v1.3.4/go.mod h1:tvnYRpyJnbuU00f/RPN5D+8JbFwyI1fB7vQh+ZWwIqM=
 github.com/issue9/mux/v2 v2.3.2 h1:dPovq3NUoE/5OIC1qrXAim6o7EXP+AxwhWXAme+DtV4=

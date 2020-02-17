@@ -1,6 +1,7 @@
 module github.com/caixw/apidoc/v6
 
 require (
+	github.com/caixw/apidoc/v5 v5.2.1
 	github.com/issue9/assert v1.3.4
 	github.com/issue9/cmdopt v0.5.2
 	github.com/issue9/is v1.3.4

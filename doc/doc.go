@@ -11,6 +11,7 @@ import (
 
 	xmessage "golang.org/x/text/message"
 
+	"github.com/caixw/apidoc/v6/input"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
@@ -53,12 +54,12 @@ type Doc struct {
 	// 表示所有接口都支持的文档类型
 	Mimetypes []string `xml:"mimetype"`
 
-	Block *Block `xml:"-"`
+	Block *input.Block `xml:"-"`
 }
 
 // Valid 验证文档内容的正确性
 func Valid(content []byte) error {
-	return New().FromXML(&Block{Data: content})
+	return New().FromXML(&input.Block{Data: content})
 }
 
 // New 返回 Doc 实例
@@ -82,21 +83,21 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Title == "" {
-		return doc.Block.NewLocaleError("apidoc/title", locale.ErrRequired)
+		return newBlockError(doc.Block, "apidoc/title", locale.ErrRequired)
 	}
 
 	// Tag.Name 查重
 	if findDupTag(shadow.Tags) != "" {
-		return doc.Block.NewLocaleError("apidoc/tag/@name", locale.ErrDuplicateValue)
+		return newBlockError(doc.Block, "apidoc/tag/@name", locale.ErrDuplicateValue)
 	}
 
 	// Server.Name 查重
 	if findDupServer(shadow.Servers) != "" {
-		return doc.Block.NewLocaleError("apidoc/server/@name", locale.ErrDuplicateValue)
+		return newBlockError(doc.Block, "apidoc/server/@name", locale.ErrDuplicateValue)
 	}
 
 	if len(shadow.Mimetypes) == 0 {
-		return doc.Block.NewLocaleError("apidoc/mimetype", locale.ErrRequired)
+		return newBlockError(doc.Block, "apidoc/mimetype", locale.ErrRequired)
 	}
 
 	// 操作 clone 进行比较，不影响原文档的排序
@@ -105,7 +106,7 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	sort.Strings(clone)
 	for index := 1; index < len(clone); index++ {
 		if clone[index] == clone[index-1] {
-			return doc.Block.NewLocaleError("apidoc/mimetype", locale.ErrDuplicateValue)
+			return newBlockError(doc.Block, "apidoc/mimetype", locale.ErrDuplicateValue)
 		}
 	}
 
@@ -118,7 +119,7 @@ func (doc *Doc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 }
 
 // FromXML 从 XML 字符串初始化当前的实例
-func (doc *Doc) FromXML(b *Block) error {
+func (doc *Doc) FromXML(b *input.Block) error {
 	doc.Block = b
 	return xml.Unmarshal(b.Data, doc)
 }

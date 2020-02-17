@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/xml"
 
+	"github.com/caixw/apidoc/v6/input"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -35,12 +36,12 @@ type API struct {
 	Tags    []string `xml:"tag,omitempty"`
 	Servers []string `xml:"server,omitempty"`
 
-	Block *Block `xml:"-"`
+	Block *input.Block `xml:"-"`
 	doc   *Doc
 }
 
 // NewAPI 从 b.Data 中解析新的 API 对象
-func (doc *Doc) NewAPI(b *Block) error {
+func (doc *Doc) NewAPI(b *input.Block) error {
 	api := &API{
 		Block: b,
 		doc:   doc,
@@ -92,17 +93,17 @@ func (api *API) sanitize(field string) error {
 
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag) {
-			return api.Block.NewLocaleError(field+"/tag/@name", locale.ErrInvalidValue)
+			return newBlockError(api.Block, field+"/tag/@name", locale.ErrInvalidValue)
 		}
 	}
 
 	if len(api.Servers) == 0 {
-		return api.Block.NewLocaleError(field+"/server", locale.ErrRequired)
+		return newBlockError(api.Block, field+"/server", locale.ErrRequired)
 	}
 
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv) {
-			return api.Block.NewLocaleError(field+"/server/@name", locale.ErrInvalidValue)
+			return newBlockError(api.Block, field+"/server/@name", locale.ErrInvalidValue)
 		}
 	}
 

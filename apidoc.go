@@ -51,7 +51,7 @@ func Version() string {
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
 func Build(h *message.Handler, o *output.Options, i ...*input.Options) error {
-	d, err := input.Parse(h, i...)
+	d, err := parse(h, i...)
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func Build(h *message.Handler, o *output.Options, i ...*input.Options) error {
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
 func Buffer(h *message.Handler, o *output.Options, i ...*input.Options) (*bytes.Buffer, error) {
-	d, err := input.Parse(h, i...)
+	d, err := parse(h, i...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,11 +76,25 @@ func Buffer(h *message.Handler, o *output.Options, i ...*input.Options) (*bytes.
 
 // Test 测试文档语法，并将结果输出到 h
 func Test(h *message.Handler, i ...*input.Options) {
-	if _, err := input.Parse(h, i...); err != nil {
+	if _, err := parse(h, i...); err != nil {
 		h.Error(message.Erro, err)
 		return
 	}
 	h.Message(message.Succ, locale.TestSuccess)
+}
+
+func parse(h *message.Handler, i ...*input.Options) (*doc.Doc, error) {
+	d := doc.New()
+	if err := d.Parse(h, i...); err != nil {
+		return nil, err
+	}
+
+	if err := d.Sanitize(); err != nil {
+		h.Error(message.Erro, err)
+		return nil, err
+	}
+
+	return d, nil
 }
 
 // Static 为 /docs 搭建一个静态文件服务
@@ -166,7 +180,7 @@ func Mock(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handl
 // servers 为文档中所有 server 以及对应的路由前缀。
 func MockBuffer(h *message.Handler, data []byte, servers map[string]string) (http.Handler, error) {
 	d := doc.New()
-	if err := d.FromXML(&doc.Block{Data: data}); err != nil {
+	if err := d.FromXML(&input.Block{Data: data}); err != nil {
 		return nil, err
 	}
 

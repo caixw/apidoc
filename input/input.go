@@ -16,83 +16,46 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/lang"
 	"github.com/caixw/apidoc/v6/message"
 )
 
-// Parse 分析从 input 中获取的代码块
+// Block 表示原始的注释代码块
+type Block struct {
+	File string
+	Line int
+	Data []byte
+}
+
+// Parse 分析 opt 中所指定的内容
 //
-// 所有与解析有关的错误均通过 h 输出。
-// 如果是配置文件的错误，则通过 error 返回
-func Parse(h *message.Handler, opt ...*Options) (*doc.Doc, error) {
+// 分析后的内容推送至 blocks 中。
+//
+// 如果 opt 的内容有误，直接返回错误信息，而文档的语法错误，则推送给 h。
+func Parse(blocks chan Block, h *message.Handler, opt ...*Options) error {
 	for _, item := range opt {
 		if err := item.sanitize(); err != nil {
-			return nil, err
+			return err
 		}
 	}
 
-	blocks := buildBlock(h, opt...)
-	d := doc.New()
-	wg := sync.WaitGroup{}
-
-	for blk := range blocks {
-		wg.Add(1)
-		go func(b doc.Block) {
-			parseBlock(d, &b, h)
-			wg.Done()
-		}(blk)
+	wg := &sync.WaitGroup{}
+	for _, o := range opt {
+		for _, path := range o.paths {
+			wg.Add(1)
+			go func(path string) {
+				ParseFile(blocks, h, path, o)
+				wg.Done()
+			}(path)
+		}
 	}
-
 	wg.Wait()
 
-	if err := d.Sanitize(); err != nil {
-		h.Error(message.Erro, err)
-	}
-
-	return d, nil
+	return nil
 }
 
-func parseBlock(d *doc.Doc, block *doc.Block, h *message.Handler) {
-	if err := d.ParseBlock(block); err != nil {
-		h.Error(message.Erro, err)
-	}
-}
-
-// 分析源代码，获取注释块。
-//
-// 当所有的代码块已经放入 Block 之后，Block 会被关闭。
-func buildBlock(h *message.Handler, opt ...*Options) chan doc.Block {
-	data := make(chan doc.Block, 500)
-
-	go func() {
-		wg := &sync.WaitGroup{}
-		for _, o := range opt {
-			parseOptions(data, h, wg, o)
-		}
-		wg.Wait()
-
-		close(data)
-	}()
-
-	return data
-}
-
-// 分析每个配置项对应的内容
-func parseOptions(data chan doc.Block, h *message.Handler, wg *sync.WaitGroup, o *Options) {
-	for _, path := range o.paths {
-		wg.Add(1)
-		go func(path string) {
-			parseFile(data, h, path, o)
-			wg.Done()
-		}(path)
-	}
-}
-
-// 分析 path 指向的文件。
-//
-// NOTE: parseFile 内部不能有协程处理代码。
-func parseFile(channel chan doc.Block, h *message.Handler, path string, o *Options) {
+// ParseFile 分析 path 指向的文件。
+func ParseFile(blocks chan Block, h *message.Handler, path string, o *Options) {
 	data, err := readFile(path, o.encoding)
 	if err != nil {
 		h.Error(message.Erro, message.WithError(path, "", 0, err))
@@ -101,7 +64,7 @@ func parseFile(channel chan doc.Block, h *message.Handler, path string, o *Optio
 
 	ret := lang.Parse(path, data, o.blocks, h)
 	for line, data := range ret {
-		channel <- doc.Block{
+		blocks <- Block{
 			File: path,
 			Line: line,
 			Data: data,
