@@ -27,8 +27,6 @@ type InitializeParams struct {
 	Capabilities ClientCapabilities `json:"capabilities"`
 
 	// The initial trace setting. If omitted trace is disabled ('off').
-	//
-	// 枚举值：off, messages, verbose
 	Trace string `json:"trace,omitempty"`
 
 	// The workspace folders configured in the client when the server starts.
@@ -37,7 +35,7 @@ type InitializeParams struct {
 	// configured.
 	//
 	// Since 3.6.0
-	WorkspaceFolders *WorkspaceFolder `json:"workspaceFolders,omitempty"`
+	WorkspaceFolders []*WorkspaceFolder `json:"workspaceFolders,omitempty"`
 
 	// Information about the client
 	//
@@ -45,7 +43,7 @@ type InitializeParams struct {
 	ClientInfo *ServerInfo `json:"clientInfo,omitempty"`
 }
 
-// ServerInfo information about the client or server
+// ServerInfo 终端的信息，同时用于描述服务和客户端。
 //
 // @since 3.15.0
 type ServerInfo struct {
@@ -83,50 +81,19 @@ type ClientCapabilities struct {
 		ApplyEdit bool `json:"applyEdit,omitempty"`
 
 		// Capabilities specific to `WorkspaceEdit`s
-		WorkspaceEdit struct {
-			// The client supports versioned document changes in `WorkspaceEdit`s
-			DocumentChanges bool `json:"documentChanges,omitempty"`
-
-			// The resource operations the client supports. Clients should at least
-			// support 'create', 'rename' and 'delete' files and folders.
-			ResourceOperations []ResourceOperationKind `json:"resourceOperations,omitempty"`
-
-			// The failure handling strategy of a client if applying the workspace edit fails.
-			FailureHandling FailureHandlingKind `json:"failureHandling,omitempty"`
-		} `json:"workspaceEdit,omitempty"`
+		WorkspaceEdit WorkspaceEditClientCapabilities `json:"workspaceEdit,omitempty"`
 
 		// Capabilities specific to the `workspace/didChangeConfiguration` notification.
-		DidChangeConfiguration DynamicRegistration `json:"didChangeConfiguration,omitempty"`
+		DidChangeConfiguration DidChangeConfigurationClientCapabilities `json:"didChangeConfiguration,omitempty"`
 
 		// Capabilities specific to the `workspace/didChangeWatchedFiles` notification.
-		//
-		// DidChangeWatchedFiles.DynamicRegistration:
-		// Did change watched files notification supports dynamic registration. Please note
-		// that the current protocol doesn't support static configuration for file changes
-		// from the server side.
-		DidChangeWatchedFiles DynamicRegistration `json:"didChangeWatchedFiles,omitempty"`
+		DidChangeWatchedFiles DidChangeConfigurationClientCapabilities `json:"didChangeWatchedFiles,omitempty"`
 
 		// Capabilities specific to the `workspace/symbol` request.
-		Symbol struct {
-			// Symbol request supports dynamic registration.
-			DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-			// Specific capabilities for the `SymbolKind` in the `workspace/symbol` request.
-			SymbolKind struct {
-				// The symbol kind values the client supports. When this
-				// property exists the client also guarantees that it will
-				// handle values outside its set gracefully and falls back
-				// to a default value when unknown.
-				//
-				// If this property is not present the client only supports
-				// the symbol kinds from `File` to `Array` as defined in
-				// the initial version of the protocol.
-				ValueSet SymbolKind `json:"valueSet,omitempty"`
-			} `json:"symbolKind,omitempty"`
-		} `json:"symbol,omitempty"`
+		Symbol WorkspaceSymbolClientCapabilities `json:"symbol,omitempty"`
 
 		// Capabilities specific to the `workspace/executeCommand` request.
-		ExecuteCommand DynamicRegistration `json:"executeCommand,omitempty"`
+		ExecuteCommand ExecuteCommandClientCapabilities `json:"executeCommand,omitempty"`
 
 		// The client has support for workspace folders.
 		//
@@ -144,4 +111,43 @@ type ClientCapabilities struct {
 
 	// Experimental client capabilities.
 	Experimental interface{} `json:"experimental,omitempty"`
+}
+
+type WorkspaceEditClientCapabilities struct {
+	// The client supports versioned document changes in `WorkspaceEdit`s
+	DocumentChanges bool `json:"documentChanges,omitempty"`
+
+	// The resource operations the client supports. Clients should at least
+	// support 'create', 'rename' and 'delete' files and folders.
+	//
+	// @since 3.13.0
+	ResourceOperations []ResourceOperationKind `json:"resourceOperations,omitempty"`
+
+	// The failure handling strategy of a client if applying the workspace edit fails.
+	//
+	// @since 3.13.0
+	FailureHandling FailureHandlingKind `json:"failureHandling,omitempty"`
+}
+
+type WorkspaceSymbolClientCapabilities struct {
+	// Symbol request supports dynamic registration.
+	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
+
+	// Specific capabilities for the `SymbolKind` in the `workspace/symbol` request.
+	SymbolKind struct {
+		// The symbol kind values the client supports. When this
+		// property exists the client also guarantees that it will
+		// handle values outside its set gracefully and falls back
+		// to a default value when unknown.
+		//
+		// If this property is not present the client only supports
+		// the symbol kinds from `File` to `Array` as defined in
+		// the initial version of the protocol.
+		ValueSet []SymbolKind `json:"valueSet,omitempty"`
+	} `json:"symbolKind,omitempty"`
+}
+
+type ExecuteCommandClientCapabilities struct {
+	// Execute command supports dynamic registration.
+	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 }

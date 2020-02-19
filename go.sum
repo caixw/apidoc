@@ -5,7 +5,7 @@ github.com/issue9/assert v1.3.4/go.mod h1:9Ger+iz8X7r1zMYYwEhh++2wMGWcNN2oVI+zIQ
 github.com/issue9/autoinc v1.0.6/go.mod h1:bGWX564I5nsereCvh5W9A4jSS8TXONd/ybdNJu5ct/E=
 github.com/issue9/cmdopt v0.5.2/go.mod h1:quFf4x/qMmizqoWHLeJ0m8UIPSgltJIU5B6Y6leXZVk=
 github.com/issue9/is v1.3.4/go.mod h1:tvnYRpyJnbuU00f/RPN5D+8JbFwyI1fB7vQh+ZWwIqM=
-github.com/issue9/jsonrpc v0.5.0/go.mod h1:ZuUJB9tEOO7Xk5RR1RUT2pxGLJx8zWXfO+qUptOhIAQ=
+github.com/issue9/jsonrpc v0.8.0/go.mod h1:ZuUJB9tEOO7Xk5RR1RUT2pxGLJx8zWXfO+qUptOhIAQ=
 github.com/issue9/mux/v2 v2.3.2/go.mod h1:VX+9EkwwAz8IfFNJj67BgAFa48D7IipqVxz5z3ke4c8=
 github.com/issue9/qheader v0.3.0/go.mod h1:Po7U9K3JqUdU9T0wibdEgb+WtIyLIEC8fB94o7kClKA=
 github.com/issue9/rands v1.1.4/go.mod h1:aCnoDR8ukczytaW+9FXuWS7YhhAK/5f+w8sM7P6UXqs=

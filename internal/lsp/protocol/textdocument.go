@@ -157,10 +157,10 @@ type TextDocumentClientCapabilities struct {
 	} `json:"signatureHelp,omitempty"`
 
 	// Capabilities specific to the `textDocument/references`
-	References DynamicRegistration `json:"references,omitempty"`
+	References DidChangeConfigurationClientCapabilities `json:"references,omitempty"`
 
 	// Capabilities specific to the `textDocument/documentHighlight`
-	DocumentHighlight DynamicRegistration `json:"documentHighlight,omitempty"`
+	DocumentHighlight DidChangeConfigurationClientCapabilities `json:"documentHighlight,omitempty"`
 
 	// Capabilities specific to the `textDocument/documentSymbol`
 	DocumentSymbol struct {
@@ -185,13 +185,13 @@ type TextDocumentClientCapabilities struct {
 	} `json:"documentSymbol,omitempty"`
 
 	// Capabilities specific to the `textDocument/formatting`
-	Formatting DynamicRegistration `json:"formatting,omitempty"`
+	Formatting DidChangeConfigurationClientCapabilities `json:"formatting,omitempty"`
 
 	// Capabilities specific to the `textDocument/rangeFormatting`
-	RangeFormatting DynamicRegistration `json:"rangeFormatting,omitempty"`
+	RangeFormatting DidChangeConfigurationClientCapabilities `json:"rangeFormatting,omitempty"`
 
 	// Capabilities specific to the `textDocument/onTypeFormatting`
-	OnTypeFormatting DynamicRegistration `json:"onTypeFormatting,omitempty"`
+	OnTypeFormatting DidChangeConfigurationClientCapabilities `json:"onTypeFormatting,omitempty"`
 
 	// Capabilities specific to the `textDocument/declaration`
 	Declaration struct {
@@ -269,20 +269,20 @@ type TextDocumentClientCapabilities struct {
 	} `json:"codeAction,omitempty"`
 
 	// Capabilities specific to the `textDocument/codeLens`
-	CodeLens DynamicRegistration `json:"codeLens,omitempty"`
+	CodeLens DidChangeConfigurationClientCapabilities `json:"codeLens,omitempty"`
 
 	// Capabilities specific to the `textDocument/documentLink`
-	DocumentLink DynamicRegistration `json:"documentLink,omitempty"`
+	DocumentLink DidChangeConfigurationClientCapabilities `json:"documentLink,omitempty"`
 
 	// Capabilities specific to the `textDocument/documentColor` and the
 	// `textDocument/colorPresentation` request.
 	//
 	// Since 3.6.0
 	//
-	// If ColorProvider.DynamicRegistration is set to `true`
+	// If ColorProvider.DidChangeConfigurationClientCapabilities is set to `true`
 	// the client supports the new `(ColorProviderOptions & TextDocumentRegistrationOptions & StaticRegistrationOptions)`
 	// return value for the corresponding server capability as well.
-	ColorProvider DynamicRegistration `json:"colorProvider,omitempty"`
+	ColorProvider DidChangeConfigurationClientCapabilities `json:"colorProvider,omitempty"`
 
 	// Capabilities specific to the `textDocument/rename`
 	Rename struct {
@@ -316,7 +316,7 @@ type TextDocumentClientCapabilities struct {
 	} `json:"foldingRange,omitempty"`
 }
 
-type DynamicRegistration struct {
+type DidChangeConfigurationClientCapabilities struct {
 	// Whether formatting supports dynamic registration.
 	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 }
@@ -332,17 +332,21 @@ type DocumentOnTypeFormattingOptions struct {
 
 // Rename options
 type RenameOptions struct {
+	WorkDoneProgressOptions
+
 	// Renames should be checked and tested before being executed.
 	PrepareProvider bool `json:"prepareProvider,omitempty"`
 }
 
 // Document link options.
 type DocumentLinkOptions struct {
+	WorkDoneProgressOptions
+
 	// Document links have a resolve provider as well.
 	ResolveProvider bool `json:"resolveProvider,omitempty"`
 }
 
-type TextDocumentSyncOptions struct {
+type ServerCapabilitiesTextDocumentSyncOptions struct {
 	// Open and close notifications are sent to the server.
 	// If omitted open close notification should not be sent.
 	OpenClose bool `json:"openClose,omitempty"`
@@ -350,6 +354,10 @@ type TextDocumentSyncOptions struct {
 	// Change notifications are sent to the server. See TextDocumentSyncKind.None, TextDocumentSyncKind.Full
 	// and TextDocumentSyncKind.Incremental. If omitted it defaults to TextDocumentSyncKind.None.
 	Change int `json:"change,omitempty"`
+}
+
+type TextDocumentSyncOptions struct {
+	ServerCapabilitiesTextDocumentSyncOptions
 
 	// If present will save notifications are sent to the server.
 	// If omitted the notification should not be sent.
@@ -404,4 +412,50 @@ type DidSaveTextDocumentParams struct {
 	// Optional the content when saved. Depends on the includeText value
 	// when the save notification was requested.
 	Text string `json:"text,omitempty"`
+}
+
+type DocumentHighlightOptions struct {
+	WorkDoneProgressOptions
+}
+
+type DocumentSymbolOptions struct {
+	WorkDoneProgressOptions
+}
+
+type DocumentColorOptions struct {
+	WorkDoneProgressOptions
+}
+
+type DocumentColorRegistrationOptions struct {
+	TextDocumentRegistrationOptions
+	StaticRegistrationOptions
+	DocumentColorOptions
+}
+
+type DocumentFormattingOptions struct {
+	WorkDoneProgressOptions
+}
+
+type DocumentRangeFormattingOptions struct {
+	WorkDoneProgressOptions
+}
+
+type FoldingRangeOptions struct {
+	WorkDoneProgressOptions
+}
+
+type FoldingRangeRegistrationOptions struct {
+	TextDocumentRegistrationOptions
+	FoldingRangeOptions
+	StaticRegistrationOptions
+}
+
+type SelectionRangeOptions struct {
+	WorkDoneProgressOptions
+}
+
+type SelectionRangeRegistrationOptions struct {
+	SelectionRangeOptions
+	TextDocumentRegistrationOptions
+	StaticRegistrationOptions
 }

@@ -2,6 +2,13 @@
 
 package protocol
 
+// 表示 InitializeParams.Trace 的枚举值
+const (
+	InitializeTraceOff      = "off"
+	InitializeTraceMessages = "messages"
+	InitializeTraceVerbose  = "verbose"
+)
+
 // SymbolKind A symbol kind.
 type SymbolKind int
 

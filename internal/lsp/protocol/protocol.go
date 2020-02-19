@@ -45,3 +45,10 @@ type WorkDoneProgressParams struct {
 
 // ProgressToken type ProgressToken = number | string;
 type ProgressToken interface{}
+
+// WorkDoneProgressOptions options to signal work done progress support in server capabilities.
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workDoneProgressOptions
+type WorkDoneProgressOptions struct {
+	WorkDoneProgress bool `json:"workDoneProgress,omitempty"`
+}
