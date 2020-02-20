@@ -24,7 +24,7 @@ func initLSP() {
 	lspFlagSet = command.New("lsp", doLSP, lspUsage)
 	lspFlagSet.StringVar(&lspPort, "p", ":8080", locale.Sprintf(locale.FlagLSPPortUsage))
 	lspFlagSet.StringVar(&lspMode, "m", "http", locale.Sprintf(locale.FlagLSPModeUsage))
-	lspFlagSet.BoolVar(&lspHeader, "h", true, locale.Sprintf(locale.FlagLSPHeaderUsage))
+	lspFlagSet.BoolVar(&lspHeader, "h", false, locale.Sprintf(locale.FlagLSPHeaderUsage))
 }
 
 func doLSP(io.Writer) error {

@@ -52,6 +52,17 @@ func (s *server) shutdown(bool, *interface{}, *interface{}) error {
 	if s.getState() != serverInitialized {
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}
+
+	for _, f := range s.folders {
+		if err := f.close(); err != nil {
+			return err
+		}
+	}
+
+	if s.cancelFunc != nil {
+		s.cancelFunc()
+	}
+
 	s.setState(serverShutdown)
 
 	return nil
@@ -64,7 +75,6 @@ func (s *server) exit(bool, *interface{}, *interface{}) error {
 	if s.getState() != serverShutdown {
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}
-	s.close()
 
 	return nil
 }

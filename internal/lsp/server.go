@@ -8,6 +8,7 @@ import (
 
 	"github.com/issue9/jsonrpc"
 
+	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
 )
 
@@ -29,10 +30,20 @@ type server struct {
 
 	cancelFunc context.CancelFunc
 
-	workspaceFolders []protocol.WorkspaceFolder
+	folders []*folder
 
 	clientInfo         *protocol.ServerInfo
 	clientCapabilities *protocol.ClientCapabilities
+}
+
+type folder struct {
+	protocol.WorkspaceFolder
+	doc *doc.Doc
+}
+
+func (f *folder) close() error {
+	// TODO
+	return nil
 }
 
 func (s *server) setState(state serverState) {
@@ -45,10 +56,4 @@ func (s *server) getState() serverState {
 	s.stateMux.RLock()
 	defer s.stateMux.RUnlock()
 	return s.state
-}
-
-func (s *server) close() {
-	if s.cancelFunc != nil {
-		s.cancelFunc()
-	}
 }
