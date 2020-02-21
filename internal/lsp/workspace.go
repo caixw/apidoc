@@ -3,7 +3,6 @@
 package lsp
 
 import (
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
 )
@@ -24,12 +23,7 @@ func (s *server) workspaceWorkspaceFolders() error {
 	}
 
 	if len(folders) != 0 {
-		for _, wf := range folders {
-			s.folders = append(s.folders, &folder{
-				WorkspaceFolder: wf,
-				doc:             doc.New(),
-			})
-		}
+		s.appendFolders(folders...)
 	}
 	return nil
 }
@@ -42,10 +36,10 @@ func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.Di
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}
 
-	for _, folder := range in.Event.Removed {
-		for index, f2 := range s.folders {
-			if f2.Name == folder.Name && f2.URI == folder.URI {
-				if err := f2.close(); err != nil {
+	for _, removed := range in.Event.Removed {
+		for index, f := range s.folders {
+			if f.Name == removed.Name && f.URI == removed.URI {
+				if err := f.close(); err != nil {
 					return err
 				}
 				s.folders = append(s.folders[:index], s.folders[index+1:]...)
@@ -53,12 +47,6 @@ func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.Di
 		}
 	}
 
-	for _, wf := range in.Event.Added {
-		s.folders = append(s.folders, &folder{
-			WorkspaceFolder: wf,
-			doc:             doc.New(),
-		})
-	}
-
+	s.appendFolders(in.Event.Added...)
 	return nil
 }

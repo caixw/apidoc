@@ -8,7 +8,6 @@ import (
 
 	"github.com/issue9/jsonrpc"
 
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
 )
 
@@ -34,16 +33,6 @@ type server struct {
 
 	clientInfo         *protocol.ServerInfo
 	clientCapabilities *protocol.ClientCapabilities
-}
-
-type folder struct {
-	protocol.WorkspaceFolder
-	doc *doc.Doc
-}
-
-func (f *folder) close() error {
-	// TODO
-	return nil
 }
 
 func (s *server) setState(state serverState) {
