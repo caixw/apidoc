@@ -7,9 +7,9 @@ import (
 	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
 )
 
-// The workspace/workspaceFolders request is sent from the server to the client to fetch the current open
-// list of workspace folders. Returns null in the response if only a single file is open in the tool.
-// Returns an empty array if a workspace is open but no folders are configured.
+// workspace/workspaceFolders
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_workspaceFolders
 func (s *server) workspaceWorkspaceFolders() error {
 	var folders []protocol.WorkspaceFolder
 	if err := s.Send("workspace/workspaceFolders", nil, &folders); err != nil {
