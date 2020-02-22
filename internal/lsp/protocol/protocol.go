@@ -3,6 +3,8 @@
 // Package protocol 协议内容的定义
 package protocol
 
+import "github.com/issue9/jsonrpc"
+
 // Position in a text document expressed as zero-based line and zero-based character offset
 //
 // A position is between two characters like an ‘insert’ cursor in a editor.
@@ -51,4 +53,9 @@ type ProgressToken interface{}
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workDoneProgressOptions
 type WorkDoneProgressOptions struct {
 	WorkDoneProgress bool `json:"workDoneProgress,omitempty"`
+}
+
+type CancelParams struct {
+	// The request id to cancel.
+	ID *jsonrpc.ID
 }

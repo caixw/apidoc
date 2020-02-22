@@ -89,10 +89,18 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 	}
 
 	jsonrpcServer.Registers(map[string]interface{}{
-		"initialize":  srv.initialize,
-		"initialized": srv.initialized,
-		"shutdown":    srv.shutdown,
+		"initialize":      srv.initialize,
+		"initialized":     srv.initialized,
+		"shutdown":        srv.shutdown,
+		"exit":            srv.exit,
+		"$/cancelRequest": srv.cancel,
 
+		// window
+		"window/showMessage":        srv.windowShowMessage,
+		"window/showMessageRequest": srv.windowShowMessageRequest,
+		"window/logMessage":         srv.windowLogMessage,
+
+		// workspace
 		"workspace/didChangeWorkspaceFolders": srv.workspaceDidChangeWorkspaceFolders,
 	})
 

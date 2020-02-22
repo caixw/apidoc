@@ -78,3 +78,10 @@ func (s *server) exit(bool, *interface{}, *interface{}) error {
 
 	return nil
 }
+
+// $/cancelRequest
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#cancelRequest
+func (s *server) cancel(notify bool, in *protocol.CancelParams, out *interface{}) error {
+	return nil
+}
