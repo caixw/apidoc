@@ -8,10 +8,10 @@ import "github.com/caixw/apidoc/v6/internal/lsp/protocol"
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#window_showMessage
 func (s *server) windowShowMessage(message string, t protocol.MessageType) error {
-	return s.Send("window/showMessage", &protocol.ShowMessageParams{
+	return s.Notify("window/showMessage", &protocol.ShowMessageParams{
 		Type:    t,
 		Message: message,
-	}, nil)
+	})
 }
 
 // window/showMessageRequest
@@ -37,8 +37,8 @@ func (s *server) windowShowMessageRequest(message string, t protocol.MessageType
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#window_logMessage
 func (s *server) windowLogMessage(message string, t protocol.MessageType) error {
-	return s.Send("window/logMessage", &protocol.ShowMessageParams{
+	return s.Notify("window/logMessage", &protocol.ShowMessageParams{
 		Type:    t,
 		Message: message,
-	}, nil)
+	})
 }

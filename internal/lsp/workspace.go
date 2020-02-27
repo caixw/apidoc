@@ -11,21 +11,20 @@ import (
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_workspaceFolders
 func (s *server) workspaceWorkspaceFolders() error {
-	var folders []protocol.WorkspaceFolder
-	if err := s.Send("workspace/workspaceFolders", nil, &folders); err != nil {
-		return err
-	}
-
-	for _, f := range s.folders {
-		if err := f.close(); err != nil {
-			return err
+	err := s.Send("workspace/workspaceFolders", nil, func(folders *[]protocol.WorkspaceFolder) error {
+		for _, f := range s.folders {
+			if err := f.close(); err != nil {
+				return err
+			}
 		}
-	}
 
-	if len(folders) != 0 {
-		s.appendFolders(folders...)
-	}
-	return nil
+		if len(*folders) != 0 {
+			s.appendFolders(*folders...)
+		}
+		return nil
+	})
+	return err
+
 }
 
 // workspace/didChangeWorkspaceFolders

@@ -41,3 +41,37 @@ type WorkspaceFoldersServerCapabilities struct {
 	// string | boolean;
 	ChangeNotifications interface{} `json:"changeNotifications,omitempty"`
 }
+
+type WorkspaceEditClientCapabilities struct {
+	// The client supports versioned document changes in `WorkspaceEdit`s
+	DocumentChanges bool `json:"documentChanges,omitempty"`
+
+	// The resource operations the client supports. Clients should at least
+	// support 'create', 'rename' and 'delete' files and folders.
+	//
+	// @since 3.13.0
+	ResourceOperations []ResourceOperationKind `json:"resourceOperations,omitempty"`
+
+	// The failure handling strategy of a client if applying the workspace edit fails.
+	//
+	// @since 3.13.0
+	FailureHandling FailureHandlingKind `json:"failureHandling,omitempty"`
+}
+
+type WorkspaceSymbolClientCapabilities struct {
+	// Symbol request supports dynamic registration.
+	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
+
+	// Specific capabilities for the `SymbolKind` in the `workspace/symbol` request.
+	SymbolKind struct {
+		// The symbol kind values the client supports. When this
+		// property exists the client also guarantees that it will
+		// handle values outside its set gracefully and falls back
+		// to a default value when unknown.
+		//
+		// If this property is not present the client only supports
+		// the symbol kinds from `File` to `Array` as defined in
+		// the initial version of the protocol.
+		ValueSet []SymbolKind `json:"valueSet,omitempty"`
+	} `json:"symbolKind,omitempty"`
+}

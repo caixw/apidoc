@@ -24,6 +24,17 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		out.Capabilities.Workspace.WorkspaceFolders.Supported = true
 	}
 
+	out.Capabilities.TextDocumentSync = &protocol.ServerCapabilitiesTextDocumentSyncOptions{
+		OpenClose: true,
+		Change:    protocol.TextDocumentSyncKindFull,
+	}
+
+	if in.Capabilities.TextDocument.Hover.ContentFormat != nil {
+		out.Capabilities.HoverProvider = true
+	}
+
+	s.appendFolders(in.Folders()...)
+
 	return nil
 }
 

@@ -2,6 +2,8 @@
 
 package protocol
 
+import "path"
+
 // InitializeParams 初始化请求的参数
 type InitializeParams struct {
 	WorkDoneProgressParams
@@ -35,12 +37,37 @@ type InitializeParams struct {
 	// configured.
 	//
 	// Since 3.6.0
-	WorkspaceFolders []*WorkspaceFolder `json:"workspaceFolders,omitempty"`
+	//
+	// 在客户端支持工作区的情况下，RootURI 和 RootPath 的内容为 WorkspaceFolders 的第一个元素，
+	// 否则 WorkspaceFolders 为空。
+	// RootURI 和 RootPath 的区别在于，RootURI 会带协议，比如 file:///path 而 RootPath 为 /path
+	WorkspaceFolders []WorkspaceFolder `json:"workspaceFolders,omitempty"`
 
 	// Information about the client
 	//
 	// @since 3.15.0
 	ClientInfo *ServerInfo `json:"clientInfo,omitempty"`
+}
+
+func (p *InitializeParams) Folders() []WorkspaceFolder {
+	if len(p.WorkspaceFolders) > 0 {
+		return p.WorkspaceFolders
+	}
+
+	if p.RootURI != "" {
+		return []WorkspaceFolder{{
+			Name: path.Base(string(p.RootURI)),
+			URI:  p.RootURI,
+		}}
+	}
+	if p.RootPath != "" {
+		return []WorkspaceFolder{{
+			Name: path.Base(p.RootPath),
+			URI:  DocumentURI(p.RootPath),
+		}}
+	}
+
+	return nil
 }
 
 // ServerInfo 终端的信息，同时用于描述服务和客户端。
@@ -111,40 +138,6 @@ type ClientCapabilities struct {
 
 	// Experimental client capabilities.
 	Experimental interface{} `json:"experimental,omitempty"`
-}
-
-type WorkspaceEditClientCapabilities struct {
-	// The client supports versioned document changes in `WorkspaceEdit`s
-	DocumentChanges bool `json:"documentChanges,omitempty"`
-
-	// The resource operations the client supports. Clients should at least
-	// support 'create', 'rename' and 'delete' files and folders.
-	//
-	// @since 3.13.0
-	ResourceOperations []ResourceOperationKind `json:"resourceOperations,omitempty"`
-
-	// The failure handling strategy of a client if applying the workspace edit fails.
-	//
-	// @since 3.13.0
-	FailureHandling FailureHandlingKind `json:"failureHandling,omitempty"`
-}
-
-type WorkspaceSymbolClientCapabilities struct {
-	// Symbol request supports dynamic registration.
-	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-	// Specific capabilities for the `SymbolKind` in the `workspace/symbol` request.
-	SymbolKind struct {
-		// The symbol kind values the client supports. When this
-		// property exists the client also guarantees that it will
-		// handle values outside its set gracefully and falls back
-		// to a default value when unknown.
-		//
-		// If this property is not present the client only supports
-		// the symbol kinds from `File` to `Array` as defined in
-		// the initial version of the protocol.
-		ValueSet []SymbolKind `json:"valueSet,omitempty"`
-	} `json:"symbolKind,omitempty"`
 }
 
 type ExecuteCommandClientCapabilities struct {

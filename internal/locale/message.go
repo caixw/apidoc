@@ -82,6 +82,7 @@ options 可以是以下参数
 	GeneratorBy         = "当前文档由 %s 生成"
 	ServerStart         = "服务启动，可通过 %s 访问"
 	RequestRPC          = "访问 RPC：%s"
+	UnimplementedRPC    = "未实现该 RPC 服务 %s"
 
 	// 文档树中各个字段的介绍
 	UsageAPIDoc            = "usage-apidoc"

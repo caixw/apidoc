@@ -83,6 +83,7 @@ options 可以是以下參數
 	GeneratorBy:         "當前文檔由 %s 生成",
 	ServerStart:         "服務啟動，可通過 %s 訪問",
 	RequestRPC:          "訪問 RPC：%s",
+	UnimplementedRPC:    "未實現該 RPC 服務 %s",
 
 	// 文檔樹中各個字段的介紹
 	UsageAPIDoc:            "用於描述整個文檔的相關內容，只能出現壹次。",

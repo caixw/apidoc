@@ -75,6 +75,10 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 	jsonrpcServer := jsonrpc.NewServer()
 
 	jsonrpcServer.RegisterBefore(func(method string) error {
+		if strings.HasPrefix(method, "$/") && !jsonrpcServer.Exists(method) {
+			return newError(ErrMethodNotFound, locale.UnimplementedRPC, method)
+		}
+
 		log.Println(locale.Sprintf(locale.RequestRPC, method))
 		infolog.Println(locale.Sprintf(locale.RequestRPC, method))
 		return nil
@@ -95,13 +99,13 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 		"exit":            srv.exit,
 		"$/cancelRequest": srv.cancel,
 
-		// window
-		"window/showMessage":        srv.windowShowMessage,
-		"window/showMessageRequest": srv.windowShowMessageRequest,
-		"window/logMessage":         srv.windowLogMessage,
-
 		// workspace
 		"workspace/didChangeWorkspaceFolders": srv.workspaceDidChangeWorkspaceFolders,
+
+		// textDocument
+		"textDocument/didOpen":   srv.textDocumentDidOpen,
+		"textDocument/didChange": srv.textDocumentDidChange,
+		"textDocument/hover":     srv.textDocumentHover,
 	})
 
 	return srv.Serve(ctx)

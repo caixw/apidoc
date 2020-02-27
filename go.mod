@@ -15,4 +15,6 @@ require (
 	gopkg.in/yaml.v2 v2.2.8
 )
 
+replace github.com/issue9/jsonrpc => /Users/caixw/dev.localized/issue9/jsonrpc
+
 go 1.13
