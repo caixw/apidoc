@@ -72,6 +72,7 @@ func readFile(path string, enc encoding.Encoding) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer r.Close()
 
 	reader := transform.NewReader(r, enc.NewDecoder())
 	return ioutil.ReadAll(reader)
