@@ -4,6 +4,7 @@ package input
 
 import (
 	"testing"
+	"unicode/utf8"
 
 	"github.com/issue9/assert"
 	"golang.org/x/text/encoding"
@@ -42,16 +43,31 @@ func TestParseFile(t *testing.T) {
 	blocks := make(chan Block, 100)
 	erro, _, h := messagetest.MessageHandler()
 	o := &Options{
-		Lang:      "php",
+		Lang:      "c++",
 		Dir:       "./testdata",
 		Recursive: true,
-		Encoding:  "gbk",
 	}
 	a.NotError(o.sanitize())
 	ParseFile(blocks, h, "./testdata/testfile.c", o)
 	close(blocks)
 
 	a.Equal(2, len(blocks))
+	a.Empty(erro.String())
+
+	// 非 utf8 编码
+	blocks = make(chan Block, 100)
+	erro, _, h = messagetest.MessageHandler()
+	o = &Options{
+		Lang:      "php",
+		Dir:       "./testdata",
+		Recursive: true,
+		Encoding:  "gbk",
+	}
+	a.NotError(o.Sanitize())
+	ParseFile(blocks, h, "./testdata/gbk.php", o)
+	close(blocks)
+
+	a.Equal(1, len(blocks))
 	a.Empty(erro.String())
 }
 
@@ -61,17 +77,20 @@ func TestReadFile(t *testing.T) {
 	nop, err := readFile("./testdata/gbk.php", encoding.Nop)
 	a.NotError(err).
 		NotNil(nop).
-		NotContains(string(nop), "这是一个 GBK 编码的文件")
+		NotContains(string(nop), "这是一个 GBK 编码的文件").
+		False(utf8.Valid(nop))
 
 	def, err := readFile("./testdata/gbk.php", nil)
 	a.NotError(err).
 		NotNil(def).
-		NotContains(string(def), "这是一个 GBK 编码的文件")
+		NotContains(string(def), "这是一个 GBK 编码的文件").
+		False(utf8.Valid(def))
 	a.Equal(def, nop)
 
 	data, err := readFile("./testdata/gbk.php", simplifiedchinese.GB18030)
 	a.NotError(err).
 		NotNil(data).
 		Contains(string(data), "这是一个 GBK 编码的文件").
-		Contains(string(data), "中文")
+		Contains(string(data), "中文").
+		True(utf8.Valid(data))
 }

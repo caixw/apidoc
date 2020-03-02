@@ -35,10 +35,10 @@ func Parse(blocks chan Block, h *message.Handler, opt ...*Options) {
 	for _, o := range opt {
 		for _, path := range o.paths {
 			wg.Add(1)
-			go func(path string) {
+			go func(path string, o *Options) {
 				ParseFile(blocks, h, path, o)
 				wg.Done()
-			}(path)
+			}(path, o)
 		}
 	}
 	wg.Wait()

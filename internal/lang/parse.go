@@ -10,6 +10,7 @@ import (
 	"github.com/caixw/apidoc/v6/message"
 )
 
+// 可以作为文档的最小代码块长度
 var minSize = len("<api />")
 
 // Parse 分析 data 中的内容，并以行号作为键名，代码块作为键值返回
