@@ -72,5 +72,6 @@ func TestReadFile(t *testing.T) {
 	data, err := readFile("./testdata/gbk.php", simplifiedchinese.GB18030)
 	a.NotError(err).
 		NotNil(data).
-		Contains(string(data), "这是一个 GBK 编码的文件")
+		Contains(string(data), "这是一个 GBK 编码的文件").
+		Contains(string(data), "中文")
 }

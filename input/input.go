@@ -9,8 +9,8 @@
 package input
 
 import (
-	"bytes"
 	"io/ioutil"
+	"os"
 	"sync"
 
 	"golang.org/x/text/encoding"
@@ -30,15 +30,7 @@ type Block struct {
 // Parse 分析 opt 中所指定的内容
 //
 // 分析后的内容推送至 blocks 中。
-//
-// 如果 opt 的内容有误，直接返回错误信息，而文档的语法错误，则推送给 h。
-func Parse(blocks chan Block, h *message.Handler, opt ...*Options) error {
-	for _, item := range opt {
-		if err := item.sanitize(); err != nil {
-			return err
-		}
-	}
-
+func Parse(blocks chan Block, h *message.Handler, opt ...*Options) {
 	wg := &sync.WaitGroup{}
 	for _, o := range opt {
 		for _, path := range o.paths {
@@ -50,8 +42,6 @@ func Parse(blocks chan Block, h *message.Handler, opt ...*Options) error {
 		}
 	}
 	wg.Wait()
-
-	return nil
 }
 
 // ParseFile 分析 path 指向的文件。
@@ -74,15 +64,15 @@ func ParseFile(blocks chan Block, h *message.Handler, path string, o *Options) {
 
 // 以指定的编码方式读取内容。
 func readFile(path string, enc encoding.Encoding) ([]byte, error) {
-	data, err := ioutil.ReadFile(path)
+	if enc == nil || enc == encoding.Nop {
+		return ioutil.ReadFile(path)
+	}
+
+	r, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 
-	if enc == nil || enc == encoding.Nop {
-		return data, nil
-	}
-
-	reader := transform.NewReader(bytes.NewReader(data), enc.NewDecoder())
+	reader := transform.NewReader(r, enc.NewDecoder())
 	return ioutil.ReadAll(reader)
 }
