@@ -86,7 +86,7 @@ func loadFile(wd, path string) (*Config, error) {
 	return cfg, nil
 }
 
-func (cfg *Config) sanitize(file string) *message.SyntaxError {
+func (cfg *Config) sanitize(file string) error {
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
 	if err != nil {
@@ -110,13 +110,21 @@ func (cfg *Config) sanitize(file string) *message.SyntaxError {
 		if i.Dir, err = path.Abs(i.Dir, cfg.wd); err != nil {
 			return message.WithError(file, field+".path", 0, err)
 		}
+
+		if err := i.Sanitize(); err != nil {
+			if serr, ok := err.(*message.SyntaxError); ok {
+				serr.File = file
+				serr.Line = 0
+				serr.Field = field + serr.Field
+			}
+			return err
+		}
 	}
 
 	if cfg.Output.Path, err = path.Abs(cfg.Output.Path, cfg.wd); err != nil {
 		return message.WithError(file, "output.path", 0, err)
 	}
-
-	return nil
+	return cfg.Output.Sanitize()
 }
 
 func detectConfig(wd string, recursive bool) (*Config, error) {

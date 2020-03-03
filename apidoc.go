@@ -55,6 +55,9 @@ func Build(h *message.Handler, o *output.Options, i ...*input.Options) error {
 	if err != nil {
 		return err
 	}
+	if err = o.Sanitize(); err != nil {
+		return err
+	}
 
 	return output.Render(d, o)
 }
@@ -68,6 +71,9 @@ func Build(h *message.Handler, o *output.Options, i ...*input.Options) error {
 func Buffer(h *message.Handler, o *output.Options, i ...*input.Options) (*bytes.Buffer, error) {
 	d, err := parse(h, i...)
 	if err != nil {
+		return nil, err
+	}
+	if err = o.Sanitize(); err != nil {
 		return nil, err
 	}
 
@@ -84,10 +90,14 @@ func Test(h *message.Handler, i ...*input.Options) {
 }
 
 func parse(h *message.Handler, i ...*input.Options) (*doc.Doc, error) {
-	d := doc.New()
-	if err := d.Parse(h, i...); err != nil {
-		return nil, err
+	for _, item := range i {
+		if err := item.Sanitize(); err != nil {
+			return nil, err
+		}
 	}
+
+	d := doc.New()
+	d.Parse(h, i...)
 
 	if err := d.Sanitize(); err != nil {
 		h.Error(message.Erro, err)

@@ -13,11 +13,7 @@ import (
 
 // Render 渲染 doc 的内容
 func Render(d *doc.Doc, opt *Options) error {
-	if err := opt.sanitize(false); err != nil {
-		return err
-	}
-
-	buf, err := buffer(d, opt)
+	buf, err := Buffer(d, opt)
 	if err != nil {
 		return err
 	}
@@ -27,14 +23,6 @@ func Render(d *doc.Doc, opt *Options) error {
 
 // Buffer 将内容导出到内存
 func Buffer(d *doc.Doc, opt *Options) (*bytes.Buffer, error) {
-	if err := opt.sanitize(true); err != nil {
-		return nil, err
-	}
-
-	return buffer(d, opt)
-}
-
-func buffer(d *doc.Doc, opt *Options) (*bytes.Buffer, error) {
 	filterDoc(d, opt)
 
 	buf := new(bytes.Buffer)

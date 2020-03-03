@@ -16,40 +16,40 @@ func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	var o *Options
-	a.Error(o.sanitize())
+	a.Error(o.Sanitize())
 
 	o = &Options{}
-	a.Error(o.sanitize())
+	a.Error(o.Sanitize())
 
 	o.Dir = "not exists"
-	a.Error(o.sanitize())
+	a.Error(o.Sanitize())
 
 	o.Dir = "./"
-	a.Error(o.sanitize())
+	a.Error(o.Sanitize())
 
 	o.Lang = "not exists"
-	a.Error(o.sanitize())
+	a.Error(o.Sanitize())
 
 	// 未指定扩展名，则使用系统默认的
 	language := lang.Get("go")
 	o.Lang = "go"
-	a.NotError(o.sanitize())
+	a.NotError(o.Sanitize())
 	a.Equal(o.Exts, language.Exts)
 
 	// 指定了 Exts，自动调整扩展名样式。
 	o.Lang = "go"
 	o.Exts = []string{"go", ".g2"}
-	a.NotError(o.sanitize())
+	a.NotError(o.Sanitize())
 	a.Equal(o.Exts, []string{".go", ".g2"})
 
 	// 特定的编码
-	o.Encoding = "GBK"
-	a.NotError(o.sanitize())
+	o.Encoding = "GbK"
+	a.NotError(o.Sanitize())
 	a.Equal(o.encoding, simplifiedchinese.GBK)
 
 	// 不存在的编码
 	o.Encoding = "not-exists---"
-	a.Error(o.sanitize())
+	a.Error(o.Sanitize())
 }
 
 func TestRecursivePath(t *testing.T) {

@@ -15,28 +15,51 @@ import (
 func TestParse(t *testing.T) {
 	a := assert.New(t)
 
-	erro, _, h := messagetest.MessageHandler()
-
 	php := &input.Options{
 		Lang:      "php",
 		Dir:       "../input/testdata",
 		Recursive: true,
 		Encoding:  "gbk",
 	}
+	a.NotError(php.Sanitize())
 
 	c := &input.Options{
 		Lang:      "c++",
 		Dir:       "../input/testdata",
 		Recursive: true,
 	}
+	a.NotError(c.Sanitize())
 
 	doc := New()
-	err := doc.Parse(h, php, c)
-	a.NotError(err).NotNil(doc).
-		Equal(1, len(doc.Apis)).
+	a.NotNil(doc)
+	erro, _, h := messagetest.MessageHandler()
+	doc.Parse(h, php, c)
+	a.NotError(doc.Sanitize())
+	a.Equal(2, len(doc.Apis)).
 		Equal(doc.Version, "1.1.1")
 	api := doc.Apis[0]
 	a.Equal(api.Method, "GET")
+	h.Stop()
+	a.Empty(erro.String())
+}
+
+func TestParseFile(t *testing.T) {
+	a := assert.New(t)
+
+	c := &input.Options{
+		Lang:      "c++",
+		Dir:       "../input/testdata",
+		Recursive: true,
+	}
+	a.NotError(c.Sanitize())
+
+	doc := New()
+	a.NotNil(doc)
+	erro, _, h := messagetest.MessageHandler()
+	doc.ParseFile(h, "../input/testdata/testfile.h", c)
+	a.NotError(doc.Sanitize())
+	a.Equal(0, len(doc.Apis)).
+		Equal(doc.Version, "1.1.1")
 	h.Stop()
 	a.Empty(erro.String())
 }

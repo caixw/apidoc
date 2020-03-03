@@ -40,38 +40,24 @@ func (doc *Doc) DeleteFile(file string) {
 	}
 }
 
-var (
-	apidocBegin = []byte("<apidoc")
-	apiBegin    = []byte("<api")
-)
-
-// Parse 分析从 input 中获取的代码块
+// Parse 分析从 opt 中获取的代码块
 //
 // 所有与解析有关的错误均通过 h 输出。
 // 如果是配置文件的错误，则通过 error 返回
-func (doc *Doc) Parse(h *message.Handler, opt ...*input.Options) error {
-	done := make(chan struct{})
-	blocks := make(chan input.Block, 500)
-
-	go func() {
-		for block := range blocks {
-			if err := doc.ParseBlock(&block); err != nil {
-				h.Error(message.Erro, err)
-			}
-		}
-		done <- struct{}{}
-	}()
-
-	if err := input.Parse(blocks, h, opt...); err != nil {
-		close(blocks)
-		return err
-	}
-	close(blocks)
-	<-done
-	return nil
+func (doc *Doc) Parse(h *message.Handler, o ...*input.Options) {
+	doc.parse(h, func(blocks chan input.Block) {
+		input.Parse(blocks, h, o...)
+	})
 }
 
+// ParseFile 分析 path 的内容，并将其中的文档解析至 doc
 func (doc *Doc) ParseFile(h *message.Handler, path string, o *input.Options) {
+	doc.parse(h, func(blocks chan input.Block) {
+		input.ParseFile(blocks, h, path, o)
+	})
+}
+
+func (doc *Doc) parse(h *message.Handler, g func(chan input.Block)) {
 	done := make(chan struct{})
 	blocks := make(chan input.Block, 50)
 
@@ -84,10 +70,15 @@ func (doc *Doc) ParseFile(h *message.Handler, path string, o *input.Options) {
 		done <- struct{}{}
 	}()
 
-	input.ParseFile(blocks, h, path, o)
+	g(blocks)
 	close(blocks)
 	<-done
 }
+
+var (
+	apidocBegin = []byte("<apidoc")
+	apiBegin    = []byte("<api")
+)
 
 // ParseBlock 分析 b 的内容并填充到 doc
 func (doc *Doc) ParseBlock(b *input.Block) error {

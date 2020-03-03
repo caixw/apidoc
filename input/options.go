@@ -41,7 +41,8 @@ type Options struct {
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
 
-func (opt *Options) sanitize() *message.SyntaxError {
+// Sanitize 验证参数正确性
+func (opt *Options) Sanitize() error {
 	if opt == nil {
 		return message.NewLocaleError("", "", 0, locale.ErrRequired)
 	}

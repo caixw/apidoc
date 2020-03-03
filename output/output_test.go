@@ -16,6 +16,7 @@ func TestRender(t *testing.T) {
 	o := &Options{
 		Path: "./apidoc.xml",
 	}
+	a.NotError(o.Sanitize())
 
 	a.NotError(Render(doc, o))
 }
@@ -28,6 +29,7 @@ func TestRender_openapiJSON(t *testing.T) {
 		Type: OpenapiJSON,
 		Path: "./openapi.json",
 	}
+	a.NotError(o.Sanitize())
 
 	a.NotError(Render(doc, o))
 }
@@ -37,13 +39,9 @@ func TestBuffer(t *testing.T) {
 	doc := doctest.Get()
 
 	o := &Options{}
+	a.NotError(o.Sanitize())
 	buf, err := Buffer(doc, o)
 	a.NotError(err).NotNil(buf)
-
-	// 返回错误
-	o = &Options{Type: "not-exists"}
-	buf, err = Buffer(doc, o)
-	a.Error(err).Nil(buf)
 }
 
 func TestFilterDoc(t *testing.T) {
@@ -51,6 +49,7 @@ func TestFilterDoc(t *testing.T) {
 
 	d := doctest.Get()
 	o := &Options{}
+	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(3, len(d.Tags))
 
@@ -58,6 +57,7 @@ func TestFilterDoc(t *testing.T) {
 	o = &Options{
 		Tags: []string{"t1"},
 	}
+	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(1, len(d.Tags)).
 		Equal(2, len(d.Apis))
@@ -66,6 +66,7 @@ func TestFilterDoc(t *testing.T) {
 	o = &Options{
 		Tags: []string{"t1", "t2"},
 	}
+	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(2, len(d.Tags)).
 		Equal(2, len(d.Apis))
@@ -74,6 +75,7 @@ func TestFilterDoc(t *testing.T) {
 	o = &Options{
 		Tags: []string{"tag1"},
 	}
+	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(1, len(d.Tags)).
 		Equal(1, len(d.Apis))
@@ -82,6 +84,7 @@ func TestFilterDoc(t *testing.T) {
 	o = &Options{
 		Tags: []string{"not-exists"},
 	}
+	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(0, len(d.Tags)).
 		Equal(0, len(d.Apis))

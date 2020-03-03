@@ -65,8 +65,8 @@ func (o *Options) contains(tags ...string) bool {
 	return false
 }
 
-// buf 表示是否数据只存在于内存，如果为 true，则不需要检测 Path 是否正常。
-func (o *Options) sanitize(buf bool) *message.SyntaxError {
+// Sanitize 验证 options 的数据是否都合规
+func (o *Options) Sanitize() error {
 	if o == nil {
 		return message.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
@@ -87,10 +87,6 @@ func (o *Options) sanitize(buf bool) *message.SyntaxError {
 	}
 
 	o.xml = strings.HasSuffix(o.Type, "+xml")
-
-	if o.Path == "" && !buf {
-		return message.NewLocaleError("", "path", 0, locale.ErrRequired)
-	}
 
 	if o.xml {
 		if o.Style == "" {

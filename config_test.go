@@ -13,6 +13,7 @@ import (
 	"github.com/caixw/apidoc/v6/input"
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/message/messagetest"
 )
 
@@ -71,26 +72,34 @@ func TestConfig_sanitize(t *testing.T) {
 	// 错误的版本号格式
 	conf := &Config{}
 	err := conf.sanitize("./apidoc.yaml")
+	err2, ok := err.(*message.SyntaxError)
 	a.Error(err).
-		Equal(err.Field, "version")
+		True(ok).
+		Equal(err2.Field, "version")
 
 	// 与当前程序的版本号不兼容
 	conf.Version = "1.0"
 	err = conf.sanitize("./apidoc.yaml")
+	err2, ok = err.(*message.SyntaxError)
 	a.Error(err).
-		Equal(err.Field, "version")
+		True(ok).
+		Equal(err2.Field, "version")
 
 	// 未声明 inputs
 	conf.Version = "6.0.1"
 	err = conf.sanitize("./apidoc.yaml")
+	err2, ok = err.(*message.SyntaxError)
 	a.Error(err).
-		Equal(err.Field, "inputs")
+		True(ok).
+		Equal(err2.Field, "inputs")
 
 	// 未声明 output
 	conf.Inputs = []*input.Options{{}}
 	err = conf.sanitize("./apidoc.yaml")
+	err2, ok = err.(*message.SyntaxError)
 	a.Error(err).
-		Equal(err.Field, "output")
+		True(ok).
+		Equal(err2.Field, "output")
 }
 
 func TestConfig_Test(t *testing.T) {

@@ -26,25 +26,23 @@ func TestOptions_contains(t *testing.T) {
 	a.False(o.contains(""))
 }
 
-func TestOptions_sanitize(t *testing.T) {
+func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	var o *Options
-	a.Error(o.sanitize(false))
+	a.Error(o.Sanitize())
 
 	// 默认的 Type
 	o = &Options{}
-	a.Error(o.sanitize(false))
+	a.NotError(o.Sanitize())
 	a.Equal(o.marshal, marshaler(apidocMarshaler))
 
 	o = &Options{Type: "invalid-type"}
-	a.Error(o.sanitize(false))
+	a.Error(o.Sanitize())
 
-	o = &Options{}
-	a.NotError(o.sanitize(true))
-
+	o = &Options{Type: ApidocXML}
 	o.Path = "./testdir/apidoc.json"
-	a.NotError(o.sanitize(false))
+	a.NotError(o.Sanitize())
 	a.Equal(o.Style, stylesheetURL).
 		Equal(2, len(o.procInst)).
 		Contains(o.procInst[1], stylesheetURL)

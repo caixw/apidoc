@@ -24,13 +24,16 @@ func TestParse(t *testing.T) {
 		Recursive: true,
 		Encoding:  "gbk",
 	}
+	a.NotError(php.Sanitize())
 
 	c := &Options{
 		Lang:      "c++",
 		Dir:       "./testdata",
 		Recursive: true,
 	}
-	a.NotError(Parse(blocks, h, php, c))
+	a.NotError(c.Sanitize())
+
+	Parse(blocks, h, php, c)
 	close(blocks)
 
 	a.Equal(5, len(blocks))
@@ -47,7 +50,7 @@ func TestParseFile(t *testing.T) {
 		Dir:       "./testdata",
 		Recursive: true,
 	}
-	a.NotError(o.sanitize())
+	a.NotError(o.Sanitize())
 	ParseFile(blocks, h, "./testdata/testfile.c", o)
 	close(blocks)
 
