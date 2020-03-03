@@ -49,6 +49,7 @@ type InitializeParams struct {
 	ClientInfo *ServerInfo `json:"clientInfo,omitempty"`
 }
 
+// Folders 获取客户端当前打开的所有项目
 func (p *InitializeParams) Folders() []WorkspaceFolder {
 	if len(p.WorkspaceFolders) > 0 {
 		return p.WorkspaceFolders
@@ -61,9 +62,15 @@ func (p *InitializeParams) Folders() []WorkspaceFolder {
 		}}
 	}
 	if p.RootPath != "" {
+		var prefix string
+		if p.RootPath[0] == '/' {
+			prefix = "file://"
+		} else {
+			prefix = "file:///"
+		}
 		return []WorkspaceFolder{{
 			Name: path.Base(p.RootPath),
-			URI:  DocumentURI(p.RootPath),
+			URI:  DocumentURI(prefix + p.RootPath),
 		}}
 	}
 
@@ -76,14 +83,6 @@ func (p *InitializeParams) Folders() []WorkspaceFolder {
 type ServerInfo struct {
 	Name    string `json:"name"`
 	Version string `json:"version,omitempty"`
-}
-
-// WorkspaceRootPath 从 RootURI 和 RootPath 中获取正确的值
-func (p *InitializeParams) WorkspaceRootPath() string {
-	if p.RootURI != "" {
-		return string(p.RootURI)
-	}
-	return p.RootPath
 }
 
 // InitializeResult initialize 服务的返回结构
