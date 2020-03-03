@@ -55,7 +55,7 @@ type TextDocumentPositionParams struct {
 	Position Position `json:"position"`
 }
 
-// Text document specific client capabilities.
+// TextDocumentClientCapabilities text document specific client capabilities.
 type TextDocumentClientCapabilities struct {
 	Synchronization struct {
 		// Whether text document synchronization supports dynamic registration.
@@ -151,7 +151,7 @@ type TextDocumentClientCapabilities struct {
 				// simple label string.
 				//
 				// Since 3.14.0
-				LabelOffsetSupport bool `json:"labelOffsetSupport,omitmepty"`
+				LabelOffsetSupport bool `json:"labelOffsetSupport,omitempty"`
 			} `json:"parameterInformation,omitempty"`
 		} `json:"signatureInformation,omitempty"`
 	} `json:"signatureHelp,omitempty"`
@@ -484,8 +484,9 @@ type DidChangeTextDocumentParams struct {
 	ContentChanges []TextDocumentContentChangeEvent `json:"contentChanges"`
 }
 
-// An event describing a change to a text document. If range and rangeLength are omitted
-// the new text is considered to be the full content of the document.
+// TextDocumentContentChangeEvent an event describing a change to a text document.
+// If range and rangeLength are omitted the new text is considered to be
+// the full content of the document.
 type TextDocumentContentChangeEvent struct {
 	// The range of the document that changed.
 	Range *Range `json:"range,omitempty"`
