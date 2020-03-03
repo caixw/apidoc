@@ -1,5 +1,5 @@
-apidoc
-======
+# apidoc
+
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fcaixw%2Fapidoc%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/caixw/apidoc/goto?ref=master)
 [![Latest Release](https://img.shields.io/github/release/caixw/apidoc.svg?style=flat-square)](https://github.com/caixw/apidoc/releases/latest)
 [![Go version](https://img.shields.io/badge/Go-1.13-brightgreen.svg?style=flat)](https://golang.org)
@@ -52,8 +52,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-使用
-----
+## 使用
 
 在 <https://github.com/caixw/apidoc/releases> 提供了主流系统下可用软件，可直接下载使用。
 如果你使用的系统不在此列，则需要手动下载编译。
@@ -67,8 +66,7 @@ LANG=lang apidoc
 
 将其中的 lang 设置为你需要的语言。
 
-集成
-----
+## 集成
 
 若需要将 apidoc 当作包集成到其它 Go 程序中，可参考以下代码：
 
@@ -89,13 +87,11 @@ apidoc.Build(h, output, inputs...)
 
 具体可查看文档：<https://pkg.go.dev/github.com/caixw/apidoc/v6>
 
-参与开发
-----
+## 参与开发
 
 请阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 文件的相关内容。
 
-版权
-----
+## 版权
 
 本项目源码采用 [MIT](https://opensource.org/licenses/MIT) 开源授权许可证，完整的授权说明可在 [LICENSE](LICENSE) 文件中找到。
 
