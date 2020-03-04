@@ -23,13 +23,13 @@ type Blocker interface {
 	BeginFunc(l *Lexer) bool
 
 	// 确定 l 的当前位置是否匹配 blocker 的结束位置，若匹配则返回中间的字符串。
-	// 返回内容以行为单位进行分割。
 	//
-	// 如果不使用返回的内容，可以返回空值。
-	// 比如字符串，只需要返回 true，以确保找到了结束位置，但是内容可以直接返回 nil。
+	// ok 表示是否正确匹配；
+	// data 表示匹配的内容，如果不使用返回的内容，可以返回空值。
+	// 比如字符串，只需要返回 true，以确保找到了结束位置，但是 data 可以直接返回 nil。
 	//
 	// 如果在到达文件末尾都没有找到结束符，则应该返回 nil, false
-	EndFunc(l *Lexer) ([]byte, bool)
+	EndFunc(l *Lexer) (data []byte, ok bool)
 }
 
 // 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
