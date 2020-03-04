@@ -68,7 +68,7 @@ func Load(h *message.Handler, path string, servers map[string]string) (http.Hand
 
 	// 加载并验证
 	d := doc.New()
-	if err = d.FromXML(&input.Block{File: path, Data: data}); err != nil {
+	if err = d.ParseBlock(&input.Block{File: path, Data: data}); err != nil {
 		return nil, err
 	}
 

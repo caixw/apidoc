@@ -18,7 +18,7 @@ func loadAPI(a *assert.Assertion) *API {
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	a.NotError(doc.NewAPI(&input.Block{File: "", Line: 1, Data: data}))
+	a.NotError(doc.appendAPI(&input.Block{File: "", Line: 1, Data: data}))
 	return doc.Apis[0]
 }
 
@@ -66,7 +66,7 @@ func TestAPI_UnmarshalXML(t *testing.T) {
 		</header>
 		<response type="number" summary="summary" />
 	</api>`
-	a.Error(doc.NewAPI(&input.Block{Data: []byte(data)}))
+	a.Error(doc.appendAPI(&input.Block{Data: []byte(data)}))
 }
 
 // 测试错误提示的行号是否正确
@@ -75,13 +75,13 @@ func TestAPI_lineNumber(t *testing.T) {
 	doc := loadDoc(a)
 
 	data := []byte(`<api version="x.0.1"></api>`)
-	err := doc.NewAPI(&input.Block{File: "file", Line: 11, Data: data})
+	err := doc.appendAPI(&input.Block{File: "file", Line: 11, Data: data})
 	a.Equal(err.(*message.SyntaxError).Line, 11)
 
 	data = []byte(`<api version="0.1.1">
 
 	    <callback method="not-exists" />
 	</api>`)
-	err = doc.NewAPI(&input.Block{File: "file", Line: 12, Data: data})
+	err = doc.appendAPI(&input.Block{File: "file", Line: 12, Data: data})
 	a.Equal(err.(*message.SyntaxError).Line, 14)
 }

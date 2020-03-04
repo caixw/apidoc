@@ -40,20 +40,6 @@ type API struct {
 	doc   *Doc
 }
 
-// NewAPI 从 b.Data 中解析新的 API 对象
-func (doc *Doc) NewAPI(b *input.Block) error {
-	api := &API{
-		Block: b,
-		doc:   doc,
-	}
-	if err := xml.Unmarshal(b.Data, api); err != nil {
-		return err
-	}
-
-	doc.Apis = append(doc.Apis, api)
-	return nil
-}
-
 type shadowAPI API
 
 // UnmarshalXML 实现 xml.Unmarshaler 接口

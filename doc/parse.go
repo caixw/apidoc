@@ -4,6 +4,7 @@ package doc
 
 import (
 	"bytes"
+	"encoding/xml"
 
 	xmessage "golang.org/x/text/message"
 
@@ -84,13 +85,32 @@ var (
 func (doc *Doc) ParseBlock(b *input.Block) error {
 	switch {
 	case bytes.HasPrefix(b.Data, apidocBegin):
-		if err := doc.FromXML(b); err != nil {
+		if err := doc.fromXML(b); err != nil {
 			return err
 		}
 	case bytes.HasPrefix(b.Data, apiBegin):
-		if err := doc.NewAPI(b); err != nil {
+		if err := doc.appendAPI(b); err != nil {
 			return err
 		}
 	}
+	return nil
+}
+
+func (doc *Doc) fromXML(b *input.Block) error {
+	doc.Block = b
+	return xml.Unmarshal(b.Data, doc)
+}
+
+// appendAPI 从 b.Data 中解析新的 API 对象
+func (doc *Doc) appendAPI(b *input.Block) error {
+	api := &API{
+		Block: b,
+		doc:   doc,
+	}
+	if err := xml.Unmarshal(b.Data, api); err != nil {
+		return err
+	}
+
+	doc.Apis = append(doc.Apis, api)
 	return nil
 }

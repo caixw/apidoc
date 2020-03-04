@@ -190,7 +190,7 @@ func Mock(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handl
 // servers 为文档中所有 server 以及对应的路由前缀。
 func MockBuffer(h *message.Handler, data []byte, servers map[string]string) (http.Handler, error) {
 	d := doc.New()
-	if err := d.FromXML(&input.Block{Data: data}); err != nil {
+	if err := d.ParseBlock(&input.Block{Data: data}); err != nil {
 		return nil, err
 	}
 

@@ -42,18 +42,18 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.0.0" created="2020-01-11T22:24:34+08:00" version="1.1.1">
+<apidoc apidoc="6.0.0" created="2020-03-05T00:27:52+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
-
-    <p>这是一个用于测试的文档用例</p>
-    状态码：
-    <ul>
-        <li>40300:xxx</li>
-        <li>40301:xxx</li>
-    </ul>
-
-    ]]></description>
+ 
+     <p>这是一个用于测试的文档用例</p>
+     状态码：
+     <ul>
+         <li>40300:xxx</li>
+         <li>40301:xxx</li>
+     </ul>
+ 
+     ]]></description>
 	<contact name="name">
 		<url>https://example.com</url>
 		<email>example@example.com</email>
@@ -63,8 +63,8 @@ var data = []*FileInfo{{
 	<tag name="t2" title="标签2"></tag>
 	<server name="admin" url="https://api.example.com/admin">
 		<description type="html"><![CDATA[
-    后台管理接口，
-    ]]></description>
+     后台管理接口，
+     ]]></description>
 	</server>
 	<server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" summary="客户端接口"></server>
 	<server name="client" url="https://api.example.com" summary="客户端接口"></server>
@@ -76,11 +76,11 @@ var data = []*FileInfo{{
 			</query>
 		</path>
 		<description type="markdown"><![CDATA[
-
-<p>这是关于接口的详细说明文档</p><br />
-可以是一个 HTML 内容
-
-]]></description>
+ 
+ <p>这是关于接口的详细说明文档</p><br />
+ 可以是一个 HTML 内容
+ 
+ ]]></description>
 		<response name="user" type="object" array="true" status="200">
 			<param xml-attr="true" name="count" type="number" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
@@ -104,11 +104,11 @@ var data = []*FileInfo{{
 	<api method="POST" summary="添加用户">
 		<path path="/users"></path>
 		<description type="markdown"><![CDATA[
-
-这是关于接口的详细说明文档<br />
-可以是一个 HTML 内容
-
-]]></description>
+ 
+ 这是关于接口的详细说明文档<br />
+ 可以是一个 HTML 内容
+ 
+ ]]></description>
 		<request type="object">
 			<param name="count" type="number" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
@@ -132,13 +132,13 @@ var data = []*FileInfo{{
 				</param>
 			</param>
 			<example mimetype="application/xml"><![CDATA[
-        
-            <users count="20">
-                <user id="20" name="xx"></user>
-                <user id="21" name="xx"></user>
-            </users>
-        
-        ]]></example>
+         
+             <users count="20">
+                 <user id="20" name="xx"></user>
+                 <user id="21" name="xx"></user>
+             </users>
+         
+         ]]></example>
 		</request>
 		<response array="true" status="200" mimetype="application/json"></response>
 		<header name="name" type="string">
@@ -154,11 +154,11 @@ var data = []*FileInfo{{
 			<param name="id" type="number" summary="用户 ID"></param>
 		</path>
 		<description type="markdown"><![CDATA[
-
-这是关于接口的详细说明文档<br />
-可以是一个 HTML 内容<br />
-
-    ]]></description>
+ 
+ 这是关于接口的详细说明文档<br />
+ 可以是一个 HTML 内容<br />
+ 
+     ]]></description>
 		<server>admin</server>
 	</api>
 	<api method="GET" summary="获取用户详情">
@@ -172,11 +172,11 @@ var data = []*FileInfo{{
 			</query>
 		</path>
 		<description type="markdown"><![CDATA[
-
-这是关于接口的详细说明文档
-可以是一个 HTML 内容
-
-    ]]></description>
+ 
+ 这是关于接口的详细说明文档
+ 可以是一个 HTML 内容
+ 
+     ]]></description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="id" type="number" summary="用户 ID"></param>
 			<param name="name" type="string" summary="用户名"></param>
@@ -198,11 +198,11 @@ var data = []*FileInfo{{
 			</query>
 		</path>
 		<description type="html"><![CDATA[
-
-<p>这是关于接口的详细说明文档</p>
-<p style="color:red">可以是一个 HTML 内容</p>
-
-    ]]></description>
+ 
+ <p>这是关于接口的详细说明文档</p>
+ <p style="color:red">可以是一个 HTML 内容</p>
+ 
+     ]]></description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="count" type="number" optional="true" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
@@ -216,36 +216,36 @@ var data = []*FileInfo{{
 				</param>
 			</param>
 			<example mimetype="application/json"><![CDATA[
-{
- count: 5,
- list: [
-   {id:1, name: 'name1', 'groups': [1,2]},
-   {id:2, name: 'name2', 'groups': [1,2]}
- ]
-}
-        ]]></example>
+ {
+  count: 5,
+  list: [
+    {id:1, name: 'name1', 'groups': [1,2]},
+    {id:2, name: 'name2', 'groups': [1,2]}
+  ]
+ }
+         ]]></example>
 			<header name="name" type="string" summary="desc"></header>
 			<header name="name1" type="string" summary="desc1"></header>
 		</response>
 		<callback method="POST" summary="回调函数">
 			<description type="html"><![CDATA[
-
-        <p style="color:red">这是一个回调函数的详细说明</p>
-        <p>为一个 html 文档</p>
-
-    ]]></description>
+ 
+         <p style="color:red">这是一个回调函数的详细说明</p>
+         <p>为一个 html 文档</p>
+ 
+     ]]></description>
 			<response type="string" status="200" mimetype="text/plain"></response>
 			<request type="object" mimetype="application/json">
 				<param name="id" type="number" default="1" summary="id"></param>
 				<param name="age" type="number" summary="age"></param>
 				<example mimetype="application/json"><![CDATA[
-            
-            {
-                id:1,
-                sex: male,
-            }
-            
-            ]]></example>
+             
+             {
+                 id:1,
+                 sex: male,
+             }
+             
+             ]]></example>
 			</request>
 		</callback>
 		<server>client</server>
@@ -1131,6 +1131,7 @@ function initGotoTop() {
             <item name="inputs.lang">源文件類型。具體支持的類型可通過 -l 參數進行查找</item>
             <item name="output">控制輸出行為</item>
             <item name="output.path">指定輸出的文件名，包含路徑信息。</item>
+            <item name="output.type">指定輸出的文件格式，值可以是 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>，其中 <var>apidoc+xml</var> 為默認值。</item>
             <item name="output.tags">只輸出與這些標簽相關聯的文檔，默認為全部。</item>
             <item name="output.style">為 XML 文件指定的 XSL 文件。</item>
         </type>
@@ -1293,7 +1294,7 @@ function initGotoTop() {
 
         <type name="date">
             <description>
-                <p>采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp></p>>
+                <p>采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp></p>
             </description>
         </type>
     </types>
@@ -1335,6 +1336,7 @@ function initGotoTop() {
             <item name="inputs.lang" type="string" required="true" />
             <item name="output" type="object" required="true" />
             <item name="output.path" type="string" required="true" />
+            <item name="output.type" type="string" required="false" />
             <item name="output.tags" type="string[]" required="false" />
             <item name="output.style" type="string" required="false" />
         </type>
