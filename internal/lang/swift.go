@@ -31,8 +31,8 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *Lexer) bool {
 	return false
 }
 
-func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) ([][]byte, bool) {
-	lines := make([][]byte, 0, 20)
+func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) ([]byte, bool) {
+	lines := make([]byte, 0, 200)
 	line := make([]byte, 0, 100)
 
 LOOP:
@@ -44,7 +44,7 @@ LOOP:
 			b.level--
 			if b.level == 0 {
 				if len(line) > 0 { // 如果 len(line) == 0 表示最后一行仅仅只有一个结束符
-					lines = append(lines, filterSymbols(line, b.prefix))
+					lines = append(lines, filterSymbols(line, b.prefix)...)
 				}
 				break LOOP
 			}
@@ -60,7 +60,7 @@ LOOP:
 			l.pos++
 			line = append(line, r)
 			if r == '\n' {
-				lines = append(lines, filterSymbols(line, b.prefix))
+				lines = append(lines, filterSymbols(line, b.prefix)...)
 				line = make([]byte, 0, 100)
 			}
 		}

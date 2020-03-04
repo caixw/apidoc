@@ -29,7 +29,7 @@ type Blocker interface {
 	// 比如字符串，只需要返回 true，以确保找到了结束位置，但是内容可以直接返回 nil。
 	//
 	// 如果在到达文件末尾都没有找到结束符，则应该返回 nil, false
-	EndFunc(l *Lexer) ([][]byte, bool)
+	EndFunc(l *Lexer) ([]byte, bool)
 }
 
 // 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
@@ -63,7 +63,7 @@ func (b *block) BeginFunc(l *Lexer) bool {
 }
 
 // EndFunc 实现 Blocker.EndFunc
-func (b *block) EndFunc(l *Lexer) ([][]byte, bool) {
+func (b *block) EndFunc(l *Lexer) ([]byte, bool) {
 	switch b.Type {
 	case blockTypeString:
 		return b.endString(l)
@@ -81,7 +81,7 @@ func (b *block) EndFunc(l *Lexer) ([][]byte, bool) {
 // 正常找到结束符的返回 true，否则返回 false。
 //
 // 第一个返回参数无用，仅是为了统一函数签名
-func (b *block) endString(l *Lexer) ([][]byte, bool) {
+func (b *block) endString(l *Lexer) ([]byte, bool) {
 	for {
 		switch {
 		case l.AtEOF():
@@ -97,8 +97,8 @@ func (b *block) endString(l *Lexer) ([][]byte, bool) {
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-func (b *block) endSComments(l *Lexer) ([][]byte, bool) {
-	lines := make([][]byte, 0, 20)
+func (b *block) endSComments(l *Lexer) ([]byte, bool) {
+	data := make([]byte, 0, 20)
 
 LOOP:
 	for {
@@ -108,12 +108,12 @@ LOOP:
 			l.pos++
 
 			if l.AtEOF() {
-				lines = append(lines, l.data[start:l.pos])
+				data = append(data, l.data[start:l.pos]...)
 				break LOOP
 			}
 
 			if r == '\n' {
-				lines = append(lines, filterSymbols(l.data[start:l.pos], b.Escape))
+				data = append(data, filterSymbols(l.data[start:l.pos], b.Escape)...)
 				break
 			}
 		}
@@ -124,17 +124,17 @@ LOOP:
 		}
 	}
 
-	if len(lines) > 0 { // 最后一个换行符返还给 Lexer
+	if len(data) > 0 { // 最后一个换行符返还给 Lexer
 		l.pos--
 	}
 
-	return lines, true
+	return data, true
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *block) endMComments(l *Lexer) ([][]byte, bool) {
-	lines := make([][]byte, 0, 20)
+func (b *block) endMComments(l *Lexer) ([]byte, bool) {
+	data := make([]byte, 0, 20)
 	start := l.pos
 
 	for {
@@ -143,14 +143,14 @@ func (b *block) endMComments(l *Lexer) ([][]byte, bool) {
 			return nil, false
 		case l.match(b.End):
 			if pos := l.pos - len(b.End); pos > start {
-				lines = append(lines, filterSymbols(l.data[start:pos], b.Escape))
+				data = append(data, filterSymbols(l.data[start:pos], b.Escape)...)
 			}
-			return lines, true
+			return data, true
 		default:
 			r := l.data[l.pos]
 			l.pos++
 			if r == '\n' {
-				lines = append(lines, filterSymbols(l.data[start:l.pos], b.Escape))
+				data = append(data, filterSymbols(l.data[start:l.pos], b.Escape)...)
 				start = l.pos
 			}
 		}

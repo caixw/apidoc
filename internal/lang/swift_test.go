@@ -20,8 +20,8 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	ret, ok := b.EndFunc(l)
 	a.True(ok).
-		Equal(ret, [][]byte{[]byte(" *123*123*")}). // 返回内容
-		True(l.AtEOF())                             // 到达末尾
+		Equal(string(ret), " *123*123*"). // 返回内容
+		True(l.AtEOF())                   // 到达末尾
 
 	// 多行，最后一行没有任何内容，则不返回数据
 	l = &Lexer{data: []byte(`/**
@@ -31,7 +31,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(ret, [][]byte{[]byte("\n"), []byte(" xx\n"), []byte(" yy\n")})
+		Equal(string(ret), "\n xx\n yy\n")
 
 	l = &Lexer{data: []byte(`/**
 	* xx/yy/zz
@@ -40,22 +40,22 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(ret, [][]byte{[]byte("\n"), []byte(" xx/yy/zz\n"), []byte(" yy/zz/\n"), []byte("\t")})
+		Equal(string(ret), "\n xx/yy/zz\n yy/zz/\n\t")
 
 	// 嵌套注释
 	l = &Lexer{data: []byte(`/*0/*1/*2*/*/*/`)}
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(ret, [][]byte{[]byte("0/*1/*2*/*/")}). // 返回内容
-		True(l.AtEOF())                              // 到达末尾
+		Equal(string(ret), "0/*1/*2*/*/"). // 返回内容
+		True(l.AtEOF())                    // 到达末尾
 
 		// 多出 end 匹配项
 	l = &Lexer{data: []byte(`/*0/*1/*2*/*/*/*/`)}
 	a.True(b.BeginFunc(l))
 	ret, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(ret, [][]byte{[]byte("0/*1/*2*/*/")}). // 返回内容
+		Equal(string(ret), "0/*1/*2*/*/"). // 返回内容
 		Equal(string(l.data[l.pos:]), "*/")
 
 	// 缺少 end 匹配项

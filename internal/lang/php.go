@@ -44,7 +44,7 @@ func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 	return true
 }
 
-func (b *phpDocBlock) EndFunc(l *Lexer) ([][]byte, bool) {
+func (b *phpDocBlock) EndFunc(l *Lexer) ([]byte, bool) {
 	for {
 		switch {
 		case l.AtEOF():
