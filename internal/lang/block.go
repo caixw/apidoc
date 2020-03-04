@@ -20,7 +20,7 @@ const (
 // 通过 EndFunc 查找结束位置，并返回所有的块内容。
 type Blocker interface {
 	// 确定 l 的当前位置是否匹配 blocker 的起始位置。
-	BeginFunc(l *lexer) bool
+	BeginFunc(l *Lexer) bool
 
 	// 确定 l 的当前位置是否匹配 blocker 的结束位置，若匹配则返回中间的字符串。
 	// 返回内容以行为单位进行分割。
@@ -29,7 +29,7 @@ type Blocker interface {
 	// 比如字符串，只需要返回 true，以确保找到了结束位置，但是内容可以直接返回 nil。
 	//
 	// 如果在到达文件末尾都没有找到结束符，则应该返回 nil, false
-	EndFunc(l *lexer) ([][]byte, bool)
+	EndFunc(l *Lexer) ([][]byte, bool)
 }
 
 // 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
@@ -58,12 +58,12 @@ type block struct {
 }
 
 // BeginFunc 实现 Blocker.BeginFunc
-func (b *block) BeginFunc(l *lexer) bool {
+func (b *block) BeginFunc(l *Lexer) bool {
 	return l.match(b.Begin)
 }
 
 // EndFunc 实现 Blocker.EndFunc
-func (b *block) EndFunc(l *lexer) ([][]byte, bool) {
+func (b *block) EndFunc(l *Lexer) ([][]byte, bool) {
 	switch b.Type {
 	case blockTypeString:
 		return b.endString(l)
@@ -81,10 +81,10 @@ func (b *block) EndFunc(l *lexer) ([][]byte, bool) {
 // 正常找到结束符的返回 true，否则返回 false。
 //
 // 第一个返回参数无用，仅是为了统一函数签名
-func (b *block) endString(l *lexer) ([][]byte, bool) {
+func (b *block) endString(l *Lexer) ([][]byte, bool) {
 	for {
 		switch {
-		case l.atEOF():
+		case l.AtEOF():
 			return nil, false
 		case (len(b.Escape) > 0) && l.match(b.Escape):
 			l.pos++
@@ -97,7 +97,7 @@ func (b *block) endString(l *lexer) ([][]byte, bool) {
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-func (b *block) endSComments(l *lexer) ([][]byte, bool) {
+func (b *block) endSComments(l *Lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 
 LOOP:
@@ -107,7 +107,7 @@ LOOP:
 			r := l.data[l.pos]
 			l.pos++
 
-			if l.atEOF() {
+			if l.AtEOF() {
 				lines = append(lines, l.data[start:l.pos])
 				break LOOP
 			}
@@ -124,7 +124,7 @@ LOOP:
 		}
 	}
 
-	if len(lines) > 0 { // 最后一个换行符返还给 lexer
+	if len(lines) > 0 { // 最后一个换行符返还给 Lexer
 		l.pos--
 	}
 
@@ -133,13 +133,13 @@ LOOP:
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *block) endMComments(l *lexer) ([][]byte, bool) {
+func (b *block) endMComments(l *Lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 	start := l.pos
 
 	for {
 		switch {
-		case l.atEOF(): // 没有找到结束符号，直接到达文件末尾
+		case l.AtEOF(): // 没有找到结束符号，直接到达文件末尾
 			return nil, false
 		case l.match(b.End):
 			if pos := l.pos - len(b.End); pos > start {

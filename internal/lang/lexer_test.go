@@ -8,25 +8,25 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestLexer_lineNumber(t *testing.T) {
+func TestLexer_LineNumber(t *testing.T) {
 	a := assert.New(t)
 
-	l := &lexer{data: []byte("l0\nl1\nl2\nl3\n")}
+	l := NewLexer([]byte("l0\nl1\nl2\nl3\n"), nil)
 	l.pos = 3
-	a.Equal(l.lineNumber(), 1)
+	a.Equal(l.LineNumber(), 1)
 
 	l.pos += 3
-	a.Equal(l.lineNumber(), 2)
+	a.Equal(l.LineNumber(), 2)
 
 	l.pos += 3
 	l.pos += 3
-	a.Equal(l.lineNumber(), 4)
+	a.Equal(l.LineNumber(), 4)
 }
 
 func TestLexer_match(t *testing.T) {
 	a := assert.New(t)
 
-	l := &lexer{
+	l := &Lexer{
 		data: []byte("ab\ncd"),
 	}
 
@@ -41,7 +41,7 @@ func TestLexer_match(t *testing.T) {
 	a.True(l.match("cd"))
 }
 
-func TestLexer_block(t *testing.T) {
+func TestLexer_Block(t *testing.T) {
 	a := assert.New(t)
 
 	blocks := []Blocker{
@@ -51,7 +51,7 @@ func TestLexer_block(t *testing.T) {
 		&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: "\\"},
 	}
 
-	l := &lexer{
+	l := &Lexer{
 		data: []byte(`// scomment1
 // scomment2
 func(){}
@@ -72,34 +72,34 @@ mcomment2
 		blocks: blocks,
 	}
 
-	b := l.block() // scomment1
+	b := l.Block() // scomment1
 	a.Equal(b.(*block).Type, blockTypeSComment)
 	rs, err := b.EndFunc(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte(" scomment1\n"), []byte(" scomment2\n")})
 
-	b = l.block() // string1
+	b = l.Block() // string1
 	a.Equal(b.(*block).Type, blockTypeString)
 	_, err = b.EndFunc(l)
 	a.NotError(err)
 
-	b = l.block() // string2
+	b = l.Block() // string2
 	a.Equal(b.(*block).Type, blockTypeString)
 	_, err = b.EndFunc(l)
 	a.NotError(err)
 
-	b = l.block()
+	b = l.Block()
 	a.Equal(b.(*block).Type, blockTypeMComment) // mcomment1
 	rs, err = b.EndFunc(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("\n"), []byte("mcomment1\n"), []byte("mcomment2\n")})
 
 	/* 测试一段单行注释后紧跟 \n=pod 形式的多行注释，是否会出错 */
 
-	b = l.block() // scomment3,scomment4
+	b = l.Block() // scomment3,scomment4
 	a.Equal(b.(*block).Type, blockTypeSComment)
 	rs, err = b.EndFunc(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte(" scomment3\n"), []byte(" scomment4\n")})
 
-	b = l.block() // mcomment3,mcomment4
+	b = l.Block() // mcomment3,mcomment4
 	a.Equal(b.(*block).Type, blockTypeMComment)
 	rs, err = b.EndFunc(l)
 	a.NotError(err).Equal(rs, [][]byte{[]byte("\n"), []byte(" mcomment3\n"), []byte(" mcomment4")})
@@ -107,7 +107,7 @@ mcomment2
 
 func TestLexer_skipSpace(t *testing.T) {
 	a := assert.New(t)
-	l := &lexer{data: []byte("  0 \n  1 ")}
+	l := &Lexer{data: []byte("  0 \n  1 ")}
 
 	l.skipSpace()
 	a.Equal(l.data[l.pos], "0")

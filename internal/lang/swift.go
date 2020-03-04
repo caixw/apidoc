@@ -22,7 +22,7 @@ func newSwiftNestMCommentBlock(begin, end, prefix string) Blocker {
 	}
 }
 
-func (b *swiftNestMCommentBlock) BeginFunc(l *lexer) bool {
+func (b *swiftNestMCommentBlock) BeginFunc(l *Lexer) bool {
 	if l.match(b.begin) {
 		b.level++
 		return true
@@ -31,14 +31,14 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *lexer) bool {
 	return false
 }
 
-func (b *swiftNestMCommentBlock) EndFunc(l *lexer) ([][]byte, bool) {
+func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) ([][]byte, bool) {
 	lines := make([][]byte, 0, 20)
 	line := make([]byte, 0, 100)
 
 LOOP:
 	for {
 		switch {
-		case l.atEOF():
+		case l.AtEOF():
 			return nil, false
 		case l.match(b.end):
 			b.level--

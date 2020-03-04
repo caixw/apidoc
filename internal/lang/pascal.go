@@ -17,15 +17,15 @@ func newPascalStringBlock(symbol byte) Blocker {
 	}
 }
 
-func (b *pascalStringBlock) BeginFunc(l *lexer) bool {
+func (b *pascalStringBlock) BeginFunc(l *Lexer) bool {
 	return l.match(b.symbol)
 }
 
-func (b *pascalStringBlock) EndFunc(l *lexer) ([][]byte, bool) {
+func (b *pascalStringBlock) EndFunc(l *Lexer) ([][]byte, bool) {
 LOOP:
 	for {
 		switch {
-		case l.atEOF():
+		case l.AtEOF():
 			return nil, false
 		case l.match(b.escape): // 转义
 			continue LOOP

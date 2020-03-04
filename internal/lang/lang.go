@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-// Package lang 各类语言解析和管理。
+// Package lang 管理各类语言提取注释代码块规则的定义
 package lang
 
 import "fmt"

@@ -22,7 +22,7 @@ func newPHPDocBlock() Blocker {
 	}
 }
 
-func (b *phpDocBlock) BeginFunc(l *lexer) bool {
+func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 	if !l.match("<<<") {
 		return false
 	}
@@ -44,10 +44,10 @@ func (b *phpDocBlock) BeginFunc(l *lexer) bool {
 	return true
 }
 
-func (b *phpDocBlock) EndFunc(l *lexer) ([][]byte, bool) {
+func (b *phpDocBlock) EndFunc(l *Lexer) ([][]byte, bool) {
 	for {
 		switch {
-		case l.atEOF():
+		case l.AtEOF():
 			return nil, false
 		case l.match(b.token1):
 			return nil, true
@@ -62,10 +62,10 @@ func (b *phpDocBlock) EndFunc(l *lexer) ([][]byte, bool) {
 // 读取到当前行行尾。
 //
 // 返回 nil 表示没有换行符，即当前就是最后一行。
-func readLine(l *lexer) []byte {
+func readLine(l *Lexer) []byte {
 	start := l.pos
 	for index, b := range l.data[l.pos:] {
-		if l.atEOF() {
+		if l.AtEOF() {
 			return nil
 		}
 

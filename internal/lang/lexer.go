@@ -7,8 +7,8 @@ import (
 	"unicode"
 )
 
-// 是对一个文本内容的包装，方便 blocker 等接口操作。
-type lexer struct {
+// Lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
+type Lexer struct {
 	blocks []Blocker
 	data   []byte
 	pos    int
@@ -17,15 +17,23 @@ type lexer struct {
 	lnPos int // 上次记录行号时所在的位置
 }
 
-// 是否已经在文件末尾。
-func (l *lexer) atEOF() bool {
+// NewLexer 声明 Lexer 实例
+func NewLexer(data []byte, blocks []Blocker) *Lexer {
+	return &Lexer{
+		data:   data,
+		blocks: blocks,
+	}
+}
+
+// AtEOF 是否已经在文件末尾。
+func (l *Lexer) AtEOF() bool {
 	return l.pos >= len(l.data)
 }
 
 // 接下来的 n 个字符是否匹配指定的字符串，
 // 若匹配，则将指定移向该字符串这后，否则不作任何操作。
-func (l *lexer) match(word string) bool {
-	if l.atEOF() || (l.pos+len(word) > len(l.data)) { // 剩余字符没有 word 长，直接返回 false
+func (l *Lexer) match(word string) bool {
+	if l.AtEOF() || (l.pos+len(word) > len(l.data)) { // 剩余字符没有 word 长，直接返回 false
 		return false
 	}
 
@@ -39,7 +47,8 @@ func (l *lexer) match(word string) bool {
 
 var newLine = []byte("\n")
 
-func (l *lexer) lineNumber() int {
+// LineNumber 获取当前位置所在的行号
+func (l *Lexer) LineNumber() int {
 	if l.lnPos < l.pos {
 		l.ln += bytes.Count(l.data[l.lnPos:l.pos], newLine)
 		l.lnPos = l.pos
@@ -48,10 +57,10 @@ func (l *lexer) lineNumber() int {
 	return l.ln
 }
 
-// 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 Blocker 。
-func (l *lexer) block() Blocker {
+// Block 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 Blocker 。
+func (l *Lexer) Block() Blocker {
 	for {
-		if l.atEOF() {
+		if l.AtEOF() {
 			return nil
 		}
 
@@ -66,9 +75,9 @@ func (l *lexer) block() Blocker {
 }
 
 // 跳过除换行符以外的所有空白字符。
-func (l *lexer) skipSpace() {
+func (l *Lexer) skipSpace() {
 	for {
-		if l.atEOF() {
+		if l.AtEOF() {
 			return
 		}
 

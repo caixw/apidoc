@@ -14,7 +14,7 @@ func TestPHPDocBlock(t *testing.T) {
 	a.NotNil(b)
 
 	// herodoc
-	l := &lexer{data: []byte(`<<<EOF
+	l := &Lexer{data: []byte(`<<<EOF
 	xx
 	xx
 EOF
@@ -30,7 +30,7 @@ EOF
 		Nil(ret)
 
 	// nowdoc
-	l = &lexer{data: []byte(`<<<'EOF'
+	l = &Lexer{data: []byte(`<<<'EOF'
 	xx
 	xx
 EOF
@@ -46,7 +46,7 @@ EOF
 		Nil(ret)
 
 	// nowdoc 验证结尾带分号的结束符
-	l = &lexer{data: []byte(`<<<'EOF'
+	l = &Lexer{data: []byte(`<<<'EOF'
 	xx
 	xx
 EOF;
@@ -62,7 +62,7 @@ EOF;
 		Nil(ret)
 
 	// 开始符号错误
-	l = &lexer{data: []byte(`<<<
+	l = &Lexer{data: []byte(`<<<
 	xx
 	xx
 EOF;
@@ -70,7 +70,7 @@ EOF;
 	a.False(b.BeginFunc(l))
 
 	// nowdoc 不存在结束符
-	l = &lexer{data: []byte(`<<<'EOF'
+	l = &Lexer{data: []byte(`<<<'EOF'
 	xx
 	xx
 EO
@@ -88,14 +88,14 @@ EO
 func TestReadLine(t *testing.T) {
 	a := assert.New(t)
 
-	l := &lexer{data: []byte("123")}
+	l := &Lexer{data: []byte("123")}
 	a.Nil(readLine(l))
 
-	l = &lexer{data: []byte("123\n")}
+	l = &Lexer{data: []byte("123\n")}
 	a.Equal(string(readLine(l)), "123").
 		Equal(l.pos, 3)
 
-	l = &lexer{data: []byte("123\n"), pos: 1}
+	l = &Lexer{data: []byte("123\n"), pos: 1}
 	a.Equal(string(readLine(l)), "23").
 		Equal(l.pos, 3)
 }
