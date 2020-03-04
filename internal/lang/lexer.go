@@ -88,3 +88,22 @@ func (l *Lexer) skipSpace() {
 		l.pos++
 	}
 }
+
+// 读取到当前行行尾。
+//
+// 返回 nil 表示没有换行符，即当前就是最后一行。
+func (l *Lexer) line() []byte {
+	start := l.pos
+	for index, b := range l.data[l.pos:] {
+		if l.AtEOF() {
+			return nil
+		}
+
+		if b == '\n' {
+			l.pos += index
+			return l.data[start : index+start]
+		}
+	} // end for
+
+	return nil
+}

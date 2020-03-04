@@ -27,7 +27,7 @@ func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 		return false
 	}
 
-	token := readLine(l)
+	token := l.line()
 	if len(token) == 0 {
 		l.pos -= 3 // 退回 <<< 字符
 		return false
@@ -57,23 +57,4 @@ func (b *phpDocBlock) EndFunc(l *Lexer) ([][]byte, bool) {
 			l.pos++
 		}
 	}
-}
-
-// 读取到当前行行尾。
-//
-// 返回 nil 表示没有换行符，即当前就是最后一行。
-func readLine(l *Lexer) []byte {
-	start := l.pos
-	for index, b := range l.data[l.pos:] {
-		if l.AtEOF() {
-			return nil
-		}
-
-		if b == '\n' {
-			l.pos += index
-			return l.data[start : index+start]
-		}
-	} // end for
-
-	return nil
 }

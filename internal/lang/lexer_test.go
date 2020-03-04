@@ -130,3 +130,18 @@ func TestLexer_skipSpace(t *testing.T) {
 	l.skipSpace()
 	a.Equal(l.pos, len(l.data))
 }
+
+func TestLexer_line(t *testing.T) {
+	a := assert.New(t)
+
+	l := NewLexer([]byte("123"), nil)
+	a.Nil(l.line())
+
+	l = NewLexer([]byte("123\n"), nil)
+	a.Equal(string(l.line()), "123").
+		Equal(l.pos, 3)
+
+	l = &Lexer{data: []byte("123\n"), pos: 1}
+	a.Equal(string(l.line()), "23").
+		Equal(l.pos, 3)
+}

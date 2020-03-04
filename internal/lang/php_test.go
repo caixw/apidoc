@@ -84,18 +84,3 @@ EO
 	ret, ok = b.EndFunc(l)
 	a.False(ok)
 }
-
-func TestReadLine(t *testing.T) {
-	a := assert.New(t)
-
-	l := &Lexer{data: []byte("123")}
-	a.Nil(readLine(l))
-
-	l = &Lexer{data: []byte("123\n")}
-	a.Equal(string(readLine(l)), "123").
-		Equal(l.pos, 3)
-
-	l = &Lexer{data: []byte("123\n"), pos: 1}
-	a.Equal(string(readLine(l)), "23").
-		Equal(l.pos, 3)
-}
