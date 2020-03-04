@@ -9,11 +9,10 @@
 package input
 
 import (
+	"bytes"
 	"io/ioutil"
-	"math"
 	"os"
 	"sync"
-	"unicode"
 
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
@@ -82,12 +81,12 @@ func ParseFile(blocks chan Block, h *message.Handler, path string, o *Options) {
 
 		block = nil // 重置 block
 
-		var raw = make([]byte, 500)
+		var raw = make([]byte, 0, 500)
 		for _, line := range lines {
 			raw = append(raw, line...)
 		}
 
-		data := mergeLines(lines)
+		data = bytes.TrimSpace(raw)
 		if len(data) <= minSize {
 			continue
 		}
@@ -115,88 +114,4 @@ func readFile(path string, enc encoding.Encoding) ([]byte, error) {
 
 	reader := transform.NewReader(r, enc.NewDecoder())
 	return ioutil.ReadAll(reader)
-}
-
-// 合并多行为一个 []byte 结构，并去掉前导空格
-func mergeLines(lines [][]byte) []byte {
-	lines = trimSpaceLine(lines)
-
-	if len(lines) == 0 {
-		return nil
-	}
-
-	// 去掉第一行的所有空格
-	for index, b := range lines[0] {
-		if !unicode.IsSpace(rune(b)) {
-			lines[0] = lines[0][index:]
-			break
-		}
-	}
-
-	if len(lines) == 1 {
-		return lines[0]
-	}
-
-	min := math.MaxInt32
-	size := 0
-	for _, line := range lines[1:] {
-		size += len(line)
-
-		if isSpaceLine(line) {
-			continue
-		}
-
-		for index, b := range line {
-			if !unicode.IsSpace(rune(b)) {
-				if min > index {
-					min = index
-				}
-				break
-			}
-		}
-	}
-
-	ret := make([]byte, 0, size+len(lines[0]))
-	ret = append(ret, lines[0]...)
-	for _, line := range lines[1:] {
-		if isSpaceLine(line) {
-			ret = append(ret, line...)
-		} else {
-			ret = append(ret, line[min:]...)
-		}
-	}
-
-	return ret
-}
-
-// 是否为空白行
-func isSpaceLine(line []byte) bool {
-	for _, b := range line {
-		if !unicode.IsSpace(rune(b)) {
-			return false
-		}
-	}
-
-	return true
-}
-
-// 去掉首尾的空行
-func trimSpaceLine(lines [][]byte) [][]byte {
-	// 去掉开头空行
-	for index, line := range lines {
-		if !isSpaceLine(line) {
-			lines = lines[index:]
-			break
-		}
-	}
-
-	// 去掉尾部的空行
-	for i := len(lines) - 1; i >= 0; i-- {
-		if !isSpaceLine(lines[i]) {
-			lines = lines[:i+1]
-			break
-		}
-	}
-
-	return lines
 }
