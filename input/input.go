@@ -73,7 +73,7 @@ func ParseFile(blocks chan Block, h *message.Handler, path string, o *Options) {
 		}
 
 		ln := l.LineNumber() + 1 // 记录当前的行号，1 表示从 1 开始记数
-		raw, ok := block.EndFunc(l)
+		raw, data, ok := block.EndFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 			h.Error(message.Erro, message.NewLocaleError(path, "", ln, locale.ErrNotFoundEndFlag))
 			return

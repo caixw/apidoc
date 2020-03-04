@@ -27,9 +27,10 @@ type Blocker interface {
 	// ok 表示是否正确匹配；
 	// data 表示匹配的内容，如果不使用返回的内容，可以返回空值。
 	// 比如字符串，只需要返回 true，以确保找到了结束位置，但是 data 可以直接返回 nil。
+	// raw 表示匹配情况下的原始内容，data 返回的可能是经过处理，而 raw 应该是未处理的。
 	//
 	// 如果在到达文件末尾都没有找到结束符，则应该返回 nil, false
-	EndFunc(l *Lexer) (data []byte, ok bool)
+	EndFunc(l *Lexer) (raw, data []byte, ok bool)
 }
 
 // 定义了与语言相关的三种类型的代码块：单行注释，多行注释，字符串。
@@ -63,7 +64,7 @@ func (b *block) BeginFunc(l *Lexer) bool {
 }
 
 // EndFunc 实现 Blocker.EndFunc
-func (b *block) EndFunc(l *Lexer) ([]byte, bool) {
+func (b *block) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 	switch b.Type {
 	case blockTypeString:
 		return b.endString(l)
@@ -81,15 +82,15 @@ func (b *block) EndFunc(l *Lexer) ([]byte, bool) {
 // 正常找到结束符的返回 true，否则返回 false。
 //
 // 第一个返回参数无用，仅是为了统一函数签名
-func (b *block) endString(l *Lexer) ([]byte, bool) {
+func (b *block) endString(l *Lexer) (raw, data []byte, ok bool) {
 	for {
 		switch {
 		case l.AtEOF():
-			return nil, false
+			return nil, nil, false
 		case (len(b.Escape) > 0) && l.match(b.Escape):
 			l.pos++
 		case l.match(b.End):
-			return nil, true
+			return nil, nil, true
 		default:
 			l.pos++
 		}
@@ -97,8 +98,9 @@ func (b *block) endString(l *Lexer) ([]byte, bool) {
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-func (b *block) endSComments(l *Lexer) ([]byte, bool) {
-	data := make([]byte, 0, 20)
+func (b *block) endSComments(l *Lexer) (raw, data []byte, ok bool) {
+	data = make([]byte, 0, 120)
+	raw = make([]byte, 0, 120)
 
 LOOP:
 	for {
@@ -106,6 +108,7 @@ LOOP:
 		for {          // 读取一行的内容
 			r := l.data[l.pos]
 			l.pos++
+			raw = append(raw, r)
 
 			if l.AtEOF() {
 				data = append(data, l.data[start:l.pos]...)
@@ -128,27 +131,29 @@ LOOP:
 		l.pos--
 	}
 
-	return data, true
+	return raw, data, true
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *block) endMComments(l *Lexer) ([]byte, bool) {
-	data := make([]byte, 0, 20)
+func (b *block) endMComments(l *Lexer) (raw, data []byte, ok bool) {
+	data = make([]byte, 0, 200)
+	raw = make([]byte, 0, 200)
 	start := l.pos
 
 	for {
 		switch {
 		case l.AtEOF(): // 没有找到结束符号，直接到达文件末尾
-			return nil, false
+			return nil, nil, false
 		case l.match(b.End):
 			if pos := l.pos - len(b.End); pos > start {
 				data = append(data, filterSymbols(l.data[start:pos], b.Escape)...)
 			}
-			return data, true
+			return raw, data, true
 		default:
 			r := l.data[l.pos]
 			l.pos++
+			raw = append(raw, r)
 			if r == '\n' {
 				data = append(data, filterSymbols(l.data[start:l.pos], b.Escape)...)
 				start = l.pos

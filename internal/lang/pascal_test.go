@@ -18,15 +18,17 @@ func TestPascalStringBlock(t *testing.T) {
 
 	l := &Lexer{data: []byte(`"123""123"`)}
 	a.True(b.BeginFunc(l))
-	ret, ok := b.EndFunc(l)
+	raw, data, ok := b.EndFunc(l)
 	a.True(ok).
-		Equal(len(ret), 0). // 不返回内容
-		True(l.AtEOF())     // 到达末尾
+		Equal(len(data), 0). // 不返回内容
+		Equal(len(raw), 0).  // 不返回内容
+		True(l.AtEOF())      // 到达末尾
 
 	l = &Lexer{data: []byte(`"123"""123"`)}
 	a.True(b.BeginFunc(l))
-	ret, ok = b.EndFunc(l)
+	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(len(ret), 0).                    // 不返回内容
+		Equal(len(data), 0).                   // 不返回内容
+		Equal(len(raw), 0).                    // 不返回内容
 		Equal(string(l.data[l.pos:]), "123\"") // 未到达末尾
 }

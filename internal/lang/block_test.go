@@ -22,10 +22,12 @@ func TestBlock_BeginFunc_EndFunc(t *testing.T) {
 	a.False(bStr.BeginFunc(l))
 	a.True(bSComment.BeginFunc(l))
 	a.False(bMComment.BeginFunc(l))
-	ret, ok := bSComment.EndFunc(l)
-	a.True(ok).Equal(string(ret), []byte(" scomment1\n scomment2"))
-	ret, ok = bMComment.EndFunc(l)
-	a.False(ok).Equal(len(ret), 0)
+	raw, data, ok := bSComment.EndFunc(l)
+	a.True(ok).
+		Equal(string(data), " scomment1\n scomment2").
+		Equal(string(raw), " scomment1\n scomment2")
+	raw, data, ok = bMComment.EndFunc(l)
+	a.False(ok).Equal(len(data), 0)
 }
 
 func TestBlock_endString(t *testing.T) {
@@ -40,24 +42,25 @@ func TestBlock_endString(t *testing.T) {
 	l := &Lexer{
 		data: []byte(`text"`),
 	}
-	rs, ok := b.endString(l)
-	a.True(ok).Nil(rs)
+	raw, data, ok := b.endString(l)
+	a.True(ok).Nil(data).Nil(raw)
 
 	// 带转义字符
 	l = &Lexer{
 		data: []byte(`te\"xt"`),
 	}
-	rs, ok = b.endString(l)
+	raw, data, ok = b.endString(l)
 	a.True(ok).
-		Nil(rs).
+		Nil(data).
+		Nil(raw).
 		Equal(l.pos, len(l.data))
 
 	// 找不到匹配字符串
 	l = &Lexer{
 		data: []byte("text"),
 	}
-	rs, ok = b.endString(l)
-	a.False(ok).Nil(rs)
+	raw, data, ok = b.endString(l)
+	a.False(ok).Nil(data).Nil(raw)
 }
 
 func TestBlock_endSComment(t *testing.T) {
@@ -70,36 +73,46 @@ func TestBlock_endSComment(t *testing.T) {
 	l := &Lexer{
 		data: []byte("comment1\n"),
 	}
-	rs, err := b.endSComments(l)
-	a.NotError(err).Equal(string(rs), "comment1\n")
+	raw, data, err := b.endSComments(l)
+	a.NotError(err).
+		Equal(string(data), "comment1\n").
+		Equal(string(raw), "comment1\n")
 
 	// 没有换行符，则自动取到结束符。
 	l = &Lexer{
 		data: []byte("comment1"),
 	}
-	rs, err = b.endSComments(l)
-	a.NotError(err).Equal(string(rs), "comment1")
+	raw, data, err = b.endSComments(l)
+	a.NotError(err).
+		Equal(string(data), "comment1").
+		Equal(string(raw), "comment1")
 
 	// 多行连续的单行注释。
 	l = &Lexer{
 		data: []byte("comment1\n//comment2\n //comment3"),
 	}
-	rs, err = b.endSComments(l)
-	a.NotError(err).Equal(string(rs), "comment1\ncomment2\ncomment3")
+	raw, data, err = b.endSComments(l)
+	a.NotError(err).
+		Equal(string(data), "comment1\ncomment2\ncomment3").
+		Equal(string(raw), "comment1\ncomment2\ncomment3")
 
 	// 多行连续的单行注释，中间有空白行。
 	l = &Lexer{
 		data: []byte("comment1\n//\n//comment2\n //comment3"),
 	}
-	rs, err = b.endSComments(l)
-	a.NotError(err).Equal(string(rs), "comment1\n\ncomment2\ncomment3")
+	raw, data, err = b.endSComments(l)
+	a.NotError(err).
+		Equal(string(data), "comment1\n\ncomment2\ncomment3").
+		Equal(string(raw), "comment1\n\ncomment2\ncomment3")
 
 	// 多行不连续的单行注释。
 	l = &Lexer{
 		data: []byte("comment1\n // comment2\n\n //comment3\n"),
 	}
-	rs, err = b.endSComments(l)
-	a.NotError(err).Equal(string(rs), "comment1\n comment2\n")
+	raw, data, err = b.endSComments(l)
+	a.NotError(err).
+		Equal(string(data), "comment1\n comment2\n").
+		Equal(string(raw), "comment1\n comment2\n")
 }
 
 func TestBlock_endMComment(t *testing.T) {
@@ -113,29 +126,35 @@ func TestBlock_endMComment(t *testing.T) {
 	l := &Lexer{
 		data: []byte("comment1\n*/"),
 	}
-	rs, found := b.endMComments(l)
-	a.True(found).Equal(string(rs), "comment1\n")
+	raw, data, found := b.endMComments(l)
+	a.True(found).
+		Equal(string(data), "comment1\n").
+		Equal(string(raw), "comment1\n")
 
 	// 多个注释结束符
 	l = &Lexer{
 		data: []byte("comment1\ncomment2*/*/"),
 	}
-	rs, found = b.endMComments(l)
-	a.True(found).Equal(string(rs), "comment1\ncomment2")
+	raw, data, found = b.endMComments(l)
+	a.True(found).
+		Equal(string(data), "comment1\ncomment2").
+		Equal(string(raw), "comment1\ncomment2")
 
 	// 空格开头
 	l = &Lexer{
 		data: []byte("\ncomment1\ncomment2*/*/"),
 	}
-	rs, found = b.endMComments(l)
-	a.True(found).Equal(string(rs), "\ncomment1\ncomment2")
+	raw, data, found = b.endMComments(l)
+	a.True(found).
+		Equal(string(data), "\ncomment1\ncomment2").
+		Equal(string(raw), "\ncomment1\ncomment2")
 
 	// 没有注释结束符
 	l = &Lexer{
 		data: []byte("comment1"),
 	}
-	rs, found = b.endMComments(l)
-	a.False(found).Nil(rs)
+	raw, data, found = b.endMComments(l)
+	a.False(found).Nil(data).Nil(raw)
 }
 
 func TestFilterSymbols(t *testing.T) {

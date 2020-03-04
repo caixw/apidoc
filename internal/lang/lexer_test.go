@@ -74,35 +74,43 @@ mcomment2
 
 	b := l.Block() // scomment1
 	a.Equal(b.(*block).Type, blockTypeSComment)
-	rs, err := b.EndFunc(l)
-	a.NotError(err).Equal(string(rs), " scomment1\n scomment2\n")
+	raw, data, err := b.EndFunc(l)
+	a.NotError(err).
+		Equal(string(raw), " scomment1\n scomment2\n").
+		Equal(string(data), " scomment1\n scomment2\n")
 
 	b = l.Block() // string1
 	a.Equal(b.(*block).Type, blockTypeString)
-	_, err = b.EndFunc(l)
+	_, _, err = b.EndFunc(l)
 	a.NotError(err)
 
 	b = l.Block() // string2
 	a.Equal(b.(*block).Type, blockTypeString)
-	_, err = b.EndFunc(l)
+	_, _, err = b.EndFunc(l)
 	a.NotError(err)
 
 	b = l.Block()
 	a.Equal(b.(*block).Type, blockTypeMComment) // mcomment1
-	rs, err = b.EndFunc(l)
-	a.NotError(err).Equal(string(rs), "\nmcomment1\nmcomment2\n")
+	raw, data, err = b.EndFunc(l)
+	a.NotError(err).
+		Equal(string(raw), "\nmcomment1\nmcomment2\n").
+		Equal(string(data), "\nmcomment1\nmcomment2\n")
 
 	/* 测试一段单行注释后紧跟 \n=pod 形式的多行注释，是否会出错 */
 
 	b = l.Block() // scomment3,scomment4
 	a.Equal(b.(*block).Type, blockTypeSComment)
-	rs, err = b.EndFunc(l)
-	a.NotError(err).Equal(string(rs), " scomment3\n scomment4\n")
+	raw, data, err = b.EndFunc(l)
+	a.NotError(err).
+		Equal(string(raw), " scomment3\n scomment4\n").
+		Equal(string(data), " scomment3\n scomment4\n")
 
 	b = l.Block() // mcomment3,mcomment4
 	a.Equal(b.(*block).Type, blockTypeMComment)
-	rs, err = b.EndFunc(l)
-	a.NotError(err).Equal(string(rs), "\n mcomment3\n mcomment4")
+	raw, data, err = b.EndFunc(l)
+	a.NotError(err).
+		Equal(string(raw), "\n mcomment3\n mcomment4").
+		Equal(string(data), "\n mcomment3\n mcomment4")
 }
 
 func TestLexer_skipSpace(t *testing.T) {

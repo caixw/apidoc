@@ -16,53 +16,59 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	b := newSwiftNestMCommentBlock("/*", "*/", "*")
 	a.NotNil(b)
 
-	l := &Lexer{data: []byte(`/* *123*123**/`)}
+	l := NewLexer([]byte(`/* *123*123**/`), nil)
 	a.True(b.BeginFunc(l))
-	ret, ok := b.EndFunc(l)
+	raw, data, ok := b.EndFunc(l)
 	a.True(ok).
-		Equal(string(ret), " *123*123*"). // 返回内容
-		True(l.AtEOF())                   // 到达末尾
-
-	// 多行，最后一行没有任何内容，则不返回数据
-	l = &Lexer{data: []byte(`/**
-	* xx
-	* yy
-*/`)}
-	a.True(b.BeginFunc(l))
-	ret, ok = b.EndFunc(l)
-	a.True(ok).
-		Equal(string(ret), "\n xx\n yy\n")
-
-	l = &Lexer{data: []byte(`/**
-	* xx/yy/zz
-	* yy/zz/
-	*/`)}
-	a.True(b.BeginFunc(l))
-	ret, ok = b.EndFunc(l)
-	a.True(ok).
-		Equal(string(ret), "\n xx/yy/zz\n yy/zz/\n\t")
-
-	// 嵌套注释
-	l = &Lexer{data: []byte(`/*0/*1/*2*/*/*/`)}
-	a.True(b.BeginFunc(l))
-	ret, ok = b.EndFunc(l)
-	a.True(ok).
-		Equal(string(ret), "0/*1/*2*/*/"). // 返回内容
+		Equal(string(data), " *123*123*"). // 返回内容
+		Equal(string(raw), " *123*123*").  // 返回内容
 		True(l.AtEOF())                    // 到达末尾
 
-		// 多出 end 匹配项
-	l = &Lexer{data: []byte(`/*0/*1/*2*/*/*/*/`)}
+	// 多行，最后一行没有任何内容，则不返回数据
+	l = NewLexer([]byte(`/**
+	* xx
+	* yy
+*/`), nil)
 	a.True(b.BeginFunc(l))
-	ret, ok = b.EndFunc(l)
+	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(ret), "0/*1/*2*/*/"). // 返回内容
+		Equal(string(data), "\n xx\n yy\n").
+		Equal(string(raw), "*\n\t* xx\n\t* yy\n")
+
+	l = NewLexer([]byte(`/**
+	* xx/yy/zz
+	* yy/zz/
+	*/`), nil)
+	a.True(b.BeginFunc(l))
+	raw, data, ok = b.EndFunc(l)
+	a.True(ok).
+		Equal(string(data), "\n xx/yy/zz\n yy/zz/\n\t").
+		Equal(string(raw), "*\n\t* xx/yy/zz\n\t* yy/zz/\n\t")
+
+	// 嵌套注释
+	l = NewLexer([]byte(`/*0/*1/*2*/*/*/`), nil)
+	a.True(b.BeginFunc(l))
+	raw, data, ok = b.EndFunc(l)
+	a.True(ok).
+		Equal(string(data), "0/*1/*2*/*/"). // 返回内容
+		Equal(string(raw), "0/*1/*2*/*/").  // 返回内容
+		True(l.AtEOF())                     // 到达末尾
+
+		// 多出 end 匹配项
+	l = NewLexer([]byte(`/*0/*1/*2*/*/*/*/`), nil)
+	a.True(b.BeginFunc(l))
+	raw, data, ok = b.EndFunc(l)
+	a.True(ok).
+		Equal(string(data), "0/*1/*2*/*/"). // 返回内容
+		Equal(string(raw), "0/*1/*2*/*/").  // 返回内容
 		Equal(string(l.data[l.pos:]), "*/")
 
 	// 缺少 end 匹配项
-	l = &Lexer{data: []byte(`/*0/*1/*2*/*/`)}
+	l = NewLexer([]byte(`/*0/*1/*2*/*/`), nil)
 	a.True(b.BeginFunc(l))
-	ret, ok = b.EndFunc(l)
+	raw, data, ok = b.EndFunc(l)
 	a.False(ok).
-		Equal(len(ret), 0).
+		Equal(len(data), 0).
+		Equal(len(raw), 0).
 		True(l.AtEOF()) // 到达末尾
 }

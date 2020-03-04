@@ -4,21 +4,26 @@ package lang
 
 // swift 嵌套风格的块注释。会忽略掉内嵌的注释块。
 type swiftNestMCommentBlock struct {
-	begin      string
-	end        string
-	prefix     string // 需要过滤的前缀
-	beginRunes []byte
-	endRunes   []byte
-	level      int8
+	begin  string
+	end    string
+	prefix string // 需要过滤的前缀
+	begins []byte
+	ends   []byte
+	level  int8
 }
 
+// prefix 表示每一行的前缀符号，比如：
+//  /*
+//   *
+//   */
+// 中的 * 字符
 func newSwiftNestMCommentBlock(begin, end, prefix string) Blocker {
 	return &swiftNestMCommentBlock{
-		begin:      begin,
-		end:        end,
-		prefix:     prefix,
-		beginRunes: []byte(begin),
-		endRunes:   []byte(end),
+		begin:  begin,
+		end:    end,
+		prefix: prefix,
+		begins: []byte(begin),
+		ends:   []byte(end),
 	}
 }
 
@@ -31,40 +36,47 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *Lexer) bool {
 	return false
 }
 
-func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) ([]byte, bool) {
-	lines := make([]byte, 0, 200)
+func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
+	data = make([]byte, 0, 200)
+	raw = make([]byte, 0, 200)
 	line := make([]byte, 0, 100)
 
 LOOP:
 	for {
 		switch {
 		case l.AtEOF():
-			return nil, false
+			return nil, nil, false
 		case l.match(b.end):
 			b.level--
 			if b.level == 0 {
 				if len(line) > 0 { // 如果 len(line) == 0 表示最后一行仅仅只有一个结束符
-					lines = append(lines, filterSymbols(line, b.prefix)...)
+					data = append(data, filterSymbols(line, b.prefix)...)
 				}
 				break LOOP
 			}
 
-			line = append(line, b.endRunes...)
+			raw = append(raw, b.ends...)
+			line = append(line, b.ends...)
 			continue LOOP
 		case l.match(b.begin):
+			if b.level > 0 {
+				raw = append(raw, b.begins...)
+			}
+
 			b.level++
-			line = append(line, b.beginRunes...)
+			line = append(line, b.begins...)
 			continue LOOP
 		default:
 			r := l.data[l.pos]
+			raw = append(raw, r)
 			l.pos++
 			line = append(line, r)
 			if r == '\n' {
-				lines = append(lines, filterSymbols(line, b.prefix)...)
+				data = append(data, filterSymbols(line, b.prefix)...)
 				line = make([]byte, 0, 100)
 			}
 		}
 	}
 
-	return lines, true
+	return raw, data, true
 }

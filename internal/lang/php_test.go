@@ -25,9 +25,10 @@ EOF
 	a.Equal(bb.token1, "\nEOF\n").
 		Equal(bb.token2, "\nEOF;\n").
 		Equal(bb.doctype, phpHerodoc)
-	ret, ok := b.EndFunc(l)
+	raw, data, ok := b.EndFunc(l)
 	a.True(ok).
-		Nil(ret)
+		Nil(data).
+		Nil(raw)
 
 	// nowdoc
 	l = &Lexer{data: []byte(`<<<'EOF'
@@ -41,9 +42,10 @@ EOF
 	a.Equal(bb.token1, "\nEOF\n").
 		Equal(bb.token2, "\nEOF;\n").
 		Equal(bb.doctype, phpNowdoc)
-	ret, ok = b.EndFunc(l)
+	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
-		Nil(ret)
+		Nil(data).
+		Nil(raw)
 
 	// nowdoc 验证结尾带分号的结束符
 	l = &Lexer{data: []byte(`<<<'EOF'
@@ -57,9 +59,10 @@ EOF;
 	a.Equal(bb.token1, "\nEOF\n").
 		Equal(bb.token2, "\nEOF;\n").
 		Equal(bb.doctype, phpNowdoc)
-	ret, ok = b.EndFunc(l)
+	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
-		Nil(ret)
+		Nil(raw).
+		Nil(data)
 
 	// 开始符号错误
 	l = &Lexer{data: []byte(`<<<
@@ -81,6 +84,6 @@ EO
 	a.Equal(bb.token1, "\nEOF\n").
 		Equal(bb.token2, "\nEOF;\n").
 		Equal(bb.doctype, phpNowdoc)
-	ret, ok = b.EndFunc(l)
+	raw, data, ok = b.EndFunc(l)
 	a.False(ok)
 }
