@@ -62,15 +62,9 @@ func (p *InitializeParams) Folders() []WorkspaceFolder {
 		}}
 	}
 	if p.RootPath != "" {
-		var prefix string
-		if p.RootPath[0] == '/' {
-			prefix = "file://"
-		} else {
-			prefix = "file:///"
-		}
 		return []WorkspaceFolder{{
 			Name: path.Base(p.RootPath),
-			URI:  DocumentURI(prefix + p.RootPath),
+			URI:  FileURI(p.RootPath),
 		}}
 	}
 
