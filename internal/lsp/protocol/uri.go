@@ -2,9 +2,13 @@
 
 package protocol
 
-import "net/url"
+import (
+	"net/url"
 
-const fileScheme = "file://"
+	"github.com/caixw/apidoc/v6/internal/locale"
+)
+
+const fileScheme = "file"
 
 // DocumentURI is are transferred as strings.
 // The URI’s format is defined in http://tools.ietf.org/html/rfc3986
@@ -31,15 +35,15 @@ func (uri DocumentURI) File() (string, error) {
 		return "", err
 	}
 
+	if u.Scheme != fileScheme {
+		return "", locale.Errorf(locale.ErrInvalidURIScheme)
+	}
+
 	return u.Path, nil
 }
 
 // FileURI 根据本地文件路径构建 DocumentURI 实例
 func FileURI(path string) DocumentURI {
-	prefix := fileScheme
-	if path[0] != '/' {
-		prefix = fileScheme + "/"
-	}
-
-	return DocumentURI(prefix + path)
+	u := &url.URL{Scheme: fileScheme, Path: path}
+	return DocumentURI(u.String())
 }

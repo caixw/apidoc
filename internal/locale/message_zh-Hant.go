@@ -225,6 +225,7 @@ options 可以是以下參數
 	ErrReadRemoteFile:            "讀取遠程文件 %s 時返回狀態碼 %d",
 	ErrServerNotInitialized:      "服務未初始化",
 	ErrInvalidLSPState:           "無效的 LSP 狀態",
+	ErrInvalidURIScheme:          "無效的 uri 協議",
 
 	// logs
 	InfoPrefix:    "[信息] ",

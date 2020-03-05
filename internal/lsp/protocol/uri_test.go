@@ -12,8 +12,8 @@ func TestFileURI(t *testing.T) {
 	a := assert.New(t)
 
 	path := "/path/file"
-	a.Equal(FileURI(path), fileScheme+path)
-
-	path = "path/file"
-	a.Equal(FileURI(path), fileScheme+"/"+path)
+	uri := FileURI(path)
+	a.Equal(uri, fileScheme+"://"+path)
+	file, err := uri.File()
+	a.NotError(err).Equal(path, file)
 }

@@ -18,7 +18,7 @@ func TestInitializeParams_Folders(t *testing.T) {
 	a.Equal(p.Folders(), []WorkspaceFolder{
 		{
 			Name: "protocol",
-			URI:  "file:///../../lsp/protocol",
+			URI:  "file://../../lsp/protocol",
 		},
 	})
 
