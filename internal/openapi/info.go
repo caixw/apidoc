@@ -6,9 +6,9 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Info 接口文档的基本信息
@@ -72,7 +72,7 @@ func (l *License) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func newLicense(l *doc.Link) *License {
+func newLicense(l *spec.Link) *License {
 	if l == nil {
 		return nil
 	}
@@ -83,7 +83,7 @@ func newLicense(l *doc.Link) *License {
 	}
 }
 
-func newContact(c *doc.Contact) *Contact {
+func newContact(c *spec.Contact) *Contact {
 	if c == nil {
 		return nil
 	}

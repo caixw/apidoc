@@ -10,17 +10,16 @@ import (
 	"github.com/issue9/assert"
 	"github.com/issue9/assert/rest"
 
-	"github.com/caixw/apidoc/v6/doc"
-	"github.com/caixw/apidoc/v6/doc/doctest"
-	"github.com/caixw/apidoc/v6/input"
 	"github.com/caixw/apidoc/v6/message/messagetest"
+	"github.com/caixw/apidoc/v6/spec"
+	"github.com/caixw/apidoc/v6/spec/spectest"
 )
 
 var _ http.Handler = &Mock{}
 
 type tester struct {
 	Title string
-	Type  *doc.Request
+	Type  *spec.Request
 	JSON  string
 	XML   string
 }
@@ -35,28 +34,28 @@ var data = []*tester{
 	},
 	{
 		Title: "doc.None",
-		Type:  &doc.Request{Type: doc.None},
+		Type:  &spec.Request{Type: spec.None},
 		JSON:  "",
 		XML:   "",
 	},
 	{
 		Title: "doc.Request{}",
-		Type:  &doc.Request{},
+		Type:  &spec.Request{},
 		JSON:  "",
 		XML:   "",
 	},
 	{
 		Title: "number",
-		Type:  &doc.Request{Type: doc.Number, Name: "root"},
+		Type:  &spec.Request{Type: spec.Number, Name: "root"},
 		JSON:  "1024",
 		XML:   "<root>1024</root>",
 	},
 	{
 		Title: "enum number",
-		Type: &doc.Request{
+		Type: &spec.Request{
 			Name: "root",
-			Type: doc.Number,
-			Enums: []*doc.Enum{
+			Type: spec.Number,
+			Enums: []*spec.Enum{
 				{Value: "1024"},
 				{Value: "1025"},
 			},
@@ -66,19 +65,19 @@ var data = []*tester{
 	},
 	{
 		Title: "xml-extract",
-		Type: &doc.Request{
+		Type: &spec.Request{
 			Name: "root",
-			Type: doc.Object,
-			Items: []*doc.Param{
+			Type: spec.Object,
+			Items: []*spec.Param{
 				{
 					Name: "id",
-					Type: doc.Number,
-					XML:  doc.XML{XMLAttr: true},
+					Type: spec.Number,
+					XML:  spec.XML{XMLAttr: true},
 				},
 				{
 					Name: "desc",
-					Type: doc.String,
-					XML:  doc.XML{XMLExtract: true},
+					Type: spec.String,
+					XML:  spec.XML{XMLExtract: true},
 				},
 			},
 		},
@@ -91,10 +90,10 @@ var data = []*tester{
 
 	{
 		Title: "enum string",
-		Type: &doc.Request{
+		Type: &spec.Request{
 			Name: "root",
-			Type: doc.String,
-			Enums: []*doc.Enum{
+			Type: spec.String,
+			Enums: []*spec.Enum{
 				{Value: "1024"},
 				{Value: "1025"},
 			},
@@ -104,10 +103,10 @@ var data = []*tester{
 	},
 	{ // array
 		Title: "[bool]",
-		Type: &doc.Request{
-			XML:   doc.XML{XMLWrapped: "root"},
+		Type: &spec.Request{
+			XML:   spec.XML{XMLWrapped: "root"},
 			Name:  "arr",
-			Type:  doc.Bool,
+			Type:  spec.Bool,
 			Array: true,
 		},
 		JSON: `[
@@ -127,12 +126,12 @@ var data = []*tester{
 	},
 	{
 		Title: "array with enum",
-		Type: &doc.Request{
-			XML:   doc.XML{XMLWrapped: "root"},
+		Type: &spec.Request{
+			XML:   spec.XML{XMLWrapped: "root"},
 			Name:  "arr",
-			Type:  doc.Number,
+			Type:  spec.Number,
 			Array: true,
-			Enums: []*doc.Enum{
+			Enums: []*spec.Enum{
 				{Value: "1"},
 				{Value: "2"},
 				{Value: "3"},
@@ -155,30 +154,30 @@ var data = []*tester{
 	},
 	{
 		Title: "bool",
-		Type:  &doc.Request{Type: doc.Bool, Name: "root"},
+		Type:  &spec.Request{Type: spec.Bool, Name: "root"},
 		JSON:  "true",
 		XML:   "<root>true</root>",
 	},
 	{ // Object
 		Title: "Object with wrapped",
-		Type: &doc.Request{
+		Type: &spec.Request{
 			Name: "root",
-			Type: doc.Object,
-			Items: []*doc.Param{
+			Type: spec.Object,
+			Items: []*spec.Param{
 				{
-					Type: doc.String,
+					Type: spec.String,
 					Name: "name",
 				},
 				{
-					Type:  doc.Number,
+					Type:  spec.Number,
 					Name:  "num",
 					Array: true,
-					XML:   doc.XML{XMLWrapped: "nums"},
+					XML:   spec.XML{XMLWrapped: "nums"},
 				},
 				{
-					Type: doc.Number,
+					Type: spec.Number,
 					Name: "id",
-					XML:  doc.XML{XMLAttr: true},
+					XML:  spec.XML{XMLAttr: true},
 				},
 			},
 		},
@@ -207,19 +206,19 @@ var data = []*tester{
 
 	{
 		Title: "object array",
-		Type: &doc.Request{
-			XML:   doc.XML{XMLWrapped: "root"},
+		Type: &spec.Request{
+			XML:   spec.XML{XMLWrapped: "root"},
 			Name:  "user",
-			Type:  doc.Object,
+			Type:  spec.Object,
 			Array: true,
-			Items: []*doc.Param{
+			Items: []*spec.Param{
 				{
 					Name: "id",
-					Type: doc.Number,
+					Type: spec.Number,
 				},
 				{
 					Name: "name",
-					Type: doc.String,
+					Type: spec.String,
 				},
 			},
 		},
@@ -272,39 +271,39 @@ var data = []*tester{
 	// NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第二的位置。
 	{
 		Title: "object with item",
-		Type: &doc.Request{
+		Type: &spec.Request{
 			Name: "root",
-			Type: doc.Object,
-			Headers: []*doc.Param{
+			Type: spec.Object,
+			Headers: []*spec.Param{
 				{
-					Type: doc.String,
+					Type: spec.String,
 					Name: "content-type",
 				},
 				{
-					Type: doc.String,
+					Type: spec.String,
 					Name: "encoding",
 				},
 			},
-			Items: []*doc.Param{
+			Items: []*spec.Param{
 				{
-					Type: doc.Object,
+					Type: spec.Object,
 					Name: "name",
-					Items: []*doc.Param{
+					Items: []*spec.Param{
 						{
-							Type: doc.String,
+							Type: spec.String,
 							Name: "last",
 						},
 						{
-							Type:     doc.String,
+							Type:     spec.String,
 							Name:     "first",
 							Optional: true,
 						},
 					},
 				},
 				{
-					Type: doc.Number,
+					Type: spec.Number,
 					Name: "age",
-					XML:  doc.XML{XMLAttr: true},
+					XML:  spec.XML{XMLAttr: true},
 				},
 			},
 		},
@@ -326,46 +325,46 @@ var data = []*tester{
 	// NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第一的位置。
 	{ // 各类型混合
 		Title: "Object with array",
-		Type: &doc.Request{
+		Type: &spec.Request{
 			Name: "root",
-			Type: doc.Object,
-			Items: []*doc.Param{
+			Type: spec.Object,
+			Items: []*spec.Param{
 				{
-					Type: doc.String,
+					Type: spec.String,
 					Name: "name",
 				},
 				{
-					Type: doc.Number,
+					Type: spec.Number,
 					Name: "id",
-					XML:  doc.XML{XMLAttr: true},
+					XML:  spec.XML{XMLAttr: true},
 				},
 				{
-					Type: doc.Object,
+					Type: spec.Object,
 					Name: "group",
-					Items: []*doc.Param{
+					Items: []*spec.Param{
 						{
-							Type: doc.String,
+							Type: spec.String,
 							Name: "name",
-							XML:  doc.XML{XMLAttr: true},
+							XML:  spec.XML{XMLAttr: true},
 						},
 						{
-							Type: doc.Number,
+							Type: spec.Number,
 							Name: "id",
-							XML:  doc.XML{XMLAttr: true},
+							XML:  spec.XML{XMLAttr: true},
 						},
 						{
 							Name:  "tags",
 							Array: true,
-							Type:  doc.Object,
-							Items: []*doc.Param{
+							Type:  spec.Object,
+							Items: []*spec.Param{
 								{
-									Type: doc.String,
+									Type: spec.String,
 									Name: "name",
 								},
 								{
-									Type: doc.Number,
+									Type: spec.Number,
 									Name: "id",
-									XML:  doc.XML{XMLAttr: true},
+									XML:  spec.XML{XMLAttr: true},
 								},
 							},
 						}, // end tags
@@ -454,8 +453,8 @@ const testAPIDoc = `<apidoc version="1.0.1">
 
 func TestNew(t *testing.T) {
 	a := assert.New(t)
-	d := doc.New()
-	a.NotError(d.ParseBlock(&input.Block{File: "memory.file", Data: []byte(testAPIDoc)}))
+	d := spec.New()
+	a.NotError(d.ParseBlock(&spec.Block{File: "memory.file", Data: []byte(testAPIDoc)}))
 
 	erro, _, h := messagetest.MessageHandler()
 	mock, err := New(h, d, map[string]string{"test": "/test"})
@@ -499,7 +498,7 @@ func TestNew(t *testing.T) {
 
 	// 版本号兼容性
 	_, _, h = messagetest.MessageHandler()
-	mock, err = New(h, &doc.Doc{APIDoc: "1.0.1"}, nil)
+	mock, err = New(h, &spec.APIDoc{APIDoc: "1.0.1"}, nil)
 	a.Error(err).Nil(mock)
 	h.Stop()
 }
@@ -513,12 +512,12 @@ func TestLoad(t *testing.T) {
 
 	// LoadFromPath
 	_, _, h = messagetest.MessageHandler()
-	mock, err = Load(h, doctest.Path(a), map[string]string{"admin": "/admin"})
+	mock, err = Load(h, spectest.Path(a), map[string]string{"admin": "/admin"})
 	h.Stop()
 	a.NotError(err).NotNil(mock)
 
 	// loadFromURL
-	static := http.FileServer(http.Dir(doctest.Dir(a)))
+	static := http.FileServer(http.Dir(spectest.Dir(a)))
 	srv := httptest.NewServer(static)
 	defer srv.Close()
 

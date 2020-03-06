@@ -3,8 +3,8 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Schema.Type 需要的一些预定义数据类型
@@ -19,13 +19,13 @@ const (
 	TypeArray    = "array"
 )
 
-func fromDocType(t doc.Type) string {
+func fromDocType(t spec.Type) string {
 	switch string(t) {
-	case doc.Number:
+	case spec.Number:
 		return TypeInt
-	case doc.String:
+	case spec.String:
 		return TypeString
-	case doc.Bool:
+	case spec.Bool:
 		return TypeBool
 	default:
 		return ""
@@ -131,7 +131,7 @@ func (s *Schema) sanitize() *message.SyntaxError {
 }
 
 // chkArray 是否需要检测当前类型是否为数组
-func newSchema(p *doc.Param, chkArray bool) *Schema {
+func newSchema(p *spec.Param, chkArray bool) *Schema {
 	xml := &XML{
 		Name:      p.Name,
 		Namespace: p.XMLNS,
@@ -188,6 +188,6 @@ func newSchema(p *doc.Param, chkArray bool) *Schema {
 }
 
 // chkArray 是否需要检测当前类型是否为数组
-func newSchemaFromRequest(p *doc.Request, chkArray bool) *Schema {
+func newSchemaFromRequest(p *spec.Request, chkArray bool) *Schema {
 	return newSchema(p.Param(), chkArray)
 }

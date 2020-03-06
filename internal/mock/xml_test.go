@@ -9,7 +9,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 func TestValidXML(t *testing.T) {
@@ -20,19 +20,19 @@ func TestValidXML(t *testing.T) {
 		a.NotError(err, "测试 %s 时返回错误 %s", item.Title, err)
 	}
 
-	p := &doc.Request{
+	p := &spec.Request{
 		Name: "root",
-		Type: doc.Object,
-		Items: []*doc.Param{
+		Type: spec.Object,
+		Items: []*spec.Param{
 			{
 				Name: "id",
-				Type: doc.Number,
-				XML:  doc.XML{XMLAttr: true},
+				Type: spec.Number,
+				XML:  spec.XML{XMLAttr: true},
 			},
 			{
 				Name: "desc",
-				Type: doc.String,
-				XML:  doc.XML{XMLExtract: true},
+				Type: spec.String,
+				XML:  spec.XML{XMLExtract: true},
 			},
 		},
 	}
@@ -73,7 +73,7 @@ func TestXMLValidator_find(t *testing.T) {
 
 	v.names = []string{"root"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type, doc.Object)
+	a.NotNil(p).Equal(p.Type, spec.Object)
 
 	v.names = []string{"not-exists"}
 	p = v.find()
@@ -81,61 +81,61 @@ func TestXMLValidator_find(t *testing.T) {
 
 	v.names = []string{"root", "group", "id"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type, doc.Number)
+	a.NotNil(p).Equal(p.Type, spec.Number)
 
 	v.names = []string{"root", "group", "tags", "id"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type, doc.Number)
+	a.NotNil(p).Equal(p.Type, spec.Number)
 }
 
 func TestValidXMLParamValue(t *testing.T) {
 	a := assert.New(t)
 
 	// None
-	a.NotError(validXMLParamValue(&doc.Param{}, "", ""))
-	a.Error(validXMLParamValue(&doc.Param{}, "", "xx"))
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.None}, "", ""))
-	a.Error(validXMLParamValue(&doc.Param{Type: doc.None}, "", "xx"))
+	a.NotError(validXMLParamValue(&spec.Param{}, "", ""))
+	a.Error(validXMLParamValue(&spec.Param{}, "", "xx"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.None}, "", ""))
+	a.Error(validXMLParamValue(&spec.Param{Type: spec.None}, "", "xx"))
 
 	// Number
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.Number}, "", "1111"))
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.Number}, "", "0"))
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.Number}, "", "-11"))
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.Number}, "", "-1024.11"))
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.Number}, "", "-1024.1111234"))
-	a.Error(validXMLParamValue(&doc.Param{Type: doc.Number}, "", "fxy0"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.Number}, "", "1111"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.Number}, "", "0"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.Number}, "", "-11"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.Number}, "", "-1024.11"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.Number}, "", "-1024.1111234"))
+	a.Error(validXMLParamValue(&spec.Param{Type: spec.Number}, "", "fxy0"))
 
 	// String
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.String}, "", "fxy0"))
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.String}, "", ""))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.String}, "", "fxy0"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.String}, "", ""))
 
 	// Bool
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.Bool}, "", "true"))
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.Bool}, "", "false"))
-	a.NotError(validXMLParamValue(&doc.Param{Type: doc.Bool}, "", "1"))
-	a.Error(validXMLParamValue(&doc.Param{Type: doc.Bool}, "", "false/true"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.Bool}, "", "true"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.Bool}, "", "false"))
+	a.NotError(validXMLParamValue(&spec.Param{Type: spec.Bool}, "", "1"))
+	a.Error(validXMLParamValue(&spec.Param{Type: spec.Bool}, "", "false/true"))
 
 	// Other
-	a.Error(validXMLParamValue(&doc.Param{Type: doc.Object}, "", ""))
-	a.Error(validXMLParamValue(&doc.Param{Type: doc.Object}, "", "{}"))
-	a.Error(validXMLParamValue(&doc.Param{Type: "xxx"}, "", "{}"))
-	a.Error(validXMLParamValue(&doc.Param{Type: "xxx"}, "", ""))
+	a.Error(validXMLParamValue(&spec.Param{Type: spec.Object}, "", ""))
+	a.Error(validXMLParamValue(&spec.Param{Type: spec.Object}, "", "{}"))
+	a.Error(validXMLParamValue(&spec.Param{Type: "xxx"}, "", "{}"))
+	a.Error(validXMLParamValue(&spec.Param{Type: "xxx"}, "", ""))
 
 	// bool enum
-	p := &doc.Param{Type: doc.Bool, Enums: []*doc.Enum{
+	p := &spec.Param{Type: spec.Bool, Enums: []*spec.Enum{
 		{Value: "true"},
 		{Value: "false"},
 	}}
 	a.NotError(validXMLParamValue(p, "", "true"))
 
 	// 不存在于枚举
-	p = &doc.Param{Type: doc.Bool, Enums: []*doc.Enum{
+	p = &spec.Param{Type: spec.Bool, Enums: []*spec.Enum{
 		{Value: "true"},
 	}}
 	a.Error(validXMLParamValue(p, "", "false"))
 
 	// number enum
-	p = &doc.Param{Type: doc.Number, Enums: []*doc.Enum{
+	p = &spec.Param{Type: spec.Number, Enums: []*spec.Enum{
 		{Value: "1"},
 		{Value: "-1.2"},
 	}}
@@ -143,7 +143,7 @@ func TestValidXMLParamValue(t *testing.T) {
 	a.NotError(validXMLParamValue(p, "", "-1.2"))
 
 	// 不存在于枚举
-	p = &doc.Param{Type: doc.Number, Enums: []*doc.Enum{
+	p = &spec.Param{Type: spec.Number, Enums: []*spec.Enum{
 		{Value: "1"},
 		{Value: "-1.2"},
 	}}
@@ -153,24 +153,24 @@ func TestValidXMLParamValue(t *testing.T) {
 func TestGetXMLValue(t *testing.T) {
 	a := assert.New(t)
 
-	v, err := getXMLValue(&doc.Param{})
+	v, err := getXMLValue(&spec.Param{})
 	a.NotError(err).Equal(v, "")
 
-	v, err = getXMLValue(&doc.Param{Type: doc.None})
+	v, err = getXMLValue(&spec.Param{Type: spec.None})
 	a.NotError(err).Equal(v, "")
 
-	v, err = getXMLValue(&doc.Param{Type: doc.Bool})
+	v, err = getXMLValue(&spec.Param{Type: spec.Bool})
 	a.NotError(err).Equal(v, true)
 
-	v, err = getXMLValue(&doc.Param{Type: doc.Number})
+	v, err = getXMLValue(&spec.Param{Type: spec.Number})
 	a.NotError(err).Equal(v, 1024)
 
-	v, err = getXMLValue(&doc.Param{Type: doc.String})
+	v, err = getXMLValue(&spec.Param{Type: spec.String})
 	a.NotError(err).Equal(v, "1024")
 
-	v, err = getXMLValue(&doc.Param{Type: doc.Object})
+	v, err = getXMLValue(&spec.Param{Type: spec.Object})
 	a.Error(err).Nil(v)
 
-	v, err = getXMLValue(&doc.Param{Type: "not-exists"})
+	v, err = getXMLValue(&spec.Param{Type: "not-exists"})
 	a.Error(err).Nil(v)
 }

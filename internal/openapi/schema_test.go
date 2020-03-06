@@ -5,16 +5,16 @@ package openapi
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/spec"
 	"github.com/issue9/assert"
 )
 
 func TestNewSchema(t *testing.T) {
 	a := assert.New(t)
 
-	input := &doc.Param{
+	input := &spec.Param{
 		Name:       "name",
-		Type:       doc.Bool,
+		Type:       spec.Bool,
 		Deprecated: "v1.1.0",
 		Default:    "true",
 		Optional:   true,
@@ -33,14 +33,14 @@ func TestNewSchema(t *testing.T) {
 		True(output.Items.Deprecated).
 		Equal(output.Items.Title, input.Summary)
 
-	input.Enums = []*doc.Enum{
+	input.Enums = []*spec.Enum{
 		{
 			Value:   "v1",
 			Summary: "s1",
 		},
 		{
 			Value:       "v2",
-			Description: doc.Richtext{Text: "s2"},
+			Description: spec.Richtext{Text: "s2"},
 			Deprecated:  "1.0.1",
 		},
 	}
@@ -48,16 +48,16 @@ func TestNewSchema(t *testing.T) {
 	a.Equal(output.Type, TypeBool).
 		Equal(output.Enum, []string{"v1", "v2"})
 
-	input = &doc.Param{
-		Type: doc.Number,
-		Items: []*doc.Param{
+	input = &spec.Param{
+		Type: spec.Number,
+		Items: []*spec.Param{
 			{
 				Name: "p1",
-				Type: doc.String,
+				Type: spec.String,
 			},
 			{
 				Name: "p2",
-				Type: doc.Number,
+				Type: spec.Number,
 			},
 		},
 	}

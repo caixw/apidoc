@@ -11,14 +11,14 @@ import (
 	"github.com/issue9/assert"
 	"github.com/issue9/qheader"
 
-	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 func TestFindRequestByContentType(t *testing.T) {
 	a := assert.New(t)
 	data := []*struct {
 		// 输入参数
-		requests []*doc.Request
+		requests []*spec.Request
 		ct       string
 
 		// 返回参数
@@ -28,27 +28,27 @@ func TestFindRequestByContentType(t *testing.T) {
 			index: -1,
 		},
 		{
-			requests: []*doc.Request{{Mimetype: "application/json"}},
+			requests: []*spec.Request{{Mimetype: "application/json"}},
 			ct:       "application/json",
 			index:    0,
 		},
 		{
-			requests: []*doc.Request{{Mimetype: "application/json"}},
+			requests: []*spec.Request{{Mimetype: "application/json"}},
 			ct:       "not/exists",
 			index:    -1,
 		},
 		{
-			requests: []*doc.Request{{Mimetype: "application/json"}, {Mimetype: "text/xml"}},
+			requests: []*spec.Request{{Mimetype: "application/json"}, {Mimetype: "text/xml"}},
 			ct:       "text/xml",
 			index:    1,
 		},
 		{
-			requests: []*doc.Request{{}, {Mimetype: "text/xml"}},
+			requests: []*spec.Request{{}, {Mimetype: "text/xml"}},
 			ct:       "text/xml",
 			index:    1,
 		},
 		{ // 没有明确匹配，则匹配 none
-			requests: []*doc.Request{{}, {Mimetype: "application/json"}},
+			requests: []*spec.Request{{}, {Mimetype: "application/json"}},
 			ct:       "text/xml",
 			index:    0,
 		},
@@ -70,7 +70,7 @@ func TestFindResponseByAccept(t *testing.T) {
 	data := []*struct {
 		// 输入参数
 		mimetypes []string
-		requests  []*doc.Request
+		requests  []*spec.Request
 		accepts   []*qheader.Header
 
 		// 返回参数
@@ -81,97 +81,97 @@ func TestFindResponseByAccept(t *testing.T) {
 			index: -1,
 		},
 		{
-			requests: []*doc.Request{},
+			requests: []*spec.Request{},
 			index:    -1,
 		},
 		{
-			requests: []*doc.Request{{Mimetype: "text/xml"}},
+			requests: []*spec.Request{{Mimetype: "text/xml"}},
 			accepts:  []*qheader.Header{{Value: "text/xml"}},
 			index:    0,
 			ct:       "text/xml",
 		},
 		{
-			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			requests: []*spec.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
 			accepts:  []*qheader.Header{{Value: "text/xml"}},
 			index:    0,
 			ct:       "text/xml",
 		},
 		{
-			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			requests: []*spec.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
 			accepts:  []*qheader.Header{{Value: "text/*"}},
 			index:    0,
 			ct:       "text/xml",
 		},
 		{ // 5
-			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			requests: []*spec.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
 			accepts:  []*qheader.Header{{Value: "application/*"}},
 			index:    1,
 			ct:       "application/json",
 		},
 		{
-			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			requests: []*spec.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
 			accepts:  []*qheader.Header{{Value: "*/*"}},
 			index:    0,
 			ct:       "text/xml",
 		},
 		{
-			requests: []*doc.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
+			requests: []*spec.Request{{Mimetype: "text/xml"}, {Mimetype: "application/json"}},
 			accepts:  []*qheader.Header{{Value: "*/*"}, {Value: "application/*"}},
 			index:    0,
 			ct:       "text/xml", // 第一个元素，匹配 */*
 		},
 		{
 			mimetypes: []string{"text/xml"},
-			requests:  []*doc.Request{},
+			requests:  []*spec.Request{},
 			accepts:   []*qheader.Header{{Value: "*/*"}},
 			index:     -1,
 			ct:        "",
 		},
 		{
 			mimetypes: []string{"text/xml"},
-			requests:  []*doc.Request{{}},
+			requests:  []*spec.Request{{}},
 			accepts:   []*qheader.Header{{Value: "*/*"}},
 			index:     0,
 			ct:        "text/xml",
 		},
 		{
 			mimetypes: []string{"text/xml"},
-			requests:  []*doc.Request{{}, {}},
+			requests:  []*spec.Request{{}, {}},
 			accepts:   []*qheader.Header{{Value: "*/*"}},
 			index:     0,
 			ct:        "text/xml",
 		},
 		{
 			mimetypes: []string{"text/xml", "application/json"},
-			requests:  []*doc.Request{{}},
+			requests:  []*spec.Request{{}},
 			accepts:   []*qheader.Header{{Value: "application/*"}},
 			index:     0,
 			ct:        "application/json",
 		},
 		{
 			mimetypes: []string{"text/xml", "application/json"},
-			requests:  []*doc.Request{{}},
+			requests:  []*spec.Request{{}},
 			accepts:   []*qheader.Header{{Value: "application/json"}},
 			index:     0,
 			ct:        "application/json",
 		},
 		{
 			mimetypes: []string{"text/xml", "application/json"},
-			requests:  []*doc.Request{{}},
+			requests:  []*spec.Request{{}},
 			accepts:   []*qheader.Header{{Value: "application/*"}, {Value: "text/xml"}},
 			index:     0,
 			ct:        "text/xml",
 		},
 		{
 			mimetypes: []string{"text/xml", "application/json"},
-			requests:  []*doc.Request{{Mimetype: "application/json"}},
+			requests:  []*spec.Request{{Mimetype: "application/json"}},
 			accepts:   []*qheader.Header{{Value: "application/*"}},
 			index:     0,
 			ct:        "application/json",
 		},
 		{ // 任意值，匹配 mimetypes
 			mimetypes: []string{"text/xml", "application/json"},
-			requests:  []*doc.Request{{}},
+			requests:  []*spec.Request{{}},
 			accepts:   []*qheader.Header{{Value: "font/*"}, {Value: "*/*"}},
 			index:     0,
 			ct:        "text/xml",
@@ -203,21 +203,21 @@ func TestValidRequest(t *testing.T) {
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "application/json")
 	r.Header.Set("encoding", "xxx")
-	a.NotError(validRequest([]*doc.Request{item.Type}, r))
+	a.NotError(validRequest([]*spec.Request{item.Type}, r))
 
 	// 匹配 xml
 	body = bytes.NewBufferString(item.XML)
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "application/xml")
 	r.Header.Set("encoding", "yyy")
-	a.NotError(validRequest([]*doc.Request{item.Type}, r))
+	a.NotError(validRequest([]*spec.Request{item.Type}, r))
 
 	// 无法匹配 content-type
 	body = bytes.NewBufferString(`{"name":{"last":"l","first":"f"},"age":1}`)
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "not-exists")
 	r.Header.Set("encoding", "xxx")
-	a.Error(validRequest([]*doc.Request{item.Type}, r))
+	a.Error(validRequest([]*spec.Request{item.Type}, r))
 }
 
 func TestBuildResponse(t *testing.T) {
@@ -255,7 +255,7 @@ func TestValidSimpleParam(t *testing.T) {
 
 	data := []*struct {
 		title string
-		p     *doc.Param
+		p     *spec.Param
 		v     string
 		err   bool
 	}{
@@ -266,20 +266,20 @@ func TestValidSimpleParam(t *testing.T) {
 		},
 		{
 			title: "number",
-			p:     &doc.Param{Type: doc.Number},
+			p:     &spec.Param{Type: spec.Number},
 			v:     "-10.2",
 		},
 		{
 			title: "number failed",
-			p:     &doc.Param{Type: doc.Number},
+			p:     &spec.Param{Type: spec.Number},
 			v:     "-xxx10.2",
 			err:   true,
 		},
 		{
 			title: "number with enum",
-			p: &doc.Param{
-				Type: doc.Number,
-				Enums: []*doc.Enum{
+			p: &spec.Param{
+				Type: spec.Number,
+				Enums: []*spec.Enum{
 					{Value: "1"},
 					{Value: "2"},
 					{Value: "10"},
@@ -289,9 +289,9 @@ func TestValidSimpleParam(t *testing.T) {
 		},
 		{
 			title: "number with enum failed",
-			p: &doc.Param{
-				Type: doc.Number,
-				Enums: []*doc.Enum{
+			p: &spec.Param{
+				Type: spec.Number,
+				Enums: []*spec.Enum{
 					{Value: "1"},
 					{Value: "2"},
 					{Value: "10"},
@@ -302,34 +302,34 @@ func TestValidSimpleParam(t *testing.T) {
 		},
 		{
 			title: "bool",
-			p:     &doc.Param{Type: doc.Bool},
+			p:     &spec.Param{Type: spec.Bool},
 			v:     "false",
 		},
 		{
 			title: "bool failed",
-			p:     &doc.Param{Type: doc.Bool},
+			p:     &spec.Param{Type: spec.Bool},
 			v:     "-xxx-true",
 			err:   true,
 		},
 		{
 			title: "bool with optional",
-			p:     &doc.Param{Type: doc.Bool, Optional: true},
+			p:     &spec.Param{Type: spec.Bool, Optional: true},
 			v:     "",
 		},
 		{
 			title: "bool with empty",
-			p:     &doc.Param{Type: doc.Bool},
+			p:     &spec.Param{Type: spec.Bool},
 			v:     "",
 			err:   true,
 		},
 		{
 			title: "string",
-			p:     &doc.Param{Type: doc.String},
+			p:     &spec.Param{Type: spec.String},
 			v:     "-xxx10.2",
 		},
 		{
 			title: "doc.None",
-			p:     &doc.Param{Type: doc.None},
+			p:     &spec.Param{Type: spec.None},
 			v:     "-xxx10.2",
 			err:   true,
 		},
@@ -349,7 +349,7 @@ func TestValidQueryArrayParam(t *testing.T) {
 	a := assert.New(t)
 	data := []*struct {
 		title string
-		p     []*doc.Param
+		p     []*spec.Param
 		r     *http.Request
 		err   bool
 	}{
@@ -358,51 +358,51 @@ func TestValidQueryArrayParam(t *testing.T) {
 		},
 		{
 			title: "非数组",
-			p: []*doc.Param{
-				{Name: "k1", Type: doc.String},
-				{Name: "k2", Type: doc.Number},
+			p: []*spec.Param{
+				{Name: "k1", Type: spec.String},
+				{Name: "k2", Type: spec.Number},
 			},
 			r: httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2", nil),
 		},
 		{
 			title: "非数组，格式不正确",
-			p: []*doc.Param{
-				{Name: "k1", Type: doc.String},
-				{Name: "k2", Type: doc.Number},
+			p: []*spec.Param{
+				{Name: "k1", Type: spec.String},
+				{Name: "k2", Type: spec.Number},
 			},
 			r:   httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=not-number", nil),
 			err: true,
 		},
 		{
 			title: "数组-form",
-			p: []*doc.Param{
-				{Name: "k1", Type: doc.String},
-				{Name: "k2", Type: doc.Number, Array: true},
+			p: []*spec.Param{
+				{Name: "k1", Type: spec.String},
+				{Name: "k2", Type: spec.Number, Array: true},
 			},
 			r: httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2&k2=3&k2=4", nil),
 		},
 		{
 			title: "数组-form，格式不正确",
-			p: []*doc.Param{
-				{Name: "k1", Type: doc.String},
-				{Name: "k2", Type: doc.Number, Array: true},
+			p: []*spec.Param{
+				{Name: "k1", Type: spec.String},
+				{Name: "k2", Type: spec.Number, Array: true},
 			},
 			r:   httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2&k2=3&k2=not-number", nil),
 			err: true,
 		},
 		{
 			title: "数组-array-style",
-			p: []*doc.Param{
-				{Name: "k1", Type: doc.String},
-				{Name: "k2", Type: doc.Number, Array: true, ArrayStyle: true},
+			p: []*spec.Param{
+				{Name: "k1", Type: spec.String},
+				{Name: "k2", Type: spec.Number, Array: true, ArrayStyle: true},
 			},
 			r: httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2,3,4", nil),
 		},
 		{
 			title: "数组-array-style，格式不正确",
-			p: []*doc.Param{
-				{Name: "k1", Type: doc.String},
-				{Name: "k2", Type: doc.Number, Array: true, ArrayStyle: true},
+			p: []*spec.Param{
+				{Name: "k1", Type: spec.String},
+				{Name: "k2", Type: spec.Number, Array: true, ArrayStyle: true},
 			},
 			r:   httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2,3,not-number", nil),
 			err: true,

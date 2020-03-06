@@ -11,9 +11,9 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 // LatestVersion openapi 最新的版本号
@@ -82,7 +82,7 @@ type Example struct {
 // ExampleValue 表示示例的内容类型。
 type ExampleValue string
 
-func newTag(tag *doc.Tag) *Tag {
+func newTag(tag *spec.Tag) *Tag {
 	return &Tag{
 		Name:        tag.Name,
 		Description: tag.Title,

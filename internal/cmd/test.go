@@ -6,7 +6,7 @@ import (
 	"flag"
 	"io"
 
-	"github.com/caixw/apidoc/v6"
+	build2 "github.com/caixw/apidoc/v6/build"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/message"
 )
@@ -21,6 +21,6 @@ func test(w io.Writer) error {
 	h := message.NewHandler(newHandlerFunc())
 	defer h.Stop()
 
-	apidoc.LoadConfig(h, getPath(testFlagSet)).Test()
+	build2.LoadConfig(h, getPath(testFlagSet)).Test()
 	return nil
 }

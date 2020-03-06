@@ -10,13 +10,13 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/doc/doctest"
 	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/spec/spectest"
 )
 
 func TestJSON(t *testing.T) {
 	a := assert.New(t)
-	data, err := JSON(doctest.Get())
+	data, err := JSON(spectest.Get())
 	a.NotError(err).NotNil(data)
 
 	openapi := &OpenAPI{}
@@ -40,6 +40,6 @@ func TestJSON(t *testing.T) {
 
 func TestYAML(t *testing.T) {
 	a := assert.New(t)
-	data, err := YAML(doctest.Get())
+	data, err := YAML(spectest.Get())
 	a.NotError(err).NotNil(data)
 }

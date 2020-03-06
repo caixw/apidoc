@@ -5,9 +5,9 @@ package openapi
 import (
 	"strings"
 
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 // 去掉 URL 中的 {} 模板参数。使其符合 is.URL 的判断规则
@@ -27,7 +27,7 @@ type ServerVariable struct {
 	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
 }
 
-func newServer(srv *doc.Server) *Server {
+func newServer(srv *spec.Server) *Server {
 	desc := srv.Summary
 	if srv.Description.Text != "" {
 		desc = srv.Description.Text

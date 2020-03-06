@@ -9,7 +9,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 func TestJSONValidator_find(t *testing.T) {
@@ -35,7 +35,7 @@ func TestJSONValidator_find(t *testing.T) {
 
 	v.names = []string{"name"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type, doc.String)
+	a.NotNil(p).Equal(p.Type, spec.String)
 
 	v.names = []string{"not-exists"}
 	p = v.find()
@@ -43,11 +43,11 @@ func TestJSONValidator_find(t *testing.T) {
 
 	v.names = []string{"group", "id"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type, doc.Number)
+	a.NotNil(p).Equal(p.Type, spec.Number)
 
 	v.names = []string{"group", "tags", "id"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type, doc.Number)
+	a.NotNil(p).Equal(p.Type, spec.Number)
 }
 
 func TestValidJSON(t *testing.T) {

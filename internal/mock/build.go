@@ -11,13 +11,13 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/qheader"
 
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
-func (m *Mock) buildAPI(api *doc.API) http.Handler {
+func (m *Mock) buildAPI(api *spec.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m.h.Message(message.Succ, locale.RequestAPI, r.Method, r.URL.Path)
 		if api.Deprecated != "" {
@@ -47,7 +47,7 @@ func (m *Mock) buildAPI(api *doc.API) http.Handler {
 	})
 }
 
-func validRequest(requests []*doc.Request, r *http.Request) error {
+func validRequest(requests []*spec.Request, r *http.Request) error {
 	ct := r.Header.Get("Content-Type")
 	if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") { // 用户提交的 content-type 必须是明确的值
 		return message.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
@@ -81,7 +81,7 @@ func validRequest(requests []*doc.Request, r *http.Request) error {
 	}
 }
 
-func (m *Mock) renderResponse(api *doc.API, w http.ResponseWriter, r *http.Request) {
+func (m *Mock) renderResponse(api *spec.API, w http.ResponseWriter, r *http.Request) {
 	accepts, err := qheader.Accept(r)
 	if err != nil {
 		m.handleError(w, r, "request.headers[Accept]", err)
@@ -108,11 +108,11 @@ func (m *Mock) renderResponse(api *doc.API, w http.ResponseWriter, r *http.Reque
 	w.Header().Set("Server", vars.Name)
 	for _, item := range resp.Headers {
 		switch item.Type {
-		case doc.Bool:
+		case spec.Bool:
 			w.Header().Set(item.Name, strconv.FormatBool(generateBool()))
-		case doc.Number:
+		case spec.Number:
 			w.Header().Set(item.Name, strconv.FormatInt(generateNumber(item), 10))
-		case doc.String:
+		case spec.String:
 			w.Header().Set(item.Name, generateString(item))
 		default:
 			m.handleError(w, r, "response.headers", locale.Errorf(locale.ErrInvalidFormat))
@@ -127,8 +127,8 @@ func (m *Mock) renderResponse(api *doc.API, w http.ResponseWriter, r *http.Reque
 }
 
 // 需要保证 ct 的值不能为空
-func findRequestByContentType(requests []*doc.Request, ct string) *doc.Request {
-	var none *doc.Request
+func findRequestByContentType(requests []*spec.Request, ct string) *spec.Request {
+	var none *spec.Request
 	for _, req := range requests {
 		if req.Mimetype == ct {
 			return req
@@ -144,12 +144,12 @@ func findRequestByContentType(requests []*doc.Request, ct string) *doc.Request {
 }
 
 // accepts 必须是已经按权重进行排序的。
-func findResponseByAccept(mimetypes []string, requests []*doc.Request, accepts []*qheader.Header) (*doc.Request, string) {
+func findResponseByAccept(mimetypes []string, requests []*spec.Request, accepts []*qheader.Header) (*spec.Request, string) {
 	if len(requests) == 0 {
 		return nil, ""
 	}
 
-	var none *doc.Request // 表示 requests 中 mimetype 值为空的第一个子项
+	var none *spec.Request // 表示 requests 中 mimetype 值为空的第一个子项
 
 	// 从 requests 中查找是否有符合 accepts 的内容
 	for _, req := range requests {
@@ -205,11 +205,11 @@ func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 	w.WriteHeader(http.StatusBadRequest)
 }
 
-func validQueryArrayParam(queries []*doc.Param, r *http.Request) error {
+func validQueryArrayParam(queries []*spec.Param, r *http.Request) error {
 	for _, query := range queries {
 		field := "queries[" + query.Name + "]."
 
-		valid := func(p *doc.Param, v string) error {
+		valid := func(p *spec.Param, v string) error {
 			err := validSimpleParam(p, v)
 			if serr, ok := err.(*message.SyntaxError); ok {
 				serr.Field = field + serr.Field
@@ -244,12 +244,12 @@ func validQueryArrayParam(queries []*doc.Param, r *http.Request) error {
 }
 
 // 验证单个参数，仅支持对 query、header 等简单类型的参数验证
-func validSimpleParam(p *doc.Param, val string) error {
+func validSimpleParam(p *spec.Param, val string) error {
 	if p == nil {
 		return nil
 	}
 
-	if val == "" && p.Type != doc.String { // 字符串的默认值可以为 “”
+	if val == "" && p.Type != spec.String { // 字符串的默认值可以为 “”
 		if p.Optional || p.Default != "" {
 			return nil
 		}
@@ -257,17 +257,17 @@ func validSimpleParam(p *doc.Param, val string) error {
 	}
 
 	switch p.Type {
-	case doc.Bool:
+	case spec.Bool:
 		if _, err := strconv.ParseBool(val); err != nil {
 			return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 		}
-	case doc.Number:
+	case spec.Number:
 		if !is.Number(val) {
 			return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 		}
-	case doc.String:
-	case doc.Object:
-	case doc.None:
+	case spec.String:
+	case spec.Object:
+	case spec.None:
 		if val != "" {
 			return message.NewLocaleError("", "", 0, locale.ErrInvalidValue)
 		}
@@ -290,7 +290,7 @@ func validSimpleParam(p *doc.Param, val string) error {
 	return nil
 }
 
-func buildResponse(p *doc.Request, r *http.Request) ([]byte, error) {
+func buildResponse(p *spec.Request, r *http.Request) ([]byte, error) {
 	if p == nil {
 		return nil, nil
 	}

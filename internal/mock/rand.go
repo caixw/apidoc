@@ -8,7 +8,7 @@ import (
 
 	"github.com/issue9/rands"
 
-	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 var randOptions = &struct {
@@ -41,7 +41,7 @@ func generateBool() bool {
 	return (rand.Int() % 2) == 0
 }
 
-func generateNumber(p *doc.Param) int64 {
+func generateNumber(p *spec.Param) int64 {
 	if p.IsEnum() {
 		index := 0
 		if !test {
@@ -60,7 +60,7 @@ func generateNumber(p *doc.Param) int64 {
 	return rand.Int63n(int64(randOptions.maxNumber))
 }
 
-func generateString(p *doc.Param) string {
+func generateString(p *spec.Param) string {
 	if p.IsEnum() {
 		index := 0
 		if !test {

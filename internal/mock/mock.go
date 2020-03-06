@@ -10,12 +10,11 @@ import (
 	"github.com/issue9/mux/v2"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v6/doc"
-	"github.com/caixw/apidoc/v6/input"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	xpath "github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 const (
@@ -26,7 +25,7 @@ const (
 // Mock 管理 mock 数据
 type Mock struct {
 	h       *message.Handler
-	doc     *doc.Doc
+	doc     *spec.APIDoc
 	mux     *mux.Mux
 	servers map[string]string
 }
@@ -34,9 +33,9 @@ type Mock struct {
 // New 声明 Mock 对象
 //
 // h 用于处理各类输出消息，仅在 ServeHTTP 中的消息才输出到 h；
-// d doc.Doc 实例，调用方需要保证该数据类型的正确性；
+// d doc.APIDoc 实例，调用方需要保证该数据类型的正确性；
 // servers 用于指定 d.Servers 中每一个服务对应的路由前缀
-func New(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handler, error) {
+func New(h *message.Handler, d *spec.APIDoc, servers map[string]string) (http.Handler, error) {
 	c, err := version.SemVerCompatible(d.APIDoc, vars.Version())
 	if err != nil {
 		return nil, err
@@ -67,8 +66,8 @@ func Load(h *message.Handler, path string, servers map[string]string) (http.Hand
 	}
 
 	// 加载并验证
-	d := doc.New()
-	if err = d.ParseBlock(&input.Block{File: path, Data: data}); err != nil {
+	d := spec.New()
+	if err = d.ParseBlock(&spec.Block{File: path, Data: data}); err != nil {
 		return nil, err
 	}
 

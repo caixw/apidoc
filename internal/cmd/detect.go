@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/caixw/apidoc/v6"
+	build2 "github.com/caixw/apidoc/v6/build"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/message"
 )
@@ -26,7 +26,7 @@ func detect(w io.Writer) error {
 	h := message.NewHandler(newHandlerFunc())
 	defer h.Stop()
 
-	if err := apidoc.Detect(path, detectRecursive); err != nil {
+	if err := build2.Detect(path, detectRecursive); err != nil {
 		return err
 	}
 

@@ -12,20 +12,20 @@ import (
 
 	"github.com/issue9/is"
 
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 type xmlValidator struct {
-	param   *doc.Param
+	param   *spec.Param
 	decoder *xml.Decoder
 	names   []string // 按顺序保存变量名称
 }
 
-func validXML(p *doc.Request, content []byte) error {
+func validXML(p *spec.Request, content []byte) error {
 	if len(content) == 0 {
-		if p == nil || p.Type == doc.None {
+		if p == nil || p.Type == spec.None {
 			return nil
 		}
 		return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
@@ -90,19 +90,19 @@ func (validator *xmlValidator) validValue(v string) error {
 
 // 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
 // field 表示 p 在整个对象中的位置信息。
-func validXMLParamValue(p *doc.Param, field, v string) error {
+func validXMLParamValue(p *spec.Param, field, v string) error {
 	switch p.Type {
-	case doc.Number:
+	case spec.Number:
 		if !is.Number(v) {
 			return message.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
 		}
-	case doc.Bool:
+	case spec.Bool:
 		if _, err := strconv.ParseBool(v); err != nil {
 			return message.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
 		}
-	case doc.String:
+	case spec.String:
 		return nil
-	case doc.None:
+	case spec.None:
 		if v != "" {
 			return message.NewLocaleError("", field, 0, locale.ErrInvalidValue)
 		}
@@ -135,7 +135,7 @@ func (validator *xmlValidator) popName() *xmlValidator {
 }
 
 // 如果 names 为空，返回 nil
-func (validator *xmlValidator) find() *doc.Param {
+func (validator *xmlValidator) find() *spec.Param {
 	p := validator.param
 
 	if len(validator.names) == 0 || p == nil {
@@ -186,7 +186,7 @@ LOOP:
 	}
 
 	// 从子项中查找带 XMLExtract 的项
-	if p.Type == doc.Object {
+	if p.Type == spec.Object {
 		for _, pp := range p.Items {
 			if pp.XMLExtract {
 				p = pp
@@ -204,8 +204,8 @@ type xmlBuilder struct {
 	items    []*xmlBuilder
 }
 
-func buildXML(p *doc.Request) ([]byte, error) {
-	if p == nil || p.Type == doc.None {
+func buildXML(p *spec.Request) ([]byte, error) {
+	if p == nil || p.Type == spec.None {
 		return nil, nil
 	}
 
@@ -229,7 +229,7 @@ func buildXML(p *doc.Request) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func parseXML(p *doc.Param, chkArray, root bool) (*xmlBuilder, error) {
+func parseXML(p *spec.Param, chkArray, root bool) (*xmlBuilder, error) {
 	builder := &xmlBuilder{
 		start: xml.StartElement{
 			Name: xml.Name{
@@ -251,13 +251,13 @@ func parseXML(p *doc.Param, chkArray, root bool) (*xmlBuilder, error) {
 		return builder, nil
 	}
 
-	if p.Type != doc.Object {
+	if p.Type != spec.Object {
 		switch p.Type {
-		case doc.Bool:
+		case spec.Bool:
 			builder.charData = fmt.Sprint(generateBool())
-		case doc.Number:
+		case spec.Number:
 			builder.charData = fmt.Sprint(generateNumber(p))
-		case doc.String:
+		case spec.String:
 			builder.charData = fmt.Sprint(generateString(p))
 		}
 		return builder, nil
@@ -301,7 +301,7 @@ func parseXML(p *doc.Param, chkArray, root bool) (*xmlBuilder, error) {
 	return builder, nil
 }
 
-func parseArray(p *doc.Param, parent *xmlBuilder) error {
+func parseArray(p *spec.Param, parent *xmlBuilder) error {
 	b := parent
 	if p.XMLWrapped != "" {
 		b = &xmlBuilder{
@@ -349,15 +349,15 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 	return e.EncodeToken(builder.start.End())
 }
 
-func getXMLValue(p *doc.Param) (interface{}, error) {
+func getXMLValue(p *spec.Param) (interface{}, error) {
 	switch p.Type {
-	case doc.None:
+	case spec.None:
 		return "", nil
-	case doc.Bool:
+	case spec.Bool:
 		return generateBool(), nil
-	case doc.Number:
+	case spec.Number:
 		return generateNumber(p), nil
-	case doc.String:
+	case spec.String:
 		return generateString(p), nil
 	default: // doc.Object:
 		return nil, message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)

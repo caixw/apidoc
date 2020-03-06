@@ -18,16 +18,18 @@ import (
 
 	"golang.org/x/text/language"
 
-	"github.com/caixw/apidoc/v6/doc"
-	"github.com/caixw/apidoc/v6/input"
+	"github.com/caixw/apidoc/v6/build"
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/mock"
 	xpath "github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
-	"github.com/caixw/apidoc/v6/output"
+	"github.com/caixw/apidoc/v6/spec"
 )
+
+// Config 配置文件映身的结构
+type Config = build.Config
 
 // Init 初始化包
 //
@@ -50,16 +52,8 @@ func Version() string {
 // 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
-func Build(h *message.Handler, o *output.Options, i ...*input.Options) error {
-	d, err := parse(h, i...)
-	if err != nil {
-		return err
-	}
-	if err = o.Sanitize(); err != nil {
-		return err
-	}
-
-	return output.Render(d, o)
+func Build(h *message.Handler, o *build.Output, i ...*build.Input) error {
+	return build.Build(h, o, i...)
 }
 
 // Buffer 生成文档内容并返回
@@ -68,43 +62,15 @@ func Build(h *message.Handler, o *output.Options, i ...*input.Options) error {
 // 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
-func Buffer(h *message.Handler, o *output.Options, i ...*input.Options) (*bytes.Buffer, error) {
-	d, err := parse(h, i...)
-	if err != nil {
-		return nil, err
-	}
-	if err = o.Sanitize(); err != nil {
-		return nil, err
-	}
-
-	return output.Buffer(d, o)
+func Buffer(h *message.Handler, o *build.Output, i ...*build.Input) (*bytes.Buffer, error) {
+	return build.Buffer(h, o, i...)
 }
 
 // Test 测试文档语法，并将结果输出到 h
-func Test(h *message.Handler, i ...*input.Options) {
-	if _, err := parse(h, i...); err != nil {
-		h.Error(message.Erro, err)
-		return
-	}
-	h.Message(message.Succ, locale.TestSuccess)
-}
-
-func parse(h *message.Handler, i ...*input.Options) (*doc.Doc, error) {
-	for _, item := range i {
-		if err := item.Sanitize(); err != nil {
-			return nil, err
-		}
-	}
-
-	d := doc.New()
-	d.Parse(h, i...)
-
-	if err := d.Sanitize(); err != nil {
-		h.Error(message.Erro, err)
-		return nil, err
-	}
-
-	return d, nil
+//
+// NOTE: 需要先调用 Init() 初始化本地化信息
+func Test(h *message.Handler, i ...*build.Input) {
+	build.Test(h, i...)
 }
 
 // Static 为 /docs 搭建一个静态文件服务
@@ -174,13 +140,13 @@ func ViewFile(status int, url, path, contentType, dir string, stylesheet bool) (
 
 // Valid 验证文档内容的正确性
 func Valid(content []byte) error {
-	return doc.Valid(content)
+	return spec.Valid(content)
 }
 
 // Mock 生成 Mock 中间件
 //
 // 调用者需要保证 d 的正确性。
-func Mock(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handler, error) {
+func Mock(h *message.Handler, d *spec.APIDoc, servers map[string]string) (http.Handler, error) {
 	return mock.New(h, d, servers)
 }
 
@@ -189,8 +155,8 @@ func Mock(h *message.Handler, d *doc.Doc, servers map[string]string) (http.Handl
 // data 为文档内容；
 // servers 为文档中所有 server 以及对应的路由前缀。
 func MockBuffer(h *message.Handler, data []byte, servers map[string]string) (http.Handler, error) {
-	d := doc.New()
-	if err := d.ParseBlock(&input.Block{Data: data}); err != nil {
+	d := spec.New()
+	if err := d.ParseBlock(&spec.Block{Data: data}); err != nil {
 		return nil, err
 	}
 

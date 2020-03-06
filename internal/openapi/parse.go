@@ -8,14 +8,14 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/caixw/apidoc/v6/doc"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
-// 将 doc.Doc 转换成 openapi
-func convert(doc *doc.Doc) (*OpenAPI, error) {
+// 将 doc.APIDoc 转换成 openapi
+func convert(doc *spec.APIDoc) (*OpenAPI, error) {
 	langID := doc.Lang
 	if langID == "" {
 		langID = "und"
@@ -57,7 +57,7 @@ func convert(doc *doc.Doc) (*OpenAPI, error) {
 	return openapi, nil
 }
 
-func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
+func parsePaths(openapi *OpenAPI, d *spec.APIDoc) *message.SyntaxError {
 	for _, api := range d.Apis {
 		p := openapi.Paths[api.Path.Path]
 		if p == nil {
@@ -162,7 +162,7 @@ func parsePaths(openapi *OpenAPI, d *doc.Doc) *message.SyntaxError {
 	return nil
 }
 
-func setOperationParams(operation *Operation, api *doc.API) {
+func setOperationParams(operation *Operation, api *spec.API) {
 	l := len(api.Path.Params) + len(api.Path.Queries)
 	operation.Parameters = make([]*Parameter, 0, l)
 
@@ -256,7 +256,7 @@ func setOperation(path *PathItem, method string) (*Operation, *message.SyntaxErr
 }
 
 // JSON 输出 JSON 格式数据
-func JSON(doc *doc.Doc) ([]byte, error) {
+func JSON(doc *spec.APIDoc) ([]byte, error) {
 	openapi, err := convert(doc)
 	if err != nil {
 		return nil, err
@@ -266,7 +266,7 @@ func JSON(doc *doc.Doc) ([]byte, error) {
 }
 
 // YAML 输出 YAML 格式数据
-func YAML(doc *doc.Doc) ([]byte, error) {
+func YAML(doc *spec.APIDoc) ([]byte, error) {
 	openapi, err := convert(doc)
 	if err != nil {
 		return nil, err

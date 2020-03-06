@@ -7,13 +7,13 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/doc"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 func TestNewContact(t *testing.T) {
 	a := assert.New(t)
 
-	input := &doc.Contact{
+	input := &spec.Contact{
 		Email: "user@example.com",
 		URL:   "https://example.com",
 		Name:  "name",
