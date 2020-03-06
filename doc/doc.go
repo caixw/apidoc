@@ -19,7 +19,7 @@ import (
 
 const createdFormat = time.RFC3339
 
-// Doc 文档
+// Doc 对应 apidoc 元素
 type Doc struct {
 	XMLName struct{} `xml:"apidoc"`
 

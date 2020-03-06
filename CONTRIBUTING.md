@@ -13,7 +13,7 @@ apidoc 是一个基于 [MIT](https://opensource.org/licenses/MIT) 的开源软�
 
 ## 文档
 
-可以通过 /cmd/site 将 docs 作为一个本地的 web 服务，方便 XSL 相关功能的调试；
+可以通过 `apidoc static -docs=xxx` 将 docs 作为一个本地的 web 服务，方便 XSL 相关功能的调试；
 
 文档应该尽可能的保证在非 Javascript 环境下，也有基本的功能。
 
