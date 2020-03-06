@@ -30,8 +30,6 @@ jobs:
         run: go vet -v ./...
         
       - name: Test
-        env:
-          LANG: en
         run: go test -v -coverprofile='coverage.txt' -covermode=atomic ./...
 
       - name: Upload Coverage report
