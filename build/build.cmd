@@ -4,7 +4,7 @@ set wd=%~dp0\..\cmd\apidoc
 
 set mainPath=github.com\caixw\apidoc
 
-set varsPath=%mainPath%\v5\internal\vars
+set varsPath=%mainPath%\v6\internal\vars
 
 set builddate=%date:~0,4%%date:~5,2%%date:~8,2% 
 
