@@ -1,4 +1,4 @@
-name: Go
+name: Test
 on: [push, pull_request]
 
 jobs:
@@ -30,6 +30,8 @@ jobs:
         run: go vet -v ./...
         
       - name: Test
+        env:
+          LANG: en # 必须指定语言，否则 internal/locale 测试不通过
         run: go test -v -coverprofile='coverage.txt' -covermode=atomic ./...
 
       - name: Upload Coverage report
