@@ -226,6 +226,7 @@ options 可以是以下參數
 	ErrServerNotInitialized:      "服務未初始化",
 	ErrInvalidLSPState:           "無效的 LSP 狀態",
 	ErrInvalidURIScheme:          "無效的 uri 協議",
+	ErrFileNotFound:              "未找到文件 %s",
 
 	// logs
 	InfoPrefix:    "[信息] ",

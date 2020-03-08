@@ -33,9 +33,7 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		out.Capabilities.HoverProvider = true
 	}
 
-	s.appendFolders(in.Folders()...)
-
-	return nil
+	return s.appendFolders(in.Folders()...)
 }
 
 // initialized

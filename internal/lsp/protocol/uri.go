@@ -42,6 +42,10 @@ func (uri DocumentURI) File() (string, error) {
 	return u.Path, nil
 }
 
+func (uri DocumentURI) String() string {
+	return string(uri)
+}
+
 // FileURI 根据本地文件路径构建 DocumentURI 实例
 func FileURI(path string) DocumentURI {
 	u := &url.URL{Scheme: fileScheme, Path: path}
