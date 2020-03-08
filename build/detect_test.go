@@ -42,11 +42,11 @@ func TestDetectExts(t *testing.T) {
 
 	files, err := detectExts("./testdata", false)
 	a.NotError(err)
-	a.Equal(len(files), 4)
+	a.Equal(len(files), 5)
 	a.Equal(files[".php"], 1).Equal(files[".c"], 1)
 
 	files, err = detectExts("./testdata", true)
 	a.NotError(err)
-	a.Equal(len(files), 5)
+	a.Equal(len(files), 6)
 	a.Equal(files[".php"], 1).Equal(files[".1"], 3)
 }

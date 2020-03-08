@@ -10,7 +10,7 @@ import (
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
-// Version 版本号
+// Version 描述文档中与版本相关的信息
 type Version string
 
 // UnmarshalXMLAttr xml.UnmarshalerAttr

@@ -41,7 +41,7 @@ func TestLoadFile(t *testing.T) {
 	cfg, err := loadFile("./", "./not-exists-file")
 	a.Error(err).Nil(cfg)
 
-	cfg, err = loadFile("./", "./failed.yaml")
+	cfg, err = loadFile("./", "./testdata/failed.yaml")
 	a.Error(err).Nil(cfg)
 }
 
