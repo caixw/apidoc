@@ -4,7 +4,6 @@ package build
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -12,10 +11,10 @@ import (
 	"github.com/issue9/utils"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
-	"golang.org/x/text/transform"
 
 	"github.com/caixw/apidoc/v6/internal/lang"
 	"github.com/caixw/apidoc/v6/internal/locale"
+	xpath "github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
@@ -143,22 +142,6 @@ func recursivePath(o *Input) ([]string, error) {
 	return paths, nil
 }
 
-// 以指定的编码方式读取内容。
-func readFile(path string, enc encoding.Encoding) ([]byte, error) {
-	if enc == nil || enc == encoding.Nop {
-		return ioutil.ReadFile(path)
-	}
-
-	r, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer r.Close()
-
-	reader := transform.NewReader(r, enc.NewDecoder())
-	return ioutil.ReadAll(reader)
-}
-
 // 分析 opt 中所指定的内容
 //
 // 分析后的内容推送至 blocks 中。
@@ -178,7 +161,7 @@ func parseInputs(blocks chan spec.Block, h *message.Handler, opt ...*Input) {
 
 // 分析 path 指向的文件。
 func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path string) {
-	data, err := readFile(path, o.encoding)
+	data, err := xpath.ReadFile(path, o.encoding)
 	if err != nil {
 		h.Error(message.Erro, message.WithError(path, "", 0, err))
 		return

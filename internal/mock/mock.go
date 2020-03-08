@@ -60,7 +60,7 @@ func New(h *message.Handler, d *spec.APIDoc, servers map[string]string) (http.Ha
 
 // Load 从本地或是远程加载文档内容
 func Load(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
-	data, err := xpath.ReadFile(path)
+	data, err := xpath.ReadFile(path, nil)
 	if err != nil {
 		return nil, err
 	}

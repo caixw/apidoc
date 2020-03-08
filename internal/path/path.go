@@ -11,6 +11,9 @@ import (
 	"runtime"
 	"strings"
 
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/transform"
+
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -66,21 +69,44 @@ func CurrPath(path string) string {
 // ReadFile 读取本地或是远程的文件内容
 //
 // 根据 path 是否以 http:// 和 https:// 开头判断是否为远程文件
-func ReadFile(path string) ([]byte, error) {
-	if !strings.HasPrefix(path, "https://") &&
-		!strings.HasPrefix(path, "http://") {
+func ReadFile(path string, enc encoding.Encoding) ([]byte, error) {
+	if !strings.HasPrefix(path, "https://") && !strings.HasPrefix(path, "http://") {
+		return readLocalFile(path, enc)
+	}
+	return readRemoteFile(path, enc)
+}
+
+// 以指定的编码方式读取本地文件内容
+func readLocalFile(path string, enc encoding.Encoding) ([]byte, error) {
+	if enc == nil || enc == encoding.Nop {
 		return ioutil.ReadFile(path)
 	}
 
-	resp, err := http.Get(path)
+	r, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+
+	reader := transform.NewReader(r, enc.NewDecoder())
+	return ioutil.ReadAll(reader)
+}
+
+// 以指定的编码方式读取远程文件内容
+func readRemoteFile(url string, enc encoding.Encoding) ([]byte, error) {
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode > 300 {
-		return nil, locale.Errorf(locale.ErrReadRemoteFile, path, resp.StatusCode)
+		return nil, locale.Errorf(locale.ErrReadRemoteFile, url, resp.StatusCode)
 	}
 
-	return ioutil.ReadAll(resp.Body)
+	if enc == nil || enc == encoding.Nop {
+		return ioutil.ReadAll(resp.Body)
+	}
+	reader := transform.NewReader(resp.Body, enc.NewDecoder())
+	return ioutil.ReadAll(reader)
 }

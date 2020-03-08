@@ -122,7 +122,7 @@ func View(status int, url string, data []byte, contentType, dir string, styleshe
 //
 // path 可以是远程文件 (http 开头)，也可以是本地文件。
 func ViewFile(status int, url, path, contentType, dir string, stylesheet bool) (http.Handler, error) {
-	data, err := xpath.ReadFile(path)
+	data, err := xpath.ReadFile(path, nil)
 	if err != nil {
 		return nil, err
 	}
