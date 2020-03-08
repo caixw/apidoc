@@ -9,7 +9,35 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v6/internal/lang"
+	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/path"
+	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
+
+// DetectConfig 检测 wd 内容并生成 Config 实例
+func DetectConfig(wd string, recursive bool) (*Config, error) {
+	inputs, err := detectInput(wd, recursive)
+	if err != nil {
+		return nil, err
+	}
+	if len(inputs) == 0 {
+		return nil, message.NewLocaleError("", "", 0, locale.ErrNotFoundSupportedLang)
+	}
+
+	for _, i := range inputs {
+		i.Dir = path.Rel(i.Dir, wd)
+	}
+
+	return &Config{
+		Version: spec.Version,
+		Inputs:  inputs,
+		Output: &Output{
+			Path: path.Rel(filepath.Join(wd, "apidoc.xml"), wd),
+		},
+		wd: wd,
+	}, nil
+}
 
 // 检测指定目录下的内容，并为其生成一个合适的 Input 实例。
 //

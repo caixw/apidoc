@@ -3,7 +3,6 @@
 package build
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -13,7 +12,6 @@ import (
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/message/messagetest"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -43,26 +41,6 @@ func TestLoadFile(t *testing.T) {
 
 	cfg, err = loadFile("./", "./testdata/failed.yaml")
 	a.Error(err).Nil(cfg)
-}
-
-func TestDetect_Load(t *testing.T) {
-	a := assert.New(t)
-
-	wd, err := filepath.Abs("./")
-	a.NotError(err).NotEmpty(wd)
-	a.NotError(Detect(wd, true))
-
-	// 删除生成的文件
-	defer func() {
-		a.NotError(os.Remove("./.apidoc.yaml"))
-	}()
-
-	erro, _, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, wd)
-	a.Empty(erro.String()).NotNil(cfg)
-
-	a.Equal(cfg.Version, spec.Version).
-		Equal(cfg.Inputs[0].Lang, "go")
 }
 
 func TestConfig_sanitize(t *testing.T) {
@@ -99,6 +77,16 @@ func TestConfig_sanitize(t *testing.T) {
 	a.Error(err).
 		True(ok).
 		Equal(err2.Field, "output")
+}
+
+func TestConfig_SaveToFile(t *testing.T) {
+	a := assert.New(t)
+
+	wd, err := filepath.Abs("./")
+	a.NotError(err).NotEmpty(wd)
+	cfg, err := DetectConfig(wd, true)
+	a.NotError(err).NotNil(cfg)
+	a.NotError(cfg.SaveToFile(filepath.Join(wd, "./.apidoc.yaml")))
 }
 
 func TestConfig_Test(t *testing.T) {

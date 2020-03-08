@@ -6,9 +6,11 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"path"
 
-	build2 "github.com/caixw/apidoc/v6/build"
+	"github.com/caixw/apidoc/v6/build"
 	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
 )
 
@@ -22,15 +24,20 @@ func initDetect() {
 }
 
 func detect(w io.Writer) error {
-	path := getPath(detectFlagSet)
+	p := getPath(detectFlagSet)
 	h := message.NewHandler(newHandlerFunc())
 	defer h.Stop()
 
-	if err := build2.Detect(path, detectRecursive); err != nil {
+	cfg, err := build.DetectConfig(p, detectRecursive)
+	if err != nil {
 		return err
 	}
 
-	h.Message(message.Succ, locale.ConfigWriteSuccess, path)
+	if err = cfg.SaveToFile(path.Join(p, vars.AllowConfigFilenames[0])); err != nil {
+		return err
+	}
+
+	h.Message(message.Succ, locale.ConfigWriteSuccess, p)
 	return nil
 }
 

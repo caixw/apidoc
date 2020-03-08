@@ -21,13 +21,9 @@ const (
 	OpenapiJSON = "openapi+json"
 )
 
-var stylesheetURL string
+const stylesheetURL = vars.OfficialURL + "/docs/" + spec.MajorVersion + "/apidoc.xsl"
 
 type marshaler func(*spec.APIDoc) ([]byte, error)
-
-func init() {
-	stylesheetURL = vars.OfficialURL + "/" + spec.MajorVersion + "/apidoc.xsl"
-}
 
 // Output 指定了渲染输出的相关设置项。
 type Output struct {

@@ -66,30 +66,6 @@ func LoadConfig(h *message.Handler, wd string) *Config {
 	return nil
 }
 
-// DetectConfig 检测 wd 内容并生成 Config 实例
-func DetectConfig(wd string, recursive bool) (*Config, error) {
-	inputs, err := detectInput(wd, recursive)
-	if err != nil {
-		return nil, err
-	}
-	if len(inputs) == 0 {
-		return nil, message.NewLocaleError("", "", 0, locale.ErrNotFoundSupportedLang)
-	}
-
-	for _, i := range inputs {
-		i.Dir = path.Rel(i.Dir, wd)
-	}
-
-	return &Config{
-		Version: spec.Version,
-		Inputs:  inputs,
-		Output: &Output{
-			Path: path.Rel(filepath.Join(wd, "apidoc.xml"), wd),
-		},
-		wd: wd,
-	}, nil
-}
-
 func loadFile(wd, path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -150,25 +126,14 @@ func (cfg *Config) sanitize(file string) error {
 	return cfg.Output.Sanitize()
 }
 
-// Detect 根据 wd 所在目录的内容生成一个配置文件，并写入到该目录配置文件中。
-//
-// wd 表示当前程序的工作目录，根据此目录的内容检测其语言特性。
-func Detect(wd string, recursive bool) error {
-	cfg, err := DetectConfig(wd, recursive)
-	if err != nil {
-		return err
-	}
-
+// SaveToFile 将内容保存至文件
+func (cfg *Config) SaveToFile(path string) error {
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
 		return err
 	}
 
-	p, err := path.Abs(vars.AllowConfigFilenames[0], wd)
-	if err != nil {
-		return err
-	}
-	return ioutil.WriteFile(p, data, os.ModePerm)
+	return ioutil.WriteFile(path, data, os.ModePerm)
 }
 
 // Build 解析文档并输出文档内容

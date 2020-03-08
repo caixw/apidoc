@@ -39,7 +39,7 @@ func Dir() string {
 	return Path("")
 }
 
-// Path 指赂 /docs 下的 p 路径
+// Path 指向 /docs 下的 p 路径
 func Path(p string) string {
 	return filepath.Join(xpath.CurrPath("../../docs"), p)
 }

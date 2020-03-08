@@ -7,7 +7,7 @@ import (
 	"io"
 	"time"
 
-	build2 "github.com/caixw/apidoc/v6/build"
+	"github.com/caixw/apidoc/v6/build"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/message"
 )
@@ -15,14 +15,14 @@ import (
 var buildFlagSet *flag.FlagSet
 
 func initBuild() {
-	buildFlagSet = command.New("build", build, buildUsage(locale.CmdBuildUsage))
+	buildFlagSet = command.New("build", doBuild, buildUsage(locale.CmdBuildUsage))
 }
 
-func build(w io.Writer) error {
+func doBuild(w io.Writer) error {
 	h := message.NewHandler(newHandlerFunc())
 	defer h.Stop()
 
-	build2.LoadConfig(h, getPath(buildFlagSet)).Build(time.Now())
+	build.LoadConfig(h, getPath(buildFlagSet)).Build(time.Now())
 	return nil
 }
 
