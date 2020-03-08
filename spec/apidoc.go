@@ -37,7 +37,7 @@ type APIDoc struct {
 	Logo string `xml:"logo,attr,omitempty"`
 
 	Created     string    `xml:"created,attr,omitempty"` // 文档的生成时间
-	Version     Version   `xml:"version,attr,omitempty"` // 文档的版本
+	Version     Semver    `xml:"version,attr,omitempty"` // 文档的版本
 	Title       string    `xml:"title"`
 	Description Richtext  `xml:"description,omitempty"`
 	Contact     *Contact  `xml:"contact,omitempty"`

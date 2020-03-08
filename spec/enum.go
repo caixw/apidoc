@@ -12,7 +12,7 @@ import (
 //  <enum value="male" summary="男性" />
 //  <enum value="female"><description type="html"><p>女性</p></description></enum>
 type Enum struct {
-	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
+	Deprecated  Semver   `xml:"deprecated,attr,omitempty"`
 	Value       string   `xml:"value,attr"`
 	Summary     string   `xml:"summary,attr,omitempty"`
 	Description Richtext `xml:"description,omitempty"`

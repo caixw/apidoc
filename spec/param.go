@@ -25,7 +25,7 @@ type Param struct {
 	XML
 	Name        string   `xml:"name,attr"`
 	Type        Type     `xml:"type,attr"`
-	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
+	Deprecated  Semver   `xml:"deprecated,attr,omitempty"`
 	Default     string   `xml:"default,attr,omitempty"`
 	Optional    bool     `xml:"optional,attr,omitempty"`
 	Array       bool     `xml:"array,attr,omitempty"`

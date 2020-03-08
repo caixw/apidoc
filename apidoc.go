@@ -175,7 +175,7 @@ func MockFile(h *message.Handler, path string, servers map[string]string) (http.
 var procInst = regexp.MustCompile(`<\?xml .+ ?>`)
 
 func addStylesheet(data []byte) []byte {
-	stylesheet := "./" + vars.DocVersion() + "/apidoc.xsl"
+	stylesheet := "./" + spec.MajorVersion + "/apidoc.xsl"
 
 	pi := `
 <?xml-stylesheet type="text/xsl" href="` + stylesheet + `"?>`

@@ -10,22 +10,24 @@ import (
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
-// Version 描述文档中与版本相关的信息
-type Version string
+// Semver 描述文档中与版本相关的信息
+//
+// 遵守 https://semver.org/lang/zh-CN/ 规则。
+type Semver string
 
 // UnmarshalXMLAttr xml.UnmarshalerAttr
-func (v *Version) UnmarshalXMLAttr(attr xml.Attr) error {
+func (v *Semver) UnmarshalXMLAttr(attr xml.Attr) error {
 	if !version.SemVerValid(attr.Value) {
 		field := "/@" + attr.Name.Local
 		return newSyntaxError(field, locale.ErrInvalidFormat)
 	}
 
-	*v = Version(attr.Value)
+	*v = Semver(attr.Value)
 	return nil
 }
 
 // UnmarshalXML xml.Unmarshaler
-func (v *Version) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (v *Semver) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	var str string
 	if err := d.DecodeElement(&str, &start); err != nil {
@@ -36,17 +38,17 @@ func (v *Version) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return newSyntaxError(field, locale.ErrInvalidFormat)
 	}
 
-	*v = Version(str)
+	*v = Semver(str)
 	return nil
 }
 
 // MarshalXML xml.Marshaler
-func (v Version) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (v Semver) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return e.EncodeElement(string(v), start)
 }
 
 // MarshalXMLAttr xml.MarshalerAttr
-func (v Version) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+func (v Semver) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	return xml.Attr{
 		Name:  name,
 		Value: string(v),

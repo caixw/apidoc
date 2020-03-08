@@ -18,11 +18,12 @@ import (
 	"github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Config 配置文件映身的结构
 type Config struct {
-	// 产生此配置文件的程序版本号
+	// 文档的版本信息
 	//
 	// 程序会用此来判断程序的兼容性。
 	Version string `yaml:"version"`
@@ -80,7 +81,7 @@ func DetectConfig(wd string, recursive bool) (*Config, error) {
 	}
 
 	return &Config{
-		Version: vars.Version(),
+		Version: spec.Version,
 		Inputs:  inputs,
 		Output: &Output{
 			Path: path.Rel(filepath.Join(wd, "apidoc.xml"), wd),
@@ -110,7 +111,7 @@ func loadFile(wd, path string) (*Config, error) {
 
 func (cfg *Config) sanitize(file string) error {
 	// 比较版本号兼容问题
-	compatible, err := version.SemVerCompatible(vars.Version(), cfg.Version)
+	compatible, err := version.SemVerCompatible(spec.Version, cfg.Version)
 	if err != nil {
 		return message.WithError(file, "version", 0, err)
 	}

@@ -11,8 +11,19 @@ import (
 	"strings"
 
 	xpath "github.com/caixw/apidoc/v6/internal/path"
-	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/spec"
 )
+
+// 默认页面
+const indexPage = "index.xml"
+
+// 指定在 folderHandler 下需要的文件列表。
+//
+// 可以以前缀的方式指定，比如：v5/ 表示以 v5/ 开头的所有文件。
+var styles = []string{
+	"icon.svg",
+	spec.MajorVersion + "/",
+}
 
 // FileInfo 被打包文件的信息
 type FileInfo struct {
@@ -21,17 +32,6 @@ type FileInfo struct {
 
 	ContentType string
 	Content     []byte
-}
-
-// 默认页面
-const indexPage = "index.xml"
-
-// 指定在 TypeStylesheet 下需要的文件列表。
-//
-// 可以以前缀的方式指定，比如：v5/ 表示以 v5/ 开头的所有文件。
-var styles = []string{
-	"icon.svg",
-	vars.DocVersion() + "/", // v5/ 仅支持当前的文档版本
 }
 
 // Dir 指向 /docs 的路径

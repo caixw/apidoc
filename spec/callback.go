@@ -24,7 +24,7 @@ type Callback struct {
 	Path        *Path      `xml:"path,omitempty"`
 	Summary     string     `xml:"summary,attr,omitempty"`
 	Description Richtext   `xml:"description,omitempty"`
-	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
+	Deprecated  Semver     `xml:"deprecated,attr,omitempty"`
 	Reference   string     `xml:"ref,attr,omitempty"`
 	Responses   []*Request `xml:"response,omitempty"`
 	Requests    []*Request `xml:"request"` // 至少一个

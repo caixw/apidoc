@@ -9,6 +9,14 @@ import (
 	"github.com/caixw/apidoc/v6/message"
 )
 
+const (
+	// Version 文档规范的版本
+	Version = "6.0.0"
+
+	// MajorVersion 文档规范的主版本信息
+	MajorVersion = "v6"
+)
+
 // Block 表示原始的注释代码块
 type Block struct {
 	File string

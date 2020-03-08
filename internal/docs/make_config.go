@@ -12,6 +12,7 @@ import (
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/lang"
 	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 const fileHeader = "\n<!-- 该文件由工具自动生成，请勿手动修改！-->\n\n"
@@ -30,7 +31,7 @@ type config struct {
 
 var defaultConfig = &config{
 	Name:      vars.Name,
-	Version:   vars.DocVersion(),
+	Version:   spec.Version,
 	Repo:      vars.RepoURL,
 	URL:       vars.OfficialURL,
 	Languages: make([]string, 0, len(lang.Langs())),

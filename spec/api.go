@@ -20,7 +20,7 @@ import (
 //  </api>
 type API struct {
 	XMLName     struct{}   `xml:"api"`
-	Version     Version    `xml:"version,attr,omitempty"`
+	Version     Semver     `xml:"version,attr,omitempty"`
 	Method      Method     `xml:"method,attr"`
 	ID          string     `xml:"id,attr,omitempty"`
 	Path        *Path      `xml:"path"`
@@ -29,7 +29,7 @@ type API struct {
 	Requests    []*Request `xml:"request,omitempty"` // 不同的 mimetype 可能会定义不同
 	Responses   []*Request `xml:"response,omitempty"`
 	Callback    *Callback  `xml:"callback,omitempty"`
-	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
+	Deprecated  Semver     `xml:"deprecated,attr,omitempty"`
 	Headers     []*Param   `xml:"header,omitempty"`
 
 	Tags    []string `xml:"tag,omitempty"`

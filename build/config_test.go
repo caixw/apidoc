@@ -11,9 +11,9 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v6/internal/docs"
-	"github.com/caixw/apidoc/v6/internal/vars"
 	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/message/messagetest"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -61,7 +61,7 @@ func TestDetect_Load(t *testing.T) {
 	cfg := LoadConfig(h, wd)
 	a.Empty(erro.String()).NotNil(cfg)
 
-	a.Equal(cfg.Version, vars.Version()).
+	a.Equal(cfg.Version, spec.Version).
 		Equal(cfg.Inputs[0].Lang, "go")
 }
 

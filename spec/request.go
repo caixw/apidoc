@@ -16,7 +16,7 @@ type Request struct {
 	Name string `xml:"name,attr,omitempty"`
 
 	Type        Type       `xml:"type,attr,omitempty"`
-	Deprecated  Version    `xml:"deprecated,attr,omitempty"`
+	Deprecated  Semver     `xml:"deprecated,attr,omitempty"`
 	Enums       []*Enum    `xml:"enum,omitempty"`
 	Array       bool       `xml:"array,attr,omitempty"`
 	Items       []*Param   `xml:"param,omitempty"`

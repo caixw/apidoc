@@ -10,20 +10,20 @@ import (
 )
 
 var (
-	v                     = Version("1.1.1")
+	v                     = Semver("1.1.1")
 	_ xml.Unmarshaler     = &v
 	_ xml.UnmarshalerAttr = &v
 	_ xml.Marshaler       = v
 	_ xml.MarshalerAttr   = v
 )
 
-func TestVersionXML(t *testing.T) {
+func TestSemverXML(t *testing.T) {
 	a := assert.New(t)
 
 	type Object struct {
 		XMLName struct{} `xml:"xml"`
-		Attr    Version  `xml:"attr,attr"`
-		Value   Version  `xml:"value"`
+		Attr    Semver   `xml:"attr,attr"`
+		Value   Semver   `xml:"value"`
 	}
 
 	obj := &Object{

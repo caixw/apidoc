@@ -11,7 +11,7 @@ var data = []*FileInfo{{
 
 <config>
 	<name>apidoc</name>
-	<version>v6</version>
+	<version>6.0.0</version>
 	<repo>https://github.com/caixw/apidoc</repo>
 	<url>https://apidoc.tools</url>
 	<languages>
@@ -42,7 +42,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.0.0" created="2020-03-07T03:16:53+08:00" version="1.1.1">
+<apidoc apidoc="6.0.0" created="2020-03-08T19:39:19+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
  

@@ -17,11 +17,3 @@ func TestVersion(t *testing.T) {
 	a.True(v.SemVerValid(fullVersion))
 	a.True(v.SemVerValid(Version()))
 }
-
-func TestDocVersion(t *testing.T) {
-	a := assert.New(t)
-	v := DocVersion()
-	a.True(len(v) >= 2).
-		Equal(v[0], 'v').
-		NotContains(v, '.')
-}

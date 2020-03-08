@@ -26,7 +26,7 @@ var stylesheetURL string
 type marshaler func(*spec.APIDoc) ([]byte, error)
 
 func init() {
-	stylesheetURL = vars.OfficialURL + "/" + vars.DocVersion() + "/apidoc.xsl"
+	stylesheetURL = vars.OfficialURL + "/" + spec.MajorVersion + "/apidoc.xsl"
 }
 
 // Output 指定了渲染输出的相关设置项。

@@ -3,6 +3,7 @@
 package docs
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"testing"
@@ -82,6 +83,7 @@ func TestEmbeddedHandler_stylesheet(t *testing.T) {
 		Do().
 		Status(http.StatusNotFound)
 
+	fmt.Println(styles)
 	srv.Get("/v6/apidoc.xsl").
 		Do().
 		Status(http.StatusOK)

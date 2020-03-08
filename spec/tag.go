@@ -14,9 +14,9 @@ import (
 // Tag 标签内容
 //  <tag name="tag1" deprecated="1.1.1" />
 type Tag struct {
-	Name       string  `xml:"name,attr"`  // 标签的唯一 ID
-	Title      string  `xml:"title,attr"` // 显示的名称
-	Deprecated Version `xml:"deprecated,attr,omitempty"`
+	Name       string `xml:"name,attr"`  // 标签的唯一 ID
+	Title      string `xml:"title,attr"` // 显示的名称
+	Deprecated Semver `xml:"deprecated,attr,omitempty"`
 }
 
 // Server 服务信息
@@ -24,7 +24,7 @@ type Tag struct {
 type Server struct {
 	Name        string   `xml:"name,attr"` // 字面名称，需要唯一
 	URL         string   `xml:"url,attr"`
-	Deprecated  Version  `xml:"deprecated,attr,omitempty"`
+	Deprecated  Semver   `xml:"deprecated,attr,omitempty"`
 	Summary     string   `xml:"summary,attr,omitempty"`
 	Description Richtext `xml:"description,omitempty"`
 }
