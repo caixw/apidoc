@@ -73,6 +73,13 @@ func TestInput_parseFile(t *testing.T) {
 	h.Stop()
 	close(blocks)
 	a.Equal(1, len(blocks))
+	blk := <-blocks
+	a.Equal(string(blk.Data), ``).
+		Equal(string(blk.Raw), ``).
+		Equal(blk.Range, spec.Range{
+			Start: spec.Position{Line: 5, Character: 31},
+			End:   spec.Position{Line: 9, Character: 31 + len(blk.Raw)},
+		})
 	a.Empty(erro.String())
 
 	// 文件不存在

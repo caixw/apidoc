@@ -67,9 +67,9 @@ LOOP:
 			line = append(line, b.begins...)
 			continue LOOP
 		default:
-			r := l.data[l.pos]
+			r := l.data[l.offset]
 			raw = append(raw, r)
-			l.pos++
+			l.offset++
 			line = append(line, r)
 			if r == '\n' {
 				data = append(data, filterSymbols(line, b.prefix)...)

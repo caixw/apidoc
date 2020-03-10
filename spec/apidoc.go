@@ -77,7 +77,7 @@ func (doc *APIDoc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	shadow := (*shadowDoc)(doc)
 	if err := d.DecodeElement(shadow, &start); err != nil {
 		line := bytes.Count(doc.Block.Data[:d.InputOffset()], []byte{'\n'})
-		return fixedSyntaxError(err, doc.Block.File, "apidoc", doc.Block.Line+line)
+		return fixedSyntaxError(err, doc.Block.File, "apidoc", doc.Block.Range.Start.Line+line)
 	}
 
 	if shadow.Title == "" {

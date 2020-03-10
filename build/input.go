@@ -159,7 +159,7 @@ func parseInputs(blocks chan spec.Block, h *message.Handler, opt ...*Input) {
 	wg.Wait()
 }
 
-// 分析 path 指向的文件。
+// 分析 path 指向的文件
 func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path string) {
 	data, err := xpath.ReadFile(path, o.encoding)
 	if err != nil {
@@ -181,7 +181,9 @@ func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path strin
 			}
 		}
 
-		ln := l.LineNumber() + 1 // 记录当前的行号，1 表示从 1 开始记数
+		ln := l.LineNumber()
+		offset := l.Offset()
+
 		raw, data, ok := block.EndFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 			h.Error(message.Erro, message.NewLocaleError(path, "", ln, locale.ErrNotFoundEndFlag))
@@ -197,7 +199,16 @@ func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path strin
 
 		blocks <- spec.Block{
 			File: path,
-			Line: ln,
+			Range: spec.Range{
+				Start: spec.Position{
+					Line:      ln,
+					Character: offset,
+				},
+				End: spec.Position{
+					Line:      ln + lang.LineCount(raw),
+					Character: l.Offset(),
+				},
+			},
 			Data: data,
 			Raw:  raw,
 		}

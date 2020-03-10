@@ -32,7 +32,7 @@ LOOP:
 		case l.match(b.symbol): // 结束
 			return nil, nil, true
 		default:
-			l.pos++
+			l.offset++
 		}
 	} // end for
 }

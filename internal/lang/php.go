@@ -29,7 +29,7 @@ func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 
 	token := l.line()
 	if len(token) == 0 {
-		l.pos -= 3 // 退回 <<< 字符
+		l.offset -= 3 // 退回 <<< 字符
 		return false
 	}
 
@@ -54,7 +54,7 @@ func (b *phpDocBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 		case l.match(b.token2):
 			return nil, nil, true
 		default:
-			l.pos++
+			l.offset++
 		}
 	}
 }

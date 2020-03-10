@@ -53,7 +53,7 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		}
 
 		line := bytes.Count(api.Block.Data[:d.InputOffset()], []byte{'\n'})
-		return fixedSyntaxError(err, api.Block.File, field, api.Block.Line+line)
+		return fixedSyntaxError(err, api.Block.File, field, api.Block.Range.Start.Line+line)
 	}
 
 	// 报头不能为 object
@@ -61,7 +61,7 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		if header.Type == Object {
 			err := locale.Errorf(locale.ErrInvalidValue)
 			field = field + "/header[" + header.Name + "].type"
-			return fixedSyntaxError(err, api.Block.File, field, api.Block.Line)
+			return fixedSyntaxError(err, api.Block.File, field, api.Block.Range.Start.Line)
 		}
 	}
 

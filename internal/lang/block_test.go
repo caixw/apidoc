@@ -53,7 +53,7 @@ func TestBlock_endString(t *testing.T) {
 	a.True(ok).
 		Nil(data).
 		Nil(raw).
-		Equal(l.pos, len(l.data))
+		Equal(l.offset, len(l.data))
 
 	// 找不到匹配字符串
 	l = &Lexer{

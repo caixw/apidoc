@@ -88,11 +88,11 @@ func (b *block) endString(l *Lexer) (raw, data []byte, ok bool) {
 		case l.AtEOF():
 			return nil, nil, false
 		case (len(b.Escape) > 0) && l.match(b.Escape):
-			l.pos++
+			l.offset++
 		case l.match(b.End):
 			return nil, nil, true
 		default:
-			l.pos++
+			l.offset++
 		}
 	} // end for
 }
@@ -104,19 +104,19 @@ func (b *block) endSComments(l *Lexer) (raw, data []byte, ok bool) {
 
 LOOP:
 	for {
-		start := l.pos // 当前行的起始位置
-		for {          // 读取一行的内容
-			r := l.data[l.pos]
-			l.pos++
+		start := l.offset // 当前行的起始位置
+		for {             // 读取一行的内容
+			r := l.data[l.offset]
+			l.offset++
 			raw = append(raw, r)
 
 			if l.AtEOF() {
-				data = append(data, l.data[start:l.pos]...)
+				data = append(data, l.data[start:l.offset]...)
 				break LOOP
 			}
 
 			if r == '\n' {
-				data = append(data, filterSymbols(l.data[start:l.pos], b.Escape)...)
+				data = append(data, filterSymbols(l.data[start:l.offset], b.Escape)...)
 				break
 			}
 		}
@@ -128,7 +128,7 @@ LOOP:
 	}
 
 	if len(data) > 0 { // 最后一个换行符返还给 Lexer
-		l.pos--
+		l.offset--
 	}
 
 	return raw, data, true
@@ -139,24 +139,24 @@ LOOP:
 func (b *block) endMComments(l *Lexer) (raw, data []byte, ok bool) {
 	data = make([]byte, 0, 200)
 	raw = make([]byte, 0, 200)
-	start := l.pos
+	start := l.offset
 
 	for {
 		switch {
 		case l.AtEOF(): // 没有找到结束符号，直接到达文件末尾
 			return nil, nil, false
 		case l.match(b.End):
-			if pos := l.pos - len(b.End); pos > start {
+			if pos := l.offset - len(b.End); pos > start {
 				data = append(data, filterSymbols(l.data[start:pos], b.Escape)...)
 			}
 			return raw, data, true
 		default:
-			r := l.data[l.pos]
-			l.pos++
+			r := l.data[l.offset]
+			l.offset++
 			raw = append(raw, r)
 			if r == '\n' {
-				data = append(data, filterSymbols(l.data[start:l.pos], b.Escape)...)
-				start = l.pos
+				data = append(data, filterSymbols(l.data[start:l.offset], b.Escape)...)
+				start = l.offset
 			}
 		}
 	} // end for

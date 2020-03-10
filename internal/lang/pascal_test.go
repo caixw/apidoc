@@ -28,7 +28,7 @@ func TestPascalStringBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(len(data), 0).                   // 不返回内容
-		Equal(len(raw), 0).                    // 不返回内容
-		Equal(string(l.data[l.pos:]), "123\"") // 未到达末尾
+		Equal(len(data), 0).                      // 不返回内容
+		Equal(len(raw), 0).                       // 不返回内容
+		Equal(string(l.data[l.offset:]), "123\"") // 未到达末尾
 }

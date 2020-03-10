@@ -12,14 +12,14 @@ func TestLexer_LineNumber(t *testing.T) {
 	a := assert.New(t)
 
 	l := NewLexer([]byte("l0\nl1\nl2\nl3\n"), nil)
-	l.pos = 3
+	l.offset = 3
 	a.Equal(l.LineNumber(), 1)
 
-	l.pos += 3
+	l.offset += 3
 	a.Equal(l.LineNumber(), 2)
 
-	l.pos += 3
-	l.pos += 3
+	l.offset += 3
+	l.offset += 3
 	a.Equal(l.LineNumber(), 4)
 }
 
@@ -30,14 +30,14 @@ func TestLexer_match(t *testing.T) {
 		data: []byte("ab\ncd"),
 	}
 
-	a.False(l.match("b")).Equal(0, l.pos)
-	a.True(l.match("ab")).Equal(2, l.pos)
+	a.False(l.match("b")).Equal(0, l.offset)
+	a.True(l.match("ab")).Equal(2, l.offset)
 
-	l.pos = len(l.data)
+	l.offset = len(l.data)
 	a.False(l.match("ab"))
 
 	// 匹配结尾单词
-	l.pos = 3 // c的位置
+	l.offset = 3 // c的位置
 	a.True(l.match("cd"))
 }
 
@@ -118,25 +118,25 @@ func TestLexer_skipSpace(t *testing.T) {
 	l := &Lexer{data: []byte("  0 \n  1 ")}
 
 	l.skipSpace()
-	a.Equal(l.data[l.pos], "0")
+	a.Equal(l.data[l.offset], "0")
 
 	// 无法跳过换行符
-	l.pos++
+	l.offset++
 	l.skipSpace()
 	l.skipSpace()
 	l.skipSpace()
 	l.skipSpace()
 	l.skipSpace()
-	a.Equal(l.data[l.pos], "\n")
+	a.Equal(l.data[l.offset], "\n")
 
-	l.pos++
+	l.offset++
 	l.skipSpace()
-	a.Equal(l.data[l.pos], "1")
+	a.Equal(l.data[l.offset], "1")
 
-	l.pos++
+	l.offset++
 	l.skipSpace()
 	l.skipSpace()
-	a.Equal(l.pos, len(l.data))
+	a.Equal(l.offset, len(l.data))
 }
 
 func TestLexer_line(t *testing.T) {
@@ -147,9 +147,9 @@ func TestLexer_line(t *testing.T) {
 
 	l = NewLexer([]byte("123\n"), nil)
 	a.Equal(string(l.line()), "123").
-		Equal(l.pos, 3)
+		Equal(l.offset, 3)
 
-	l = &Lexer{data: []byte("123\n"), pos: 1}
+	l = &Lexer{data: []byte("123\n"), offset: 1}
 	a.Equal(string(l.line()), "23").
-		Equal(l.pos, 3)
+		Equal(l.offset, 3)
 }

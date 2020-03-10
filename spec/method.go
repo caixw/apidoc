@@ -36,7 +36,6 @@ func isValidMethod(method string) bool {
 
 // UnmarshalXMLAttr xml.UnmarshalerAttr
 func (m *Method) UnmarshalXMLAttr(attr xml.Attr) error {
-
 	if !isValidMethod(attr.Value) {
 		field := "/@" + attr.Name.Local
 		return newSyntaxError(field, locale.ErrInvalidFormat)

@@ -61,7 +61,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(ok).
 		Equal(string(data), "0/*1/*2*/*/"). // 返回内容
 		Equal(string(raw), "0/*1/*2*/*/").  // 返回内容
-		Equal(string(l.data[l.pos:]), "*/")
+		Equal(string(l.data[l.offset:]), "*/")
 
 	// 缺少 end 匹配项
 	l = NewLexer([]byte(`/*0/*1/*2*/*/`), nil)

@@ -17,7 +17,7 @@ func loadAPI(a *assert.Assertion) *API {
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	a.NotError(doc.appendAPI(&Block{File: "", Line: 1, Data: data}))
+	a.NotError(doc.appendAPI(&Block{File: "", Range: Range{}, Data: data}))
 	return doc.Apis[0]
 }
 
@@ -72,15 +72,22 @@ func TestAPI_UnmarshalXML(t *testing.T) {
 func TestAPI_lineNumber(t *testing.T) {
 	a := assert.New(t)
 	doc := loadDoc(a)
+	rng := Range{
+		Start: Position{
+			Line:      11,
+			Character: 22,
+		},
+		End: Position{},
+	}
 
 	data := []byte(`<api version="x.0.1"></api>`)
-	err := doc.appendAPI(&Block{File: "file", Line: 11, Data: data})
+	err := doc.appendAPI(&Block{File: "file", Range: rng, Data: data})
 	a.Equal(err.(*message.SyntaxError).Line, 11)
 
 	data = []byte(`<api version="0.1.1">
 
 	    <callback method="not-exists" />
 	</api>`)
-	err = doc.appendAPI(&Block{File: "file", Line: 12, Data: data})
-	a.Equal(err.(*message.SyntaxError).Line, 14)
+	err = doc.appendAPI(&Block{File: "file", Range: rng, Data: data})
+	a.Equal(err.(*message.SyntaxError).Line, 13)
 }

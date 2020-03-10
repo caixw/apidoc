@@ -17,14 +17,26 @@ const (
 	MajorVersion = "v6"
 )
 
+// Position 用于描述字符在文件中的定位
+type Position struct {
+	Line      int `json:"line"`
+	Character int `json:"character"`
+}
+
+// Range 用于描述文档在文件中的范围
+type Range struct {
+	Start Position `json:"start"`
+	End   Position `json:"end"`
+}
+
 // Block 表示原始的注释代码块
 type Block struct {
-	File string
-	Line int
-	Data []byte // 整理之后的数据
-	Raw  []byte // 原始数据
+	File  string
+	Range Range
+	Data  []byte // 整理之后的数据
+	Raw   []byte // 原始数据
 }
 
 func (b *Block) localeError(field string, key xmessage.Reference, v ...interface{}) error {
-	return message.NewLocaleError(b.File, field, b.Line, key, v...)
+	return message.NewLocaleError(b.File, field, b.Range.Start.Line, key, v...)
 }
