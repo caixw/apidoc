@@ -38,7 +38,7 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *Lexer) bool {
 
 func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 	data = make([]byte, 0, 200)
-	raw = make([]byte, 0, 200)
+	raw = append(make([]byte, 0, 200), b.begins...)
 	line := make([]byte, 0, 100)
 
 LOOP:
@@ -47,33 +47,29 @@ LOOP:
 		case l.AtEOF():
 			return nil, nil, false
 		case l.match(b.end):
+			raw = append(raw, b.ends...)
+
 			b.level--
 			if b.level == 0 {
 				if len(line) > 0 { // 如果 len(line) == 0 表示最后一行仅仅只有一个结束符
 					data = append(data, filterSymbols(line, b.prefix)...)
+					line = line[:0]
 				}
 				break LOOP
 			}
 
-			raw = append(raw, b.ends...)
 			line = append(line, b.ends...)
-			continue LOOP
 		case l.match(b.begin):
-			if b.level > 0 {
-				raw = append(raw, b.begins...)
-			}
-
 			b.level++
+			raw = append(raw, b.begins...)
 			line = append(line, b.begins...)
-			continue LOOP
 		default:
-			r := l.data[l.offset]
-			raw = append(raw, r)
-			l.offset++
-			line = append(line, r)
-			if r == '\n' {
+			bs := l.next(1)
+			raw = append(raw, bs...)
+			line = append(line, bs...)
+			if isNewline(bs) {
 				data = append(data, filterSymbols(line, b.prefix)...)
-				line = make([]byte, 0, 100)
+				line = line[:0]
 			}
 		}
 	}

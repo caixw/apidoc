@@ -27,11 +27,13 @@ func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 		return false
 	}
 
-	token := l.line()
-	if len(token) == 0 {
-		l.offset -= 3 // 退回 <<< 字符
+	prev := l.prev
+	token := l.delim('\n')
+	if len(token) == 1 { // <<< 之后直接是换行符，则应该退回 <<< 字符
+		l.current = prev
 		return false
 	}
+	token = token[:len(token)-1] // l.delim 会带上换行符，需要去掉
 
 	if token[0] == '\'' && token[len(token)-1] == '\'' {
 		b.doctype = phpNowdoc
@@ -54,7 +56,7 @@ func (b *phpDocBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 		case l.match(b.token2):
 			return nil, nil, true
 		default:
-			l.offset++
+			l.next(1)
 		}
 	}
 }

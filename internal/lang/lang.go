@@ -3,7 +3,10 @@
 // Package lang 管理各类语言提取注释代码块规则的定义
 package lang
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
 // 所有支持的语言模型定义
 var langs = []*Language{
@@ -33,8 +36,8 @@ var langs = []*Language{
 		Name:        "erlang",
 		Exts:        []string{".erl", ".hrl"},
 		Blocks: []Blocker{
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeSComment, Begin: `%`},
+			newCStyleString(),
+			newSingleComment("%"),
 		},
 	},
 
@@ -43,11 +46,11 @@ var langs = []*Language{
 		Name:        "go",
 		Exts:        []string{".go"},
 		Blocks: []Blocker{
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeString, Begin: "`", End: "`"},
-			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
-			&block{Type: blockTypeSComment, Begin: `//`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
+			newCStyleString(),
+			newString("`", "`", ""),
+			newCStyleChar(),
+			newCStyleSingleComment(),
+			newCStyleMultipleComment(),
 		},
 	},
 
@@ -56,11 +59,11 @@ var langs = []*Language{
 		Name:        "groovy",
 		Exts:        []string{".groovy"},
 		Blocks: []Blocker{
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
-			&block{Type: blockTypeString, Begin: "'''", End: "'''", Escape: `\`},
-			&block{Type: blockTypeSComment, Begin: `//`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
+			newCStyleString(),
+			newString("'", "'", `\`),
+			newString("'''", "'''", `\`),
+			newCStyleSingleComment(),
+			newCStyleMultipleComment(),
 		},
 	},
 
@@ -76,13 +79,13 @@ var langs = []*Language{
 		Name:        "javascript",
 		Exts:        []string{".js"},
 		Blocks: []Blocker{
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
-			&block{Type: blockTypeString, Begin: "`", End: "`", Escape: `\`},
-			&block{Type: blockTypeSComment, Begin: `//`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
+			newCStyleString(),
+			newString("'", "'", `\`),
+			newString("`", "`", `\`),
+			newCStyleSingleComment(),
+			newCStyleMultipleComment(),
 			// NOTE: js 中若出现 /*abc/.test() 应该是先优先注释的。放最后，优先匹配 // 和 /*
-			&block{Type: blockTypeString, Begin: "/", End: "/", Escape: `\`}, // 正则表达式
+			newString("/", "/", `\`),
 		},
 	},
 
@@ -100,8 +103,8 @@ var langs = []*Language{
 		Blocks: []Blocker{
 			newPascalStringBlock('\''),
 			newPascalStringBlock('"'),
-			&block{Type: blockTypeMComment, Begin: "{", End: "}"},
-			&block{Type: blockTypeMComment, Begin: "(*", End: "*)", Escape: "*"},
+			newMultipleComment("{", "}", ""),
+			newMultipleComment("(*", "*)", "*"),
 		},
 	},
 
@@ -110,10 +113,10 @@ var langs = []*Language{
 		Name:        "perl",
 		Exts:        []string{".perl", ".prl", ".pl"},
 		Blocks: []Blocker{
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
-			&block{Type: blockTypeSComment, Begin: `#`},
-			&block{Type: blockTypeMComment, Begin: "\n=pod\n", End: "\n=cut\n"},
+			newCStyleString(),
+			newString("'", "'", `\`),
+			newSingleComment("#"),
+			newRubyMultipleComment("=pod", "=cut", ""),
 		},
 	},
 
@@ -122,12 +125,12 @@ var langs = []*Language{
 		Name:        "php",
 		Exts:        []string{".php"},
 		Blocks: []Blocker{
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
+			newCStyleString(),
+			newString("'", "'", `\`),
 			newPHPDocBlock(),
-			&block{Type: blockTypeSComment, Begin: `//`},
-			&block{Type: blockTypeSComment, Begin: `#`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
+			newCStyleSingleComment(),
+			newSingleComment("#"),
+			newCStyleMultipleComment(),
 		},
 	},
 
@@ -136,10 +139,10 @@ var langs = []*Language{
 		Name:        "python",
 		Exts:        []string{".py"},
 		Blocks: []Blocker{
-			&block{Type: blockTypeMComment, Begin: `"""`, End: `"""`},
-			&block{Type: blockTypeMComment, Begin: "'''", End: `'''`},
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeSComment, Begin: `#`},
+			newMultipleComment(`"""`, `"""`, ""),
+			newMultipleComment("'''", "'''", ""),
+			newCStyleString(),
+			newSingleComment(`#`),
 		},
 	},
 
@@ -148,10 +151,10 @@ var langs = []*Language{
 		Name:        "ruby",
 		Exts:        []string{".rb"},
 		Blocks: []Blocker{
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeString, Begin: "'", End: "'", Escape: `\`},
-			&block{Type: blockTypeSComment, Begin: `#`},
-			&block{Type: blockTypeMComment, Begin: "\n=begin\n", End: "\n=end\n"},
+			newCStyleString(),
+			newString("'", "'", `\`),
+			newSingleComment(`#`),
+			newRubyMultipleComment("=begin", "=end", ""),
 		},
 	},
 
@@ -159,13 +162,7 @@ var langs = []*Language{
 		DisplayName: "Rust",
 		Name:        "rust",
 		Exts:        []string{".rs"},
-		Blocks: []Blocker{
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
-			&block{Type: blockTypeSComment, Begin: `///`},       // 需要在 // 之前定义
-			&block{Type: blockTypeSComment, Begin: `//`},
-			&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
-		},
+		Blocks:      cStyle,
 	},
 
 	{
@@ -180,22 +177,42 @@ var langs = []*Language{
 		Name:        "swift",
 		Exts:        []string{".swift"},
 		Blocks: []Blocker{
-			&block{Type: blockTypeString, Begin: `"""`, End: `"""`, Escape: `\`},
-			&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-			&block{Type: blockTypeString, Begin: `#"`, End: `"#`},
-			&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
-			&block{Type: blockTypeSComment, Begin: `//`},
+			newString(`"""`, `"""`, `\`),
+			newString(`#"`, `"#`, ""),
+			newCStyleString(),
+			newCStyleChar(),
+			newCStyleSingleComment(),
 			newSwiftNestMCommentBlock("/*", "*/", "*"),
 		},
 	},
 }
 
 var cStyle = []Blocker{
-	&block{Type: blockTypeString, Begin: `"`, End: `"`, Escape: `\`},
-	&block{Type: blockTypeString, Begin: `'`, End: `'`}, // 处理 '"‘ 的内容
-	&block{Type: blockTypeSComment, Begin: `///`},       // 需要在 // 之前定义
-	&block{Type: blockTypeSComment, Begin: `//`},
-	&block{Type: blockTypeMComment, Begin: `/*`, End: `*/`, Escape: "*"},
+	newCStyleString(),
+	newCStyleChar(),
+	newSingleComment("///"), // 需要在 // 之前定义
+	newCStyleSingleComment(),
+	newCStyleMultipleComment(),
+}
+
+// 处理 "XXX\""
+func newCStyleString() Blocker {
+	return newString(`"`, `"`, `\`)
+}
+
+// 处理 '"'
+func newCStyleChar() Blocker {
+	return newString(`'`, `'`, "")
+}
+
+// 处理 // xxx
+func newCStyleSingleComment() Blocker {
+	return newSingleComment(`//`)
+}
+
+// 处理 /* */
+func newCStyleMultipleComment() Blocker {
+	return newMultipleComment(`/*`, `*/`, "*")
 }
 
 // Language 语言模块的定义
@@ -242,4 +259,10 @@ func GetByExt(ext string) *Language {
 // Langs 返回所有支持的语言
 func Langs() []*Language {
 	return langs
+}
+
+var newline = []byte{'\n'}
+
+func isNewline(bs []byte) bool {
+	return bytes.Equal(bs, newline)
 }

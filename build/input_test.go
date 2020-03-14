@@ -74,11 +74,20 @@ func TestInput_parseFile(t *testing.T) {
 	close(blocks)
 	a.Equal(1, len(blocks))
 	blk := <-blocks
-	a.Equal(string(blk.Data), ``).
-		Equal(string(blk.Raw), ``).
+	a.Equal(string(blk.Data), `<api method="GET">
+ <path path="/apis/gbk" />
+ <description>1223 中文 45 </description>
+ <server>test</server>
+ </api>`).
+		Equal(string(blk.Raw), `// <api method="GET">
+// <path path="/apis/gbk" />
+// <description>1223 中文 45 </description>
+// <server>test</server>
+// </api>
+`).
 		Equal(blk.Range, spec.Range{
-			Start: spec.Position{Line: 5, Character: 31},
-			End:   spec.Position{Line: 9, Character: 31 + len(blk.Raw)},
+			Start: spec.Position{Line: 5, Character: 0},
+			End:   spec.Position{Line: 10, Character: 0},
 		})
 	a.Empty(erro.String())
 

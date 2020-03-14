@@ -33,13 +33,14 @@ func TestParse(t *testing.T) {
 	a.NotNil(doc)
 	erro, _, h := messagetest.MessageHandler()
 	Parse(doc, h, php, c)
+	h.Stop()
+	a.Empty(erro.String())
+
 	a.NotError(doc.Sanitize())
 	a.Equal(2, len(doc.Apis)).
 		Equal(doc.Version, "1.1.1")
 	api := doc.Apis[0]
 	a.Equal(api.Method, "GET")
-	h.Stop()
-	a.Empty(erro.String())
 }
 
 func TestParseFile(t *testing.T) {

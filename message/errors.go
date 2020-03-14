@@ -21,6 +21,18 @@ type SyntaxError struct {
 	Field   string
 }
 
+// Position 用于描述字符在文件中的定位
+type Position struct {
+	Line      int `json:"line"`
+	Character int `json:"character"`
+}
+
+// Range 用于描述文档在文件中的范围
+type Range struct {
+	Start Position `json:"start"`
+	End   Position `json:"end"`
+}
+
 func (err *SyntaxError) Error() string {
 	detail := err.File
 

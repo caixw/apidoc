@@ -167,32 +167,34 @@ func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path strin
 		return
 	}
 
-	l := lang.NewLexer(data, o.blocks)
-	var block lang.Blocker
+	l, err := lang.NewLexer(data, o.blocks)
+	if err != nil {
+		h.Error(message.Erro, message.WithError(path, "", 0, err))
+		return
+	}
 
+	var block lang.Blocker
+	var pos message.Position
 	for {
 		if l.AtEOF() {
 			return
 		}
 
 		if block == nil {
-			if block = l.Block(); block == nil { // 没有匹配的 block 了
+			if block, pos = l.Block(); block == nil { // 没有匹配的 block 了
 				return
 			}
 		}
 
-		ln := l.LineNumber()
-		offset := l.Offset()
-
 		raw, data, ok := block.EndFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
-			h.Error(message.Erro, message.NewLocaleError(path, "", ln, locale.ErrNotFoundEndFlag))
+			h.Error(message.Erro, message.NewLocaleError(path, "", pos.Line, locale.ErrNotFoundEndFlag))
 			return
 		}
 
 		block = nil // 重置 block
 
-		data = bytes.TrimSpace(raw)
+		data = bytes.TrimSpace(data)
 		if len(data) <= minSize {
 			continue
 		}
@@ -200,14 +202,8 @@ func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path strin
 		blocks <- spec.Block{
 			File: path,
 			Range: spec.Range{
-				Start: spec.Position{
-					Line:      ln,
-					Character: offset,
-				},
-				End: spec.Position{
-					Line:      ln + lang.LineCount(raw),
-					Character: l.Offset(),
-				},
+				Start: pos,
+				End:   l.Position(),
 			},
 			Data: data,
 			Raw:  raw,

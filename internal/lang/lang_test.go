@@ -32,15 +32,6 @@ func TestLangs(t *testing.T) {
 		// 检测 block
 		a.NotEmpty(lang.Blocks, "blocks 不能为空，在 %s", lang.Name)
 
-		for index, blk := range lang.Blocks {
-			b, ok := blk.(*block)
-			if !ok {
-				continue
-			}
-			v := b.Type == blockTypeString || b.Type == blockTypeMComment || b.Type == blockTypeSComment
-			a.True(v, "langs[%v].[%v].Type 值为非法值", lang.Name, index)
-		}
-
 		// 检测扩展名
 		for _, ext := range lang.Exts {
 			a.NotEmpty(ext, "空的扩展名在 %s", lang.Name).

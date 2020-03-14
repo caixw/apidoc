@@ -17,17 +17,10 @@ const (
 	MajorVersion = "v6"
 )
 
-// Position 用于描述字符在文件中的定位
-type Position struct {
-	Line      int `json:"line"`
-	Character int `json:"character"`
-}
-
-// Range 用于描述文档在文件中的范围
-type Range struct {
-	Start Position `json:"start"`
-	End   Position `json:"end"`
-}
+type (
+	Range    = message.Range
+	Position = message.Position
+)
 
 // Block 表示原始的注释代码块
 type Block struct {
