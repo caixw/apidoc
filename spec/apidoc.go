@@ -57,11 +57,11 @@ type APIDoc struct {
 
 // Valid 验证文档内容的正确性
 func Valid(content []byte) error {
-	return New().fromXML(&Block{Data: content})
+	return NewAPIDoc().fromXML(&Block{Data: content})
 }
 
-// New 返回 APIDoc 实例
-func New() *APIDoc {
+// NewAPIDoc 返回 APIDoc 实例
+func NewAPIDoc() *APIDoc {
 	return &APIDoc{
 		APIDoc:  vars.Version(),
 		Created: time.Now().Format(createdFormat),

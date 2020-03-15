@@ -155,7 +155,7 @@ func Mock(h *message.Handler, d *spec.APIDoc, servers map[string]string) (http.H
 // data 为文档内容；
 // servers 为文档中所有 server 以及对应的路由前缀。
 func MockBuffer(h *message.Handler, data []byte, servers map[string]string) (http.Handler, error) {
-	d := spec.New()
+	d := spec.NewAPIDoc()
 	if err := d.ParseBlock(&spec.Block{Data: data}); err != nil {
 		return nil, err
 	}

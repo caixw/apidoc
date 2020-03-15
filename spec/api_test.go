@@ -58,7 +58,7 @@ func TestAPI(t *testing.T) {
 func TestAPI_UnmarshalXML(t *testing.T) {
 	a := assert.New(t)
 
-	doc := New()
+	doc := NewAPIDoc()
 	data := `<api version="1.1.1">
 		<header type="object" name="key1" summary="summary">
 			<param name="id" type="number" summary="summary" />

@@ -29,7 +29,7 @@ func TestParse(t *testing.T) {
 	}
 	a.NotError(c.Sanitize())
 
-	doc := spec.New()
+	doc := spec.NewAPIDoc()
 	a.NotNil(doc)
 	erro, _, h := messagetest.MessageHandler()
 	Parse(doc, h, php, c)
@@ -53,7 +53,7 @@ func TestParseFile(t *testing.T) {
 	}
 	a.NotError(c.Sanitize())
 
-	doc := spec.New()
+	doc := spec.NewAPIDoc()
 	a.NotNil(doc)
 	erro, _, h := messagetest.MessageHandler()
 	ParseFile(doc, h, "./testdata/testfile.h", c)

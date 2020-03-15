@@ -65,7 +65,7 @@ func parse(h *message.Handler, i ...*Input) (*spec.APIDoc, error) {
 		}
 	}
 
-	d := spec.New()
+	d := spec.NewAPIDoc()
 	Parse(d, h, i...)
 
 	if err := d.Sanitize(); err != nil {

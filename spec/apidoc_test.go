@@ -16,7 +16,7 @@ func loadDoc(a *assert.Assertion) *APIDoc {
 	data, err := ioutil.ReadFile("./testdata/doc.xml")
 	a.NotError(err).NotNil(data)
 
-	doc := New()
+	doc := NewAPIDoc()
 	a.NotNil(doc).NotEmpty(doc.APIDoc)
 
 	a.NotError(doc.fromXML(&Block{
@@ -77,7 +77,7 @@ func TestDoc_all(t *testing.T) {
 
 	data, err := ioutil.ReadFile("./testdata/all.xml")
 	a.NotError(err).NotNil(data)
-	doc := New()
+	doc := NewAPIDoc()
 	a.NotNil(doc)
 	a.NotError(doc.fromXML(&Block{File: "all.xml", Range: message.Range{}, Data: data}))
 
@@ -125,7 +125,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 		<mimetype>application/json</mimetype>
 		<title>title</title>
 	</apidoc>`
-	doc := New()
+	doc := NewAPIDoc()
 	a.NotNil(doc)
 	err := doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
 	serr, ok := err.(*message.SyntaxError)
@@ -134,7 +134,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 		Equal(serr.File, "file")
 
 	// 缺少 title
-	doc = New()
+	doc = NewAPIDoc()
 	data = `<apidoc version="1.1.1">
 			<mimetype>application/json</mimetype>
 	</apidoc>`
@@ -144,7 +144,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	a.Equal(serr.Line, 11)
 
 	// 重复得的 server
-	doc = New()
+	doc = NewAPIDoc()
 	data = `<apidoc version="1.1.1">
 		<server name="s1" url="https://example.com/s1" summary="tet" />
 		<server name="s1" url="https://example.com/s2" summary="tet" />
@@ -159,7 +159,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 		Equal(serr.File, "file")
 
 	// 无效的 deprecated 值
-	doc = New()
+	doc = NewAPIDoc()
 	data = `<apidoc version="1.1.1">
 			<tag name="t1" deprecated="x.0.1" />
 			<mimetype>application/json</mimetype>
@@ -171,7 +171,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	a.Equal(serr.Line, 12)
 
 	// 缺少 mimetype
-	doc = New()
+	doc = NewAPIDoc()
 	data = `<apidoc version="1.1.1">
 			<title>title</title>
 	</apidoc>`
@@ -181,7 +181,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	a.Equal(serr.Line, 11)
 
 	// response.header.type 错误
-	doc = New()
+	doc = NewAPIDoc()
 	data = `<apidoc version="1.1.1">
 		<mimetype>application/json</mimetype>
 		<title>title</title>
@@ -196,7 +196,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 
 func TestDoc_Sanitize(t *testing.T) {
 	a := assert.New(t)
-	doc := New()
+	doc := NewAPIDoc()
 	a.NotNil(doc)
 	doc.Block = &Block{}
 
@@ -250,7 +250,7 @@ func TestDoc_Sanitize(t *testing.T) {
 // 测试错误提示的行号是否正确
 func TestDoc_lineNumber(t *testing.T) {
 	a := assert.New(t)
-	doc := New()
+	doc := NewAPIDoc()
 	a.NotNil(doc)
 
 	data := []byte(`<apidoc version="x.0.1"></apidoc>`)

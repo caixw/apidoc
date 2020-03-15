@@ -66,7 +66,7 @@ func Load(h *message.Handler, path string, servers map[string]string) (http.Hand
 	}
 
 	// 加载并验证
-	d := spec.New()
+	d := spec.NewAPIDoc()
 	if err = d.ParseBlock(&spec.Block{File: path, Data: data}); err != nil {
 		return nil, err
 	}
