@@ -21,7 +21,7 @@ func loadDoc(a *assert.Assertion) *APIDoc {
 
 	a.NotError(doc.fromXML(&Block{
 		File:  "doc.xml",
-		Range: Range{},
+		Range: message.Range{},
 		Data:  data,
 	}))
 
@@ -79,7 +79,7 @@ func TestDoc_all(t *testing.T) {
 	a.NotError(err).NotNil(data)
 	doc := New()
 	a.NotNil(doc)
-	a.NotError(doc.fromXML(&Block{File: "all.xml", Range: Range{}, Data: data}))
+	a.NotError(doc.fromXML(&Block{File: "all.xml", Range: message.Range{}, Data: data}))
 
 	a.Equal(doc.Version, "1.1.1")
 
@@ -110,12 +110,12 @@ func TestDoc_all(t *testing.T) {
 
 func TestDoc_UnmarshalXML(t *testing.T) {
 	a := assert.New(t)
-	rng := Range{
-		Start: Position{
+	rng := message.Range{
+		Start: message.Position{
 			Line:      11,
 			Character: 22,
 		},
-		End: Position{},
+		End: message.Position{},
 	}
 
 	// 重得的标签名
@@ -254,13 +254,13 @@ func TestDoc_lineNumber(t *testing.T) {
 	a.NotNil(doc)
 
 	data := []byte(`<apidoc version="x.0.1"></apidoc>`)
-	err := doc.fromXML(&Block{File: "file", Range: Range{Start: Position{Line: 11}}, Data: data})
+	err := doc.fromXML(&Block{File: "file", Range: message.Range{Start: message.Position{Line: 11}}, Data: data})
 	a.Equal(err.(*message.SyntaxError).Line, 11)
 
 	data = []byte(`<apidoc
 	
 	version="x.1.1">
 	</apidoc>`)
-	err = doc.fromXML(&Block{File: "file", Range: Range{Start: Position{Line: 12}}, Data: data})
+	err = doc.fromXML(&Block{File: "file", Range: message.Range{Start: message.Position{Line: 12}}, Data: data})
 	a.Equal(err.(*message.SyntaxError).Line, 14)
 }

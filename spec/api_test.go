@@ -17,7 +17,7 @@ func loadAPI(a *assert.Assertion) *API {
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	a.NotError(doc.appendAPI(&Block{File: "", Range: Range{}, Data: data}))
+	a.NotError(doc.appendAPI(&Block{File: "", Range: message.Range{}, Data: data}))
 	return doc.Apis[0]
 }
 
@@ -72,12 +72,12 @@ func TestAPI_UnmarshalXML(t *testing.T) {
 func TestAPI_lineNumber(t *testing.T) {
 	a := assert.New(t)
 	doc := loadDoc(a)
-	rng := Range{
-		Start: Position{
+	rng := message.Range{
+		Start: message.Position{
 			Line:      11,
 			Character: 22,
 		},
-		End: Position{},
+		End: message.Position{},
 	}
 
 	data := []byte(`<api version="x.0.1"></api>`)

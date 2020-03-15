@@ -10,6 +10,7 @@ import (
 	"golang.org/x/text/encoding/simplifiedchinese"
 
 	"github.com/caixw/apidoc/v6/internal/lang"
+	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/message/messagetest"
 	"github.com/caixw/apidoc/v6/spec"
 )
@@ -85,9 +86,9 @@ func TestInput_parseFile(t *testing.T) {
 // <server>test</server>
 // </api>
 `).
-		Equal(blk.Range, spec.Range{
-			Start: spec.Position{Line: 5, Character: 0},
-			End:   spec.Position{Line: 10, Character: 0},
+		Equal(blk.Range, message.Range{
+			Start: message.Position{Line: 5, Character: 0},
+			End:   message.Position{Line: 10, Character: 0},
 		})
 	a.Empty(erro.String())
 

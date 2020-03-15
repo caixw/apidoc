@@ -201,7 +201,7 @@ func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path strin
 
 		blocks <- spec.Block{
 			File: path,
-			Range: spec.Range{
+			Range: message.Range{
 				Start: pos,
 				End:   l.Position(),
 			},

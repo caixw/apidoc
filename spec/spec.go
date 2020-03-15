@@ -17,15 +17,10 @@ const (
 	MajorVersion = "v6"
 )
 
-type (
-	Range    = message.Range
-	Position = message.Position
-)
-
 // Block 表示原始的注释代码块
 type Block struct {
 	File  string
-	Range Range
+	Range message.Range
 	Data  []byte // 整理之后的数据
 	Raw   []byte // 原始数据
 }
