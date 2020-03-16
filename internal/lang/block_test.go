@@ -57,7 +57,7 @@ func TestSingleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, err := b.EndFunc(l)
 	a.NotError(err).
-		Equal(string(data), "comment1\n").
+		Equal(string(data), "  comment1\n").
 		Equal(string(raw), "//comment1\n")
 
 	// 没有换行符，则自动取到结束符。
@@ -67,7 +67,7 @@ func TestSingleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, err = b.EndFunc(l)
 	a.NotError(err).
-		Equal(string(data), " comment1").
+		Equal(string(data), "   comment1").
 		Equal(string(raw), "// comment1")
 
 	// 多行连续的单行注释，且 // 前带空格。
@@ -77,7 +77,7 @@ func TestSingleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, err = b.EndFunc(l)
 	a.NotError(err).
-		Equal(string(data), "comment1\ncomment2\n comment3").
+		Equal(string(data), "  comment1\n  comment2\n    comment3").
 		Equal(string(raw), "//comment1\n//comment2\n // comment3")
 
 	// 多行连续的单行注释，中间有空白行。
@@ -87,7 +87,7 @@ func TestSingleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, err = b.EndFunc(l)
 	a.NotError(err).
-		Equal(string(data), "comment1\n\ncomment2\ncomment3").
+		Equal(string(data), "  comment1\n  \n  comment2\n   comment3").
 		Equal(string(raw), "//comment1\n//\n//comment2\n //comment3")
 
 	// 多行不连续的单行注释。
@@ -97,7 +97,7 @@ func TestSingleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, err = b.EndFunc(l)
 	a.NotError(err).
-		Equal(string(data), "comment1\n comment2\n").
+		Equal(string(data), "  comment1\n    comment2\n").
 		Equal(string(raw), "//comment1\n // comment2\n")
 }
 
@@ -111,7 +111,7 @@ func TestMultipleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, found := b.EndFunc(l)
 	a.True(found).
-		Equal(string(data), "comment1\n").
+		Equal(string(data), "  comment1\n  ").
 		Equal(string(raw), "/*comment1\n*/")
 
 	// 多个注释结束符
@@ -121,7 +121,7 @@ func TestMultipleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, found = b.EndFunc(l)
 	a.True(found).
-		Equal(string(data), "comment1\ncomment2").
+		Equal(string(data), "  comment1\ncomment2  ").
 		Equal(string(raw), "/*comment1\ncomment2*/")
 
 	// 空格开头
@@ -131,7 +131,7 @@ func TestMultipleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, found = b.EndFunc(l)
 	a.True(found).
-		Equal(string(data), "\ncomment1\ncomment2").
+		Equal(string(data), "  \ncomment1\ncomment2  ").
 		Equal(string(raw), "/*\ncomment1\ncomment2*/")
 
 	// 没有注释结束符
@@ -142,50 +142,152 @@ func TestMultipleComment(t *testing.T) {
 	raw, data, found = b.EndFunc(l)
 	a.False(found).Nil(data).Nil(raw)
 }
-
-func TestFilterSymbols(t *testing.T) {
+func TestConvertSingleCommentToXML(t *testing.T) {
 	a := assert.New(t)
-
-	eq := func(charset, v1, v2 string) {
-		s1 := string(filterSymbols([]byte(v1), charset))
-		a.Equal(s1, v2)
+	data := []struct {
+		input, begin, output string
+	}{
+		{},
+		{
+			input:  "// xxx",
+			begin:  "/",
+			output: "   xxx",
+		},
+		{
+			input:  "//xxx",
+			begin:  "//",
+			output: "  xxx",
+		},
+		{
+			input:  "\t//\txxx",
+			begin:  "//",
+			output: "\t  \txxx",
+		},
+		{
+			input:  "#xxx",
+			begin:  "#",
+			output: " xxx",
+		},
+		{
+			input:  "# xxx",
+			begin:  "#",
+			output: "  xxx",
+		},
+		{
+			input:  "## xxx",
+			begin:  "#",
+			output: "   xxx",
+		},
 	}
 
-	neq := func(charset, v1, v2 string) {
-		s1 := string(filterSymbols([]byte(v1), charset))
-		a.NotEqual(s1, v2)
+	for i, item := range data {
+		output := convertSingleCommentToXML([]byte(item.input), []byte(item.begin))
+		a.Equal(string(output), item.output, "not equal @ %d,v1=%s,v2=%s", i, string(output), item.output)
+	}
+}
+
+func TestConvertMultipleCommentToXML(t *testing.T) {
+	a := assert.New(t)
+	data := []struct {
+		input, begin, end, chars, output string
+	}{
+		{},
+		{
+			input:  "/*\n * xx\n * xx\n */",
+			begin:  "/*",
+			end:    "*/",
+			chars:  "*",
+			output: "  \n   xx\n   xx\n   ",
+		},
+		{
+			input:  "/**\n * xx\n * xx\n */",
+			begin:  "/*",
+			end:    "*/",
+			chars:  "*",
+			output: "   \n   xx\n   xx\n   ",
+		},
+		{
+			input:  "/**xxx\n * xx\n * xx\n */",
+			begin:  "/*",
+			end:    "*/",
+			chars:  "*",
+			output: "  *xxx\n   xx\n   xx\n   ",
+		},
+		{
+			input:  "/**xxx\n * xx\n * xx\n */",
+			begin:  "/**",
+			end:    "*/",
+			chars:  "*",
+			output: "   xxx\n   xx\n   xx\n   ",
+		},
 	}
 
-	eq("/*", "* ", " ")
-	eq("/*", "* line", " line")
-	eq("/*", "** line", " line")
-	eq("/*", "*line", "*line")
-	eq("/*", "**line", "**line")
-	eq("/*", "* line", " line")
-	eq("/*", " * line", " line")
-	eq("/*", "*** line", " line")
-	eq("/*", "*   line", "   line")
-	eq("/*", "*\tline", "\tline")
-	eq("/*", "* \tline", " \tline")
+	for i, item := range data {
+		output := convertMultipleCommentToXML([]byte(item.input), []byte(item.begin), []byte(item.end), []byte(item.chars))
+		a.Equal(string(output), item.output, "not equal @ %d,v1=%s,v2=%s", i, string(output), item.output)
+	}
+}
 
-	eq("/*", "/ line", " line")
-	eq("/*", "/   line", "   line")
+func TestReplaceSymbol(t *testing.T) {
+	a := assert.New(t)
+	data := []struct {
+		input, chars, output string
+	}{
+		{},
+		{
+			input:  "// xxx",
+			chars:  "/",
+			output: "   xxx",
+		},
+		{
+			input:  "/* xxx",
+			chars:  "/*",
+			output: "   xxx",
+		},
+		{
+			input:  "/*xxx",
+			chars:  "/*",
+			output: "/*xxx",
+		},
+		{
+			input:  " /* xxx",
+			chars:  "/*",
+			output: "    xxx",
+		},
+		{
+			input:  "\t/*\txxx",
+			chars:  "/*",
+			output: "\t  \txxx",
+		},
+		{
+			input:  "\t/**\txxx",
+			chars:  "/*",
+			output: "\t   \txxx",
+		},
+		{
+			input:  "\t/**\n\txxx",
+			chars:  "/*",
+			output: "\t   \n\txxx",
+		},
+		{
+			input:  "\t/**\n\t** xxx",
+			chars:  "/*",
+			output: "\t   \n\t   xxx",
+		},
+		{
+			input:  "\t/**\n\t**xxx",
+			chars:  "/*",
+			output: "\t   \n\t**xxx",
+		},
+		{
+			input:  "\t/**\n\t** xxx",
+			chars:  "/*",
+			output: "\t   \n\t   xxx",
+		},
+	}
 
-	eq("/*", "  * line", " line")
-	eq("/*", "  *  line", "  line")
-	eq("/*", "\t*  line", "  line")
-
-	neq("/*", "*\nline", "line")
-	// 包含多个符号
-	neq("/*", "// line", "line")
-	neq("/*", "**   line", "  line")
-	neq("/*", "/* line", "line")
-	neq("/*", "*/   line", "  line")
-
-	// 非定义的符号
-	neq("/*", "+ line", "line")
-	neq("/*", "+   line", "  line")
-
-	eq("++", "+ line", " line")
-	neq("++", "++ line", "line")
+	for i, item := range data {
+		output := replaceSymbols([]byte(item.input), []byte(item.chars))
+		a.Equal(string(output), item.output, "not equal @ %d,v1=%s,v2=%s", i, string(output), item.output)
+	}
 }

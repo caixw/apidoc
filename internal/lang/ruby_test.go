@@ -20,7 +20,7 @@ func TestRubyMultipleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, found := b.EndFunc(l)
 	a.True(found).
-		Equal(string(data), "comment1\n").
+		Equal(string(data), "     comment1\n     ").
 		Equal(string(raw), "=pod\ncomment1\n=cut\n")
 
 	// 多个注释结束符
@@ -30,17 +30,17 @@ func TestRubyMultipleComment(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, found = b.EndFunc(l)
 	a.True(found).
-		Equal(string(data), "comment1\ncomment2\n").
+		Equal(string(data), "     comment1\ncomment2\n     ").
 		Equal(string(raw), "=pod\ncomment1\ncomment2\n=cut\n")
 
-	// 空格开头
+	// 换行符开头
 	l = &Lexer{
 		data: []byte("\ncomment1\ncomment2\n=cut\n=cut\n"),
 	}
 	a.False(b.BeginFunc(l))
 	raw, data, found = b.EndFunc(l)
 	a.True(found).
-		Equal(string(data), "\ncomment1\ncomment2\n").
+		Equal(string(data), "     \ncomment1\ncomment2\n     ").
 		Equal(string(raw), "=pod\n\ncomment1\ncomment2\n=cut\n")
 
 	// 没有注释结束符

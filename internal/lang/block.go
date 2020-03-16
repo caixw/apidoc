@@ -35,8 +35,8 @@ type (
 	}
 
 	multipleComment struct {
-		begin, end, escape string
-		begins, ends       []byte
+		begin, end           string
+		begins, ends, prefix []byte
 	}
 )
 
@@ -55,11 +55,11 @@ func newSingleComment(begin string) Blocker {
 	}
 }
 
-func newMultipleComment(begin, end, escape string) Blocker {
+func newMultipleComment(begin, end, prefix string) Blocker {
 	return &multipleComment{
 		begin:  begin,
 		end:    end,
-		escape: escape,
+		prefix: []byte(prefix),
 
 		begins: []byte(begin),
 		ends:   []byte(end),
@@ -98,30 +98,24 @@ func (b *singleComment) BeginFunc(l *Lexer) bool {
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
 func (b *singleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
-	data = make([]byte, 0, 120)
 	raw = make([]byte, 0, 120)
 
 	for {
 		raw = append(raw, b.begins...)
 		bs := l.delim('\n')
 		if bs == nil { // 找不到换行符，直接填充到末尾
-			all := l.all()
-			data = append(data, all...)
-			raw = append(raw, all...)
+			raw = append(raw, l.all()...)
 			break
-		} else {
-			data = append(data, bs...)
-			raw = append(raw, bs...)
 		}
 
-		spaces := l.skipSpace()
-		raw = append(raw, spaces...)
+		raw = append(raw, bs...)
+		raw = append(raw, l.skipSpace()...)
 		if !l.match(b.begin) { // 不是接连着的注释块了，结束当前的匹配
 			break
 		}
 	}
 
-	return raw, data, true
+	return raw, convertSingleCommentToXML(raw, b.begins), true
 }
 
 // BeginFunc 实现 Blocker.BeginFunc
@@ -132,30 +126,23 @@ func (b *multipleComment) BeginFunc(l *Lexer) bool {
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
 func (b *multipleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
-	data = make([]byte, 0, 200)
 	raw = append(make([]byte, 0, 200), b.begins...)
-	line := make([]byte, 0, 100)
 
+LOOP:
 	for {
 		switch {
 		case l.AtEOF(): // 没有找到结束符号，直接到达文件末尾
 			return nil, nil, false
 		case l.match(b.end):
 			raw = append(raw, b.ends...)
-			if len(line) > 0 {
-				data = append(data, line...)
-			}
-			return raw, data, true
+			break LOOP
 		default:
 			bs := l.next(1)
 			raw = append(raw, bs...)
-			line = append(line, bs...)
-			if isNewline(bs) {
-				data = append(data, filterSymbols(line, b.escape)...)
-				line = line[:0]
-			}
 		}
 	} // end for
+
+	return raw, convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
 }
 
 // 行首若出现`空白字符+symbol+空白字符`的组合，则去掉 symbol 及之前的字符。
@@ -186,4 +173,112 @@ func filterSymbols(line []byte, charset string) []byte {
 	}
 
 	return line
+}
+
+func convertSingleCommentToXML(lines, begin []byte) []byte {
+	data := make([]byte, 0, len(lines))
+
+	newline := true
+	start := -1 // 零是一个有效的数组下标
+	for index, b := range lines {
+		switch {
+		case b == '\n':
+			if start > -1 {
+				for i := 0; i < index-start; i++ {
+					data = append(data, ' ')
+				}
+				start = -1
+			}
+			data = append(data, b)
+			newline = true
+		case newline:
+			switch {
+			case bytes.IndexByte(begin, b) >= 0 && start == -1:
+				start = index
+			case unicode.IsSpace(rune(b)) && start == -1:
+				data = append(data, b)
+			case bytes.IndexByte(begin, b) < 0:
+				if start > -1 {
+					for i := 0; i < index-start; i++ { // 替换之前字符为空格
+						data = append(data, ' ')
+					}
+					start = -1
+				}
+				data = append(data, b)
+				newline = false
+			}
+		default:
+			data = append(data, b)
+		}
+	}
+
+	return data
+}
+
+// 转换成合法的 XML 格式
+func convertMultipleCommentToXML(data, begin, end, chars []byte) []byte {
+	ret := make([]byte, len(data))
+	copy(ret, data)
+
+	index := bytes.Index(data, begin)
+	if index >= 0 {
+		for i := range begin {
+			ret[index+i] = ' '
+		}
+	}
+
+	index = bytes.LastIndex(data, end)
+	if index >= 0 {
+		for i := range end {
+			ret[index+i] = ' '
+		}
+	}
+
+	return replaceSymbols(ret, chars)
+}
+
+// 替换特殊的符号为空格，使 lines 的内容为一个合法的 xml 文档
+func replaceSymbols(lines, chars []byte) []byte {
+	data := make([]byte, 0, len(lines))
+
+	newline := true
+	start := -1 // 零是一个有效的数组下标
+	for index, b := range lines {
+		switch {
+		case b == '\n':
+			if start > -1 {
+				for i := 0; i < index-start; i++ {
+					data = append(data, ' ')
+				}
+				start = -1
+			}
+			data = append(data, b)
+			newline = true
+		case newline:
+			switch {
+			case bytes.IndexByte(chars, b) >= 0 && start == -1:
+				start = index
+			case unicode.IsSpace(rune(b)):
+				if start > -1 {
+					for i := 0; i < index-start; i++ { // 替换之前字符为空格
+						data = append(data, ' ')
+					}
+					start = -1
+					newline = false
+				}
+				data = append(data, b)
+			case bytes.IndexByte(chars, b) < 0:
+				if start > -1 {
+					data = append(data, lines[start:index]...)
+					start = -1
+				}
+				data = append(data, b)
+				newline = false
+			}
+		default:
+			data = append(data, b)
+		}
+	}
+
+	return data
 }

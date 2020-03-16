@@ -38,7 +38,7 @@ func TestParseInputs(t *testing.T) {
 	parseInputs(blocks, h, php, c)
 	close(blocks)
 
-	a.Equal(5, len(blocks))
+	a.Equal(6, len(blocks))
 	a.Empty(erro.String())
 }
 
@@ -57,7 +57,7 @@ func TestInput_parseFile(t *testing.T) {
 	h.Stop()
 	close(blocks)
 
-	a.Equal(2, len(blocks))
+	a.Equal(3, len(blocks))
 	a.Empty(erro.String())
 
 	// 非 utf8 编码
@@ -75,11 +75,12 @@ func TestInput_parseFile(t *testing.T) {
 	close(blocks)
 	a.Equal(1, len(blocks))
 	blk := <-blocks
-	a.Equal(string(blk.Data), `<api method="GET">
- <path path="/apis/gbk" />
- <description>1223 中文 45 </description>
- <server>test</server>
- </api>`).
+	a.Equal(string(blk.Data), `   <api method="GET">
+   <path path="/apis/gbk" />
+   <description>1223 中文 45 </description>
+   <server>test</server>
+   </api>
+`).
 		Equal(string(blk.Raw), `// <api method="GET">
 // <path path="/apis/gbk" />
 // <description>1223 中文 45 </description>

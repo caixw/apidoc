@@ -3,7 +3,6 @@
 package build
 
 import (
-	"bytes"
 	"os"
 	"path/filepath"
 	"sync"
@@ -18,9 +17,6 @@ import (
 	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
-
-// 可以作为文档的最小代码块长度
-var minSize = len("<api />")
 
 // Input 指定输入内容的相关信息。
 type Input struct {
@@ -194,8 +190,7 @@ func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path strin
 
 		block = nil // 重置 block
 
-		data = bytes.TrimSpace(data)
-		if len(data) <= minSize {
+		if len(raw) == 0 {
 			continue
 		}
 

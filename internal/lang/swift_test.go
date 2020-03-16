@@ -22,7 +22,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, ok := b.EndFunc(l)
 	a.True(ok).
-		Equal(string(data), "*123*123*").
+		Equal(string(data), "   *123*123*  ").
 		Equal(string(raw), "/* *123*123**/")
 	bs := l.next(1)
 	a.Empty(bs).True(l.AtEOF()) // 到达末尾
@@ -36,7 +36,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(data), "\n xx\n yy\n").
+		Equal(string(data), "   \n\t  xx\n\t  yy\n  ").
 		Equal(string(raw), "/**\n\t* xx\n\t* yy\n*/")
 
 	l, err = NewLexer([]byte(`/**
@@ -47,7 +47,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(data), "\n xx/yy/zz\n yy/zz/\n").
+		Equal(string(data), "   \n\t  xx/yy/zz\n\t  yy/zz/\n\t  ").
 		Equal(string(raw), "/**\n\t* xx/yy/zz\n\t* yy/zz/\n\t*/")
 
 	// 嵌套注释
@@ -56,7 +56,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(data), "0/*1/*2*/*/").
+		Equal(string(data), "  0/*1/*2*/*/  ").
 		Equal(string(raw), "/*0/*1/*2*/*/*/")
 	bs = l.next(1)
 	a.Empty(bs).True(l.AtEOF()) // 到达末尾
@@ -67,7 +67,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(b.BeginFunc(l))
 	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(data), "0/*1/*2*/*/").
+		Equal(string(data), "  0/*1/*2*/*/  ").
 		Equal(string(raw), "/*0/*1/*2*/*/*/").
 		Equal(string(l.data[l.current.Offset:]), "*/")
 

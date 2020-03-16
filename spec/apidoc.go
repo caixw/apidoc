@@ -8,11 +8,8 @@ import (
 	"sort"
 	"time"
 
-	xmessage "golang.org/x/text/message"
-
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 const createdFormat = time.RFC3339
@@ -155,24 +152,4 @@ func (doc *APIDoc) serverExists(srv string) bool {
 		}
 	}
 	return false
-}
-
-func fixedSyntaxError(err error, file, field string, line int) error {
-	if serr, ok := err.(*message.SyntaxError); ok {
-		serr.File = file
-		serr.Line = line
-
-		if serr.Field == "" {
-			serr.Field = field
-		} else {
-			serr.Field = field + serr.Field
-		}
-		return err
-	}
-
-	return message.WithError(file, field, line, err)
-}
-
-func newSyntaxError(field string, key xmessage.Reference, val ...interface{}) error {
-	return message.NewLocaleError("", field, 0, key, val...)
 }

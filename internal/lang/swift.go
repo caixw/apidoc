@@ -6,7 +6,7 @@ package lang
 type swiftNestMCommentBlock struct {
 	begin  string
 	end    string
-	prefix string // 需要过滤的前缀
+	prefix []byte // 需要过滤的前缀
 	begins []byte
 	ends   []byte
 	level  int8
@@ -21,7 +21,7 @@ func newSwiftNestMCommentBlock(begin, end, prefix string) Blocker {
 	return &swiftNestMCommentBlock{
 		begin:  begin,
 		end:    end,
-		prefix: prefix,
+		prefix: []byte(prefix),
 		begins: []byte(begin),
 		ends:   []byte(end),
 	}
@@ -37,9 +37,7 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *Lexer) bool {
 }
 
 func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
-	data = make([]byte, 0, 200)
 	raw = append(make([]byte, 0, 200), b.begins...)
-	line := make([]byte, 0, 100)
 
 LOOP:
 	for {
@@ -48,31 +46,17 @@ LOOP:
 			return nil, nil, false
 		case l.match(b.end):
 			raw = append(raw, b.ends...)
-
 			b.level--
 			if b.level == 0 {
-				if len(line) > 0 { // 如果 len(line) == 0 表示最后一行仅仅只有一个结束符
-					data = append(data, filterSymbols(line, b.prefix)...)
-					line = line[:0]
-				}
 				break LOOP
 			}
-
-			line = append(line, b.ends...)
 		case l.match(b.begin):
-			b.level++
 			raw = append(raw, b.begins...)
-			line = append(line, b.begins...)
+			b.level++
 		default:
-			bs := l.next(1)
-			raw = append(raw, bs...)
-			line = append(line, bs...)
-			if isNewline(bs) {
-				data = append(data, filterSymbols(line, b.prefix)...)
-				line = line[:0]
-			}
+			raw = append(raw, l.next(1)...)
 		}
 	}
 
-	return raw, data, true
+	return raw, convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
 }

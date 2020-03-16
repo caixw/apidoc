@@ -39,12 +39,17 @@ var (
 
 // ParseBlock 分析 b 的内容并填充到 doc
 func (doc *APIDoc) ParseBlock(b *Block) error {
+	index := bytes.IndexByte(b.Data, '<')
+	if index < 0 {
+		return nil
+	}
+
 	switch {
-	case bytes.HasPrefix(b.Data, apidocBegin):
+	case bytes.HasPrefix(b.Data[index:], apidocBegin):
 		if err := doc.fromXML(b); err != nil {
 			return err
 		}
-	case bytes.HasPrefix(b.Data, apiBegin):
+	case bytes.HasPrefix(b.Data[index:], apiBegin):
 		if err := doc.appendAPI(b); err != nil {
 			return err
 		}

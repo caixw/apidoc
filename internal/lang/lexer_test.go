@@ -111,7 +111,7 @@ mcomment2
 	raw, data, err := b.EndFunc(l)
 	a.NotError(err).
 		Equal(string(raw), "// scomment1\n  // scomment2\n").
-		Equal(string(data), " scomment1\n scomment2\n")
+		Equal(string(data), "   scomment1\n     scomment2\n")
 
 	b, pos = l.Block() // 中文1
 	a.NotNil(b)
@@ -137,7 +137,7 @@ mcomment2
 	raw, data, err = b.EndFunc(l)
 	a.NotError(err).
 		Equal(string(raw), "/*\nmcomment1\nmcomment2\n*/").
-		Equal(string(data), "\nmcomment1\nmcomment2\n")
+		Equal(string(data), "  \nmcomment1\nmcomment2\n  ")
 
 	/* 测试一段单行注释后紧跟 \n=pod 形式的多行注释，是否会出错 */
 
@@ -149,7 +149,7 @@ mcomment2
 	raw, data, err = b.EndFunc(l)
 	a.NotError(err).
 		Equal(string(raw), "// scomment3\n// scomment4\n").
-		Equal(string(data), " scomment3\n scomment4\n")
+		Equal(string(data), "   scomment3\n   scomment4\n")
 
 	b, pos = l.Block() // mcomment3,mcomment4
 	a.NotNil(b)
@@ -159,7 +159,7 @@ mcomment2
 	raw, data, err = b.EndFunc(l)
 	a.NotError(err).
 		Equal(string(raw), "=pod\n mcomment3\n mcomment4\n=cut\n").
-		Equal(string(data), " mcomment3\n mcomment4\n")
+		Equal(string(data), "      mcomment3\n mcomment4\n     ")
 }
 
 func TestLexer_skipSpace(t *testing.T) {
