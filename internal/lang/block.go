@@ -4,7 +4,6 @@ package lang
 
 import (
 	"bytes"
-	"strings"
 	"unicode"
 )
 
@@ -143,36 +142,6 @@ LOOP:
 	} // end for
 
 	return raw, convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
-}
-
-// 行首若出现`空白字符+symbol+空白字符`的组合，则去掉 symbol 及之前的字符。
-// symbol 为 charset 中的任意字符。
-func filterSymbols(line []byte, charset string) []byte {
-	if len(charset) == 0 {
-		return line
-	}
-
-	// 过滤左侧的空格
-	line = bytes.TrimLeftFunc(line, func(r rune) bool { return unicode.IsSpace(r) && r != '\n' })
-	if len(line) == 0 {
-		return line
-	}
-
-	// 过滤左侧的符号
-	hasSymbol := false
-	for index, v := range line {
-		if strings.IndexByte(charset, v) >= 0 {
-			hasSymbol = true
-			continue
-		}
-
-		if hasSymbol && unicode.IsSpace(rune(v)) {
-			return line[index:]
-		}
-		break
-	}
-
-	return line
 }
 
 func convertSingleCommentToXML(lines, begin []byte) []byte {
