@@ -65,6 +65,12 @@ func TestLexer_match(t *testing.T) {
 		Offset:   5,
 	})
 
+	l.back()
+	a.True(l.match("中")).Equal(l.current, position{
+		Position: message.Position{Line: 0, Character: 3},
+		Offset:   5,
+	})
+
 	l.next(len(l.data))
 	a.False(l.match("ab")).Equal(l.current, position{
 		Position: message.Position{Line: 1, Character: 2},
@@ -176,11 +182,13 @@ func TestLexer_skipSpace(t *testing.T) {
 	l.skipSpace()
 	l.skipSpace()
 	l.skipSpace()
-	l.skipSpace()
+	a.Empty(l.skipSpace())
 	a.Equal(string(l.next(1)), "\n")
 
 	l.next(1)
-	l.skipSpace()
+	a.Equal(1, len(l.skipSpace()))
+	l.back()
+	a.Equal(1, len(l.skipSpace()))
 	a.Equal(string(l.next(1)), "1")
 
 	l.next(1)
