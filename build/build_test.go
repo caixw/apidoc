@@ -7,7 +7,8 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/message/messagetest"
+	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/core/messagetest"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -56,7 +57,9 @@ func TestParseFile(t *testing.T) {
 	doc := spec.NewAPIDoc()
 	a.NotNil(doc)
 	erro, _, h := messagetest.MessageHandler()
-	ParseFile(doc, h, "./testdata/testfile.h", c)
+	uri, err := core.FileURI("./testdata/testfile.h")
+	a.NotError(err).NotEmpty(uri)
+	ParseFile(doc, h, uri, c)
 	a.NotError(doc.Sanitize())
 	a.Equal(0, len(doc.Apis)).
 		Equal(doc.Version, "1.1.1")

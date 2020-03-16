@@ -14,10 +14,10 @@ import (
 	"github.com/issue9/version"
 	"gopkg.in/yaml.v2"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -41,19 +41,19 @@ type Config struct {
 	// 如果 input 和 output 中涉及到地址为非绝对目录，则使用此值作为基地址。
 	wd string
 
-	h *message.Handler
+	h *core.MessageHandler
 }
 
 // LoadConfig 加载指定目录下的配置文件
 //
 // 所有的错误信息会输出到 h，在出错时，会返回 nil
-func LoadConfig(h *message.Handler, wd string) *Config {
+func LoadConfig(h *core.MessageHandler, wd string) *Config {
 	for _, filename := range vars.AllowConfigFilenames {
 		p := filepath.Join(wd, filename)
 		if utils.FileExists(p) {
 			cfg, err := loadFile(wd, p)
 			if err != nil {
-				h.Error(message.Erro, err)
+				h.Error(core.Erro, err)
 				return nil
 			}
 			cfg.h = h
@@ -61,20 +61,20 @@ func LoadConfig(h *message.Handler, wd string) *Config {
 		}
 	}
 
-	msg := message.NewLocaleError("", filepath.Join(wd, vars.AllowConfigFilenames[0]), 0, locale.ErrRequired)
-	h.Error(message.Erro, msg)
+	msg := core.NewLocaleError("", filepath.Join(wd, vars.AllowConfigFilenames[0]), 0, locale.ErrRequired)
+	h.Error(core.Erro, msg)
 	return nil
 }
 
 func loadFile(wd, path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, message.WithError(path, "", 0, err)
+		return nil, core.WithError(path, "", 0, err)
 	}
 
 	cfg := &Config{}
 	if err = yaml.Unmarshal(data, cfg); err != nil {
-		return nil, message.WithError(path, "", 0, err)
+		return nil, core.WithError(path, "", 0, err)
 	}
 	cfg.wd = wd
 
@@ -89,29 +89,29 @@ func (cfg *Config) sanitize(file string) error {
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(spec.Version, cfg.Version)
 	if err != nil {
-		return message.WithError(file, "version", 0, err)
+		return core.WithError(file, "version", 0, err)
 	}
 	if !compatible {
-		return message.NewLocaleError(file, "version", 0, locale.VersionInCompatible)
+		return core.NewLocaleError(file, "version", 0, locale.VersionInCompatible)
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return message.NewLocaleError(file, "inputs", 0, locale.ErrRequired)
+		return core.NewLocaleError(file, "inputs", 0, locale.ErrRequired)
 	}
 
 	if cfg.Output == nil {
-		return message.NewLocaleError(file, "output", 0, locale.ErrRequired)
+		return core.NewLocaleError(file, "output", 0, locale.ErrRequired)
 	}
 
 	for index, i := range cfg.Inputs {
 		field := "inputs[" + strconv.Itoa(index) + "]"
 
 		if i.Dir, err = path.Abs(i.Dir, cfg.wd); err != nil {
-			return message.WithError(file, field+".path", 0, err)
+			return core.WithError(file, field+".path", 0, err)
 		}
 
 		if err := i.Sanitize(); err != nil {
-			if serr, ok := err.(*message.SyntaxError); ok {
+			if serr, ok := err.(*core.SyntaxError); ok {
 				serr.File = file
 				serr.Line = 0
 				serr.Field = field + serr.Field
@@ -121,7 +121,7 @@ func (cfg *Config) sanitize(file string) error {
 	}
 
 	if cfg.Output.Path, err = path.Abs(cfg.Output.Path, cfg.wd); err != nil {
-		return message.WithError(file, "output.path", 0, err)
+		return core.WithError(file, "output.path", 0, err)
 	}
 	return cfg.Output.Sanitize()
 }
@@ -141,11 +141,11 @@ func (cfg *Config) SaveToFile(path string) error {
 // 具体信息可参考 Build 函数的相关文档。
 func (cfg *Config) Build(start time.Time) {
 	if err := Build(cfg.h, cfg.Output, cfg.Inputs...); err != nil {
-		cfg.h.Error(message.Erro, err)
+		cfg.h.Error(core.Erro, err)
 		return
 	}
 
-	cfg.h.Message(message.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(start))
+	cfg.h.Message(core.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(start))
 }
 
 // Buffer 根据 wd 目录下的配置文件生成文档内容并保存至内存
@@ -154,7 +154,7 @@ func (cfg *Config) Build(start time.Time) {
 func (cfg *Config) Buffer() *bytes.Buffer {
 	buf, err := Buffer(cfg.h, cfg.Output, cfg.Inputs...)
 	if err != nil {
-		cfg.h.Error(message.Erro, err)
+		cfg.h.Error(core.Erro, err)
 		return nil
 	}
 

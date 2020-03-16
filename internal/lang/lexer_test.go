@@ -7,7 +7,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/core"
 )
 
 func TestLexer_Position(t *testing.T) {
@@ -18,20 +18,20 @@ func TestLexer_Position(t *testing.T) {
 
 	l.next(3)
 	a.Equal(l.current, position{
-		Position: message.Position{Line: 1, Character: 0},
+		Position: core.Position{Line: 1, Character: 0},
 		Offset:   3,
 	})
 
 	l.next(4)
 	a.Equal(l.current, position{
-		Position: message.Position{Line: 2, Character: 1},
+		Position: core.Position{Line: 2, Character: 1},
 		Offset:   7,
 	})
 
 	l.next(3)
 	l.next(3)
 	a.Equal(l.current, position{
-		Position: message.Position{Line: 4, Character: 0},
+		Position: core.Position{Line: 4, Character: 0},
 		Offset:   12,
 	})
 
@@ -39,13 +39,13 @@ func TestLexer_Position(t *testing.T) {
 	a.NotError(err).NotNil(l)
 	l.next(2)
 	a.Equal(l.current, position{
-		Position: message.Position{Line: 0, Character: 2},
+		Position: core.Position{Line: 0, Character: 2},
 		Offset:   2,
 	})
 
 	l.next(2)
 	a.Equal(l.current, position{
-		Position: message.Position{Line: 0, Character: 4},
+		Position: core.Position{Line: 0, Character: 4},
 		Offset:   8,
 	})
 }
@@ -61,19 +61,19 @@ func TestLexer_match(t *testing.T) {
 	a.True(l.match("ab")).Equal(2, l.current.Offset)
 	a.False(l.match("ab")).Equal(2, l.current.Offset)
 	a.True(l.match("中")).Equal(l.current, position{
-		Position: message.Position{Line: 0, Character: 3},
+		Position: core.Position{Line: 0, Character: 3},
 		Offset:   5,
 	})
 
 	l.back()
 	a.True(l.match("中")).Equal(l.current, position{
-		Position: message.Position{Line: 0, Character: 3},
+		Position: core.Position{Line: 0, Character: 3},
 		Offset:   5,
 	})
 
 	l.next(len(l.data))
 	a.False(l.match("ab")).Equal(l.current, position{
-		Position: message.Position{Line: 1, Character: 2},
+		Position: core.Position{Line: 1, Character: 2},
 		Offset:   8,
 	})
 }
@@ -111,7 +111,7 @@ mcomment2
 
 	b, pos := l.Block() // scomment1
 	a.NotNil(b)
-	a.Equal(pos, message.Position{Line: 0, Character: 0})
+	a.Equal(pos, core.Position{Line: 0, Character: 0})
 	_, ok := b.(*singleComment)
 	a.True(ok)
 	raw, data, err := b.EndFunc(l)
@@ -121,7 +121,7 @@ mcomment2
 
 	b, pos = l.Block() // 中文1
 	a.NotNil(b)
-	a.Equal(pos, message.Position{Line: 3, Character: 0})
+	a.Equal(pos, core.Position{Line: 3, Character: 0})
 	_, ok = b.(*stringBlock)
 	a.True(ok)
 	_, _, err = b.EndFunc(l)
@@ -129,7 +129,7 @@ mcomment2
 
 	b, pos = l.Block() // 中文2
 	a.NotNil(b)
-	a.Equal(pos, message.Position{Line: 4, Character: 4})
+	a.Equal(pos, core.Position{Line: 4, Character: 4})
 	_, ok = b.(*stringBlock)
 	a.True(ok)
 	_, _, err = b.EndFunc(l)
@@ -137,7 +137,7 @@ mcomment2
 
 	b, pos = l.Block()
 	a.NotNil(b)
-	a.Equal(pos, message.Position{Line: 5, Character: 1})
+	a.Equal(pos, core.Position{Line: 5, Character: 1})
 	_, ok = b.(*multipleComment)
 	a.True(ok)
 	raw, data, err = b.EndFunc(l)
@@ -149,7 +149,7 @@ mcomment2
 
 	b, pos = l.Block() // scomment3,scomment4
 	a.NotNil(b)
-	a.Equal(pos, message.Position{Line: 10, Character: 2})
+	a.Equal(pos, core.Position{Line: 10, Character: 2})
 	_, ok = b.(*singleComment)
 	a.True(ok)
 	raw, data, err = b.EndFunc(l)
@@ -159,7 +159,7 @@ mcomment2
 
 	b, pos = l.Block() // mcomment3,mcomment4
 	a.NotNil(b)
-	a.Equal(pos, message.Position{Line: 12, Character: 0})
+	a.Equal(pos, core.Position{Line: 12, Character: 0})
 	_, ok = b.(*rubyMultipleComment)
 	a.True(ok)
 	raw, data, err = b.EndFunc(l)

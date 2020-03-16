@@ -15,6 +15,18 @@ func TestXML(t *testing.T) {
 	a.NotNil(data)
 }
 
+func TestURI(t *testing.T) {
+	a := assert.New(t)
+
+	p1, err := filepath.Abs(Filename)
+	a.NotError(err).NotEmpty(p1)
+
+	p2, err := URI(a).File()
+	a.NotError(err).NotEmpty(p2)
+
+	a.Equal(p1, p2)
+}
+
 func TestPath(t *testing.T) {
 	a := assert.New(t)
 

@@ -8,7 +8,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/core"
 )
 
 func loadAPI(a *assert.Assertion) *API {
@@ -17,7 +17,7 @@ func loadAPI(a *assert.Assertion) *API {
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	a.NotError(doc.appendAPI(&Block{File: "", Range: message.Range{}, Data: data}))
+	a.NotError(doc.appendAPI(&Block{File: "", Range: core.Range{}, Data: data}))
 	return doc.Apis[0]
 }
 
@@ -72,22 +72,22 @@ func TestAPI_UnmarshalXML(t *testing.T) {
 func TestAPI_lineNumber(t *testing.T) {
 	a := assert.New(t)
 	doc := loadDoc(a)
-	rng := message.Range{
-		Start: message.Position{
+	rng := core.Range{
+		Start: core.Position{
 			Line:      11,
 			Character: 22,
 		},
-		End: message.Position{},
+		End: core.Position{},
 	}
 
 	data := []byte(`<api version="x.0.1"></api>`)
 	err := doc.appendAPI(&Block{File: "file", Range: rng, Data: data})
-	a.Equal(err.(*message.SyntaxError).Line, 11)
+	a.Equal(err.(*core.SyntaxError).Line, 11)
 
 	data = []byte(`<api version="0.1.1">
 
 	    <callback method="not-exists" />
 	</api>`)
 	err = doc.appendAPI(&Block{File: "file", Range: rng, Data: data})
-	a.Equal(err.(*message.SyntaxError).Line, 13)
+	a.Equal(err.(*core.SyntaxError).Line, 13)
 }

@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v6"
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 var mockFlagSet *flag.FlagSet
@@ -60,7 +60,7 @@ func (srv servers) String() string {
 }
 
 var mockPort string
-var mockServers servers = make(servers, 0)
+var mockServers = make(servers, 0)
 
 func initMock() {
 	mockFlagSet = command.New("mock", doMock, mockUsage)
@@ -69,18 +69,21 @@ func initMock() {
 }
 
 func doMock(io.Writer) error {
-	path := getPath(mockFlagSet)
+	uri, err := core.FileURI(getPath(mockFlagSet))
+	if err != nil {
+		return err
+	}
 
-	h := message.NewHandler(newHandlerFunc())
+	h := core.NewMessageHandler(newHandlerFunc())
 	defer h.Stop()
 
-	handler, err := apidoc.MockFile(h, path, mockServers)
+	handler, err := apidoc.MockFile(h, uri, mockServers)
 	if err != nil {
 		return err
 	}
 
 	url := "http://localhost" + mockPort
-	h.Message(message.Succ, locale.ServerStart, url)
+	h.Message(core.Succ, locale.ServerStart, url)
 
 	return http.ListenAndServe(mockPort, handler)
 }

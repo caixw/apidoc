@@ -19,12 +19,11 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v6/build"
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/mock"
-	xpath "github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -52,7 +51,7 @@ func Version() string {
 // 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
-func Build(h *message.Handler, o *build.Output, i ...*build.Input) error {
+func Build(h *core.MessageHandler, o *build.Output, i ...*build.Input) error {
 	return build.Build(h, o, i...)
 }
 
@@ -62,14 +61,14 @@ func Build(h *message.Handler, o *build.Output, i ...*build.Input) error {
 // 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
-func Buffer(h *message.Handler, o *build.Output, i ...*build.Input) (*bytes.Buffer, error) {
+func Buffer(h *core.MessageHandler, o *build.Output, i ...*build.Input) (*bytes.Buffer, error) {
 	return build.Buffer(h, o, i...)
 }
 
 // Test 测试文档语法，并将结果输出到 h
 //
 // NOTE: 需要先调用 Init() 初始化本地化信息
-func Test(h *message.Handler, i ...*build.Input) {
+func Test(h *core.MessageHandler, i ...*build.Input) {
 	build.Test(h, i...)
 }
 
@@ -120,19 +119,23 @@ func View(status int, url string, data []byte, contentType, dir string, styleshe
 // 功能等同于 View，但是将 data 参数换成了文件地址。
 // url 可以为空值，表示接受 path 的文件名部分作为其值。
 //
-// path 可以是远程文件 (http 开头)，也可以是本地文件。
-func ViewFile(status int, url, path, contentType, dir string, stylesheet bool) (http.Handler, error) {
-	data, err := xpath.ReadFile(path, nil)
+// path 可以是远程文件，也可以是本地文件。
+func ViewFile(status int, url string, path core.URI, contentType, dir string, stylesheet bool) (http.Handler, error) {
+	data, err := path.ReadAll(nil)
 	if err != nil {
 		return nil, err
 	}
 
+	file, err := path.File()
+	if err != nil {
+		return nil, err
+	}
 	if url == "" {
-		url = "/" + filepath.Base(path)
+		url = "/" + filepath.Base(file)
 	}
 
 	if contentType == "" {
-		contentType = mime.TypeByExtension(filepath.Ext(path))
+		contentType = mime.TypeByExtension(filepath.Ext(file))
 	}
 
 	return View(status, url, data, contentType, dir, stylesheet), nil
@@ -146,7 +149,7 @@ func Valid(content []byte) error {
 // Mock 生成 Mock 中间件
 //
 // 调用者需要保证 d 的正确性。
-func Mock(h *message.Handler, d *spec.APIDoc, servers map[string]string) (http.Handler, error) {
+func Mock(h *core.MessageHandler, d *spec.APIDoc, servers map[string]string) (http.Handler, error) {
 	return mock.New(h, d, servers)
 }
 
@@ -154,7 +157,7 @@ func Mock(h *message.Handler, d *spec.APIDoc, servers map[string]string) (http.H
 //
 // data 为文档内容；
 // servers 为文档中所有 server 以及对应的路由前缀。
-func MockBuffer(h *message.Handler, data []byte, servers map[string]string) (http.Handler, error) {
+func MockBuffer(h *core.MessageHandler, data []byte, servers map[string]string) (http.Handler, error) {
 	d := spec.NewAPIDoc()
 	if err := d.ParseBlock(&spec.Block{Data: data}); err != nil {
 		return nil, err
@@ -167,7 +170,7 @@ func MockBuffer(h *message.Handler, data []byte, servers map[string]string) (htt
 //
 // path 为文档路径，可以是本地路径也可以是 URL，根据是否为 http 或是 https 开头做判断；
 // servers 为文档中所有 server 以及对应的路由前缀。
-func MockFile(h *message.Handler, path string, servers map[string]string) (http.Handler, error) {
+func MockFile(h *core.MessageHandler, path core.URI, servers map[string]string) (http.Handler, error) {
 	return mock.Load(h, path, servers)
 }
 

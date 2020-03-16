@@ -3,7 +3,7 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -105,7 +105,7 @@ type Discriminator struct {
 	Mapping      map[string]string `json:"mapping,omitempty" yaml:"mapping,omitempty"`
 }
 
-func (s *Schema) sanitize() *message.SyntaxError {
+func (s *Schema) sanitize() *core.SyntaxError {
 	if s.ExternalDocs != nil {
 		if err := s.ExternalDocs.sanitize(); err != nil {
 			err.Field = "externalDocs." + err.Field

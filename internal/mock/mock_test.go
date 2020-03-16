@@ -10,7 +10,8 @@ import (
 	"github.com/issue9/assert"
 	"github.com/issue9/assert/rest"
 
-	"github.com/caixw/apidoc/v6/message/messagetest"
+	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/core/messagetest"
 	"github.com/caixw/apidoc/v6/spec"
 	"github.com/caixw/apidoc/v6/spec/spectest"
 )
@@ -512,7 +513,7 @@ func TestLoad(t *testing.T) {
 
 	// LoadFromPath
 	_, _, h = messagetest.MessageHandler()
-	mock, err = Load(h, spectest.Path(a), map[string]string{"admin": "/admin"})
+	mock, err = Load(h, spectest.URI(a), map[string]string{"admin": "/admin"})
 	h.Stop()
 	a.NotError(err).NotNil(mock)
 
@@ -522,7 +523,7 @@ func TestLoad(t *testing.T) {
 	defer srv.Close()
 
 	_, _, h = messagetest.MessageHandler()
-	mock, err = Load(h, srv.URL+"/index.xml", map[string]string{"admin": "/admin"})
+	mock, err = Load(h, core.URI(srv.URL+"/index.xml"), map[string]string{"admin": "/admin"})
 	h.Stop()
 	a.NotError(err).NotNil(mock)
 }

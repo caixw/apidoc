@@ -10,6 +10,7 @@ import (
 
 	"github.com/issue9/assert"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/spec"
 )
@@ -123,6 +124,13 @@ func XML(a *assert.Assertion) []byte {
 	a.NotError(err).NotNil(data)
 
 	return data
+}
+
+// URI 返回测试文件基于 URI 的表示方式
+func URI(a *assert.Assertion) core.URI {
+	p, err := core.FileURI(pp(a, Filename))
+	a.NotError(err).NotEmpty(p)
+	return p
 }
 
 // Path 返回测试文件的绝对路径

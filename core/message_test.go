@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package message
+package core
 
 import (
 	"bytes"
@@ -15,12 +15,21 @@ import (
 
 var _ fmt.Stringer = Erro
 
+func TestType_String(t *testing.T) {
+	a := assert.New(t)
+	a.Equal("ERRO", Erro.String())
+	a.Equal("SUCC", Succ.String())
+	a.Equal("INFO", Info.String())
+	a.Equal("WARN", Warn.String())
+	a.Equal("<unknown>", MessageType(-22).String())
+}
+
 func TestHandler(t *testing.T) {
 	a := assert.New(t)
 
 	erro := new(bytes.Buffer)
 	warn := new(bytes.Buffer)
-	h := NewHandler(func(msg *Message) {
+	h := NewMessageHandler(func(msg *Message) {
 		switch msg.Type {
 		case Erro:
 			erro.WriteString("erro")
@@ -49,7 +58,7 @@ func TestHandler_Stop(t *testing.T) {
 	a := assert.New(t)
 	var exit bool
 
-	h := NewHandler(func(msg *Message) {
+	h := NewMessageHandler(func(msg *Message) {
 		time.Sleep(time.Second)
 		exit = true
 	})

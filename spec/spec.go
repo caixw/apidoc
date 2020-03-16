@@ -6,7 +6,7 @@ package spec
 import (
 	xmessage "golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/core"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 // Block 表示原始的注释代码块
 type Block struct {
 	File  string
-	Range message.Range
+	Range core.Range
 
 	// Raw 表示原始的注释代码内容
 	//
@@ -31,11 +31,11 @@ type Block struct {
 }
 
 func (b *Block) localeError(field string, key xmessage.Reference, v ...interface{}) error {
-	return message.NewLocaleError(b.File, field, b.Range.Start.Line, key, v...)
+	return core.NewLocaleError(b.File, field, b.Range.Start.Line, key, v...)
 }
 
 func fixedSyntaxError(err error, file, field string, line int) error {
-	if serr, ok := err.(*message.SyntaxError); ok {
+	if serr, ok := err.(*core.SyntaxError); ok {
 		serr.File = file
 		serr.Line = line
 
@@ -47,9 +47,9 @@ func fixedSyntaxError(err error, file, field string, line int) error {
 		return err
 	}
 
-	return message.WithError(file, field, line, err)
+	return core.WithError(file, field, line, err)
 }
 
 func newSyntaxError(field string, key xmessage.Reference, val ...interface{}) error {
-	return message.NewLocaleError("", field, 0, key, val...)
+	return core.NewLocaleError("", field, 0, key, val...)
 }

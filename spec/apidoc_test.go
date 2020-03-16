@@ -9,7 +9,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/core"
 )
 
 func loadDoc(a *assert.Assertion) *APIDoc {
@@ -21,7 +21,7 @@ func loadDoc(a *assert.Assertion) *APIDoc {
 
 	a.NotError(doc.fromXML(&Block{
 		File:  "doc.xml",
-		Range: message.Range{},
+		Range: core.Range{},
 		Data:  data,
 	}))
 
@@ -79,7 +79,7 @@ func TestDoc_all(t *testing.T) {
 	a.NotError(err).NotNil(data)
 	doc := NewAPIDoc()
 	a.NotNil(doc)
-	a.NotError(doc.fromXML(&Block{File: "all.xml", Range: message.Range{}, Data: data}))
+	a.NotError(doc.fromXML(&Block{File: "all.xml", Range: core.Range{}, Data: data}))
 
 	a.Equal(doc.Version, "1.1.1")
 
@@ -110,12 +110,12 @@ func TestDoc_all(t *testing.T) {
 
 func TestDoc_UnmarshalXML(t *testing.T) {
 	a := assert.New(t)
-	rng := message.Range{
-		Start: message.Position{
+	rng := core.Range{
+		Start: core.Position{
 			Line:      11,
 			Character: 22,
 		},
-		End: message.Position{},
+		End: core.Position{},
 	}
 
 	// 重得的标签名
@@ -128,7 +128,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	doc := NewAPIDoc()
 	a.NotNil(doc)
 	err := doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
-	serr, ok := err.(*message.SyntaxError)
+	serr, ok := err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 11).
 		Equal(serr.File, "file")
@@ -139,7 +139,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 			<mimetype>application/json</mimetype>
 	</apidoc>`
 	err = doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
-	serr, ok = err.(*message.SyntaxError)
+	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 11)
 
@@ -153,7 +153,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	</apidoc>`
 	a.NotNil(doc)
 	err = doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
-	serr, ok = err.(*message.SyntaxError)
+	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 11).
 		Equal(serr.File, "file")
@@ -166,7 +166,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 			<title>title</title>
 		</apidoc>`
 	err = doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
-	serr, ok = err.(*message.SyntaxError)
+	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 12)
 
@@ -176,7 +176,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 			<title>title</title>
 	</apidoc>`
 	err = doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
-	serr, ok = err.(*message.SyntaxError)
+	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Line, 11)
 
@@ -254,13 +254,13 @@ func TestDoc_lineNumber(t *testing.T) {
 	a.NotNil(doc)
 
 	data := []byte(`<apidoc version="x.0.1"></apidoc>`)
-	err := doc.fromXML(&Block{File: "file", Range: message.Range{Start: message.Position{Line: 11}}, Data: data})
-	a.Equal(err.(*message.SyntaxError).Line, 11)
+	err := doc.fromXML(&Block{File: "file", Range: core.Range{Start: core.Position{Line: 11}}, Data: data})
+	a.Equal(err.(*core.SyntaxError).Line, 11)
 
 	data = []byte(`<apidoc
 	
 	version="x.1.1">
 	</apidoc>`)
-	err = doc.fromXML(&Block{File: "file", Range: message.Range{Start: message.Position{Line: 12}}, Data: data})
-	a.Equal(err.(*message.SyntaxError).Line, 14)
+	err = doc.fromXML(&Block{File: "file", Range: core.Range{Start: core.Position{Line: 12}}, Data: data})
+	a.Equal(err.(*core.SyntaxError).Line, 14)
 }

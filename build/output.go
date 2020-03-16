@@ -7,10 +7,10 @@ import (
 	"encoding/xml"
 	"strings"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/openapi"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -65,7 +65,7 @@ func (o *Output) contains(tags ...string) bool {
 // Sanitize 验证 options 的数据是否都合规
 func (o *Output) Sanitize() error {
 	if o == nil {
-		return message.NewLocaleError("", "", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
 
 	if o.Type == "" {
@@ -80,7 +80,7 @@ func (o *Output) Sanitize() error {
 	case OpenapiYAML:
 		o.marshal = openapi.YAML
 	default:
-		return message.NewLocaleError("", "type", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "type", 0, locale.ErrInvalidValue)
 	}
 
 	o.xml = strings.HasSuffix(o.Type, "+xml")

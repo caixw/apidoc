@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/caixw/apidoc/v6/build"
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 var buildFlagSet *flag.FlagSet
@@ -18,8 +18,8 @@ func initBuild() {
 	buildFlagSet = command.New("build", doBuild, buildUsage(locale.CmdBuildUsage))
 }
 
-func doBuild(w io.Writer) error {
-	h := message.NewHandler(newHandlerFunc())
+func doBuild(io.Writer) error {
+	h := core.NewMessageHandler(newHandlerFunc())
 	defer h.Stop()
 
 	build.LoadConfig(h, getPath(buildFlagSet)).Build(time.Now())

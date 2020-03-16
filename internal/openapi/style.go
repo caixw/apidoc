@@ -3,8 +3,8 @@
 package openapi
 
 import (
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 // Style.Style 的可选值
@@ -27,11 +27,11 @@ type Style struct {
 	AllowReserved bool   `json:"allowReserved,omitempty" yaml:"allowReserved,omitempty"`
 }
 
-func (style *Style) sanitize() *message.SyntaxError {
+func (style *Style) sanitize() *core.SyntaxError {
 	switch style.Style {
 	case StyleMatrix, StyleLabel, StyleForm, StyleSimple, StyleSpaceDelimited, StylePipeDelimited, StyleDeepObject:
 	default:
-		return message.NewLocaleError("", "style", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "style", 0, locale.ErrInvalidValue)
 	}
 
 	return nil

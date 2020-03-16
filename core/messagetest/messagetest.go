@@ -6,22 +6,22 @@ package messagetest
 import (
 	"bytes"
 
-	"github.com/caixw/apidoc/v6/message"
+	"github.com/caixw/apidoc/v6/core"
 )
 
-// MessageHandler 返回一个用于测试的 message.Handler 实例
-func MessageHandler() (erro, succ *bytes.Buffer, h *message.Handler) {
+// MessageHandler 返回一个用于测试的 message.MessageHandler 实例
+func MessageHandler() (erro, succ *bytes.Buffer, h *core.MessageHandler) {
 	erro = new(bytes.Buffer)
 	succ = new(bytes.Buffer)
 
-	f := func(msg *message.Message) {
+	f := func(msg *core.Message) {
 		switch msg.Type {
-		case message.Erro:
+		case core.Erro:
 			erro.WriteString(msg.Message)
 		default:
 			succ.WriteString(msg.Message)
 		}
 	}
 
-	return erro, succ, message.NewHandler(f)
+	return erro, succ, core.NewMessageHandler(f)
 }

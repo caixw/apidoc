@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package message
+package core
 
 import (
 	"errors"

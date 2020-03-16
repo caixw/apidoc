@@ -5,8 +5,8 @@ package openapi
 import (
 	"net/http"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 // PathItem 每一条路径的详细描述信息
@@ -81,7 +81,7 @@ type Response struct {
 	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
-func (path *PathItem) sanitize() *message.SyntaxError {
+func (path *PathItem) sanitize() *core.SyntaxError {
 	var o *Operation
 	var method string
 	switch {
@@ -112,7 +112,7 @@ func (path *PathItem) sanitize() *message.SyntaxError {
 	}
 
 	if o == nil {
-		return message.NewLocaleError("", "operation", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "operation", 0, locale.ErrRequired)
 
 	}
 
@@ -123,9 +123,9 @@ func (path *PathItem) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func (o *Operation) sanitize() *message.SyntaxError {
+func (o *Operation) sanitize() *core.SyntaxError {
 	if len(o.Responses) == 0 {
-		return message.NewLocaleError("", "responses", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "responses", 0, locale.ErrRequired)
 	}
 	for name, resp := range o.Responses {
 		if err := resp.sanitize(); err != nil {
@@ -152,9 +152,9 @@ func (o *Operation) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func (req *RequestBody) sanitize() *message.SyntaxError {
+func (req *RequestBody) sanitize() *core.SyntaxError {
 	if len(req.Content) == 0 {
-		return message.NewLocaleError("", "content", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "content", 0, locale.ErrRequired)
 	}
 
 	for key, mt := range req.Content {
@@ -167,9 +167,9 @@ func (req *RequestBody) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func (resp *Response) sanitize() *message.SyntaxError {
+func (resp *Response) sanitize() *core.SyntaxError {
 	if resp.Description == "" {
-		return message.NewLocaleError("", "description", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "description", 0, locale.ErrRequired)
 	}
 
 	for key, header := range resp.Headers {
@@ -196,7 +196,7 @@ func (resp *Response) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func (mt *MediaType) sanitize() *message.SyntaxError {
+func (mt *MediaType) sanitize() *core.SyntaxError {
 	if mt.Schema != nil {
 		if err := mt.Schema.sanitize(); err != nil {
 			err.Field = "schema." + err.Field
@@ -213,7 +213,7 @@ func (mt *MediaType) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func (en *Encoding) sanitize() *message.SyntaxError {
+func (en *Encoding) sanitize() *core.SyntaxError {
 	if err := en.Style.sanitize(); err != nil {
 		return err
 	}

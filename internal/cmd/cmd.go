@@ -15,9 +15,9 @@ import (
 	"github.com/issue9/term/colors"
 	xmessage "golang.org/x/text/message"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 // 命令行输出的表格中，每一列为了对齐填补的空格数量。
@@ -70,19 +70,19 @@ func usage(w io.Writer) error {
 	return err
 }
 
-func newHandlerFunc() message.HandlerFunc {
+func newHandlerFunc() core.HandlerFunc {
 	erroPrefix := locale.Sprintf(locale.ErrorPrefix)
 	warnPrefix := locale.Sprintf(locale.WarnPrefix)
 	infoPrefix := locale.Sprintf(locale.InfoPrefix)
 	succPrefix := locale.Sprintf(locale.SuccessPrefix)
 
-	return func(msg *message.Message) {
+	return func(msg *core.Message) {
 		switch msg.Type {
-		case message.Erro:
+		case core.Erro:
 			printMessage(erroOut, erroColor, erroPrefix, msg.Message)
-		case message.Warn:
+		case core.Warn:
 			printMessage(warnOut, warnColor, warnPrefix, msg.Message)
-		case message.Succ:
+		case core.Succ:
 			printMessage(succOut, succColor, succPrefix, msg.Message)
 		default: // message.Info 采用相同的值
 			printMessage(infoOut, infoColor, infoPrefix, msg.Message)

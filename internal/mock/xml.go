@@ -12,8 +12,8 @@ import (
 
 	"github.com/issue9/is"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -28,7 +28,7 @@ func validXML(p *spec.Request, content []byte) error {
 		if p == nil || p.Type == spec.None {
 			return nil
 		}
-		return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 	}
 
 	validator := &xmlValidator{
@@ -82,7 +82,7 @@ func (validator *xmlValidator) validValue(v string) error {
 
 	p := validator.find()
 	if p == nil {
-		return message.NewLocaleError("", field, 0, locale.ErrNotFound)
+		return core.NewLocaleError("", field, 0, locale.ErrNotFound)
 	}
 
 	return validXMLParamValue(p, field, v)
@@ -94,20 +94,20 @@ func validXMLParamValue(p *spec.Param, field, v string) error {
 	switch p.Type {
 	case spec.Number:
 		if !is.Number(v) {
-			return message.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
+			return core.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
 		}
 	case spec.Bool:
 		if _, err := strconv.ParseBool(v); err != nil {
-			return message.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
+			return core.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
 		}
 	case spec.String:
 		return nil
 	case spec.None:
 		if v != "" {
-			return message.NewLocaleError("", field, 0, locale.ErrInvalidValue)
+			return core.NewLocaleError("", field, 0, locale.ErrInvalidValue)
 		}
 	default: // case doc.Object:
-		return message.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
 	}
 
 	if p.IsEnum() {
@@ -116,7 +116,7 @@ func validXMLParamValue(p *spec.Param, field, v string) error {
 				return nil
 			}
 		}
-		return message.NewLocaleError("", field, 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", field, 0, locale.ErrInvalidValue)
 	}
 
 	return nil
@@ -360,6 +360,6 @@ func getXMLValue(p *spec.Param) (interface{}, error) {
 	case spec.String:
 		return generateString(p), nil
 	default: // doc.Object:
-		return nil, message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
+		return nil, core.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 	}
 }

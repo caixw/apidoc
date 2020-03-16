@@ -9,8 +9,8 @@ import (
 
 	"github.com/issue9/assert"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 func TestNewHandlerFunc(t *testing.T) {
@@ -28,13 +28,13 @@ func TestNewHandlerFunc(t *testing.T) {
 
 	f := newHandlerFunc()
 	a.NotNil(f)
-	h := message.NewHandler(f)
+	h := core.NewMessageHandler(f)
 	a.NotNil(h)
 
-	h.Message(message.Erro, "erro")
-	h.Message(message.Warn, "warn")
-	h.Message(message.Info, "info")
-	h.Message(message.Succ, "succ")
+	h.Message(core.Erro, "erro")
+	h.Message(core.Warn, "warn")
+	h.Message(core.Info, "info")
+	h.Message(core.Succ, "succ")
 	h.Stop()
 
 	a.Contains(erro.String(), "erro")

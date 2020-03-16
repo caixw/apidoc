@@ -6,8 +6,8 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -34,17 +34,17 @@ type License struct {
 	URL  string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
-func (info *Info) sanitize() *message.SyntaxError {
+func (info *Info) sanitize() *core.SyntaxError {
 	if info.Title == "" {
-		return message.NewLocaleError("", "title", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "title", 0, locale.ErrRequired)
 	}
 
 	if !version.SemVerValid(info.Version) {
-		return message.NewLocaleError("", "version", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "version", 0, locale.ErrInvalidFormat)
 	}
 
 	if info.TermsOfService != "" && !is.URL(info.TermsOfService) {
-		return message.NewLocaleError("", "termsOfService", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "termsOfService", 0, locale.ErrInvalidFormat)
 	}
 
 	if info.Contact != nil {
@@ -64,9 +64,9 @@ func (info *Info) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func (l *License) sanitize() *message.SyntaxError {
+func (l *License) sanitize() *core.SyntaxError {
 	if l.URL != "" && !is.URL(l.URL) {
-		return message.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil
@@ -95,13 +95,13 @@ func newContact(c *spec.Contact) *Contact {
 	}
 }
 
-func (c *Contact) sanitize() *message.SyntaxError {
+func (c *Contact) sanitize() *core.SyntaxError {
 	if c.URL != "" && !is.URL(c.URL) {
-		return message.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	if c.Email != "" && !is.Email(c.Email) {
-		return message.NewLocaleError("", "email", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "email", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil

@@ -3,8 +3,8 @@
 package openapi
 
 import (
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 // Parameter.IN 的可选值
@@ -36,7 +36,7 @@ type Parameter struct {
 	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
-func (p *Parameter) sanitize() *message.SyntaxError {
+func (p *Parameter) sanitize() *core.SyntaxError {
 	if err := p.Style.sanitize(); err != nil {
 		return err
 	}
@@ -44,23 +44,23 @@ func (p *Parameter) sanitize() *message.SyntaxError {
 	switch p.IN {
 	case ParameterINCookie, ParameterINHeader, ParameterINPath, ParameterINQuery:
 	default:
-		return message.NewLocaleError("", "in", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "in", 0, locale.ErrInvalidValue)
 	}
 
 	return nil
 }
 
-func (h *Header) sanitize() *message.SyntaxError {
+func (h *Header) sanitize() *core.SyntaxError {
 	if err := h.Style.sanitize(); err != nil {
 		return err
 	}
 
 	if h.IN != "" {
-		return message.NewLocaleError("", "in", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "in", 0, locale.ErrInvalidValue)
 	}
 
 	if h.Name != "" {
-		return message.NewLocaleError("", "name", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "name", 0, locale.ErrInvalidValue)
 	}
 
 	return nil

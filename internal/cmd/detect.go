@@ -9,9 +9,9 @@ import (
 	"path"
 
 	"github.com/caixw/apidoc/v6/build"
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 var detectFlagSet *flag.FlagSet
@@ -23,9 +23,9 @@ func initDetect() {
 	detectFlagSet.BoolVar(&detectRecursive, "r", true, locale.Sprintf(locale.FlagDetectRecursive))
 }
 
-func detect(w io.Writer) error {
+func detect(io.Writer) error {
 	p := getPath(detectFlagSet)
-	h := message.NewHandler(newHandlerFunc())
+	h := core.NewMessageHandler(newHandlerFunc())
 	defer h.Stop()
 
 	cfg, err := build.DetectConfig(p, detectRecursive)
@@ -37,7 +37,7 @@ func detect(w io.Writer) error {
 		return err
 	}
 
-	h.Message(message.Succ, locale.ConfigWriteSuccess, p)
+	h.Message(core.Succ, locale.ConfigWriteSuccess, p)
 	return nil
 }
 

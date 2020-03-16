@@ -11,10 +11,9 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/lang"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	xpath "github.com/caixw/apidoc/v6/internal/path"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -40,31 +39,31 @@ type Input struct {
 	Encoding string `yaml:"encoding,omitempty"`
 
 	blocks   []lang.Blocker    // 根据 Lang 生成
-	paths    []string          // 根据 Dir、Exts 和 Recursive 生成
+	paths    []core.URI        // 根据 Dir、Exts 和 Recursive 生成
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
 
 // Sanitize 验证参数正确性
 func (o *Input) Sanitize() error {
 	if o == nil {
-		return message.NewLocaleError("", "", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
 
 	if len(o.Dir) == 0 {
-		return message.NewLocaleError("", "dir", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "dir", 0, locale.ErrRequired)
 	}
 
 	if !utils.FileExists(o.Dir) {
-		return message.NewLocaleError("", "dir", 0, locale.ErrDirNotExists)
+		return core.NewLocaleError("", "dir", 0, locale.ErrDirNotExists)
 	}
 
 	if len(o.Lang) == 0 {
-		return message.NewLocaleError("", "lang", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "lang", 0, locale.ErrRequired)
 	}
 
 	language := lang.Get(o.Lang)
 	if language == nil {
-		return message.NewLocaleError("", "lang", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "lang", 0, locale.ErrInvalidValue)
 	}
 	o.blocks = language.Blocks
 
@@ -88,10 +87,10 @@ func (o *Input) Sanitize() error {
 	// 生成 paths
 	paths, err := recursivePath(o)
 	if err != nil {
-		return message.WithError("", "dir", 0, err)
+		return core.WithError("", "dir", 0, err)
 	}
 	if len(paths) == 0 {
-		return message.NewLocaleError("", "dir", 0, locale.ErrDirIsEmpty)
+		return core.NewLocaleError("", "dir", 0, locale.ErrDirIsEmpty)
 	}
 	o.paths = paths
 
@@ -99,7 +98,7 @@ func (o *Input) Sanitize() error {
 	if o.Encoding != "" {
 		o.encoding, err = ianaindex.IANA.Encoding(o.Encoding)
 		if err != nil {
-			return message.WithError("", "encoding", 0, err)
+			return core.WithError("", "encoding", 0, err)
 		}
 	}
 
@@ -107,8 +106,8 @@ func (o *Input) Sanitize() error {
 }
 
 // 按 Input 中的规则查找所有符合条件的文件列表。
-func recursivePath(o *Input) ([]string, error) {
-	var paths []string
+func recursivePath(o *Input) ([]core.URI, error) {
+	var uris []core.URI
 
 	extIsEnabled := func(ext string) bool {
 		for _, v := range o.Exts {
@@ -126,7 +125,11 @@ func recursivePath(o *Input) ([]string, error) {
 		if fi.IsDir() && !o.Recursive && path != o.Dir {
 			return filepath.SkipDir
 		} else if extIsEnabled(filepath.Ext(path)) {
-			paths = append(paths, path)
+			uri, err := core.FileURI(path)
+			if err != nil {
+				return err
+			}
+			uris = append(uris, uri)
 		}
 		return nil
 	}
@@ -135,18 +138,18 @@ func recursivePath(o *Input) ([]string, error) {
 		return nil, err
 	}
 
-	return paths, nil
+	return uris, nil
 }
 
 // 分析 opt 中所指定的内容
 //
 // 分析后的内容推送至 blocks 中。
-func parseInputs(blocks chan spec.Block, h *message.Handler, opt ...*Input) {
+func parseInputs(blocks chan spec.Block, h *core.MessageHandler, opt ...*Input) {
 	wg := &sync.WaitGroup{}
 	for _, o := range opt {
 		for _, path := range o.paths {
 			wg.Add(1)
-			go func(path string, o *Input) {
+			go func(path core.URI, o *Input) {
 				o.parseFile(blocks, h, path)
 				wg.Done()
 			}(path, o)
@@ -155,22 +158,22 @@ func parseInputs(blocks chan spec.Block, h *message.Handler, opt ...*Input) {
 	wg.Wait()
 }
 
-// 分析 path 指向的文件
-func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path string) {
-	data, err := xpath.ReadFile(path, o.encoding)
+// 分析 uri 指向的文件
+func (o *Input) parseFile(blocks chan spec.Block, h *core.MessageHandler, uri core.URI) {
+	data, err := uri.ReadAll(o.encoding)
 	if err != nil {
-		h.Error(message.Erro, message.WithError(path, "", 0, err))
+		h.Error(core.Erro, core.WithError(string(uri), "", 0, err))
 		return
 	}
 
 	l, err := lang.NewLexer(data, o.blocks)
 	if err != nil {
-		h.Error(message.Erro, message.WithError(path, "", 0, err))
+		h.Error(core.Erro, core.WithError(string(uri), "", 0, err))
 		return
 	}
 
 	var block lang.Blocker
-	var pos message.Position
+	var pos core.Position
 	for {
 		if l.AtEOF() {
 			return
@@ -184,7 +187,7 @@ func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path strin
 
 		raw, data, ok := block.EndFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
-			h.Error(message.Erro, message.NewLocaleError(path, "", pos.Line, locale.ErrNotFoundEndFlag))
+			h.Error(core.Erro, core.NewLocaleError(string(uri), "", pos.Line, locale.ErrNotFoundEndFlag))
 			return
 		}
 
@@ -195,8 +198,8 @@ func (o *Input) parseFile(blocks chan spec.Block, h *message.Handler, path strin
 		}
 
 		blocks <- spec.Block{
-			File: path,
-			Range: message.Range{
+			File: string(uri),
+			Range: core.Range{
 				Start: pos,
 				End:   l.Position(),
 			},

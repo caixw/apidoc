@@ -11,17 +11,17 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/qheader"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
 func (m *Mock) buildAPI(api *spec.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m.h.Message(message.Succ, locale.RequestAPI, r.Method, r.URL.Path)
+		m.h.Message(core.Succ, locale.RequestAPI, r.Method, r.URL.Path)
 		if api.Deprecated != "" {
-			m.h.Message(message.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated)
+			m.h.Message(core.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated)
 		}
 
 		if err := validQueryArrayParam(api.Path.Queries, r); err != nil {
@@ -50,11 +50,11 @@ func (m *Mock) buildAPI(api *spec.API) http.Handler {
 func validRequest(requests []*spec.Request, r *http.Request) error {
 	ct := r.Header.Get("Content-Type")
 	if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") { // 用户提交的 content-type 必须是明确的值
-		return message.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
 	}
 	req := findRequestByContentType(requests, ct)
 	if req == nil {
-		return message.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
 	}
 
 	for _, header := range req.Headers {
@@ -77,7 +77,7 @@ func validRequest(requests []*spec.Request, r *http.Request) error {
 	case "application/xml", "text/xml":
 		return validXML(req, content)
 	default:
-		return message.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "headers[content-type]", 0, locale.ErrInvalidValue)
 	}
 }
 
@@ -122,7 +122,7 @@ func (m *Mock) renderResponse(api *spec.API, w http.ResponseWriter, r *http.Requ
 
 	w.WriteHeader(int(resp.Status))
 	if _, err := w.Write(data); err != nil {
-		m.h.Error(message.Erro, err) // 此时状态码已经输出
+		m.h.Error(core.Erro, err) // 此时状态码已经输出
 	}
 }
 
@@ -189,7 +189,7 @@ func matchContentType(ct string, accepts []*qheader.Header) bool {
 func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string, err error) {
 	file := r.Method + " " + r.URL.Path
 
-	if serr, ok := err.(*message.SyntaxError); ok {
+	if serr, ok := err.(*core.SyntaxError); ok {
 		if serr.Field == "" {
 			serr.Field = field
 		} else {
@@ -198,10 +198,10 @@ func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 
 		serr.File = file
 	} else {
-		err = message.WithError(file, field, 0, err)
+		err = core.WithError(file, field, 0, err)
 	}
 
-	m.h.Error(message.Erro, err)
+	m.h.Error(core.Erro, err)
 	w.WriteHeader(http.StatusBadRequest)
 }
 
@@ -211,7 +211,7 @@ func validQueryArrayParam(queries []*spec.Param, r *http.Request) error {
 
 		valid := func(p *spec.Param, v string) error {
 			err := validSimpleParam(p, v)
-			if serr, ok := err.(*message.SyntaxError); ok {
+			if serr, ok := err.(*core.SyntaxError); ok {
 				serr.Field = field + serr.Field
 			}
 			return err
@@ -253,23 +253,23 @@ func validSimpleParam(p *spec.Param, val string) error {
 		if p.Optional || p.Default != "" {
 			return nil
 		}
-		return message.NewLocaleError("", "", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "", 0, locale.ErrRequired)
 	}
 
 	switch p.Type {
 	case spec.Bool:
 		if _, err := strconv.ParseBool(val); err != nil {
-			return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
+			return core.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 		}
 	case spec.Number:
 		if !is.Number(val) {
-			return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
+			return core.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 		}
 	case spec.String:
 	case spec.Object:
 	case spec.None:
 		if val != "" {
-			return message.NewLocaleError("", "", 0, locale.ErrInvalidValue)
+			return core.NewLocaleError("", "", 0, locale.ErrInvalidValue)
 		}
 	}
 
@@ -283,7 +283,7 @@ func validSimpleParam(p *spec.Param, val string) error {
 		}
 
 		if !found {
-			return message.NewLocaleError("", "", 0, locale.ErrInvalidValue)
+			return core.NewLocaleError("", "", 0, locale.ErrInvalidValue)
 		}
 	}
 
@@ -308,6 +308,6 @@ func buildResponse(p *spec.Request, r *http.Request) ([]byte, error) {
 	case "application/xml", "text/xml":
 		return buildXML(p)
 	default:
-		return nil, message.NewLocaleError("", "headers[accept]", 0, locale.ErrInvalidValue)
+		return nil, core.NewLocaleError("", "headers[accept]", 0, locale.ErrInvalidValue)
 	}
 }

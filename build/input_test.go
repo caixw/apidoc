@@ -3,15 +3,14 @@
 package build
 
 import (
-	"path/filepath"
 	"testing"
 
 	"github.com/issue9/assert"
 	"golang.org/x/text/encoding/simplifiedchinese"
 
+	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/core/messagetest"
 	"github.com/caixw/apidoc/v6/internal/lang"
-	"github.com/caixw/apidoc/v6/message"
-	"github.com/caixw/apidoc/v6/message/messagetest"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -87,9 +86,9 @@ func TestInput_parseFile(t *testing.T) {
 // <server>test</server>
 // </api>
 `).
-		Equal(blk.Range, message.Range{
-			Start: message.Position{Line: 5, Character: 0},
-			End:   message.Position{Line: 10, Character: 0},
+		Equal(blk.Range, core.Range{
+			Start: core.Position{Line: 5, Character: 0},
+			End:   core.Position{Line: 10, Character: 0},
 		})
 	a.Empty(erro.String())
 
@@ -169,42 +168,23 @@ func TestRecursivePath(t *testing.T) {
 		Exts:      []string{".c", ".h"},
 	}
 	paths, err := recursivePath(opt)
-	a.NotError(err)
-	a.Contains(paths, []string{
-		filepath.Join("testdata", "testfile.c"),
-		filepath.Join("testdata", "testfile.h"),
-	})
+	a.NotError(err).Equal(2, len(paths))
 
 	opt.Dir = "./testdata"
 	opt.Recursive = true
 	opt.Exts = []string{".1", ".2"}
 	paths, err = recursivePath(opt)
-	a.NotError(err)
-	a.Contains(paths, []string{
-		filepath.Join("testdata", "testdir1", "testfile.1"),
-		filepath.Join("testdata", "testdir1", "testfile.2"),
-		filepath.Join("testdata", "testdir2", "testfile.1"),
-		filepath.Join("testdata", "testfile.1"),
-	})
+	a.NotError(err).Equal(4, len(paths))
 
 	opt.Dir = "./testdata/testdir1"
 	opt.Recursive = true
 	opt.Exts = []string{".1", ".2"}
 	paths, err = recursivePath(opt)
-	a.NotError(err)
-	a.Contains(paths, []string{
-		filepath.Join("testdata", "testdir1", "testfile.1"),
-		filepath.Join("testdata", "testdir1", "testfile.2"),
-	})
+	a.NotError(err).Equal(2, len(paths))
 
 	opt.Dir = "./testdata"
 	opt.Recursive = true
 	opt.Exts = []string{".1"}
 	paths, err = recursivePath(opt)
-	a.NotError(err)
-	a.Contains(paths, []string{
-		filepath.Join("testdata", "testdir1", "testfile.1"),
-		filepath.Join("testdata", "testdir2", "testfile.1"),
-		filepath.Join("testdata", "testfile.1"),
-	})
+	a.NotError(err).Equal(3, len(paths))
 }

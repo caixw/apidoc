@@ -11,8 +11,8 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/version"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -89,17 +89,17 @@ func newTag(tag *spec.Tag) *Tag {
 	}
 }
 
-func (oa *OpenAPI) sanitize() *message.SyntaxError {
+func (oa *OpenAPI) sanitize() *core.SyntaxError {
 	if oa.OpenAPI == "" {
 		oa.OpenAPI = LatestVersion
 	}
 
 	if !version.SemVerValid(oa.OpenAPI) {
-		return message.NewLocaleError("", "openapi", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "openapi", 0, locale.ErrInvalidFormat)
 	}
 
 	if oa.Info == nil {
-		return message.NewLocaleError("", "info", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "info", 0, locale.ErrRequired)
 	}
 	if err := oa.Info.sanitize(); err != nil {
 		err.Field = "info." + err.Field
@@ -121,7 +121,7 @@ func (oa *OpenAPI) sanitize() *message.SyntaxError {
 	}
 
 	if len(oa.Paths) == 0 {
-		return message.NewLocaleError("", "paths", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "paths", 0, locale.ErrRequired)
 	}
 	for k, path := range oa.Paths {
 		if err := path.sanitize(); err != nil {
@@ -154,7 +154,7 @@ func (oa *OpenAPI) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func (c *Components) sanitize() *message.SyntaxError {
+func (c *Components) sanitize() *core.SyntaxError {
 	for key, item := range c.Schemas {
 		if err := item.sanitize(); err != nil {
 			err.Field = "schemas[" + key + "]." + err.Field
@@ -200,15 +200,15 @@ func (c *Components) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func (ext *ExternalDocumentation) sanitize() *message.SyntaxError {
+func (ext *ExternalDocumentation) sanitize() *core.SyntaxError {
 	if !is.URL(ext.URL) {
-		return message.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
 	}
 
 	return nil
 }
 
-func (l *Link) sanitize() *message.SyntaxError {
+func (l *Link) sanitize() *core.SyntaxError {
 	if err := l.Server.sanitize(); err != nil {
 		err.Field = "server." + err.Field
 		return err
@@ -217,9 +217,9 @@ func (l *Link) sanitize() *message.SyntaxError {
 	return nil
 }
 
-func (tag *Tag) sanitize() *message.SyntaxError {
+func (tag *Tag) sanitize() *core.SyntaxError {
 	if tag.Name == "" {
-		return message.NewLocaleError("", "name", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "name", 0, locale.ErrInvalidFormat)
 	}
 
 	if tag.ExternalDocs != nil {

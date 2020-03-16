@@ -1,0 +1,150 @@
+// SPDX-License-Identifier: MIT
+
+package core
+
+import (
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/transform"
+
+	"github.com/caixw/apidoc/v6/internal/locale"
+)
+
+const (
+	fileScheme  = "file"
+	httpScheme  = "http"
+	httpsScheme = "https"
+)
+
+// URI 定义 URI
+//
+// http://tools.ietf.org/html/rfc3986
+//
+//    foo://example.com:8042/over/there?name=ferret#nose
+//    \_/   \______________/\_________/ \_________/ \__/
+//     |           |            |            |        |
+//  scheme     authority       path        query   fragment
+//     |   _____________________|__
+//    / \ /                        \
+//    urn:example:animal:ferret:nose
+type URI string
+
+// FileURI 根据本地文件路径构建 URI 实例
+//
+// NOTE: 如果 path 不会绝对路径，会被转换成绝对路径，
+// 如果仅需要一个表示相对的路径的 URI 类型，可以采用：
+//  URI(path)
+// 的方式直接将字符串转换成 URI 类型。
+func FileURI(path string) (URI, error) {
+	if !filepath.IsAbs(path) {
+		p, err := filepath.Abs(path)
+		if err != nil {
+			return "", err
+		}
+		path = p
+	}
+
+	u := &url.URL{Scheme: fileScheme, Path: path}
+	return URI(u.String()), nil
+}
+
+// File 返回 file:// 协议关联的文件路径
+func (uri URI) File() (string, error) {
+	if uri.isNoScheme() {
+		return string(uri), nil
+	}
+
+	u, err := url.ParseRequestURI(string(uri))
+	if err != nil {
+		return "", err
+	}
+
+	if u.Scheme != fileScheme && u.Scheme != "" {
+		return "", locale.Errorf(locale.ErrInvalidURIScheme)
+	}
+
+	return u.Path, nil
+}
+
+func (uri URI) String() string {
+	return string(uri)
+}
+
+// ReadAll 以 enc 编码读取 uri 的内容
+//
+// 目前仅支持 file、http 和 https 协议
+func (uri URI) ReadAll(enc encoding.Encoding) ([]byte, error) {
+	if uri.isNoScheme() {
+		return readLocalFile(string(uri), enc)
+	}
+
+	u, err := url.ParseRequestURI(string(uri))
+	if err != nil {
+		return nil, err
+	}
+
+	switch u.Scheme {
+	case fileScheme, "":
+		return readLocalFile(u.Path, enc)
+	case httpScheme, httpsScheme:
+		return readRemoteFile(string(uri), enc)
+	default:
+		return nil, locale.Errorf(locale.ErrInvalidURIScheme)
+	}
+}
+
+func (uri URI) isNoScheme() bool {
+	str := string(uri)
+
+	if str == "" || str[0] == '.' || str[0] == '/' || str[0] == os.PathSeparator {
+		return true
+	}
+
+	if index := strings.IndexByte(str, ':'); index > 0 {
+		// 可能是 windows 的 c:\path 格式
+		return len(str) > index+1 && str[index+1] == '\\'
+	}
+
+	return true
+}
+
+// 以指定的编码方式读取本地文件内容
+func readLocalFile(path string, enc encoding.Encoding) ([]byte, error) {
+	if enc == nil || enc == encoding.Nop {
+		return ioutil.ReadFile(path)
+	}
+
+	r, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+
+	reader := transform.NewReader(r, enc.NewDecoder())
+	return ioutil.ReadAll(reader)
+}
+
+// 以指定的编码方式读取远程文件内容
+func readRemoteFile(url string, enc encoding.Encoding) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode > 300 {
+		return nil, locale.Errorf(locale.ErrReadRemoteFile, url, resp.StatusCode)
+	}
+
+	if enc == nil || enc == encoding.Nop {
+		return ioutil.ReadAll(resp.Body)
+	}
+	reader := transform.NewReader(resp.Body, enc.NewDecoder())
+	return ioutil.ReadAll(reader)
+}

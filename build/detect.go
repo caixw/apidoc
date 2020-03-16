@@ -8,10 +8,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/lang"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/path"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -22,7 +22,7 @@ func DetectConfig(wd string, recursive bool) (*Config, error) {
 		return nil, err
 	}
 	if len(inputs) == 0 {
-		return nil, message.NewLocaleError("", "", 0, locale.ErrNotFoundSupportedLang)
+		return nil, core.NewLocaleError("", "", 0, locale.ErrNotFoundSupportedLang)
 	}
 
 	for _, i := range inputs {

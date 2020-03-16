@@ -6,13 +6,13 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 // Error 表示解析错误
 type Error struct {
-	Position message.Position
+	Position core.Position
 	Message  string
 }
 
@@ -21,7 +21,7 @@ func (err *Error) Error() string {
 }
 
 type position struct {
-	message.Position
+	core.Position
 
 	// 表示的是字节的偏移量，
 	// 而 Position.Character 表示的是当前行`字符`的偏移量
@@ -98,15 +98,15 @@ func (l *Lexer) match(word string) bool {
 }
 
 // Position 当前在 data 中的偏移量
-func (l *Lexer) Position() message.Position {
+func (l *Lexer) Position() core.Position {
 	return l.current.Position
 }
 
 // Block 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 Blocker 。
-func (l *Lexer) Block() (Blocker, message.Position) {
+func (l *Lexer) Block() (Blocker, core.Position) {
 	for {
 		if l.AtEOF() {
-			return nil, message.Position{}
+			return nil, core.Position{}
 		}
 
 		pos := l.Position()

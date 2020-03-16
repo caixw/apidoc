@@ -9,8 +9,8 @@ import (
 	"io"
 	"strings"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -41,7 +41,7 @@ func validJSON(p *spec.Request, content []byte) error {
 		if bytes.Equal(content, []byte("null")) {
 			return nil
 		}
-		return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 	}
 
 	if (p.Type == spec.None) && len(content) == 0 {
@@ -49,7 +49,7 @@ func validJSON(p *spec.Request, content []byte) error {
 	}
 
 	if !json.Valid(content) {
-		return message.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", "", 0, locale.ErrInvalidFormat)
 	}
 
 	validator := &jsonValidator{
@@ -145,7 +145,7 @@ func (validator *jsonValidator) validValue(t spec.Type, v interface{}) error {
 
 	p := validator.find()
 	if p == nil {
-		return message.NewLocaleError("", field, 0, locale.ErrNotFound)
+		return core.NewLocaleError("", field, 0, locale.ErrNotFound)
 	}
 
 	if t == "" {
@@ -153,7 +153,7 @@ func (validator *jsonValidator) validValue(t spec.Type, v interface{}) error {
 	}
 
 	if p.Type != t {
-		return message.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError("", field, 0, locale.ErrInvalidFormat)
 	}
 
 	if p.IsEnum() {
@@ -162,7 +162,7 @@ func (validator *jsonValidator) validValue(t spec.Type, v interface{}) error {
 				return nil
 			}
 		}
-		return message.NewLocaleError("", field, 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", field, 0, locale.ErrInvalidValue)
 	}
 
 	return nil

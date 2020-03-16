@@ -2,9 +2,9 @@
 
 package openapi
 
-import "github.com/caixw/apidoc/v6/message"
+import "github.com/caixw/apidoc/v6/core"
 
 // 数据验证接口
 type sanitizer interface {
-	Sanitize() *message.SyntaxError
+	Sanitize() *core.SyntaxError
 }

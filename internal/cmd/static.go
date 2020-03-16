@@ -9,8 +9,8 @@ import (
 	"net/http"
 
 	"github.com/caixw/apidoc/v6"
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 var staticFlagSet *flag.FlagSet
@@ -38,7 +38,7 @@ func static(io.Writer) (err error) {
 		path = getPath(staticFlagSet)
 	}
 
-	h := message.NewHandler(newHandlerFunc())
+	h := core.NewMessageHandler(newHandlerFunc())
 	defer h.Stop()
 
 	var handler http.Handler
@@ -46,14 +46,18 @@ func static(io.Writer) (err error) {
 	if path == "" {
 		handler = apidoc.Static(staticDocs, staticStylesheet)
 	} else {
-		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, path, staticContentType, staticDocs, staticStylesheet)
+		uri, err := core.FileURI(path)
+		if err != nil {
+			return err
+		}
+		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, uri, staticContentType, staticDocs, staticStylesheet)
 		if err != nil {
 			return err
 		}
 	}
 
 	url := "http://localhost" + staticPort
-	h.Message(message.Succ, locale.ServerStart, url)
+	h.Message(core.Succ, locale.ServerStart, url)
 
 	return http.ListenAndServe(staticPort, handler)
 }

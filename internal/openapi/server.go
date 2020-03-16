@@ -5,8 +5,8 @@ package openapi
 import (
 	"strings"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -39,10 +39,10 @@ func newServer(srv *spec.Server) *Server {
 	}
 }
 
-func (srv *Server) sanitize() *message.SyntaxError {
+func (srv *Server) sanitize() *core.SyntaxError {
 	url := urlreplace.Replace(srv.URL)
 	if url == "" { // 可以是 / 未必是一个 URL
-		return message.NewLocaleError("", "url", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "url", 0, locale.ErrRequired)
 	}
 
 	for key, val := range srv.Variables {
@@ -53,16 +53,16 @@ func (srv *Server) sanitize() *message.SyntaxError {
 
 		k := "{" + key + "}"
 		if strings.Index(srv.URL, k) < 0 {
-			return message.NewLocaleError("", "variables["+key+"]", 0, locale.ErrInvalidValue)
+			return core.NewLocaleError("", "variables["+key+"]", 0, locale.ErrInvalidValue)
 		}
 	}
 
 	return nil
 }
 
-func (v *ServerVariable) sanitize() *message.SyntaxError {
+func (v *ServerVariable) sanitize() *core.SyntaxError {
 	if v.Default == "" {
-		return message.NewLocaleError("", "default", 0, locale.ErrRequired)
+		return core.NewLocaleError("", "default", 0, locale.ErrRequired)
 	}
 
 	if len(v.Enum) == 0 {
@@ -78,7 +78,7 @@ func (v *ServerVariable) sanitize() *message.SyntaxError {
 	}
 
 	if !found {
-		return message.NewLocaleError("", "default", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError("", "default", 0, locale.ErrInvalidValue)
 	}
 
 	return nil
