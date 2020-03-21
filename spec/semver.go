@@ -7,6 +7,7 @@ import (
 
 	"github.com/issue9/version"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -19,7 +20,7 @@ type Semver string
 func (v *Semver) UnmarshalXMLAttr(attr xml.Attr) error {
 	if !version.SemVerValid(attr.Value) {
 		field := "/@" + attr.Name.Local
-		return newSyntaxError(field, locale.ErrInvalidFormat)
+		return newSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 	}
 
 	*v = Semver(attr.Value)
@@ -31,11 +32,11 @@ func (v *Semver) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	var str string
 	if err := d.DecodeElement(&str, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if !version.SemVerValid(str) {
-		return newSyntaxError(field, locale.ErrInvalidFormat)
+		return newSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 	}
 
 	*v = Semver(str)

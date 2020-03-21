@@ -5,6 +5,7 @@ package spec
 import (
 	"encoding/xml"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -25,15 +26,15 @@ func (e *Enum) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	shadow := (*shadowEnum)(e)
 	if err := d.DecodeElement(shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if shadow.Value == "" {
-		return newSyntaxError(field+"/@value", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/@value", locale.ErrRequired)
 	}
 
 	if shadow.Description.Text == "" && shadow.Summary == "" {
-		return newSyntaxError(field+"/@summary", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/@summary", locale.ErrRequired)
 	}
 
 	return nil

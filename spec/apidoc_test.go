@@ -20,9 +20,11 @@ func loadDoc(a *assert.Assertion) *APIDoc {
 	a.NotNil(doc).NotEmpty(doc.APIDoc)
 
 	a.NotError(doc.fromXML(&Block{
-		File:  "doc.xml",
-		Range: core.Range{},
-		Data:  data,
+		Location: core.Location{
+			URI:   "doc.xml",
+			Range: core.Range{},
+		},
+		Data: data,
 	}))
 
 	return doc
@@ -79,7 +81,7 @@ func TestDoc_all(t *testing.T) {
 	a.NotError(err).NotNil(data)
 	doc := NewAPIDoc()
 	a.NotNil(doc)
-	a.NotError(doc.fromXML(&Block{File: "all.xml", Range: core.Range{}, Data: data}))
+	a.NotError(doc.fromXML(&Block{Data: data}))
 
 	a.Equal(doc.Version, "1.1.1")
 
@@ -110,12 +112,15 @@ func TestDoc_all(t *testing.T) {
 
 func TestDoc_UnmarshalXML(t *testing.T) {
 	a := assert.New(t)
-	rng := core.Range{
-		Start: core.Position{
-			Line:      11,
-			Character: 22,
+	loc := core.Location{
+		URI: "file:///file.php",
+		Range: core.Range{
+			Start: core.Position{
+				Line:      11,
+				Character: 22,
+			},
+			End: core.Position{},
 		},
-		End: core.Position{},
 	}
 
 	// 重得的标签名
@@ -127,21 +132,21 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	</apidoc>`
 	doc := NewAPIDoc()
 	a.NotNil(doc)
-	err := doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
+	err := doc.fromXML(&Block{Location: loc, Data: []byte(data)})
 	serr, ok := err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
-	a.Equal(serr.Line, 11).
-		Equal(serr.File, "file")
+	a.Equal(serr.Location.Range.Start.Line, 11).
+		Equal(serr.Location.URI, "file:///file.php")
 
 	// 缺少 title
 	doc = NewAPIDoc()
 	data = `<apidoc version="1.1.1">
 			<mimetype>application/json</mimetype>
 	</apidoc>`
-	err = doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
+	err = doc.fromXML(&Block{Location: loc, Data: []byte(data)})
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
-	a.Equal(serr.Line, 11)
+	a.Equal(serr.Location.Range.Start.Line, 11)
 
 	// 重复得的 server
 	doc = NewAPIDoc()
@@ -152,11 +157,11 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 		<title>title</title>
 	</apidoc>`
 	a.NotNil(doc)
-	err = doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
+	err = doc.fromXML(&Block{Location: loc, Data: []byte(data)})
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
-	a.Equal(serr.Line, 11).
-		Equal(serr.File, "file")
+	a.Equal(serr.Location.Range.Start.Line, 11).
+		Equal(serr.Location.URI, "file:///file.php")
 
 	// 无效的 deprecated 值
 	doc = NewAPIDoc()
@@ -165,20 +170,20 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 			<mimetype>application/json</mimetype>
 			<title>title</title>
 		</apidoc>`
-	err = doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
+	err = doc.fromXML(&Block{Location: loc, Data: []byte(data)})
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
-	a.Equal(serr.Line, 12)
+	a.Equal(serr.Location.Range.Start.Line, 12)
 
 	// 缺少 mimetype
 	doc = NewAPIDoc()
 	data = `<apidoc version="1.1.1">
 			<title>title</title>
 	</apidoc>`
-	err = doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)})
+	err = doc.fromXML(&Block{Location: loc, Data: []byte(data)})
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
-	a.Equal(serr.Line, 11)
+	a.Equal(serr.Location.Range.Start.Line, 11)
 
 	// response.header.type 错误
 	doc = NewAPIDoc()
@@ -191,7 +196,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 			</header>
 		</response>
 	</apidoc>`
-	a.Error(doc.fromXML(&Block{File: "file", Range: rng, Data: []byte(data)}))
+	a.Error(doc.fromXML(&Block{Location: loc, Data: []byte(data)}))
 }
 
 func TestDoc_Sanitize(t *testing.T) {
@@ -248,19 +253,25 @@ func TestDoc_Sanitize(t *testing.T) {
 }
 
 // 测试错误提示的行号是否正确
-func TestDoc_lineNumber(t *testing.T) {
+func TestDoc_Rang(t *testing.T) {
 	a := assert.New(t)
 	doc := NewAPIDoc()
 	a.NotNil(doc)
 
 	data := []byte(`<apidoc version="x.0.1"></apidoc>`)
-	err := doc.fromXML(&Block{File: "file", Range: core.Range{Start: core.Position{Line: 11}}, Data: data})
-	a.Equal(err.(*core.SyntaxError).Line, 11)
+	loc := core.Location{
+		Range: core.Range{Start: core.Position{Line: 11, Character: 12}},
+	}
+	err := doc.fromXML(&Block{Location: loc, Data: data})
+	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 11, Character: 12})
 
 	data = []byte(`<apidoc
 	
 	version="x.1.1">
 	</apidoc>`)
-	err = doc.fromXML(&Block{File: "file", Range: core.Range{Start: core.Position{Line: 12}}, Data: data})
-	a.Equal(err.(*core.SyntaxError).Line, 14)
+	loc = core.Location{
+		Range: core.Range{Start: core.Position{Line: 12, Character: 21}},
+	}
+	err = doc.fromXML(&Block{Location: loc, Data: data})
+	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 14, Character: 1})
 }

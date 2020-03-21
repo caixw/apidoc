@@ -86,7 +86,7 @@ func TestInput_parseFile(t *testing.T) {
 // <server>test</server>
 // </api>
 `).
-		Equal(blk.Range, core.Range{
+		Equal(blk.Location.Range, core.Range{
 			Start: core.Position{Line: 5, Character: 0},
 			End:   core.Position{Line: 10, Character: 0},
 		})

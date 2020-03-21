@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -38,7 +39,7 @@ func isValidMethod(method string) bool {
 func (m *Method) UnmarshalXMLAttr(attr xml.Attr) error {
 	if !isValidMethod(attr.Value) {
 		field := "/@" + attr.Name.Local
-		return newSyntaxError(field, locale.ErrInvalidFormat)
+		return newSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 	}
 
 	*m = Method(strings.ToUpper(attr.Value))
@@ -50,11 +51,11 @@ func (m *Method) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	var str string
 	if err := d.DecodeElement(&str, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if !isValidMethod(str) {
-		return newSyntaxError(field, locale.ErrInvalidValue)
+		return newSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
 	}
 
 	*m = Method(strings.ToUpper(str))

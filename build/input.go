@@ -46,29 +46,29 @@ type Input struct {
 // Sanitize 验证参数正确性
 func (o *Input) Sanitize() error {
 	if o == nil {
-		return core.NewLocaleError("", "", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "", locale.ErrRequired)
 	}
 
 	if len(o.Dir) == 0 {
-		return core.NewLocaleError("", "dir", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "dir", locale.ErrRequired)
 	}
 
 	local, err := o.Dir.File()
 	if err != nil {
-		return core.WithError("", "dir", 0, err)
+		return core.WithError(core.Location{}, "dir", err)
 	}
 
 	if !utils.FileExists(local) {
-		return core.NewLocaleError("", "dir", 0, locale.ErrDirNotExists)
+		return core.NewLocaleError(core.Location{}, "dir", locale.ErrDirNotExists)
 	}
 
 	if len(o.Lang) == 0 {
-		return core.NewLocaleError("", "lang", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "lang", locale.ErrRequired)
 	}
 
 	language := lang.Get(o.Lang)
 	if language == nil {
-		return core.NewLocaleError("", "lang", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError(core.Location{}, "lang", locale.ErrInvalidValue)
 	}
 	o.blocks = language.Blocks
 
@@ -92,10 +92,10 @@ func (o *Input) Sanitize() error {
 	// 生成 paths
 	paths, err := recursivePath(o)
 	if err != nil {
-		return core.WithError("", "dir", 0, err)
+		return core.WithError(core.Location{}, "dir", err)
 	}
 	if len(paths) == 0 {
-		return core.NewLocaleError("", "dir", 0, locale.ErrDirIsEmpty)
+		return core.NewLocaleError(core.Location{}, "dir", locale.ErrDirIsEmpty)
 	}
 	o.paths = paths
 
@@ -103,7 +103,7 @@ func (o *Input) Sanitize() error {
 	if o.Encoding != "" {
 		o.encoding, err = ianaindex.IANA.Encoding(o.Encoding)
 		if err != nil {
-			return core.WithError("", "encoding", 0, err)
+			return core.WithError(core.Location{}, "encoding", err)
 		}
 	}
 
@@ -172,13 +172,13 @@ func parseInputs(blocks chan spec.Block, h *core.MessageHandler, opt ...*Input) 
 func (o *Input) parseFile(blocks chan spec.Block, h *core.MessageHandler, uri core.URI) {
 	data, err := uri.ReadAll(o.encoding)
 	if err != nil {
-		h.Error(core.Erro, core.WithError(string(uri), "", 0, err))
+		h.Error(core.Erro, core.WithError(core.Location{URI: uri}, "", err))
 		return
 	}
 
 	l, err := lang.NewLexer(data, o.blocks)
 	if err != nil {
-		h.Error(core.Erro, core.WithError(string(uri), "", 0, err))
+		h.Error(core.Erro, core.WithError(core.Location{URI: uri}, "", err))
 		return
 	}
 
@@ -197,7 +197,14 @@ func (o *Input) parseFile(blocks chan spec.Block, h *core.MessageHandler, uri co
 
 		raw, data, ok := block.EndFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
-			h.Error(core.Erro, core.NewLocaleError(string(uri), "", pos.Line, locale.ErrNotFoundEndFlag))
+			loc := core.Location{
+				URI: uri,
+				Range: core.Range{
+					Start: pos,
+					End:   l.Position(),
+				},
+			}
+			h.Error(core.Erro, core.NewLocaleError(loc, "", locale.ErrNotFoundEndFlag))
 			return
 		}
 
@@ -208,10 +215,12 @@ func (o *Input) parseFile(blocks chan spec.Block, h *core.MessageHandler, uri co
 		}
 
 		blocks <- spec.Block{
-			File: string(uri),
-			Range: core.Range{
-				Start: pos,
-				End:   l.Position(),
+			Location: core.Location{
+				URI: uri,
+				Range: core.Range{
+					Start: pos,
+					End:   l.Position(),
+				},
 			},
 			Data: data,
 			Raw:  raw,

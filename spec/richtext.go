@@ -2,7 +2,11 @@
 
 package spec
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+
+	"github.com/caixw/apidoc/v6/core"
+)
 
 // 富文本可用的类型
 const (
@@ -37,7 +41,7 @@ func (text *Richtext) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 
 	shadow := (*shadowRichtext)(text)
 	if err := d.DecodeElement(shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if shadow.Type == "" {

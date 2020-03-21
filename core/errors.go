@@ -4,7 +4,6 @@ package core
 
 import (
 	"net/http"
-	"strconv"
 
 	"golang.org/x/text/message"
 
@@ -22,10 +21,9 @@ type HTTPError struct {
 // 无论是配置文件的错误，还是文档的语法错误，都将返回此错误。
 // apidoc 的错误基本上都是基于 SyntaxError。
 type SyntaxError struct {
-	Message string
-	File    string
-	Line    int
-	Field   string
+	Location Location
+	Message  string
+	Field    string
 }
 
 func (err HTTPError) Error() string {
@@ -45,11 +43,7 @@ func NewHTTPError(code int, msg string) *HTTPError {
 }
 
 func (err *SyntaxError) Error() string {
-	detail := err.File
-
-	if err.Line > 0 {
-		detail += ":" + strconv.Itoa(err.Line)
-	}
+	detail := err.Location.String()
 
 	if err.Field != "" {
 		detail += ":" + err.Field
@@ -62,21 +56,19 @@ func (err *SyntaxError) Error() string {
 // NewLocaleError 本地化的错误信息
 //
 // 其中的 msg 和 val 会被转换成本地化的内容保存。
-func NewLocaleError(file, field string, line int, msg message.Reference, val ...interface{}) *SyntaxError {
+func NewLocaleError(loc Location, field string, msg message.Reference, val ...interface{}) *SyntaxError {
 	return &SyntaxError{
-		Message: locale.Sprintf(msg, val...),
-		File:    file,
-		Line:    line,
-		Field:   field,
+		Message:  locale.Sprintf(msg, val...),
+		Location: loc,
+		Field:    field,
 	}
 }
 
 // WithError 声明 SyntaxError 实例，其中的提示信息由 err 返回
-func WithError(file, field string, line int, err error) *SyntaxError {
+func WithError(loc Location, field string, err error) *SyntaxError {
 	return &SyntaxError{
-		Message: err.Error(),
-		File:    file,
-		Line:    line,
-		Field:   field,
+		Message:  err.Error(),
+		Location: loc,
+		Field:    field,
 	}
 }

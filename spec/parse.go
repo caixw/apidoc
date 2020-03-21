@@ -5,17 +5,19 @@ package spec
 import (
 	"bytes"
 	"encoding/xml"
+
+	"github.com/caixw/apidoc/v6/core"
 )
 
 // DeleteFile 从文档中删除与文件 file 相关的文档内容
-func (doc *APIDoc) DeleteFile(file string) {
+func (doc *APIDoc) DeleteFile(file core.URI) {
 	for index, api := range doc.Apis {
-		if api.Block.File == file {
+		if api.Block.Location.URI == file {
 			doc.Apis = append(doc.Apis[:index], doc.Apis[index+1:]...)
 		}
 	}
 
-	if doc.Block.File == file {
+	if doc.Block.Location.URI == file {
 		doc.Block = &Block{}
 		doc.Mimetypes = doc.Mimetypes[:0]
 		doc.Title = ""

@@ -29,6 +29,16 @@ type Location struct {
 	Range Range `json:"range"`
 }
 
+// Equal 判断两个 Position 是否相等
+func (p Position) Equal(v Position) bool {
+	return p.Line == v.Line && p.Character == v.Character
+}
+
+// IsEmpty 表示 Range 表示的范围长度为空
+func (r Range) IsEmpty() bool {
+	return r.End == r.Start
+}
+
 func (l Location) String() string {
 	s := l.Range.Start
 	e := l.Range.End

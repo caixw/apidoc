@@ -8,6 +8,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
 )
@@ -74,7 +75,15 @@ func (doc *APIDoc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	shadow := (*shadowDoc)(doc)
 	if err := d.DecodeElement(shadow, &start); err != nil {
 		line := bytes.Count(doc.Block.Data[:d.InputOffset()], []byte{'\n'})
-		return fixedSyntaxError(err, doc.Block.File, "apidoc", doc.Block.Range.Start.Line+line)
+		loc := core.Location{
+			URI: doc.Block.Location.URI,
+			Range: core.Range{
+				Start: core.Position{
+					Line: doc.Block.Location.Range.Start.Line + line,
+				},
+			},
+		}
+		return fixedSyntaxError(loc, err, "apidoc")
 	}
 
 	if shadow.Title == "" {

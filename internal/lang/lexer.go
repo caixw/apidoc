@@ -10,16 +10,6 @@ import (
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
-// Error 表示解析错误
-type Error struct {
-	Position core.Position
-	Message  string
-}
-
-func (err *Error) Error() string {
-	return err.Message
-}
-
 type position struct {
 	core.Position
 
@@ -49,7 +39,13 @@ func NewLexer(data []byte, blocks []Blocker) (*Lexer, error) {
 			break
 		}
 		if r == utf8.RuneError {
-			return nil, &Error{Position: p.Position, Message: locale.Sprintf(locale.ErrInvalidUTF8Character)}
+			loc := core.Location{
+				Range: core.Range{
+					Start: p.Position,
+					End:   core.Position{Line: p.Line, Character: p.Character + size},
+				},
+			}
+			return nil, core.NewLocaleError(loc, "", locale.ErrInvalidUTF8Character)
 		}
 
 		p.Offset += size

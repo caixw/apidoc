@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"strings"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -47,12 +48,12 @@ func (t *Type) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	var str string
 	if err := d.DecodeElement(&str, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	v, err := parseType(str)
 	if err != nil {
-		return fixedSyntaxError(err, "", field+"/type", 0)
+		return fixedSyntaxError(core.Location{}, err, field+"/type")
 	}
 
 	*t = v

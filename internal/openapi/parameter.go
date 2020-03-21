@@ -44,7 +44,7 @@ func (p *Parameter) sanitize() *core.SyntaxError {
 	switch p.IN {
 	case ParameterINCookie, ParameterINHeader, ParameterINPath, ParameterINQuery:
 	default:
-		return core.NewLocaleError("", "in", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError(core.Location{}, "in", locale.ErrInvalidValue)
 	}
 
 	return nil
@@ -56,11 +56,11 @@ func (h *Header) sanitize() *core.SyntaxError {
 	}
 
 	if h.IN != "" {
-		return core.NewLocaleError("", "in", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError(core.Location{}, "in", locale.ErrInvalidValue)
 	}
 
 	if h.Name != "" {
-		return core.NewLocaleError("", "name", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError(core.Location{}, "name", locale.ErrInvalidValue)
 	}
 
 	return nil

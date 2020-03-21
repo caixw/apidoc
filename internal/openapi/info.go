@@ -36,15 +36,15 @@ type License struct {
 
 func (info *Info) sanitize() *core.SyntaxError {
 	if info.Title == "" {
-		return core.NewLocaleError("", "title", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "title", locale.ErrRequired)
 	}
 
 	if !version.SemVerValid(info.Version) {
-		return core.NewLocaleError("", "version", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError(core.Location{}, "version", locale.ErrInvalidFormat)
 	}
 
 	if info.TermsOfService != "" && !is.URL(info.TermsOfService) {
-		return core.NewLocaleError("", "termsOfService", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError(core.Location{}, "termsOfService", locale.ErrInvalidFormat)
 	}
 
 	if info.Contact != nil {
@@ -66,7 +66,7 @@ func (info *Info) sanitize() *core.SyntaxError {
 
 func (l *License) sanitize() *core.SyntaxError {
 	if l.URL != "" && !is.URL(l.URL) {
-		return core.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError(core.Location{}, "url", locale.ErrInvalidFormat)
 	}
 
 	return nil
@@ -97,11 +97,11 @@ func newContact(c *spec.Contact) *Contact {
 
 func (c *Contact) sanitize() *core.SyntaxError {
 	if c.URL != "" && !is.URL(c.URL) {
-		return core.NewLocaleError("", "url", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError(core.Location{}, "url", locale.ErrInvalidFormat)
 	}
 
 	if c.Email != "" && !is.Email(c.Email) {
-		return core.NewLocaleError("", "email", 0, locale.ErrInvalidFormat)
+		return core.NewLocaleError(core.Location{}, "email", locale.ErrInvalidFormat)
 	}
 
 	return nil

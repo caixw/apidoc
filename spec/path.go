@@ -5,6 +5,7 @@ package spec
 import (
 	"encoding/xml"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -27,23 +28,23 @@ func (p *Path) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	shadow := (*shadowPath)(p)
 	if err := d.DecodeElement(shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if shadow.Path == "" {
-		return newSyntaxError(field+"/@path", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/@path", locale.ErrRequired)
 	}
 
 	params, err := parsePath(shadow.Path)
 	if err != nil {
-		return fixedSyntaxError(err, "", field+"/@path", 0)
+		return fixedSyntaxError(core.Location{}, err, field+"/@path")
 	}
 	if len(params) != len(shadow.Params) {
-		return newSyntaxError(field+"/@path", locale.ErrPathNotMatchParams)
+		return newSyntaxError(core.Location{}, field+"/@path", locale.ErrPathNotMatchParams)
 	}
 	for _, param := range shadow.Params {
 		if _, found := params[param.Name]; !found {
-			return newSyntaxError(field+"/@path", locale.ErrPathNotMatchParams)
+			return newSyntaxError(core.Location{}, field+"/@path", locale.ErrPathNotMatchParams)
 		}
 	}
 
@@ -51,13 +52,13 @@ func (p *Path) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, p := range shadow.Params {
 		if p.Type == Object {
 			field = field + "/param[" + p.Name + "].type"
-			return newSyntaxError(field, locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
 		}
 	}
 	for _, q := range shadow.Queries {
 		if q.Type == Object {
 			field = field + "/query[" + q.Name + "].type"
-			return newSyntaxError(field, locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
 		}
 	}
 

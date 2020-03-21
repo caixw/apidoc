@@ -112,7 +112,7 @@ func (path *PathItem) sanitize() *core.SyntaxError {
 	}
 
 	if o == nil {
-		return core.NewLocaleError("", "operation", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "operation", locale.ErrRequired)
 
 	}
 
@@ -125,7 +125,7 @@ func (path *PathItem) sanitize() *core.SyntaxError {
 
 func (o *Operation) sanitize() *core.SyntaxError {
 	if len(o.Responses) == 0 {
-		return core.NewLocaleError("", "responses", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "responses", locale.ErrRequired)
 	}
 	for name, resp := range o.Responses {
 		if err := resp.sanitize(); err != nil {
@@ -154,7 +154,7 @@ func (o *Operation) sanitize() *core.SyntaxError {
 
 func (req *RequestBody) sanitize() *core.SyntaxError {
 	if len(req.Content) == 0 {
-		return core.NewLocaleError("", "content", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "content", locale.ErrRequired)
 	}
 
 	for key, mt := range req.Content {
@@ -169,7 +169,7 @@ func (req *RequestBody) sanitize() *core.SyntaxError {
 
 func (resp *Response) sanitize() *core.SyntaxError {
 	if resp.Description == "" {
-		return core.NewLocaleError("", "description", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "description", locale.ErrRequired)
 	}
 
 	for key, header := range resp.Headers {

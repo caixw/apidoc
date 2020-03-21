@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/xml"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -49,11 +50,19 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		// API 可能是嵌套在 apidoc 里的一个子标签。
 		// 如果是子标签，则不应该有 doc 变量，也不需要构建错误信息。
 		if api.doc == nil {
-			return fixedSyntaxError(err, "", field, 0)
+			return fixedSyntaxError(core.Location{}, err, field)
 		}
 
 		line := bytes.Count(api.Block.Data[:d.InputOffset()], []byte{'\n'})
-		return fixedSyntaxError(err, api.Block.File, field, api.Block.Range.Start.Line+line)
+		loc := core.Location{
+			URI: api.Block.Location.URI,
+			Range: core.Range{
+				Start: core.Position{
+					Line: api.Block.Location.Range.Start.Line + line,
+				},
+			},
+		}
+		return fixedSyntaxError(loc, err, field)
 	}
 
 	// 报头不能为 object
@@ -61,7 +70,7 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		if header.Type == Object {
 			err := locale.Errorf(locale.ErrInvalidValue)
 			field = field + "/header[" + header.Name + "].type"
-			return fixedSyntaxError(err, api.Block.File, field, api.Block.Range.Start.Line)
+			return fixedSyntaxError(api.Block.Location, err, field)
 		}
 	}
 

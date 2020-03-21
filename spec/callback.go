@@ -5,6 +5,7 @@ package spec
 import (
 	"encoding/xml"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -39,15 +40,15 @@ func (c *Callback) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	shadow := (*shadowCallback)(c)
 	if err := d.DecodeElement(shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if shadow.Method == "" {
-		return newSyntaxError(field+"/@method", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/@method", locale.ErrRequired)
 	}
 
 	if len(shadow.Requests) == 0 {
-		return newSyntaxError(field+"/request", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/request", locale.ErrRequired)
 	}
 
 	// 可以不需要 response

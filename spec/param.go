@@ -9,6 +9,7 @@ import (
 
 	"github.com/issue9/is"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -81,23 +82,23 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	shadow := (*shadowParam)(p)
 	if err := d.DecodeElement(shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if shadow.Name == "" {
-		return newSyntaxError(field+"/@name", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/@name", locale.ErrRequired)
 	}
 
 	if shadow.Type == None {
-		return newSyntaxError(field+"/@type", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/@type", locale.ErrRequired)
 	}
 	if shadow.Type == Object && len(shadow.Items) == 0 {
-		return newSyntaxError(field+"/param", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/param", locale.ErrRequired)
 	}
 
 	// 判断 enums 的值是否相同
 	if key := getDuplicateEnum(shadow.Enums); key != "" {
-		return newSyntaxError(field+"/enum", locale.ErrDuplicateValue)
+		return newSyntaxError(core.Location{}, field+"/enum", locale.ErrDuplicateValue)
 	}
 
 	if err := chkEnumsType(shadow.Type, shadow.Enums, field); err != nil {
@@ -106,7 +107,7 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
-		return newSyntaxError(field+"/param", locale.ErrDuplicateValue)
+		return newSyntaxError(core.Location{}, field+"/param", locale.ErrDuplicateValue)
 	}
 
 	if err := checkXML(shadow.Array, len(shadow.Items) > 0, &shadow.XML, field); err != nil {
@@ -114,7 +115,7 @@ func (p *Param) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if p.Summary == "" && p.Description.Text == "" {
-		return newSyntaxError(field+"/summary", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/summary", locale.ErrRequired)
 	}
 
 	return nil
@@ -130,17 +131,17 @@ func chkEnumsType(t Type, enums []*Enum, field string) error {
 	case Number:
 		for _, enum := range enums {
 			if !is.Number(enum.Value) {
-				return newSyntaxError(field+"/enum/@"+enum.Value, locale.ErrInvalidFormat)
+				return newSyntaxError(core.Location{}, field+"/enum/@"+enum.Value, locale.ErrInvalidFormat)
 			}
 		}
 	case Bool:
 		for _, enum := range enums {
 			if _, err := strconv.ParseBool(enum.Value); err != nil {
-				return newSyntaxError(field+"/enum/@"+enum.Value, locale.ErrInvalidFormat)
+				return newSyntaxError(core.Location{}, field+"/enum/@"+enum.Value, locale.ErrInvalidFormat)
 			}
 		}
 	case Object, None:
-		return newSyntaxError(field+"/enum", locale.ErrInvalidValue)
+		return newSyntaxError(core.Location{}, field+"/enum", locale.ErrInvalidValue)
 	}
 
 	return nil

@@ -17,7 +17,7 @@ func loadAPI(a *assert.Assertion) *API {
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	a.NotError(doc.appendAPI(&Block{File: "", Range: core.Range{}, Data: data}))
+	a.NotError(doc.appendAPI(&Block{Data: data}))
 	return doc.Apis[0]
 }
 
@@ -69,25 +69,28 @@ func TestAPI_UnmarshalXML(t *testing.T) {
 }
 
 // 测试错误提示的行号是否正确
-func TestAPI_lineNumber(t *testing.T) {
+func TestAPI_Rang(t *testing.T) {
 	a := assert.New(t)
 	doc := loadDoc(a)
-	rng := core.Range{
-		Start: core.Position{
-			Line:      11,
-			Character: 22,
+	loc := core.Location{
+		URI: "file:///file.php",
+		Range: core.Range{
+			Start: core.Position{
+				Line:      11,
+				Character: 22,
+			},
+			End: core.Position{},
 		},
-		End: core.Position{},
 	}
 
 	data := []byte(`<api version="x.0.1"></api>`)
-	err := doc.appendAPI(&Block{File: "file", Range: rng, Data: data})
-	a.Equal(err.(*core.SyntaxError).Line, 11)
+	err := doc.appendAPI(&Block{Location: loc, Data: data})
+	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 11, Character: 27})
 
 	data = []byte(`<api version="0.1.1">
 
 	    <callback method="not-exists" />
 	</api>`)
-	err = doc.appendAPI(&Block{File: "file", Range: rng, Data: data})
-	a.Equal(err.(*core.SyntaxError).Line, 13)
+	err = doc.appendAPI(&Block{Location: loc, Data: data})
+	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 13, Character: 5})
 }

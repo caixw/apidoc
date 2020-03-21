@@ -2,7 +2,10 @@
 
 package spec
 
-import "github.com/caixw/apidoc/v6/internal/locale"
+import (
+	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/locale"
+)
 
 // XML 仅作用于 XML 的几个属性
 type XML struct {
@@ -16,43 +19,43 @@ type XML struct {
 func checkXML(isArray, hasItems bool, xml *XML, field string) error {
 	if xml.XMLAttr {
 		if isArray || hasItems {
-			return newSyntaxError(field+"/@xml-attr", locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field+"/@xml-attr", locale.ErrInvalidValue)
 		}
 
 		if xml.XMLWrapped != "" {
-			return newSyntaxError(field+"/@wrapped", locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field+"/@wrapped", locale.ErrInvalidValue)
 		}
 
 		if xml.XMLExtract {
-			return newSyntaxError(field+"/@xml-extract", locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field+"/@xml-extract", locale.ErrInvalidValue)
 		}
 
 		if xml.XMLNS != "" {
-			return newSyntaxError(field+"/@xml-ns", locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field+"/@xml-ns", locale.ErrInvalidValue)
 		}
 
 		if xml.XMLNSPrefix != "" {
-			return newSyntaxError(field+"/@xml-ns-prefix", locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field+"/@xml-ns-prefix", locale.ErrInvalidValue)
 		}
 	}
 
 	if xml.XMLWrapped != "" && !isArray {
-		return newSyntaxError(field+"/@xml-rapped", locale.ErrInvalidValue)
+		return newSyntaxError(core.Location{}, field+"/@xml-rapped", locale.ErrInvalidValue)
 	}
 
 	if xml.XMLExtract {
 		if xml.XMLNS != "" {
-			return newSyntaxError(field+"/@xml-ns", locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field+"/@xml-ns", locale.ErrInvalidValue)
 		}
 
 		if xml.XMLNSPrefix != "" {
-			return newSyntaxError(field+"/@xml-ns-prefix", locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field+"/@xml-ns-prefix", locale.ErrInvalidValue)
 		}
 	}
 
 	// 有命名空间，必须要有前缀
 	if xml.XMLNS != "" && xml.XMLNSPrefix == "" {
-		return newSyntaxError(field+"/@xml-ns-prefix", locale.ErrInvalidValue)
+		return newSyntaxError(core.Location{}, field+"/@xml-ns-prefix", locale.ErrInvalidValue)
 	}
 
 	return nil

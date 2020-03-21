@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -24,11 +25,11 @@ func (s *Status) UnmarshalXMLAttr(attr xml.Attr) error {
 
 	v, err := strconv.Atoi(attr.Value)
 	if err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if !isValidStatus(v) {
-		return newSyntaxError(field, locale.ErrInvalidFormat)
+		return newSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 	}
 
 	*s = Status(v)
@@ -40,11 +41,11 @@ func (s *Status) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	var v int
 	if err := d.DecodeElement(&v, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if !isValidStatus(v) {
-		return newSyntaxError(field+"/status", locale.ErrInvalidFormat)
+		return newSyntaxError(core.Location{}, field+"/status", locale.ErrInvalidFormat)
 	}
 
 	*s = Status(v)

@@ -6,6 +6,7 @@ package mock
 import (
 	"net/http"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/issue9/mux/v2"
 	"github.com/issue9/version"
@@ -64,9 +65,41 @@ func Load(h *core.MessageHandler, path core.URI, servers map[string]string) (htt
 		return nil, err
 	}
 
+	p := core.Position{}
+	var offset int
+	for {
+		r, size := utf8.DecodeRune(data[offset:])
+		if size == 0 {
+			break
+		}
+		if r == utf8.RuneError {
+			loc := core.Location{
+				URI: path,
+				Range: core.Range{
+					End: p,
+				},
+			}
+			return nil, core.NewLocaleError(loc, "", locale.ErrInvalidUTF8Character)
+		}
+
+		offset += size
+		p.Character++
+		if r == '\n' {
+			p.Line++
+			p.Character = 0
+		}
+	}
+
+	loc := core.Location{
+		URI: path,
+		Range: core.Range{
+			End: p,
+		},
+	}
+
 	// 加载并验证
 	d := spec.NewAPIDoc()
-	if err = d.ParseBlock(&spec.Block{File: string(path), Data: data}); err != nil {
+	if err = d.ParseBlock(&spec.Block{Location: loc, Data: data}); err != nil {
 		return nil, err
 	}
 

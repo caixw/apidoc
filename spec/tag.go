@@ -8,6 +8,7 @@ import (
 
 	"github.com/issue9/is"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -39,15 +40,15 @@ func (t *Tag) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	var shadow shadowTag
 	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if shadow.Name == "" {
-		return newSyntaxError(field+"/@name", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/@name", locale.ErrRequired)
 	}
 
 	if shadow.Title == "" {
-		return newSyntaxError(field+"/@title", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/@title", locale.ErrRequired)
 	}
 
 	*t = Tag(shadow)
@@ -59,19 +60,19 @@ func (srv *Server) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	var shadow shadowServer
 	if err := d.DecodeElement(&shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if shadow.Name == "" {
-		return newSyntaxError(field+"/@name", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/@name", locale.ErrRequired)
 	}
 
 	if !is.URL(shadow.URL) {
-		return newSyntaxError(field+"/@url", locale.ErrInvalidFormat)
+		return newSyntaxError(core.Location{}, field+"/@url", locale.ErrInvalidFormat)
 	}
 
 	if shadow.Summary == "" && shadow.Description.Text == "" {
-		return newSyntaxError(field+"/summary", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/summary", locale.ErrRequired)
 	}
 
 	*srv = Server(shadow)

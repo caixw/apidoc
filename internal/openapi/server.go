@@ -42,7 +42,7 @@ func newServer(srv *spec.Server) *Server {
 func (srv *Server) sanitize() *core.SyntaxError {
 	url := urlreplace.Replace(srv.URL)
 	if url == "" { // 可以是 / 未必是一个 URL
-		return core.NewLocaleError("", "url", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "url", locale.ErrRequired)
 	}
 
 	for key, val := range srv.Variables {
@@ -53,7 +53,7 @@ func (srv *Server) sanitize() *core.SyntaxError {
 
 		k := "{" + key + "}"
 		if strings.Index(srv.URL, k) < 0 {
-			return core.NewLocaleError("", "variables["+key+"]", 0, locale.ErrInvalidValue)
+			return core.NewLocaleError(core.Location{}, "variables["+key+"]", locale.ErrInvalidValue)
 		}
 	}
 
@@ -62,7 +62,7 @@ func (srv *Server) sanitize() *core.SyntaxError {
 
 func (v *ServerVariable) sanitize() *core.SyntaxError {
 	if v.Default == "" {
-		return core.NewLocaleError("", "default", 0, locale.ErrRequired)
+		return core.NewLocaleError(core.Location{}, "default", locale.ErrRequired)
 	}
 
 	if len(v.Enum) == 0 {
@@ -78,7 +78,7 @@ func (v *ServerVariable) sanitize() *core.SyntaxError {
 	}
 
 	if !found {
-		return core.NewLocaleError("", "default", 0, locale.ErrInvalidValue)
+		return core.NewLocaleError(core.Location{}, "default", locale.ErrInvalidValue)
 	}
 
 	return nil

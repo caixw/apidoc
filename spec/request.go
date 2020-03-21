@@ -5,6 +5,7 @@ package spec
 import (
 	"encoding/xml"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
@@ -41,16 +42,16 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	field := "/" + start.Name.Local
 	shadow := (*shadowRequest)(r)
 	if err := d.DecodeElement(shadow, &start); err != nil {
-		return fixedSyntaxError(err, "", field, 0)
+		return fixedSyntaxError(core.Location{}, err, field)
 	}
 
 	if shadow.Type == Object && len(shadow.Items) == 0 {
-		return newSyntaxError(field+"/param", locale.ErrRequired)
+		return newSyntaxError(core.Location{}, field+"/param", locale.ErrRequired)
 	}
 
 	// 判断 enums 的值是否相同
 	if key := getDuplicateEnum(shadow.Enums); key != "" {
-		return newSyntaxError(field+"/enum", locale.ErrDuplicateValue)
+		return newSyntaxError(core.Location{}, field+"/enum", locale.ErrDuplicateValue)
 	}
 
 	if err := chkEnumsType(shadow.Type, shadow.Enums, field); err != nil {
@@ -64,7 +65,7 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if shadow.Mimetype != "" {
 		for _, exp := range shadow.Examples {
 			if exp.Mimetype != shadow.Mimetype {
-				return newSyntaxError(field+"/example/@"+exp.Mimetype, locale.ErrInvalidValue)
+				return newSyntaxError(core.Location{}, field+"/example/@"+exp.Mimetype, locale.ErrInvalidValue)
 			}
 		}
 	}
@@ -73,13 +74,13 @@ func (r *Request) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, header := range shadow.Headers {
 		if header.Type == Object {
 			field = field + "/header[" + header.Name + "].type"
-			return newSyntaxError(field, locale.ErrInvalidValue)
+			return newSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
 		}
 	}
 
 	// 判断 items 的值是否相同
 	if key := getDuplicateItems(shadow.Items); key != "" {
-		return newSyntaxError(field+"/param", locale.ErrDuplicateValue)
+		return newSyntaxError(core.Location{}, field+"/param", locale.ErrDuplicateValue)
 	}
 
 	return nil
