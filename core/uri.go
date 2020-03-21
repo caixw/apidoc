@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/issue9/utils"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
@@ -76,6 +77,34 @@ func (uri URI) String() string {
 	return string(uri)
 }
 
+// Append 追加 path 至 URI，生成新的 URI。
+func (uri URI) Append(path string) URI {
+	return uri + URI(path)
+}
+
+// Exists 判断 uri 指向的内容是否存在
+//
+// 如果是非本地文件，通过 http 的状态码是否为 400 以内加以判断。
+func (uri URI) Exists() (bool, error) {
+	if uri.isNoScheme() {
+		return localFileIsExists(string(uri)), nil
+	}
+
+	u, err := url.ParseRequestURI(string(uri))
+	if err != nil {
+		return false, err
+	}
+
+	switch u.Scheme {
+	case fileScheme, "":
+		return localFileIsExists(u.Path), nil
+	case httpScheme, httpsScheme:
+		return remoteFileIsExists(string(uri))
+	default:
+		return false, locale.Errorf(locale.ErrInvalidURIScheme)
+	}
+}
+
 // ReadAll 以 enc 编码读取 uri 的内容
 //
 // 目前仅支持 file、http 和 https 协议
@@ -112,6 +141,18 @@ func (uri URI) isNoScheme() bool {
 	}
 
 	return true
+}
+
+func localFileIsExists(path string) bool {
+	return utils.FileExists(path)
+}
+
+func remoteFileIsExists(url string) (bool, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return false, err
+	}
+	return resp.StatusCode < 400, nil
 }
 
 // 以指定的编码方式读取本地文件内容

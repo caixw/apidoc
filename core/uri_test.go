@@ -57,6 +57,48 @@ func TestURI_isNoScheme(t *testing.T) {
 	a.False(URI("c:/file.php").isNoScheme())
 }
 
+func TestURI_Exists(t *testing.T) {
+	a := assert.New(t)
+
+	uri, err := FileURI("./not-exists")
+	a.NotError(err).NotEmpty(uri)
+	exists, err := uri.Exists()
+	a.NotError(err).False(exists)
+
+	uri, err = FileURI("./uri.go")
+	a.NotError(err).NotEmpty(uri)
+	exists, err = uri.Exists()
+	a.NotError(err).True(exists)
+
+	uri = URI("./uri.go")
+	exists, err = uri.Exists()
+	a.NotError(err).True(exists)
+
+	// 未知的协议
+	uri = URI("unknown:///uri.go")
+	exists, err = uri.Exists()
+	a.Error(err).False(exists)
+
+	// 无效的 URI
+	uri = URI(" :///uri.go")
+	exists, err = uri.Exists()
+	a.Error(err).False(exists)
+
+	// 测试远程读取
+	static := http.FileServer(http.Dir("./"))
+	srv := httptest.NewServer(static)
+	defer srv.Close()
+
+	uri = URI(srv.URL + "/uri.go")
+	exists, err = uri.Exists()
+	a.NotError(err).True(exists)
+
+	uri = URI(srv.URL + "/not-exists")
+	a.NotError(err).NotEmpty(uri)
+	exists, err = uri.Exists()
+	a.NotError(err).False(exists)
+}
+
 func TestURI_ReadAll(t *testing.T) {
 	a := assert.New(t)
 
@@ -70,6 +112,10 @@ func TestURI_ReadAll(t *testing.T) {
 
 	uri, err = FileURI("./uri.go")
 	a.NotError(err).NotEmpty(uri)
+	data, err = uri.ReadAll(encoding.Nop)
+	a.NotError(err).NotNil(data)
+
+	uri = URI("./uri.go")
 	data, err = uri.ReadAll(encoding.Nop)
 	a.NotError(err).NotNil(data)
 
