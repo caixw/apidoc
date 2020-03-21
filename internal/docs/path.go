@@ -3,14 +3,15 @@
 package docs
 
 import (
+	"github.com/issue9/utils"
+
 	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/path"
 )
 
 var docsDir core.URI
 
 func init() {
-	dir, err := core.FileURI(path.CurrPath("../../docs"))
+	dir, err := core.FileURI(utils.CurrentPath("../../docs"))
 	if err != nil {
 		panic(err)
 	}

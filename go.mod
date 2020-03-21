@@ -14,4 +14,6 @@ require (
 	gopkg.in/yaml.v2 v2.2.8
 )
 
+replace github.com/issue9/utils => /Users/caixw/dev.localized/issue9/utils
+
 go 1.13

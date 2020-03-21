@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 
 	"github.com/issue9/assert"
+	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
@@ -146,7 +146,7 @@ func Dir(a *assert.Assertion) string {
 }
 
 func pp(a *assert.Assertion, p string) string {
-	p = path.CurrPath(p)
+	p = utils.CurrentPath(p)
 	p, err := filepath.Abs(p)
 	a.NotError(err).NotEmpty(p)
 	return p
