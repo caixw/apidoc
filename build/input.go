@@ -25,7 +25,7 @@ type Input struct {
 	Lang string `yaml:"lang"`
 
 	// 源代码目录
-	Dir string `yaml:"dir"`
+	Dir core.URI `yaml:"dir"`
 
 	// 需要扫描的文件扩展名
 	//
@@ -53,7 +53,12 @@ func (o *Input) Sanitize() error {
 		return core.NewLocaleError("", "dir", 0, locale.ErrRequired)
 	}
 
-	if !utils.FileExists(o.Dir) {
+	local, err := o.Dir.File()
+	if err != nil {
+		return core.WithError("", "dir", 0, err)
+	}
+
+	if !utils.FileExists(local) {
 		return core.NewLocaleError("", "dir", 0, locale.ErrDirNotExists)
 	}
 
@@ -109,6 +114,11 @@ func (o *Input) Sanitize() error {
 func recursivePath(o *Input) ([]core.URI, error) {
 	var uris []core.URI
 
+	local, err := o.Dir.File()
+	if err != nil {
+		return nil, err
+	}
+
 	extIsEnabled := func(ext string) bool {
 		for _, v := range o.Exts {
 			if ext == v {
@@ -122,7 +132,7 @@ func recursivePath(o *Input) ([]core.URI, error) {
 		if err != nil {
 			return err
 		}
-		if fi.IsDir() && !o.Recursive && path != o.Dir {
+		if fi.IsDir() && !o.Recursive && path != local {
 			return filepath.SkipDir
 		} else if extIsEnabled(filepath.Ext(path)) {
 			uri, err := core.FileURI(path)
@@ -134,7 +144,7 @@ func recursivePath(o *Input) ([]core.URI, error) {
 		return nil
 	}
 
-	if err := filepath.Walk(o.Dir, walk); err != nil {
+	if err := filepath.Walk(local, walk); err != nil {
 		return nil, err
 	}
 

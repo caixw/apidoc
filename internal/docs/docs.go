@@ -10,14 +10,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	xpath "github.com/caixw/apidoc/v6/internal/path"
+	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
 // 默认页面
 const indexPage = "index.xml"
 
-// 指定在 folderHandler 下需要的文件列表。
+// 指定在 Handler 中，folder 不为空时，可以访问的文件列表。
 //
 // 可以以前缀的方式指定，比如：v5/ 表示以 v5/ 开头的所有文件。
 var styles = []string{
@@ -34,22 +35,25 @@ type FileInfo struct {
 	Content     []byte
 }
 
-// Dir 指向 /docs 的路径
-func Dir() string {
-	return Path("")
-}
-
-// Path 指向 /docs 下的 p 路径
-func Path(p string) string {
-	return filepath.Join(xpath.CurrPath("../../docs"), p)
-}
-
 // Handler 返回文件服务中间件
-func Handler(folder string, stylesheet bool) http.Handler {
+func Handler(folder core.URI, stylesheet bool) http.Handler {
 	if folder == "" {
 		return embeddedHandler(stylesheet)
 	}
-	return folderHandler(folder, stylesheet)
+
+	u, err := folder.Parse()
+	if err != nil {
+		panic(err)
+	}
+
+	switch u.Scheme {
+	case core.SchemeFile:
+		return localHandler(folder, stylesheet)
+	case core.SchemeHTTP, core.SchemeHTTPS:
+		return remoteHandler(folder, stylesheet)
+	default:
+		panic(locale.Errorf(locale.ErrInvalidURIScheme))
+	}
 }
 
 func embeddedHandler(stylesheet bool) http.Handler {
@@ -58,8 +62,8 @@ func embeddedHandler(stylesheet bool) http.Handler {
 
 		if len(pp) > 0 && pp[0] == '/' {
 			pp = pp[1:]
+			r.URL.Path = pp
 		}
-		r.URL.Path = pp
 		indexPath := path.Join(pp, indexPage)
 
 		for _, info := range data {
@@ -79,21 +83,55 @@ func embeddedHandler(stylesheet bool) http.Handler {
 	})
 }
 
-func folderHandler(folder string, stylesheet bool) http.Handler {
+func remoteHandler(url core.URI, stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		p := r.URL.Path
-
-		if len(p) > 0 && p[0] == '/' {
-			p = p[1:]
-			r.URL.Path = p
-		}
 
 		if stylesheet && !isStylesheetFile(p) {
 			errStatus(w, http.StatusNotFound)
 			return
 		}
 
-		p = filepath.Clean(filepath.Join(folder, p))
+		uri := url.Append(p)
+		data, err := uri.ReadAll(nil)
+		if err != nil {
+			httpError, ok := err.(*core.HTTPError)
+			if !ok {
+				errStatus(w, http.StatusInternalServerError)
+				return
+			}
+
+			if httpError.Code != http.StatusNotFound {
+				errStatusWithError(w, httpError)
+				return
+			}
+
+			data, err = uri.Append(indexPage).ReadAll(nil)
+			if err != nil {
+				errStatusWithError(w, err)
+				return
+			}
+		}
+
+		w.Write(data)
+	})
+}
+
+func localHandler(folder core.URI, stylesheet bool) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		p := r.URL.Path
+
+		if stylesheet && !isStylesheetFile(p) {
+			errStatus(w, http.StatusNotFound)
+			return
+		}
+
+		p, err := folder.Append(p).File()
+		if err != nil {
+			errStatus(w, http.StatusInternalServerError)
+			return
+		}
+
 		info, err := os.Stat(p)
 		if err != nil {
 			if os.IsNotExist(err) {
@@ -118,6 +156,16 @@ func folderHandler(folder string, stylesheet bool) http.Handler {
 
 func errStatus(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
+}
+
+func errStatusWithError(w http.ResponseWriter, err error) {
+	herr, ok := err.(*core.HTTPError)
+	if ok {
+		http.Error(w, herr.Message, herr.Code)
+		return
+	}
+
+	errStatus(w, http.StatusInternalServerError)
 }
 
 func isStylesheetFile(filename string) bool {

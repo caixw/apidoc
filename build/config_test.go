@@ -3,7 +3,6 @@
 package build
 
 import (
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -18,7 +17,7 @@ func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, docs.Path("example"))
+	cfg := LoadConfig(h, docs.Dir().Append("example"))
 	h.Stop()
 	a.NotNil(cfg).
 		Empty(erro.String()).
@@ -82,18 +81,18 @@ func TestConfig_sanitize(t *testing.T) {
 func TestConfig_SaveToFile(t *testing.T) {
 	a := assert.New(t)
 
-	wd, err := filepath.Abs("./")
+	wd, err := core.FileURI("./")
 	a.NotError(err).NotEmpty(wd)
 	cfg, err := DetectConfig(wd, true)
 	a.NotError(err).NotNil(cfg)
-	a.NotError(cfg.SaveToFile(filepath.Join(wd, "./.apidoc.yaml")))
+	a.NotError(cfg.SaveToFile(wd.Append(".apidoc.yaml")))
 }
 
 func TestConfig_Test(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, docs.Path("example"))
+	cfg := LoadConfig(h, docs.Dir().Append("example"))
 	a.NotNil(cfg)
 	cfg.Test()
 
@@ -106,7 +105,7 @@ func TestConfig_Build(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, docs.Path("example"))
+	cfg := LoadConfig(h, docs.Dir().Append("example"))
 	a.NotNil(cfg)
 	cfg.Build(time.Now())
 
@@ -119,7 +118,7 @@ func TestConfig_Buffer(t *testing.T) {
 	a := assert.New(t)
 
 	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, docs.Path("example"))
+	cfg := LoadConfig(h, docs.Dir().Append("example"))
 	a.NotNil(cfg)
 
 	buf := cfg.Buffer()

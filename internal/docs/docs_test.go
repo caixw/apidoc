@@ -3,38 +3,15 @@
 package docs
 
 import (
-	"fmt"
 	"net/http"
-	"path/filepath"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/issue9/assert"
 	"github.com/issue9/assert/rest"
+
+	"github.com/caixw/apidoc/v6/core"
 )
-
-func TestDir(t *testing.T) {
-	a := assert.New(t)
-
-	p1, err := filepath.Abs("../../docs")
-	a.NotError(err).NotEmpty(p1)
-
-	p2, err := filepath.Abs(Dir())
-	a.NotError(err).NotEmpty(p2)
-
-	a.Equal(p1, p2)
-}
-
-func TestPath(t *testing.T) {
-	a := assert.New(t)
-
-	p1, err := filepath.Abs("../../docs/example")
-	a.NotError(err).NotEmpty(p1)
-
-	p2, err := filepath.Abs(Path("example"))
-	a.NotError(err).NotEmpty(p2)
-
-	a.Equal(p1, p2)
-}
 
 func TestEmbeddedHandler(t *testing.T) {
 	a := assert.New(t)
@@ -83,7 +60,6 @@ func TestEmbeddedHandler_stylesheet(t *testing.T) {
 		Do().
 		Status(http.StatusNotFound)
 
-	fmt.Println(styles)
 	srv.Get("/v6/apidoc.xsl").
 		Do().
 		Status(http.StatusOK)
@@ -134,7 +110,7 @@ func TestEmbeddedHandler_prefix(t *testing.T) {
 		Status(http.StatusOK)
 }
 
-func TestFolderHandler(t *testing.T) {
+func TestLocalHandler(t *testing.T) {
 	a := assert.New(t)
 
 	srv := rest.NewServer(t, Handler(Dir(), false), nil)
@@ -162,7 +138,7 @@ func TestFolderHandler(t *testing.T) {
 		Status(http.StatusOK)
 }
 
-func TestFolderHandler_stylesheet(t *testing.T) {
+func TestLocalHandler_stylesheet(t *testing.T) {
 	a := assert.New(t)
 
 	srv := rest.NewServer(t, Handler(Dir(), true), nil)
@@ -198,10 +174,110 @@ func TestFolderHandler_stylesheet(t *testing.T) {
 		Status(http.StatusNotFound)
 }
 
-func TestFolderHandler_prefix(t *testing.T) {
+func TestLocalHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", folderHandler(Dir(), false))
+	h := http.StripPrefix("/prefix/", Handler(Dir(), false))
+	srv := rest.NewServer(t, h, nil)
+	a.NotNil(srv)
+	defer srv.Close()
+
+	srv.Get("/prefix/not-exists").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/prefix/not-exists").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/prefix/").
+		Do().
+		Status(http.StatusOK)
+
+	srv.Get("/prefix/index.xml").
+		Do().
+		Status(http.StatusOK)
+
+	srv.Get("/prefix/v6/apidoc.xsl").
+		Do().
+		Status(http.StatusOK)
+}
+
+func TestRemoteHandler(t *testing.T) {
+	a := assert.New(t)
+
+	remote := httptest.NewServer(Handler(Dir(), false))
+	srv := rest.NewServer(t, Handler(core.URI(remote.URL), false), nil)
+	a.NotNil(srv)
+	defer srv.Close()
+
+	srv.Get("/not-exists").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/").
+		Do().
+		Status(http.StatusOK)
+
+	srv.Get("/example/").
+		Do().
+		Status(http.StatusOK)
+
+	srv.Get("/example").
+		Do().
+		Status(http.StatusOK)
+
+	srv.Get("/index.xml").
+		Do().
+		Status(http.StatusOK)
+}
+
+func TestRemoteHandler_stylesheet(t *testing.T) {
+	a := assert.New(t)
+
+	remote := httptest.NewServer(Handler(Dir(), false))
+	srv := rest.NewServer(t, Handler(core.URI(remote.URL), true), nil)
+	a.NotNil(srv)
+	defer srv.Close()
+
+	srv.Get("/icon.svg").
+		Do().
+		Status(http.StatusOK)
+
+	srv.Get("/v6/apidoc.xsl").
+		Do().
+		Status(http.StatusOK)
+
+	srv.Get("/not-exists").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/example/").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/example").
+		Do().
+		Status(http.StatusNotFound)
+
+	srv.Get("/index.xml").
+		Do().
+		Status(http.StatusNotFound)
+}
+
+func TestRemoteHandler_prefix(t *testing.T) {
+	a := assert.New(t)
+
+	remote := httptest.NewServer(Handler(Dir(), false))
+	h := http.StripPrefix("/prefix/", Handler(core.URI(remote.URL), false))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()

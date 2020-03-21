@@ -17,25 +17,49 @@ var staticFlagSet *flag.FlagSet
 
 var (
 	staticPort        string
-	staticDocs        string
+	staticDocs        uri
 	staticStylesheet  bool
 	staticContentType string
 	staticURL         string
 )
 
+type uri core.URI
+
+func (u uri) Get() interface{} {
+	return string(u)
+}
+
+func (u *uri) Set(v string) error {
+	fu, err := core.FileURI(v)
+	if err != nil {
+		return err
+	}
+
+	*u = uri(fu)
+	return nil
+}
+
+func (u *uri) String() string {
+	return core.URI(*u).String()
+}
+
 func initStatic() {
 	staticFlagSet = command.New("static", static, staticUsage)
 	staticFlagSet.StringVar(&staticPort, "p", ":8080", locale.Sprintf(locale.FlagStaticPortUsage))
-	staticFlagSet.StringVar(&staticDocs, "docs", "", locale.Sprintf(locale.FlagStaticDocsUsage))
+	staticFlagSet.Var(&staticDocs, "docs", locale.Sprintf(locale.FlagStaticDocsUsage))
 	staticFlagSet.StringVar(&staticContentType, "ct", "", locale.Sprintf(locale.FlagStaticContentTypeUsage))
 	staticFlagSet.StringVar(&staticURL, "url", "", locale.Sprintf(locale.FlagStaticURLUsage))
 	staticFlagSet.BoolVar(&staticStylesheet, "stylesheet", false, locale.Sprintf(locale.FlagStaticStylesheetUsage))
 }
 
 func static(io.Writer) (err error) {
-	var path string
+	var path core.URI
 	if staticFlagSet.NArg() != 0 {
-		path = getPath(staticFlagSet)
+		uri, err := getPath(staticFlagSet)
+		if err != nil {
+			return err
+		}
+		path = uri
 	}
 
 	h := core.NewMessageHandler(newHandlerFunc())
@@ -44,13 +68,9 @@ func static(io.Writer) (err error) {
 	var handler http.Handler
 
 	if path == "" {
-		handler = apidoc.Static(staticDocs, staticStylesheet)
+		handler = apidoc.Static(core.URI(staticDocs), staticStylesheet)
 	} else {
-		uri, err := core.FileURI(path)
-		if err != nil {
-			return err
-		}
-		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, uri, staticContentType, staticDocs, staticStylesheet)
+		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, path, staticContentType, core.URI(staticDocs), staticStylesheet)
 		if err != nil {
 			return err
 		}

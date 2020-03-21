@@ -6,12 +6,20 @@ import (
 	"flag"
 	"testing"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/issue9/assert"
 )
 
 func TestGetPath(t *testing.T) {
 	a := assert.New(t)
 	fs := flag.NewFlagSet("test", flag.ContinueOnError)
-	a.Equal("./", getPath(fs))
-	a.Equal("./", getPath(nil))
+
+	curr, err := core.FileURI("./")
+	a.NotError(err).NotEmpty(curr)
+
+	uri, err := getPath(fs)
+	a.NotError(err).Equal(curr, uri)
+
+	uri, err = getPath(nil)
+	a.NotError(err).Equal(curr, uri)
 }

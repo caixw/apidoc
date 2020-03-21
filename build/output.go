@@ -31,7 +31,9 @@ type Output struct {
 	Type string `yaml:"type,omitempty"`
 
 	// 文档的保存路径
-	Path string `yaml:"path"`
+	//
+	// 仅适用本地路径
+	Path core.URI `yaml:"path"`
 
 	// 只输出该标签的文档，若为空，则表示所有。
 	Tags []string `yaml:"tags,omitempty"`
@@ -84,7 +86,6 @@ func (o *Output) Sanitize() error {
 	}
 
 	o.xml = strings.HasSuffix(o.Type, "+xml")
-
 	if o.xml {
 		if o.Style == "" {
 			o.Style = stylesheetURL
@@ -93,6 +94,16 @@ func (o *Output) Sanitize() error {
 		o.procInst = []string{
 			xml.Header,
 			`<?xml-stylesheet type="text/xsl" href="` + o.Style + `"?>`,
+		}
+	}
+
+	if len(o.Path) > 0 {
+		u, err := o.Path.Parse()
+		if err != nil {
+			return err
+		}
+		if u.Scheme != core.SchemeFile {
+			return core.NewLocaleError("", "path", 0, locale.ErrInvalidURIScheme)
 		}
 	}
 

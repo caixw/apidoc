@@ -5,6 +5,7 @@ package core
 import (
 	"net/http"
 	"net/http/httptest"
+	"runtime"
 	"testing"
 	"unicode/utf8"
 
@@ -18,7 +19,7 @@ func TestFileURI(t *testing.T) {
 
 	path := "/path/file"
 	uri, err := FileURI(path)
-	a.NotError(err).Equal(uri, fileScheme+"://"+path)
+	a.NotError(err).Equal(uri, SchemeFile+"://"+path)
 	file, err := uri.File()
 	a.NotError(err).Equal(path, file)
 
@@ -43,18 +44,41 @@ func TestURI_File(t *testing.T) {
 	a.Error(err).Empty(file)
 }
 
-func TestURI_isNoScheme(t *testing.T) {
+func TestURI_Append(t *testing.T) {
 	a := assert.New(t)
 
-	a.True(URI("").isNoScheme())
-	a.True(URI("a").isNoScheme())
-	a.True(URI("./file.php").isNoScheme())
-	a.True(URI("/file.php").isNoScheme())
-	a.False(URI("file:///file.php").isNoScheme())
+	uri := URI("file://root")
+	a.Equal(uri.Append(""), uri)
+	a.Equal(uri.Append("path"), "file://root/path")
+	a.Equal(uri.Append("/path"), "file://root/path")
+	a.Equal(uri.Append("//path"), "file://root//path")
 
-	a.True(URI("c:\\file.php").isNoScheme())
-	a.True(URI("c:\\").isNoScheme())
-	a.False(URI("c:/file.php").isNoScheme())
+	if runtime.GOOS == "windows" {
+		a.Equal(uri.Append("\\path"), "file://root\\path")
+	}
+
+	uri = URI("file://root/")
+	a.Equal(uri.Append(""), uri)
+	a.Equal(uri.Append("/path"), "file://root/path")
+	a.Equal(uri.Append("//path"), "file://root//path")
+
+	if runtime.GOOS == "windows" {
+		a.Equal(uri.Append("\\path"), "file://root/path")
+	}
+}
+
+func TestURI_IsNoScheme(t *testing.T) {
+	a := assert.New(t)
+
+	a.True(URI("").IsNoScheme())
+	a.True(URI("a").IsNoScheme())
+	a.True(URI("./file.php").IsNoScheme())
+	a.True(URI("/file.php").IsNoScheme())
+	a.False(URI("file:///file.php").IsNoScheme())
+
+	a.True(URI("c:\\file.php").IsNoScheme())
+	a.True(URI("c:\\").IsNoScheme())
+	a.False(URI("c:/file.php").IsNoScheme())
 }
 
 func TestURI_Exists(t *testing.T) {
@@ -156,5 +180,16 @@ func TestURI_ReadAll(t *testing.T) {
 	// 不存在的远程文件
 	uri = URI(srv.URL + "/not-exists")
 	data, err = uri.ReadAll(nil)
-	a.Error(err).Nil(data)
+	a.Nil(data).ErrorType(err, &HTTPError{})
+}
+
+func TestURI_WriteAll(t *testing.T) {
+	a := assert.New(t)
+
+	uri := URI(" :///path.php")
+	a.Error(uri.WriteAll([]byte("test")))
+
+	// 协议类型错误
+	uri = URI("https:///path.php")
+	a.Error(uri.WriteAll([]byte("test")))
 }

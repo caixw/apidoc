@@ -86,7 +86,7 @@ func Test(h *core.MessageHandler, i ...*build.Input) {
 // 则可以直接传递空的 dir，表示采用内置的文档，否则指向指定的目录，
 // 如果指向了自定义的目录，需要保证目录结构和文件名与 /docs 相同。
 // stylesheet 则指定了是否需要根目录的内容，如果为 true，只会提供转换工具的代码。
-func Static(dir string, stylesheet bool) http.Handler {
+func Static(dir core.URI, stylesheet bool) http.Handler {
 	return docs.Handler(dir, stylesheet)
 }
 
@@ -100,7 +100,7 @@ func Static(dir string, stylesheet bool) http.Handler {
 // data 表示文档的实际内容，会添加 xml-stylesheet 指令，并指向当前的 apidoc.xsl；
 // contentType 表示文档的 Content-Type 报头值；
 // dir 和 stylesheet 则和 Static 相同。
-func View(status int, url string, data []byte, contentType, dir string, stylesheet bool) http.Handler {
+func View(status int, url string, data []byte, contentType string, dir core.URI, stylesheet bool) http.Handler {
 	data = addStylesheet(data)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == url {
@@ -120,7 +120,7 @@ func View(status int, url string, data []byte, contentType, dir string, styleshe
 // url 可以为空值，表示接受 path 的文件名部分作为其值。
 //
 // path 可以是远程文件，也可以是本地文件。
-func ViewFile(status int, url string, path core.URI, contentType, dir string, stylesheet bool) (http.Handler, error) {
+func ViewFile(status int, url string, path core.URI, contentType string, dir core.URI, stylesheet bool) (http.Handler, error) {
 	data, err := path.ReadAll(nil)
 	if err != nil {
 		return nil, err

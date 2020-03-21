@@ -10,8 +10,6 @@ package build
 
 import (
 	"bytes"
-	"io/ioutil"
-	"os"
 
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
@@ -33,7 +31,7 @@ func Build(h *core.MessageHandler, o *Output, i ...*Input) error {
 		return err
 	}
 
-	return ioutil.WriteFile(o.Path, buf.Bytes(), os.ModePerm)
+	return o.Path.WriteAll(buf.Bytes())
 }
 
 // Buffer 生成文档内容并返回

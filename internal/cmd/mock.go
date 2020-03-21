@@ -69,7 +69,7 @@ func initMock() {
 }
 
 func doMock(io.Writer) error {
-	uri, err := core.FileURI(getPath(mockFlagSet))
+	uri, err := getPath(mockFlagSet)
 	if err != nil {
 		return err
 	}

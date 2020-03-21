@@ -17,7 +17,7 @@ import (
 
 const fileHeader = "\n<!-- 该文件由工具自动生成，请勿手动修改！-->\n\n"
 
-var target = docs.Path("config.xml")
+var target = docs.Dir().Append("config.xml")
 
 type config struct {
 	XMLName struct{} `xml:"config"`
@@ -37,46 +37,45 @@ var defaultConfig = &config{
 	Languages: make([]string, 0, len(lang.Langs())),
 }
 
+func chkError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	for _, lang := range lang.Langs() {
 		defaultConfig.Languages = append(defaultConfig.Languages, lang.DisplayName)
 	}
 
 	data, err := xml.MarshalIndent(defaultConfig, "", "\t")
-	if err != nil {
-		panic(err)
-	}
+	chkError(err)
 
-	file, err := os.Create(target)
-	if err != nil {
-		panic(err)
-	}
+	path, err := target.File()
+	chkError(err)
+
+	file, err := os.Create(path)
+	chkError(err)
 	defer func() {
-		if err = file.Close(); err != nil {
-			panic(err)
-		}
+		err = file.Close()
+		chkError(err)
 	}()
 
 	w := bufio.NewWriter(file)
 
-	if _, err = w.WriteString(xml.Header); err != nil {
-		panic(err)
-	}
+	_, err = w.WriteString(xml.Header)
+	chkError(err)
 
-	if _, err = w.WriteString(fileHeader); err != nil {
-		panic(err)
-	}
+	_, err = w.WriteString(fileHeader)
+	chkError(err)
 
-	if _, err = w.Write(data); err != nil {
-		panic(err)
-	}
+	_, err = w.Write(data)
+	chkError(err)
 
 	// 统一代码风格，文件末尾加一空行。
-	if _, err = w.WriteString("\n"); err != nil {
-		panic(err)
-	}
+	_, err = w.WriteString("\n")
+	chkError(err)
 
-	if err = w.Flush(); err != nil {
-		panic(err)
-	}
+	err = w.Flush()
+	chkError(err)
 }

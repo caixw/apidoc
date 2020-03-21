@@ -11,12 +11,11 @@ import (
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/lang"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/internal/path"
 	"github.com/caixw/apidoc/v6/spec"
 )
 
 // DetectConfig 检测 wd 内容并生成 Config 实例
-func DetectConfig(wd string, recursive bool) (*Config, error) {
+func DetectConfig(wd core.URI, recursive bool) (*Config, error) {
 	inputs, err := detectInput(wd, recursive)
 	if err != nil {
 		return nil, err
@@ -25,15 +24,11 @@ func DetectConfig(wd string, recursive bool) (*Config, error) {
 		return nil, core.NewLocaleError("", "", 0, locale.ErrNotFoundSupportedLang)
 	}
 
-	for _, i := range inputs {
-		i.Dir = path.Rel(i.Dir, wd)
-	}
-
 	return &Config{
 		Version: spec.Version,
 		Inputs:  inputs,
 		Output: &Output{
-			Path: path.Rel(filepath.Join(wd, "apidoc.xml"), wd),
+			Path: "./apidoc.xml",
 		},
 		wd: wd,
 	}, nil
@@ -42,8 +37,12 @@ func DetectConfig(wd string, recursive bool) (*Config, error) {
 // 检测指定目录下的内容，并为其生成一个合适的 Input 实例。
 //
 // 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
-func detectInput(dir string, recursive bool) ([]*Input, error) {
-	exts, err := detectExts(dir, recursive)
+func detectInput(dir core.URI, recursive bool) ([]*Input, error) {
+	dirLocal, err := dir.File()
+	if err != nil {
+		return nil, err
+	}
+	exts, err := detectExts(dirLocal, recursive)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +53,7 @@ func detectInput(dir string, recursive bool) ([]*Input, error) {
 	for _, l := range langs {
 		opts = append(opts, &Input{
 			Lang:      l.Name,
-			Dir:       dir,
+			Dir:       "./",
 			Exts:      l.Exts,
 			Recursive: recursive,
 		})

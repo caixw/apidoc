@@ -21,6 +21,10 @@ func test(w io.Writer) error {
 	h := core.NewMessageHandler(newHandlerFunc())
 	defer h.Stop()
 
-	build2.LoadConfig(h, getPath(testFlagSet)).Test()
+	uri, err := getPath(testFlagSet)
+	if err != nil {
+		return err
+	}
+	build2.LoadConfig(h, uri).Test()
 	return nil
 }

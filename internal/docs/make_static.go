@@ -42,7 +42,12 @@ func main() {
 
 // NOTE: 隐藏文件不会被打包
 func pack() error {
-	fis, err := getFileInfos(docs.Dir())
+	dir, err := docs.Dir().File()
+	if err != nil {
+		return err
+	}
+
+	fis, err := getFileInfos(dir)
 	if err != nil {
 		return err
 	}

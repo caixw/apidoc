@@ -3,12 +3,19 @@
 package core
 
 import (
+	"net/http"
 	"strconv"
 
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
+
+// HTTPError 表示 HTTP 状态码的错误
+type HTTPError struct {
+	Code    int
+	Message string
+}
 
 // SyntaxError 表示语法错误信息
 //
@@ -19,6 +26,22 @@ type SyntaxError struct {
 	File    string
 	Line    int
 	Field   string
+}
+
+func (err HTTPError) Error() string {
+	return err.Message
+}
+
+// NewHTTPError 声明 HTTPError 实例
+func NewHTTPError(code int, msg string) *HTTPError {
+	if msg == "" {
+		msg = http.StatusText(code)
+	}
+
+	return &HTTPError{
+		Code:    code,
+		Message: msg,
+	}
 }
 
 func (err *SyntaxError) Error() string {
