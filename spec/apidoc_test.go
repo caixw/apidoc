@@ -251,27 +251,3 @@ func TestDoc_Sanitize(t *testing.T) {
 	}
 	a.Error(doc.Sanitize())
 }
-
-// 测试错误提示的行号是否正确
-func TestDoc_Rang(t *testing.T) {
-	a := assert.New(t)
-	doc := NewAPIDoc()
-	a.NotNil(doc)
-
-	data := []byte(`<apidoc version="x.0.1"></apidoc>`)
-	loc := core.Location{
-		Range: core.Range{Start: core.Position{Line: 11, Character: 12}},
-	}
-	err := doc.fromXML(&Block{Location: loc, Data: data})
-	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 11, Character: 12})
-
-	data = []byte(`<apidoc
-	
-	version="x.1.1">
-	</apidoc>`)
-	loc = core.Location{
-		Range: core.Range{Start: core.Position{Line: 12, Character: 21}},
-	}
-	err = doc.fromXML(&Block{Location: loc, Data: data})
-	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 14, Character: 1})
-}

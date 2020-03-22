@@ -7,8 +7,6 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-
-	"github.com/caixw/apidoc/v6/core"
 )
 
 func loadAPI(a *assert.Assertion) *API {
@@ -66,31 +64,4 @@ func TestAPI_UnmarshalXML(t *testing.T) {
 		<response type="number" summary="summary" />
 	</api>`
 	a.Error(doc.appendAPI(&Block{Data: []byte(data)}))
-}
-
-// 测试错误提示的行号是否正确
-func TestAPI_Rang(t *testing.T) {
-	a := assert.New(t)
-	doc := loadDoc(a)
-	loc := core.Location{
-		URI: "file:///file.php",
-		Range: core.Range{
-			Start: core.Position{
-				Line:      11,
-				Character: 22,
-			},
-			End: core.Position{},
-		},
-	}
-
-	data := []byte(`<api version="x.0.1"></api>`)
-	err := doc.appendAPI(&Block{Location: loc, Data: data})
-	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 11, Character: 27})
-
-	data = []byte(`<api version="0.1.1">
-
-	    <callback method="not-exists" />
-	</api>`)
-	err = doc.appendAPI(&Block{Location: loc, Data: data})
-	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 13, Character: 5})
 }

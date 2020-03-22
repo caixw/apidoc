@@ -13,7 +13,7 @@ import (
 
 	"github.com/issue9/cmdopt"
 	"github.com/issue9/term/colors"
-	xmessage "golang.org/x/text/message"
+	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
@@ -100,7 +100,7 @@ func printMessage(out io.Writer, color colors.Color, prefix, msg string) {
 	}
 }
 
-func buildUsage(key xmessage.Reference, v ...interface{}) cmdopt.DoFunc {
+func buildUsage(key message.Reference, v ...interface{}) cmdopt.DoFunc {
 	return func(w io.Writer) error {
 		_, err := fmt.Fprintln(w, locale.Sprintf(key, v...))
 		return err
