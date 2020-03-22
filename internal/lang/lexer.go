@@ -39,7 +39,7 @@ func NewLexer(data []byte, blocks []Blocker) (*Lexer, error) {
 		if size == 0 {
 			break
 		}
-		if r == utf8.RuneError {
+		if r == utf8.RuneError && size == 1 {
 			loc := core.Location{
 				Range: core.Range{
 					Start: p.Position,

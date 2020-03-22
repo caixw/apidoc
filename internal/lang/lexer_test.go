@@ -12,7 +12,24 @@ import (
 	"github.com/caixw/apidoc/v6/spec"
 )
 
-func TestLexer_Position(t *testing.T) {
+func TestNewLexer(t *testing.T) {
+	a := assert.New(t)
+
+	l, err := NewLexer([]byte("// doc"), cStyle)
+	a.NotError(err).
+		NotNil(l).
+		Equal(l.blocks, cStyle)
+
+	// 中间三个字节表示一个汉字
+	l, err = NewLexer([]byte{0b01001001, 0b11100111, 0b10011111, 0b10100101, 0b01110100}, cStyle)
+	a.NotError(err).NotNil(l)
+
+	// 中间三个字节表示一个汉字，编码错误
+	l, err = NewLexer([]byte{0b01001001, 0b01100111, 0b10011111, 0b10100101, 0b01110100}, cStyle)
+	a.Error(err).Nil(l)
+}
+
+func TestLexer_position(t *testing.T) {
 	a := assert.New(t)
 
 	l, err := NewLexer([]byte("l0\nl1\nl2\nl3\n"), nil)

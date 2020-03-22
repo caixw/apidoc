@@ -72,7 +72,7 @@ func Load(h *core.MessageHandler, path core.URI, servers map[string]string) (htt
 		if size == 0 {
 			break
 		}
-		if r == utf8.RuneError {
+		if r == utf8.RuneError && size == 1 {
 			loc := core.Location{
 				URI: path,
 				Range: core.Range{
