@@ -78,7 +78,7 @@ func (b *stringBlock) BeginFunc(l *Lexer) bool {
 func (b *stringBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 	for {
 		switch {
-		case l.AtEOF():
+		case l.atEOF:
 			return nil, nil, false
 		case (len(b.escape) > 0) && l.match(b.escape):
 			l.next(1)
@@ -130,7 +130,7 @@ func (b *multipleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 LOOP:
 	for {
 		switch {
-		case l.AtEOF(): // 没有找到结束符号，直接到达文件末尾
+		case l.atEOF: // 没有找到结束符号，直接到达文件末尾
 			return nil, nil, false
 		case l.match(b.end):
 			raw = append(raw, b.ends...)

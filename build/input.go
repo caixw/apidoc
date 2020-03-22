@@ -182,48 +182,5 @@ func (o *Input) parseFile(blocks chan spec.Block, h *core.MessageHandler, uri co
 		return
 	}
 
-	var block lang.Blocker
-	var pos core.Position
-	for {
-		if l.AtEOF() {
-			return
-		}
-
-		if block == nil {
-			if block, pos = l.Block(); block == nil { // 没有匹配的 block 了
-				return
-			}
-		}
-
-		raw, data, ok := block.EndFunc(l)
-		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
-			loc := core.Location{
-				URI: uri,
-				Range: core.Range{
-					Start: pos,
-					End:   l.Position(),
-				},
-			}
-			h.Error(core.Erro, core.NewLocaleError(loc, "", locale.ErrNotFoundEndFlag))
-			return
-		}
-
-		block = nil // 重置 block
-
-		if len(raw) == 0 {
-			continue
-		}
-
-		blocks <- spec.Block{
-			Location: core.Location{
-				URI: uri,
-				Range: core.Range{
-					Start: pos,
-					End:   l.Position(),
-				},
-			},
-			Data: data,
-			Raw:  raw,
-		}
-	} // end for
+	l.Parse(blocks, h, uri)
 }

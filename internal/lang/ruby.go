@@ -22,7 +22,7 @@ func newRubyMultipleComment(begin, end, preifx string) Blocker {
 
 // BeginFunc 实现 Blocker.BeginFunc
 func (b *rubyMultipleComment) BeginFunc(l *Lexer) bool {
-	return l.Position().Character == 0 && l.match(b.begin)
+	return l.position().Character == 0 && l.match(b.begin)
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
@@ -33,9 +33,9 @@ func (b *rubyMultipleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 LOOP:
 	for {
 		switch {
-		case l.AtEOF(): // 没有找到结束符号，直接到达文件末尾
+		case l.atEOF: // 没有找到结束符号，直接到达文件末尾
 			return nil, nil, false
-		case l.Position().Character == 0 && l.match(b.end):
+		case l.position().Character == 0 && l.match(b.end):
 			raw = append(raw, b.ends...)
 			break LOOP
 		default:

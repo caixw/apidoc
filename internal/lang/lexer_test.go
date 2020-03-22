@@ -8,6 +8,8 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/core/messagetest"
+	"github.com/caixw/apidoc/v6/spec"
 )
 
 func TestLexer_Position(t *testing.T) {
@@ -78,7 +80,7 @@ func TestLexer_match(t *testing.T) {
 	})
 }
 
-func TestLexer_Block(t *testing.T) {
+func TestLexer_block(t *testing.T) {
 	a := assert.New(t)
 
 	blocks := []Blocker{
@@ -109,7 +111,7 @@ mcomment2
 		blocks: blocks,
 	}
 
-	b, pos := l.Block() // scomment1
+	b, pos := l.block() // scomment1
 	a.NotNil(b)
 	a.Equal(pos, core.Position{Line: 0, Character: 0})
 	_, ok := b.(*singleComment)
@@ -119,7 +121,7 @@ mcomment2
 		Equal(string(raw), "// scomment1\n  // scomment2\n").
 		Equal(string(data), "   scomment1\n     scomment2\n")
 
-	b, pos = l.Block() // 中文1
+	b, pos = l.block() // 中文1
 	a.NotNil(b)
 	a.Equal(pos, core.Position{Line: 3, Character: 0})
 	_, ok = b.(*stringBlock)
@@ -127,7 +129,7 @@ mcomment2
 	_, _, err = b.EndFunc(l)
 	a.NotError(err)
 
-	b, pos = l.Block() // 中文2
+	b, pos = l.block() // 中文2
 	a.NotNil(b)
 	a.Equal(pos, core.Position{Line: 4, Character: 4})
 	_, ok = b.(*stringBlock)
@@ -135,7 +137,7 @@ mcomment2
 	_, _, err = b.EndFunc(l)
 	a.NotError(err)
 
-	b, pos = l.Block()
+	b, pos = l.block()
 	a.NotNil(b)
 	a.Equal(pos, core.Position{Line: 5, Character: 1})
 	_, ok = b.(*multipleComment)
@@ -147,7 +149,7 @@ mcomment2
 
 	/* 测试一段单行注释后紧跟 \n=pod 形式的多行注释，是否会出错 */
 
-	b, pos = l.Block() // scomment3,scomment4
+	b, pos = l.block() // scomment3,scomment4
 	a.NotNil(b)
 	a.Equal(pos, core.Position{Line: 10, Character: 2})
 	_, ok = b.(*singleComment)
@@ -157,7 +159,7 @@ mcomment2
 		Equal(string(raw), "// scomment3\n// scomment4\n").
 		Equal(string(data), "   scomment3\n   scomment4\n")
 
-	b, pos = l.Block() // mcomment3,mcomment4
+	b, pos = l.block() // mcomment3,mcomment4
 	a.NotNil(b)
 	a.Equal(pos, core.Position{Line: 12, Character: 0})
 	_, ok = b.(*rubyMultipleComment)
@@ -212,4 +214,53 @@ func TestLexer_delim(t *testing.T) {
 	l = &Lexer{data: []byte("123\n"), current: position{Offset: 1}}
 	a.Equal(string(l.delim('\n')), "23\n").
 		Equal(l.current.Offset, 4)
+}
+
+func TestLexer_Parse(t *testing.T) {
+	a := assert.New(t)
+
+	raw := `// <api method="GET">
+// <path path="/apis/gbk" />
+// <description>1223 中文 45 </description>
+// <server>test</server>
+// </api>
+`
+
+	blocks := make(chan spec.Block, 100)
+	erro, _, h := messagetest.MessageHandler()
+	l, err := NewLexer([]byte(raw), cStyle)
+	a.NotError(err).NotNil(l)
+	l.Parse(blocks, h, core.URI("./testdata/gbk.php"))
+	h.Stop()
+	close(blocks)
+	a.Equal(1, len(blocks))
+	blk := <-blocks
+	a.Equal(string(blk.Data), `   <api method="GET">
+   <path path="/apis/gbk" />
+   <description>1223 中文 45 </description>
+   <server>test</server>
+   </api>
+`).
+		Equal(string(blk.Raw), raw).
+		Equal(blk.Location.Range, core.Range{
+			Start: core.Position{Line: 0, Character: 0},
+			End:   core.Position{Line: 5, Character: 0},
+		})
+	a.Empty(erro.String())
+
+	// 没有正确的结束符号
+	raw = `/* <api method="GET">
+// <path path="/apis/gbk" />
+// <description>1223 中文 45 </description>
+// <server>test</server>
+// </api>
+`
+	blocks = make(chan spec.Block, 100)
+	erro, _, h = messagetest.MessageHandler()
+	l, err = NewLexer([]byte(raw), cStyle)
+	a.NotError(err).NotNil(l)
+	l.Parse(blocks, h, core.URI("./testdata/gbk.php"))
+	h.Stop()
+	close(blocks)
+	a.NotEmpty(erro.String())
 }

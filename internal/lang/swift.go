@@ -42,7 +42,7 @@ func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 LOOP:
 	for {
 		switch {
-		case l.AtEOF():
+		case l.atEOF:
 			return nil, nil, false
 		case l.match(b.end):
 			raw = append(raw, b.ends...)

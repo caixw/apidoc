@@ -49,7 +49,7 @@ func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 func (b *phpDocBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 	for {
 		switch {
-		case l.AtEOF():
+		case l.atEOF:
 			return nil, nil, false
 		case l.match(b.token1):
 			return nil, nil, true
