@@ -14,7 +14,6 @@ import (
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/lang"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Input 指定输入内容的相关信息。
@@ -154,7 +153,7 @@ func recursivePath(o *Input) ([]core.URI, error) {
 // 分析 opt 中所指定的内容
 //
 // 分析后的内容推送至 blocks 中。
-func parseInputs(blocks chan spec.Block, h *core.MessageHandler, opt ...*Input) {
+func parseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) {
 	wg := &sync.WaitGroup{}
 	for _, o := range opt {
 		for _, path := range o.paths {
@@ -169,7 +168,7 @@ func parseInputs(blocks chan spec.Block, h *core.MessageHandler, opt ...*Input) 
 }
 
 // 分析 uri 指向的文件
-func (o *Input) parseFile(blocks chan spec.Block, h *core.MessageHandler, uri core.URI) {
+func (o *Input) parseFile(blocks chan core.Block, h *core.MessageHandler, uri core.URI) {
 	data, err := uri.ReadAll(o.encoding)
 	if err != nil {
 		h.Error(core.Erro, core.WithError(core.Location{URI: uri}, "", err))

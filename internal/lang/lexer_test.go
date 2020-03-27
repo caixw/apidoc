@@ -9,7 +9,6 @@ import (
 
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/core/messagetest"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 func TestLexer_block(t *testing.T) {
@@ -111,7 +110,7 @@ func TestLexer_Parse(t *testing.T) {
 // </api>
 `
 
-	blocks := make(chan spec.Block, 100)
+	blocks := make(chan core.Block, 100)
 	erro, _, h := messagetest.MessageHandler()
 	l, err := NewLexer([]byte(raw), cStyle)
 	a.NotError(err).NotNil(l)
@@ -140,7 +139,7 @@ func TestLexer_Parse(t *testing.T) {
 // <server>test</server>
 // </api>
 `
-	blocks = make(chan spec.Block, 100)
+	blocks = make(chan core.Block, 100)
 	erro, _, h = messagetest.MessageHandler()
 	l, err = NewLexer([]byte(raw), cStyle)
 	a.NotError(err).NotNil(l)

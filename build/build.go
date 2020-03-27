@@ -79,21 +79,21 @@ func parse(h *core.MessageHandler, i ...*Input) (*spec.APIDoc, error) {
 // 所有与解析有关的错误均通过 h 输出。
 // 如果是配置文件的错误，则通过 error 返回
 func Parse(doc *spec.APIDoc, h *core.MessageHandler, o ...*Input) {
-	parse2APIDoc(doc, h, func(blocks chan spec.Block) {
+	parse2APIDoc(doc, h, func(blocks chan core.Block) {
 		parseInputs(blocks, h, o...)
 	})
 }
 
 // ParseFile 分析 path 的内容，并将其中的文档解析至 doc
 func ParseFile(doc *spec.APIDoc, h *core.MessageHandler, uri core.URI, o *Input) {
-	parse2APIDoc(doc, h, func(blocks chan spec.Block) {
+	parse2APIDoc(doc, h, func(blocks chan core.Block) {
 		o.parseFile(blocks, h, uri)
 	})
 }
 
-func parse2APIDoc(doc *spec.APIDoc, h *core.MessageHandler, g func(chan spec.Block)) {
+func parse2APIDoc(doc *spec.APIDoc, h *core.MessageHandler, g func(chan core.Block)) {
 	done := make(chan struct{})
-	blocks := make(chan spec.Block, 50)
+	blocks := make(chan core.Block, 50)
 
 	go func() {
 		for block := range blocks {

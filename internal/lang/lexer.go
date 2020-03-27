@@ -6,7 +6,6 @@ import (
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/lexer"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
@@ -49,7 +48,7 @@ func (l *Lexer) block() (Blocker, core.Position) {
 // Parse 分析 l.data 的内容
 //
 // uri 表示在出错时，其返回的错误信息包含的定位信息。
-func (l *Lexer) Parse(blocks chan spec.Block, h *core.MessageHandler, uri core.URI) {
+func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler, uri core.URI) {
 	var block Blocker
 	var pos core.Position
 	for {
@@ -82,7 +81,7 @@ func (l *Lexer) Parse(blocks chan spec.Block, h *core.MessageHandler, uri core.U
 			continue
 		}
 
-		blocks <- spec.Block{
+		blocks <- core.Block{
 			Location: core.Location{
 				URI: uri,
 				Range: core.Range{

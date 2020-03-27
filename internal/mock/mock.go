@@ -99,7 +99,7 @@ func Load(h *core.MessageHandler, path core.URI, servers map[string]string) (htt
 
 	// 加载并验证
 	d := spec.NewAPIDoc()
-	if err = d.ParseBlock(&spec.Block{Location: loc, Data: data}); err != nil {
+	if err = d.ParseBlock(&core.Block{Location: loc, Data: data}); err != nil {
 		return nil, err
 	}
 

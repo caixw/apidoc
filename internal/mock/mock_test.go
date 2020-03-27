@@ -455,7 +455,7 @@ const testAPIDoc = `<apidoc version="1.0.1">
 func TestNew(t *testing.T) {
 	a := assert.New(t)
 	d := spec.NewAPIDoc()
-	a.NotError(d.ParseBlock(&spec.Block{Data: []byte(testAPIDoc)}))
+	a.NotError(d.ParseBlock(&core.Block{Data: []byte(testAPIDoc)}))
 
 	erro, _, h := messagetest.MessageHandler()
 	mock, err := New(h, d, map[string]string{"test": "/test"})

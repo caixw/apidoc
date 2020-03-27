@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/v6/core"
 )
 
 func loadAPI(a *assert.Assertion) *API {
@@ -15,7 +17,7 @@ func loadAPI(a *assert.Assertion) *API {
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	a.NotError(doc.appendAPI(&Block{Data: data}))
+	a.NotError(doc.appendAPI(&core.Block{Data: data}))
 	return doc.Apis[0]
 }
 
@@ -63,5 +65,5 @@ func TestAPI_UnmarshalXML(t *testing.T) {
 		</header>
 		<response type="number" summary="summary" />
 	</api>`
-	a.Error(doc.appendAPI(&Block{Data: []byte(data)}))
+	a.Error(doc.appendAPI(&core.Block{Data: []byte(data)}))
 }

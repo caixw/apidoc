@@ -4,7 +4,7 @@
 package spec
 
 import (
-	xmessage "golang.org/x/text/message"
+	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v6/core"
 )
@@ -16,14 +16,6 @@ const (
 	// MajorVersion 文档规范的主版本信息
 	MajorVersion = "v6"
 )
-
-// Block 表示原始的注释代码块
-type Block core.Block
-
-// 返回基于当前范围的错误信息
-func (b *Block) localeError(field string, key xmessage.Reference, v ...interface{}) error {
-	return core.NewLocaleError(b.Location, field, key, v...)
-}
 
 func fixedSyntaxError(loc core.Location, err error, field string) error {
 	if serr, ok := err.(*core.SyntaxError); ok {
@@ -40,6 +32,6 @@ func fixedSyntaxError(loc core.Location, err error, field string) error {
 	return core.WithError(loc, field, err)
 }
 
-func newSyntaxError(loc core.Location, field string, key xmessage.Reference, val ...interface{}) error {
+func newSyntaxError(loc core.Location, field string, key message.Reference, val ...interface{}) error {
 	return core.NewLocaleError(loc, field, key, val...)
 }
