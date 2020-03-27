@@ -5,6 +5,18 @@ package core
 
 import "fmt"
 
+// Block 表示原始的注释代码块
+type Block struct {
+	Location Location
+
+	// Raw 表示原始的注释代码内容
+	//
+	// Data 为处理之后的数据
+	// 为一个正常的 XML 格式内容，且长度应该与 Raw 相同。
+	Raw  []byte
+	Data []byte
+}
+
 // Position 用于描述字符在文件中的定位
 //
 // 兼容 LSP https://microsoft.github.io/language-server-protocol/specifications/specification-current/#position

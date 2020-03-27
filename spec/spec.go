@@ -18,16 +18,7 @@ const (
 )
 
 // Block 表示原始的注释代码块
-type Block struct {
-	Location core.Location
-
-	// Raw 表示原始的注释代码内容
-	//
-	// Data 为处理之后的数据
-	// 为一个正常的 XML 格式内容，且长度应该与 Raw 相同。
-	Raw  []byte
-	Data []byte
-}
+type Block core.Block
 
 // 返回基于当前范围的错误信息
 func (b *Block) localeError(field string, key xmessage.Reference, v ...interface{}) error {
