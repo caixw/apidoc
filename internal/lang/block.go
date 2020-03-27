@@ -67,7 +67,7 @@ func newMultipleComment(begin, end, prefix string) Blocker {
 
 // BeginFunc 实现 Blocker.BeginFunc
 func (b *stringBlock) BeginFunc(l *Lexer) bool {
-	return l.match(b.begin)
+	return l.Match(b.begin)
 }
 
 // 从 l 的当前位置开始往后查找，直到找到 b 中定义的 end 字符串，
@@ -78,21 +78,21 @@ func (b *stringBlock) BeginFunc(l *Lexer) bool {
 func (b *stringBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 	for {
 		switch {
-		case l.atEOF:
+		case l.AtEOF():
 			return nil, nil, false
-		case (len(b.escape) > 0) && l.match(b.escape):
-			l.next(1)
-		case l.match(b.end):
+		case (len(b.escape) > 0) && l.Match(b.escape):
+			l.Next(1)
+		case l.Match(b.end):
 			return nil, nil, true
 		default:
-			l.next(1)
+			l.Next(1)
 		}
 	} // end for
 }
 
 // BeginFunc 实现 Blocker.BeginFunc
 func (b *singleComment) BeginFunc(l *Lexer) bool {
-	return l.match(b.begin)
+	return l.Match(b.begin)
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
@@ -101,15 +101,15 @@ func (b *singleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 
 	for {
 		raw = append(raw, b.begins...)
-		bs := l.delim('\n')
+		bs := l.Delim('\n')
 		if bs == nil { // 找不到换行符，直接填充到末尾
-			raw = append(raw, l.all()...)
+			raw = append(raw, l.All()...)
 			break
 		}
 
 		raw = append(raw, bs...)
-		raw = append(raw, l.skipSpace()...)
-		if !l.match(b.begin) { // 不是接连着的注释块了，结束当前的匹配
+		raw = append(raw, l.Spaces()...)
+		if !l.Match(b.begin) { // 不是接连着的注释块了，结束当前的匹配
 			break
 		}
 	}
@@ -119,7 +119,7 @@ func (b *singleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 
 // BeginFunc 实现 Blocker.BeginFunc
 func (b *multipleComment) BeginFunc(l *Lexer) bool {
-	return l.match(b.begin)
+	return l.Match(b.begin)
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
@@ -130,13 +130,13 @@ func (b *multipleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 LOOP:
 	for {
 		switch {
-		case l.atEOF: // 没有找到结束符号，直接到达文件末尾
+		case l.AtEOF(): // 没有找到结束符号，直接到达文件末尾
 			return nil, nil, false
-		case l.match(b.end):
+		case l.Match(b.end):
 			raw = append(raw, b.ends...)
 			break LOOP
 		default:
-			bs := l.next(1)
+			bs := l.Next(1)
 			raw = append(raw, bs...)
 		}
 	} // end for

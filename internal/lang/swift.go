@@ -28,7 +28,7 @@ func newSwiftNestMCommentBlock(begin, end, prefix string) Blocker {
 }
 
 func (b *swiftNestMCommentBlock) BeginFunc(l *Lexer) bool {
-	if l.match(b.begin) {
+	if l.Match(b.begin) {
 		b.level++
 		return true
 	}
@@ -42,19 +42,19 @@ func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 LOOP:
 	for {
 		switch {
-		case l.atEOF:
+		case l.AtEOF():
 			return nil, nil, false
-		case l.match(b.end):
+		case l.Match(b.end):
 			raw = append(raw, b.ends...)
 			b.level--
 			if b.level == 0 {
 				break LOOP
 			}
-		case l.match(b.begin):
+		case l.Match(b.begin):
 			raw = append(raw, b.begins...)
 			b.level++
 		default:
-			raw = append(raw, l.next(1)...)
+			raw = append(raw, l.Next(1)...)
 		}
 	}
 

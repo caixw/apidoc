@@ -18,21 +18,21 @@ func newPascalStringBlock(symbol byte) Blocker {
 }
 
 func (b *pascalStringBlock) BeginFunc(l *Lexer) bool {
-	return l.match(b.symbol)
+	return l.Match(b.symbol)
 }
 
 func (b *pascalStringBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 LOOP:
 	for {
 		switch {
-		case l.atEOF:
+		case l.AtEOF():
 			return nil, nil, false
-		case l.match(b.escape): // 转义
+		case l.Match(b.escape): // 转义
 			continue LOOP
-		case l.match(b.symbol): // 结束
+		case l.Match(b.symbol): // 结束
 			return nil, nil, true
 		default:
-			l.next(1)
+			l.Next(1)
 		}
 	} // end for
 }

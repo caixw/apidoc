@@ -93,6 +93,15 @@ func (l *Lexer) Position() Position {
 	return l.current
 }
 
+// SetPosition 重新定位位置信息
+//
+// 执行此操作之后，Rollback 将失效，且 AtEOF 为 false
+func (l *Lexer) SetPosition(p Position) {
+	l.current = p
+	l.atEOF = false
+	l.prev.Offset = 0
+}
+
 // Spaces 获取之后的所有空格，不包含换行符
 //
 // NOTE: 可回滚该操作

@@ -24,8 +24,8 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(ok).
 		Equal(string(data), "   *123*123*  ").
 		Equal(string(raw), "/* *123*123**/")
-	bs := l.next(1)
-	a.Empty(bs).True(l.atEOF) // 到达末尾
+	bs := l.Next(1)
+	a.Empty(bs).True(l.AtEOF()) // 到达末尾
 
 	// 多行，最后一行没有任何内容，则不返回数据
 	l, err = NewLexer([]byte(`/**
@@ -58,8 +58,8 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(ok).
 		Equal(string(data), "  0/*1/*2*/*/  ").
 		Equal(string(raw), "/*0/*1/*2*/*/*/")
-	bs = l.next(1)
-	a.Empty(bs).True(l.atEOF) // 到达末尾
+	bs = l.Next(1)
+	a.Empty(bs).True(l.AtEOF()) // 到达末尾
 
 	// 多出 end 匹配项
 	l, err = NewLexer([]byte(`/*0/*1/*2*/*/*/*/`), nil)
@@ -69,7 +69,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.True(ok).
 		Equal(string(data), "  0/*1/*2*/*/  ").
 		Equal(string(raw), "/*0/*1/*2*/*/*/").
-		Equal(string(l.data[l.current.Offset:]), "*/")
+		Equal(string(l.All()), "*/")
 
 	// 缺少 end 匹配项
 	l, err = NewLexer([]byte(`/*0/*1/*2*/*/`), nil)
@@ -79,5 +79,5 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.False(ok).
 		Equal(len(data), 0).
 		Equal(len(raw), 0).
-		True(l.atEOF) // 到达末尾
+		True(l.AtEOF()) // 到达末尾
 }

@@ -19,28 +19,25 @@ func TestStringBlock(t *testing.T) {
 	b := newCStyleString()
 	a.NotNil(b)
 
-	l := &Lexer{
-		data: []byte(`"text"`),
-	}
+	l, err := NewLexer([]byte(`"text"`), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	raw, data, ok := b.EndFunc(l)
 	a.True(ok).Nil(data).Nil(raw)
 
 	// 带转义字符
-	l = &Lexer{
-		data: []byte(`"te\"xt"`),
-	}
+	l, err = NewLexer([]byte(`"te\"xt"`), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	raw, data, ok = b.EndFunc(l)
 	a.True(ok).
 		Nil(data).
 		Nil(raw).
-		Equal(l.current.Offset, len(l.data))
+		Equal(l.Position().Offset, len(`"te\"xt"`))
 
 	// 找不到匹配字符串
-	l = &Lexer{
-		data: []byte("text"),
-	}
+	l, err = NewLexer([]byte("text"), nil)
+	a.NotError(err).NotNil(l)
 	a.False(b.BeginFunc(l))
 	raw, data, ok = b.EndFunc(l)
 	a.False(ok).Nil(data).Nil(raw)
@@ -51,52 +48,47 @@ func TestSingleComment(t *testing.T) {
 	b := newCStyleSingleComment()
 	a.NotNil(b)
 
-	l := &Lexer{
-		data: []byte("//comment1\n"),
-	}
+	l, err := NewLexer([]byte("//comment1\n"), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, err := b.EndFunc(l)
-	a.NotError(err).
+	raw, data, ok := b.EndFunc(l)
+	a.True(ok).
 		Equal(string(data), "  comment1\n").
 		Equal(string(raw), "//comment1\n")
 
 	// 没有换行符，则自动取到结束符。
-	l = &Lexer{
-		data: []byte("// comment1"),
-	}
+	l, err = NewLexer([]byte("// comment1"), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, err = b.EndFunc(l)
-	a.NotError(err).
+	raw, data, ok = b.EndFunc(l)
+	a.True(ok).
 		Equal(string(data), "   comment1").
 		Equal(string(raw), "// comment1")
 
 	// 多行连续的单行注释，且 // 前带空格。
-	l = &Lexer{
-		data: []byte("//comment1\n//comment2\n // comment3"),
-	}
+	l, err = NewLexer([]byte("//comment1\n//comment2\n // comment3"), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, err = b.EndFunc(l)
-	a.NotError(err).
+	raw, data, ok = b.EndFunc(l)
+	a.True(ok).
 		Equal(string(data), "  comment1\n  comment2\n    comment3").
 		Equal(string(raw), "//comment1\n//comment2\n // comment3")
 
 	// 多行连续的单行注释，中间有空白行。
-	l = &Lexer{
-		data: []byte("//comment1\n//\n//comment2\n //comment3"),
-	}
+	l, err = NewLexer([]byte("//comment1\n//\n//comment2\n //comment3"), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, err = b.EndFunc(l)
-	a.NotError(err).
+	raw, data, ok = b.EndFunc(l)
+	a.True(ok).
 		Equal(string(data), "  comment1\n  \n  comment2\n   comment3").
 		Equal(string(raw), "//comment1\n//\n//comment2\n //comment3")
 
 	// 多行不连续的单行注释。
-	l = &Lexer{
-		data: []byte("//comment1\n // comment2\n\n //comment3\n"),
-	}
+	l, err = NewLexer([]byte("//comment1\n // comment2\n\n //comment3\n"), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, err = b.EndFunc(l)
-	a.NotError(err).
+	raw, data, ok = b.EndFunc(l)
+	a.True(ok).
 		Equal(string(data), "  comment1\n    comment2\n").
 		Equal(string(raw), "//comment1\n // comment2\n")
 }
@@ -105,9 +97,8 @@ func TestMultipleComment(t *testing.T) {
 	a := assert.New(t)
 	b := newCStyleMultipleComment()
 
-	l := &Lexer{
-		data: []byte("/*comment1\n*/"),
-	}
+	l, err := NewLexer([]byte("/*comment1\n*/"), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	raw, data, found := b.EndFunc(l)
 	a.True(found).
@@ -115,9 +106,8 @@ func TestMultipleComment(t *testing.T) {
 		Equal(string(raw), "/*comment1\n*/")
 
 	// 多个注释结束符
-	l = &Lexer{
-		data: []byte("/*comment1\ncomment2*/*/"),
-	}
+	l, err = NewLexer([]byte("/*comment1\ncomment2*/*/"), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	raw, data, found = b.EndFunc(l)
 	a.True(found).
@@ -125,9 +115,8 @@ func TestMultipleComment(t *testing.T) {
 		Equal(string(raw), "/*comment1\ncomment2*/")
 
 	// 空格开头
-	l = &Lexer{
-		data: []byte("/*\ncomment1\ncomment2*/*/"),
-	}
+	l, err = NewLexer([]byte("/*\ncomment1\ncomment2*/*/"), nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	raw, data, found = b.EndFunc(l)
 	a.True(found).
@@ -135,13 +124,13 @@ func TestMultipleComment(t *testing.T) {
 		Equal(string(raw), "/*\ncomment1\ncomment2*/")
 
 	// 没有注释结束符
-	l = &Lexer{
-		data: []byte("comment1"),
-	}
+	l, err = NewLexer([]byte("comment1"), nil)
+	a.NotError(err).NotNil(l)
 	a.False(b.BeginFunc(l))
 	raw, data, found = b.EndFunc(l)
 	a.False(found).Nil(data).Nil(raw)
 }
+
 func TestConvertSingleCommentToXML(t *testing.T) {
 	a := assert.New(t)
 	data := []struct {

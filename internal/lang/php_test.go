@@ -14,11 +14,13 @@ func TestPHPDocBlock(t *testing.T) {
 	a.NotNil(b)
 
 	// herodoc
-	l := &Lexer{data: []byte(`<<<EOF
+	data := []byte(`<<<EOF
 	xx
 	xx
 EOF
-`)}
+`)
+	l, err := NewLexer(data, nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok := b.(*phpDocBlock)
 	a.True(ok)
@@ -31,11 +33,13 @@ EOF
 		Nil(raw)
 
 	// nowdoc
-	l = &Lexer{data: []byte(`<<<'EOF'
+	data = []byte(`<<<'EOF'
 	xx
 	xx
 EOF
-`)}
+`)
+	l, err = NewLexer(data, nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok = b.(*phpDocBlock)
 	a.True(ok)
@@ -48,11 +52,13 @@ EOF
 		Nil(raw)
 
 	// nowdoc 验证结尾带分号的结束符
-	l = &Lexer{data: []byte(`<<<'EOF'
+	data = []byte(`<<<'EOF'
 	xx
 	xx
 EOF;
-`)}
+`)
+	l, err = NewLexer(data, nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok = b.(*phpDocBlock)
 	a.True(ok)
@@ -65,19 +71,23 @@ EOF;
 		Nil(data)
 
 	// 开始符号错误
-	l = &Lexer{data: []byte(`<<<
+	data = []byte(`<<<
 	xx
 	xx
 EOF;
-`)}
+`)
+	l, err = NewLexer(data, nil)
+	a.NotError(err).NotNil(l)
 	a.False(b.BeginFunc(l))
 
 	// nowdoc 不存在结束符
-	l = &Lexer{data: []byte(`<<<'EOF'
+	data = []byte(`<<<'EOF'
 	xx
 	xx
 EO
-`)}
+`)
+	l, err = NewLexer(data, nil)
+	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok = b.(*phpDocBlock)
 	a.True(ok)

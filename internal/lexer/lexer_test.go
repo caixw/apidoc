@@ -66,6 +66,15 @@ func TestLexer_Position(t *testing.T) {
 
 	l.Next(10)
 	a.True(l.AtEOF())
+
+	p := Position{
+		Position: core.Position{Line: 0, Character: 2},
+		Offset:   2,
+	}
+	l.SetPosition(p)
+	a.False(l.AtEOF()).
+		Equal(0, l.prev.Offset).
+		Equal(l.current, p)
 }
 
 func TestLexer_Match(t *testing.T) {
