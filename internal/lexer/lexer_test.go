@@ -151,6 +151,10 @@ func TestLexer_Delim(t *testing.T) {
 	l = &Lexer{data: []byte("123\n"), current: Position{Offset: 1}}
 	a.Equal(string(l.Delim('\n')), "23\n").
 		Equal(l.current.Offset, 4)
+	l.Rollback()
+	a.Equal(l.current.Offset, 1)
+	a.Equal(string(l.Delim('\n')), "23\n").
+		Equal(l.current.Offset, 4)
 }
 
 func TestLexer_All(t *testing.T) {
