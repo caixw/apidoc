@@ -140,20 +140,20 @@ func TestLexer_Delim(t *testing.T) {
 
 	l, err := New([]byte("123"))
 	a.NotError(err).NotNil(l)
-	a.Nil(l.Delim('\n'))
-	a.Nil(l.Delim(0))
+	a.Nil(l.Delim('\n', true))
+	a.Nil(l.Delim(0, true))
 
 	l, err = New([]byte("123\n"))
 	a.NotError(err).NotNil(l)
-	a.Equal(string(l.Delim('\n')), "123\n").
+	a.Equal(string(l.Delim('\n', true)), "123\n").
 		Equal(l.current.Offset, 4)
 
 	l = &Lexer{data: []byte("123\n"), current: Position{Offset: 1}}
-	a.Equal(string(l.Delim('\n')), "23\n").
+	a.Equal(string(l.Delim('\n', true)), "23\n").
 		Equal(l.current.Offset, 4)
 	l.Rollback()
 	a.Equal(l.current.Offset, 1)
-	a.Equal(string(l.Delim('\n')), "23\n").
+	a.Equal(string(l.Delim('\n', true)), "23\n").
 		Equal(l.current.Offset, 4)
 }
 
@@ -162,8 +162,9 @@ func TestLexer_DelimFunc(t *testing.T) {
 
 	l, err := New([]byte("123456789\n123456789\n123"))
 	a.NotError(err).NotNil(l)
-	a.Nil(l.DelimFunc(func(r rune) bool { return r == '\r' }, true))
-	a.Nil(l.Delim(0))
+	a.Nil(l.DelimFunc(func(r rune) bool { return r == 0 }, true))    // 不存在
+	a.Nil(l.DelimFunc(func(r rune) bool { return r == '\r' }, true)) // 不存在
+	a.Nil(l.DelimFunc(func(r rune) bool { return r == '\r' }, true)) // 不存在
 
 	bs := l.DelimFunc(func(r rune) bool { return r == '9' }, true)
 	a.Equal(string(bs), "123456789")

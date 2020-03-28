@@ -138,7 +138,7 @@ func (l *Lexer) DelimString(delim string) []byte {
 
 	delimRunes := []rune(delim)
 	if len(delimRunes) == 1 {
-		return l.Delim(delimRunes[0])
+		return l.Delim(delimRunes[0], true)
 	}
 
 	curr := l.current
@@ -151,7 +151,7 @@ func (l *Lexer) DelimString(delim string) []byte {
 		}
 
 		// 找到第一个匹配的字符
-		if l.Delim(delimRunes[0]) == nil {
+		if l.Delim(delimRunes[0], true) == nil {
 			return nil
 		}
 
@@ -165,12 +165,8 @@ func (l *Lexer) DelimString(delim string) []byte {
 // Delim 查找 delim 并返回到此字符的所有内容，未找到则返回空值
 //
 // NOTE: 可回滚此操作
-func (l *Lexer) Delim(delim rune) []byte {
-	if delim == 0 {
-		return nil
-	}
-
-	return l.DelimFunc(func(r rune) bool { return r == delim }, true)
+func (l *Lexer) Delim(delim rune, contain bool) []byte {
+	return l.DelimFunc(func(r rune) bool { return r == delim }, contain)
 }
 
 // DelimFunc 查找并返回当前位置到 f 确定位置的所有内容
