@@ -157,6 +157,35 @@ func TestLexer_Delim(t *testing.T) {
 		Equal(l.current.Offset, 4)
 }
 
+func TestLexer_DelimFunc(t *testing.T) {
+	a := assert.New(t)
+
+	l, err := New([]byte("123456789\n123456789\n123"))
+	a.NotError(err).NotNil(l)
+	a.Nil(l.DelimFunc(func(r rune) bool { return r == '\r' }, true))
+	a.Nil(l.Delim(0))
+
+	bs := l.DelimFunc(func(r rune) bool { return r == '9' }, true)
+	a.Equal(string(bs), "123456789")
+
+	bs = l.DelimFunc(func(r rune) bool { return r == '9' }, false)
+	a.Equal(string(bs), "\n12345678")
+
+	bs = l.DelimFunc(func(r rune) bool { return r == '9' }, false)
+	a.Empty(bs)
+
+	bs = l.DelimFunc(func(r rune) bool { return r == '9' }, true)
+	a.Equal(string(bs), "9")
+
+	bs = l.DelimFunc(func(r rune) bool { return r == '\n' }, false)
+	a.Empty(bs)
+	a.Equal(l.Position(), Position{Offset: 19, Position: core.Position{Line: 1, Character: 0}})
+
+	bs = l.DelimFunc(func(r rune) bool { return r == '\n' }, true)
+	a.Equal(string(bs), "\n")
+	a.Equal(l.Position(), Position{Offset: 20, Position: core.Position{Line: 2, Character: 0}})
+}
+
 func TestLexer_All(t *testing.T) {
 	a := assert.New(t)
 

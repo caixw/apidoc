@@ -170,15 +170,13 @@ func (l *Lexer) Delim(delim rune) []byte {
 		return nil
 	}
 
-	return l.DelimFunc(func(r rune) bool {
-		return r == delim
-	})
+	return l.DelimFunc(func(r rune) bool { return r == delim }, true)
 }
 
 // DelimFunc 查找并返回当前位置到 f 确定位置的所有内容
 //
 // NOTE: 可回滚此操作
-func (l *Lexer) DelimFunc(f func(r rune) bool) []byte {
+func (l *Lexer) DelimFunc(f func(r rune) bool, contain bool) []byte {
 	if f == nil {
 		panic("参数 f 不能为空")
 	}
@@ -202,6 +200,16 @@ func (l *Lexer) DelimFunc(f func(r rune) bool) []byte {
 
 		if f(r) {
 			found = true
+
+			if !contain {
+				p.Offset -= size
+				if r == '\n' {
+					p.Line--
+					p.Character = 0
+				} else {
+					p.Character--
+				}
+			}
 			break
 		}
 	}
