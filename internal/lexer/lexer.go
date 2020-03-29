@@ -74,13 +74,7 @@ func (l *Lexer) Match(word string) bool {
 		if size == 0 || r != w {
 			return false
 		}
-
-		p.Offset += size
-		p.Character++
-		if r == '\n' {
-			p.Line++
-			p.Character = 0
-		}
+		p = p.add(r, size)
 	}
 
 	l.prev = l.current
@@ -119,8 +113,7 @@ func (l *Lexer) Spaces() []byte {
 			break
 		}
 
-		p.Offset += size
-		p.Character++
+		p = p.add(r, size)
 	}
 
 	l.prev = l.current
@@ -186,25 +179,13 @@ func (l *Lexer) DelimFunc(f func(r rune) bool, contain bool) []byte {
 			l.atEOF = true
 			break
 		}
-
-		p.Offset += size
-		p.Character++
-		if r == '\n' {
-			p.Line++
-			p.Character = 0
-		}
+		p = p.add(r, size)
 
 		if f(r) {
 			found = true
 
 			if !contain {
-				p.Offset -= size
-				if r == '\n' {
-					p.Line--
-					p.Character = 0
-				} else {
-					p.Character--
-				}
+				p = p.sub(r, size)
 			}
 			break
 		}
@@ -231,13 +212,7 @@ func (l *Lexer) Next(n int) []byte {
 			l.atEOF = true
 			break
 		}
-
-		p.Offset += size
-		p.Character++
-		if r == '\n' {
-			p.Line++
-			p.Character = 0
-		}
+		p = p.add(r, size)
 	}
 
 	l.prev = l.current
@@ -257,13 +232,7 @@ func (l *Lexer) All() []byte {
 			l.atEOF = true
 			break
 		}
-
-		p.Offset += size
-		p.Character++
-		if r == '\n' {
-			p.Line++
-			p.Character = 0
-		}
+		p = p.add(r, size)
 	}
 
 	l.prev = l.current
@@ -271,7 +240,7 @@ func (l *Lexer) All() []byte {
 	return l.data[l.prev.Offset:]
 }
 
-// Rollback 回滚操作
+// Rollback 回滚上一次的操作
 func (l *Lexer) Rollback() {
 	if l.prev.Offset == 0 {
 		return
@@ -285,6 +254,8 @@ func (l *Lexer) Rollback() {
 }
 
 // Bytes 返回指定范围的内容
+//
+// NOTE: 并不会改变定位信息
 func (l *Lexer) Bytes(start, end int) []byte {
 	return l.data[start:end]
 }

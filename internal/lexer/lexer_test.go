@@ -94,6 +94,8 @@ func TestLexer_Match(t *testing.T) {
 	})
 
 	l.Rollback()
+	l.Rollback()
+	l.Rollback()
 	a.True(l.Match("中")).Equal(l.current, Position{
 		Position: core.Position{Line: 0, Character: 3},
 		Offset:   5,
@@ -165,6 +167,9 @@ func TestLexer_DelimFunc(t *testing.T) {
 	a.Nil(l.DelimFunc(func(r rune) bool { return r == 0 }, true))    // 不存在
 	a.Nil(l.DelimFunc(func(r rune) bool { return r == '\r' }, true)) // 不存在
 	a.Nil(l.DelimFunc(func(r rune) bool { return r == '\r' }, true)) // 不存在
+	a.Panic(func() {
+		l.DelimFunc(nil, false)
+	})
 
 	bs := l.DelimFunc(func(r rune) bool { return r == '9' }, true)
 	a.Equal(string(bs), "123456789")
