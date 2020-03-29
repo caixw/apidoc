@@ -88,6 +88,7 @@ path 表示需要展示的文档路径，为空表示没有需要展示的文档
 	ErrReadRemoteFile:        "读取远程文件 %s 时返回状态码 %d",
 	ErrInvalidUTF8Character:  "无效的 UTF8 字符",
 	ErrInvalidURIScheme:      "无效的 uri 协议",
+	ErrInvalidXML:            "无效的 XML 文档",
 
 	// logs
 	InfoPrefix:    "[信息] ",
