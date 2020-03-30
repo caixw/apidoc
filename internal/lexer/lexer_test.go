@@ -125,10 +125,14 @@ func TestLexer_Spaces(t *testing.T) {
 	a.Empty(l.Spaces('\n'))
 	a.Equal(string(l.Next(1)), "\n")
 
-	l.Next(1)
-	a.Equal(1, len(l.Spaces('\n')))
+	a.Equal(l.Spaces('\t'), "  ")
 	l.Rollback()
-	a.Equal(1, len(l.Spaces('\n')))
+	a.Equal(2, len(l.Spaces(0)))
+
+	l.Rollback()
+	a.Equal(0, len(l.Spaces(' ')))
+	a.Equal(2, len(l.Spaces(0)))
+
 	a.Equal(string(l.Next(1)), "1")
 
 	l.Next(1)
