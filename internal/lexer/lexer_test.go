@@ -222,10 +222,16 @@ func TestLexer_DelimString(t *testing.T) {
 
 	l, err := New([]byte("1234567"))
 	a.NotError(err).NotNil(l)
-	a.Panic(func() { l.DelimString("") })
-	a.Equal(l.DelimString("45"), "12345").
+	a.Panic(func() { l.DelimString("", true) })
+
+	a.Equal(l.DelimString("45", true), "12345").
 		Equal(l.Position().Offset, 5)
-	a.Equal(l.DelimString("7"), "67").
+
+	l.Rollback()
+	a.Equal(l.DelimString("45", false), "123").
+		Equal(l.Position().Offset, 3)
+
+	a.Equal(l.DelimString("7", true), "4567").
 		Equal(l.Position().Offset, 7)
 	l.Next(1)
 	a.True(l.AtEOF())
@@ -233,18 +239,17 @@ func TestLexer_DelimString(t *testing.T) {
 	l, err = New([]byte("123444567\n8910"))
 	a.NotError(err).NotNil(l)
 
-	// 测试 Rollback 是否正常
-	a.Equal(l.DelimString("45"), "1234445").
+	a.Equal(l.DelimString("45", true), "1234445").
 		Equal(l.Position().Offset, 7)
 	l.Rollback()
 	a.Equal(0, l.Position().Offset)
-	a.Equal(l.DelimString("45"), "1234445").
+	a.Equal(l.DelimString("45", true), "1234445").
 		Equal(l.Position().Offset, 7)
 
-	a.Equal(l.DelimString("891"), "67\n891").
+	a.Equal(l.DelimString("891", true), "67\n891").
 		Equal(l.Position().Offset, 13)
-	a.Nil(l.DelimString("891")).
+	a.Nil(l.DelimString("891", true)).
 		Equal(l.Position().Offset, 13)
-	a.Nil(l.DelimString("891")).
+	a.Nil(l.DelimString("891", true)).
 		Equal(l.Position().Offset, 13)
 }

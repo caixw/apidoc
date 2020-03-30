@@ -123,8 +123,10 @@ func (l *Lexer) Spaces(exclude rune) []byte {
 
 // DelimString 查找 delim 并返回到此字符的所有内容，未找到则返回空值
 //
+// contain 表示是否包含 delim 本身，如果为 false，则返回内容不包含，且该字符串会退回至输入流中，等待下次被读取。
+//
 // NOTE: 可回滚此操作
-func (l *Lexer) DelimString(delim string) []byte {
+func (l *Lexer) DelimString(delim string, contain bool) []byte {
 	if len(delim) == 0 {
 		panic("参数 delim 不能为空值")
 	}
@@ -137,6 +139,9 @@ func (l *Lexer) DelimString(delim string) []byte {
 		}
 
 		if l.Match(delim) {
+			if !contain {
+				l.Rollback()
+			}
 			l.prev = start
 			return l.Bytes(start.Offset, l.current.Offset)
 		}
@@ -152,6 +157,8 @@ func (l *Lexer) Delim(delim rune, contain bool) []byte {
 }
 
 // DelimFunc 查找并返回当前位置到 f 确定位置的所有内容
+//
+// contain 表示是否包含字符本身，如果为 false，则返回内容不包含，且该字符会退回至输入流中，等待下次被读取。
 //
 // NOTE: 可回滚此操作
 func (l *Lexer) DelimFunc(f func(r rune) bool, contain bool) []byte {
