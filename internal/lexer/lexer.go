@@ -93,7 +93,7 @@ func (l *Lexer) Position() Position {
 func (l *Lexer) SetPosition(p Position) {
 	l.current = p
 	l.atEOF = false
-	l.prev.Offset = 0
+	l.prev.Offset = -1
 }
 
 // Spaces 获取之后的所有空格，不包含换行符
@@ -126,32 +126,21 @@ func (l *Lexer) Spaces(exclude rune) []byte {
 // NOTE: 可回滚此操作
 func (l *Lexer) DelimString(delim string) []byte {
 	if len(delim) == 0 {
-		return nil
+		panic("参数 delim 不能为空值")
 	}
 
-	delimRunes := []rune(delim)
-	if len(delimRunes) == 1 {
-		return l.Delim(delimRunes[0], true)
-	}
-
-	curr := l.current
-	prev := l.prev
+	start := l.current
 	for {
 		if l.AtEOF() { // 一直到结束都未找到匹配项，则还原到起始位置
-			l.current = curr
-			l.prev = prev
+			l.current = start
 			return nil
 		}
 
-		// 找到第一个匹配的字符
-		if l.Delim(delimRunes[0], true) == nil {
-			return nil
+		if l.Match(delim) {
+			l.prev = start
+			return l.Bytes(start.Offset, l.current.Offset)
 		}
-
-		// 查看后续字符是否匹配，如果不匹配，则继续从当前位置开始查找
-		if l.Match(string(delimRunes[1:])) {
-			return l.Bytes(curr.Offset, l.current.Offset)
-		}
+		l.Next(1)
 	}
 }
 
@@ -242,7 +231,7 @@ func (l *Lexer) All() []byte {
 
 // Rollback 回滚上一次的操作
 func (l *Lexer) Rollback() {
-	if l.prev.Offset == 0 {
+	if l.prev.Offset == -1 {
 		return
 	}
 
@@ -250,7 +239,7 @@ func (l *Lexer) Rollback() {
 	l.current = l.prev
 	l.atEOF = false
 
-	l.prev.Offset = 0 // 清空 prev
+	l.prev.Offset = -1 // 清空 prev
 }
 
 // Bytes 返回指定范围的内容

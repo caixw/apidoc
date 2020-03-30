@@ -73,7 +73,7 @@ func TestLexer_Position(t *testing.T) {
 	}
 	l.SetPosition(p)
 	a.False(l.AtEOF()).
-		Equal(0, l.prev.Offset).
+		Equal(-1, l.prev.Offset).
 		Equal(l.current, p)
 }
 
@@ -222,7 +222,7 @@ func TestLexer_DelimString(t *testing.T) {
 
 	l, err := New([]byte("1234567"))
 	a.NotError(err).NotNil(l)
-	a.Nil(l.DelimString(""))
+	a.Panic(func() { l.DelimString("") })
 	a.Equal(l.DelimString("45"), "12345").
 		Equal(l.Position().Offset, 5)
 	a.Equal(l.DelimString("7"), "67").
@@ -232,8 +232,15 @@ func TestLexer_DelimString(t *testing.T) {
 
 	l, err = New([]byte("123444567\n8910"))
 	a.NotError(err).NotNil(l)
+
+	// 测试 Rollback 是否正常
 	a.Equal(l.DelimString("45"), "1234445").
 		Equal(l.Position().Offset, 7)
+	l.Rollback()
+	a.Equal(0, l.Position().Offset)
+	a.Equal(l.DelimString("45"), "1234445").
+		Equal(l.Position().Offset, 7)
+
 	a.Equal(l.DelimString("891"), "67\n891").
 		Equal(l.Position().Offset, 13)
 	a.Nil(l.DelimString("891")).
