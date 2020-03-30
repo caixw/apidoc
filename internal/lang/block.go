@@ -101,8 +101,8 @@ func (b *singleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 
 	for {
 		raw = append(raw, b.begins...)
-		bs := l.Delim('\n', true)
-		if bs == nil { // 找不到换行符，直接填充到末尾
+		bs, found := l.Delim('\n', true)
+		if !found { // 找不到换行符，直接填充到末尾
 			raw = append(raw, l.All()...)
 			break
 		}

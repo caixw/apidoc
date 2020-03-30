@@ -146,20 +146,25 @@ func TestLexer_Delim(t *testing.T) {
 
 	l, err := New([]byte("123"))
 	a.NotError(err).NotNil(l)
-	a.Nil(l.Delim('\n', true))
-	a.Nil(l.Delim(0, true))
+	val, found := l.Delim('\n', true)
+	a.False(found).Nil(val)
+	val, found = l.Delim(0, true)
+	a.False(found).Nil(val)
 
 	l, err = New([]byte("123\n"))
 	a.NotError(err).NotNil(l)
-	a.Equal(string(l.Delim('\n', true)), "123\n").
+	val, found = l.Delim('\n', true)
+	a.True(found).Equal(string(val), "123\n").
 		Equal(l.current.Offset, 4)
 
 	l = &Lexer{data: []byte("123\n"), current: Position{Offset: 1}}
-	a.Equal(string(l.Delim('\n', true)), "23\n").
+	val, found = l.Delim('\n', true)
+	a.True(found).Equal(string(val), "23\n").
 		Equal(l.current.Offset, 4)
 	l.Rollback()
 	a.Equal(l.current.Offset, 1)
-	a.Equal(string(l.Delim('\n', true)), "23\n").
+	val, found = l.Delim('\n', true)
+	a.True(found).Equal(string(val), "23\n").
 		Equal(l.current.Offset, 4)
 }
 
@@ -168,31 +173,34 @@ func TestLexer_DelimFunc(t *testing.T) {
 
 	l, err := New([]byte("123456789\n123456789\n123"))
 	a.NotError(err).NotNil(l)
-	a.Nil(l.DelimFunc(func(r rune) bool { return r == 0 }, true))    // 不存在
-	a.Nil(l.DelimFunc(func(r rune) bool { return r == '\r' }, true)) // 不存在
-	a.Nil(l.DelimFunc(func(r rune) bool { return r == '\r' }, true)) // 不存在
+
+	// 不存在
+	val, found := l.DelimFunc(func(r rune) bool { return r == 0 }, true)
+	a.False(found).Nil(val)
+	val, found = l.DelimFunc(func(r rune) bool { return r == '\r' }, true)
+	a.False(found).Nil(val)
 	a.Panic(func() {
 		l.DelimFunc(nil, false)
 	})
 
-	bs := l.DelimFunc(func(r rune) bool { return r == '9' }, true)
-	a.Equal(string(bs), "123456789")
+	bs, found := l.DelimFunc(func(r rune) bool { return r == '9' }, true)
+	a.True(found).Equal(string(bs), "123456789")
 
-	bs = l.DelimFunc(func(r rune) bool { return r == '9' }, false)
-	a.Equal(string(bs), "\n12345678")
+	bs, found = l.DelimFunc(func(r rune) bool { return r == '9' }, false)
+	a.True(found).Equal(string(bs), "\n12345678")
 
-	bs = l.DelimFunc(func(r rune) bool { return r == '9' }, false)
-	a.Empty(bs)
+	bs, found = l.DelimFunc(func(r rune) bool { return r == '9' }, false)
+	a.True(found).Empty(bs)
 
-	bs = l.DelimFunc(func(r rune) bool { return r == '9' }, true)
-	a.Equal(string(bs), "9")
+	bs, found = l.DelimFunc(func(r rune) bool { return r == '9' }, true)
+	a.True(found).Equal(string(bs), "9")
 
-	bs = l.DelimFunc(func(r rune) bool { return r == '\n' }, false)
-	a.Empty(bs)
+	bs, found = l.DelimFunc(func(r rune) bool { return r == '\n' }, false)
+	a.True(found).Empty(bs)
 	a.Equal(l.Position(), Position{Offset: 19, Position: core.Position{Line: 1, Character: 0}})
 
-	bs = l.DelimFunc(func(r rune) bool { return r == '\n' }, true)
-	a.Equal(string(bs), "\n")
+	bs, found = l.DelimFunc(func(r rune) bool { return r == '\n' }, true)
+	a.True(found).Equal(string(bs), "\n")
 	a.Equal(l.Position(), Position{Offset: 20, Position: core.Position{Line: 2, Character: 0}})
 }
 
@@ -224,14 +232,17 @@ func TestLexer_DelimString(t *testing.T) {
 	a.NotError(err).NotNil(l)
 	a.Panic(func() { l.DelimString("", true) })
 
-	a.Equal(l.DelimString("45", true), "12345").
+	val, found := l.DelimString("45", true)
+	a.True(found).Equal(val, "12345").
 		Equal(l.Position().Offset, 5)
 
 	l.Rollback()
-	a.Equal(l.DelimString("45", false), "123").
+	val, found = l.DelimString("45", false)
+	a.True(found).Equal(val, "123").
 		Equal(l.Position().Offset, 3)
 
-	a.Equal(l.DelimString("7", true), "4567").
+	val, found = l.DelimString("7", true)
+	a.True(found).Equal(val, "4567").
 		Equal(l.Position().Offset, 7)
 	l.Next(1)
 	a.True(l.AtEOF())
@@ -239,17 +250,22 @@ func TestLexer_DelimString(t *testing.T) {
 	l, err = New([]byte("123444567\n8910"))
 	a.NotError(err).NotNil(l)
 
-	a.Equal(l.DelimString("45", true), "1234445").
+	val, found = l.DelimString("45", true)
+	a.True(found).Equal(val, "1234445").
 		Equal(l.Position().Offset, 7)
 	l.Rollback()
 	a.Equal(0, l.Position().Offset)
-	a.Equal(l.DelimString("45", true), "1234445").
+	val, found = l.DelimString("45", true)
+	a.True(found).Equal(val, "1234445").
 		Equal(l.Position().Offset, 7)
 
-	a.Equal(l.DelimString("891", true), "67\n891").
+	val, found = l.DelimString("891", true)
+	a.True(found).Equal(val, "67\n891").
 		Equal(l.Position().Offset, 13)
-	a.Nil(l.DelimString("891", true)).
-		Equal(l.Position().Offset, 13)
-	a.Nil(l.DelimString("891", true)).
-		Equal(l.Position().Offset, 13)
+
+	val, found = l.DelimString("891", true)
+	a.False(found).Nil(val).Equal(l.Position().Offset, 13)
+
+	val, found = l.DelimString("891", true)
+	a.False(found).Nil(val).Equal(l.Position().Offset, 13)
 }
