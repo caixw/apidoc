@@ -113,27 +113,27 @@ func TestLexer_Spaces(t *testing.T) {
 	l, err := New([]byte("    0 \n  1 "))
 	a.NotError(err).NotNil(l)
 
-	l.Spaces()
+	l.Spaces('\n')
 	a.Equal(string(l.Next(1)), "0")
 
 	// 无法跳过换行符
 	l.Next(1)
-	l.Spaces()
-	l.Spaces()
-	l.Spaces()
-	l.Spaces()
-	a.Empty(l.Spaces())
+	l.Spaces('\n')
+	l.Spaces('\n')
+	l.Spaces('\n')
+	l.Spaces('\n')
+	a.Empty(l.Spaces('\n'))
 	a.Equal(string(l.Next(1)), "\n")
 
 	l.Next(1)
-	a.Equal(1, len(l.Spaces()))
+	a.Equal(1, len(l.Spaces('\n')))
 	l.Rollback()
-	a.Equal(1, len(l.Spaces()))
+	a.Equal(1, len(l.Spaces('\n')))
 	a.Equal(string(l.Next(1)), "1")
 
 	l.Next(1)
-	l.Spaces()
-	l.Spaces()
+	l.Spaces('\n')
+	l.Spaces('\n')
 	a.Equal(l.current.Offset, len(l.data))
 }
 

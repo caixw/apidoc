@@ -108,7 +108,7 @@ func (b *singleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
 		}
 
 		raw = append(raw, bs...)
-		raw = append(raw, l.Spaces()...)
+		raw = append(raw, l.Spaces('\n')...)
 		if !l.Match(b.begin) { // 不是接连着的注释块了，结束当前的匹配
 			break
 		}

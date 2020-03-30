@@ -99,7 +99,7 @@ func (l *Lexer) SetPosition(p Position) {
 // Spaces 获取之后的所有空格，不包含换行符
 //
 // NOTE: 可回滚该操作
-func (l *Lexer) Spaces() []byte {
+func (l *Lexer) Spaces(exclude rune) []byte {
 	p := l.current
 
 	for {
@@ -109,7 +109,7 @@ func (l *Lexer) Spaces() []byte {
 			break
 		}
 
-		if r == '\n' || !unicode.IsSpace(r) { // 碰到换行符或是非空字符，则中止
+		if r == exclude || !unicode.IsSpace(r) { // 碰到换行符或是非空字符，则中止
 			break
 		}
 
