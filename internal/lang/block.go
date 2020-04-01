@@ -125,22 +125,13 @@ func (b *multipleComment) BeginFunc(l *Lexer) bool {
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
 func (b *multipleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
-	raw = append(make([]byte, 0, 200), b.begins...)
+	data, found := l.DelimString(b.end, true)
+	if !found { // 没有找到结束符号，直接到达文件末尾
+		return nil, nil, false
+	}
 
-LOOP:
-	for {
-		switch {
-		case l.AtEOF(): // 没有找到结束符号，直接到达文件末尾
-			return nil, nil, false
-		case l.Match(b.end):
-			raw = append(raw, b.ends...)
-			break LOOP
-		default:
-			bs := l.Next(1)
-			raw = append(raw, bs...)
-		}
-	} // end for
-
+	raw = make([]byte, 0, len(b.begins)+len(data))
+	raw = append(append(raw, b.begins...), data...)
 	return raw, convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
 }
 
