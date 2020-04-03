@@ -5,7 +5,7 @@ package token
 
 import "github.com/caixw/apidoc/v6/core"
 
-// Element 表示 XML 的元素
+// StartElement 表示 XML 的元素
 type StartElement struct {
 	core.Range
 	Name       String
