@@ -12,25 +12,31 @@ import (
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
-type parser struct {
+// Parser 代码块的解析器
+type Parser struct {
 	block *core.Block
 	l     *lexer.Lexer
 	err   error // 记录最后一次错误信息
 }
 
-func newParser(b *core.Block) (*parser, error) {
+// NewParser 声明新的 Parser 实例
+func NewParser(b *core.Block) (*Parser, error) {
 	l, err := lexer.New(b.Data)
 	if err != nil {
 		return nil, err
 	}
 
-	return &parser{
+	return &Parser{
 		block: b,
 		l:     l,
 	}, nil
 }
 
-func (p *parser) token() (interface{}, error) {
+// Token 返回下一个 token 对象
+//
+// token 可能的类型为 *StartElement、*EndElement、*Instruction、*Attribute、*CData、*Comment 和 *String。
+// 其中 *String 用于表示 XML 元素的内容。
+func (p *Parser) Token() (interface{}, error) {
 	if p.err != nil {
 		return nil, p.err
 	}
@@ -59,6 +65,8 @@ func (p *parser) token() (interface{}, error) {
 			ret, err = p.parseCData(pos)
 		case p.l.Match("/"):
 			ret, err = p.parseEndElement(pos)
+		case p.l.Match("!--"):
+			ret, err = p.parseComment(pos)
 		default:
 			ret, err = p.parseStartElement(pos)
 		}
@@ -71,7 +79,7 @@ func (p *parser) token() (interface{}, error) {
 	}
 }
 
-func (p *parser) parseContent() (*String, error) {
+func (p *Parser) parseContent() (*String, error) {
 	start := p.l.Position()
 
 	data, found := p.l.Delim('<', false)
@@ -85,7 +93,26 @@ func (p *parser) parseContent() (*String, error) {
 	}, nil
 }
 
-func (p *parser) parseStartElement(pos lexer.Position) (*StartElement, error) {
+func (p *Parser) parseComment(pos lexer.Position) (*Comment, error) {
+	start := p.l.Position()
+
+	data, found := p.l.DelimString("-->", false)
+	if !found {
+		return nil, p.newError(p.l.Position().Position, p.l.Position().Position, locale.ErrInvalidXML)
+	}
+	end := p.l.Position()
+	p.l.Next(3) // 跳过 --> 三个字符
+
+	return &Comment{
+		Range: p.fixRange(pos.Position, p.l.Position().Position),
+		Value: String{
+			Range: p.fixRange(start.Position, end.Position),
+			Value: string(data),
+		},
+	}, nil
+}
+
+func (p *Parser) parseStartElement(pos lexer.Position) (*StartElement, error) {
 	p.l.Spaces(0) // 跳过空格
 
 	start := p.l.Position()
@@ -121,7 +148,7 @@ func (p *parser) parseStartElement(pos lexer.Position) (*StartElement, error) {
 }
 
 // pos 表示当前元素的起始位置，包含了 < 元素
-func (p *parser) parseEndElement(pos lexer.Position) (*EndElement, error) {
+func (p *Parser) parseEndElement(pos lexer.Position) (*EndElement, error) {
 	// 名称开始的定位，传递过来的 pos 表示的 < 起始位置
 	start := p.l.Position()
 
@@ -142,7 +169,7 @@ func (p *parser) parseEndElement(pos lexer.Position) (*EndElement, error) {
 }
 
 // pos 表示当前元素的起始位置，包含了 < 元素
-func (p *parser) parseCData(pos lexer.Position) (*CData, error) {
+func (p *Parser) parseCData(pos lexer.Position) (*CData, error) {
 	start := p.l.Position()
 
 	value, found := p.l.DelimString("]]>", false)
@@ -162,7 +189,7 @@ func (p *parser) parseCData(pos lexer.Position) (*CData, error) {
 }
 
 // pos 表示当前元素的起始位置，包含了 < 元素
-func (p *parser) parseInstruction(pos lexer.Position) (*Instruction, error) {
+func (p *Parser) parseInstruction(pos lexer.Position) (*Instruction, error) {
 	name, nameRange := p.getName()
 	if len(name) == 0 {
 		return nil, p.newError(p.l.Position().Position, p.l.Position().Position, locale.ErrInvalidXML)
@@ -188,7 +215,7 @@ func (p *parser) parseInstruction(pos lexer.Position) (*Instruction, error) {
 	return nil, p.newError(p.l.Position().Position, p.l.Position().Position, locale.ErrInvalidXML)
 }
 
-func (p *parser) parseAttributes() (attrs []*Attribute, err error) {
+func (p *Parser) parseAttributes() (attrs []*Attribute, err error) {
 	for {
 		attr, err := p.parseAttribute()
 		if err != nil {
@@ -205,7 +232,7 @@ func (p *parser) parseAttributes() (attrs []*Attribute, err error) {
 	return attrs, nil
 }
 
-func (p *parser) parseAttribute() (*Attribute, error) {
+func (p *Parser) parseAttribute() (*Attribute, error) {
 	p.l.Spaces(0) // 忽略空格
 	pos, start := p.l.Position(), p.l.Position()
 
@@ -246,7 +273,7 @@ func (p *parser) parseAttribute() (*Attribute, error) {
 	return attr, nil
 }
 
-func (p *parser) getName() ([]byte, core.Range) {
+func (p *Parser) getName() ([]byte, core.Range) {
 	start := p.l.Position()
 
 	for {
@@ -271,7 +298,7 @@ func (p *parser) getName() ([]byte, core.Range) {
 	return p.l.Bytes(start.Offset, end.Offset), p.fixRange(start.Position, end.Position)
 }
 
-func (p *parser) fixRange(start, end core.Position) core.Range {
+func (p *Parser) fixRange(start, end core.Position) core.Range {
 	l := p.block.Location
 
 	if start.Line == 0 {
@@ -288,7 +315,7 @@ func (p *parser) fixRange(start, end core.Position) core.Range {
 	return core.Range{Start: start, End: end}
 }
 
-func (p *parser) newError(start, end core.Position, key message.Reference, v ...interface{}) error {
+func (p *Parser) newError(start, end core.Position, key message.Reference, v ...interface{}) error {
 	return core.NewLocaleError(core.Location{
 		URI:   p.block.Location.URI,
 		Range: p.fixRange(start, end),

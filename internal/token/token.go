@@ -44,3 +44,9 @@ type CData struct {
 	core.Range
 	Value String
 }
+
+// Comment 表示 XML 的注释
+type Comment struct {
+	core.Range
+	Value String
+}

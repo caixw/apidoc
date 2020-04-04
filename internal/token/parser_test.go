@@ -29,7 +29,8 @@ func TestParser_token(t *testing.T) {
 * <apidoc version="2.0">
 *	<title>标题</title>
 *	<desc type="html"><![CDATA[<h1>h1</h1>]]></desc>
-* </apidoc>`,
+* </apidoc>
+<!-- comment -->`,
 			elems: []interface{}{
 				&Instruction{
 					Range: core.Range{
@@ -267,13 +268,35 @@ func TestParser_token(t *testing.T) {
 					},
 				},
 
+				&String{
+					Range: core.Range{
+						Start: core.Position{Line: 15, Character: 11},
+						End:   core.Position{Line: 16, Character: 0},
+					},
+					Value: "\n",
+				},
+
+				&Comment{
+					Range: core.Range{
+						Start: core.Position{Line: 16, Character: 0},
+						End:   core.Position{Line: 16, Character: 16},
+					},
+					Value: String{
+						Range: core.Range{
+							Start: core.Position{Line: 16, Character: 4},
+							End:   core.Position{Line: 16, Character: 13},
+						},
+						Value: " comment ",
+					},
+				},
+
 				nil, nil,
 			}, // end elems
 		},
 	}
 
 	for _, item := range data {
-		p, err := newParser(&core.Block{
+		p, err := NewParser(&core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -285,7 +308,7 @@ func TestParser_token(t *testing.T) {
 			NotNil(p, "nil at %s", item.input)
 
 		for i, elem := range item.elems {
-			e, err := p.token()
+			e, err := p.Token()
 			a.NotError(err, "error %s at %d", err, i)
 			a.Equal(e, elem, "not equal at %s:%d\nv1=%+v\nv2=%+v", item.input, i, e, elem)
 		}
@@ -436,7 +459,7 @@ func TestParser_parseStartElement(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := newParser(&core.Block{
+		p, err := NewParser(&core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -514,7 +537,7 @@ func TestParser_parseEndElement(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := newParser(&core.Block{
+		p, err := NewParser(&core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -592,7 +615,7 @@ func TestParser_parseCData(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := newParser(&core.Block{
+		p, err := NewParser(&core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -778,7 +801,7 @@ func TestParser_parseInstruction(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := newParser(&core.Block{
+		p, err := NewParser(&core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -903,7 +926,7 @@ func TestParser_parseAttributes(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := newParser(&core.Block{
+		p, err := NewParser(&core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1111,7 +1134,7 @@ func TestParser_parseAttribute(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := newParser(&core.Block{
+		p, err := NewParser(&core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1140,7 +1163,7 @@ func TestParser_fixRange(t *testing.T) {
 		Line:      11,
 		Character: 22,
 	}
-	p := &parser{block: &core.Block{
+	p := &Parser{block: &core.Block{
 		Location: core.Location{Range: core.Range{Start: start}},
 	}}
 
