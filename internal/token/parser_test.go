@@ -8,7 +8,6 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/lexer"
 )
 
 func TestParser_token(t *testing.T) {
@@ -296,7 +295,7 @@ func TestParser_token(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(&core.Block{
+		p, err := NewParser(core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -459,7 +458,7 @@ func TestParser_parseStartElement(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(&core.Block{
+		p, err := NewParser(core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -470,7 +469,7 @@ func TestParser_parseStartElement(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		elem, err := p.parseStartElement(lexer.Position{})
+		elem, err := p.parseStartElement(p.l.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -537,7 +536,7 @@ func TestParser_parseEndElement(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(&core.Block{
+		p, err := NewParser(core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -548,7 +547,7 @@ func TestParser_parseEndElement(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		elem, err := p.parseEndElement(lexer.Position{})
+		elem, err := p.parseEndElement(p.l.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -615,7 +614,7 @@ func TestParser_parseCData(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(&core.Block{
+		p, err := NewParser(core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -626,7 +625,7 @@ func TestParser_parseCData(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		cdata, err := p.parseCData(lexer.Position{})
+		cdata, err := p.parseCData(p.l.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -801,7 +800,7 @@ func TestParser_parseInstruction(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(&core.Block{
+		p, err := NewParser(core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -812,7 +811,7 @@ func TestParser_parseInstruction(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		pi, err := p.parseInstruction(lexer.Position{})
+		pi, err := p.parseInstruction(p.l.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -926,7 +925,7 @@ func TestParser_parseAttributes(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(&core.Block{
+		p, err := NewParser(core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1134,7 +1133,7 @@ func TestParser_parseAttribute(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(&core.Block{
+		p, err := NewParser(core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1155,30 +1154,4 @@ func TestParser_parseAttribute(t *testing.T) {
 				Equal(attr, item.attr, "not equal at %s\nv1=%+v\nv2=%+v", item.input, attr, item.attr)
 		}
 	}
-}
-
-func TestParser_fixRange(t *testing.T) {
-	a := assert.New(t)
-	start := core.Position{
-		Line:      11,
-		Character: 22,
-	}
-	p := &Parser{block: &core.Block{
-		Location: core.Location{Range: core.Range{Start: start}},
-	}}
-
-	s := core.Position{}
-	e := core.Position{}
-	r := p.fixRange(s, e)
-	a.Equal(r, core.Range{Start: start, End: start})
-
-	s = core.Position{Line: 0, Character: 22}
-	e = core.Position{Line: 0, Character: 23}
-	r = p.fixRange(s, e)
-	a.Equal(r, core.Range{Start: core.Position{Line: 11, Character: 44}, End: core.Position{Line: 11, Character: 45}})
-
-	s = core.Position{Line: 11, Character: 22}
-	e = core.Position{Line: 12, Character: 22}
-	r = p.fixRange(s, e)
-	a.Equal(r, core.Range{Start: core.Position{Line: 22, Character: 22}, End: core.Position{Line: 23, Character: 22}})
 }

@@ -16,7 +16,7 @@ type Lexer struct {
 
 // NewLexer 声明 Lexer 实例
 func NewLexer(data []byte, blocks []Blocker) (*Lexer, error) {
-	l, err := lexer.New(data)
+	l, err := lexer.New(core.Block{Data: data})
 	if err != nil {
 		return nil, err
 	}

@@ -13,7 +13,7 @@ import (
 
 // Lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
 type Lexer struct {
-	data  []byte
+	core.Block
 	atEOF bool
 
 	// 分别表示当前和之前的定位，可以在某些可撤消的操作之前保存定位信息到 prev
@@ -21,12 +21,12 @@ type Lexer struct {
 }
 
 // New 声明 Lexer 实例
-func New(data []byte) (*Lexer, error) {
+func New(b core.Block) (*Lexer, error) {
 	// 以下代码主要保证内容都是合法的 utf8 编码，
 	// 这样后续的操作不用再判断每个 utf8.DecodeRune 的调用返回是否都正常。
-	p := Position{}
+	p := Position{Position: b.Location.Range.Start}
 	for {
-		r, size := utf8.DecodeRune(data[p.Offset:])
+		r, size := utf8.DecodeRune(b.Data[p.Offset:])
 		if size == 0 {
 			break
 		}
@@ -49,7 +49,9 @@ func New(data []byte) (*Lexer, error) {
 	}
 
 	return &Lexer{
-		data: data,
+		Block:   b,
+		current: Position{Position: b.Location.Range.Start},
+		prev:    Position{Position: b.Location.Range.Start},
 	}, nil
 }
 
@@ -70,7 +72,7 @@ func (l *Lexer) Match(word string) bool {
 	p := l.current
 
 	for _, w := range word {
-		r, size := utf8.DecodeRune(l.data[p.Offset:])
+		r, size := utf8.DecodeRune(l.Data[p.Offset:])
 		if size == 0 || r != w {
 			return false
 		}
@@ -103,7 +105,7 @@ func (l *Lexer) Spaces(exclude rune) []byte {
 	p := l.current
 
 	for {
-		r, size := utf8.DecodeRune(l.data[p.Offset:])
+		r, size := utf8.DecodeRune(l.Data[p.Offset:])
 		if size == 0 {
 			l.atEOF = true
 			break
@@ -170,7 +172,7 @@ func (l *Lexer) DelimFunc(f func(r rune) bool, contain bool) ([]byte, bool) {
 	found := false
 
 	for {
-		r, size := utf8.DecodeRune(l.data[p.Offset:])
+		r, size := utf8.DecodeRune(l.Data[p.Offset:])
 		if size == 0 {
 			l.atEOF = true
 			break
@@ -203,7 +205,7 @@ func (l *Lexer) Next(n int) []byte {
 	p := l.current
 
 	for i := 0; i < n; i++ {
-		r, size := utf8.DecodeRune(l.data[p.Offset:])
+		r, size := utf8.DecodeRune(l.Data[p.Offset:])
 		if size == 0 {
 			l.atEOF = true
 			break
@@ -223,7 +225,7 @@ func (l *Lexer) All() []byte {
 	p := l.current
 
 	for {
-		r, size := utf8.DecodeRune(l.data[p.Offset:])
+		r, size := utf8.DecodeRune(l.Data[p.Offset:])
 		if size == 0 {
 			l.atEOF = true
 			break
@@ -233,7 +235,7 @@ func (l *Lexer) All() []byte {
 
 	l.prev = l.current
 	l.current = p
-	return l.data[l.prev.Offset:]
+	return l.Data[l.prev.Offset:]
 }
 
 // Rollback 回滚上一次的操作
@@ -253,5 +255,5 @@ func (l *Lexer) Rollback() {
 //
 // NOTE: 并不会改变定位信息
 func (l *Lexer) Bytes(start, end int) []byte {
-	return l.data[start:end]
+	return l.Data[start:end]
 }

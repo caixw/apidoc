@@ -14,21 +14,19 @@ import (
 
 // Parser 代码块的解析器
 type Parser struct {
-	block *core.Block
-	l     *lexer.Lexer
-	err   error // 记录最后一次错误信息
+	l   *lexer.Lexer
+	err error // 记录最后一次错误信息
 }
 
 // NewParser 声明新的 Parser 实例
-func NewParser(b *core.Block) (*Parser, error) {
-	l, err := lexer.New(b.Data)
+func NewParser(b core.Block) (*Parser, error) {
+	l, err := lexer.New(b)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Parser{
-		block: b,
-		l:     l,
+		l: l,
 	}, nil
 }
 
@@ -89,7 +87,7 @@ func (p *Parser) parseContent() (*String, error) {
 
 	return &String{
 		Value: string(data),
-		Range: p.fixRange(start.Position, p.l.Position().Position),
+		Range: core.Range{Start: start.Position, End: p.l.Position().Position},
 	}, nil
 }
 
@@ -104,9 +102,9 @@ func (p *Parser) parseComment(pos lexer.Position) (*Comment, error) {
 	p.l.Next(3) // 跳过 --> 三个字符
 
 	return &Comment{
-		Range: p.fixRange(pos.Position, p.l.Position().Position),
+		Range: core.Range{Start: pos.Position, End: p.l.Position().Position},
 		Value: String{
-			Range: p.fixRange(start.Position, end.Position),
+			Range: core.Range{Start: start.Position, End: end.Position},
 			Value: string(data),
 		},
 	}, nil
@@ -123,7 +121,7 @@ func (p *Parser) parseStartElement(pos lexer.Position) (*StartElement, error) {
 
 	elem := &StartElement{
 		Name: String{
-			Range: p.fixRange(start.Position, p.l.Position().Position),
+			Range: core.Range{Start: start.Position, End: p.l.Position().Position},
 			Value: string(name),
 		},
 	}
@@ -135,12 +133,12 @@ func (p *Parser) parseStartElement(pos lexer.Position) (*StartElement, error) {
 	elem.Attributes = attrs
 
 	if p.l.Match("/>") {
-		elem.Range = p.fixRange(pos.Position, p.l.Position().Position)
+		elem.Range = core.Range{Start: pos.Position, End: p.l.Position().Position}
 		elem.Close = true
 		return elem, nil
 	}
 	if p.l.Match(">") {
-		elem.Range = p.fixRange(pos.Position, p.l.Position().Position)
+		elem.Range = core.Range{Start: pos.Position, End: p.l.Position().Position}
 		return elem, nil
 	}
 
@@ -160,9 +158,9 @@ func (p *Parser) parseEndElement(pos lexer.Position) (*EndElement, error) {
 	p.l.Next(1) // 去掉 > 符号
 
 	return &EndElement{
-		Range: p.fixRange(pos.Position, p.l.Position().Position),
+		Range: core.Range{Start: pos.Position, End: p.l.Position().Position},
 		Name: String{
-			Range: p.fixRange(start.Position, end.Position),
+			Range: core.Range{Start: start.Position, End: end.Position},
 			Value: string(name),
 		},
 	}, nil
@@ -180,9 +178,9 @@ func (p *Parser) parseCData(pos lexer.Position) (*CData, error) {
 	p.l.Next(3) // 去掉 ]]>
 
 	return &CData{
-		Range: p.fixRange(pos.Position, p.l.Position().Position),
+		Range: core.Range{Start: pos.Position, End: p.l.Position().Position},
 		Value: String{
-			Range: p.fixRange(start.Position, end.Position),
+			Range: core.Range{Start: start.Position, End: end.Position},
 			Value: string(value),
 		},
 	}, nil
@@ -208,7 +206,7 @@ func (p *Parser) parseInstruction(pos lexer.Position) (*Instruction, error) {
 	elem.Attributes = attrs
 
 	if p.l.Match("?>") {
-		elem.Range = p.fixRange(pos.Position, p.l.Position().Position)
+		elem.Range = core.Range{Start: pos.Position, End: p.l.Position().Position}
 		return elem, nil
 	}
 
@@ -264,11 +262,11 @@ func (p *Parser) parseAttribute() (*Attribute, error) {
 	}
 	end := p.l.Position().SubRune('"') // 不包含 " 符号
 	attr.Value = String{
-		Range: p.fixRange(pos.Position, end.Position),
+		Range: core.Range{Start: pos.Position, End: end.Position},
 		Value: string(p.l.Bytes(pos.Offset, end.Offset)),
 	}
 
-	attr.Range = p.fixRange(start.Position, p.l.Position().Position)
+	attr.Range = core.Range{Start: start.Position, End: p.l.Position().Position}
 
 	return attr, nil
 }
@@ -295,29 +293,12 @@ func (p *Parser) getName() ([]byte, core.Range) {
 
 	end := p.l.Position()
 
-	return p.l.Bytes(start.Offset, end.Offset), p.fixRange(start.Position, end.Position)
-}
-
-func (p *Parser) fixRange(start, end core.Position) core.Range {
-	l := p.block.Location
-
-	if start.Line == 0 {
-		start.Character += l.Range.Start.Character
-	}
-
-	if end.Line == 0 {
-		end.Character += l.Range.Start.Character
-	}
-
-	start.Line += l.Range.Start.Line
-	end.Line += l.Range.Start.Line
-
-	return core.Range{Start: start, End: end}
+	return p.l.Bytes(start.Offset, end.Offset), core.Range{Start: start.Position, End: end.Position}
 }
 
 func (p *Parser) newError(start, end core.Position, key message.Reference, v ...interface{}) error {
 	return core.NewLocaleError(core.Location{
-		URI:   p.block.Location.URI,
-		Range: p.fixRange(start, end),
+		URI:   p.l.Location.URI,
+		Range: core.Range{Start: start, End: end},
 	}, "", key, v...)
 }

@@ -13,54 +13,59 @@ import (
 func TestNewLexer(t *testing.T) {
 	a := assert.New(t)
 
-	l, err := New([]byte("// doc"))
+	l, err := New(core.Block{Data: []byte("// doc")})
 	a.NotError(err).NotNil(l)
 
 	// 中间三个字节表示一个汉字
-	l, err = New([]byte{0b01001001, 0b11100111, 0b10011111, 0b10100101, 0b01110100})
+	l, err = New(core.Block{Data: []byte{0b01001001, 0b11100111, 0b10011111, 0b10100101, 0b01110100}})
 	a.NotError(err).NotNil(l)
 
 	// 中间三个字节表示一个汉字，编码错误
-	l, err = New([]byte{0b01001001, 0b01100111, 0b10011111, 0b10100101, 0b01110100})
+	l, err = New(core.Block{Data: []byte{0b01001001, 0b01100111, 0b10011111, 0b10100101, 0b01110100}})
 	a.Error(err).Nil(l)
 }
 
 func TestLexer_Position(t *testing.T) {
 	a := assert.New(t)
 
-	l, err := New([]byte("l0\nl1\nl2\nl3\n"))
+	loc := core.Location{
+		Range: core.Range{
+			Start: core.Position{Line: 11, Character: 2},
+		},
+	}
+	l, err := New(core.Block{Data: []byte("l0\nl1\nl2\nl3\n"), Location: loc})
 	a.NotError(err).NotNil(l)
 
 	l.Next(3)
 	a.Equal(l.Position(), Position{
-		Position: core.Position{Line: 1, Character: 0},
+		Position: core.Position{Line: 12, Character: 0},
 		Offset:   3,
 	})
 
 	l.Next(4)
 	a.Equal(l.Position(), Position{
-		Position: core.Position{Line: 2, Character: 1},
+		Position: core.Position{Line: 13, Character: 1},
 		Offset:   7,
 	})
 
 	l.Next(3)
 	l.Next(3)
 	a.Equal(l.Position(), Position{
-		Position: core.Position{Line: 4, Character: 0},
+		Position: core.Position{Line: 15, Character: 0},
 		Offset:   12,
 	})
 
-	l, err = New([]byte("12中文ab"))
+	l, err = New(core.Block{Data: []byte("12中文ab"), Location: loc})
 	a.NotError(err).NotNil(l)
 	l.Next(2)
 	a.Equal(l.Position(), Position{
-		Position: core.Position{Line: 0, Character: 2},
+		Position: core.Position{Line: 11, Character: 4},
 		Offset:   2,
 	})
 
 	l.Next(2)
 	a.Equal(l.Position(), Position{
-		Position: core.Position{Line: 0, Character: 4},
+		Position: core.Position{Line: 11, Character: 6},
 		Offset:   8,
 	})
 
@@ -80,9 +85,8 @@ func TestLexer_Position(t *testing.T) {
 func TestLexer_Match(t *testing.T) {
 	a := assert.New(t)
 
-	l := &Lexer{
-		data: []byte("ab中\ncd"),
-	}
+	l, err := New(core.Block{Data: []byte("ab中\ncd")})
+	a.NotError(err).NotNil(l)
 
 	a.False(l.Match("")).Equal(0, l.current.Offset)
 	a.False(l.Match("b")).Equal(0, l.current.Offset)
@@ -101,7 +105,7 @@ func TestLexer_Match(t *testing.T) {
 		Offset:   5,
 	})
 
-	l.Next(len(l.data))
+	l.Next(len(l.Data))
 	a.False(l.Match("ab")).Equal(l.current, Position{
 		Position: core.Position{Line: 1, Character: 2},
 		Offset:   8,
@@ -110,7 +114,7 @@ func TestLexer_Match(t *testing.T) {
 
 func TestLexer_Spaces(t *testing.T) {
 	a := assert.New(t)
-	l, err := New([]byte("    0 \n  1 "))
+	l, err := New(core.Block{Data: []byte("    0 \n  1 ")})
 	a.NotError(err).NotNil(l)
 
 	l.Spaces('\n')
@@ -138,26 +142,26 @@ func TestLexer_Spaces(t *testing.T) {
 	l.Next(1)
 	l.Spaces('\n')
 	l.Spaces('\n')
-	a.Equal(l.current.Offset, len(l.data))
+	a.Equal(l.current.Offset, len(l.Data))
 }
 
 func TestLexer_Delim(t *testing.T) {
 	a := assert.New(t)
 
-	l, err := New([]byte("123"))
+	l, err := New(core.Block{Data: []byte("123")})
 	a.NotError(err).NotNil(l)
 	val, found := l.Delim('\n', true)
 	a.False(found).Nil(val)
 	val, found = l.Delim(0, true)
 	a.False(found).Nil(val)
 
-	l, err = New([]byte("123\n"))
+	l, err = New(core.Block{Data: []byte("123\n")})
 	a.NotError(err).NotNil(l)
 	val, found = l.Delim('\n', true)
 	a.True(found).Equal(string(val), "123\n").
 		Equal(l.current.Offset, 4)
 
-	l = &Lexer{data: []byte("123\n"), current: Position{Offset: 1}}
+	l = &Lexer{Block: core.Block{Data: []byte("123\n")}, current: Position{Offset: 1}}
 	val, found = l.Delim('\n', true)
 	a.True(found).Equal(string(val), "23\n").
 		Equal(l.current.Offset, 4)
@@ -171,7 +175,7 @@ func TestLexer_Delim(t *testing.T) {
 func TestLexer_DelimFunc(t *testing.T) {
 	a := assert.New(t)
 
-	l, err := New([]byte("123456789\n123456789\n123"))
+	l, err := New(core.Block{Data: []byte("123456789\n123456789\n123")})
 	a.NotError(err).NotNil(l)
 
 	// 不存在
@@ -207,11 +211,11 @@ func TestLexer_DelimFunc(t *testing.T) {
 func TestLexer_All(t *testing.T) {
 	a := assert.New(t)
 
-	l, err := New([]byte("123"))
+	l, err := New(core.Block{Data: []byte("123")})
 	a.NotError(err).NotNil(l)
 	a.Equal(l.All(), "123").True(l.AtEOF())
 
-	l, err = New([]byte("123\n456"))
+	l, err = New(core.Block{Data: []byte("123\n456")})
 	a.NotError(err).NotNil(l)
 	l.Next(1)
 	a.Equal(l.All(), "23\n456").True(l.AtEOF())
@@ -220,7 +224,7 @@ func TestLexer_All(t *testing.T) {
 func TestLexer_Bytes(t *testing.T) {
 	a := assert.New(t)
 
-	l, err := New([]byte("123"))
+	l, err := New(core.Block{Data: []byte("123")})
 	a.NotError(err).NotNil(l)
 	a.Equal(l.Bytes(1, 2), "2").False(l.AtEOF())
 }
@@ -228,7 +232,7 @@ func TestLexer_Bytes(t *testing.T) {
 func TestLexer_DelimString(t *testing.T) {
 	a := assert.New(t)
 
-	l, err := New([]byte("1234567"))
+	l, err := New(core.Block{Data: []byte("1234567")})
 	a.NotError(err).NotNil(l)
 	a.Panic(func() { l.DelimString("", true) })
 
@@ -247,7 +251,7 @@ func TestLexer_DelimString(t *testing.T) {
 	l.Next(1)
 	a.True(l.AtEOF())
 
-	l, err = New([]byte("123444567\n8910"))
+	l, err = New(core.Block{Data: []byte("123444567\n8910")})
 	a.NotError(err).NotNil(l)
 
 	val, found = l.DelimString("45", true)
