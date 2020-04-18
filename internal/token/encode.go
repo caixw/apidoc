@@ -31,10 +31,10 @@ func Encode(indent, name string, v interface{}) ([]byte, error) {
 		return nil, nil
 	}
 
-	n := newNode(name, rv)
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
 	e.Indent("", indent)
+	n := newNode(name, rv)
 
 	if err := n.encode(e); err != nil {
 		return nil, err
@@ -108,8 +108,7 @@ func (n *node) encodeElems(e *xml.Encoder, start xml.StartElement) (err error) {
 			continue
 		}
 
-		nn := newNode(v.name, v.Value)
-		if err := nn.encode(e); err != nil {
+		if err := newNode(v.name, v.Value).encode(e); err != nil {
 			return err
 		}
 	}
@@ -118,9 +117,7 @@ func (n *node) encodeElems(e *xml.Encoder, start xml.StartElement) (err error) {
 
 func (n *node) buildStartElement() (xml.StartElement, error) {
 	start := xml.StartElement{
-		Name: xml.Name{
-			Local: n.name,
-		},
+		Name: xml.Name{Local: n.name},
 		Attr: make([]xml.Attr, 0, len(n.attrs)),
 	}
 
@@ -129,10 +126,9 @@ func (n *node) buildStartElement() (xml.StartElement, error) {
 		if err != nil {
 			return xml.StartElement{}, err
 		}
+
 		start.Attr = append(start.Attr, xml.Attr{
-			Name: xml.Name{
-				Local: v.name,
-			},
+			Name:  xml.Name{Local: v.name},
 			Value: val,
 		})
 	}
@@ -143,9 +139,7 @@ func (n *node) buildStartElement() (xml.StartElement, error) {
 func getAttributeValue(elem reflect.Value) (string, error) {
 	if elem.CanInterface() && elem.Type().Implements(attrEncoderType) {
 		return elem.Interface().(AttrEncoder).EncodeXMLAttr()
-	}
-
-	if elem.CanAddr() {
+	} else if elem.CanAddr() {
 		pv := elem.Addr()
 		if pv.CanInterface() && pv.Type().Implements(attrEncoderType) {
 			return pv.Interface().(AttrEncoder).EncodeXMLAttr()
@@ -158,9 +152,7 @@ func getAttributeValue(elem reflect.Value) (string, error) {
 func getElementValue(elem reflect.Value) (string, error) {
 	if elem.CanInterface() && elem.Type().Implements(encoderType) {
 		return elem.Interface().(Encoder).EncodeXML()
-	}
-
-	if elem.CanAddr() {
+	} else if elem.CanAddr() {
 		pv := elem.Addr()
 		if pv.CanInterface() && pv.Type().Implements(encoderType) {
 			return pv.Interface().(Encoder).EncodeXML()
