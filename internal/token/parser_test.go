@@ -611,6 +611,39 @@ func TestParser_parseCData(t *testing.T) {
 				},
 			},
 		},
+		{ // cdata 转义
+			input: "<h1>]]]]><![CDATA[>\nxxx]]>",
+			cdata: &CData{
+				Range: core.Range{
+					Start: core.Position{Line: 11, Character: 22},
+					End:   core.Position{Line: 12, Character: 6},
+				},
+				Value: String{
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 12, Character: 3},
+					},
+					Value: "<h1>]]]]><![CDATA[>\nxxx",
+				},
+			},
+		},
+
+		{
+			input: "<h1>]]]]><![CDATA[>\n12]]]]><![CDATA[>34\nxxx]]>",
+			cdata: &CData{
+				Range: core.Range{
+					Start: core.Position{Line: 11, Character: 22},
+					End:   core.Position{Line: 13, Character: 6},
+				},
+				Value: String{
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 13, Character: 3},
+					},
+					Value: "<h1>]]]]><![CDATA[>\n12]]]]><![CDATA[>34\nxxx",
+				},
+			},
+		},
 	}
 
 	for _, item := range data {

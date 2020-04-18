@@ -12,6 +12,8 @@ import (
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
+const cdataEscape = "]]]]><![CDATA[>"
+
 // Parser 代码块的解析器
 type Parser struct {
 	l   *lexer.Lexer
@@ -171,11 +173,26 @@ func (p *Parser) parseEndElement(pos lexer.Position) (*EndElement, error) {
 // pos 表示当前元素的起始位置，包含了 < 元素
 func (p *Parser) parseCData(pos lexer.Position) (*CData, error) {
 	start := p.l.Position()
+	var value []byte
 
-	value, found := p.l.DelimString("]]>", false)
-	if !found {
-		return nil, p.NewError(pos.Position, p.l.Position().Position, locale.ErrInvalidXML)
+	for {
+		v, found := p.l.DelimString("]]>", false)
+		if !found {
+			return nil, p.NewError(pos.Position, p.l.Position().Position, locale.ErrInvalidXML)
+		}
+		value = append(value, v...)
+
+		curr := p.l.Position()
+		p.l.SetPosition(curr.SubRune(']').SubRune(']')) // 回滚两个字符，用于匹配转义内容
+		if p.l.Match(cdataEscape) {
+			value = append(value, cdataEscape[2:]...)
+			continue
+		}
+
+		p.l.SetPosition(curr)
+		break
 	}
+
 	end := p.l.Position()
 	p.l.Next(3) // 去掉 ]]>
 
