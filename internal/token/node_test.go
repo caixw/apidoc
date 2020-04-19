@@ -100,7 +100,7 @@ func TestNewNode(t *testing.T) {
 			elems: 1,
 		},
 		{
-			inputName: "attr1_elem2_cdata",
+			inputName: "attr1_cdata",
 			inputNode: &struct {
 				Attr1 int `apidoc:"attr1,attr"`
 				Cdata int `apidoc:",cdata"`
@@ -109,7 +109,7 @@ func TestNewNode(t *testing.T) {
 			cdata: true,
 		},
 		{
-			inputName: "attr1_elem2_anonymous",
+			inputName: "elem2",
 			inputNode: &struct {
 				anonymous
 				Elem2 int `apidoc:"elem2,elem"`
@@ -117,7 +117,15 @@ func TestNewNode(t *testing.T) {
 			attrs: 1,
 			elems: 2,
 		},
-		{
+		{ // 包含小字名称的字段
+			inputName: "elem1",
+			inputNode: &struct {
+				elem1 int `apidoc:"elem1,elem"`
+				Elem2 int `apidoc:"elem2,elem"`
+			}{},
+			elems: 1,
+		},
+		{ // 匿名字段小写不受影响
 			inputName: "attr1_elem2_anonymous",
 			inputNode: &struct {
 				*anonymous

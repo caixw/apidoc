@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"unicode"
 )
 
 const tagName = "apidoc"
@@ -64,6 +65,11 @@ func newNode(name string, rv reflect.Value) *node {
 			}
 			continue
 		}
+
+		if unicode.IsLower(rune(field.Name[0])) {
+			continue
+		}
+
 		name, node, omitempty := parseTag(field)
 		if name == "-" {
 			continue
