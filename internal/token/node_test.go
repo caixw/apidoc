@@ -45,6 +45,14 @@ func TestNewNode(t *testing.T) {
 			attrs: 2,
 		},
 		{
+			inputName: "attr1",
+			inputNode: &struct {
+				Attr1 int `apidoc:"-"`
+				Attr2 int `apidoc:"attr2,attr"`
+			}{},
+			attrs: 1,
+		},
+		{
 			inputName: "attr1_attr2_array",
 			inputNode: &struct {
 				Attr1 int   `apidoc:"attr1,attr"`
@@ -80,6 +88,16 @@ func TestNewNode(t *testing.T) {
 			}{},
 			attrs: 1,
 			elems: 2,
+		},
+		{
+			inputName: "attr1_elem1",
+			inputNode: &struct {
+				Attr1 int `apidoc:"attr1,attr"`
+				Elem1 int `apidoc:"-"`
+				Elem2 int `apidoc:"elem2,elem"`
+			}{},
+			attrs: 1,
+			elems: 1,
 		},
 		{
 			inputName: "attr1_elem2_cdata",
@@ -335,6 +353,12 @@ func TestParseTag(t *testing.T) {
 			inputTag:  ",content",
 			name:      "Field",
 			node:      contentNode,
+		},
+		{
+			inputName: "Field",
+			inputTag:  "-",
+			name:      "-",
+			node:      0,
 		},
 	}
 

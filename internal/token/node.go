@@ -65,6 +65,9 @@ func newNode(name string, rv reflect.Value) *node {
 			continue
 		}
 		name, node, omitempty := parseTag(field)
+		if name == "-" {
+			continue
+		}
 
 		v := getRealValue(rv.Field(i))
 		switch node {
@@ -153,6 +156,10 @@ func parseTag(field reflect.StructField) (string, nodeType, bool) {
 	tag := strings.TrimSpace(field.Tag.Get(tagName))
 	if tag == "" {
 		return field.Name, elemNode, false
+	}
+
+	if tag == "-" {
+		return "-", 0, false
 	}
 
 	props := strings.Split(tag, ",")
