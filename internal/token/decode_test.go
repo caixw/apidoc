@@ -3,165 +3,190 @@
 package token
 
 import (
-	"fmt"
 	"reflect"
-	"strconv"
 	"testing"
 
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
 )
-
-type (
-	attrDecodeObject struct {
-		ID int
-	}
-	attrDecodeInt int
-
-	decodeObject struct {
-		ID int
-	}
-	decodeInt int
-)
-
-var (
-	_ AttrDecoder = &attrDecodeObject{}
-	_ AttrDecoder = attrDecodeInt(5)
-
-	_ Decoder = &decodeObject{}
-	_ Decoder = decodeInt(5)
-)
-
-func (o *attrDecodeObject) DecodeXMLAttr(attr *Attribute) error {
-	v, err := strconv.Atoi(attr.Value.Value)
-	if err != nil {
-		return err
-	}
-	o.ID = v + 1
-	return nil
-}
-
-func (o attrDecodeInt) DecodeXMLAttr(attr *Attribute) error {
-	_, err := strconv.Atoi(attr.Value.Value)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *decodeObject) DecodeXML(p *Parser, start *StartElement) error {
-	for {
-		t, err := p.Token()
-		if err != nil {
-			return err
-		}
-
-		switch elem := t.(type) {
-		case *String:
-			v, err := strconv.Atoi(elem.Value)
-			if err != nil {
-				return p.WithError(elem.Start, elem.End, err)
-			}
-			o.ID = v
-		case *EndElement:
-			if elem.Name.Value != start.Name.Value {
-				return p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
-			}
-			return nil
-		default:
-			panic(fmt.Sprintf("无效的节点类型 %+v", t))
-		}
-	}
-}
-
-func (o decodeInt) DecodeXML(p *Parser, start *StartElement) error {
-	for {
-		t, err := p.Token()
-		if err != nil {
-			return err
-		}
-
-		switch elem := t.(type) {
-		case *String:
-			_, err := strconv.Atoi(elem.Value)
-			if err != nil {
-				return p.WithError(elem.Start, elem.End, err)
-			}
-		case *EndElement:
-			if elem.Name.Value != start.Name.Value {
-				return p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
-			}
-			return nil
-		default:
-			panic(fmt.Sprintf("无效的节点类型 %+v", t))
-		}
-	}
-}
 
 func TestDecode(t *testing.T) {
 	a := assert.New(t)
 
-	v := &anonymous{}
+	v := &struct {
+		Attr1 intTest `apidoc:"attr1,attr,usage"`
+		Elem1 intTest `apidoc:"elem1,elem,usage"`
+	}{}
 	b := `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
 	a.NotError(Decode(core.Block{Data: []byte(b)}, v))
-	a.Equal(v.Attr1, 5).
-		Equal(v.Elem1, 6)
+	attr1 := intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
+		Start: core.Position{Character: 8},
+		End:   core.Position{Character: 17},
+	}}}
+	elem1 := intTest{Value: 6, Base: Base{UsageKey: "usage", Range: core.Range{
+		Start: core.Position{Character: 18},
+		End:   core.Position{Character: 34},
+	}}}
+	a.Equal(v.Attr1, attr1).
+		Equal(v.Elem1, elem1)
 
 	// 数组，单个元素
 	v2 := &struct {
-		Attr1 int   `apidoc:"attr1,attr"`
-		Elem1 []int `apidoc:"elem1,elem"`
+		Attr1 intTest   `apidoc:"attr1,attr,usage"`
+		Elem1 []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
+	attr1 = intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
+		Start: core.Position{Character: 8},
+		End:   core.Position{Character: 17},
+	}}}
+	elem1 = intTest{Value: 6, Base: Base{UsageKey: "usage", Range: core.Range{
+		Start: core.Position{Character: 18},
+		End:   core.Position{Character: 34},
+	}}}
 	a.NotError(Decode(core.Block{Data: []byte(b)}, v2))
-	a.Equal(v2.Attr1, 5).
-		Equal(v2.Elem1, []int{6})
+	a.Equal(v2.Attr1, attr1).
+		Equal(v2.Elem1, []intTest{elem1})
 
 	// 数组，多个元素
 	v3 := &struct {
-		Attr1 int   `apidoc:"attr1,attr"`
-		Elem1 []int `apidoc:"elem1,elem"`
+		Attr1 intTest   `apidoc:"attr1,attr,usage"`
+		Elem1 []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1><elem1>7</elem1></apidoc>`
+	attr1 = intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
+		Start: core.Position{Character: 8},
+		End:   core.Position{Character: 17},
+	}}}
+	elem1 = intTest{Value: 6, Base: Base{UsageKey: "usage", Range: core.Range{
+		Start: core.Position{Character: 18},
+		End:   core.Position{Character: 34},
+	}}}
+	elem2 := intTest{Value: 7, Base: Base{UsageKey: "usage", Range: core.Range{
+		Start: core.Position{Character: 34},
+		End:   core.Position{Character: 50},
+	}}}
 	a.NotError(Decode(core.Block{Data: []byte(b)}, v3))
-	a.Equal(v3.Attr1, 5).
-		Equal(v3.Elem1, []int{6, 7})
+	a.Equal(v3.Attr1, attr1).
+		Equal(v3.Elem1, []intTest{elem1, elem2})
 
 	// content
 	v4 := &struct {
-		Content string `apidoc:",content"`
+		ID      intTest `apidoc:"attr1,attr,usage"`
+		Content String  `apidoc:",content"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
 	a.NotError(Decode(core.Block{Data: []byte(b)}, v4))
-	a.Equal(v4.Content, "5555")
+	a.Equal(v4.Content, String{Value: "5555", Range: core.Range{
+		Start: core.Position{Character: 18},
+		End:   core.Position{Character: 22},
+	}}).
+		Equal(v4.ID, intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
+			Start: core.Position{Character: 8},
+			End:   core.Position{Character: 17},
+		}}})
 
 	// cdata
 	v5 := &struct {
-		Cdata string `apidoc:",cdata"`
+		Cdata *CData `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5"><![CDATA[5555]]></apidoc>`
 	a.NotError(Decode(core.Block{Data: []byte(b)}, v5))
-	a.Equal(v5.Cdata, "5555")
+	a.Equal(v5.Cdata, &CData{
+		Value: String{Value: "5555", Range: core.Range{
+			Start: core.Position{Character: 27},
+			End:   core.Position{Character: 31},
+		}},
+		Range: core.Range{
+			Start: core.Position{Character: 18},
+			End:   core.Position{Character: 34},
+		},
+	})
 
 	// cdata 没有围绕 CDATA，则会被忽略
 	v6 := &struct {
-		Cdata string `apidoc:",cdata"`
+		Cdata CData `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
 	a.NotError(Decode(core.Block{Data: []byte(b)}, v6))
-	a.Empty(v6.Cdata)
+	a.Empty(v6.Cdata.Value.Value).True(v6.Cdata.IsEmpty())
 
 	v7 := &struct {
-		ID     int        `apidoc:"id,attr"`
-		Name   string     `apidoc:"name,elem"`
-		Object *anonymous `apidoc:"obj,elem"`
+		ID     *intTest    `apidoc:"id,attr,usage"`
+		Name   stringTest  `apidoc:"name,elem,usage"`
+		Object *objectTest `apidoc:"obj,elem,usage"`
 	}{}
-	b = `<apidoc id="11"><name>name</name><obj attr1="11"><elem1>11</elem1></obj></apidoc>`
+	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
 	a.NotError(Decode(core.Block{Data: []byte(b)}, v7))
-	a.Equal(v7.ID, 11).Equal(v7.Name, "name").
-		Equal(v7.Object, &anonymous{Attr1: 11, Elem1: 11})
+	a.Equal(v7.ID, &intTest{Value: 11, Base: Base{UsageKey: "usage", Range: core.Range{
+		Start: core.Position{Character: 8},
+		End:   core.Position{Character: 15},
+	}}}).
+		Equal(v7.Name, stringTest{Value: "name", Base: Base{UsageKey: "usage", Range: core.Range{
+			Start: core.Position{Character: 16},
+			End:   core.Position{Character: 33},
+		}}}).
+		Equal(v7.Object, &objectTest{
+			ID: intTest{
+				Value: 11,
+				Base: Base{UsageKey: "usage", Range: core.Range{
+					Start: core.Position{Character: 38},
+					End:   core.Position{Character: 45},
+				}},
+			},
+			Name: stringTest{
+				Value: "n",
+				Base: Base{UsageKey: "usage", Range: core.Range{
+					Start: core.Position{Character: 46},
+					End:   core.Position{Character: 60},
+				}},
+			},
+			Base: Base{UsageKey: "usage", Range: core.Range{
+				Start: core.Position{Character: 33},
+				End:   core.Position{Character: 66},
+			}},
+		})
+
+	// 多个根元素
+	b = `<apidoc attr="1"></apidoc><apidoc attr="1"></apidoc>`
+	a.Error(Decode(core.Block{Data: []byte(b)}, v7))
+
+	// 多个结束元素
+	b = `<apidoc attr="1"></apidoc></apidoc>`
+	a.Error(Decode(core.Block{Data: []byte(b)}, v7))
+
+	// 无效的属性值
+	v8 := &struct {
+		ID intTest `apidoc:"id,attr,usage"`
+	}{}
+	b = `<apidoc id="1xx"></apidoc></apidoc>`
+	a.Error(Decode(core.Block{Data: []byte(b)}, v8))
+
+	// StartElement.Close
+	v9 := &struct {
+		ID intTest `apidoc:"id,attr,usage"`
+	}{}
+	b = `<apidoc id="1" />`
+	a.NotError(Decode(core.Block{Data: []byte(b)}, v9))
+
+	// 不存在的元素名
+	v10 := &struct {
+		ID intTest `apidoc:"id,elem,usage"`
+	}{}
+	b = `<apidoc id="1"><elem>11</elem></apidoc>`
+	a.Panic(func() {
+		Decode(core.Block{Data: []byte(b)}, v10)
+	})
+
+	// 数组元素未实现 Decoder 接口
+	v11 := &struct {
+		Elem []int `apidoc:"elem,elem,usage"`
+	}{}
+	b = `<apidoc id="1"><elem>11</elem></apidoc>`
+	a.Panic(func() {
+		Decode(core.Block{Data: []byte(b)}, v11)
+	})
 }
 
 func TestObject_decodeAttributes(t *testing.T) {
@@ -171,8 +196,8 @@ func TestObject_decodeAttributes(t *testing.T) {
 	a.NotError(o.decodeAttributes(nil))
 
 	val := &struct {
-		ID   int    `apidoc:"id,attr"`
-		Name string `apidoc:"name,attr"`
+		ID   intTest    `apidoc:"id,attr,usage"`
+		Name stringTest `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val))
 	a.NotNil(o)
@@ -182,12 +207,12 @@ func TestObject_decodeAttributes(t *testing.T) {
 			{Name: String{Value: "id"}, Value: String{Value: "10"}},
 		},
 	})
-	a.NotError(err).Equal(val.ID, 10).Equal(val.Name, "name")
+	a.NotError(err).Equal(val.ID, intTest{Value: 10, Base: Base{UsageKey: "usage"}}).
+		Equal(val.Name, stringTest{Value: "name", Base: Base{UsageKey: "usage"}})
 
-	// 值不能正确转换
 	val = &struct {
-		ID   int    `apidoc:"id,attr"`
-		Name string `apidoc:"name,attr"`
+		ID   intTest    `apidoc:"id,attr,usage"`
+		Name stringTest `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val))
 	a.NotNil(o)
@@ -202,8 +227,8 @@ func TestObject_decodeAttributes(t *testing.T) {
 	// 带匿名成员
 	val2 := &struct {
 		anonymous
-		ID   int    `apidoc:"id,attr"`
-		Name string `apidoc:"name,attr"`
+		ID   intTest    `apidoc:"id,attr,usage"`
+		Name stringTest `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val2))
 	a.NotNil(o)
@@ -214,30 +239,15 @@ func TestObject_decodeAttributes(t *testing.T) {
 			{Name: String{Value: "attr1"}, Value: String{Value: "11"}},
 		},
 	})
-	a.NotError(err).Equal(val2.ID, 10).Equal(val2.Name, "name").Equal(val2.Attr1, 11)
-
-	// 测试 AttrDecoder
-	val3 := &struct {
-		ID   int               `apidoc:"id,attr"`
-		Name string            `apidoc:"name,attr"`
-		O    *attrDecodeObject `apidoc:"object,attr"`
-	}{}
-	o = newNode("root", reflect.ValueOf(val3))
-	a.NotNil(o)
-	err = o.decodeAttributes(&StartElement{
-		Attributes: []*Attribute{
-			{Name: String{Value: "name"}, Value: String{Value: "name"}},
-			{Name: String{Value: "id"}, Value: String{Value: "10"}},
-			{Name: String{Value: "object"}, Value: String{Value: "11"}},
-		},
-	})
-	a.NotError(err).Equal(val3.ID, 10).Equal(val3.Name, "name").Equal(val3.O.ID, 12)
+	a.NotError(err).
+		Equal(val2.ID, intTest{Value: 10, Base: Base{UsageKey: "usage"}}).
+		Equal(val2.Name, stringTest{Value: "name", Base: Base{UsageKey: "usage"}}).
+		Equal(val2.Attr1, intTest{Value: 11, Base: Base{UsageKey: "usage"}})
 
 	// 测试 AttrDecoder，返回错误
 	val4 := &struct {
-		ID   int               `apidoc:"id,attr"`
-		Name string            `apidoc:"name,attr"`
-		O    *attrDecodeObject `apidoc:"object,attr"`
+		ID   errIntTest `apidoc:"id,attr,usage"`
+		Name stringTest `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val4))
 	a.NotNil(o)
@@ -245,117 +255,25 @@ func TestObject_decodeAttributes(t *testing.T) {
 		Attributes: []*Attribute{
 			{Name: String{Value: "name"}, Value: String{Value: "name"}},
 			{Name: String{Value: "id"}, Value: String{Value: "10"}},
-			{Name: String{Value: "object"}, Value: String{Value: "11xx"}}, // 无法解析数值，返回错误
 		},
 	})
 	a.Error(err)
 
-	// 测试 AttrDecoder
+	// 未实现 AttrDecoder
 	val5 := &struct {
-		ID   int           `apidoc:"id,attr"`
-		Name string        `apidoc:"name,attr"`
-		Int  attrDecodeInt `apidoc:"int,attr"`
+		ID   int        `apidoc:"id,attr,usage"`
+		Name stringTest `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val5))
 	a.NotNil(o)
-	err = o.decodeAttributes(&StartElement{
-		Attributes: []*Attribute{
-			{Name: String{Value: "name"}, Value: String{Value: "name"}},
-			{Name: String{Value: "id"}, Value: String{Value: "10"}},
-			{Name: String{Value: "int"}, Value: String{Value: "11"}},
-		},
+	a.Panic(func() {
+		o.decodeAttributes(&StartElement{
+			Attributes: []*Attribute{
+				{Name: String{Value: "name"}, Value: String{Value: "name"}},
+				{Name: String{Value: "id"}, Value: String{Value: "10"}},
+			},
+		})
 	})
-	a.NotError(err).Equal(val5.ID, 10).Equal(val5.Name, "name").Equal(val5.Int, 0)
-
-	// 测试 AttrDecoder
-	val6 := &struct {
-		ID   int           `apidoc:"id,attr"`
-		Name string        `apidoc:"name,attr"`
-		Int  attrDecodeInt `apidoc:"int,attr"`
-	}{}
-	o = newNode("root", reflect.ValueOf(val6))
-	a.NotNil(o)
-	err = o.decodeAttributes(&StartElement{
-		Attributes: []*Attribute{
-			{Name: String{Value: "name"}, Value: String{Value: "name"}},
-			{Name: String{Value: "id"}, Value: String{Value: "10"}},
-			{Name: String{Value: "int"}, Value: String{Value: "11xxx"}}, // 无法解析数值，返回错误
-		},
-	})
-	a.Error(err)
-}
-
-func TestObject_decodeElements(t *testing.T) {
-	a := assert.New(t)
-
-	p, err := NewParser(core.Block{Data: []byte("<c>1</c>")})
-	a.NotError(err).NotNil(p)
-	obj := &struct {
-		Content string `apidoc:"c,content"`
-	}{}
-	node := newNode("root", reflect.ValueOf(obj))
-	a.NotError(node.decodeElements(p))
-	a.Equal(obj.Content, "1")
-
-	// 数组，多个元素
-	p, err = NewParser(core.Block{Data: []byte("<c>1</c><c>2</c>")})
-	a.NotError(err).NotNil(p)
-	obj2 := &struct {
-		Content []string `apidoc:"c,content"`
-	}{}
-	node = newNode("root", reflect.ValueOf(obj2))
-	a.NotError(node.decodeElements(p))
-	a.Equal(obj2.Content, []string{"1", "2"})
-
-	// 数组，单个元素
-	p, err = NewParser(core.Block{Data: []byte("<c>1</c>")})
-	a.NotError(err).NotNil(p)
-	obj2 = &struct {
-		Content []string `apidoc:"c,content"`
-	}{}
-	node = newNode("root", reflect.ValueOf(obj2))
-	a.NotError(node.decodeElements(p))
-	a.Equal(obj2.Content, []string{"1"})
-
-	// content
-	p, err = NewParser(core.Block{Data: []byte("<elem>1</elem><c>1</c><c>2</c>")})
-	a.NotError(err).NotNil(p)
-	obj3 := &struct {
-		Content []string `apidoc:"c,content"`
-	}{}
-	node = newNode("root", reflect.ValueOf(obj3))
-	a.NotError(node.decodeElements(p))
-	a.Equal(obj3.Content, []string{"1", "2"})
-
-	// CDATA
-	p, err = NewParser(core.Block{Data: []byte("<elem>1</elem><c>1</c><c>2</c><![CDATA[cdata]]>")})
-	a.NotError(err).NotNil(p)
-	obj4 := &struct {
-		CData string `apidoc:",cdata"`
-	}{}
-	node = newNode("root", reflect.ValueOf(obj4))
-	a.NotError(node.decodeElements(p))
-	a.Equal(obj4.CData, "cdata")
-
-	// 实现 Decoder 接口
-	p, err = NewParser(core.Block{Data: []byte("<elem>1</elem><c>1</c><c>2</c><![CDATA[cdata]]>")})
-	a.NotError(err).NotNil(p)
-	obj5 := &struct {
-		Content []*decodeObject `apidoc:"c,content"`
-	}{}
-	node = newNode("root", reflect.ValueOf(obj5))
-	a.NotError(node.decodeElements(p))
-	a.Equal(obj5.Content, []*decodeObject{{ID: 1}, {ID: 2}})
-
-	// 实现 Decoder 接口
-	p, err = NewParser(core.Block{Data: []byte("<elem>1</elem><c>1</c><![CDATA[cdata]]>")})
-	a.NotError(err).NotNil(p)
-	obj6 := &struct {
-		Elem []decodeInt `apidoc:"elem,elem"`
-	}{}
-	node = newNode("root", reflect.ValueOf(obj6))
-	a.NotError(node.decodeElements(p))
-	a.Equal(obj6.Elem, []decodeInt{0})
 }
 
 func TestFindEndElement(t *testing.T) {

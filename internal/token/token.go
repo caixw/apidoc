@@ -3,7 +3,12 @@
 // Package token 解析 xml 内容
 package token
 
-import "github.com/caixw/apidoc/v6/core"
+import (
+	"golang.org/x/text/message"
+
+	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/locale"
+)
 
 // StartElement 表示 XML 的元素
 type StartElement struct {
@@ -49,4 +54,21 @@ type CData struct {
 type Comment struct {
 	core.Range
 	Value String
+}
+
+// 这些常量对应 Base 中两个相关字段的名称
+const (
+	usageKeyName = "UsageKey"
+	rangeName    = "Range"
+)
+
+// Base 每一个 XML 节点必须包含的内容
+type Base struct {
+	core.Range
+	UsageKey message.Reference `apidoc:"-"`
+}
+
+// Usage 返回该节点的说明内容
+func (b *Base) Usage() string {
+	return locale.Sprintf(b.UsageKey)
 }

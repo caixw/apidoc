@@ -70,10 +70,10 @@ func (n *node) encode(e *xml.Encoder) error {
 		return e.EncodeElement(xml.CharData(chardata), start)
 	}
 
-	return n.encodeElems(e, start)
+	return n.encodeElements(e, start)
 }
 
-func (n *node) encodeElems(e *xml.Encoder, start xml.StartElement) (err error) {
+func (n *node) encodeElements(e *xml.Encoder, start xml.StartElement) (err error) {
 	if err = e.EncodeToken(start); err != nil {
 		return err
 	}
@@ -149,15 +149,25 @@ func getAttributeValue(elem reflect.Value) (string, error) {
 	return fmt.Sprint(elem.Interface()), nil
 }
 
+// 获取 CData 和 String 的编码内容，适用于 content 和 cdata 节点类型。
 func getElementValue(elem reflect.Value) (string, error) {
-	if elem.CanInterface() && elem.Type().Implements(encoderType) {
-		return elem.Interface().(Encoder).EncodeXML()
+	if elem.CanInterface() {
+		switch {
+		case elem.Type() == cdataType:
+			return elem.Interface().(CData).Value.Value, nil
+		case elem.Type() == contentType:
+			return elem.Interface().(String).Value, nil
+		}
 	} else if elem.CanAddr() {
-		pv := elem.Addr()
-		if pv.CanInterface() && pv.Type().Implements(encoderType) {
-			return pv.Interface().(Encoder).EncodeXML()
+		if pv := elem.Addr(); pv.CanInterface() {
+			switch {
+			case pv.Type() == cdataType:
+				return elem.Interface().(CData).Value.Value, nil
+			case pv.Type() == contentType:
+				return pv.Interface().(String).Value, nil
+			}
 		}
 	}
 
-	return fmt.Sprint(elem.Interface()), nil
+	panic(fmt.Sprintf("%s 只能是 CData 或是 String 类型", elem.Type()))
 }

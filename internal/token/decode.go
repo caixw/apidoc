@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/issue9/conv"
-
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
@@ -16,8 +14,9 @@ import (
 type Decoder interface {
 	// 从 p 中读取内容并实例化到当前对象中
 	//
-	// 必须要同时从 p 中读取相应的 EndElement 才能返回
-	DecodeXML(p *Parser, start *StartElement) error
+	// 必须要同时从 p 中读取相应的 EndElement 才能返回。
+	// end 表示 EndElement.End 的值。
+	DecodeXML(p *Parser, start *StartElement) (end core.Position, err error)
 }
 
 // AttrDecoder 实现从 attr 中解码内容到当前对象
@@ -52,9 +51,10 @@ func Decode(b core.Block, v interface{}) error {
 			if hasRoot { // 多个根元素
 				return p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
 			}
+			hasRoot = true
 
 			o := newNode(elem.Name.Value, reflect.ValueOf(v))
-			if err := o.decode(p, elem); err != nil {
+			if _, err := o.decode(p, elem); err != nil {
 				return err
 			}
 		case *EndElement:
@@ -63,13 +63,13 @@ func Decode(b core.Block, v interface{}) error {
 	}
 }
 
-func (n *node) decode(p *Parser, start *StartElement) error {
+func (n *node) decode(p *Parser, start *StartElement) (core.Position, error) {
 	if err := n.decodeAttributes(start); err != nil {
-		return err
+		return core.Position{}, err
 	}
 
 	if start.Close {
-		return nil
+		return core.Position{}, nil
 	}
 
 	return n.decodeElements(p)
@@ -88,105 +88,108 @@ func (n *node) decodeAttributes(start *StartElement) error {
 			continue
 		}
 
+		var impl bool
 		if item.CanInterface() && item.Type().Implements(attrDecoderType) {
 			if err := item.Interface().(AttrDecoder).DecodeXMLAttr(attr); err != nil {
 				return err
 			}
-			continue
+			impl = true
 		} else if item.CanAddr() {
 			pv := item.Addr()
 			if pv.CanInterface() && pv.Type().Implements(attrDecoderType) {
 				if err := pv.Interface().(AttrDecoder).DecodeXMLAttr(attr); err != nil {
 					return err
 				}
-				continue
+				impl = true
 			}
 		}
 
-		if err := conv.Value(attr.Value.Value, item.Value); err != nil {
-			return err
+		if !impl {
+			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name.Value))
 		}
+
+		initValue(item.Value, item.usage, attr.Start, attr.End)
 	}
 
 	return nil
 }
 
-func (n *node) decodeElements(p *Parser) error {
+func (n *node) decodeElements(p *Parser) (core.Position, error) {
 	for {
 		t, err := p.Token()
 		if err != nil {
-			return err
+			return core.Position{}, err
 		}
 		if t == nil {
-			return nil
+			return core.Position{}, nil
 		}
 
 		switch elem := t.(type) {
 		case *EndElement: // 找到当前对象的结束标签
 			if elem.Name.Value != n.name {
-				return p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
+				return core.Position{}, p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
 			}
-			return nil
+			return elem.End, nil
 		case *CData:
-			if !n.cdata.IsValid() {
-				break
-			}
-			if err := conv.Value(elem.Value.Value, n.cdata.Value); err != nil {
-				return err
+			if n.cdata.IsValid() {
+				n.cdata.Set(getRealValue(reflect.ValueOf(elem)))
+				initValue(n.cdata.Value, n.cdata.usage, elem.Start, elem.End)
 			}
 		case *String:
-			if !n.content.IsValid() {
-				break
-			}
-			if err := conv.Value(elem.Value, n.content.Value); err != nil {
-				return err
+			if n.content.IsValid() {
+				n.content.Set(getRealValue(reflect.ValueOf(elem)))
+				initValue(n.content.Value, n.content.usage, elem.Start, elem.End)
 			}
 		case *StartElement:
 			item, found := n.elem(elem.Name.Value)
-			if !found { // 当子元素不存在于 elems 时，就有可能是当作内容处理的
-				if !n.content.IsValid() {
-					if err := findEndElement(p, elem); err != nil {
-						return err
-					}
-					break
-					// panic(fmt.Sprintf("不存在的子元素 %s", elem.Name.Value))
-				}
-				item = n.content
+			if !found {
+				panic(fmt.Sprintf("不存在的子元素 %s", elem.Name.Value))
 			}
 
-			if err = n.decodeElement(p, elem, item); err != nil {
-				return err
+			if err = decodeElement(p, elem, item); err != nil {
+				return core.Position{}, err
 			}
 		}
 	} // end for
 }
 
-func (n *node) decodeElement(p *Parser, start *StartElement, v value) error {
+func decodeElement(p *Parser, start *StartElement, v value) error {
 	if v.CanInterface() && v.Type().Implements(decoderType) {
-		return v.Interface().(Decoder).DecodeXML(p, start)
+		end, err := v.Interface().(Decoder).DecodeXML(p, start)
+		if err != nil {
+			return err
+		}
+		initValue(v.Value, v.usage, start.Start, end)
+		return nil
 	} else if v.CanAddr() {
 		pv := v.Addr()
 		if pv.CanInterface() && pv.Type().Implements(decoderType) {
-			return pv.Interface().(Decoder).DecodeXML(p, start)
+			end, err := pv.Interface().(Decoder).DecodeXML(p, start)
+			if err != nil {
+				return err
+			}
+			initValue(v.Value, v.usage, start.Start, end)
+			return nil
 		}
 	}
 
-	if isScalar(v.Value) {
-		return decodeScalarElement(p, start, v.Value)
-	}
-
-	switch v.Kind() {
-	case reflect.Ptr, reflect.Func, reflect.Chan, reflect.Array:
-		panic(fmt.Sprintf("无效的 kind %s", v.Kind()))
-	case reflect.Slice:
-		return n.decodeSlice(p, start, v)
+	k := v.Kind()
+	switch {
+	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, isScalar(v.Value):
+		panic(fmt.Sprintf("%s 是无效的类型", v.Value.Type().Name()))
+	case k == reflect.Slice:
+		return decodeSlice(p, start, v)
 	default:
-		oo := newNode(start.Name.Value, v.Value)
-		return oo.decode(p, start)
+		end, err := newNode(start.Name.Value, v.Value).decode(p, start)
+		if err != nil {
+			return err
+		}
+		initValue(v.Value, v.usage, start.Start, end)
+		return nil
 	}
 }
 
-func (n *node) decodeSlice(p *Parser, start *StartElement, slice value) error {
+func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 	if start.Name.Value != slice.name {
 		return findEndElement(p, start)
 	}
@@ -198,60 +201,30 @@ func (n *node) decodeSlice(p *Parser, start *StartElement, slice value) error {
 		}
 	}
 
+	var end core.Position
 	if elem.CanInterface() && elem.Type().Implements(decoderType) {
-		if err := elem.Interface().(Decoder).DecodeXML(p, start); err != nil {
+		end, err = elem.Interface().(Decoder).DecodeXML(p, start)
+		if err != nil {
 			return err
 		}
 		goto RET
 	} else if elem.CanAddr() {
 		pv := elem.Addr()
 		if pv.CanInterface() && pv.Type().Implements(decoderType) {
-			if err := pv.Interface().(Decoder).DecodeXML(p, start); err != nil {
+			end, err = pv.Interface().(Decoder).DecodeXML(p, start)
+			if err != nil {
 				return err
 			}
 			goto RET
 		}
 	}
 
-	if isScalar(elem) {
-		if err := decodeScalarElement(p, start, elem); err != nil {
-			return err
-		}
-	} else {
-		if err := newNode(start.Name.Value, elem).decode(p, start); err != nil {
-			return err
-		}
-	}
+	panic(fmt.Sprintf("%s 必须实现 Decoder 接口", elem.Type().Name()))
 
 RET:
+	initValue(elem, slice.usage, start.Start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return nil
-}
-
-func decodeScalarElement(p *Parser, start *StartElement, v reflect.Value) error {
-	for {
-		t, err := p.Token()
-		if err != nil {
-			return err
-		}
-		if t == nil {
-			return nil
-		}
-
-		switch elem := t.(type) {
-		case *EndElement:
-			if elem.Name.Value != start.Name.Value {
-				return p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
-			}
-			return nil
-		case *String:
-			if err = conv.Value(elem.Value, v); err != nil {
-				return p.WithError(elem.Start, elem.End, err)
-			}
-		default:
-			return p.NewError(start.Start, start.End, locale.ErrInvalidXML)
-		}
-	}
 }
 
 // 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
@@ -278,5 +251,17 @@ func findEndElement(p *Parser, start *StartElement) error {
 			}
 			level--
 		}
+	}
+}
+
+func initValue(v reflect.Value, usage string, start, end core.Position) {
+	if v.Kind() != reflect.Struct {
+		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
+	}
+	v.FieldByName(rangeName).Set(reflect.ValueOf(core.Range{Start: start, End: end}))
+
+	// CDATA 和 content 节点类型的 usage 内容为空
+	if usage != "" {
+		v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
 	}
 }

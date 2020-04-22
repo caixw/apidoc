@@ -9,11 +9,6 @@ import (
 	"github.com/issue9/assert"
 )
 
-type anonymous struct {
-	Attr1 int `apidoc:"attr1,attr"`
-	Elem1 int `apidoc:"elem1,elem"`
-}
-
 func TestNewNode(t *testing.T) {
 	a := assert.New(t)
 
@@ -32,40 +27,40 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1",
 			inputNode: &struct {
-				Attr1 int `apidoc:"attr1,attr"`
+				Attr1 intTest `apidoc:"attr1,attr,usage"`
 			}{},
 			attrs: 1,
 		},
 		{
 			inputName: "attr2",
 			inputNode: &struct {
-				Attr1 int `apidoc:"attr1,attr"`
-				Attr2 int `apidoc:"attr2,attr"`
+				Attr1 intTest `apidoc:"attr1,attr,usage"`
+				Attr2 intTest `apidoc:"attr2,attr,usage"`
 			}{},
 			attrs: 2,
 		},
 		{
 			inputName: "attr1",
 			inputNode: &struct {
-				Attr1 int `apidoc:"-"`
-				Attr2 int `apidoc:"attr2,attr"`
+				Attr1 intTest `apidoc:"-"`
+				Attr2 intTest `apidoc:"attr2,attr,usage"`
 			}{},
 			attrs: 1,
 		},
 		{
 			inputName: "attr1_attr2_array",
 			inputNode: &struct {
-				Attr1 int   `apidoc:"attr1,attr"`
-				Attr2 []int `apidoc:"attr2,attr"`
+				Attr1 intTest   `apidoc:"attr1,attr,usage"`
+				Attr2 []intTest `apidoc:"attr2,attr,usage"`
 			}{},
 			attrs: 2,
 		},
 		{
 			inputName: "attr2_content",
 			inputNode: &struct {
-				Attr1   int `apidoc:"attr1,attr"`
-				Attr2   int `apidoc:"attr2,attr"`
-				Content int `apidoc:",content"`
+				Attr1   intTest `apidoc:"attr1,attr,usage"`
+				Attr2   intTest `apidoc:"attr2,attr,usage"`
+				Content String  `apidoc:",content,"`
 			}{},
 			attrs:   2,
 			content: true,
@@ -73,8 +68,8 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_elem1",
 			inputNode: &struct {
-				Attr1 int `apidoc:"attr1,attr"`
-				Elem1 int `apidoc:"elem1,elem"`
+				Attr1 intTest `apidoc:"attr1,attr,usage"`
+				Elem1 intTest `apidoc:"elem1,elem,usage"`
 			}{},
 			attrs: 1,
 			elems: 1,
@@ -82,9 +77,9 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_elem2",
 			inputNode: &struct {
-				Attr1 int `apidoc:"attr1,attr"`
-				Elem1 int `apidoc:"elem1,elem"`
-				Elem2 int `apidoc:"elem2,elem"`
+				Attr1 intTest `apidoc:"attr1,attr,usage"`
+				Elem1 intTest `apidoc:"elem1,elem,usage"`
+				Elem2 intTest `apidoc:"elem2,elem,usage"`
 			}{},
 			attrs: 1,
 			elems: 2,
@@ -92,9 +87,9 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_elem1",
 			inputNode: &struct {
-				Attr1 int `apidoc:"attr1,attr"`
-				Elem1 int `apidoc:"-"`
-				Elem2 int `apidoc:"elem2,elem"`
+				Attr1 intTest `apidoc:"attr1,attr,usage"`
+				Elem1 intTest `apidoc:"-"`
+				Elem2 intTest `apidoc:"elem2,elem,usage"`
 			}{},
 			attrs: 1,
 			elems: 1,
@@ -102,8 +97,8 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_cdata",
 			inputNode: &struct {
-				Attr1 int `apidoc:"attr1,attr"`
-				Cdata int `apidoc:",cdata"`
+				Attr1 intTest `apidoc:"attr1,attr,usage"`
+				Cdata *CData  `apidoc:",cdata"`
 			}{},
 			attrs: 1,
 			cdata: true,
@@ -112,7 +107,7 @@ func TestNewNode(t *testing.T) {
 			inputName: "elem2",
 			inputNode: &struct {
 				anonymous
-				Elem2 int `apidoc:"elem2,elem"`
+				Elem2 intTest `apidoc:"elem2,elem,usage"`
 			}{},
 			attrs: 1,
 			elems: 2,
@@ -120,8 +115,8 @@ func TestNewNode(t *testing.T) {
 		{ // 包含小字名称的字段
 			inputName: "elem1",
 			inputNode: &struct {
-				elem1 int `apidoc:"elem1,elem"`
-				Elem2 int `apidoc:"elem2,elem"`
+				elem1 intTest `apidoc:"elem1,elem,usage"`
+				Elem2 intTest `apidoc:"elem2,elem,usage"`
 			}{},
 			elems: 1,
 		},
@@ -129,7 +124,7 @@ func TestNewNode(t *testing.T) {
 			inputName: "attr1_elem2_anonymous",
 			inputNode: &struct {
 				*anonymous
-				Elem2 int `apidoc:"elem2,elem"`
+				Elem2 intTest `apidoc:"elem2,elem,usage"`
 			}{
 				anonymous: &anonymous{},
 			},
@@ -140,7 +135,7 @@ func TestNewNode(t *testing.T) {
 			inputName: "attr1_elem2_anonymous",
 			inputNode: &struct {
 				*anonymous
-				Elem2 *anonymous `apidoc:"elem2,elem"`
+				Elem2 *anonymous `apidoc:"elem2,elem,usage"`
 			}{
 				anonymous: &anonymous{},
 			},
@@ -170,7 +165,7 @@ func TestNewNode(t *testing.T) {
 
 	// 数组
 	o := newNode("empty", reflect.ValueOf(&struct {
-		Elem1 []int `apidoc:"elem1,elem"`
+		Elem1 []int `apidoc:"elem1,elem,usage"`
 	}{}))
 	a.Equal(1, len(o.elems))
 
@@ -192,63 +187,63 @@ func TestNewNode(t *testing.T) {
 	// 相同的 cdata
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			Attr2  int `apidoc:"attr1,attr"`
-			Cdata1 int `apidoc:",cdata"`
-			Cdata2 int `apidoc:",cdata"`
+			Attr2  int    `apidoc:"attr1,attr"`
+			Cdata1 *CData `apidoc:",cdata"`
+			Cdata2 *CData `apidoc:",cdata"`
 		}{}))
 	})
 
 	// 同时存在 cdata 和 content
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			Attr2   int `apidoc:"attr1,attr"`
-			Cdata1  int `apidoc:",cdata"`
-			Content int `apidoc:",content"`
+			Attr2   int     `apidoc:"attr1,attr"`
+			Cdata1  *CData  `apidoc:",cdata"`
+			Content *String `apidoc:",content"`
 		}{}))
 	})
 
 	// 相同的 content
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			Attr2 int `apidoc:"attr1,attr"`
-			C1    int `apidoc:",content"`
-			C2    int `apidoc:",content"`
+			Attr2 int    `apidoc:"attr1,attr"`
+			C1    String `apidoc:",content"`
+			C2    String `apidoc:",content"`
 		}{}))
 	})
 
 	// 同时存在 cdata 和 content
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			Attr2   int `apidoc:"attr1,attr"`
-			Content int `apidoc:",content"`
-			Cdata1  int `apidoc:",cdata"`
+			Attr2   int    `apidoc:"attr1,attr"`
+			Content String `apidoc:",content"`
+			Cdata1  CData  `apidoc:",cdata"`
 		}{}))
 	})
 
 	// 同时存在 cdata 和 elems
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			Attr2  int `apidoc:"attr1,attr"`
-			Elem1  int `apidoc:"elem1,elem"`
-			Cdata1 int `apidoc:",cdata"`
+			Attr2  int   `apidoc:"attr1,attr"`
+			Elem1  int   `apidoc:"elem1,elem"`
+			Cdata1 CData `apidoc:",cdata"`
 		}{}))
 	})
 
 	// 同时存在 content 和 elems
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			Attr2   int `apidoc:"attr1,attr"`
-			Elem1   int `apidoc:"elem1,elem"`
-			Content int `apidoc:",content"`
+			Attr2   int    `apidoc:"attr1,attr"`
+			Elem1   int    `apidoc:"elem1,elem"`
+			Content String `apidoc:",content"`
 		}{}))
 	})
 
 	// elems 同时与 content 和 cdata 存在
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			Attr2   int `apidoc:"attr1,attr"`
-			Content int `apidoc:",content"`
-			Elem1   int `apidoc:"elem1,elem"`
+			Attr2   int    `apidoc:"attr1,attr"`
+			Content String `apidoc:",content"`
+			Elem1   int    `apidoc:"elem1,elem"`
 		}{}))
 	})
 
@@ -285,38 +280,26 @@ func TestParseTag(t *testing.T) {
 	data := []*struct {
 		inputName string
 		inputTag  string
+
 		name      string
 		node      nodeType
+		usage     string
 		omitempty bool
 	}{
 		{
 			inputName: "Field",
-			name:      "Field",
-			node:      elemNode,
-		},
-		{ // 全部采用默认属性
-			inputName: "Field",
-			inputTag:  ",,",
-			name:      "Field",
-			node:      elemNode,
+			inputTag:  "field,attr,usage",
+
+			name:  "field",
+			node:  attrNode,
+			usage: "usage",
 		},
 		{
 			inputName: "Field",
-			inputTag:  "field",
+			inputTag:  "field,elem,usage",
 			name:      "field",
 			node:      elemNode,
-		},
-		{
-			inputName: "Field",
-			inputTag:  "field,attr",
-			name:      "field",
-			node:      attrNode,
-		},
-		{
-			inputName: "Field",
-			inputTag:  "field,elem",
-			name:      "field",
-			node:      elemNode,
+			usage:     "usage",
 		},
 		{
 			inputName: "Field",
@@ -326,47 +309,30 @@ func TestParseTag(t *testing.T) {
 		},
 		{
 			inputName: "Field",
-			inputTag:  "field,cdata,",
-			name:      "field",
-			node:      cdataNode,
-		},
-		{
-			inputName: "Field",
-			inputTag:  "field,cdata,omitempty",
-			name:      "field",
-			node:      cdataNode,
-			omitempty: true,
-		},
-		{
-			inputName: "Field",
-			inputTag:  "field,cdata,omitempty",
-			name:      "field",
-			node:      cdataNode,
-			omitempty: true,
-		},
-		{
-			inputName: "Field",
 			inputTag:  ",cdata",
 			name:      "Field",
 			node:      cdataNode,
 		},
 		{
 			inputName: "Field",
-			inputTag:  ",",
-			name:      "Field",
-			node:      elemNode,
+			inputTag:  "field,cdata,,omitempty",
+			name:      "field",
+			node:      cdataNode,
+			omitempty: true,
 		},
 		{
 			inputName: "Field",
-			inputTag:  ",content",
-			name:      "Field",
-			node:      contentNode,
+			inputTag:  "field,cdata,,omitempty",
+			name:      "field",
+			node:      cdataNode,
+			omitempty: true,
 		},
 		{
 			inputName: "Field",
 			inputTag:  "-",
 			name:      "-",
 			node:      0,
+			usage:     "",
 		},
 	}
 
@@ -376,12 +342,14 @@ func TestParseTag(t *testing.T) {
 			Tag:  reflect.StructTag(tagName + ":\"" + item.inputTag + "\""),
 		}
 
-		name, node, omitempty := parseTag(field)
+		name, node, usage, omitempty := parseTag(field)
 		a.Equal(name, item.name, "not equal at %d\nv1=%+v,v2=%+v", i, name, item.name).
 			Equal(node, item.node, "not equal at %d\nv1=%+v\nv2=%+v", i, node, item.node).
+			Equal(usage, item.usage, "not equal at %d\nv1=%+v\nv2=%+v", i, usage, item.usage).
 			Equal(omitempty, item.omitempty, "not equal at %d\nv1=%+v\nv2=%+v", i, omitempty, item.omitempty)
 	}
 
+	// 数量不够
 	a.Panic(func() {
 		field := reflect.StructField{
 			Tag: reflect.StructTag(tagName + `:"field,not-exists"`),
@@ -389,16 +357,34 @@ func TestParseTag(t *testing.T) {
 		parseTag(field)
 	})
 
+	// omitempty 错误
 	a.Panic(func() {
 		field := reflect.StructField{
-			Tag: reflect.StructTag(tagName + `:"field,elem,other"`),
+			Tag: reflect.StructTag(tagName + `:"field,elem,usage,other"`),
 		}
 		parseTag(field)
 	})
 
+	// cdata 指定了 usage
 	a.Panic(func() {
 		field := reflect.StructField{
-			Tag: reflect.StructTag(tagName + `:"field,elem,omitempty,xxx"`),
+			Tag: reflect.StructTag(tagName + `:"field,cdata,usage,other"`),
+		}
+		parseTag(field)
+	})
+
+	// elem 未指定 usage
+	a.Panic(func() {
+		field := reflect.StructField{
+			Tag: reflect.StructTag(tagName + `:"field,elem,"`),
+		}
+		parseTag(field)
+	})
+
+	// 数量太多
+	a.Panic(func() {
+		field := reflect.StructField{
+			Tag: reflect.StructTag(tagName + `:"field,elem,usage,omitempty,xxx"`),
 		}
 		parseTag(field)
 	})

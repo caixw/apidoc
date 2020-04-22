@@ -31,7 +31,16 @@ type value struct {
 	name string
 	reflect.Value
 	omitempty bool
+
+	// 当前值可能未初始化，所以保存 usage 的值，
+	// 等 value 初始化之后再赋值给 Base.UsageKey
+	usage string
 }
+
+var (
+	cdataType   = reflect.TypeOf(CData{})
+	contentType = reflect.TypeOf(String{})
+)
 
 func isScalar(v reflect.Value) bool {
 	return v.IsValid() &&
@@ -70,7 +79,7 @@ func newNode(name string, rv reflect.Value) *node {
 			continue
 		}
 
-		name, node, omitempty := parseTag(field)
+		name, node, usage, omitempty := parseTag(field)
 		if name == "-" {
 			continue
 		}
@@ -78,9 +87,9 @@ func newNode(name string, rv reflect.Value) *node {
 		v := getRealValue(rv.Field(i))
 		switch node {
 		case attrNode:
-			n.appendAttr(value{name: name, Value: v, omitempty: omitempty})
+			n.appendAttr(value{name: name, Value: v, omitempty: omitempty, usage: usage})
 		case elemNode:
-			n.appendElem(value{name: name, Value: v, omitempty: omitempty})
+			n.appendElem(value{name: name, Value: v, omitempty: omitempty, usage: usage})
 		case cdataNode:
 			if n.cdata.IsValid() {
 				panic("已经定义了一个节点用于表示 cdata 内容")
@@ -91,7 +100,10 @@ func newNode(name string, rv reflect.Value) *node {
 			if len(n.elems) > 0 {
 				panic("cdata 与子元素不能同时存在")
 			}
-			n.cdata = value{name: name, Value: v, omitempty: omitempty}
+			if v.Type() != cdataType {
+				panic("cdata 的类型只能是 *CData")
+			}
+			n.cdata = value{name: name, Value: v, omitempty: omitempty, usage: usage}
 		case contentNode:
 			if n.content.IsValid() {
 				panic("已经定义了一个节点用于表示 content 内容")
@@ -102,7 +114,10 @@ func newNode(name string, rv reflect.Value) *node {
 			if len(n.elems) > 0 {
 				panic("content 与子元素不能同时存在")
 			}
-			n.content = value{name: name, Value: v, omitempty: omitempty}
+			if v.Type() != contentType {
+				panic("content 的类型只能是 *String")
+			}
+			n.content = value{name: name, Value: v, omitempty: omitempty, usage: usage}
 		}
 	}
 
@@ -157,29 +172,25 @@ func (n *node) appendElem(v value) {
 	n.elems = append(n.elems, v)
 }
 
-// `apidoc:"name,attr,omitempty"`
-func parseTag(field reflect.StructField) (string, nodeType, bool) {
+// `apidoc:"name,attr,usage,omitempty"`
+func parseTag(field reflect.StructField) (string, nodeType, string, bool) {
 	tag := strings.TrimSpace(field.Tag.Get(tagName))
-	if tag == "" {
-		return field.Name, elemNode, false
-	}
-
 	if tag == "-" {
-		return "-", 0, false
+		return "-", 0, "", false
 	}
 
 	props := strings.Split(tag, ",")
 	switch len(props) {
-	case 0:
-		return field.Name, elemNode, false
-	case 1:
-		return strings.TrimSpace(props[0]), elemNode, false
 	case 2:
-		return getTagName(field, props[0]), getAttrValue(props[1]), false
+		return getTagName(field, props[0]), getNodeType(props[1]), "", false
 	case 3:
-		return getTagName(field, props[0]), getAttrValue(props[1]), getOmitemptyValue(props[2])
+		node := getNodeType(props[1])
+		return getTagName(field, props[0]), node, getUsageKey(node, props[2]), false
+	case 4:
+		node := getNodeType(props[1])
+		return getTagName(field, props[0]), node, getUsageKey(node, props[2]), getOmitempty(props[3])
 	default:
-		panic("无效的 struct tag，最多只能有三个值")
+		panic(fmt.Sprintf("无效的 struct tag %s，数量必须介于 [3,4] 之间", field.Name))
 	}
 }
 
@@ -190,28 +201,39 @@ func getTagName(field reflect.StructField, name string) string {
 	return strings.TrimSpace(name)
 }
 
-func getAttrValue(v string) nodeType {
+func getNodeType(v string) nodeType {
 	switch strings.ToLower(strings.TrimSpace(v)) {
 	case "attr":
 		return attrNode
-	case "elem", "":
+	case "elem":
 		return elemNode
 	case "cdata":
 		return cdataNode
 	case "content":
 		return contentNode
 	default:
-		panic(fmt.Sprintf("无效的 struct tag: %s，第二个元素必须得是 attr、cdata 或是 elem", v))
+		panic("无效的 struct tag，第二个元素必须得是 attr、cdata 或是 elem")
 	}
 }
 
-func getOmitemptyValue(v string) bool {
+func getOmitempty(v string) bool {
 	switch strings.TrimSpace(v) {
 	case "omitempty":
 		return true
 	case "":
 		return false
 	default:
-		panic(fmt.Sprintf("无效的 struct tag: %s，第三个元素必须得是 omitempty 或是空值", v))
+		panic("无效的 struct tag，第四个元素必须得是 omitempty 或是空值")
 	}
+}
+
+func getUsageKey(node nodeType, v string) string {
+	need := (node != cdataNode) && (node != contentNode)
+
+	if v == "" && need {
+		panic("无效的 struct tag，当类型为 cdata 和 content，不能指定 usage 属性")
+	} else if v != "" && !need {
+		panic("无效的 struct tag，当类型不为 cdata 和 content，必须指定 usage 属性")
+	}
+	return v
 }
