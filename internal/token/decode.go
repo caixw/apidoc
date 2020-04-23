@@ -215,7 +215,7 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 	}
 
 	if isPrimitive(elem) {
-		panic(fmt.Sprintf("%s 必须实现 Decoder 接口", elem.Type()))
+		panic(fmt.Sprintf("%s:%s 必须实现 Decoder 接口", slice.name, elem.Type()))
 	} else {
 		if end, err = newNode(start.Name.Value, elem).decode(p, start); err != nil {
 			return err

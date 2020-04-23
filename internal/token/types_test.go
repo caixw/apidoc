@@ -33,6 +33,7 @@ type errIntTest struct {
 	Value int
 }
 
+// NOTE: objectTest 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
 type objectTest struct {
 	Base
 	ID   intTest    `apidoc:"id,attr,usage"`

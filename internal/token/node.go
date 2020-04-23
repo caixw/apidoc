@@ -212,7 +212,7 @@ func getNodeType(v string) nodeType {
 	case "content":
 		return contentNode
 	default:
-		panic("无效的 struct tag，第二个元素必须得是 attr、cdata 或是 elem")
+		panic("无效的 struct tag，第二个元素必须得是 attr、cdata、content 或是 elem")
 	}
 }
 
