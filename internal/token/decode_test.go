@@ -11,6 +11,18 @@ import (
 	"github.com/caixw/apidoc/v6/core"
 )
 
+func decode(a *assert.Assertion, xml string, v interface{}, hasErr bool) {
+	p, err := NewParser(core.Block{Data: []byte(xml)})
+	a.NotError(err).
+		NotNil(p)
+
+	if hasErr {
+		a.Error(Decode(p, v))
+		return
+	}
+	a.NotError(Decode(p, v))
+}
+
 func TestDecode(t *testing.T) {
 	a := assert.New(t)
 
@@ -19,7 +31,7 @@ func TestDecode(t *testing.T) {
 		Elem1 intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b := `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
-	a.NotError(Decode(core.Block{Data: []byte(b)}, v))
+	decode(a, b, v, false)
 	attr1 := intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
 		Start: core.Position{Character: 8},
 		End:   core.Position{Character: 17},
@@ -45,7 +57,7 @@ func TestDecode(t *testing.T) {
 		Start: core.Position{Character: 18},
 		End:   core.Position{Character: 34},
 	}}}
-	a.NotError(Decode(core.Block{Data: []byte(b)}, v2))
+	decode(a, b, v2, false)
 	a.Equal(v2.Attr1, attr1).
 		Equal(v2.Elem1, []intTest{elem1})
 
@@ -67,7 +79,7 @@ func TestDecode(t *testing.T) {
 		Start: core.Position{Character: 34},
 		End:   core.Position{Character: 50},
 	}}}
-	a.NotError(Decode(core.Block{Data: []byte(b)}, v3))
+	decode(a, b, v3, false)
 	a.Equal(v3.Attr1, attr1).
 		Equal(v3.Elem1, []intTest{elem1, elem2})
 
@@ -77,7 +89,7 @@ func TestDecode(t *testing.T) {
 		Content String  `apidoc:",content"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
-	a.NotError(Decode(core.Block{Data: []byte(b)}, v4))
+	decode(a, b, v4, false)
 	a.Equal(v4.Content, String{Value: "5555", Range: core.Range{
 		Start: core.Position{Character: 18},
 		End:   core.Position{Character: 22},
@@ -92,7 +104,7 @@ func TestDecode(t *testing.T) {
 		Cdata *CData `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5"><![CDATA[5555]]></apidoc>`
-	a.NotError(Decode(core.Block{Data: []byte(b)}, v5))
+	decode(a, b, v5, false)
 	a.Equal(v5.Cdata, &CData{
 		Value: String{Value: "5555", Range: core.Range{
 			Start: core.Position{Character: 27},
@@ -109,7 +121,7 @@ func TestDecode(t *testing.T) {
 		Cdata CData `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
-	a.NotError(Decode(core.Block{Data: []byte(b)}, v6))
+	decode(a, b, v6, false)
 	a.Empty(v6.Cdata.Value.Value).True(v6.Cdata.IsEmpty())
 
 	v7 := &struct {
@@ -118,7 +130,7 @@ func TestDecode(t *testing.T) {
 		Object *objectTest `apidoc:"obj,elem,usage"`
 	}{}
 	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
-	a.NotError(Decode(core.Block{Data: []byte(b)}, v7))
+	decode(a, b, v7, false)
 	a.Equal(v7.ID, &intTest{Value: 11, Base: Base{UsageKey: "usage", Range: core.Range{
 		Start: core.Position{Character: 8},
 		End:   core.Position{Character: 15},
@@ -150,25 +162,25 @@ func TestDecode(t *testing.T) {
 
 	// 多个根元素
 	b = `<apidoc attr="1"></apidoc><apidoc attr="1"></apidoc>`
-	a.Error(Decode(core.Block{Data: []byte(b)}, v7))
+	decode(a, b, v7, true)
 
 	// 多个结束元素
 	b = `<apidoc attr="1"></apidoc></apidoc>`
-	a.Error(Decode(core.Block{Data: []byte(b)}, v7))
+	decode(a, b, v7, true)
 
 	// 无效的属性值
 	v8 := &struct {
 		ID intTest `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1xx"></apidoc></apidoc>`
-	a.Error(Decode(core.Block{Data: []byte(b)}, v8))
+	decode(a, b, v8, true)
 
 	// StartElement.Close
 	v9 := &struct {
 		ID intTest `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1" />`
-	a.NotError(Decode(core.Block{Data: []byte(b)}, v9))
+	decode(a, b, v9, false)
 
 	// 不存在的元素名
 	v10 := &struct {
@@ -176,7 +188,7 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
-		Decode(core.Block{Data: []byte(b)}, v10)
+		decode(a, b, v10, false)
 	})
 
 	// 数组元素未实现 Decoder 接口
@@ -185,8 +197,67 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
-		Decode(core.Block{Data: []byte(b)}, v11)
+		decode(a, b, v11, false)
 	})
+
+	// 多个数组，未实现 Decoder 的元素
+	v12 := &struct {
+		Attr1 intTest       `apidoc:"attr1,attr,usage"`
+		Elem1 []*objectTest `apidoc:"e,elem,usage"`
+	}{}
+	b = `<apidoc attr1="5">
+	<e id="5"><name>6</name></e>
+	<e id="7"><name>7</name></e>
+</apidoc>`
+	attr1 = intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
+		Start: core.Position{Character: 8},
+		End:   core.Position{Character: 17},
+	}}}
+	e1 := &objectTest{
+		Base: Base{UsageKey: "usage", Range: core.Range{
+			Start: core.Position{Character: 1, Line: 1},
+			End:   core.Position{Character: 29, Line: 1},
+		}},
+		ID: intTest{
+			Base: Base{UsageKey: "usage", Range: core.Range{
+				Start: core.Position{Character: 4, Line: 1},
+				End:   core.Position{Character: 10, Line: 1},
+			}},
+			Value: 5,
+		},
+		Name: stringTest{
+			Base: Base{UsageKey: "usage", Range: core.Range{
+				Start: core.Position{Character: 11, Line: 1},
+				End:   core.Position{Character: 25, Line: 1},
+			}},
+			Value: "6",
+		},
+	}
+	e2 := &objectTest{
+		Base: Base{UsageKey: "usage", Range: core.Range{
+			Start: core.Position{Character: 1, Line: 2},
+			End:   core.Position{Character: 29, Line: 2},
+		}},
+		ID: intTest{
+			Base: Base{UsageKey: "usage", Range: core.Range{
+				Start: core.Position{Character: 4, Line: 2},
+				End:   core.Position{Character: 10, Line: 2},
+			}},
+			Value: 7,
+		},
+		Name: stringTest{
+			Base: Base{UsageKey: "usage", Range: core.Range{
+				Start: core.Position{Character: 11, Line: 2},
+				End:   core.Position{Character: 25, Line: 2},
+			}},
+			Value: "7",
+		},
+	}
+	decode(a, b, v12, false)
+	a.Equal(v12.Attr1, attr1).
+		Equal(2, len(v12.Elem1)).
+		Equal(v12.Elem1[0], e1).
+		Equal(v12.Elem1[1], e2)
 }
 
 func TestObject_decodeAttributes(t *testing.T) {

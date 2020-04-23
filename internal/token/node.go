@@ -42,7 +42,7 @@ var (
 	contentType = reflect.TypeOf(String{})
 )
 
-func isScalar(v reflect.Value) bool {
+func isPrimitive(v reflect.Value) bool {
 	return v.IsValid() &&
 		(v.Kind() == reflect.String || (v.Kind() >= reflect.Bool && v.Kind() <= reflect.Complex128))
 }

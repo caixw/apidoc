@@ -29,13 +29,8 @@ var (
 	decoderType     = reflect.TypeOf((*Decoder)(nil)).Elem()
 )
 
-// Decode 将 b 中的 XML 内容解码至 v 对象中
-func Decode(b core.Block, v interface{}) error {
-	p, err := NewParser(b)
-	if err != nil {
-		return err
-	}
-
+// Decode 将 p 中的 XML 内容解码至 v 对象中
+func Decode(p *Parser, v interface{}) error {
 	var hasRoot bool
 	for {
 		t, err := p.Token()
@@ -175,7 +170,7 @@ func decodeElement(p *Parser, start *StartElement, v value) error {
 
 	k := v.Kind()
 	switch {
-	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, isScalar(v.Value):
+	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, isPrimitive(v.Value):
 		panic(fmt.Sprintf("%s 是无效的类型", v.Value.Type().Name()))
 	case k == reflect.Slice:
 		return decodeSlice(p, start, v)
@@ -219,7 +214,13 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 		}
 	}
 
-	panic(fmt.Sprintf("%s 必须实现 Decoder 接口", elem.Type().Name()))
+	if isPrimitive(elem) {
+		panic(fmt.Sprintf("%s 必须实现 Decoder 接口", elem.Type()))
+	} else {
+		if end, err = newNode(start.Name.Value, elem).decode(p, start); err != nil {
+			return err
+		}
+	}
 
 RET:
 	initValue(elem, slice.usage, start.Start, end)
@@ -255,12 +256,12 @@ func findEndElement(p *Parser, start *StartElement) error {
 }
 
 func initValue(v reflect.Value, usage string, start, end core.Position) {
+	v = getRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}
 
 	v.FieldByName(rangeName).Set(reflect.ValueOf(core.Range{Start: start, End: end}))
-
 	if usage != "" { // CDATA 和 content 节点类型的 usage 内容为空
 		v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
 	}

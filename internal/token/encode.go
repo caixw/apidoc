@@ -95,7 +95,7 @@ func (n *node) encodeElements(e *xml.Encoder, start xml.StartElement) (err error
 				found = true
 			}
 		}
-		if !found && isScalar(v.Value) {
+		if !found && isPrimitive(v.Value) {
 			chardata = fmt.Sprint(v.Interface())
 			found = true
 		}
