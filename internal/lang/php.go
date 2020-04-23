@@ -31,7 +31,7 @@ func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 
 	token, found := l.Delim('\n', true)
 	if !found || len(token) <= 1 { // <<< 之后直接是换行符，则应该退回 <<< 字符
-		l.SetPosition(prev)
+		l.Move(prev)
 		return false
 	}
 	token = token[:len(token)-1] // l.delim 会带上换行符，需要去掉

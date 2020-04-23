@@ -89,10 +89,10 @@ func (l *Lexer) Position() Position {
 	return l.current
 }
 
-// SetPosition 重新定位位置信息
+// Move 移动当前的分析器的位置
 //
 // 执行此操作之后，Rollback 将失效，且 AtEOF 为 false
-func (l *Lexer) SetPosition(p Position) {
+func (l *Lexer) Move(p Position) {
 	l.current = p
 	l.atEOF = false
 	l.prev.Offset = -1

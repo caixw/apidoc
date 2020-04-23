@@ -76,7 +76,7 @@ func TestLexer_Position(t *testing.T) {
 		Position: core.Position{Line: 0, Character: 2},
 		Offset:   2,
 	}
-	l.SetPosition(p)
+	l.Move(p)
 	a.False(l.AtEOF()).
 		Equal(-1, l.prev.Offset).
 		Equal(l.current, p)

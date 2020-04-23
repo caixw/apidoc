@@ -16,8 +16,7 @@ const cdataEscape = "]]]]><![CDATA[>"
 
 // Parser 代码块的解析器
 type Parser struct {
-	l   *lexer.Lexer
-	err error // 记录最后一次错误信息
+	l *lexer.Lexer
 }
 
 // NewParser 声明新的 Parser 实例
@@ -32,6 +31,11 @@ func NewParser(b core.Block) (*Parser, error) {
 	}, nil
 }
 
+// Lexer 返回关联的 lexer.Lexer 实例
+func (p *Parser) Lexer() *lexer.Lexer {
+	return p.l
+}
+
 // Token 返回下一个 token 对象
 //
 // token 可能的类型为 *StartElement、*EndElement、*Instruction、*Attribute、*CData、*Comment 和 *String。
@@ -39,10 +43,6 @@ func NewParser(b core.Block) (*Parser, error) {
 //
 // 当返回 nil,nil 时，表示已经结束
 func (p *Parser) Token() (interface{}, error) {
-	if p.err != nil {
-		return nil, p.err
-	}
-
 	for {
 		if p.l.AtEOF() {
 			return nil, nil
@@ -74,7 +74,6 @@ func (p *Parser) Token() (interface{}, error) {
 		}
 
 		if err != nil {
-			p.err = err
 			return nil, err
 		}
 		return ret, nil
@@ -183,13 +182,13 @@ func (p *Parser) parseCData(pos lexer.Position) (*CData, error) {
 		value = append(value, v...)
 
 		curr := p.l.Position()
-		p.l.SetPosition(curr.SubRune(']').SubRune(']')) // 回滚两个字符，用于匹配转义内容
+		p.l.Move(curr.SubRune(']').SubRune(']')) // 回滚两个字符，用于匹配转义内容
 		if p.l.Match(cdataEscape) {
 			value = append(value, cdataEscape[2:]...)
 			continue
 		}
 
-		p.l.SetPosition(curr)
+		p.l.Move(curr)
 		break
 	}
 

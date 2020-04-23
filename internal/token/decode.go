@@ -258,10 +258,10 @@ func initValue(v reflect.Value, usage string, start, end core.Position) {
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}
+
 	v.FieldByName(rangeName).Set(reflect.ValueOf(core.Range{Start: start, End: end}))
 
-	// CDATA 和 content 节点类型的 usage 内容为空
-	if usage != "" {
+	if usage != "" { // CDATA 和 content 节点类型的 usage 内容为空
 		v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
 	}
 }
