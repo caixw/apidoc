@@ -469,7 +469,7 @@ func TestParser_parseStartElement(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		elem, err := p.parseStartElement(p.l.Position())
+		elem, err := p.parseStartElement(p.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -547,7 +547,7 @@ func TestParser_parseEndElement(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		elem, err := p.parseEndElement(p.l.Position())
+		elem, err := p.parseEndElement(p.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -658,7 +658,7 @@ func TestParser_parseCData(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		cdata, err := p.parseCData(p.l.Position())
+		cdata, err := p.parseCData(p.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -844,7 +844,7 @@ func TestParser_parseInstruction(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		pi, err := p.parseInstruction(p.l.Position())
+		pi, err := p.parseInstruction(p.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
