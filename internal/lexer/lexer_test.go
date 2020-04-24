@@ -206,6 +206,16 @@ func TestLexer_DelimFunc(t *testing.T) {
 	bs, found = l.DelimFunc(func(r rune) bool { return r == '\n' }, true)
 	a.True(found).Equal(string(bs), "\n")
 	a.Equal(l.Position(), Position{Offset: 20, Position: core.Position{Line: 2, Character: 0}})
+
+	bs, found = l.DelimFunc(func(r rune) bool { return r == '3' }, false)
+	a.True(found).Equal(string(bs), "12")
+	a.False(l.AtEOF())
+	bs, found = l.DelimFunc(func(r rune) bool { return r == '3' }, false)
+	a.True(found).Empty(bs)
+	a.False(l.AtEOF())
+	bs, found = l.DelimFunc(func(r rune) bool { return r == '3' }, true)
+	a.True(found).Equal(string(bs), "3")
+	a.True(l.AtEOF())
 }
 
 func TestLexer_All(t *testing.T) {
@@ -218,6 +228,10 @@ func TestLexer_All(t *testing.T) {
 	l, err = New(core.Block{Data: []byte("123\n456")})
 	a.NotError(err).NotNil(l)
 	l.Next(1)
+	a.Equal(l.All(), "23\n456").True(l.AtEOF())
+
+	l.Rollback()
+	a.Equal(l.Position().Offset, 1)
 	a.Equal(l.All(), "23\n456").True(l.AtEOF())
 }
 
@@ -248,8 +262,7 @@ func TestLexer_DelimString(t *testing.T) {
 	val, found = l.DelimString("7", true)
 	a.True(found).Equal(val, "4567").
 		Equal(l.Position().Offset, 7)
-	l.Next(1)
-	a.True(l.AtEOF())
+	a.True(l.AtEOF(), l.current.Offset, l.lastIndex)
 
 	l, err = New(core.Block{Data: []byte("123444567\n8910")})
 	a.NotError(err).NotNil(l)

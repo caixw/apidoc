@@ -14,7 +14,7 @@ import (
 // Lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
 type Lexer struct {
 	core.Block
-	atEOF bool
+	lastIndex int
 
 	// 分别表示当前和之前的定位，可以在某些可撤消的操作之前保存定位信息到 prev
 	current, prev Position
@@ -49,15 +49,16 @@ func New(b core.Block) (*Lexer, error) {
 	}
 
 	return &Lexer{
-		Block:   b,
-		current: Position{Position: b.Location.Range.Start},
-		prev:    Position{Position: b.Location.Range.Start},
+		Block:     b,
+		lastIndex: p.Offset - 1,
+		current:   Position{Position: b.Location.Range.Start},
+		prev:      Position{Position: b.Location.Range.Start},
 	}, nil
 }
 
 // AtEOF 是否已经结束
 func (l *Lexer) AtEOF() bool {
-	return l.atEOF
+	return l.Position().Offset > l.lastIndex
 }
 
 // Match 接下来的 n 个字符是否匹配指定的字符串，
@@ -94,7 +95,6 @@ func (l *Lexer) Position() Position {
 // 执行此操作之后，Rollback 将失效，且 AtEOF 为 false
 func (l *Lexer) Move(p Position) {
 	l.current = p
-	l.atEOF = false
 	l.prev.Offset = -1
 }
 
@@ -102,12 +102,11 @@ func (l *Lexer) Move(p Position) {
 //
 // NOTE: 可回滚该操作
 func (l *Lexer) Spaces(exclude rune) []byte {
-	p := l.current
+	l.prev = l.current
 
 	for {
-		r, size := utf8.DecodeRune(l.Data[p.Offset:])
+		r, size := utf8.DecodeRune(l.Data[l.current.Offset:])
 		if size == 0 {
-			l.atEOF = true
 			break
 		}
 
@@ -115,11 +114,9 @@ func (l *Lexer) Spaces(exclude rune) []byte {
 			break
 		}
 
-		p = p.add(r, size)
+		l.current = l.current.add(r, size)
 	}
 
-	l.prev = l.current
-	l.current = p
 	return l.Bytes(l.prev.Offset, l.current.Offset)
 }
 
@@ -135,7 +132,7 @@ func (l *Lexer) DelimString(delim string, contain bool) ([]byte, bool) {
 
 	start := l.current
 	for {
-		if l.AtEOF() { // 一直到结束都未找到匹配项，则还原到起始位置
+		if l.AtEOF() {
 			l.current = start
 			return nil, false
 		}
@@ -174,7 +171,6 @@ func (l *Lexer) DelimFunc(f func(r rune) bool, contain bool) ([]byte, bool) {
 	for {
 		r, size := utf8.DecodeRune(l.Data[p.Offset:])
 		if size == 0 {
-			l.atEOF = true
 			break
 		}
 		p = p.add(r, size)
@@ -202,19 +198,16 @@ func (l *Lexer) DelimFunc(f func(r rune) bool, contain bool) ([]byte, bool) {
 //
 // NOTE: 可回滚该操作
 func (l *Lexer) Next(n int) []byte {
-	p := l.current
+	l.prev = l.current
 
 	for i := 0; i < n; i++ {
-		r, size := utf8.DecodeRune(l.Data[p.Offset:])
+		r, size := utf8.DecodeRune(l.Data[l.Position().Offset:])
 		if size == 0 {
-			l.atEOF = true
 			break
 		}
-		p = p.add(r, size)
+		l.current = l.current.add(r, size)
 	}
 
-	l.prev = l.current
-	l.current = p
 	return l.Bytes(l.prev.Offset, l.current.Offset)
 }
 
@@ -222,33 +215,25 @@ func (l *Lexer) Next(n int) []byte {
 //
 // NOTE: 可回滚该操作
 func (l *Lexer) All() []byte {
-	p := l.current
+	l.prev = l.current
 
 	for {
-		r, size := utf8.DecodeRune(l.Data[p.Offset:])
+		r, size := utf8.DecodeRune(l.Data[l.current.Offset:])
 		if size == 0 {
-			l.atEOF = true
 			break
 		}
-		p = p.add(r, size)
+		l.current = l.current.add(r, size)
 	}
 
-	l.prev = l.current
-	l.current = p
 	return l.Data[l.prev.Offset:]
 }
 
 // Rollback 回滚上一次的操作
 func (l *Lexer) Rollback() {
-	if l.prev.Offset == -1 {
-		return
+	if l.prev.Offset != -1 {
+		l.current = l.prev // 回滚
+		l.prev.Offset = -1 // 清空 prev
 	}
-
-	// 回滚
-	l.current = l.prev
-	l.atEOF = false
-
-	l.prev.Offset = -1 // 清空 prev
 }
 
 // Bytes 返回指定范围的内容
