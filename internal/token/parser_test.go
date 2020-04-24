@@ -3,6 +3,7 @@
 package token
 
 import (
+	"io"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -288,9 +289,137 @@ func TestParser_Token(t *testing.T) {
 						Value: " comment ",
 					},
 				},
-
+				&String{
+					Range: core.Range{
+						Start: core.Position{Line: 16, Character: 16},
+						End:   core.Position{Line: 16, Character: 18},
+					},
+					Value: "  ",
+				},
 				nil, nil,
 			}, // end elems
+		},
+
+		{
+			input: `<apidoc version="2.0" /> 
+  `, // 尾部包含空格
+			elems: []interface{}{
+				&StartElement{
+					Close: true,
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 11, Character: 46},
+					},
+					Name: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 23},
+							End:   core.Position{Line: 11, Character: 29},
+						},
+						Value: "apidoc",
+					},
+					Attributes: []*Attribute{
+						{
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 30},
+								End:   core.Position{Line: 11, Character: 43},
+							},
+							Name: String{
+								Range: core.Range{
+									Start: core.Position{Line: 11, Character: 30},
+									End:   core.Position{Line: 11, Character: 37},
+								},
+								Value: "version",
+							},
+							Value: String{
+								Range: core.Range{
+									Start: core.Position{Line: 11, Character: 39},
+									End:   core.Position{Line: 11, Character: 42},
+								},
+								Value: "2.0",
+							},
+						},
+					},
+				}, // end StartElement
+				&String{
+					Value: " \n  ",
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 46},
+						End:   core.Position{Line: 12, Character: 2},
+					},
+				},
+				nil,
+			},
+		},
+
+		{
+			input: `<apidoc version="2.0">123
+	</apidoc>
+  `, // 尾部包含空格
+			elems: []interface{}{
+				&StartElement{
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 11, Character: 44},
+					},
+					Name: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 23},
+							End:   core.Position{Line: 11, Character: 29},
+						},
+						Value: "apidoc",
+					},
+					Attributes: []*Attribute{
+						{
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 30},
+								End:   core.Position{Line: 11, Character: 43},
+							},
+							Name: String{
+								Range: core.Range{
+									Start: core.Position{Line: 11, Character: 30},
+									End:   core.Position{Line: 11, Character: 37},
+								},
+								Value: "version",
+							},
+							Value: String{
+								Range: core.Range{
+									Start: core.Position{Line: 11, Character: 39},
+									End:   core.Position{Line: 11, Character: 42},
+								},
+								Value: "2.0",
+							},
+						},
+					},
+				}, // end StartElement
+				&String{
+					Value: "123\n\t",
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 44},
+						End:   core.Position{Line: 12, Character: 1},
+					},
+				},
+				&EndElement{
+					Range: core.Range{
+						Start: core.Position{Line: 12, Character: 1},
+						End:   core.Position{Line: 12, Character: 10},
+					},
+					Name: String{
+						Range: core.Range{
+							Start: core.Position{Line: 12, Character: 3},
+							End:   core.Position{Line: 12, Character: 9},
+						},
+						Value: "apidoc",
+					},
+				},
+				&String{
+					Value: "\n  ",
+					Range: core.Range{
+						Start: core.Position{Line: 12, Character: 10},
+						End:   core.Position{Line: 13, Character: 2},
+					},
+				},
+				nil, nil,
+			},
 		},
 	}
 
@@ -308,8 +437,13 @@ func TestParser_Token(t *testing.T) {
 
 		for i, elem := range item.elems {
 			e, err := p.Token()
-			a.NotError(err, "error %s at %d", err, i)
-			a.Equal(e, elem, "not equal at %s:%d\nv1=%+v\nv2=%+v", item.input, i, e, elem)
+			if elem == nil {
+				a.Equal(err, io.EOF, "%s no io.EOF at %s:%d", err, item.input, i)
+				a.Nil(e, "not nil at %s:%d", item.input, i)
+			} else {
+				a.NotError(err, "error %s at %d", err, i)
+				a.Equal(e, elem, "not equal at %s:%d\nv1=%#v\nv2=%#v", item.input, i, e, elem)
+			}
 		}
 	}
 }

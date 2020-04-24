@@ -4,6 +4,7 @@ package token
 
 import (
 	"fmt"
+	"io"
 	"reflect"
 
 	"github.com/caixw/apidoc/v6/core"
@@ -34,11 +35,10 @@ func Decode(p *Parser, v interface{}) error {
 	var hasRoot bool
 	for {
 		t, err := p.Token()
-		if err != nil {
-			return err
-		}
-		if t == nil {
+		if err == io.EOF {
 			return nil
+		} else if err != nil {
+			return err
 		}
 
 		switch elem := t.(type) {
@@ -79,7 +79,6 @@ func (n *node) decodeAttributes(start *StartElement) error {
 	for _, attr := range start.Attributes {
 		item, found := n.attr(attr.Name.Value)
 		if !found {
-			//panic(fmt.Sprintf("不存在的属性 %s", attr.Name.Value))
 			continue
 		}
 
@@ -112,11 +111,10 @@ func (n *node) decodeAttributes(start *StartElement) error {
 func (n *node) decodeElements(p *Parser) (core.Position, error) {
 	for {
 		t, err := p.Token()
-		if err != nil {
-			return core.Position{}, err
-		}
-		if t == nil {
+		if err == io.EOF {
 			return core.Position{}, nil
+		} else if err != nil {
+			return core.Position{}, err
 		}
 
 		switch elem := t.(type) {
@@ -234,11 +232,10 @@ func findEndElement(p *Parser, start *StartElement) error {
 	level := 0
 	for {
 		t, err := p.Token()
-		if err != nil {
-			return err
-		}
-		if t == nil {
+		if err == io.EOF {
 			return p.NewError(start.Start, start.End, locale.ErrInvalidXML) // 找不到相配的结束符号
+		} else if err != nil {
+			return err
 		}
 
 		switch elem := t.(type) {

@@ -3,6 +3,7 @@
 package token
 
 import (
+	"io"
 	"unicode"
 
 	"golang.org/x/text/message"
@@ -40,41 +41,32 @@ func NewParser(b core.Block) (*Parser, error) {
 func (p *Parser) Token() (interface{}, error) {
 	for {
 		if p.AtEOF() {
-			return nil, nil
+			return nil, io.EOF
 		}
-
-		p.Spaces('\n') // 跳过非换行的空格
 
 		pos := p.Position() // 记录元素的开始位置
 
 		bs := p.Next(1)
 		if len(bs) == 0 {
-			return nil, nil
+			return nil, io.EOF
 		}
 		if len(bs) > 1 || bs[0] != '<' {
 			p.Rollback() // 当前字符是内容的一部分，返回给 parseContent 解析
 			return p.parseContent()
 		}
 
-		var ret interface{}
-		var err error
 		switch {
 		case p.Match("?"):
-			ret, err = p.parseInstruction(pos)
+			return p.parseInstruction(pos)
 		case p.Match("![CDATA["):
-			ret, err = p.parseCData(pos)
+			return p.parseCData(pos)
 		case p.Match("/"):
-			ret, err = p.parseEndElement(pos)
+			return p.parseEndElement(pos)
 		case p.Match("!--"):
-			ret, err = p.parseComment(pos)
+			return p.parseComment(pos)
 		default:
-			ret, err = p.parseStartElement(pos)
+			return p.parseStartElement(pos)
 		}
-
-		if err != nil {
-			return nil, err
-		}
-		return ret, nil
 	}
 }
 
@@ -83,7 +75,10 @@ func (p *Parser) parseContent() (*String, error) {
 
 	data, found := p.Delim('<', false)
 	if !found {
-		return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+		data = p.All()
+		if len(data) == 0 {
+			return nil, io.EOF
+		}
 	}
 
 	return &String{
