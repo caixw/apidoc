@@ -37,7 +37,7 @@ func NewParser(b core.Block) (*Parser, error) {
 // token 可能的类型为 *StartElement、*EndElement、*Instruction、*Attribute、*CData、*Comment 和 *String。
 // 其中 *String 用于表示 XML 元素的内容。
 //
-// 当返回 nil,nil 时，表示已经结束
+// 当返回 nil, io.EOF 时，表示已经结束
 func (p *Parser) Token() (interface{}, error) {
 	for {
 		if p.AtEOF() {
