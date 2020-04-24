@@ -43,7 +43,10 @@ func (p *Parser) Token() (interface{}, error) {
 			return nil, nil
 		}
 
-		pos := p.Position()
+		p.Spaces('\n') // 跳过非换行的空格
+
+		pos := p.Position() // 记录元素的开始位置
+
 		bs := p.Next(1)
 		if len(bs) == 0 {
 			return nil, nil

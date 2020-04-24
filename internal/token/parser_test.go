@@ -10,7 +10,7 @@ import (
 	"github.com/caixw/apidoc/v6/core"
 )
 
-func TestParser_token(t *testing.T) {
+func TestParser_Token(t *testing.T) {
 	a := assert.New(t)
 	start := core.Position{
 		Line:      11,
@@ -29,7 +29,7 @@ func TestParser_token(t *testing.T) {
 *	<title>标题</title>
 *	<desc type="html"><![CDATA[<h1>h1</h1>]]></desc>
 * </apidoc>
-<!-- comment -->`,
+<!-- comment -->  `, // 尾部包含空格
 			elems: []interface{}{
 				&Instruction{
 					Range: core.Range{
