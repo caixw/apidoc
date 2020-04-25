@@ -56,16 +56,20 @@ type Comment struct {
 	Value String
 }
 
-// 这些常量对应 Base 中两个相关字段的名称
+// 这些常量对应 Base 中相关字段的名称
 const (
-	usageKeyName = "UsageKey"
-	rangeName    = "Range"
+	rangeName         = "Range"
+	usageKeyName      = "UsageKey"
+	elementTagName    = "XMLName"
+	elementTagEndName = "XMLNameEnd"
 )
 
 // Base 每一个 XML 节点必须包含的内容
 type Base struct {
 	core.Range
-	UsageKey message.Reference `apidoc:"-"`
+	UsageKey   message.Reference `apidoc:"-"`
+	XMLName    String            `apidoc:"-"` // 表示标签名或是属性名
+	XMLNameEnd String            `apidoc:"-"` // 表示标签的结束名称，如果是属性，此值为空
 }
 
 // Usage 返回该节点的说明内容

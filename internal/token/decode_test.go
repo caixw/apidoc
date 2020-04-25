@@ -32,14 +32,43 @@ func TestDecode(t *testing.T) {
 	}{}
 	b := `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
 	decode(a, b, v, false)
-	attr1 := intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
-		Start: core.Position{Character: 8},
-		End:   core.Position{Character: 17},
-	}}}
-	elem1 := intTest{Value: 6, Base: Base{UsageKey: "usage", Range: core.Range{
-		Start: core.Position{Character: 18},
-		End:   core.Position{Character: 34},
-	}}}
+	attr1 := intTest{Value: 5,
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 17},
+			},
+			XMLName: String{
+				Value: "attr1",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 13},
+				},
+			},
+		}}
+	elem1 := intTest{Value: 6,
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 18},
+				End:   core.Position{Character: 34},
+			},
+			XMLName: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 19},
+					End:   core.Position{Character: 24},
+				},
+			},
+			XMLNameEnd: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 28},
+					End:   core.Position{Character: 33},
+				},
+			},
+		}}
 	a.Equal(v.Attr1, attr1).
 		Equal(v.Elem1, elem1)
 
@@ -49,14 +78,41 @@ func TestDecode(t *testing.T) {
 		Elem1 []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
-	attr1 = intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
-		Start: core.Position{Character: 8},
-		End:   core.Position{Character: 17},
-	}}}
-	elem1 = intTest{Value: 6, Base: Base{UsageKey: "usage", Range: core.Range{
-		Start: core.Position{Character: 18},
-		End:   core.Position{Character: 34},
-	}}}
+	attr1 = intTest{Value: 5, Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
+			Start: core.Position{Character: 8},
+			End:   core.Position{Character: 17},
+		},
+		XMLName: String{
+			Value: "attr1",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 13},
+			},
+		},
+	}}
+	elem1 = intTest{Value: 6, Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
+			Start: core.Position{Character: 18},
+			End:   core.Position{Character: 34},
+		},
+		XMLName: String{
+			Value: "elem1",
+			Range: core.Range{
+				Start: core.Position{Character: 19},
+				End:   core.Position{Character: 24},
+			},
+		},
+		XMLNameEnd: String{
+			Value: "elem1",
+			Range: core.Range{
+				Start: core.Position{Character: 28},
+				End:   core.Position{Character: 33},
+			},
+		},
+	}}
 	decode(a, b, v2, false)
 	a.Equal(v2.Attr1, attr1).
 		Equal(v2.Elem1, []intTest{elem1})
@@ -67,18 +123,62 @@ func TestDecode(t *testing.T) {
 		Elem1 []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1><elem1>7</elem1></apidoc>`
-	attr1 = intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
-		Start: core.Position{Character: 8},
-		End:   core.Position{Character: 17},
-	}}}
-	elem1 = intTest{Value: 6, Base: Base{UsageKey: "usage", Range: core.Range{
-		Start: core.Position{Character: 18},
-		End:   core.Position{Character: 34},
-	}}}
-	elem2 := intTest{Value: 7, Base: Base{UsageKey: "usage", Range: core.Range{
-		Start: core.Position{Character: 34},
-		End:   core.Position{Character: 50},
-	}}}
+	attr1 = intTest{Value: 5, Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
+			Start: core.Position{Character: 8},
+			End:   core.Position{Character: 17},
+		},
+		XMLName: String{
+			Value: "attr1",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 13},
+			},
+		},
+	}}
+	elem1 = intTest{Value: 6, Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
+			Start: core.Position{Character: 18},
+			End:   core.Position{Character: 34},
+		},
+		XMLName: String{
+			Value: "elem1",
+			Range: core.Range{
+				Start: core.Position{Character: 19},
+				End:   core.Position{Character: 24},
+			},
+		},
+		XMLNameEnd: String{
+			Value: "elem1",
+			Range: core.Range{
+				Start: core.Position{Character: 28},
+				End:   core.Position{Character: 33},
+			},
+		},
+	}}
+	elem2 := intTest{Value: 7, Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
+			Start: core.Position{Character: 34},
+			End:   core.Position{Character: 50},
+		},
+		XMLName: String{
+			Value: "elem1",
+			Range: core.Range{
+				Start: core.Position{Character: 35},
+				End:   core.Position{Character: 40},
+			},
+		},
+		XMLNameEnd: String{
+			Value: "elem1",
+			Range: core.Range{
+				Start: core.Position{Character: 44},
+				End:   core.Position{Character: 49},
+			},
+		},
+	}}
 	decode(a, b, v3, false)
 	a.Equal(v3.Attr1, attr1).
 		Equal(v3.Elem1, []intTest{elem1, elem2})
@@ -93,11 +193,21 @@ func TestDecode(t *testing.T) {
 	a.Equal(v4.Content, String{Value: "5555", Range: core.Range{
 		Start: core.Position{Character: 18},
 		End:   core.Position{Character: 22},
-	}}).
-		Equal(v4.ID, intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
+	}})
+	a.Equal(v4.ID, intTest{Value: 5, Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
 			Start: core.Position{Character: 8},
 			End:   core.Position{Character: 17},
-		}}})
+		},
+		XMLName: String{
+			Value: "attr1",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 13},
+			},
+		},
+	}})
 
 	// cdata
 	v5 := &struct {
@@ -113,8 +223,8 @@ func TestDecode(t *testing.T) {
 		Range: core.Range{
 			Start: core.Position{Character: 18},
 			End:   core.Position{Character: 34},
-		},
-	})
+		}},
+	)
 
 	// cdata 没有围绕 CDATA，则会被忽略
 	v6 := &struct {
@@ -131,34 +241,99 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
 	decode(a, b, v7, false)
-	a.Equal(v7.ID, &intTest{Value: 11, Base: Base{UsageKey: "usage", Range: core.Range{
-		Start: core.Position{Character: 8},
-		End:   core.Position{Character: 15},
-	}}}).
-		Equal(v7.Name, stringTest{Value: "name", Base: Base{UsageKey: "usage", Range: core.Range{
+	a.Equal(v7.ID, &intTest{Value: 11, Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
+			Start: core.Position{Character: 8},
+			End:   core.Position{Character: 15},
+		},
+		XMLName: String{
+			Value: "id",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 10},
+			},
+		},
+	}})
+	a.Equal(v7.Name, stringTest{Value: "name", Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
 			Start: core.Position{Character: 16},
 			End:   core.Position{Character: 33},
-		}}}).
-		Equal(v7.Object, &objectTest{
-			ID: intTest{
-				Value: 11,
-				Base: Base{UsageKey: "usage", Range: core.Range{
-					Start: core.Position{Character: 38},
-					End:   core.Position{Character: 45},
-				}},
+		},
+		XMLName: String{
+			Value: "name",
+			Range: core.Range{
+				Start: core.Position{Character: 17},
+				End:   core.Position{Character: 21},
 			},
-			Name: stringTest{
-				Value: "n",
-				Base: Base{UsageKey: "usage", Range: core.Range{
-					Start: core.Position{Character: 46},
-					End:   core.Position{Character: 60},
-				}},
+		},
+		XMLNameEnd: String{
+			Value: "name",
+			Range: core.Range{
+				Start: core.Position{Character: 28},
+				End:   core.Position{Character: 32},
 			},
-			Base: Base{UsageKey: "usage", Range: core.Range{
+		},
+	}})
+	a.Equal(v7.Object, &objectTest{
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
 				Start: core.Position{Character: 33},
 				End:   core.Position{Character: 66},
-			}},
-		})
+			},
+			XMLName: String{
+				Value: "obj",
+				Range: core.Range{
+					Start: core.Position{Character: 34},
+					End:   core.Position{Character: 37},
+				},
+			},
+			XMLNameEnd: String{
+				Value: "obj",
+				Range: core.Range{
+					Start: core.Position{Character: 62},
+					End:   core.Position{Character: 65},
+				},
+			},
+		},
+		ID: intTest{Value: 11, Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 38},
+				End:   core.Position{Character: 45},
+			},
+			XMLName: String{
+				Value: "id",
+				Range: core.Range{
+					Start: core.Position{Character: 38},
+					End:   core.Position{Character: 40},
+				},
+			},
+		}},
+		Name: stringTest{Value: "n", Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 46},
+				End:   core.Position{Character: 60},
+			},
+			XMLName: String{
+				Value: "name",
+				Range: core.Range{
+					Start: core.Position{Character: 47},
+					End:   core.Position{Character: 51},
+				},
+			},
+			XMLNameEnd: String{
+				Value: "name",
+				Range: core.Range{
+					Start: core.Position{Character: 55},
+					End:   core.Position{Character: 59},
+				},
+			},
+		}},
+	})
 
 	// 多个根元素
 	b = `<apidoc attr="1"></apidoc><apidoc attr="1"></apidoc>`
@@ -209,47 +384,145 @@ func TestDecode(t *testing.T) {
 	<e id="5"><name>6</name></e>
 	<e id="7"><name>7</name></e>
 </apidoc>`
-	attr1 = intTest{Value: 5, Base: Base{UsageKey: "usage", Range: core.Range{
-		Start: core.Position{Character: 8},
-		End:   core.Position{Character: 17},
-	}}}
+	attr1 = intTest{Value: 5, Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
+			Start: core.Position{Character: 8},
+			End:   core.Position{Character: 17},
+		},
+		XMLName: String{
+			Value: "attr1",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 13},
+			},
+		},
+	}}
 	e1 := &objectTest{
-		Base: Base{UsageKey: "usage", Range: core.Range{
-			Start: core.Position{Character: 1, Line: 1},
-			End:   core.Position{Character: 29, Line: 1},
-		}},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 1, Line: 1},
+				End:   core.Position{Character: 29, Line: 1},
+			},
+			XMLName: String{
+				Value: "e",
+				Range: core.Range{
+					Start: core.Position{Character: 2, Line: 1},
+					End:   core.Position{Character: 3, Line: 1},
+				},
+			},
+			XMLNameEnd: String{
+				Value: "e",
+				Range: core.Range{
+					Start: core.Position{Character: 27, Line: 1},
+					End:   core.Position{Character: 28, Line: 1},
+				},
+			},
+		},
 		ID: intTest{
-			Base: Base{UsageKey: "usage", Range: core.Range{
-				Start: core.Position{Character: 4, Line: 1},
-				End:   core.Position{Character: 10, Line: 1},
-			}},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 4, Line: 1},
+					End:   core.Position{Character: 10, Line: 1},
+				},
+				XMLName: String{
+					Value: "id",
+					Range: core.Range{
+						Start: core.Position{Character: 4, Line: 1},
+						End:   core.Position{Character: 6, Line: 1},
+					},
+				},
+			},
 			Value: 5,
 		},
 		Name: stringTest{
-			Base: Base{UsageKey: "usage", Range: core.Range{
-				Start: core.Position{Character: 11, Line: 1},
-				End:   core.Position{Character: 25, Line: 1},
-			}},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 11, Line: 1},
+					End:   core.Position{Character: 25, Line: 1},
+				},
+				XMLName: String{
+					Value: "name",
+					Range: core.Range{
+						Start: core.Position{Character: 12, Line: 1},
+						End:   core.Position{Character: 16, Line: 1},
+					},
+				},
+				XMLNameEnd: String{
+					Value: "name",
+					Range: core.Range{
+						Start: core.Position{Character: 20, Line: 1},
+						End:   core.Position{Character: 24, Line: 1},
+					},
+				},
+			},
 			Value: "6",
 		},
 	}
 	e2 := &objectTest{
-		Base: Base{UsageKey: "usage", Range: core.Range{
-			Start: core.Position{Character: 1, Line: 2},
-			End:   core.Position{Character: 29, Line: 2},
-		}},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 1, Line: 2},
+				End:   core.Position{Character: 29, Line: 2},
+			},
+			XMLName: String{
+				Value: "e",
+				Range: core.Range{
+					Start: core.Position{Character: 2, Line: 2},
+					End:   core.Position{Character: 3, Line: 2},
+				},
+			},
+			XMLNameEnd: String{
+				Value: "e",
+				Range: core.Range{
+					Start: core.Position{Character: 27, Line: 2},
+					End:   core.Position{Character: 28, Line: 2},
+				},
+			},
+		},
 		ID: intTest{
-			Base: Base{UsageKey: "usage", Range: core.Range{
-				Start: core.Position{Character: 4, Line: 2},
-				End:   core.Position{Character: 10, Line: 2},
-			}},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 4, Line: 2},
+					End:   core.Position{Character: 10, Line: 2},
+				},
+				XMLName: String{
+					Value: "id",
+					Range: core.Range{
+						Start: core.Position{Character: 4, Line: 2},
+						End:   core.Position{Character: 6, Line: 2},
+					},
+				},
+			},
 			Value: 7,
 		},
 		Name: stringTest{
-			Base: Base{UsageKey: "usage", Range: core.Range{
-				Start: core.Position{Character: 11, Line: 2},
-				End:   core.Position{Character: 25, Line: 2},
-			}},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 11, Line: 2},
+					End:   core.Position{Character: 25, Line: 2},
+				},
+				XMLName: String{
+					Value: "name",
+					Range: core.Range{
+						Start: core.Position{Character: 12, Line: 2},
+						End:   core.Position{Character: 16, Line: 2},
+					},
+				},
+				XMLNameEnd: String{
+					Value: "name",
+					Range: core.Range{
+						Start: core.Position{Character: 20, Line: 2},
+						End:   core.Position{Character: 24, Line: 2},
+					},
+				},
+			},
 			Value: "7",
 		},
 	}
@@ -278,8 +551,15 @@ func TestObject_decodeAttributes(t *testing.T) {
 			{Name: String{Value: "id"}, Value: String{Value: "10"}},
 		},
 	})
-	a.NotError(err).Equal(val.ID, intTest{Value: 10, Base: Base{UsageKey: "usage"}}).
-		Equal(val.Name, stringTest{Value: "name", Base: Base{UsageKey: "usage"}})
+	a.NotError(err)
+	a.Equal(val.ID, intTest{Value: 10, Base: Base{
+		UsageKey: "usage",
+		XMLName:  String{Value: "id"},
+	}})
+	a.Equal(val.Name, stringTest{Value: "name", Base: Base{
+		UsageKey: "usage",
+		XMLName:  String{Value: "name"},
+	}})
 
 	val = &struct {
 		ID   intTest    `apidoc:"id,attr,usage"`
@@ -311,9 +591,18 @@ func TestObject_decodeAttributes(t *testing.T) {
 		},
 	})
 	a.NotError(err).
-		Equal(val2.ID, intTest{Value: 10, Base: Base{UsageKey: "usage"}}).
-		Equal(val2.Name, stringTest{Value: "name", Base: Base{UsageKey: "usage"}}).
-		Equal(val2.Attr1, intTest{Value: 11, Base: Base{UsageKey: "usage"}})
+		Equal(val2.ID, intTest{Value: 10, Base: Base{
+			UsageKey: "usage",
+			XMLName:  String{Value: "id"},
+		}})
+	a.Equal(val2.Name, stringTest{Value: "name", Base: Base{
+		UsageKey: "usage",
+		XMLName:  String{Value: "name"},
+	}})
+	a.Equal(val2.Attr1, intTest{Value: 11, Base: Base{
+		UsageKey: "usage",
+		XMLName:  String{Value: "attr1"},
+	}})
 
 	// 测试 AttrDecoder，返回错误
 	val4 := &struct {

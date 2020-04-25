@@ -52,25 +52,25 @@ var (
 	_ Decoder     = &stringTest{}
 )
 
-func (i *intTest) DecodeXML(p *Parser, start *StartElement) (core.Position, error) {
+func (i *intTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
 	for {
 		t, err := p.Token()
 		if err != nil {
-			return core.Position{}, err
+			return nil, err
 		}
 		if t == nil {
-			return core.Position{}, io.EOF
+			return nil, io.EOF
 		}
 
 		switch elem := t.(type) {
 		case *EndElement:
 			if elem.Name.Value == start.Name.Value {
-				return elem.End, nil
+				return elem, nil
 			}
 		case *String:
 			v, err := strconv.Atoi(strings.TrimSpace(elem.Value))
 			if err != nil {
-				return core.Position{}, err
+				return nil, err
 			}
 			i.Value = v
 		default:
@@ -96,20 +96,20 @@ func (i *intTest) EncodeXMLAttr() (string, error) {
 	return strconv.Itoa(i.Value), nil
 }
 
-func (i *stringTest) DecodeXML(p *Parser, start *StartElement) (core.Position, error) {
+func (i *stringTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
 	for {
 		t, err := p.Token()
 		if err != nil {
-			return core.Position{}, err
+			return nil, err
 		}
 		if t == nil {
-			return core.Position{}, io.EOF
+			return nil, io.EOF
 		}
 
 		switch elem := t.(type) {
 		case *EndElement:
 			if elem.Name.Value == start.Name.Value {
-				return elem.End, nil
+				return elem, nil
 			}
 		case *String:
 			i.Value = elem.Value

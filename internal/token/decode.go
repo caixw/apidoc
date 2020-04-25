@@ -17,7 +17,7 @@ type Decoder interface {
 	//
 	// 必须要同时从 p 中读取相应的 EndElement 才能返回。
 	// end 表示 EndElement.End 的值。
-	DecodeXML(p *Parser, start *StartElement) (end core.Position, err error)
+	DecodeXML(p *Parser, start *StartElement) (end *EndElement, err error)
 }
 
 // AttrDecoder 实现从 attr 中解码内容到当前对象
@@ -58,13 +58,13 @@ func Decode(p *Parser, v interface{}) error {
 	}
 }
 
-func (n *node) decode(p *Parser, start *StartElement) (core.Position, error) {
+func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 	if err := n.decodeAttributes(start); err != nil {
-		return core.Position{}, err
+		return nil, err
 	}
 
 	if start.Close {
-		return core.Position{}, nil
+		return nil, nil
 	}
 
 	return n.decodeElements(p)
@@ -102,36 +102,36 @@ func (n *node) decodeAttributes(start *StartElement) error {
 			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name.Value))
 		}
 
-		initValue(item.Value, item.usage, attr.Start, attr.End)
+		initValue(item.Value, item.usage, attr.Start, attr.End, attr.Name, String{})
 	}
 
 	return nil
 }
 
-func (n *node) decodeElements(p *Parser) (core.Position, error) {
+func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 	for {
 		t, err := p.Token()
 		if err == io.EOF {
-			return core.Position{}, nil
+			return nil, nil
 		} else if err != nil {
-			return core.Position{}, err
+			return nil, err
 		}
 
 		switch elem := t.(type) {
 		case *EndElement: // 找到当前对象的结束标签
 			if elem.Name.Value != n.name {
-				return core.Position{}, p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
+				return nil, p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
 			}
-			return elem.End, nil
+			return elem, nil
 		case *CData:
 			if n.cdata.IsValid() {
 				n.cdata.Set(getRealValue(reflect.ValueOf(elem)))
-				initValue(n.cdata.Value, n.cdata.usage, elem.Start, elem.End)
+				initValue(n.cdata.Value, n.cdata.usage, elem.Start, elem.End, String{}, String{})
 			}
 		case *String:
 			if n.content.IsValid() {
 				n.content.Set(getRealValue(reflect.ValueOf(elem)))
-				initValue(n.content.Value, n.content.usage, elem.Start, elem.End)
+				initValue(n.content.Value, n.content.usage, elem.Start, elem.End, String{}, String{})
 			}
 		case *StartElement:
 			item, found := n.elem(elem.Name.Value)
@@ -140,7 +140,7 @@ func (n *node) decodeElements(p *Parser) (core.Position, error) {
 			}
 
 			if err = decodeElement(p, elem, item); err != nil {
-				return core.Position{}, err
+				return nil, err
 			}
 		}
 	} // end for
@@ -152,7 +152,7 @@ func decodeElement(p *Parser, start *StartElement, v value) error {
 		if err != nil {
 			return err
 		}
-		initValue(v.Value, v.usage, start.Start, end)
+		initValue(v.Value, v.usage, start.Start, end.End, start.Name, end.Name)
 		return nil
 	} else if v.CanAddr() {
 		pv := v.Addr()
@@ -161,7 +161,7 @@ func decodeElement(p *Parser, start *StartElement, v value) error {
 			if err != nil {
 				return err
 			}
-			initValue(v.Value, v.usage, start.Start, end)
+			initValue(v.Value, v.usage, start.Start, end.End, start.Name, end.Name)
 			return nil
 		}
 	}
@@ -177,7 +177,7 @@ func decodeElement(p *Parser, start *StartElement, v value) error {
 		if err != nil {
 			return err
 		}
-		initValue(v.Value, v.usage, start.Start, end)
+		initValue(v.Value, v.usage, start.Start, end.End, start.Name, end.Name)
 		return nil
 	}
 }
@@ -194,7 +194,7 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 		}
 	}
 
-	var end core.Position
+	var end *EndElement
 	if elem.CanInterface() && elem.Type().Implements(decoderType) {
 		end, err = elem.Interface().(Decoder).DecodeXML(p, start)
 		if err != nil {
@@ -221,7 +221,7 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 	}
 
 RET:
-	initValue(elem, slice.usage, start.Start, end)
+	initValue(elem, slice.usage, start.Start, end.End, start.Name, end.Name)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return nil
 }
@@ -252,14 +252,23 @@ func findEndElement(p *Parser, start *StartElement) error {
 	}
 }
 
-func initValue(v reflect.Value, usage string, start, end core.Position) {
+func initValue(v reflect.Value, usage string, start, end core.Position, xmlName, xmlNameEnd String) {
 	v = getRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}
 
 	v.FieldByName(rangeName).Set(reflect.ValueOf(core.Range{Start: start, End: end}))
+
 	if usage != "" { // CDATA 和 content 节点类型的 usage 内容为空
 		v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
+	}
+
+	if xmlName.Value != "" { // CDATA 和 content 节点的 XMLName 肯定为空
+		v.FieldByName(elementTagName).Set(reflect.ValueOf(xmlName))
+	}
+
+	if xmlNameEnd.Value != "" {
+		v.FieldByName(elementTagEndName).Set(reflect.ValueOf(xmlNameEnd))
 	}
 }

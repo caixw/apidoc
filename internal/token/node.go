@@ -28,8 +28,8 @@ type node struct {
 }
 
 type value struct {
-	name string
 	reflect.Value
+	name      string // 字段的 XML 名称
 	omitempty bool
 
 	// 当前值可能未初始化，所以保存 usage 的值，
