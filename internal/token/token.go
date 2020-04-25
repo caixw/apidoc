@@ -67,9 +67,17 @@ const (
 // Base 每一个 XML 节点必须包含的内容
 type Base struct {
 	core.Range
-	UsageKey   message.Reference `apidoc:"-"`
-	XMLName    String            `apidoc:"-"` // 表示标签名或是属性名
-	XMLNameEnd String            `apidoc:"-"` // 表示标签的结束名称，如果是属性，此值为空
+
+	// 表示对当前元素的一个说明内容的翻译 ID
+	UsageKey message.Reference `apidoc:"-"`
+
+	// 表示标签名或是属性名
+	XMLName String `apidoc:"-"`
+
+	// 表示标签的结束名称
+	//
+	// 如果是属性或是自闭合的标签，此值为空。
+	XMLNameEnd String `apidoc:"-"`
 }
 
 // Usage 返回该节点的说明内容

@@ -55,11 +55,10 @@ var (
 func (i *intTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
 	for {
 		t, err := p.Token()
-		if err != nil {
+		if err == io.EOF {
+			return nil, nil
+		} else if err != nil {
 			return nil, err
-		}
-		if t == nil {
-			return nil, io.EOF
 		}
 
 		switch elem := t.(type) {
@@ -99,11 +98,10 @@ func (i *intTest) EncodeXMLAttr() (string, error) {
 func (i *stringTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
 	for {
 		t, err := p.Token()
-		if err != nil {
+		if err == io.EOF {
+			return nil, nil
+		} else if err != nil {
 			return nil, err
-		}
-		if t == nil {
-			return nil, io.EOF
 		}
 
 		switch elem := t.(type) {

@@ -72,6 +72,46 @@ func TestDecode(t *testing.T) {
 	a.Equal(v.Attr1, attr1).
 		Equal(v.Elem1, elem1)
 
+	// 自闭合标签，采用上一个相同的类型
+	v = &struct {
+		Attr1 intTest `apidoc:"attr1,attr,usage"`
+		Elem1 intTest `apidoc:"elem1,elem,usage"`
+	}{}
+	b = `<apidoc attr1="5"><elem1 /></apidoc>`
+	decode(a, b, v, false)
+	attr1 = intTest{Value: 5,
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 17},
+			},
+			XMLName: String{
+				Value: "attr1",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 13},
+				},
+			},
+		}}
+	elem1 = intTest{Value: 0,
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 18},
+				End:   core.Position{Character: 27},
+			},
+			XMLName: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 19},
+					End:   core.Position{Character: 24},
+				},
+			},
+		}}
+	a.Equal(v.Attr1, attr1).
+		Equal(v.Elem1, elem1)
+
 	// 数组，单个元素
 	v2 := &struct {
 		Attr1 intTest   `apidoc:"attr1,attr,usage"`

@@ -421,6 +421,52 @@ func TestParser_Token(t *testing.T) {
 				nil, nil,
 			},
 		},
+
+		{ // 嵌套自闭合对象
+			input: `<apidoc><apidoc /></apidoc> `,
+			elems: []interface{}{
+				&StartElement{
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 11, Character: 30},
+					},
+					Name: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 23},
+							End:   core.Position{Line: 11, Character: 29},
+						},
+						Value: "apidoc",
+					},
+				}, // end StartElement
+				&StartElement{
+					Close: true,
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 30},
+						End:   core.Position{Line: 11, Character: 40},
+					},
+					Name: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 31},
+							End:   core.Position{Line: 11, Character: 37},
+						},
+						Value: "apidoc",
+					},
+				},
+				&EndElement{
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 40},
+						End:   core.Position{Line: 11, Character: 49},
+					},
+					Name: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 42},
+							End:   core.Position{Line: 11, Character: 48},
+						},
+						Value: "apidoc",
+					},
+				},
+			},
+		},
 	}
 
 	for _, item := range data {

@@ -17,6 +17,8 @@ type Decoder interface {
 	//
 	// 必须要同时从 p 中读取相应的 EndElement 才能返回。
 	// end 表示 EndElement.End 的值。
+	//
+	// NOTE: 如果是自闭合标签，则不会调用该接口。
 	DecodeXML(p *Parser, start *StartElement) (end *EndElement, err error)
 }
 
@@ -112,7 +114,8 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 	for {
 		t, err := p.Token()
 		if err == io.EOF {
-			return nil, nil
+			// 应该只有 EndElement 才能返回，否则就不完整的 XML
+			return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
 		} else if err != nil {
 			return nil, err
 		}
@@ -147,12 +150,17 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 }
 
 func decodeElement(p *Parser, start *StartElement, v value) error {
+	if start.Close { // 自闭合，没有子元素，没有处理的必要
+		initElementValue(v.Value, v.usage, start, nil)
+		return nil
+	}
+
 	if v.CanInterface() && v.Type().Implements(decoderType) {
 		end, err := v.Interface().(Decoder).DecodeXML(p, start)
 		if err != nil {
 			return err
 		}
-		initValue(v.Value, v.usage, start.Start, end.End, start.Name, end.Name)
+		initElementValue(v.Value, v.usage, start, end)
 		return nil
 	} else if v.CanAddr() {
 		pv := v.Addr()
@@ -161,7 +169,7 @@ func decodeElement(p *Parser, start *StartElement, v value) error {
 			if err != nil {
 				return err
 			}
-			initValue(v.Value, v.usage, start.Start, end.End, start.Name, end.Name)
+			initElementValue(v.Value, v.usage, start, end)
 			return nil
 		}
 	}
@@ -177,7 +185,7 @@ func decodeElement(p *Parser, start *StartElement, v value) error {
 		if err != nil {
 			return err
 		}
-		initValue(v.Value, v.usage, start.Start, end.End, start.Name, end.Name)
+		initElementValue(v.Value, v.usage, start, end)
 		return nil
 	}
 }
@@ -221,7 +229,7 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 	}
 
 RET:
-	initValue(elem, slice.usage, start.Start, end.End, start.Name, end.Name)
+	initElementValue(elem, slice.usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return nil
 }
@@ -250,6 +258,14 @@ func findEndElement(p *Parser, start *StartElement) error {
 			level--
 		}
 	}
+}
+
+func initElementValue(v reflect.Value, usage string, start *StartElement, end *EndElement) {
+	if end == nil {
+		initValue(v, usage, start.Start, start.End, start.Name, String{})
+		return
+	}
+	initValue(v, usage, start.Start, end.End, start.Name, end.Name)
 }
 
 func initValue(v reflect.Value, usage string, start, end core.Position, xmlName, xmlNameEnd String) {
