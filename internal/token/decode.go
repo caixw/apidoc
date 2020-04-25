@@ -149,93 +149,93 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 	} // end for
 }
 
-func decodeElement(p *Parser, start *StartElement, v value) error {
-	if start.Close { // 自闭合，没有子元素，没有处理的必要
-		initElementValue(v.Value, v.usage, start, nil)
-		return nil
-	}
-
-	if v.CanInterface() && v.Type().Implements(decoderType) {
-		end, err := v.Interface().(Decoder).DecodeXML(p, start)
-		if err != nil {
-			return err
-		}
-		initElementValue(v.Value, v.usage, start, end)
-		return nil
-	} else if v.CanAddr() {
-		pv := v.Addr()
-		if pv.CanInterface() && pv.Type().Implements(decoderType) {
-			end, err := pv.Interface().(Decoder).DecodeXML(p, start)
-			if err != nil {
-				return err
-			}
-			initElementValue(v.Value, v.usage, start, end)
-			return nil
-		}
-	}
-
+func decodeElement(p *Parser, start *StartElement, v value) (err error) {
 	k := v.Kind()
 	switch {
 	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, isPrimitive(v.Value):
 		panic(fmt.Sprintf("%s 是无效的类型", v.Value.Type().Name()))
 	case k == reflect.Slice:
 		return decodeSlice(p, start, v)
-	default:
-		end, err := newNode(start.Name.Value, v.Value).decode(p, start)
-		if err != nil {
-			return err
-		}
-		initElementValue(v.Value, v.usage, start, end)
+	}
+
+	if start.Close { // 自闭合，没有子元素，没有处理的必要
+		initElementValue(v.Value, v.usage, start, nil)
 		return nil
 	}
+
+	var end *EndElement
+	if v.CanInterface() && v.Type().Implements(decoderType) {
+		end, err = v.Interface().(Decoder).DecodeXML(p, start)
+		goto RET
+	} else if v.CanAddr() {
+		pv := v.Addr()
+		if pv.CanInterface() && pv.Type().Implements(decoderType) {
+			end, err = pv.Interface().(Decoder).DecodeXML(p, start)
+			goto RET
+		}
+	}
+	end, err = newNode(start.Name.Value, v.Value).decode(p, start)
+
+RET:
+	if err != nil {
+		return err
+	}
+	initElementValue(v.Value, v.usage, start, end)
+	return nil
 }
 
 func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
+	if start.Close {
+		elem := initSliceElem(slice.Type())
+		initElementValue(elem, slice.usage, start, nil)
+		slice.Value.Set(reflect.Append(slice.Value, elem))
+		return nil
+	}
+
+	// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
+	// 所以要过滤与 start 想匹配的结束符号才算结束。
 	if start.Name.Value != slice.name {
 		return findEndElement(p, start)
 	}
 
-	elem := reflect.New(slice.Type().Elem()).Elem()
-	if elem.Kind() == reflect.Ptr {
-		if elem.IsNil() {
-			elem.Set(reflect.New(elem.Type().Elem()))
-		}
-	}
-
+	elem := initSliceElem(slice.Type())
 	var end *EndElement
 	if elem.CanInterface() && elem.Type().Implements(decoderType) {
 		end, err = elem.Interface().(Decoder).DecodeXML(p, start)
-		if err != nil {
-			return err
-		}
 		goto RET
 	} else if elem.CanAddr() {
 		pv := elem.Addr()
 		if pv.CanInterface() && pv.Type().Implements(decoderType) {
 			end, err = pv.Interface().(Decoder).DecodeXML(p, start)
-			if err != nil {
-				return err
-			}
 			goto RET
 		}
 	}
 
 	if isPrimitive(elem) {
 		panic(fmt.Sprintf("%s:%s 必须实现 Decoder 接口", slice.name, elem.Type()))
-	} else {
-		if end, err = newNode(start.Name.Value, elem).decode(p, start); err != nil {
-			return err
-		}
 	}
+	end, err = newNode(start.Name.Value, elem).decode(p, start)
 
 RET:
+	if err != nil {
+		return err
+	}
 	initElementValue(elem, slice.usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return nil
 }
 
-// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
-// 所以要过滤与 start 想匹配的结束符号才算结束。
+func initSliceElem(t reflect.Type) reflect.Value {
+	elem := reflect.New(t.Elem()).Elem()
+	if elem.Kind() == reflect.Ptr {
+		if elem.IsNil() {
+			elem.Set(reflect.New(elem.Type().Elem()))
+		}
+	}
+	return elem
+}
+
+// 找到与 start 相对应的结束符号位置
 func findEndElement(p *Parser, start *StartElement) error {
 	level := 0
 	for {
