@@ -80,6 +80,14 @@ func TestLexer_Position(t *testing.T) {
 	a.False(l.AtEOF()).
 		Equal(-1, l.prev.Offset).
 		Equal(l.current, p)
+
+	l.Move(Position{Offset: 11111111})
+	a.True(l.AtEOF())
+
+	// 不能为负
+	a.Panic(func() {
+		l.Move(Position{Offset: -1})
+	})
 }
 
 func TestLexer_Match(t *testing.T) {

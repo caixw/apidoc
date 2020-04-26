@@ -92,8 +92,15 @@ func (l *Lexer) Position() Position {
 
 // Move 移动当前的分析器的位置
 //
-// 执行此操作之后，Rollback 将失效，且 AtEOF 为 false
+// 执行此操作之后，Rollback 将失效
+//
+// 不会限制 p 的值，如果将 p.Offset 的值设置为大于整个数据的长度，
+// 在下次调用 AtEOF 时会返回 true；如果将 p.Offset 设置为负值，则 panic。
 func (l *Lexer) Move(p Position) {
+	if p.Offset < 0 {
+		panic("p.Offset 必须为一个正整数")
+	}
+
 	l.current = p
 	l.prev.Offset = -1
 }
