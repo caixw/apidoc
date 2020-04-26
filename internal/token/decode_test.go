@@ -630,6 +630,68 @@ func TestDecode(t *testing.T) {
 		Equal(2, len(v12.Elem1)).
 		Equal(v12.Elem1[0], e1).
 		Equal(v12.Elem1[1], e2)
+
+	// 数组，闭合标签带属性
+	type obj struct {
+		Base
+		ID intTest `apidoc:"id,attr,usage"`
+	}
+	v13 := &struct {
+		Attr1 intTest `apidoc:"attr1,attr,usage"`
+		Elem1 []*obj  `apidoc:"elem2,elem,usage-elem2"`
+	}{}
+	b = `<apidoc attr1="5"><elem2 id="6" /></apidoc>`
+	attr1 = intTest{Value: 5, Base: Base{
+		UsageKey: "usage",
+		Range: core.Range{
+			Start: core.Position{Character: 8},
+			End:   core.Position{Character: 17},
+		},
+		XMLName: String{
+			Value: "attr1",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 13},
+			},
+		},
+	}}
+	obj1 := &obj{
+		Base: Base{
+			UsageKey: "usage-elem2",
+			Range: core.Range{
+				Start: core.Position{Character: 18},
+				End:   core.Position{Character: 34},
+			},
+			XMLName: String{
+				Value: "elem2",
+				Range: core.Range{
+					Start: core.Position{Character: 19},
+					End:   core.Position{Character: 24},
+				},
+			},
+		},
+		ID: intTest{
+			Value: 6,
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 25},
+					End:   core.Position{Character: 31},
+				},
+				XMLName: String{
+					Value: "id",
+					Range: core.Range{
+						Start: core.Position{Character: 25},
+						End:   core.Position{Character: 27},
+					},
+				},
+			},
+		},
+	}
+
+	decode(a, b, v13, false)
+	a.Equal(v13.Attr1, attr1)
+	a.Equal(1, len(v13.Elem1)).Equal(v13.Elem1[0], obj1, "v1=%#v\nv2=%#v\n", v13.Elem1[0], obj1)
 }
 
 func TestObject_decodeAttributes(t *testing.T) {

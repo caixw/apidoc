@@ -185,28 +185,31 @@ RET:
 }
 
 func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
-	if start.Close {
-		elem := initSliceElem(slice.Type())
-		initElementValue(elem, slice.usage, start, nil)
-		slice.Value.Set(reflect.Append(slice.Value, elem))
-		return nil
-	}
-
 	// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
 	// 所以要过滤与 start 想匹配的结束符号才算结束。
-	if start.Name.Value != slice.name {
+	if !start.Close && (start.Name.Value != slice.name) {
 		return findEndElement(p, start)
 	}
 
-	elem := initSliceElem(slice.Type())
+	elem := reflect.New(slice.Type().Elem()).Elem()
+	if elem.Kind() == reflect.Ptr {
+		if elem.IsNil() {
+			elem.Set(reflect.New(elem.Type().Elem()))
+		}
+	}
+
 	var end *EndElement
 	if elem.CanInterface() && elem.Type().Implements(decoderType) {
-		end, err = elem.Interface().(Decoder).DecodeXML(p, start)
+		if !start.Close {
+			end, err = elem.Interface().(Decoder).DecodeXML(p, start)
+		}
 		goto RET
 	} else if elem.CanAddr() {
 		pv := elem.Addr()
 		if pv.CanInterface() && pv.Type().Implements(decoderType) {
-			end, err = pv.Interface().(Decoder).DecodeXML(p, start)
+			if !start.Close {
+				end, err = pv.Interface().(Decoder).DecodeXML(p, start)
+			}
 			goto RET
 		}
 	}
@@ -223,16 +226,6 @@ RET:
 	initElementValue(elem, slice.usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return nil
-}
-
-func initSliceElem(t reflect.Type) reflect.Value {
-	elem := reflect.New(t.Elem()).Elem()
-	if elem.Kind() == reflect.Ptr {
-		if elem.IsNil() {
-			elem.Set(reflect.New(elem.Type().Elem()))
-		}
-	}
-	return elem
 }
 
 // 找到与 start 相对应的结束符号位置
