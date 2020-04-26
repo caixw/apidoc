@@ -89,6 +89,7 @@ path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔
 	ErrInvalidUTF8Character:  "無效的 UTF8 字符",
 	ErrInvalidURIScheme:      "無效的 uri 協議",
 	ErrInvalidXML:            "无效的 XML 文檔",
+	ErrIsNotAPIDoc:           "並非有效的 apidoc 的文檔格式",
 
 	// logs
 	InfoPrefix:    "[信息] ",
