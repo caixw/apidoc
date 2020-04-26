@@ -692,6 +692,17 @@ func TestDecode(t *testing.T) {
 	decode(a, b, v13, false)
 	a.Equal(v13.Attr1, attr1)
 	a.Equal(1, len(v13.Elem1)).Equal(v13.Elem1[0], obj1, "v1=%#v\nv2=%#v\n", v13.Elem1[0], obj1)
+
+	// 闭合标签
+	v14 := &struct {
+		Attr1 intTest `apidoc:"attr1,attr,usage"`
+		Elem1 *obj    `apidoc:"elem2,elem,usage-elem2"`
+	}{}
+	b = `<apidoc attr1="5"><elem2 id="60" /></apidoc>`
+	decode(a, b, v14, false)
+	a.NotNil(v14.Elem1).
+		Equal(v14.Elem1.XMLName.Value, "elem2").
+		Equal(v14.Elem1.ID.Value, 60)
 }
 
 func TestObject_decodeAttributes(t *testing.T) {

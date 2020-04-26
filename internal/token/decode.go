@@ -74,7 +74,7 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 
 // 将 start 的属性内容解码到 obj.attrs 之中
 func (n *node) decodeAttributes(start *StartElement) error {
-	if start == nil || len(start.Attributes) == 0 {
+	if start == nil {
 		return nil
 	}
 
@@ -144,13 +144,7 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 				panic(fmt.Sprintf("不存在的子元素 %s", elem.Name.Value))
 			}
 
-			vv := value{
-				name:      item.name,
-				omitempty: item.omitempty,
-				usage:     item.usage,
-				Value:     getRealValue(item.Value),
-			}
-			if err = decodeElement(p, elem, vv); err != nil {
+			if err = decodeElement(p, elem, item); err != nil {
 				return nil, err
 			}
 		}
@@ -158,6 +152,7 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 }
 
 func decodeElement(p *Parser, start *StartElement, v value) (err error) {
+	v.Value = getRealValue(v.Value)
 	k := v.Kind()
 	switch {
 	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, isPrimitive(v.Value):
@@ -166,25 +161,11 @@ func decodeElement(p *Parser, start *StartElement, v value) (err error) {
 		return decodeSlice(p, start, v)
 	}
 
-	if start.Close { // 自闭合，没有子元素，没有处理的必要
-		initElementValue(v.Value, v.usage, start, nil)
-		return nil
+	end, impl, err := callDecodeXML(v.Value, p, start)
+	if !impl {
+		end, err = newNode(start.Name.Value, v.Value).decode(p, start)
 	}
 
-	var end *EndElement
-	if v.CanInterface() && v.Type().Implements(decoderType) {
-		end, err = v.Interface().(Decoder).DecodeXML(p, start)
-		goto RET
-	} else if v.CanAddr() {
-		pv := v.Addr()
-		if pv.CanInterface() && pv.Type().Implements(decoderType) {
-			end, err = pv.Interface().(Decoder).DecodeXML(p, start)
-			goto RET
-		}
-	}
-	end, err = newNode(start.Name.Value, v.Value).decode(p, start)
-
-RET:
 	if err != nil {
 		return err
 	}
@@ -200,40 +181,43 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 	}
 
 	elem := reflect.New(slice.Type().Elem()).Elem()
-	if elem.Kind() == reflect.Ptr {
-		if elem.IsNil() {
-			elem.Set(reflect.New(elem.Type().Elem()))
-		}
+	if elem.Kind() == reflect.Ptr && elem.IsNil() {
+		elem.Set(reflect.New(elem.Type().Elem()))
 	}
 
-	var end *EndElement
-	if elem.CanInterface() && elem.Type().Implements(decoderType) {
-		if !start.Close {
-			end, err = elem.Interface().(Decoder).DecodeXML(p, start)
+	end, impl, err := callDecodeXML(elem, p, start)
+	if !impl {
+		if isPrimitive(elem) {
+			panic(fmt.Sprintf("%s:%s 必须实现 Decoder 接口", slice.name, elem.Type()))
 		}
-		goto RET
-	} else if elem.CanAddr() {
-		pv := elem.Addr()
-		if pv.CanInterface() && pv.Type().Implements(decoderType) {
-			if !start.Close {
-				end, err = pv.Interface().(Decoder).DecodeXML(p, start)
-			}
-			goto RET
-		}
+		end, err = newNode(start.Name.Value, elem).decode(p, start)
 	}
 
-	if isPrimitive(elem) {
-		panic(fmt.Sprintf("%s:%s 必须实现 Decoder 接口", slice.name, elem.Type()))
-	}
-	end, err = newNode(start.Name.Value, elem).decode(p, start)
-
-RET:
 	if err != nil {
 		return err
 	}
 	initElementValue(elem, slice.usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return nil
+}
+
+// 调用 v 的 DecodeXML 接口方法
+func callDecodeXML(v reflect.Value, p *Parser, start *StartElement) (end *EndElement, impl bool, err error) {
+	if v.CanInterface() && v.Type().Implements(decoderType) {
+		if !start.Close {
+			end, err = v.Interface().(Decoder).DecodeXML(p, start)
+		}
+		return end, true, err
+	} else if v.CanAddr() {
+		pv := v.Addr()
+		if pv.CanInterface() && pv.Type().Implements(decoderType) {
+			if !start.Close {
+				end, err = pv.Interface().(Decoder).DecodeXML(p, start)
+			}
+			return end, true, err
+		}
+	}
+	return nil, false, nil
 }
 
 // 找到与 start 相对应的结束符号位置
