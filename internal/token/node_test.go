@@ -153,13 +153,11 @@ func TestNewNode(t *testing.T) {
 			Equal(o.name, item.inputName)
 
 		for k, v := range o.attrs {
-			a.True(v.IsValid(), "value.IsValid() == false 位于 %d:%s.attrs", i, k)
-			a.True(v.Kind() != reflect.Ptr, "非法的指针类型位于 %d:%s.attrs", i, k)
+			a.True(v.IsValid(), "value.IsValid() == false 位于 %d:%d.attrs", i, k)
 		}
 
 		for k, v := range o.elems {
-			a.True(v.IsValid(), "value.IsValid() == false 位于 %d:%s.elems", i, k)
-			a.True(v.Kind() != reflect.Ptr, "非法的指针类型位于 %d:%s.elems", i, k)
+			a.True(v.IsValid(), "value.IsValid() == false 位于 %d:%d.elems", i, k)
 		}
 	}
 

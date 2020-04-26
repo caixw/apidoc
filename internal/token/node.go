@@ -20,16 +20,18 @@ const (
 	contentNode
 )
 
+// 表示一个 XML 标签节点
 type node struct {
-	name           string // 标签名称
-	attrs          []value
-	elems          []value
-	cdata, content value
+	name           string  // 标签名称
+	attrs          []value // 当前标签的属性值列表
+	elems          []value // 当前标签的元素列表
+	cdata, content value   // 当前标签如果没有子元素，则可能有普通的内容或是 CDATA 内容
 }
 
+// 表示 XML 节点的值的反射表示方式
 type value struct {
 	reflect.Value
-	name      string // 字段的 XML 名称
+	name      string // 节点的名称
 	omitempty bool
 
 	// 当前值可能未初始化，所以保存 usage 的值，
@@ -51,7 +53,7 @@ func newNode(name string, rv reflect.Value) *node {
 	rv = getRealValue(rv)
 	rt := rv.Type()
 
-	num := rv.NumField()
+	num := rt.NumField()
 	if num == 0 {
 		return &node{name: name}
 	}
@@ -84,7 +86,7 @@ func newNode(name string, rv reflect.Value) *node {
 			continue
 		}
 
-		v := getRealValue(rv.Field(i))
+		v := rv.Field(i)
 		switch node {
 		case attrNode:
 			n.appendAttr(value{name: name, Value: v, omitempty: omitempty, usage: usage})
@@ -100,7 +102,7 @@ func newNode(name string, rv reflect.Value) *node {
 			if len(n.elems) > 0 {
 				panic("cdata 与子元素不能同时存在")
 			}
-			if v.Type() != cdataType {
+			if getRealType(field.Type) != cdataType {
 				panic("cdata 的类型只能是 *CData")
 			}
 			n.cdata = value{name: name, Value: v, omitempty: omitempty, usage: usage}
@@ -114,7 +116,7 @@ func newNode(name string, rv reflect.Value) *node {
 			if len(n.elems) > 0 {
 				panic("content 与子元素不能同时存在")
 			}
-			if v.Type() != contentType {
+			if getRealType(field.Type) != contentType {
 				panic("content 的类型只能是 *String")
 			}
 			n.content = value{name: name, Value: v, omitempty: omitempty, usage: usage}
@@ -141,6 +143,13 @@ func (n *node) findElem(name string, elems []value) (value, bool) {
 	return value{}, false
 }
 
+func getRealType(t reflect.Type) reflect.Type {
+	for t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	return t
+}
+
 func getRealValue(v reflect.Value) reflect.Value {
 	for v.Kind() == reflect.Ptr {
 		if v.IsNil() {
@@ -149,7 +158,6 @@ func getRealValue(v reflect.Value) reflect.Value {
 			v = v.Elem()
 		}
 	}
-
 	return v
 }
 

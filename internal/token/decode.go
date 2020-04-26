@@ -83,6 +83,8 @@ func (n *node) decodeAttributes(start *StartElement) error {
 		if !found {
 			continue
 		}
+		v := getRealValue(item.Value)
+		v.Set(reflect.New(v.Type()).Elem())
 
 		var impl bool
 		if item.CanInterface() && item.Type().Implements(attrDecoderType) {
@@ -128,12 +130,12 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 			return elem, nil
 		case *CData:
 			if n.cdata.IsValid() {
-				n.cdata.Set(getRealValue(reflect.ValueOf(elem)))
+				getRealValue(n.cdata.Value).Set(getRealValue(reflect.ValueOf(elem)))
 				initValue(n.cdata.Value, n.cdata.usage, elem.Start, elem.End, String{}, String{})
 			}
 		case *String:
 			if n.content.IsValid() {
-				n.content.Set(getRealValue(reflect.ValueOf(elem)))
+				getRealValue(n.content.Value).Set(getRealValue(reflect.ValueOf(elem)))
 				initValue(n.content.Value, n.content.usage, elem.Start, elem.End, String{}, String{})
 			}
 		case *StartElement:
@@ -142,7 +144,13 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 				panic(fmt.Sprintf("不存在的子元素 %s", elem.Name.Value))
 			}
 
-			if err = decodeElement(p, elem, item); err != nil {
+			vv := value{
+				name:      item.name,
+				omitempty: item.omitempty,
+				usage:     item.usage,
+				Value:     getRealValue(item.Value),
+			}
+			if err = decodeElement(p, elem, vv); err != nil {
 				return nil, err
 			}
 		}
@@ -153,7 +161,7 @@ func decodeElement(p *Parser, start *StartElement, v value) (err error) {
 	k := v.Kind()
 	switch {
 	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, isPrimitive(v.Value):
-		panic(fmt.Sprintf("%s 是无效的类型", v.Value.Type().Name()))
+		panic(fmt.Sprintf("%s 是无效的类型", v.Value.Type()))
 	case k == reflect.Slice:
 		return decodeSlice(p, start, v)
 	}

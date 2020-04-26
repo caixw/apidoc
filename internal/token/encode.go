@@ -151,6 +151,7 @@ func getAttributeValue(elem reflect.Value) (string, error) {
 
 // 获取 CData 和 String 的编码内容，适用于 content 和 cdata 节点类型。
 func getElementValue(elem reflect.Value) (string, error) {
+	elem = getRealValue(elem)
 	if elem.CanInterface() {
 		switch {
 		case elem.Type() == cdataType:

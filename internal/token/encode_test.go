@@ -33,9 +33,9 @@ func TestEncode(t *testing.T) {
 		{
 			name: "apidoc",
 			object: &struct {
-				ID int `apidoc:"id,attr,usage"`
+				ID intTest `apidoc:"id,attr,usage"`
 			}{
-				ID: 11,
+				ID: intTest{Value: 11},
 			},
 			xml: `<apidoc id="11"></apidoc>`,
 		},
@@ -43,11 +43,11 @@ func TestEncode(t *testing.T) {
 		{
 			name: "apidoc",
 			object: &struct {
-				ID   int    `apidoc:"id,attr,usage"`
-				Name string `apidoc:",attr,usage"`
+				ID   intTest     `apidoc:"id,attr,usage"`
+				Name *stringTest `apidoc:",attr,usage"`
 			}{
-				ID:   11,
-				Name: "name",
+				ID:   intTest{Value: 11},
+				Name: &stringTest{Value: "name"},
 			},
 			xml: `<apidoc id="11" Name="name"></apidoc>`,
 		},
@@ -55,11 +55,11 @@ func TestEncode(t *testing.T) {
 		{
 			name: "apidoc",
 			object: &struct {
-				ID   int    `apidoc:"id,attr,usage"`
-				Name string `apidoc:"name,elem,usage"`
+				ID   *intTest   `apidoc:"id,attr,usage"`
+				Name stringTest `apidoc:"name,elem,usage"`
 			}{
-				ID:   11,
-				Name: "name",
+				ID:   &intTest{Value: 11},
+				Name: stringTest{Value: "name"},
 			},
 			xml: `<apidoc id="11"><name>name</name></apidoc>`,
 		},
