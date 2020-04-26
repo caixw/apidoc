@@ -1,0 +1,97 @@
+<!-- SPDX-License-Identifier: MIT -->
+
+<apidoc version="1.1.1">
+    <title>title</title>
+    <license url="https://opensource.org/licenses/MIT" text="MIT" />
+    <contact name="test">
+        <email>test@example.com</email>
+        <url>https://example.com</url>
+    </contact>
+
+    <tag name="tag1" title="tag description" />
+    <tag name="tag2" deprecated="1.0.1" title="tag description" />
+
+    <mimetype>application/xml</mimetype>
+    <mimetype>application/json</mimetype>
+
+    <server name="admin" url="https://api.example.com/admin" summary="admin api" />
+
+    <server name="client" url="https://api.example.com/client" deprecated="1.0.1">
+        <description type="html">
+        <![CDATA[
+        <p>client api</p>
+        ]]>
+        </description>
+    </server>
+
+    <description type="html">
+    <![CDATA[
+        <h2>h2</h2>
+        <h3>h3</h3>
+    ]]>
+    </description>
+
+    <api method="GET" version="1.1.0" id="xxx" summary="获取订单信息">
+        <path path="/users/{id}/orders">
+            <param name="id" type="number" summary="用户 ID" />
+            <query name="size" type="number" summary="size" />
+            <query name="page" type="number" deprecated="0.1.1" summary="page" />
+        </path>
+
+        <tag>g1</tag>
+        <tag>g2</tag>
+        <server>s1</server>
+        <server>s2</server>
+
+        <description type="html">
+        <![CDATA[
+        description xxx
+        ]]>
+        </description>
+
+        <request mimetype="json" type="number">
+            <header name="authorization" type="string" summary="token" />
+        </request>
+
+        <response status="200" mimetype="json" type="object">
+            <param name="id" type="number" default="1" summary="id" />
+            <param name="sex" type="string" default="male" summary="sex">
+                <enum value="male"><description>男性</description></enum>
+                <enum value="female" summary="女性" />
+            </param>
+            <param name="emails" type="string" array="true" summary="email" />
+            <header name="WWW-Authenticate" type="string" summary="xxx" />
+            <example mimetype="json">
+            <![CDATA[
+            {
+                id: 1,
+                sex: male,
+                emails: [xx@xx.com]
+            }
+            ]]>
+            </example>
+        </response>
+
+        <response status="400" mimetype="json" type="string">
+        </response>
+
+        <callback method="post">
+            <request mimetype="json" type="object">
+                <param name="id" type="number" default="1" summary="id" />
+                <param name="age" type="number" summary="age" />
+                <example mimetype="json">
+                <![CDATA[
+                {
+                    id:1,
+                    sex: male,
+                }
+                ]]>
+                </example>
+            </request>
+
+            <response status="200" mimetype="text" type="string">
+            </response>
+        </callback>
+    </api> 
+
+</apidoc>
