@@ -52,17 +52,18 @@ func (n *node) encode(e *xml.Encoder) error {
 		return err
 	}
 
-	if n.cdata.IsValid() {
+	if n.cdata.IsValid() && !n.cdata.isOmitempty() {
 		chardata, err := getElementValue(n.cdata.Value)
 		if err != nil {
 			return err
 		}
+
 		return e.EncodeElement(struct {
 			string `xml:",cdata"`
 		}{chardata}, start)
 	}
 
-	if n.content.IsValid() {
+	if n.content.IsValid() && !n.content.isOmitempty() {
 		chardata, err := getElementValue(n.content.Value)
 		if err != nil {
 			return err
@@ -78,6 +79,10 @@ func (n *node) encodeElements(e *xml.Encoder, start xml.StartElement) (err error
 		return err
 	}
 	for _, v := range n.elems {
+		if v.isOmitempty() {
+			continue
+		}
+
 		var chardata string
 		var found bool
 
@@ -122,6 +127,10 @@ func (n *node) buildStartElement() (xml.StartElement, error) {
 	}
 
 	for _, v := range n.attrs {
+		if v.isOmitempty() {
+			continue
+		}
+
 		val, err := getAttributeValue(v.Value)
 		if err != nil {
 			return xml.StartElement{}, err

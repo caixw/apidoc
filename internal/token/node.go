@@ -31,12 +31,27 @@ type node struct {
 // 表示 XML 节点的值的反射表示方式
 type value struct {
 	reflect.Value
-	name      string // 节点的名称
+	zero      interface{} // 当前类型的零值
+	name      string      // 节点的名称
 	omitempty bool
 
 	// 当前值可能未初始化，所以保存 usage 的值，
 	// 等 value 初始化之后再赋值给 Base.UsageKey
 	usage string
+}
+
+func initValue(name string, v reflect.Value, omitempty bool, usage string) value {
+	return value{
+		name:      name,
+		Value:     v,
+		zero:      reflect.Zero(v.Type()).Interface(),
+		omitempty: omitempty,
+		usage:     usage,
+	}
+}
+
+func (v value) isOmitempty() bool {
+	return v.omitempty && v.zero == v.Value.Interface()
 }
 
 var (
@@ -89,9 +104,9 @@ func newNode(name string, rv reflect.Value) *node {
 		v := rv.Field(i)
 		switch node {
 		case attrNode:
-			n.appendAttr(value{name: name, Value: v, omitempty: omitempty, usage: usage})
+			n.appendAttr(initValue(name, v, omitempty, usage))
 		case elemNode:
-			n.appendElem(value{name: name, Value: v, omitempty: omitempty, usage: usage})
+			n.appendElem(initValue(name, v, omitempty, usage))
 		case cdataNode:
 			if n.cdata.IsValid() {
 				panic("已经定义了一个节点用于表示 cdata 内容")
@@ -105,7 +120,7 @@ func newNode(name string, rv reflect.Value) *node {
 			if getRealType(field.Type) != cdataType {
 				panic("cdata 的类型只能是 *CData")
 			}
-			n.cdata = value{name: name, Value: v, omitempty: omitempty, usage: usage}
+			n.cdata = initValue(name, v, omitempty, usage)
 		case contentNode:
 			if n.content.IsValid() {
 				panic("已经定义了一个节点用于表示 content 内容")
@@ -119,7 +134,7 @@ func newNode(name string, rv reflect.Value) *node {
 			if getRealType(field.Type) != contentType {
 				panic("content 的类型只能是 *String")
 			}
-			n.content = value{name: name, Value: v, omitempty: omitempty, usage: usage}
+			n.content = initValue(name, v, omitempty, usage)
 		}
 	}
 

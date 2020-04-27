@@ -106,7 +106,7 @@ func (n *node) decodeAttributes(start *StartElement) error {
 			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name.Value))
 		}
 
-		initValue(item.Value, item.usage, attr.Start, attr.End, attr.Name, String{})
+		setValue(item.Value, item.usage, attr.Start, attr.End, attr.Name, String{})
 	}
 
 	return nil
@@ -131,12 +131,12 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 		case *CData:
 			if n.cdata.IsValid() {
 				getRealValue(n.cdata.Value).Set(getRealValue(reflect.ValueOf(elem)))
-				initValue(n.cdata.Value, n.cdata.usage, elem.Start, elem.End, String{}, String{})
+				setValue(n.cdata.Value, n.cdata.usage, elem.Start, elem.End, String{}, String{})
 			}
 		case *String:
 			if n.content.IsValid() {
 				getRealValue(n.content.Value).Set(getRealValue(reflect.ValueOf(elem)))
-				initValue(n.content.Value, n.content.usage, elem.Start, elem.End, String{}, String{})
+				setValue(n.content.Value, n.content.usage, elem.Start, elem.End, String{}, String{})
 			}
 		case *StartElement:
 			item, found := n.elem(elem.Name.Value)
@@ -169,7 +169,7 @@ func decodeElement(p *Parser, start *StartElement, v value) (err error) {
 	if err != nil {
 		return err
 	}
-	initElementValue(v.Value, v.usage, start, end)
+	setElementValue(v.Value, v.usage, start, end)
 	return nil
 }
 
@@ -196,7 +196,7 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 	if err != nil {
 		return err
 	}
-	initElementValue(elem, slice.usage, start, end)
+	setElementValue(elem, slice.usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return nil
 }
@@ -245,15 +245,15 @@ func findEndElement(p *Parser, start *StartElement) error {
 	}
 }
 
-func initElementValue(v reflect.Value, usage string, start *StartElement, end *EndElement) {
+func setElementValue(v reflect.Value, usage string, start *StartElement, end *EndElement) {
 	if end == nil {
-		initValue(v, usage, start.Start, start.End, start.Name, String{})
+		setValue(v, usage, start.Start, start.End, start.Name, String{})
 		return
 	}
-	initValue(v, usage, start.Start, end.End, start.Name, end.Name)
+	setValue(v, usage, start.Start, end.End, start.Name, end.Name)
 }
 
-func initValue(v reflect.Value, usage string, start, end core.Position, xmlName, xmlNameEnd String) {
+func setValue(v reflect.Value, usage string, start, end core.Position, xmlName, xmlNameEnd String) {
 	v = getRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))

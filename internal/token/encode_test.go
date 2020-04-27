@@ -12,8 +12,8 @@ func TestEncode(t *testing.T) {
 	a := assert.New(t)
 
 	type nestObject struct {
-		ID   *intTest `apidoc:"id,elem,usage"`
-		Name string   `apidoc:"name,attr,usage"`
+		ID   *intTest `apidoc:"id,elem,usage,omitempty"`
+		Name string   `apidoc:"name,attr,usage,omitempty"`
 	}
 
 	data := []*struct {
@@ -38,6 +38,30 @@ func TestEncode(t *testing.T) {
 				ID: intTest{Value: 11},
 			},
 			xml: `<apidoc id="11"></apidoc>`,
+		},
+
+		{ // 非 omitempty 属性，必须带上零值
+			name: "apidoc",
+			object: &struct {
+				ID intTest `apidoc:"id,attr,usage"`
+			}{},
+			xml: `<apidoc id="0"></apidoc>`,
+		},
+
+		{ // omitempty
+			name: "apidoc",
+			object: &struct {
+				ID intTest `apidoc:"id,attr,usage,omitempty"`
+			}{},
+			xml: `<apidoc></apidoc>`,
+		},
+
+		{ // omitempty
+			name: "apidoc",
+			object: &struct {
+				ID *intTest `apidoc:"id,attr,usage,omitempty"`
+			}{},
+			xml: `<apidoc></apidoc>`,
 		},
 
 		{
@@ -119,6 +143,36 @@ func TestEncode(t *testing.T) {
 				Content: &String{Value: "11"},
 			},
 			xml: `<apidoc>11</apidoc>`,
+		},
+
+		{ // 嵌套，omitempty 属性
+			name: "apidoc",
+			object: &struct {
+				Object *nestObject `apidoc:"object,elem,usage,omitempty"`
+			}{},
+			xml: `<apidoc></apidoc>`,
+		},
+
+		{ // 嵌套，omitempty 属性
+			name: "apidoc",
+			object: &struct {
+				Object *nestObject `apidoc:"object,elem,usage,omitempty"`
+			}{
+				Object: &nestObject{
+					ID: &intTest{Value: 12},
+				},
+			},
+			xml: `<apidoc><object><id>12</id></object></apidoc>`,
+		},
+
+		{ // 嵌套，omitempty 属性
+			name: "apidoc",
+			object: &struct {
+				Object *nestObject `apidoc:"object,elem,usage"`
+			}{
+				Object: &nestObject{},
+			},
+			xml: `<apidoc><object></object></apidoc>`,
 		},
 	}
 
