@@ -272,6 +272,43 @@ func TestNewNode(t *testing.T) {
 	})
 }
 
+func TestNode_isOmitempty(t *testing.T) {
+	a := assert.New(t)
+
+	v := value{omitempty: false}
+	a.False(v.isOmitempty())
+
+	v = initValue("elem", reflect.ValueOf(int(0)), true, "usage")
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(int(5))
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf(uint(0))
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(uint(5))
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf(float64(0))
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(float32(5))
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf([]byte{})
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf([]byte{0})
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf(false)
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(true)
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf(map[string]string{})
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(map[string]string{"id": "0"})
+	a.False(v.isOmitempty())
+}
+
 func TestParseTag(t *testing.T) {
 	a := assert.New(t)
 
