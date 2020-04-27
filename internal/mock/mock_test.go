@@ -12,15 +12,15 @@ import (
 
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/core/messagetest"
-	"github.com/caixw/apidoc/v6/spec"
-	"github.com/caixw/apidoc/v6/spec/spectest"
+	"github.com/caixw/apidoc/v6/internal/ast"
+	"github.com/caixw/apidoc/v6/internal/ast/asttest"
 )
 
 var _ http.Handler = &Mock{}
 
 type tester struct {
 	Title string
-	Type  *spec.Request
+	Type  *ast.Request
 	JSON  string
 	XML   string
 }
@@ -35,30 +35,33 @@ var data = []*tester{
 	},
 	{
 		Title: "doc.None",
-		Type:  &spec.Request{Type: spec.None},
+		Type:  &ast.Request{Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNone}}},
 		JSON:  "",
 		XML:   "",
 	},
 	{
 		Title: "doc.Request{}",
-		Type:  &spec.Request{},
+		Type:  &ast.Request{},
 		JSON:  "",
 		XML:   "",
 	},
 	{
 		Title: "number",
-		Type:  &spec.Request{Type: spec.Number, Name: "root"},
-		JSON:  "1024",
-		XML:   "<root>1024</root>",
+		Type: &ast.Request{
+			Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+			Name: &ast.Attribute{Value: ast.String{Value: "root"}},
+		},
+		JSON: "1024",
+		XML:  "<root>1024</root>",
 	},
 	{
 		Title: "enum number",
-		Type: &spec.Request{
-			Name: "root",
-			Type: spec.Number,
-			Enums: []*spec.Enum{
-				{Value: "1024"},
-				{Value: "1025"},
+		Type: &ast.Request{
+			Name: &ast.Attribute{Value: ast.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+			Enums: []*ast.Enum{
+				{Value: &ast.Attribute{Value: ast.String{Value: "1024"}}},
+				{Value: &ast.Attribute{Value: ast.String{Value: "1025"}}},
 			},
 		},
 		JSON: "1024",
@@ -66,19 +69,19 @@ var data = []*tester{
 	},
 	{
 		Title: "xml-extract",
-		Type: &spec.Request{
-			Name: "root",
-			Type: spec.Object,
-			Items: []*spec.Param{
+		Type: &ast.Request{
+			Name: &ast.Attribute{Value: ast.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeObject}},
+			Items: []*ast.Param{
 				{
-					Name: "id",
-					Type: spec.Number,
-					XML:  spec.XML{XMLAttr: true},
+					Name: &ast.Attribute{Value: ast.String{Value: "id"}},
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 				{
-					Name: "desc",
-					Type: spec.String,
-					XML:  spec.XML{XMLExtract: true},
+					Name: &ast.Attribute{Value: ast.String{Value: "desc"}},
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+					XML:  ast.XML{XMLExtract: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 			},
 		},
@@ -91,12 +94,12 @@ var data = []*tester{
 
 	{
 		Title: "enum string",
-		Type: &spec.Request{
-			Name: "root",
-			Type: spec.String,
-			Enums: []*spec.Enum{
-				{Value: "1024"},
-				{Value: "1025"},
+		Type: &ast.Request{
+			Name: &ast.Attribute{Value: ast.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+			Enums: []*ast.Enum{
+				{Value: &ast.Attribute{Value: ast.String{Value: "1024"}}},
+				{Value: &ast.Attribute{Value: ast.String{Value: "1025"}}},
 			},
 		},
 		JSON: `"1024"`,
@@ -104,11 +107,11 @@ var data = []*tester{
 	},
 	{ // array
 		Title: "[bool]",
-		Type: &spec.Request{
-			XML:   spec.XML{XMLWrapped: "root"},
-			Name:  "arr",
-			Type:  spec.Bool,
-			Array: true,
+		Type: &ast.Request{
+			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: ast.String{Value: "root"}}},
+			Name:  &ast.Attribute{Value: ast.String{Value: "arr"}},
+			Type:  &ast.TypeAttribute{Value: ast.String{Value: ast.TypeBool}},
+			Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		},
 		JSON: `[
     true,
@@ -127,15 +130,15 @@ var data = []*tester{
 	},
 	{
 		Title: "array with enum",
-		Type: &spec.Request{
-			XML:   spec.XML{XMLWrapped: "root"},
-			Name:  "arr",
-			Type:  spec.Number,
-			Array: true,
-			Enums: []*spec.Enum{
-				{Value: "1"},
-				{Value: "2"},
-				{Value: "3"},
+		Type: &ast.Request{
+			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: ast.String{Value: "root"}}},
+			Name:  &ast.Attribute{Value: ast.String{Value: "arr"}},
+			Type:  &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+			Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+			Enums: []*ast.Enum{
+				{Value: &ast.Attribute{Value: ast.String{Value: "1"}}},
+				{Value: &ast.Attribute{Value: ast.String{Value: "2"}}},
+				{Value: &ast.Attribute{Value: ast.String{Value: "3"}}},
 			},
 		},
 		JSON: `[
@@ -155,30 +158,33 @@ var data = []*tester{
 	},
 	{
 		Title: "bool",
-		Type:  &spec.Request{Type: spec.Bool, Name: "root"},
-		JSON:  "true",
-		XML:   "<root>true</root>",
+		Type: &ast.Request{
+			Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeBool}},
+			Name: &ast.Attribute{Value: ast.String{Value: "root"}},
+		},
+		JSON: "true",
+		XML:  "<root>true</root>",
 	},
 	{ // Object
 		Title: "Object with wrapped",
-		Type: &spec.Request{
-			Name: "root",
-			Type: spec.Object,
-			Items: []*spec.Param{
+		Type: &ast.Request{
+			Name: &ast.Attribute{Value: ast.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeObject}},
+			Items: []*ast.Param{
 				{
-					Type: spec.String,
-					Name: "name",
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: ast.String{Value: "name"}},
 				},
 				{
-					Type:  spec.Number,
-					Name:  "num",
-					Array: true,
-					XML:   spec.XML{XMLWrapped: "nums"},
+					Type:  &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+					Name:  &ast.Attribute{Value: ast.String{Value: "num"}},
+					Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+					XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: ast.String{Value: "nums"}}},
 				},
 				{
-					Type: spec.Number,
-					Name: "id",
-					XML:  spec.XML{XMLAttr: true},
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: ast.String{Value: "id"}},
+					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 			},
 		},
@@ -207,19 +213,19 @@ var data = []*tester{
 
 	{
 		Title: "object array",
-		Type: &spec.Request{
-			XML:   spec.XML{XMLWrapped: "root"},
-			Name:  "user",
-			Type:  spec.Object,
-			Array: true,
-			Items: []*spec.Param{
+		Type: &ast.Request{
+			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: ast.String{Value: "root"}}},
+			Name:  &ast.Attribute{Value: ast.String{Value: "user"}},
+			Type:  &ast.TypeAttribute{Value: ast.String{Value: ast.TypeObject}},
+			Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+			Items: []*ast.Param{
 				{
-					Name: "id",
-					Type: spec.Number,
+					Name: &ast.Attribute{Value: ast.String{Value: "id"}},
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
 				},
 				{
-					Name: "name",
-					Type: spec.String,
+					Name: &ast.Attribute{Value: ast.String{Value: "name"}},
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
 				},
 			},
 		},
@@ -272,39 +278,39 @@ var data = []*tester{
 	// NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第二的位置。
 	{
 		Title: "object with item",
-		Type: &spec.Request{
-			Name: "root",
-			Type: spec.Object,
-			Headers: []*spec.Param{
+		Type: &ast.Request{
+			Name: &ast.Attribute{Value: ast.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeObject}},
+			Headers: []*ast.Param{
 				{
-					Type: spec.String,
-					Name: "content-type",
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: ast.String{Value: "content-type"}},
 				},
 				{
-					Type: spec.String,
-					Name: "encoding",
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: ast.String{Value: "encoding"}},
 				},
 			},
-			Items: []*spec.Param{
+			Items: []*ast.Param{
 				{
-					Type: spec.Object,
-					Name: "name",
-					Items: []*spec.Param{
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeObject}},
+					Name: &ast.Attribute{Value: ast.String{Value: "name"}},
+					Items: []*ast.Param{
 						{
-							Type: spec.String,
-							Name: "last",
+							Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+							Name: &ast.Attribute{Value: ast.String{Value: "last"}},
 						},
 						{
-							Type:     spec.String,
-							Name:     "first",
-							Optional: true,
+							Type:     &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+							Name:     &ast.Attribute{Value: ast.String{Value: "first"}},
+							Optional: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 						},
 					},
 				},
 				{
-					Type: spec.Number,
-					Name: "age",
-					XML:  spec.XML{XMLAttr: true},
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: ast.String{Value: "age"}},
+					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 			},
 		},
@@ -326,46 +332,46 @@ var data = []*tester{
 	// NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第一的位置。
 	{ // 各类型混合
 		Title: "Object with array",
-		Type: &spec.Request{
-			Name: "root",
-			Type: spec.Object,
-			Items: []*spec.Param{
+		Type: &ast.Request{
+			Name: &ast.Attribute{Value: ast.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeObject}},
+			Items: []*ast.Param{
 				{
-					Type: spec.String,
-					Name: "name",
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: ast.String{Value: "name"}},
 				},
 				{
-					Type: spec.Number,
-					Name: "id",
-					XML:  spec.XML{XMLAttr: true},
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: ast.String{Value: "id"}},
+					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 				{
-					Type: spec.Object,
-					Name: "group",
-					Items: []*spec.Param{
+					Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeObject}},
+					Name: &ast.Attribute{Value: ast.String{Value: "group"}},
+					Items: []*ast.Param{
 						{
-							Type: spec.String,
-							Name: "name",
-							XML:  spec.XML{XMLAttr: true},
+							Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+							Name: &ast.Attribute{Value: ast.String{Value: "name"}},
+							XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 						},
 						{
-							Type: spec.Number,
-							Name: "id",
-							XML:  spec.XML{XMLAttr: true},
+							Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+							Name: &ast.Attribute{Value: ast.String{Value: "id"}},
+							XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 						},
 						{
-							Name:  "tags",
-							Array: true,
-							Type:  spec.Object,
-							Items: []*spec.Param{
+							Name:  &ast.Attribute{Value: ast.String{Value: "tags"}},
+							Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+							Type:  &ast.TypeAttribute{Value: ast.String{Value: ast.TypeObject}},
+							Items: []*ast.Param{
 								{
-									Type: spec.String,
-									Name: "name",
+									Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
+									Name: &ast.Attribute{Value: ast.String{Value: "name"}},
 								},
 								{
-									Type: spec.Number,
-									Name: "id",
-									XML:  spec.XML{XMLAttr: true},
+									Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+									Name: &ast.Attribute{Value: ast.String{Value: "id"}},
+									XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 								},
 							},
 						}, // end tags
@@ -454,8 +460,8 @@ const testAPIDoc = `<apidoc version="1.0.1">
 
 func TestNew(t *testing.T) {
 	a := assert.New(t)
-	d := spec.NewAPIDoc()
-	a.NotError(d.ParseBlock(&core.Block{Data: []byte(testAPIDoc)}))
+	d := &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: ast.String{Value: ast.Version}}}
+	a.NotError(d.Parse(core.Block{Data: []byte(testAPIDoc)}))
 
 	erro, _, h := messagetest.MessageHandler()
 	mock, err := New(h, d, map[string]string{"test": "/test"})
@@ -499,7 +505,7 @@ func TestNew(t *testing.T) {
 
 	// 版本号兼容性
 	_, _, h = messagetest.MessageHandler()
-	mock, err = New(h, &spec.APIDoc{APIDoc: "1.0.1"}, nil)
+	mock, err = New(h, &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: ast.String{Value: "1.0.1"}}}, nil)
 	a.Error(err).Nil(mock)
 	h.Stop()
 }
@@ -513,12 +519,12 @@ func TestLoad(t *testing.T) {
 
 	// LoadFromPath
 	_, _, h = messagetest.MessageHandler()
-	mock, err = Load(h, spectest.URI(a), map[string]string{"admin": "/admin"})
+	mock, err = Load(h, asttest.URI(a), map[string]string{"admin": "/admin"})
 	h.Stop()
 	a.NotError(err).NotNil(mock)
 
 	// loadFromURL
-	static := http.FileServer(http.Dir(spectest.Dir(a)))
+	static := http.FileServer(http.Dir(asttest.Dir(a)))
 	srv := httptest.NewServer(static)
 	defer srv.Close()
 

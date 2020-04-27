@@ -12,15 +12,15 @@ import (
 	"github.com/issue9/qheader"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
-func (m *Mock) buildAPI(api *spec.API) http.Handler {
+func (m *Mock) buildAPI(api *ast.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m.h.Message(core.Succ, locale.RequestAPI, r.Method, r.URL.Path)
-		if api.Deprecated != "" {
+		if api.Deprecated != nil {
 			m.h.Message(core.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated)
 		}
 
@@ -30,8 +30,8 @@ func (m *Mock) buildAPI(api *spec.API) http.Handler {
 		}
 
 		for _, header := range api.Headers {
-			if err := validSimpleParam(header, r.Header.Get(header.Name)); err != nil {
-				m.handleError(w, r, "headers["+header.Name+"]", err)
+			if err := validSimpleParam(header, r.Header.Get(header.Name.Value.Value)); err != nil {
+				m.handleError(w, r, "headers["+header.Name.Value.Value+"]", err)
 				return
 			}
 		}
@@ -47,7 +47,7 @@ func (m *Mock) buildAPI(api *spec.API) http.Handler {
 	})
 }
 
-func validRequest(requests []*spec.Request, r *http.Request) error {
+func validRequest(requests []*ast.Request, r *http.Request) error {
 	ct := r.Header.Get("Content-Type")
 	if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") { // 用户提交的 content-type 必须是明确的值
 		return core.NewLocaleError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
@@ -58,7 +58,7 @@ func validRequest(requests []*spec.Request, r *http.Request) error {
 	}
 
 	for _, header := range req.Headers {
-		if err := validSimpleParam(header, r.Header.Get(header.Name)); err != nil {
+		if err := validSimpleParam(header, r.Header.Get(header.Name.Value.Value)); err != nil {
 			return err
 		}
 	}
@@ -81,7 +81,7 @@ func validRequest(requests []*spec.Request, r *http.Request) error {
 	}
 }
 
-func (m *Mock) renderResponse(api *spec.API, w http.ResponseWriter, r *http.Request) {
+func (m *Mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Request) {
 	accepts, err := qheader.Accept(r)
 	if err != nil {
 		m.handleError(w, r, "request.headers[Accept]", err)
@@ -107,32 +107,32 @@ func (m *Mock) renderResponse(api *spec.API, w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Content-Type", accept)
 	w.Header().Set("Server", vars.Name)
 	for _, item := range resp.Headers {
-		switch item.Type {
-		case spec.Bool:
-			w.Header().Set(item.Name, strconv.FormatBool(generateBool()))
-		case spec.Number:
-			w.Header().Set(item.Name, strconv.FormatInt(generateNumber(item), 10))
-		case spec.String:
-			w.Header().Set(item.Name, generateString(item))
+		switch item.Type.Value.Value {
+		case ast.TypeBool:
+			w.Header().Set(item.Name.Value.Value, strconv.FormatBool(generateBool()))
+		case ast.TypeNumber:
+			w.Header().Set(item.Name.Value.Value, strconv.FormatInt(generateNumber(item), 10))
+		case ast.TypeString:
+			w.Header().Set(item.Name.Value.Value, generateString(item))
 		default:
 			m.handleError(w, r, "response.headers", locale.Errorf(locale.ErrInvalidFormat))
 			return
 		}
 	}
 
-	w.WriteHeader(int(resp.Status))
+	w.WriteHeader(resp.Status.Value.Value)
 	if _, err := w.Write(data); err != nil {
 		m.h.Error(core.Erro, err) // 此时状态码已经输出
 	}
 }
 
 // 需要保证 ct 的值不能为空
-func findRequestByContentType(requests []*spec.Request, ct string) *spec.Request {
-	var none *spec.Request
+func findRequestByContentType(requests []*ast.Request, ct string) *ast.Request {
+	var none *ast.Request
 	for _, req := range requests {
-		if req.Mimetype == ct {
+		if req.Mimetype != nil && req.Mimetype.Value.Value == ct {
 			return req
-		} else if none == nil && req.Mimetype == "" {
+		} else if none == nil && (req.Mimetype == nil || req.Mimetype.Value.Value == "") {
 			none = req
 		}
 	}
@@ -144,26 +144,28 @@ func findRequestByContentType(requests []*spec.Request, ct string) *spec.Request
 }
 
 // accepts 必须是已经按权重进行排序的。
-func findResponseByAccept(mimetypes []string, requests []*spec.Request, accepts []*qheader.Header) (*spec.Request, string) {
+func findResponseByAccept(mimetypes []*ast.Element, requests []*ast.Request, accepts []*qheader.Header) (*ast.Request, string) {
 	if len(requests) == 0 {
 		return nil, ""
 	}
 
-	var none *spec.Request // 表示 requests 中 mimetype 值为空的第一个子项
+	var none *ast.Request // 表示 requests 中 mimetype 值为空的第一个子项
 
 	// 从 requests 中查找是否有符合 accepts 的内容
 	for _, req := range requests {
-		if none == nil && req.Mimetype == "" {
+		if none == nil && (req.Mimetype == nil || req.Mimetype.Value.Value == "") {
 			none = req
 		}
-		if req.Mimetype != "" && matchContentType(req.Mimetype, accepts) {
-			return req, req.Mimetype
+		if (req.Mimetype != nil && req.Mimetype.Value.Value != "") &&
+			matchContentType(req.Mimetype.Value.Value, accepts) {
+			return req, req.Mimetype.Value.Value
 		}
 	}
 
 	// 如果存在 none，则从 doc.mimetypes 中查找是否有与 none.Mimetype 相匹配的
 	if none != nil {
-		for _, mt := range mimetypes {
+		for _, item := range mimetypes {
+			mt := item.Content.Value
 			if mt != "" && matchContentType(mt, accepts) {
 				return none, mt
 			}
@@ -206,11 +208,11 @@ func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 	w.WriteHeader(http.StatusBadRequest)
 }
 
-func validQueryArrayParam(queries []*spec.Param, r *http.Request) error {
+func validQueryArrayParam(queries []*ast.Param, r *http.Request) error {
 	for _, query := range queries {
-		field := "queries[" + query.Name + "]."
+		field := "queries[" + query.Name.Value.Value + "]."
 
-		valid := func(p *spec.Param, v string) error {
+		valid := func(p *ast.Param, v string) error {
 			err := validSimpleParam(p, v)
 			if serr, ok := err.(*core.SyntaxError); ok {
 				serr.Field = field + serr.Field
@@ -218,21 +220,21 @@ func validQueryArrayParam(queries []*spec.Param, r *http.Request) error {
 			return err
 		}
 
-		if !query.Array {
-			if err := valid(query, r.FormValue(query.Name)); err != nil {
+		if query.Array == nil || !query.Array.Value.Value {
+			if err := valid(query, r.FormValue(query.Name.Value.Value)); err != nil {
 				return err
 			}
-		} else if !query.ArrayStyle { // 默认的 form 格式
+		} else if query.ArrayStyle == nil || !query.ArrayStyle.Value.Value { // 默认的 form 格式
 			if err := r.ParseForm(); err != nil {
 				return err
 			}
-			for _, v := range r.Form[query.Name] {
+			for _, v := range r.Form[query.Name.Value.Value] {
 				if err := valid(query, v); err != nil {
 					return err
 				}
 			}
 		} else {
-			values := strings.Split(r.FormValue(query.Name), ",")
+			values := strings.Split(r.FormValue(query.Name.Value.Value), ",")
 			for _, v := range values {
 				if err := valid(query, v); err != nil {
 					return err
@@ -245,39 +247,40 @@ func validQueryArrayParam(queries []*spec.Param, r *http.Request) error {
 }
 
 // 验证单个参数，仅支持对 query、header 等简单类型的参数验证
-func validSimpleParam(p *spec.Param, val string) error {
+func validSimpleParam(p *ast.Param, val string) error {
 	if p == nil {
 		return nil
 	}
 
-	if val == "" && p.Type != spec.String { // 字符串的默认值可以为 “”
-		if p.Optional || p.Default != "" {
+	if val == "" && p.Type.Value.Value != ast.TypeString { // 字符串的默认值可以为 “”
+		if (p.Optional != nil && p.Optional.Value.Value) ||
+			(p.Default != nil && p.Default.Value.Value != "") {
 			return nil
 		}
 		return core.NewLocaleError(core.Location{}, "", locale.ErrRequired)
 	}
 
-	switch p.Type {
-	case spec.Bool:
+	switch p.Type.Value.Value {
+	case ast.TypeBool:
 		if _, err := strconv.ParseBool(val); err != nil {
 			return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
 		}
-	case spec.Number:
+	case ast.TypeNumber:
 		if !is.Number(val) {
 			return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
 		}
-	case spec.String:
-	case spec.Object:
-	case spec.None:
+	case ast.TypeString:
+	case ast.TypeObject:
+	case ast.TypeNone:
 		if val != "" {
 			return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidValue)
 		}
 	}
 
-	if p.IsEnum() {
+	if isEnum(p) {
 		found := false
 		for _, e := range p.Enums {
-			if e.Value == val {
+			if e.Value.Value.Value == val {
 				found = true
 				break
 			}
@@ -291,13 +294,13 @@ func validSimpleParam(p *spec.Param, val string) error {
 	return nil
 }
 
-func buildResponse(p *spec.Request, r *http.Request) ([]byte, error) {
+func buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 	if p == nil {
 		return nil, nil
 	}
 
 	for _, header := range p.Headers {
-		if err := validSimpleParam(header, r.Header.Get(header.Name)); err != nil {
+		if err := validSimpleParam(header, r.Header.Get(header.Name.Value.Value)); err != nil {
 			return nil, err
 		}
 	}

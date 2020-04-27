@@ -1,4 +1,4 @@
-<apidoc version="1.0.1">
+<apidoc apidoc="6.0.0" version="1.0.1">
 	<title>test</title>
 	<description type="html"><![CDATA[<p>desc</p>]]></description>
 	<tag name="t1" title="t1"></tag>

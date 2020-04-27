@@ -23,6 +23,7 @@ const Filename = "index.xml"
 // 同时当前目录下的 index.xml 文件与此返回对象内容是相同的。
 func Get() *ast.APIDoc {
 	return &ast.APIDoc{
+		APIDoc:  &ast.APIDocVersionAttribute{Value: ast.String{Value: ast.Version}},
 		Version: &ast.VersionAttribute{Value: ast.String{Value: "1.0.1"}},
 		Title:   &ast.Element{Content: ast.String{Value: "test"}},
 		Description: &ast.Richtext{
