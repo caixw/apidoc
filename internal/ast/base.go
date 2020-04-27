@@ -127,6 +127,7 @@ func (b *BoolAttribute) EncodeXMLAttr() (string, error) {
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *MethodAttribute) DecodeXMLAttr(attr *token.Attribute) error {
 	a.Value = attr.Value
+	a.Value.Value = strings.ToUpper(a.Value.Value)
 	if !isValidMethod(a.Value.Value) {
 		return newError(attr.Value.Range, locale.ErrInvalidValue)
 	}
@@ -247,7 +248,6 @@ var validMethods = []string{
 }
 
 func isValidMethod(method string) bool {
-	method = strings.ToUpper(method)
 	for _, m := range validMethods {
 		if m == method {
 			return true

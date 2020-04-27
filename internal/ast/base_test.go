@@ -27,7 +27,6 @@ func TestIsValidMethod(t *testing.T) {
 	a := assert.New(t)
 
 	a.True(isValidMethod("GET"))
-	a.True(isValidMethod("get"))
 	a.False(isValidMethod("not-exists"))
 }
 

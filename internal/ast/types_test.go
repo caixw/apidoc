@@ -240,7 +240,7 @@ func TestAPI(t *testing.T) {
 
 	// callback
 	cb := api.Callback
-	a.Equal(cb.Method.Value.Value, "post").
+	a.Equal(cb.Method.Value.Value, "POST").
 		Equal(cb.Requests[0].Type.Value.Value, TypeObject).
 		Equal(cb.Requests[0].Mimetype.Value.Value, "json").
 		Equal(cb.Responses[0].Status.Value.Value, 200)
