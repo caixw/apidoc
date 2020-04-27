@@ -126,7 +126,8 @@ func TestAPIDoc(t *testing.T) {
 
 	tag = doc.Tags[1]
 	a.Equal(tag.Deprecated.Value.Value, "1.0.1").
-		Empty(tag.XMLNameEnd.Value)
+		Empty(tag.XMLNameEnd.Value).
+		Equal(tag.UsageKey, "usage-apidoc-tags")
 
 	a.Equal(2, len(doc.Servers))
 	srv := doc.Servers[0]
