@@ -76,6 +76,18 @@ func TestEncode(t *testing.T) {
 			xml: `<apidoc id="11" Name="name"></apidoc>`,
 		},
 
+		{ // 数组
+			name: "apidoc",
+			object: &struct {
+				ID   []intTest     `apidoc:"id,elem,usage"`
+				Name []*stringTest `apidoc:",elem,usage"`
+			}{
+				ID:   []intTest{{Value: 11}, {Value: 12}},
+				Name: []*stringTest{{Value: "name1"}, {Value: "name2"}},
+			},
+			xml: `<apidoc><id>11</id><id>12</id><Name>name1</Name><Name>name2</Name></apidoc>`,
+		},
+
 		{
 			name: "apidoc",
 			object: &struct {
@@ -163,6 +175,19 @@ func TestEncode(t *testing.T) {
 				},
 			},
 			xml: `<apidoc><object><id>12</id></object></apidoc>`,
+		},
+
+		{ // 嵌套，数组，omitempty 属性
+			name: "apidoc",
+			object: &struct {
+				Object []*nestObject `apidoc:"object,elem,usage,omitempty"`
+			}{
+				Object: []*nestObject{
+					{ID: &intTest{Value: 12}},
+					{ID: &intTest{Value: 22}},
+				},
+			},
+			xml: `<apidoc><object><id>12</id></object><object><id>22</id></object></apidoc>`,
 		},
 
 		{ // 嵌套，omitempty 属性

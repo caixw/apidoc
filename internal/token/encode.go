@@ -79,45 +79,59 @@ func (n *node) encodeElements(e *xml.Encoder, start xml.StartElement) (err error
 		return err
 	}
 	for _, v := range n.elems {
-		if v.isOmitempty() {
-			continue
-		}
-
-		var chardata string
-		var found bool
-
-		if v.CanInterface() && v.Type().Implements(encoderType) {
-			if chardata, err = v.Interface().(Encoder).EncodeXML(); err != nil {
-				return err
-			}
-			found = true
-		} else if !found && v.CanAddr() {
-			pv := v.Addr()
-			if pv.CanInterface() && pv.Type().Implements(encoderType) {
-				if chardata, err = pv.Interface().(Encoder).EncodeXML(); err != nil {
-					return err
-				}
-				found = true
-			}
-		}
-		if !found && isPrimitive(v.Value) {
-			chardata = fmt.Sprint(v.Interface())
-			found = true
-		}
-
-		if found {
-			start := xml.StartElement{Name: xml.Name{Local: v.name}}
-			if err := e.EncodeElement(xml.CharData(chardata), start); err != nil {
-				return err
-			}
-			continue
-		}
-
-		if err := newNode(v.name, v.Value).encode(e); err != nil {
+		if err := encodeElement(e, v); err != nil {
 			return err
 		}
 	}
+
 	return e.EncodeToken(xml.EndElement{Name: xml.Name{Local: n.name}})
+}
+
+func encodeElement(e *xml.Encoder, v value) (err error) {
+	if v.isOmitempty() {
+		return nil
+	}
+
+	var chardata string
+	var found bool
+
+	if v.CanInterface() && v.Type().Implements(encoderType) {
+		if chardata, err = v.Interface().(Encoder).EncodeXML(); err != nil {
+			return err
+		}
+		found = true
+	} else if !found && v.CanAddr() {
+		pv := v.Addr()
+		if pv.CanInterface() && pv.Type().Implements(encoderType) {
+			if chardata, err = pv.Interface().(Encoder).EncodeXML(); err != nil {
+				return err
+			}
+			found = true
+		}
+	}
+	if !found && isPrimitive(v.Value) {
+		chardata = fmt.Sprint(v.Interface())
+		found = true
+	}
+
+	if found {
+		start := xml.StartElement{Name: xml.Name{Local: v.name}}
+		if err := e.EncodeElement(xml.CharData(chardata), start); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if v.Kind() == reflect.Array || v.Kind() == reflect.Slice {
+		for i := 0; i < v.Len(); i++ {
+			if err := encodeElement(e, initValue(v.name, v.Index(i), v.omitempty, v.usage)); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	return newNode(v.name, v.Value).encode(e)
 }
 
 func (n *node) buildStartElement() (xml.StartElement, error) {
