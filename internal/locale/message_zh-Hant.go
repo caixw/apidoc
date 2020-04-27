@@ -163,7 +163,7 @@ path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔
 	UsageRequestXMLNSPrefix: "XML 標簽的命名空間名稱前綴",
 	UsageRequestXMLWrapped:  "如果當前元素的 @array 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。",
 	UsageRequestName:        "當 mimetype 為 <var>application/xml</var> 時，此值表示 XML 的頂層元素名稱，否則無用。",
-	UsageRequestType:        "值的類型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和 空值；空值表示不輸出任何內容。",
+	UsageRequestType:        "值的類型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不輸出任何內容。",
 	UsageRequestDeprecated:  "表示在大於等於該版本號時不再啟作用",
 	UsageRequestArray:       "是否為數組",
 	UsageRequestItems:       "子類型，比如對象的子元素。",

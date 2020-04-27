@@ -17,11 +17,17 @@ var ErrNoDocFormat = locale.Errorf(locale.ErrIsNotAPIDoc)
 
 // 表示支持的各种数据类型
 const (
-	TypeNone   string = ""
+	TypeNone   string = "" // 空值表示不输出任何内容，仅用于 Request
 	TypeBool          = "bool"
 	TypeObject        = "object"
 	TypeNumber        = "number"
 	TypeString        = "string"
+)
+
+// 富文本可用的类型
+const (
+	RichtextTypeHTML     = "html"
+	RichtextTypeMarkdown = "markdown"
 )
 
 type (
@@ -172,7 +178,7 @@ type (
 		XML
 
 		// 一般无用，但是用于描述 XML 对象时，可以用来表示顶层元素的名称
-		Name string `apidoc:"name,attr,usage-request-name,omitempty"`
+		Name *Attribute `apidoc:"name,attr,usage-request-name,omitempty"`
 
 		Type        *TypeAttribute    `apidoc:"type,attr,usage-request-type,omitempty"`
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-request-deprecated,omitempty"`
@@ -348,4 +354,27 @@ func (api *API) sanitize() error {
 	}
 
 	return nil
+}
+
+// Param 转换成 Param 对象
+//
+// Request 可以说是 Param 的超级，两者在大部分情况下能用。
+func (r *Request) Param() *Param {
+	if r == nil {
+		return nil
+	}
+
+	return &Param{
+		XML:         r.XML,
+		Name:        r.Name,
+		Type:        r.Type,
+		Deprecated:  r.Deprecated,
+		Optional:    &BoolAttribute{Value: Bool{Value: true}},
+		Array:       r.Array,
+		Items:       r.Items,
+		Reference:   r.Reference,
+		Summary:     r.Summary,
+		Enums:       r.Enums,
+		Description: r.Description,
+	}
 }

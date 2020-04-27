@@ -1,0 +1,37 @@
+<apidoc version="1.0.1">
+	<title>test</title>
+	<description type="html"><![CDATA[<p>desc</p>]]></description>
+	<tag name="t1" title="t1"></tag>
+	<tag name="t2" title="t2"></tag>
+	<tag name="tag1" title="tag1"></tag>
+	<server name="admin" url="https://example.com/admin" summary="admin"></server>
+	<server name="client" url="https://example.com" summary="client"></server>
+	<api method="GET">
+		<path path="/users"></path>
+		<request summary="request">
+			<example mimetype="application/json"><![CDATA[xxx]]></example>
+			<header name="authorization" type="string" summary="authorization"></header>
+		</request>
+		<response type="object" status="200">
+			<param name="name" type="string" summary="summary"></param>
+			<example mimetype="application/json"><![CDATA[xxx]]></example>
+			<header name="authorization" type="string" summary="authorization"></header>
+			<description type="html"><![CDATA[<p>desc</p>]]></description>
+		</response>
+		<tag>t1</tag>
+		<tag>t2</tag>
+		<server>admin</server>
+		<server>client</server>
+	</api>
+	<api method="POST" summary="summary" deprecated="1.0.1">
+		<path path="/users"></path>
+		<response type="">
+			<description type="html"><![CDATA[<p>desc</p>]]></description>
+		</response>
+		<tag>t1</tag>
+		<tag>tag1</tag>
+		<server>admin</server>
+	</api>
+	<mimetype>application/json</mimetype>
+	<mimetype>application/xml</mimetype>
+</apidoc>
