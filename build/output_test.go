@@ -7,7 +7,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/spec/spectest"
+	"github.com/caixw/apidoc/v6/internal/ast/asttest"
 )
 
 func TestStylesheet(t *testing.T) {
@@ -53,7 +53,7 @@ func TestOutput_Sanitize(t *testing.T) {
 func TestOptions_buffer(t *testing.T) {
 	a := assert.New(t)
 
-	doc := spectest.Get()
+	doc := asttest.Get()
 	o := &Output{
 		Type: OpenapiJSON,
 		Path: "./openapi.json",
@@ -61,7 +61,7 @@ func TestOptions_buffer(t *testing.T) {
 	a.NotError(o.Sanitize())
 	a.NotError(o.buffer(doc))
 
-	doc = spectest.Get()
+	doc = asttest.Get()
 	o = &Output{}
 	a.NotError(o.Sanitize())
 	buf, err := o.buffer(doc)
@@ -71,13 +71,13 @@ func TestOptions_buffer(t *testing.T) {
 func TestFilterDoc(t *testing.T) {
 	a := assert.New(t)
 
-	d := spectest.Get()
+	d := asttest.Get()
 	o := &Output{}
 	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(3, len(d.Tags))
 
-	d = spectest.Get()
+	d = asttest.Get()
 	o = &Output{
 		Tags: []string{"t1"},
 	}
@@ -86,7 +86,7 @@ func TestFilterDoc(t *testing.T) {
 	a.Equal(1, len(d.Tags)).
 		Equal(2, len(d.Apis))
 
-	d = spectest.Get()
+	d = asttest.Get()
 	o = &Output{
 		Tags: []string{"t1", "t2"},
 	}
@@ -95,7 +95,7 @@ func TestFilterDoc(t *testing.T) {
 	a.Equal(2, len(d.Tags)).
 		Equal(2, len(d.Apis))
 
-	d = spectest.Get()
+	d = asttest.Get()
 	o = &Output{
 		Tags: []string{"tag1"},
 	}
@@ -104,7 +104,7 @@ func TestFilterDoc(t *testing.T) {
 	a.Equal(1, len(d.Tags)).
 		Equal(1, len(d.Apis))
 
-	d = spectest.Get()
+	d = asttest.Get()
 	o = &Output{
 		Tags: []string{"not-exists"},
 	}

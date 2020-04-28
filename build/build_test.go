@@ -9,7 +9,7 @@ import (
 
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/core/messagetest"
-	"github.com/caixw/apidoc/v6/spec"
+	"github.com/caixw/apidoc/v6/internal/ast"
 )
 
 func TestParse(t *testing.T) {
@@ -30,8 +30,7 @@ func TestParse(t *testing.T) {
 	}
 	a.NotError(c.Sanitize())
 
-	doc := spec.NewAPIDoc()
-	a.NotNil(doc)
+	doc := &ast.APIDoc{}
 	erro, _, h := messagetest.MessageHandler()
 	Parse(doc, h, php, c)
 	h.Stop()
@@ -39,9 +38,9 @@ func TestParse(t *testing.T) {
 
 	a.NotError(doc.Sanitize())
 	a.Equal(2, len(doc.Apis)).
-		Equal(doc.Version, "1.1.1")
+		Equal(doc.Version.V(), "1.1.1")
 	api := doc.Apis[0]
-	a.Equal(api.Method, "GET")
+	a.Equal(api.Method.V(), "GET")
 }
 
 func TestParseFile(t *testing.T) {
@@ -54,15 +53,14 @@ func TestParseFile(t *testing.T) {
 	}
 	a.NotError(c.Sanitize())
 
-	doc := spec.NewAPIDoc()
-	a.NotNil(doc)
+	doc := &ast.APIDoc{}
 	erro, _, h := messagetest.MessageHandler()
 	uri, err := core.FileURI("./testdata/testfile.h")
 	a.NotError(err).NotEmpty(uri)
 	ParseFile(doc, h, uri, c)
 	a.NotError(doc.Sanitize())
 	a.Equal(0, len(doc.Apis)).
-		Equal(doc.Version, "1.1.1")
+		Equal(doc.Version.V(), "1.1.1")
 	h.Stop()
 	a.Empty(erro.String())
 }

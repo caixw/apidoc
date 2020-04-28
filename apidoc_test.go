@@ -11,9 +11,9 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v6/core/messagetest"
+	"github.com/caixw/apidoc/v6/internal/ast/asttest"
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/spec/spectest"
 )
 
 func TestVersion(t *testing.T) {
@@ -26,7 +26,7 @@ func TestVersion(t *testing.T) {
 func TestValid(t *testing.T) {
 	a := assert.New(t)
 
-	data, err := spectest.URI(a).ReadAll(nil)
+	data, err := asttest.URI(a).ReadAll(nil)
 	a.NotError(err).NotNil(data)
 	a.NotError(Valid(data))
 }
@@ -41,7 +41,7 @@ func TestStatic(t *testing.T) {
 func TestView(t *testing.T) {
 	a := assert.New(t)
 
-	data := spectest.XML(a)
+	data := asttest.XML(a)
 	h := View(http.StatusCreated, "/test/apidoc.xml", data, "text/xml", "", false)
 	srv := rest.NewServer(t, h, nil)
 	srv.Get("/test/apidoc.xml").Do().
@@ -72,7 +72,7 @@ func TestView(t *testing.T) {
 func TestViewFile(t *testing.T) {
 	a := assert.New(t)
 
-	h, err := ViewFile(http.StatusAccepted, "/apidoc.xml", spectest.URI(a), "text/xml", "", false)
+	h, err := ViewFile(http.StatusAccepted, "/apidoc.xml", asttest.URI(a), "text/xml", "", false)
 	a.NotError(err).NotNil(h)
 	srv := rest.NewServer(t, h, nil)
 	srv.Get("/apidoc.xml").Do().
@@ -80,7 +80,7 @@ func TestViewFile(t *testing.T) {
 		Header("content-type", "text/xml")
 	srv.Close()
 
-	h, err = ViewFile(http.StatusAccepted, "/apidoc.xml", spectest.URI(a), "", "", false)
+	h, err = ViewFile(http.StatusAccepted, "/apidoc.xml", asttest.URI(a), "", "", false)
 	a.NotError(err).NotNil(h)
 	srv = rest.NewServer(t, h, nil)
 	srv.Get("/apidoc.xml").Do().
@@ -88,7 +88,7 @@ func TestViewFile(t *testing.T) {
 	srv.Close()
 
 	// 覆盖现有的 index.xml
-	h, err = ViewFile(http.StatusAccepted, "", spectest.URI(a), "", "", false)
+	h, err = ViewFile(http.StatusAccepted, "", asttest.URI(a), "", "", false)
 	a.NotError(err).NotNil(h)
 	srv = rest.NewServer(t, h, nil)
 	srv.Get("/index.xml").Do().
@@ -96,11 +96,11 @@ func TestViewFile(t *testing.T) {
 	srv.Close()
 }
 
-func TestMockBuffer(t *testing.T) {
+func TestMock(t *testing.T) {
 	a := assert.New(t)
 
 	_, _, h := messagetest.MessageHandler()
-	mock, err := MockBuffer(h, spectest.XML(a), map[string]string{"admin": "/admin"})
+	mock, err := Mock(h, asttest.XML(a), map[string]string{"admin": "/admin"})
 	a.NotError(err).NotNil(h)
 	srv := rest.NewServer(t, mock, nil)
 
@@ -125,7 +125,7 @@ func TestMockFile(t *testing.T) {
 	a := assert.New(t)
 
 	_, _, h := messagetest.MessageHandler()
-	mock, err := MockFile(h, spectest.URI(a), map[string]string{"admin": "/admin"})
+	mock, err := MockFile(h, asttest.URI(a), map[string]string{"admin": "/admin"})
 	a.NotError(err).NotNil(h)
 	srv := rest.NewServer(t, mock, nil)
 
@@ -146,7 +146,7 @@ func TestMockFile(t *testing.T) {
 
 	// 测试多个 servers 值
 	_, _, h = messagetest.MessageHandler()
-	mock, err = MockFile(h, spectest.URI(a), map[string]string{"admin": "/admin", "client": "/c"})
+	mock, err = MockFile(h, asttest.URI(a), map[string]string{"admin": "/admin", "client": "/c"})
 	a.NotError(err).NotNil(h)
 	srv = rest.NewServer(t, mock, nil)
 

@@ -3,6 +3,7 @@
 package ast
 
 import (
+	"io"
 	"sort"
 
 	"github.com/caixw/apidoc/v6/core"
@@ -266,9 +267,8 @@ func (doc *APIDoc) Parse(b core.Block) error {
 			return core.NewLocaleError(b.Location, "", locale.ErrDuplicateValue)
 		}
 		return token.Decode(p, doc)
-	default:
-		return core.NewLocaleError(b.Location, "", locale.ErrInvalidXML)
 	}
+	return nil
 }
 
 // 获取根标签的名称
@@ -276,11 +276,10 @@ func getTagName(p *token.Parser) (string, error) {
 	start := p.Position()
 	for {
 		t, err := p.Token()
-		if err != nil {
-			return "", err
-		}
-		if t == nil {
+		if err == io.EOF {
 			return "", nil
+		} else if err != nil {
+			return "", err
 		}
 
 		switch elem := t.(type) {

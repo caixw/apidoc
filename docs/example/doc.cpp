@@ -3,9 +3,9 @@
 // <apidoc version="1.1.1">
 //     <title>示例文档</title>
 //     <server name="admin" url="https://api.example.com/admin">
-//     <description type="html">
+//     <description type="html"><![CDATA[
 //     后台管理接口，<br /><br /><br /><br /><p style="color:red">admin</p>
-//     </description>
+//     ]]></description>
 //     </server>
 //     <server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" summary="客户端接口" />
 //     <server name="client" url="https://api.example.com" summary="客户端接口" />

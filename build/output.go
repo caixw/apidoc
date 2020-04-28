@@ -8,10 +8,11 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/openapi"
+	"github.com/caixw/apidoc/v6/internal/token"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // 几种输出的类型
@@ -21,9 +22,9 @@ const (
 	OpenapiJSON = "openapi+json"
 )
 
-const stylesheetURL = vars.OfficialURL + "/docs/" + spec.MajorVersion + "/apidoc.xsl"
+const stylesheetURL = vars.OfficialURL + "/docs/" + ast.MajorVersion + "/apidoc.xsl"
 
-type marshaler func(*spec.APIDoc) ([]byte, error)
+type marshaler func(*ast.APIDoc) ([]byte, error)
 
 // Output 指定了渲染输出的相关设置项。
 type Output struct {
@@ -110,11 +111,11 @@ func (o *Output) Sanitize() error {
 	return nil
 }
 
-func apidocMarshaler(d *spec.APIDoc) ([]byte, error) {
-	return xml.MarshalIndent(d, "", "\t")
+func apidocMarshaler(d *ast.APIDoc) ([]byte, error) {
+	return token.Encode("\t", "apidoc", d)
 }
 
-func (o *Output) buffer(d *spec.APIDoc) (*bytes.Buffer, error) {
+func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 	filterDoc(d, o)
 
 	buf := new(bytes.Buffer)
@@ -142,23 +143,27 @@ func (o *Output) buffer(d *spec.APIDoc) (*bytes.Buffer, error) {
 	return buf, nil
 }
 
-func filterDoc(d *spec.APIDoc, o *Output) {
+func filterDoc(d *ast.APIDoc, o *Output) {
 	if len(o.Tags) == 0 {
 		return
 	}
 
-	tags := make([]*spec.Tag, 0, len(o.Tags))
+	tags := make([]*ast.Tag, 0, len(o.Tags))
 	for _, tag := range d.Tags {
-		if o.contains(tag.Name) {
+		if o.contains(tag.Name.V()) {
 			tags = append(tags, tag)
 		}
 	}
 	d.Tags = tags
 
-	apis := make([]*spec.API, 0, len(d.Apis))
+	apis := make([]*ast.API, 0, len(d.Apis))
+LOOP:
 	for _, api := range d.Apis {
-		if o.contains(api.Tags...) {
-			apis = append(apis, api)
+		for _, tag := range api.Tags {
+			if o.contains(tag.V()) {
+				apis = append(apis, api)
+				continue LOOP
+			}
 		}
 	}
 	d.Apis = apis

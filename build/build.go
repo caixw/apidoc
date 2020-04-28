@@ -12,8 +12,8 @@ import (
 	"bytes"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Build 解析文档并输出文档内容
@@ -56,14 +56,14 @@ func Test(h *core.MessageHandler, i ...*Input) {
 	h.Message(core.Succ, locale.TestSuccess)
 }
 
-func parse(h *core.MessageHandler, i ...*Input) (*spec.APIDoc, error) {
+func parse(h *core.MessageHandler, i ...*Input) (*ast.APIDoc, error) {
 	for _, item := range i {
 		if err := item.Sanitize(); err != nil {
 			return nil, err
 		}
 	}
 
-	d := spec.NewAPIDoc()
+	d := &ast.APIDoc{}
 	Parse(d, h, i...)
 
 	if err := d.Sanitize(); err != nil {
@@ -78,26 +78,26 @@ func parse(h *core.MessageHandler, i ...*Input) (*spec.APIDoc, error) {
 //
 // 所有与解析有关的错误均通过 h 输出。
 // 如果是配置文件的错误，则通过 error 返回
-func Parse(doc *spec.APIDoc, h *core.MessageHandler, o ...*Input) {
+func Parse(doc *ast.APIDoc, h *core.MessageHandler, o ...*Input) {
 	parse2APIDoc(doc, h, func(blocks chan core.Block) {
 		parseInputs(blocks, h, o...)
 	})
 }
 
 // ParseFile 分析 path 的内容，并将其中的文档解析至 doc
-func ParseFile(doc *spec.APIDoc, h *core.MessageHandler, uri core.URI, o *Input) {
+func ParseFile(doc *ast.APIDoc, h *core.MessageHandler, uri core.URI, o *Input) {
 	parse2APIDoc(doc, h, func(blocks chan core.Block) {
 		o.parseFile(blocks, h, uri)
 	})
 }
 
-func parse2APIDoc(doc *spec.APIDoc, h *core.MessageHandler, g func(chan core.Block)) {
+func parse2APIDoc(doc *ast.APIDoc, h *core.MessageHandler, g func(chan core.Block)) {
 	done := make(chan struct{})
 	blocks := make(chan core.Block, 50)
 
 	go func() {
 		for block := range blocks {
-			if err := doc.ParseBlock(&block); err != nil {
+			if err := doc.Parse(block); err != nil {
 				h.Error(core.Erro, err)
 			}
 		}

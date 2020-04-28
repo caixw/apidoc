@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // 默认页面
@@ -23,7 +23,7 @@ const indexPage = "index.xml"
 // 可以以前缀的方式指定，比如：v5/ 表示以 v5/ 开头的所有文件。
 var styles = []string{
 	"icon.svg",
-	spec.MajorVersion + "/",
+	ast.MajorVersion + "/",
 }
 
 // FileInfo 被打包文件的信息

@@ -45,8 +45,6 @@
 // ]]>
 //     </description>
 //         <request mimetype="application/json" type="object">
-//             <query name="size">size</query>
-//
 //             <param name="id" type="number" default="1" summary="id" />
 //             <param name="age" type="number" summary="age" />
 //             <example mimetype="application/json">
