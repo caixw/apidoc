@@ -58,10 +58,11 @@ type Comment struct {
 
 // 这些常量对应 Base 中相关字段的名称
 const (
-	rangeName         = "Range"
-	usageKeyName      = "UsageKey"
-	elementTagName    = "XMLName"
-	elementTagEndName = "XMLNameEnd"
+	rangeName          = "Range"
+	usageKeyName       = "UsageKey"
+	elementTagName     = "XMLName"
+	elementTagEndName  = "XMLNameEnd"
+	rootElementTagName = "RootName"
 )
 
 // Base 每一个 XML 节点必须包含的内容

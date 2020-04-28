@@ -111,7 +111,7 @@ func newNode(name string, rv reflect.Value) *node {
 			continue
 		}
 
-		if unicode.IsLower(rune(field.Name[0])) {
+		if unicode.IsLower(rune(field.Name[0])) || field.Name == rootElementTagName {
 			continue
 		}
 

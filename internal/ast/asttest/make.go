@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	data, err := token.Encode("\t", "apidoc", asttest.Get())
+	data, err := token.Encode("\t", asttest.Get())
 	if err != nil {
 		panic(err)
 	}

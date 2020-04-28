@@ -112,7 +112,7 @@ func (o *Output) Sanitize() error {
 }
 
 func apidocMarshaler(d *ast.APIDoc) ([]byte, error) {
-	return token.Encode("\t", "apidoc", d)
+	return token.Encode("\t", d)
 }
 
 func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {

@@ -25,16 +25,21 @@ var (
 )
 
 // Encode 将 v 转换成 XML 内容
-func Encode(indent, name string, v interface{}) ([]byte, error) {
+func Encode(indent string, v interface{}) ([]byte, error) {
 	rv := reflect.ValueOf(v)
 	if !rv.IsValid() {
 		return nil, nil
 	}
 
+	root, found := getRealType(rv.Type()).FieldByName(rootElementTagName)
+	if !found {
+		panic(fmt.Sprintf("根元素 %s 未指定 %s 字段", getRealType(rv.Type()), rootElementTagName))
+	}
+
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
 	e.Indent("", indent)
-	n := newNode(name, rv)
+	n := newNode(root.Tag.Get(tagName), rv)
 
 	if err := n.encode(e); err != nil {
 		return nil, err
