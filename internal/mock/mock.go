@@ -36,7 +36,7 @@ type Mock struct {
 // d doc.APIDoc 实例，调用方需要保证该数据类型的正确性；
 // servers 用于指定 d.Servers 中每一个服务对应的路由前缀
 func New(h *core.MessageHandler, d *ast.APIDoc, servers map[string]string) (http.Handler, error) {
-	c, err := version.SemVerCompatible(d.APIDoc.Value.Value, vars.Version())
+	c, err := version.SemVerCompatible(d.APIDoc.V(), vars.Version())
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ func (m *Mock) parse() error {
 		handler := m.buildAPI(api)
 
 		if len(api.Servers) == 0 {
-			err := m.mux.Handle(api.Path.Path.Value.Value, handler, api.Method.Value.Value)
+			err := m.mux.Handle(api.Path.Path.V(), handler, api.Method.V())
 			if err != nil {
 				return err
 			}
@@ -125,7 +125,7 @@ func (m *Mock) parse() error {
 				continue
 			}
 
-			err := prefix.Handle(api.Path.Path.Value.Value, handler, api.Method.Value.Value)
+			err := prefix.Handle(api.Path.Path.V(), handler, api.Method.V())
 			if err != nil {
 				return err
 			}

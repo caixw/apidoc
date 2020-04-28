@@ -30,8 +30,8 @@ func (m *Mock) buildAPI(api *ast.API) http.Handler {
 		}
 
 		for _, header := range api.Headers {
-			if err := validSimpleParam(header, r.Header.Get(header.Name.Value.Value)); err != nil {
-				m.handleError(w, r, "headers["+header.Name.Value.Value+"]", err)
+			if err := validSimpleParam(header, r.Header.Get(header.Name.V())); err != nil {
+				m.handleError(w, r, "headers["+header.Name.V()+"]", err)
 				return
 			}
 		}
@@ -58,7 +58,7 @@ func validRequest(requests []*ast.Request, r *http.Request) error {
 	}
 
 	for _, header := range req.Headers {
-		if err := validSimpleParam(header, r.Header.Get(header.Name.Value.Value)); err != nil {
+		if err := validSimpleParam(header, r.Header.Get(header.Name.V())); err != nil {
 			return err
 		}
 	}
@@ -107,20 +107,20 @@ func (m *Mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 	w.Header().Set("Content-Type", accept)
 	w.Header().Set("Server", vars.Name)
 	for _, item := range resp.Headers {
-		switch item.Type.Value.Value {
+		switch item.Type.V() {
 		case ast.TypeBool:
-			w.Header().Set(item.Name.Value.Value, strconv.FormatBool(generateBool()))
+			w.Header().Set(item.Name.V(), strconv.FormatBool(generateBool()))
 		case ast.TypeNumber:
-			w.Header().Set(item.Name.Value.Value, strconv.FormatInt(generateNumber(item), 10))
+			w.Header().Set(item.Name.V(), strconv.FormatInt(generateNumber(item), 10))
 		case ast.TypeString:
-			w.Header().Set(item.Name.Value.Value, generateString(item))
+			w.Header().Set(item.Name.V(), generateString(item))
 		default:
 			m.handleError(w, r, "response.headers", locale.Errorf(locale.ErrInvalidFormat))
 			return
 		}
 	}
 
-	w.WriteHeader(resp.Status.Value.Value)
+	w.WriteHeader(resp.Status.V())
 	if _, err := w.Write(data); err != nil {
 		m.h.Error(core.Erro, err) // 此时状态码已经输出
 	}
@@ -130,7 +130,7 @@ func (m *Mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 func findRequestByContentType(requests []*ast.Request, ct string) *ast.Request {
 	var none *ast.Request
 	for _, req := range requests {
-		if req.Mimetype != nil && req.Mimetype.Value.Value == ct {
+		if req.Mimetype.V() == ct {
 			return req
 		} else if none == nil && req.Mimetype.V() == "" {
 			none = req
@@ -156,8 +156,8 @@ func findResponseByAccept(mimetypes []*ast.Element, requests []*ast.Request, acc
 		if none == nil && req.Mimetype.V() == "" {
 			none = req
 		}
-		if req.Mimetype.V() != "" && matchContentType(req.Mimetype.Value.Value, accepts) {
-			return req, req.Mimetype.Value.Value
+		if req.Mimetype.V() != "" && matchContentType(req.Mimetype.V(), accepts) {
+			return req, req.Mimetype.V()
 		}
 	}
 
@@ -209,7 +209,7 @@ func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 
 func validQueryArrayParam(queries []*ast.Param, r *http.Request) error {
 	for _, query := range queries {
-		field := "queries[" + query.Name.Value.Value + "]."
+		field := "queries[" + query.Name.V() + "]."
 
 		valid := func(p *ast.Param, v string) error {
 			err := validSimpleParam(p, v)
@@ -220,20 +220,20 @@ func validQueryArrayParam(queries []*ast.Param, r *http.Request) error {
 		}
 
 		if !query.Array.V() {
-			if err := valid(query, r.FormValue(query.Name.Value.Value)); err != nil {
+			if err := valid(query, r.FormValue(query.Name.V())); err != nil {
 				return err
 			}
 		} else if !query.ArrayStyle.V() { // 默认的 form 格式
 			if err := r.ParseForm(); err != nil {
 				return err
 			}
-			for _, v := range r.Form[query.Name.Value.Value] {
+			for _, v := range r.Form[query.Name.V()] {
 				if err := valid(query, v); err != nil {
 					return err
 				}
 			}
 		} else {
-			values := strings.Split(r.FormValue(query.Name.Value.Value), ",")
+			values := strings.Split(r.FormValue(query.Name.V()), ",")
 			for _, v := range values {
 				if err := valid(query, v); err != nil {
 					return err
@@ -251,15 +251,15 @@ func validSimpleParam(p *ast.Param, val string) error {
 		return nil
 	}
 
-	if val == "" && p.Type.Value.Value != ast.TypeString { // 字符串的默认值可以为 “”
-		if (p.Optional != nil && p.Optional.Value.Value) ||
-			(p.Default != nil && p.Default.Value.Value != "") {
+	if val == "" && p.Type.V() != ast.TypeString { // 字符串的默认值可以为 “”
+		if (p.Optional != nil && p.Optional.V()) ||
+			(p.Default != nil && p.Default.V() != "") {
 			return nil
 		}
 		return core.NewLocaleError(core.Location{}, "", locale.ErrRequired)
 	}
 
-	switch p.Type.Value.Value {
+	switch p.Type.V() {
 	case ast.TypeBool:
 		if _, err := strconv.ParseBool(val); err != nil {
 			return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
@@ -279,7 +279,7 @@ func validSimpleParam(p *ast.Param, val string) error {
 	if isEnum(p) {
 		found := false
 		for _, e := range p.Enums {
-			if e.Value.Value.Value == val {
+			if e.Value.V() == val {
 				found = true
 				break
 			}
@@ -299,7 +299,7 @@ func buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 	}
 
 	for _, header := range p.Headers {
-		if err := validSimpleParam(header, r.Header.Get(header.Name.Value.Value)); err != nil {
+		if err := validSimpleParam(header, r.Header.Get(header.Name.V())); err != nil {
 			return nil, err
 		}
 	}

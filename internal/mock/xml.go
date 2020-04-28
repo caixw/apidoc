@@ -112,7 +112,7 @@ func validXMLParamValue(p *ast.Param, field, v string) error {
 
 	if isEnum(p) {
 		for _, enum := range p.Enums {
-			if enum.Value.Value.Value == v {
+			if enum.Value.V() == v {
 				return nil
 			}
 		}
@@ -143,14 +143,13 @@ func (validator *xmlValidator) find() *ast.Param {
 	}
 
 	var start int
-	if (p.Array != nil && p.Array.Value.Value) &&
-		(p.XMLWrapped != nil && p.XMLWrapped.Value.Value == validator.names[0]) {
-		if len(validator.names) > 1 && validator.names[1] == p.Name.Value.Value {
+	if p.Array.V() && p.XMLWrapped.V() == validator.names[0] {
+		if len(validator.names) > 1 && validator.names[1] == p.Name.V() {
 			start = 2
 		} else {
 			return nil
 		}
-	} else if p.Name != nil && (p.Name.Value.Value == validator.names[0]) {
+	} else if p.Name != nil && (p.Name.V() == validator.names[0]) {
 		start = 1
 	} else {
 		return nil
@@ -163,17 +162,16 @@ LOOP:
 		name := names[i]
 
 		for _, pp := range p.Items {
-			if (pp.Array != nil && pp.Array.Value.Value) &&
-				(pp.XMLWrapped != nil && pp.XMLWrapped.Value.Value == name) {
+			if pp.Array.V() && pp.XMLWrapped.V() == name {
 				i++
-				if i < len(names) && pp.Name.Value.Value == names[i] {
+				if i < len(names) && pp.Name.V() == names[i] {
 					p = pp
 					continue LOOP
 				}
 				return nil
 			}
 
-			if pp.Name.Value.Value == name {
+			if pp.Name.V() == name {
 				p = pp
 				continue LOOP
 			}
@@ -183,14 +181,14 @@ LOOP:
 	}
 
 	// 如果根据 names 查找出来的实例带 XMLExtract，则肯定有问题。
-	if p.XMLExtract != nil && p.XMLExtract.Value.Value {
+	if p.XMLExtract.V() {
 		return nil
 	}
 
 	// 从子项中查找带 XMLExtract 的项
-	if p.Type.Value.Value == ast.TypeObject {
+	if p.Type.V() == ast.TypeObject {
 		for _, pp := range p.Items {
-			if pp.XMLExtract != nil && pp.XMLExtract.Value.Value {
+			if pp.XMLExtract.V() {
 				p = pp
 				break
 			}
@@ -235,17 +233,17 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 	builder := &xmlBuilder{
 		start: xml.StartElement{
 			Name: xml.Name{
-				Local: p.Name.Value.Value,
+				Local: p.Name.V(),
 			},
 			Attr: make([]xml.Attr, 0, len(p.Items)),
 		},
 		items: []*xmlBuilder{},
 	}
 	if p.XMLNSPrefix != nil {
-		builder.start.Name.Space = p.XMLNSPrefix.Value.Value
+		builder.start.Name.Space = p.XMLNSPrefix.V()
 	}
 
-	if (p.Array != nil && p.Array.Value.Value) && chkArray {
+	if p.Array.V() && chkArray {
 		if err := parseArray(p, builder); err != nil {
 			return nil, err
 		}
@@ -255,8 +253,8 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 		return builder, nil
 	}
 
-	if p.Type != nil && p.Type.Value.Value != ast.TypeObject {
-		switch p.Type.Value.Value {
+	if p.Type.V() != ast.TypeObject {
+		switch p.Type.V() {
 		case ast.TypeBool:
 			builder.charData = fmt.Sprint(generateBool())
 		case ast.TypeNumber:
@@ -269,7 +267,7 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 
 	for _, item := range p.Items {
 		switch {
-		case item.XMLAttr != nil && item.XMLAttr.Value.Value:
+		case item.XMLAttr.V():
 			v, err := getXMLValue(item)
 			if err != nil {
 				return nil, err
@@ -277,22 +275,22 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 
 			attr := xml.Attr{
 				Name: xml.Name{
-					Local: item.Name.Value.Value,
+					Local: item.Name.V(),
 				},
 				Value: fmt.Sprint(v),
 			}
 			if item.XMLNSPrefix != nil {
-				attr.Name.Space = item.XMLNSPrefix.Value.Value
+				attr.Name.Space = item.XMLNSPrefix.V()
 			}
 			builder.start.Attr = append(builder.start.Attr, attr)
-		case item.XMLExtract != nil && item.XMLExtract.Value.Value:
+		case item.XMLExtract.V():
 			v, err := getXMLValue(item)
 			if err != nil {
 				return nil, err
 			}
 
 			builder.charData = fmt.Sprint(v)
-		case item.Array != nil && item.Array.Value.Value:
+		case item.Array.V():
 			if err := parseArray(item, builder); err != nil {
 				return nil, err
 			}
@@ -310,13 +308,13 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 
 func parseArray(p *ast.Param, parent *xmlBuilder) error {
 	b := parent
-	if p.XMLWrapped != nil && p.XMLWrapped.Value.Value != "" {
+	if p.XMLWrapped.V() != "" {
 		b = &xmlBuilder{items: []*xmlBuilder{}}
 		if p.XMLNSPrefix != nil {
-			b.start.Name.Space = p.XMLNSPrefix.Value.Value
+			b.start.Name.Space = p.XMLNSPrefix.V()
 		}
 		if p.XMLWrapped != nil {
-			b.start.Name.Local = p.XMLWrapped.Value.Value
+			b.start.Name.Local = p.XMLWrapped.V()
 		}
 		parent.items = append(parent.items, b)
 	}

@@ -51,7 +51,7 @@ func generateNumber(p *ast.Param) int64 {
 		if !test {
 			index = rand.Intn(len(p.Enums))
 		}
-		v, err := strconv.ParseInt(p.Enums[index].Value.Value.Value, 10, 32)
+		v, err := strconv.ParseInt(p.Enums[index].Value.V(), 10, 32)
 		if err != nil { // 这属于文档定义错误，直接 panic
 			panic(err)
 		}
@@ -70,7 +70,7 @@ func generateString(p *ast.Param) string {
 		if !test {
 			index = rand.Intn(len(p.Enums))
 		}
-		return p.Enums[index].Value.Value.Value
+		return p.Enums[index].Value.V()
 	}
 
 	if test {

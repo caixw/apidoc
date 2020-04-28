@@ -152,13 +152,13 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 		return nil
 	}
 
-	if p.Type.Value.Value != t {
+	if p.Type.V() != t {
 		return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
 	}
 
 	if isEnum(p) {
 		for _, enum := range p.Enums {
-			if enum.Value.Value.Value == fmt.Sprint(v) {
+			if enum.Value.V() == fmt.Sprint(v) {
 				return nil
 			}
 		}
@@ -206,7 +206,7 @@ func (validator *jsonValidator) find() *ast.Param {
 	for _, name := range validator.names {
 		found := false
 		for _, pp := range p.Items {
-			if pp.Name.Value.Value == name {
+			if pp.Name.V() == name {
 				p = pp
 				found = true
 				break
@@ -294,7 +294,7 @@ func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool) error {
 		return builder.err
 	}
 
-	if (p.Array != nil && p.Array.Value.Value) && chkArray {
+	if p.Array.V() && chkArray {
 		builder.writeStrings("[\n").incrIndent()
 
 		size := generateSliceSize()
@@ -331,7 +331,7 @@ func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool) error {
 
 		last := len(p.Items) - 1
 		for index, item := range p.Items {
-			builder.writeIndent().writeStrings(`"`, item.Name.Value.Value, `"`, ": ")
+			builder.writeIndent().writeStrings(`"`, item.Name.V(), `"`, ": ")
 
 			if err := writeJSON(builder, item, true); err != nil {
 				return err
