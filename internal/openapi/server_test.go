@@ -5,17 +5,18 @@ package openapi
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/v6/spec"
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/v6/internal/ast"
 )
 
 func TestNewServer(t *testing.T) {
 	a := assert.New(t)
 
-	input := &spec.Server{
-		URL:     "https://example.com",
-		Name:    "name",
-		Summary: "summary",
+	input := &ast.Server{
+		URL:     &ast.Attribute{Value: ast.String{Value: "https://example.com"}},
+		Name:    &ast.Attribute{Value: ast.String{Value: "name"}},
+		Summary: &ast.Attribute{Value: ast.String{Value: "summary"}},
 	}
 
 	output := newServer(input)
@@ -23,7 +24,7 @@ func TestNewServer(t *testing.T) {
 		Equal(output.URL, "https://example.com").
 		Equal(output.Description, "summary")
 
-	input.Description = spec.Richtext{Text: "desc"}
+	input.Description = &ast.Richtext{Text: &ast.CData{Value: ast.String{Value: "desc"}}}
 	output = newServer(input)
 	a.NotNil(output).
 		Equal(output.URL, "https://example.com").

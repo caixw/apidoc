@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // 去掉 URL 中的 {} 模板参数。使其符合 is.URL 的判断规则
@@ -27,14 +27,14 @@ type ServerVariable struct {
 	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
 }
 
-func newServer(srv *spec.Server) *Server {
-	desc := srv.Summary
-	if srv.Description.Text != "" {
-		desc = srv.Description.Text
+func newServer(srv *ast.Server) *Server {
+	desc := srv.Summary.V()
+	if srv.Description != nil && srv.Description.Text != nil {
+		desc = srv.Description.V()
 	}
 
 	return &Server{
-		URL:         srv.URL,
+		URL:         srv.URL.V(),
 		Description: desc,
 	}
 }

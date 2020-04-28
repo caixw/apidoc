@@ -4,19 +4,20 @@ package openapi
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // 将 doc.APIDoc 转换成 openapi
-func convert(doc *spec.APIDoc) (*OpenAPI, error) {
-	langID := doc.Lang
+func convert(doc *ast.APIDoc) (*OpenAPI, error) {
+	langID := doc.Lang.V()
 	if langID == "" {
 		langID = "und"
 	}
@@ -24,11 +25,11 @@ func convert(doc *spec.APIDoc) (*OpenAPI, error) {
 	openapi := &OpenAPI{
 		OpenAPI: LatestVersion,
 		Info: &Info{
-			Title:       doc.Title,
-			Description: doc.Description.Text,
+			Title:       doc.Title.Content.Value,
+			Description: doc.Description.V(),
 			Contact:     newContact(doc.Contact),
 			License:     newLicense(doc.License),
-			Version:     string(doc.Version),
+			Version:     doc.Version.V(),
 		},
 		Servers: make([]*Server, 0, len(doc.Servers)),
 		Tags:    make([]*Tag, 0, len(doc.Tags)),
@@ -57,25 +58,36 @@ func convert(doc *spec.APIDoc) (*OpenAPI, error) {
 	return openapi, nil
 }
 
-func parsePaths(openapi *OpenAPI, d *spec.APIDoc) *core.SyntaxError {
+func parsePaths(openapi *OpenAPI, d *ast.APIDoc) *core.SyntaxError {
 	for _, api := range d.Apis {
-		p := openapi.Paths[api.Path.Path]
+		p := openapi.Paths[api.Path.Path.V()]
 		if p == nil {
 			p = &PathItem{}
-			openapi.Paths[api.Path.Path] = p
+			openapi.Paths[api.Path.Path.V()] = p
 		}
 
-		operation, err := setOperation(p, string(api.Method))
+		operation, err := setOperation(p, api.Method.V())
 		if err != nil {
 			err.Field = "paths." + err.Field
 			return err
 		}
 
-		operation.Tags = api.Tags
-		operation.Deprecated = api.Deprecated != ""
-		operation.OperationID = api.ID
-		operation.Summary = api.Summary
-		operation.Description = api.Description.Text
+		if len(api.Tags) > 0 {
+			operation.Tags = make([]string, 0, len(api.Tags))
+			for _, tag := range api.Tags {
+				operation.Tags = append(operation.Tags, tag.Content.Value)
+			}
+		}
+		operation.Deprecated = api.Deprecated != nil
+		if api.ID != nil {
+			operation.OperationID = api.ID.V()
+		}
+		if api.Summary != nil {
+			operation.Summary = api.Summary.V()
+		}
+		if api.Description != nil {
+			operation.Description = api.Description.V()
+		}
 		setOperationParams(operation, api)
 
 		// servers
@@ -85,8 +97,8 @@ func parsePaths(openapi *OpenAPI, d *spec.APIDoc) *core.SyntaxError {
 			// 找到对应的 doc.Server.URL 值，之后根据此值从 openapi 中取 Server 对象
 			var srvURL string
 			for _, docSrv := range d.Servers {
-				if docSrv.Name == srv {
-					srvURL = docSrv.URL
+				if docSrv.Name != nil && docSrv.Name.V() == srv.Content.Value {
+					srvURL = docSrv.URL.V()
 					break
 				}
 			}
@@ -108,12 +120,12 @@ func parsePaths(openapi *OpenAPI, d *spec.APIDoc) *core.SyntaxError {
 			for _, r := range api.Requests {
 				examples := make(map[string]*Example, len(r.Examples))
 				for _, exp := range r.Examples {
-					examples[exp.Mimetype] = &Example{
-						Value: ExampleValue(exp.Content),
+					examples[exp.Mimetype.V()] = &Example{
+						Value: ExampleValue(exp.Content.Value.Value),
 					}
 				}
 
-				content[r.Mimetype] = &MediaType{
+				content[r.Mimetype.V()] = &MediaType{
 					Schema:   newSchemaFromRequest(r, true),
 					Examples: examples,
 				}
@@ -127,11 +139,11 @@ func parsePaths(openapi *OpenAPI, d *spec.APIDoc) *core.SyntaxError {
 		// responses
 		operation.Responses = make(map[string]*Response, len(api.Responses))
 		for _, resp := range api.Responses {
-			status := resp.Status.String()
+			status := strconv.Itoa(resp.Status.V())
 			r, found := operation.Responses[status]
 			if !found {
 				r = &Response{
-					Description: getDescription(resp.Description.Text, resp.Summary),
+					Description: getDescription(resp.Description, resp.Summary),
 					Headers:     make(map[string]*Header, 10),
 					Content:     make(map[string]*MediaType, 10),
 				}
@@ -139,20 +151,20 @@ func parsePaths(openapi *OpenAPI, d *spec.APIDoc) *core.SyntaxError {
 			}
 
 			for _, h := range resp.Headers {
-				r.Headers[h.Name] = &Header{
+				r.Headers[h.Name.V()] = &Header{
 					Style:       Style{Style: StyleSimple},
-					Description: getDescription(h.Description.Text, h.Summary),
+					Description: getDescription(h.Description, h.Summary),
 				}
 			}
 
 			examples := make(map[string]*Example, len(resp.Examples))
 			for _, exp := range resp.Examples {
-				examples[exp.Mimetype] = &Example{
-					Summary: getDescription(exp.Description.Text, exp.Summary),
-					Value:   ExampleValue(exp.Content),
+				examples[exp.Mimetype.V()] = &Example{
+					Summary: exp.Summary.V(),
+					Value:   ExampleValue(exp.Content.Value.Value),
 				}
 			}
-			r.Content[resp.Mimetype] = &MediaType{
+			r.Content[resp.Mimetype.V()] = &MediaType{
 				Schema:   newSchemaFromRequest(resp, true),
 				Examples: examples,
 			}
@@ -162,26 +174,26 @@ func parsePaths(openapi *OpenAPI, d *spec.APIDoc) *core.SyntaxError {
 	return nil
 }
 
-func setOperationParams(operation *Operation, api *spec.API) {
+func setOperationParams(operation *Operation, api *ast.API) {
 	l := len(api.Path.Params) + len(api.Path.Queries)
 	operation.Parameters = make([]*Parameter, 0, l)
 
 	for _, param := range api.Path.Params {
 		operation.Parameters = append(operation.Parameters, &Parameter{
-			Name:        param.Name,
+			Name:        param.Name.V(),
 			IN:          ParameterINPath,
-			Description: getDescription(param.Description.Text, param.Summary),
-			Required:    !param.Optional,
+			Description: getDescription(param.Description, param.Summary),
+			Required:    !param.Optional.V(),
 			Schema:      newSchema(param, true),
 		})
 	}
 
 	for _, param := range api.Path.Queries {
 		operation.Parameters = append(operation.Parameters, &Parameter{
-			Name:        param.Name,
+			Name:        param.Name.V(),
 			IN:          ParameterINQuery,
-			Description: getDescription(param.Description.Text, param.Summary),
-			Required:    !param.Optional,
+			Description: getDescription(param.Description, param.Summary),
+			Required:    !param.Optional.V(),
 			Schema:      newSchema(param, true),
 		})
 	}
@@ -191,19 +203,24 @@ func setOperationParams(operation *Operation, api *spec.API) {
 		for _, param := range r.Headers {
 			operation.Parameters = append(operation.Parameters, &Parameter{
 				Style:       Style{Style: StyleSimple},
-				Name:        param.Name,
+				Name:        param.Name.V(),
 				IN:          ParameterINHeader,
-				Description: getDescription(param.Description.Text, param.Summary),
+				Description: getDescription(param.Description, param.Summary),
 			})
 		}
 	}
 }
 
-func getDescription(desc, summary string) string {
-	if desc != "" {
-		return desc
+func getDescription(desc *ast.Richtext, summary *ast.Attribute) string {
+	if desc.V() != "" {
+		return desc.V()
 	}
-	return summary
+
+	if summary != nil {
+		return summary.V()
+	}
+
+	return ""
 }
 
 func setOperation(path *PathItem, method string) (*Operation, *core.SyntaxError) {
@@ -256,7 +273,7 @@ func setOperation(path *PathItem, method string) (*Operation, *core.SyntaxError)
 }
 
 // JSON 输出 JSON 格式数据
-func JSON(doc *spec.APIDoc) ([]byte, error) {
+func JSON(doc *ast.APIDoc) ([]byte, error) {
 	openapi, err := convert(doc)
 	if err != nil {
 		return nil, err
@@ -266,7 +283,7 @@ func JSON(doc *spec.APIDoc) ([]byte, error) {
 }
 
 // YAML 输出 YAML 格式数据
-func YAML(doc *spec.APIDoc) ([]byte, error) {
+func YAML(doc *ast.APIDoc) ([]byte, error) {
 	openapi, err := convert(doc)
 	if err != nil {
 		return nil, err

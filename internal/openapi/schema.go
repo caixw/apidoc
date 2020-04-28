@@ -4,7 +4,7 @@ package openapi
 
 import (
 	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/spec"
+	"github.com/caixw/apidoc/v6/internal/ast"
 )
 
 // Schema.Type 需要的一些预定义数据类型
@@ -19,13 +19,13 @@ const (
 	TypeArray    = "array"
 )
 
-func fromDocType(t spec.Type) string {
-	switch string(t) {
-	case spec.Number:
+func fromDocType(t string) string {
+	switch t {
+	case ast.TypeNumber:
 		return TypeInt
-	case spec.String:
+	case ast.TypeString:
 		return TypeString
-	case spec.Bool:
+	case ast.TypeBool:
 		return TypeBool
 	default:
 		return ""
@@ -130,39 +130,41 @@ func (s *Schema) sanitize() *core.SyntaxError {
 	return nil
 }
 
-// chkArray 是否需要检测当前类型是否为数组
-func newSchema(p *spec.Param, chkArray bool) *Schema {
-	xml := &XML{
-		Name:      p.Name,
-		Namespace: p.XMLNS,
-		Prefix:    p.XMLNSPrefix,
-		Attribute: p.XMLAttr,
-		Wrapped:   p.XMLWrapped != "",
+func newXML(p *ast.Param) *XML {
+	return &XML{
+		Name:      p.Name.V(),
+		Namespace: p.XMLNS.V(),
+		Prefix:    p.XMLNSPrefix.V(),
+		Attribute: p.XMLAttr.V(),
+		Wrapped:   p.XMLWrapped != nil && p.XMLWrapped.V() != "",
 	}
+}
 
-	if chkArray && p.Array {
+// chkArray 是否需要检测当前类型是否为数组
+func newSchema(p *ast.Param, chkArray bool) *Schema {
+	if chkArray && p.Array.V() {
 		return &Schema{
 			Type:  TypeArray,
 			Items: newSchema(p, false),
-			XML:   xml,
+			XML:   newXML(p),
 		}
 	}
 
 	s := &Schema{
-		Type:        fromDocType(p.Type),
-		Title:       p.Summary,
-		Description: p.Description.Text,
-		Default:     p.Default,
-		Deprecated:  p.Deprecated != "",
+		Type:        fromDocType(p.Type.V()),
+		Title:       p.Summary.V(),
+		Description: p.Description.V(),
+		Default:     p.Default.V(),
+		Deprecated:  p.Deprecated != nil,
 		Required:    make([]string, 0, len(p.Items)),
-		XML:         xml,
+		XML:         newXML(p),
 	}
 
 	// enum
 	if len(p.Enums) > 0 {
 		s.Enum = make([]interface{}, 0, len(p.Enums))
 		for _, e := range p.Enums {
-			s.Enum = append(s.Enum, e.Value)
+			s.Enum = append(s.Enum, e.Value.V())
 		}
 	}
 
@@ -172,14 +174,14 @@ func newSchema(p *spec.Param, chkArray bool) *Schema {
 		s.Properties = make(map[string]*Schema, len(p.Items))
 
 		for _, item := range p.Items {
-			name := item.Name
-			if item.Array && item.XMLWrapped != "" {
-				name = item.XMLWrapped
+			name := item.Name.V()
+			if item.Array.V() && item.XMLWrapped.V() != "" {
+				name = item.XMLWrapped.V()
 			}
 
 			s.Properties[name] = newSchema(item, true)
-			if !item.Optional {
-				s.Required = append(s.Required, item.Name)
+			if !item.Optional.V() {
+				s.Required = append(s.Required, item.Name.V())
 			}
 		}
 	}
@@ -188,6 +190,6 @@ func newSchema(p *spec.Param, chkArray bool) *Schema {
 }
 
 // chkArray 是否需要检测当前类型是否为数组
-func newSchemaFromRequest(p *spec.Request, chkArray bool) *Schema {
+func newSchemaFromRequest(p *ast.Request, chkArray bool) *Schema {
 	return newSchema(p.Param(), chkArray)
 }
