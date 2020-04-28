@@ -27,13 +27,13 @@ func (b *rubyMultipleComment) BeginFunc(l *Lexer) bool {
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *rubyMultipleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
+func (b *rubyMultipleComment) EndFunc(l *Lexer) (data []byte, ok bool) {
 	data, found := l.DelimString(b.end, true)
 	if !found { // 没有找到结束符号，直接到达文件末尾
-		return nil, nil, false
+		return nil, false
 	}
 
-	raw = make([]byte, 0, len(b.begins)+len(data))
+	raw := make([]byte, 0, len(b.begins)+len(data))
 	raw = append(append(raw, b.begins...), data...)
-	return raw, convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
+	return convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
 }

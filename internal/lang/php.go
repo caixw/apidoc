@@ -47,15 +47,15 @@ func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 	return true
 }
 
-func (b *phpDocBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
+func (b *phpDocBlock) EndFunc(l *Lexer) (data []byte, ok bool) {
 	for {
 		switch {
 		case l.AtEOF():
-			return nil, nil, false
+			return nil, false
 		case l.Match(b.token1):
-			return nil, nil, true
+			return nil, true
 		case l.Match(b.token2):
-			return nil, nil, true
+			return nil, true
 		default:
 			l.Next(1)
 		}

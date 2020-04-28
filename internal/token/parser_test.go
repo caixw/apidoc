@@ -475,7 +475,6 @@ func TestParser_Token(t *testing.T) {
 				URI:   uri,
 				Range: core.Range{Start: start},
 			},
-			Raw:  []byte(item.input),
 			Data: []byte(item.input),
 		})
 		a.NotError(err, "error %s at %s", err, item.input).
@@ -643,7 +642,6 @@ func TestParser_parseStartElement(t *testing.T) {
 				URI:   uri,
 				Range: core.Range{Start: start},
 			},
-			Raw:  []byte(item.input),
 			Data: []byte(item.input),
 		})
 		a.NotError(err, "error %s at %s", err, item.input).
@@ -721,7 +719,6 @@ func TestParser_parseEndElement(t *testing.T) {
 				URI:   uri,
 				Range: core.Range{Start: start},
 			},
-			Raw:  []byte(item.input),
 			Data: []byte(item.input),
 		})
 		a.NotError(err, "error %s at %s", err, item.input).
@@ -832,7 +829,6 @@ func TestParser_parseCData(t *testing.T) {
 				URI:   uri,
 				Range: core.Range{Start: start},
 			},
-			Raw:  []byte(item.input),
 			Data: []byte(item.input),
 		})
 		a.NotError(err, "error %s at %s", err, item.input).
@@ -1018,7 +1014,6 @@ func TestParser_parseInstruction(t *testing.T) {
 				URI:   uri,
 				Range: core.Range{Start: start},
 			},
-			Raw:  []byte(item.input),
 			Data: []byte(item.input),
 		})
 		a.NotError(err, "error %s at %s", err, item.input).
@@ -1143,7 +1138,6 @@ func TestParser_parseAttributes(t *testing.T) {
 				URI:   uri,
 				Range: core.Range{Start: start},
 			},
-			Raw:  []byte(item.input),
 			Data: []byte(item.input),
 		})
 		a.NotError(err, "error %s at %s", err, item.input).
@@ -1351,7 +1345,6 @@ func TestParser_parseAttribute(t *testing.T) {
 				URI:   uri,
 				Range: core.Range{Start: start},
 			},
-			Raw:  []byte(item.input),
 			Data: []byte(item.input),
 		})
 		a.NotError(err, "error %s at %s", err, item.input).

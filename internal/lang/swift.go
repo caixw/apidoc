@@ -36,27 +36,27 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *Lexer) bool {
 	return false
 }
 
-func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
-	raw = append(make([]byte, 0, 200), b.begins...)
+func (b *swiftNestMCommentBlock) EndFunc(l *Lexer) (data []byte, ok bool) {
+	data = append(make([]byte, 0, 200), b.begins...)
 
 LOOP:
 	for {
 		switch {
 		case l.AtEOF():
-			return nil, nil, false
+			return nil, false
 		case l.Match(b.end):
-			raw = append(raw, b.ends...)
+			data = append(data, b.ends...)
 			b.level--
 			if b.level == 0 {
 				break LOOP
 			}
 		case l.Match(b.begin):
-			raw = append(raw, b.begins...)
+			data = append(data, b.begins...)
 			b.level++
 		default:
-			raw = append(raw, l.Next(1)...)
+			data = append(data, l.Next(1)...)
 		}
 	}
 
-	return raw, convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
+	return convertMultipleCommentToXML(data, b.begins, b.ends, b.prefix), true
 }

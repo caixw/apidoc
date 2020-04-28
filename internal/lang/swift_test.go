@@ -20,10 +20,9 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.NotError(err).NotNil(l)
 
 	a.True(b.BeginFunc(l))
-	raw, data, ok := b.EndFunc(l)
+	data, ok := b.EndFunc(l)
 	a.True(ok).
-		Equal(string(data), "   *123*123*  ").
-		Equal(string(raw), "/* *123*123**/")
+		Equal(string(data), "   *123*123*  ")
 	bs := l.Next(1)
 	a.Empty(bs).True(l.AtEOF()) // 到达末尾
 
@@ -34,10 +33,9 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 */`), nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, ok = b.EndFunc(l)
+	data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(data), "   \n\t  xx\n\t  yy\n  ").
-		Equal(string(raw), "/**\n\t* xx\n\t* yy\n*/")
+		Equal(string(data), "   \n\t  xx\n\t  yy\n  ")
 
 	l, err = NewLexer([]byte(`/**
 	* xx/yy/zz
@@ -45,19 +43,17 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	*/`), nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, ok = b.EndFunc(l)
+	data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(data), "   \n\t  xx/yy/zz\n\t  yy/zz/\n\t  ").
-		Equal(string(raw), "/**\n\t* xx/yy/zz\n\t* yy/zz/\n\t*/")
+		Equal(string(data), "   \n\t  xx/yy/zz\n\t  yy/zz/\n\t  ")
 
 	// 嵌套注释
 	l, err = NewLexer([]byte(`/*0/*1/*2*/*/*/`), nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, ok = b.EndFunc(l)
+	data, ok = b.EndFunc(l)
 	a.True(ok).
-		Equal(string(data), "  0/*1/*2*/*/  ").
-		Equal(string(raw), "/*0/*1/*2*/*/*/")
+		Equal(string(data), "  0/*1/*2*/*/  ")
 	bs = l.Next(1)
 	a.Empty(bs).True(l.AtEOF()) // 到达末尾
 
@@ -65,19 +61,17 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	l, err = NewLexer([]byte(`/*0/*1/*2*/*/*/*/`), nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, ok = b.EndFunc(l)
+	data, ok = b.EndFunc(l)
 	a.True(ok).
 		Equal(string(data), "  0/*1/*2*/*/  ").
-		Equal(string(raw), "/*0/*1/*2*/*/*/").
 		Equal(string(l.All()), "*/")
 
 	// 缺少 end 匹配项
 	l, err = NewLexer([]byte(`/*0/*1/*2*/*/`), nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
-	raw, data, ok = b.EndFunc(l)
+	data, ok = b.EndFunc(l)
 	a.False(ok).
 		Equal(len(data), 0).
-		Equal(len(raw), 0).
 		True(l.AtEOF()) // 到达末尾
 }

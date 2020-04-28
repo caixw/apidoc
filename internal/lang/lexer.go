@@ -62,7 +62,7 @@ func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler, uri core.U
 			}
 		}
 
-		raw, data, ok := block.EndFunc(l)
+		data, ok := block.EndFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 			loc := core.Location{
 				URI: uri,
@@ -77,7 +77,7 @@ func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler, uri core.U
 
 		block = nil // 重置 block
 
-		if len(raw) == 0 {
+		if len(data) == 0 {
 			continue
 		}
 
@@ -90,7 +90,6 @@ func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler, uri core.U
 				},
 			},
 			Data: data,
-			Raw:  raw,
 		}
 	} // end for
 }

@@ -79,12 +79,6 @@ func TestInput_parseFile(t *testing.T) {
    <server>test</server>
    </api>
 `).
-		Equal(string(blk.Raw), `// <api method="GET">
-// <path path="/apis/gbk" />
-// <description>1223 中文 45 </description>
-// <server>test</server>
-// </api>
-`).
 		Equal(blk.Location.Range, core.Range{
 			Start: core.Position{Line: 5, Character: 0},
 			End:   core.Position{Line: 10, Character: 0},

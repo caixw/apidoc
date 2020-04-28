@@ -21,16 +21,16 @@ func (b *pascalStringBlock) BeginFunc(l *Lexer) bool {
 	return l.Match(b.symbol)
 }
 
-func (b *pascalStringBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
+func (b *pascalStringBlock) EndFunc(l *Lexer) (data []byte, ok bool) {
 LOOP:
 	for {
 		switch {
 		case l.AtEOF():
-			return nil, nil, false
+			return nil, false
 		case l.Match(b.escape): // 转义
 			continue LOOP
 		case l.Match(b.symbol): // 结束
-			return nil, nil, true
+			return nil, true
 		default:
 			l.Next(1)
 		}
