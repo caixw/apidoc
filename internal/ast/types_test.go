@@ -125,35 +125,34 @@ func TestAPIDoc(t *testing.T) {
 	a.Equal(doc.Tags[0], tag)
 
 	tag = doc.Tags[1]
-	a.Equal(tag.Deprecated.Value.Value, "1.0.1").
+	a.Equal(tag.Deprecated.V(), "1.0.1").
 		Empty(tag.XMLNameEnd.Value).
 		Equal(tag.UsageKey, "usage-apidoc-tags")
 
 	a.Equal(2, len(doc.Servers))
 	srv := doc.Servers[0]
-	a.Equal(srv.Name.Value.Value, "admin").
-		Equal(srv.URL.Value.Value, "https://api.example.com/admin").
+	a.Equal(srv.Name.V(), "admin").
+		Equal(srv.URL.V(), "https://api.example.com/admin").
 		Nil(srv.Description).
-		Equal(srv.Summary.Value.Value, "admin api")
+		Equal(srv.Summary.V(), "admin api")
 
 	srv = doc.Servers[1]
-	a.Equal(srv.Name.Value.Value, "client").
-		Equal(srv.URL.Value.Value, "https://api.example.com/client").
-		Equal(srv.Deprecated.Value.Value, "1.0.1").
-		Equal(srv.Description.Text.Value.Value, "\n        <p>client api</p>\n        ")
+	a.Equal(srv.Name.V(), "client").
+		Equal(srv.URL.V(), "https://api.example.com/client").
+		Equal(srv.Deprecated.V(), "1.0.1").
+		Equal(srv.Description.V(), "\n        <p>client api</p>\n        ")
 
 	a.NotNil(doc.License).
-		Equal(doc.License.Text.Value.Value, "MIT").
-		Equal(doc.License.URL.Value.Value, "https://opensource.org/licenses/MIT")
+		Equal(doc.License.Text.V(), "MIT").
+		Equal(doc.License.URL.V(), "https://opensource.org/licenses/MIT")
 
 	a.NotNil(doc.Contact).
-		Equal(doc.Contact.Name.Value.Value, "test").
-		Equal(doc.Contact.URL.Content.Value, "https://example.com").
-		Equal(doc.Contact.Email.Content.Value, "test@example.com")
+		Equal(doc.Contact.Name.V(), "test").
+		Equal(doc.Contact.URL.V(), "https://example.com").
+		Equal(doc.Contact.Email.V(), "test@example.com")
 
-	a.NotEmpty(doc.Description.Text).
-		Contains(doc.Description.Text.Value.Value, "<h2>h2</h2>").
-		NotContains(doc.Description.Text.Value.Value, "</description>")
+	a.Contains(doc.Description.V(), "<h2>h2</h2>").
+		NotContains(doc.Description.V(), "</description>")
 
 	a.True(doc.tagExists("tag1")).
 		False(doc.tagExists("not-exists"))
@@ -173,20 +172,20 @@ func TestAPIDoc_all(t *testing.T) {
 	doc := &APIDoc{}
 	a.NotError(doc.Parse(core.Block{Data: data}))
 
-	a.Equal(doc.Version.Value.Value, "1.1.1").False(doc.Version.XMLName.IsEmpty())
+	a.Equal(doc.Version.V(), "1.1.1").False(doc.Version.XMLName.IsEmpty())
 
 	a.Equal(len(doc.Tags), 2)
 	tag := doc.Tags[0]
-	a.Equal(tag.Name.Value.Value, "tag1").
-		NotEmpty(tag.Title.Value.Value)
+	a.Equal(tag.Name.V(), "tag1").
+		NotEmpty(tag.Title.V())
 	tag = doc.Tags[1]
-	a.Equal(tag.Deprecated.Value.Value, "1.0.1").
-		Equal(tag.Name.Value.Value, "tag2")
+	a.Equal(tag.Deprecated.V(), "1.0.1").
+		Equal(tag.Name.V(), "tag2")
 
 	a.Equal(2, len(doc.Servers))
 	srv := doc.Servers[0]
-	a.Equal(srv.Name.Value.Value, "admin").
-		Equal(srv.URL.Value.Value, "https://api.example.com/admin").
+	a.Equal(srv.Name.V(), "admin").
+		Equal(srv.URL.V(), "https://api.example.com/admin").
 		Nil(srv.Description)
 
 	a.True(doc.tagExists("tag1")).
@@ -216,32 +215,32 @@ func TestAPI(t *testing.T) {
 	a := assert.New(t)
 	api := loadAPI(a)
 
-	a.Equal(api.Version.Value.Value, "1.1.0").
+	a.Equal(api.Version.V(), "1.1.0").
 		Equal(2, len(api.Tags))
 
 	a.Equal(len(api.Responses), 2)
 	resp := api.Responses[0]
-	a.Equal(resp.Mimetype.Value.Value, "json").
-		Equal(resp.Status.Value.Value, 200).
-		Equal(resp.Type.Value.Value, TypeObject).
+	a.Equal(resp.Mimetype.V(), "json").
+		Equal(resp.Status.V(), 200).
+		Equal(resp.Type.V(), TypeObject).
 		Equal(len(resp.Items), 3)
 	sex := resp.Items[1]
-	a.Equal(sex.Type.Value.Value, TypeString).
-		Equal(sex.Default.Value.Value, "male").
+	a.Equal(sex.Type.V(), TypeString).
+		Equal(sex.Default.V(), "male").
 		Equal(len(sex.Enums), 2)
 	example := resp.Examples[0]
-	a.Equal(example.Mimetype.Value.Value, "json").
+	a.Equal(example.Mimetype.V(), "json").
 		NotEmpty(example.Content.Value.Value)
 
 	a.Equal(1, len(api.Requests))
 	req := api.Requests[0]
-	a.Equal(req.Mimetype.Value.Value, "json").
-		Equal(req.Headers[0].Name.Value.Value, "authorization")
+	a.Equal(req.Mimetype.V(), "json").
+		Equal(req.Headers[0].Name.V(), "authorization")
 
 	// callback
 	cb := api.Callback
-	a.Equal(cb.Method.Value.Value, "POST").
-		Equal(cb.Requests[0].Type.Value.Value, TypeObject).
-		Equal(cb.Requests[0].Mimetype.Value.Value, "json").
-		Equal(cb.Responses[0].Status.Value.Value, 200)
+	a.Equal(cb.Method.V(), "POST").
+		Equal(cb.Requests[0].Type.V(), TypeObject).
+		Equal(cb.Requests[0].Mimetype.V(), "json").
+		Equal(cb.Responses[0].Status.V(), 200)
 }

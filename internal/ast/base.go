@@ -3,7 +3,6 @@
 package ast
 
 import (
-	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -267,7 +266,8 @@ func (s *Element) DecodeXML(p *token.Parser, start *token.StartElement) (*token.
 	for {
 		t, err := p.Token()
 		if err == io.EOF {
-			return nil, errors.New("test")
+			pos := p.Position().Position
+			return nil, p.NewError(pos, pos, locale.ErrInvalidXML)
 		} else if err != nil {
 			return nil, err
 		}
