@@ -25,7 +25,6 @@ import (
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/mock"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Config 配置文件映身的结构
@@ -143,8 +142,8 @@ func ViewFile(status int, url string, path core.URI, contentType string, dir cor
 }
 
 // Valid 验证文档内容的正确性
-func Valid(content []byte) error {
-	return spec.Valid(content)
+func Valid(b core.Block) error {
+	return (&ast.APIDoc{}).Parse(b)
 }
 
 // Mock 生成 Mock 中间件
