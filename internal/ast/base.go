@@ -86,6 +86,14 @@ func (a *Attribute) EncodeXMLAttr() (string, error) {
 	return a.Value.Value, nil
 }
 
+// V 返回当前属性实际表示的值
+func (a *Attribute) V() string {
+	if a == nil {
+		return ""
+	}
+	return a.Value.Value
+}
+
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (num *NumberAttribute) DecodeXMLAttr(attr *token.Attribute) error {
 	v, err := strconv.Atoi(attr.Value.Value)
@@ -103,6 +111,14 @@ func (num *NumberAttribute) DecodeXMLAttr(attr *token.Attribute) error {
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (num *NumberAttribute) EncodeXMLAttr() (string, error) {
 	return strconv.Itoa(num.Value.Value), nil
+}
+
+// V 返回当前属性实际表示的值
+func (num *NumberAttribute) V() int {
+	if num == nil {
+		return 0
+	}
+	return num.Value.Value
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
@@ -124,6 +140,14 @@ func (b *BoolAttribute) EncodeXMLAttr() (string, error) {
 	return strconv.FormatBool(b.Value.Value), nil
 }
 
+// V 返回当前属性实际表示的值
+func (b *BoolAttribute) V() bool {
+	if b == nil {
+		return false
+	}
+	return b.Value.Value
+}
+
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *MethodAttribute) DecodeXMLAttr(attr *token.Attribute) error {
 	a.Value = attr.Value
@@ -137,6 +161,11 @@ func (a *MethodAttribute) DecodeXMLAttr(attr *token.Attribute) error {
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (a *MethodAttribute) EncodeXMLAttr() (string, error) {
 	return a.Value.Value, nil
+}
+
+// V 返回当前属性实际表示的值
+func (a *MethodAttribute) V() string {
+	return (*Attribute)(a).V()
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
@@ -159,6 +188,11 @@ func (a *StatusAttribute) EncodeXMLAttr() (string, error) {
 	return strconv.Itoa(a.Value.Value), nil
 }
 
+// V 返回当前属性实际表示的值
+func (a *StatusAttribute) V() int {
+	return (*NumberAttribute)(a).V()
+}
+
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *TypeAttribute) DecodeXMLAttr(attr *token.Attribute) error {
 	a.Value = attr.Value
@@ -173,6 +207,11 @@ func (a *TypeAttribute) EncodeXMLAttr() (string, error) {
 	return a.Value.Value, nil
 }
 
+// V 返回当前属性实际表示的值
+func (a *TypeAttribute) V() string {
+	return (*Attribute)(a).V()
+}
+
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *VersionAttribute) DecodeXMLAttr(attr *token.Attribute) error {
 	a.Value = attr.Value
@@ -185,6 +224,11 @@ func (a *VersionAttribute) DecodeXMLAttr(attr *token.Attribute) error {
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (a *VersionAttribute) EncodeXMLAttr() (string, error) {
 	return a.Value.Value, nil
+}
+
+// V 返回当前属性实际表示的值
+func (a *VersionAttribute) V() string {
+	return (*Attribute)(a).V()
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
@@ -206,6 +250,11 @@ func (a *APIDocVersionAttribute) DecodeXMLAttr(attr *token.Attribute) error {
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (a *APIDocVersionAttribute) EncodeXMLAttr() (string, error) {
 	return a.Value.Value, nil
+}
+
+// V 返回当前属性实际表示的值
+func (a *APIDocVersionAttribute) V() string {
+	return (*Attribute)(a).V()
 }
 
 // EncodeXML Encoder.EncodeXML
@@ -235,6 +284,14 @@ func (s *Element) DecodeXML(p *token.Parser, start *token.StartElement) (*token.
 			return nil, p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
 		}
 	}
+}
+
+// V 返回当前属性实际表示的值
+func (s *Element) V() string {
+	if s == nil {
+		return ""
+	}
+	return s.Content.Value
 }
 
 var validMethods = []string{

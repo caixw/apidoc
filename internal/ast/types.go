@@ -229,6 +229,14 @@ type (
 	}
 )
 
+// V 返回当前富文本中的内容
+func (r *Richtext) V() string {
+	if r == nil || r.Text == nil {
+		return ""
+	}
+	return r.Text.Value.Value
+}
+
 // Parse 将注释块的内容添加到当前文档
 //
 // 分析注释块内容，如果正确，则添加到当前文档中，

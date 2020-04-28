@@ -132,7 +132,7 @@ func findRequestByContentType(requests []*ast.Request, ct string) *ast.Request {
 	for _, req := range requests {
 		if req.Mimetype != nil && req.Mimetype.Value.Value == ct {
 			return req
-		} else if none == nil && (req.Mimetype == nil || req.Mimetype.Value.Value == "") {
+		} else if none == nil && req.Mimetype.V() == "" {
 			none = req
 		}
 	}
@@ -153,11 +153,10 @@ func findResponseByAccept(mimetypes []*ast.Element, requests []*ast.Request, acc
 
 	// 从 requests 中查找是否有符合 accepts 的内容
 	for _, req := range requests {
-		if none == nil && (req.Mimetype == nil || req.Mimetype.Value.Value == "") {
+		if none == nil && req.Mimetype.V() == "" {
 			none = req
 		}
-		if (req.Mimetype != nil && req.Mimetype.Value.Value != "") &&
-			matchContentType(req.Mimetype.Value.Value, accepts) {
+		if req.Mimetype.V() != "" && matchContentType(req.Mimetype.Value.Value, accepts) {
 			return req, req.Mimetype.Value.Value
 		}
 	}
@@ -220,11 +219,11 @@ func validQueryArrayParam(queries []*ast.Param, r *http.Request) error {
 			return err
 		}
 
-		if query.Array == nil || !query.Array.Value.Value {
+		if !query.Array.V() {
 			if err := valid(query, r.FormValue(query.Name.Value.Value)); err != nil {
 				return err
 			}
-		} else if query.ArrayStyle == nil || !query.ArrayStyle.Value.Value { // 默认的 form 格式
+		} else if !query.ArrayStyle.V() { // 默认的 form 格式
 			if err := r.ParseForm(); err != nil {
 				return err
 			}

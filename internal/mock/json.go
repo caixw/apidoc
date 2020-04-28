@@ -44,7 +44,7 @@ func validJSON(p *ast.Request, content []byte) error {
 		return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 
-	if (p.Type == nil || p.Type.Value.Value == ast.TypeNone) && len(content) == 0 {
+	if p.Type.V() == ast.TypeNone && len(content) == 0 {
 		return nil
 	}
 
@@ -273,7 +273,7 @@ func (builder *jsonBuilder) writeValue(v interface{}) *jsonBuilder {
 }
 
 func buildJSON(p *ast.Request) ([]byte, error) {
-	if p != nil && (p.Type == nil || p.Type.Value.Value == ast.TypeNone) {
+	if p != nil && p.Type.V() == ast.TypeNone {
 		return nil, nil
 	}
 
@@ -317,16 +317,16 @@ func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool) error {
 		return builder.err
 	}
 
-	switch {
-	case p.Type == nil || p.Type.Value.Value == ast.TypeNone:
+	switch p.Type.V() {
+	case ast.TypeNone:
 		builder.writeValue(nil)
-	case p.Type.Value.Value == ast.TypeBool:
+	case ast.TypeBool:
 		builder.writeValue(generateBool())
-	case p.Type.Value.Value == ast.TypeNumber:
+	case ast.TypeNumber:
 		builder.writeValue(generateNumber(p))
-	case p.Type.Value.Value == ast.TypeString:
+	case ast.TypeString:
 		builder.writeValue(generateString(p))
-	case p.Type.Value.Value == ast.TypeObject:
+	case ast.TypeObject:
 		builder.writeStrings("{\n").incrIndent()
 
 		last := len(p.Items) - 1

@@ -25,7 +25,7 @@ type xmlValidator struct {
 
 func validXML(p *ast.Request, content []byte) error {
 	if len(content) == 0 {
-		if p == nil || p.Type == nil || p.Type.Value.Value == ast.TypeNone {
+		if p == nil || p.Type.V() == ast.TypeNone {
 			return nil
 		}
 		return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
@@ -91,20 +91,20 @@ func (validator *xmlValidator) validValue(v string) error {
 // 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
 // field 表示 p 在整个对象中的位置信息。
 func validXMLParamValue(p *ast.Param, field, v string) error {
-	switch {
-	case p.Type == nil || p.Type.Value.Value == ast.TypeNone:
+	switch p.Type.V() {
+	case ast.TypeNone:
 		if v != "" {
 			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidValue)
 		}
-	case p.Type.Value.Value == ast.TypeNumber:
+	case ast.TypeNumber:
 		if !is.Number(v) {
 			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
-	case p.Type.Value.Value == ast.TypeBool:
+	case ast.TypeBool:
 		if _, err := strconv.ParseBool(v); err != nil {
 			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
-	case p.Type.Value.Value == ast.TypeString:
+	case ast.TypeString:
 		return nil
 	default: // case doc.Object:
 		return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
@@ -207,7 +207,7 @@ type xmlBuilder struct {
 }
 
 func buildXML(p *ast.Request) ([]byte, error) {
-	if p == nil || p.Type == nil || p.Type.Value.Value == ast.TypeNone {
+	if p == nil || p.Type.V() == ast.TypeNone {
 		return nil, nil
 	}
 
@@ -355,14 +355,14 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 }
 
 func getXMLValue(p *ast.Param) (interface{}, error) {
-	switch {
-	case p.Type == nil || p.Type.Value.Value == ast.TypeNone:
+	switch p.Type.V() {
+	case ast.TypeNone:
 		return "", nil
-	case p.Type.Value.Value == ast.TypeBool:
+	case ast.TypeBool:
 		return generateBool(), nil
-	case p.Type.Value.Value == ast.TypeNumber:
+	case ast.TypeNumber:
 		return generateNumber(p), nil
-	case p.Type.Value.Value == ast.TypeString:
+	case ast.TypeString:
 		return generateString(p), nil
 	default: // doc.Object:
 		return nil, core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
