@@ -84,8 +84,8 @@ type ExampleValue string
 
 func newTag(tag *ast.Tag) *Tag {
 	return &Tag{
-		Name:        tag.Name.Value.Value,
-		Description: tag.Title.Value.Value,
+		Name:        tag.Name.V(),
+		Description: tag.Title.V(),
 	}
 }
 

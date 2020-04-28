@@ -73,7 +73,7 @@ func TestXMLValidator_find(t *testing.T) {
 
 	v.names = []string{"root"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type.Value.Value, ast.TypeObject)
+	a.NotNil(p).Equal(p.Type.V(), ast.TypeObject)
 
 	v.names = []string{"not-exists"}
 	p = v.find()
@@ -81,11 +81,11 @@ func TestXMLValidator_find(t *testing.T) {
 
 	v.names = []string{"root", "group", "id"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type.Value.Value, ast.TypeNumber)
+	a.NotNil(p).Equal(p.Type.V(), ast.TypeNumber)
 
 	v.names = []string{"root", "group", "tags", "id"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type.Value.Value, ast.TypeNumber)
+	a.NotNil(p).Equal(p.Type.V(), ast.TypeNumber)
 }
 
 func TestValidXMLParamValue(t *testing.T) {

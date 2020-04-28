@@ -35,7 +35,7 @@ func TestJSONValidator_find(t *testing.T) {
 
 	v.names = []string{"name"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type.Value.Value, ast.TypeString)
+	a.NotNil(p).Equal(p.Type.V(), ast.TypeString)
 
 	v.names = []string{"not-exists"}
 	p = v.find()
@@ -43,11 +43,11 @@ func TestJSONValidator_find(t *testing.T) {
 
 	v.names = []string{"group", "id"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type.Value.Value, ast.TypeNumber)
+	a.NotNil(p).Equal(p.Type.V(), ast.TypeNumber)
 
 	v.names = []string{"group", "tags", "id"}
 	p = v.find()
-	a.NotNil(p).Equal(p.Type.Value.Value, ast.TypeNumber)
+	a.NotNil(p).Equal(p.Type.V(), ast.TypeNumber)
 }
 
 func TestValidJSON(t *testing.T) {
