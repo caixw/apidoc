@@ -278,7 +278,7 @@ func getTagName(p *token.Parser) (string, error) {
 	for {
 		t, err := p.Token()
 		if err == io.EOF {
-			return "", nil
+			return "", ErrNoDocFormat
 		} else if err != nil {
 			return "", err
 		}

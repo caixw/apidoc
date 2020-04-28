@@ -97,7 +97,10 @@ func parse2APIDoc(doc *ast.APIDoc, h *core.MessageHandler, g func(chan core.Bloc
 
 	go func() {
 		for block := range blocks {
-			if err := doc.Parse(block); err != nil {
+			err := doc.Parse(block)
+			if err == ast.ErrNoDocFormat {
+				continue
+			} else if err != nil {
 				h.Error(core.Erro, err)
 			}
 		}

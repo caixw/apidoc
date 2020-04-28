@@ -12,6 +12,43 @@ import (
 	"github.com/caixw/apidoc/v6/internal/token"
 )
 
+func TestGetTagName(t *testing.T) {
+	a := assert.New(t)
+
+	p, err := token.NewParser(core.Block{Data: []byte("  <root>xx</root>")})
+	a.NotError(err).NotNil(p)
+	root, err := getTagName(p)
+	a.NotError(err).Equal(root, "root")
+
+	p, err = token.NewParser(core.Block{Data: []byte("<!-- xx -->  <root>xx</root>")})
+	a.NotError(err).NotNil(p)
+	root, err = getTagName(p)
+	a.NotError(err).Equal(root, "root")
+
+	p, err = token.NewParser(core.Block{Data: []byte("<!-- xx -->   <root>xx</root>")})
+	a.NotError(err).NotNil(p)
+	root, err = getTagName(p)
+	a.NotError(err).Equal(root, "root")
+
+	// 无效格式
+	p, err = token.NewParser(core.Block{Data: []byte("<!-- xx   <root>xx</root>")})
+	a.NotError(err).NotNil(p)
+	root, err = getTagName(p)
+	a.Error(err).Equal(root, "")
+
+	// 无效格式
+	p, err = token.NewParser(core.Block{Data: []byte("</root>")})
+	a.NotError(err).NotNil(p)
+	root, err = getTagName(p)
+	a.Equal(err, ErrNoDocFormat).Equal(root, "")
+
+	// io.EOF
+	p, err = token.NewParser(core.Block{Data: []byte("<!-- xx -->")})
+	a.NotError(err).NotNil(p)
+	root, err = getTagName(p)
+	a.Equal(err, ErrNoDocFormat).Equal(root, "")
+}
+
 func loadAPIDoc(a *assert.Assertion) *APIDoc {
 	data, err := ioutil.ReadFile("./testdata/doc.xml")
 	a.NotError(err).NotNil(data)
