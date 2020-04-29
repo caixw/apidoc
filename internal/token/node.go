@@ -20,6 +20,11 @@ const (
 	contentNode
 )
 
+var (
+	cdataType   = reflect.TypeOf(CData{})
+	contentType = reflect.TypeOf(String{})
+)
+
 // 表示一个 XML 标签节点
 type node struct {
 	name           string  // 标签名称
@@ -72,11 +77,6 @@ func (v value) isOmitempty() bool {
 		return v.zero == v.Interface()
 	}
 }
-
-var (
-	cdataType   = reflect.TypeOf(CData{})
-	contentType = reflect.TypeOf(String{})
-)
 
 func isPrimitive(v reflect.Value) bool {
 	return v.IsValid() &&

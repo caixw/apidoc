@@ -9,13 +9,15 @@ import (
 	"reflect"
 )
 
-// Encoder 实现将内容转换成 XML 的接口
+// Encoder 将元素内容编码成 XML 内容
 type Encoder interface {
+	// 仅需要返回元素内容的 XML 编码，不需要包含本身的标签和属性。
 	EncodeXML() (string, error)
 }
 
-// AttrEncoder 实现将内容作为 XML 属性的接口
+// AttrEncoder 将属性值编码成符合 XML 规范的值
 type AttrEncoder interface {
+	// 仅需要返回属性的 XML 表示，不需要包含属性值的引号字符。
 	EncodeXMLAttr() (string, error)
 }
 
@@ -25,6 +27,12 @@ var (
 )
 
 // Encode 将 v 转换成 XML 内容
+//
+// v 必须包含一个名称为 RootName 的字段，由该字段的结构标签指定 XML 根元素的名称。比如：
+//  type Root struct {
+//      RootName struct{} `apidoc:"root"`
+//      // 其它字段 ...
+//  }
 func Encode(indent string, v interface{}) ([]byte, error) {
 	rv := reflect.ValueOf(v)
 	if !rv.IsValid() {

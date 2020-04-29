@@ -11,7 +11,7 @@ import (
 	"github.com/caixw/apidoc/v6/internal/locale"
 )
 
-// Decoder 实现从 p 中解码内容到当前对象
+// Decoder 实现从 p 中解码内容到当前对象的值
 type Decoder interface {
 	// 从 p 中读取内容并实例化到当前对象中
 	//
@@ -22,7 +22,7 @@ type Decoder interface {
 	DecodeXML(p *Parser, start *StartElement) (end *EndElement, err error)
 }
 
-// AttrDecoder 实现从 attr 中解码内容到当前对象
+// AttrDecoder 实现从 attr 中解码内容到当前对象的值
 type AttrDecoder interface {
 	DecodeXMLAttr(attr *Attribute) error
 }

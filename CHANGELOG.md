@@ -9,6 +9,7 @@
 - 去掉了 core.Block.Raw 字段；
 - 采用与 LSP 相同的方式定位错误信息；
 - 采用新的编码与解码试(internal/ast)；
+- 分离程序版本和文档版本；
 
 ### Fixed
 
