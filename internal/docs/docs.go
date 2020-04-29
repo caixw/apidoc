@@ -35,6 +35,19 @@ type FileInfo struct {
 	Content     []byte
 }
 
+// StylesheetURL 生成 apidoc.xsl 文件的 URL 地址
+//
+// 相对于 docs 目录
+func StylesheetURL(prefix string) string {
+	if prefix == "" {
+		return ast.MajorVersion + "/apidoc.xsl"
+	}
+	if prefix[len(prefix)-1] != '/' {
+		prefix += "/"
+	}
+	return prefix + ast.MajorVersion + "/apidoc.xsl"
+}
+
 // Handler 返回文件服务中间件
 func Handler(folder core.URI, stylesheet bool) http.Handler {
 	if folder == "" {

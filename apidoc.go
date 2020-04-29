@@ -171,10 +171,8 @@ func MockFile(h *core.MessageHandler, path core.URI, servers map[string]string) 
 var procInst = regexp.MustCompile(`<\?xml .+ ?>`)
 
 func addStylesheet(data []byte) []byte {
-	stylesheet := "./" + ast.MajorVersion + "/apidoc.xsl"
-
 	pi := `
-<?xml-stylesheet type="text/xsl" href="` + stylesheet + `"?>`
+<?xml-stylesheet type="text/xsl" href="` + docs.StylesheetURL("./") + `"?>`
 
 	if rslt := procInst.Find(data); len(rslt) > 0 {
 		return procInst.ReplaceAll(data, append(rslt, []byte(pi)...))

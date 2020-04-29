@@ -8,12 +8,9 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v6/internal/ast/asttest"
+	"github.com/caixw/apidoc/v6/internal/docs"
+	"github.com/caixw/apidoc/v6/internal/vars"
 )
-
-func TestStylesheet(t *testing.T) {
-	a := assert.New(t)
-	a.NotEmpty(stylesheetURL)
-}
 
 func TestOptions_contains(t *testing.T) {
 	a := assert.New(t)
@@ -45,9 +42,9 @@ func TestOutput_Sanitize(t *testing.T) {
 	o = &Output{Type: ApidocXML}
 	o.Path = "./testdir/apidoc.json"
 	a.NotError(o.Sanitize())
-	a.Equal(o.Style, stylesheetURL).
+	a.Equal(o.Style, docs.StylesheetURL(vars.OfficialURL)).
 		Equal(2, len(o.procInst)).
-		Contains(o.procInst[1], stylesheetURL)
+		Contains(o.procInst[1], docs.StylesheetURL(vars.OfficialURL))
 }
 
 func TestOptions_buffer(t *testing.T) {

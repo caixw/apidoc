@@ -9,6 +9,7 @@ import (
 
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/ast"
+	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/openapi"
 	"github.com/caixw/apidoc/v6/internal/token"
@@ -21,8 +22,6 @@ const (
 	OpenapiYAML = "openapi+yaml"
 	OpenapiJSON = "openapi+json"
 )
-
-const stylesheetURL = vars.OfficialURL + "/docs/" + ast.MajorVersion + "/apidoc.xsl"
 
 type marshaler func(*ast.APIDoc) ([]byte, error)
 
@@ -89,7 +88,7 @@ func (o *Output) Sanitize() error {
 	o.xml = strings.HasSuffix(o.Type, "+xml")
 	if o.xml {
 		if o.Style == "" {
-			o.Style = stylesheetURL
+			o.Style = docs.StylesheetURL(vars.OfficialURL)
 		}
 
 		o.procInst = []string{
