@@ -5,28 +5,34 @@ package core
 
 import "fmt"
 
+// Block 表示原始的注释代码块
+type Block struct {
+	Location Location
+	Data     []byte
+}
+
 // Position 用于描述字符在文件中的定位
 //
 // 兼容 LSP https://microsoft.github.io/language-server-protocol/specifications/specification-current/#position
 type Position struct {
-	Line      int `json:"line"`
-	Character int `json:"character"`
+	Line      int `json:"line" apidoc:"-"`
+	Character int `json:"character" apidoc:"-"`
 }
 
 // Range 用于描述文档在文件中的范围
 //
 // 兼容 LSP https://microsoft.github.io/language-server-protocol/specifications/specification-current/#range
 type Range struct {
-	Start Position `json:"start"`
-	End   Position `json:"end"`
+	Start Position `json:"start" apidoc:"-"`
+	End   Position `json:"end" apidoc:"-"`
 }
 
 // Location 用于描述文档的定位
 //
 // 兼容 LSP https://microsoft.github.io/language-server-protocol/specifications/specification-current/#location
 type Location struct {
-	URI   URI   `json:"uri"`
-	Range Range `json:"range"`
+	URI   URI   `json:"uri" apidoc:"-"`
+	Range Range `json:"range" apidoc:"-"`
 }
 
 // Equal 判断两个 Position 是否相等

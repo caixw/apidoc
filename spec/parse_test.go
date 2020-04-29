@@ -32,7 +32,7 @@ func TestDoc_fromXML(t *testing.T) {
 	loc := core.Location{
 		Range: core.Range{Start: core.Position{Line: 11, Character: 12}},
 	}
-	err := doc.fromXML(&Block{Location: loc, Data: data})
+	err := doc.fromXML(&core.Block{Location: loc, Data: data})
 	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 11, Character: 12})
 
 	data = []byte(`<apidoc
@@ -42,7 +42,7 @@ func TestDoc_fromXML(t *testing.T) {
 	loc = core.Location{
 		Range: core.Range{Start: core.Position{Line: 12, Character: 21}},
 	}
-	err = doc.fromXML(&Block{Location: loc, Data: data})
+	err = doc.fromXML(&core.Block{Location: loc, Data: data})
 	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 14, Character: 1})
 }
 
@@ -61,13 +61,13 @@ func TestDoc_appendAPI(t *testing.T) {
 	}
 
 	data := []byte(`<api version="x.0.1"></api>`)
-	err := doc.appendAPI(&Block{Location: loc, Data: data})
+	err := doc.appendAPI(&core.Block{Location: loc, Data: data})
 	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 11, Character: 27})
 
 	data = []byte(`<api version="0.1.1">
 
 	    <callback method="not-exists" />
 	</api>`)
-	err = doc.appendAPI(&Block{Location: loc, Data: data})
+	err = doc.appendAPI(&core.Block{Location: loc, Data: data})
 	a.Equal(err.(*core.SyntaxError).Location.Range.Start, core.Position{Line: 13, Character: 5})
 }

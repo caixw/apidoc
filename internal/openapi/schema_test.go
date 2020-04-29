@@ -5,59 +5,63 @@ package openapi
 import (
 	"testing"
 
-	"github.com/caixw/apidoc/v6/spec"
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/v6/internal/ast"
 )
 
 func TestNewSchema(t *testing.T) {
 	a := assert.New(t)
 
-	input := &spec.Param{
-		Name:       "name",
-		Type:       spec.Bool,
-		Deprecated: "v1.1.0",
-		Default:    "true",
-		Optional:   true,
-		Array:      false,
-		Summary:    "summary",
+	input := &ast.Param{
+		Name:       &ast.Attribute{Value: ast.String{Value: "name"}},
+		Type:       &ast.TypeAttribute{Value: ast.String{Value: ast.TypeBool}},
+		Deprecated: &ast.VersionAttribute{Value: ast.String{Value: "v1.1.0"}},
+		Default:    &ast.Attribute{Value: ast.String{Value: "true"}},
+		Optional:   &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+		Array:      &ast.BoolAttribute{Value: ast.Bool{Value: false}},
+		Summary:    &ast.Attribute{Value: ast.String{Value: "summary"}},
 	}
 	output := newSchema(input, true)
 	a.Equal(output.Type, TypeBool).
 		True(output.Deprecated).
-		Equal(output.Title, input.Summary)
+		Equal(output.Title, input.Summary.V())
 
-	input.Array = true
+	input.Array = &ast.BoolAttribute{Value: ast.Bool{Value: true}}
 	output = newSchema(input, true)
 	a.Equal(output.Type, TypeArray).
 		Equal(output.Items.Type, TypeBool).
 		True(output.Items.Deprecated).
-		Equal(output.Items.Title, input.Summary)
+		Equal(output.Items.Title, input.Summary.V())
 
-	input.Enums = []*spec.Enum{
+	input.Enums = []*ast.Enum{
 		{
-			Value:   "v1",
-			Summary: "s1",
+			Value:   &ast.Attribute{Value: ast.String{Value: "v1"}},
+			Summary: &ast.Attribute{Value: ast.String{Value: "s1"}},
 		},
 		{
-			Value:       "v2",
-			Description: spec.Richtext{Text: "s2"},
-			Deprecated:  "1.0.1",
+			Value: &ast.Attribute{Value: ast.String{Value: "v2"}},
+			Description: &ast.Richtext{
+				Text: &ast.CData{Value: ast.String{Value: "s2"}},
+			},
+			Deprecated: &ast.VersionAttribute{Value: ast.String{Value: "1.0.1"}},
 		},
 	}
 	output = newSchema(input, false)
 	a.Equal(output.Type, TypeBool).
+		Equal(2, len(output.Enum)).
 		Equal(output.Enum, []string{"v1", "v2"})
 
-	input = &spec.Param{
-		Type: spec.Number,
-		Items: []*spec.Param{
+	input = &ast.Param{
+		Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
+		Items: []*ast.Param{
 			{
-				Name: "p1",
-				Type: spec.String,
+				Name: &ast.Attribute{Value: ast.String{Value: "p1"}},
+				Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
 			},
 			{
-				Name: "p2",
-				Type: spec.Number,
+				Name: &ast.Attribute{Value: ast.String{Value: "p2"}},
+				Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNumber}},
 			},
 		},
 	}

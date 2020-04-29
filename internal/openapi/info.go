@@ -7,8 +7,8 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Info 接口文档的基本信息
@@ -72,26 +72,26 @@ func (l *License) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func newLicense(l *spec.Link) *License {
+func newLicense(l *ast.Link) *License {
 	if l == nil {
 		return nil
 	}
 
 	return &License{
-		Name: l.Text,
-		URL:  l.URL,
+		Name: l.Text.V(),
+		URL:  l.URL.V(),
 	}
 }
 
-func newContact(c *spec.Contact) *Contact {
+func newContact(c *ast.Contact) *Contact {
 	if c == nil {
 		return nil
 	}
 
 	return &Contact{
-		Name:  c.Name,
-		URL:   c.URL,
-		Email: c.Email,
+		Name:  c.Name.V(),
+		URL:   c.URL.V(),
+		Email: c.Email.V(),
 	}
 }
 

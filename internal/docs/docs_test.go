@@ -11,7 +11,18 @@ import (
 	"github.com/issue9/assert/rest"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 )
+
+func TestStylesheetURL(t *testing.T) {
+	a := assert.New(t)
+
+	a.Equal(StylesheetURL(""), ast.MajorVersion+"/apidoc.xsl")
+	a.Equal(StylesheetURL("."), "./"+ast.MajorVersion+"/apidoc.xsl")
+	a.Equal(StylesheetURL("./"), "./"+ast.MajorVersion+"/apidoc.xsl")
+	a.Equal(StylesheetURL("https://apidoc.tools/"), "https://apidoc.tools/"+ast.MajorVersion+"/apidoc.xsl")
+	a.Equal(StylesheetURL("https://apidoc.tools"), "https://apidoc.tools/"+ast.MajorVersion+"/apidoc.xsl")
+}
 
 func TestEmbeddedHandler(t *testing.T) {
 	a := assert.New(t)

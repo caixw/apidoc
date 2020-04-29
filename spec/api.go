@@ -36,7 +36,7 @@ type API struct {
 	Tags    []string `xml:"tag,omitempty"`
 	Servers []string `xml:"server,omitempty"`
 
-	Block *Block `xml:"-"`
+	Block *core.Block `xml:"-"`
 	doc   *APIDoc
 }
 
@@ -87,17 +87,17 @@ func (api *API) sanitize(field string) error {
 
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag) {
-			return api.Block.localeError(field+"/tag/@name", locale.ErrInvalidValue)
+			return core.NewLocaleError(api.Block.Location, field+"/tag/@name", locale.ErrInvalidValue)
 		}
 	}
 
 	if len(api.Servers) == 0 {
-		return api.Block.localeError(field+"/server", locale.ErrRequired)
+		return core.NewLocaleError(api.Block.Location, field+"/server", locale.ErrRequired)
 	}
 
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv) {
-			return api.Block.localeError(field+"/server/@name", locale.ErrInvalidValue)
+			return core.NewLocaleError(api.Block.Location, field+"/server/@name", locale.ErrInvalidValue)
 		}
 	}
 

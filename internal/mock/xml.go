@@ -13,19 +13,19 @@ import (
 	"github.com/issue9/is"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 type xmlValidator struct {
-	param   *spec.Param
+	param   *ast.Param
 	decoder *xml.Decoder
 	names   []string // 按顺序保存变量名称
 }
 
-func validXML(p *spec.Request, content []byte) error {
+func validXML(p *ast.Request, content []byte) error {
 	if len(content) == 0 {
-		if p == nil || p.Type == spec.None {
+		if p == nil || p.Type.V() == ast.TypeNone {
 			return nil
 		}
 		return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
@@ -90,29 +90,29 @@ func (validator *xmlValidator) validValue(v string) error {
 
 // 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
 // field 表示 p 在整个对象中的位置信息。
-func validXMLParamValue(p *spec.Param, field, v string) error {
-	switch p.Type {
-	case spec.Number:
-		if !is.Number(v) {
-			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
-		}
-	case spec.Bool:
-		if _, err := strconv.ParseBool(v); err != nil {
-			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
-		}
-	case spec.String:
-		return nil
-	case spec.None:
+func validXMLParamValue(p *ast.Param, field, v string) error {
+	switch p.Type.V() {
+	case ast.TypeNone:
 		if v != "" {
 			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidValue)
 		}
+	case ast.TypeNumber:
+		if !is.Number(v) {
+			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeBool:
+		if _, err := strconv.ParseBool(v); err != nil {
+			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeString:
+		return nil
 	default: // case doc.Object:
 		return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
 	}
 
-	if p.IsEnum() {
+	if isEnum(p) {
 		for _, enum := range p.Enums {
-			if enum.Value == v {
+			if enum.Value.V() == v {
 				return nil
 			}
 		}
@@ -135,7 +135,7 @@ func (validator *xmlValidator) popName() *xmlValidator {
 }
 
 // 如果 names 为空，返回 nil
-func (validator *xmlValidator) find() *spec.Param {
+func (validator *xmlValidator) find() *ast.Param {
 	p := validator.param
 
 	if len(validator.names) == 0 || p == nil {
@@ -143,13 +143,13 @@ func (validator *xmlValidator) find() *spec.Param {
 	}
 
 	var start int
-	if p.Array && p.XMLWrapped == validator.names[0] {
-		if len(validator.names) > 1 && validator.names[1] == p.Name {
+	if p.Array.V() && p.XMLWrapped.V() == validator.names[0] {
+		if len(validator.names) > 1 && validator.names[1] == p.Name.V() {
 			start = 2
 		} else {
 			return nil
 		}
-	} else if p.Name == validator.names[0] {
+	} else if p.Name != nil && (p.Name.V() == validator.names[0]) {
 		start = 1
 	} else {
 		return nil
@@ -162,16 +162,16 @@ LOOP:
 		name := names[i]
 
 		for _, pp := range p.Items {
-			if pp.Array && pp.XMLWrapped == name {
+			if pp.Array.V() && pp.XMLWrapped.V() == name {
 				i++
-				if i < len(names) && pp.Name == names[i] {
+				if i < len(names) && pp.Name.V() == names[i] {
 					p = pp
 					continue LOOP
 				}
 				return nil
 			}
 
-			if pp.Name == name {
+			if pp.Name.V() == name {
 				p = pp
 				continue LOOP
 			}
@@ -181,14 +181,14 @@ LOOP:
 	}
 
 	// 如果根据 names 查找出来的实例带 XMLExtract，则肯定有问题。
-	if p.XMLExtract {
+	if p.XMLExtract.V() {
 		return nil
 	}
 
 	// 从子项中查找带 XMLExtract 的项
-	if p.Type == spec.Object {
+	if p.Type.V() == ast.TypeObject {
 		for _, pp := range p.Items {
-			if pp.XMLExtract {
+			if pp.XMLExtract.V() {
 				p = pp
 				break
 			}
@@ -204,8 +204,8 @@ type xmlBuilder struct {
 	items    []*xmlBuilder
 }
 
-func buildXML(p *spec.Request) ([]byte, error) {
-	if p == nil || p.Type == spec.None {
+func buildXML(p *ast.Request) ([]byte, error) {
+	if p == nil || p.Type.V() == ast.TypeNone {
 		return nil, nil
 	}
 
@@ -229,19 +229,21 @@ func buildXML(p *spec.Request) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func parseXML(p *spec.Param, chkArray, root bool) (*xmlBuilder, error) {
+func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 	builder := &xmlBuilder{
 		start: xml.StartElement{
 			Name: xml.Name{
-				Space: p.XMLNSPrefix,
-				Local: p.Name,
+				Local: p.Name.V(),
 			},
 			Attr: make([]xml.Attr, 0, len(p.Items)),
 		},
 		items: []*xmlBuilder{},
 	}
+	if p.XMLNSPrefix != nil {
+		builder.start.Name.Space = p.XMLNSPrefix.V()
+	}
 
-	if p.Array && chkArray {
+	if p.Array.V() && chkArray {
 		if err := parseArray(p, builder); err != nil {
 			return nil, err
 		}
@@ -251,13 +253,13 @@ func parseXML(p *spec.Param, chkArray, root bool) (*xmlBuilder, error) {
 		return builder, nil
 	}
 
-	if p.Type != spec.Object {
-		switch p.Type {
-		case spec.Bool:
+	if p.Type.V() != ast.TypeObject {
+		switch p.Type.V() {
+		case ast.TypeBool:
 			builder.charData = fmt.Sprint(generateBool())
-		case spec.Number:
+		case ast.TypeNumber:
 			builder.charData = fmt.Sprint(generateNumber(p))
-		case spec.String:
+		case ast.TypeString:
 			builder.charData = fmt.Sprint(generateString(p))
 		}
 		return builder, nil
@@ -265,27 +267,30 @@ func parseXML(p *spec.Param, chkArray, root bool) (*xmlBuilder, error) {
 
 	for _, item := range p.Items {
 		switch {
-		case item.XMLAttr:
+		case item.XMLAttr.V():
 			v, err := getXMLValue(item)
 			if err != nil {
 				return nil, err
 			}
 
-			builder.start.Attr = append(builder.start.Attr, xml.Attr{
+			attr := xml.Attr{
 				Name: xml.Name{
-					Space: item.XMLNSPrefix,
-					Local: item.Name,
+					Local: item.Name.V(),
 				},
 				Value: fmt.Sprint(v),
-			})
-		case item.XMLExtract:
+			}
+			if item.XMLNSPrefix != nil {
+				attr.Name.Space = item.XMLNSPrefix.V()
+			}
+			builder.start.Attr = append(builder.start.Attr, attr)
+		case item.XMLExtract.V():
 			v, err := getXMLValue(item)
 			if err != nil {
 				return nil, err
 			}
 
 			builder.charData = fmt.Sprint(v)
-		case item.Array:
+		case item.Array.V():
 			if err := parseArray(item, builder); err != nil {
 				return nil, err
 			}
@@ -301,17 +306,15 @@ func parseXML(p *spec.Param, chkArray, root bool) (*xmlBuilder, error) {
 	return builder, nil
 }
 
-func parseArray(p *spec.Param, parent *xmlBuilder) error {
+func parseArray(p *ast.Param, parent *xmlBuilder) error {
 	b := parent
-	if p.XMLWrapped != "" {
-		b = &xmlBuilder{
-			start: xml.StartElement{
-				Name: xml.Name{
-					Space: p.XMLNSPrefix,
-					Local: p.XMLWrapped,
-				},
-			},
-			items: []*xmlBuilder{},
+	if p.XMLWrapped.V() != "" {
+		b = &xmlBuilder{items: []*xmlBuilder{}}
+		if p.XMLNSPrefix != nil {
+			b.start.Name.Space = p.XMLNSPrefix.V()
+		}
+		if p.XMLWrapped != nil {
+			b.start.Name.Local = p.XMLWrapped.V()
 		}
 		parent.items = append(parent.items, b)
 	}
@@ -349,15 +352,15 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 	return e.EncodeToken(builder.start.End())
 }
 
-func getXMLValue(p *spec.Param) (interface{}, error) {
-	switch p.Type {
-	case spec.None:
+func getXMLValue(p *ast.Param) (interface{}, error) {
+	switch p.Type.V() {
+	case ast.TypeNone:
 		return "", nil
-	case spec.Bool:
+	case ast.TypeBool:
 		return generateBool(), nil
-	case spec.Number:
+	case ast.TypeNumber:
 		return generateNumber(p), nil
-	case spec.String:
+	case ast.TypeString:
 		return generateString(p), nil
 	default: // doc.Object:
 		return nil, core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)

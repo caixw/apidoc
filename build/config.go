@@ -11,9 +11,9 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Config 配置文件映身的结构
@@ -87,7 +87,7 @@ func loadFile(wd, path core.URI) (*Config, error) {
 
 func (cfg *Config) sanitize(file core.URI) error {
 	// 比较版本号兼容问题
-	compatible, err := version.SemVerCompatible(spec.Version, cfg.Version)
+	compatible, err := version.SemVerCompatible(ast.Version, cfg.Version)
 	if err != nil {
 		return core.WithError(core.Location{URI: file}, "version", err)
 	}

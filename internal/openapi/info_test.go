@@ -7,20 +7,20 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/spec"
+	"github.com/caixw/apidoc/v6/internal/ast"
 )
 
 func TestNewContact(t *testing.T) {
 	a := assert.New(t)
 
-	input := &spec.Contact{
-		Email: "user@example.com",
-		URL:   "https://example.com",
-		Name:  "name",
+	input := &ast.Contact{
+		Email: &ast.Element{Content: ast.String{Value: "user@example.com"}},
+		URL:   &ast.Element{Content: ast.String{Value: "https://example.com"}},
+		Name:  &ast.Attribute{Value: ast.String{Value: "name"}},
 	}
 
 	output := newContact(input)
-	a.Equal(output.Email, input.Email)
+	a.Equal(output.Email, input.Email.Content.Value)
 
 	output = newContact(nil)
 	a.Nil(output)

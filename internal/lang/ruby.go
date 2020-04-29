@@ -8,13 +8,13 @@ type rubyMultipleComment struct {
 	begins, ends, prefix []byte
 }
 
-func newRubyMultipleComment(begin, end, preifx string) Blocker {
+func newRubyMultipleComment(begin, end, prefix string) Blocker {
 	begin += "\n"
 	end += "\n"
 	return &rubyMultipleComment{
 		begin:  begin,
 		end:    end,
-		prefix: []byte(preifx),
+		prefix: []byte(prefix),
 		begins: []byte(begin),
 		ends:   []byte(end),
 	}
@@ -22,25 +22,18 @@ func newRubyMultipleComment(begin, end, preifx string) Blocker {
 
 // BeginFunc 实现 Blocker.BeginFunc
 func (b *rubyMultipleComment) BeginFunc(l *Lexer) bool {
-	return l.position().Character == 0 && l.match(b.begin)
+	return l.Position().Character == 0 && l.Match(b.begin)
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *rubyMultipleComment) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
-	raw = append(make([]byte, 0, 200), b.begins...)
+func (b *rubyMultipleComment) EndFunc(l *Lexer) (data []byte, ok bool) {
+	data, found := l.DelimString(b.end, true)
+	if !found { // 没有找到结束符号，直接到达文件末尾
+		return nil, false
+	}
 
-LOOP:
-	for {
-		switch {
-		case l.atEOF: // 没有找到结束符号，直接到达文件末尾
-			return nil, nil, false
-		case l.position().Character == 0 && l.match(b.end):
-			raw = append(raw, b.ends...)
-			break LOOP
-		default:
-			raw = append(raw, l.next(1)...)
-		}
-	} // end for
-	return raw, convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
+	raw := make([]byte, 0, len(b.begins)+len(data))
+	raw = append(append(raw, b.begins...), data...)
+	return convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
 }

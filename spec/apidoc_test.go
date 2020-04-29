@@ -19,7 +19,7 @@ func loadDoc(a *assert.Assertion) *APIDoc {
 	doc := NewAPIDoc()
 	a.NotNil(doc).NotEmpty(doc.APIDoc)
 
-	a.NotError(doc.fromXML(&Block{
+	a.NotError(doc.fromXML(&core.Block{
 		Location: core.Location{
 			URI:   "doc.xml",
 			Range: core.Range{},
@@ -81,7 +81,7 @@ func TestDoc_all(t *testing.T) {
 	a.NotError(err).NotNil(data)
 	doc := NewAPIDoc()
 	a.NotNil(doc)
-	a.NotError(doc.fromXML(&Block{Data: data}))
+	a.NotError(doc.fromXML(&core.Block{Data: data}))
 
 	a.Equal(doc.Version, "1.1.1")
 
@@ -132,7 +132,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	</apidoc>`
 	doc := NewAPIDoc()
 	a.NotNil(doc)
-	err := doc.fromXML(&Block{Location: loc, Data: []byte(data)})
+	err := doc.fromXML(&core.Block{Location: loc, Data: []byte(data)})
 	serr, ok := err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Location.Range.Start.Line, 11).
@@ -143,7 +143,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	data = `<apidoc version="1.1.1">
 			<mimetype>application/json</mimetype>
 	</apidoc>`
-	err = doc.fromXML(&Block{Location: loc, Data: []byte(data)})
+	err = doc.fromXML(&core.Block{Location: loc, Data: []byte(data)})
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Location.Range.Start.Line, 11)
@@ -157,7 +157,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 		<title>title</title>
 	</apidoc>`
 	a.NotNil(doc)
-	err = doc.fromXML(&Block{Location: loc, Data: []byte(data)})
+	err = doc.fromXML(&core.Block{Location: loc, Data: []byte(data)})
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Location.Range.Start.Line, 11).
@@ -170,7 +170,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 			<mimetype>application/json</mimetype>
 			<title>title</title>
 		</apidoc>`
-	err = doc.fromXML(&Block{Location: loc, Data: []byte(data)})
+	err = doc.fromXML(&core.Block{Location: loc, Data: []byte(data)})
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Location.Range.Start.Line, 12)
@@ -180,7 +180,7 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 	data = `<apidoc version="1.1.1">
 			<title>title</title>
 	</apidoc>`
-	err = doc.fromXML(&Block{Location: loc, Data: []byte(data)})
+	err = doc.fromXML(&core.Block{Location: loc, Data: []byte(data)})
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).NotNil(serr)
 	a.Equal(serr.Location.Range.Start.Line, 11)
@@ -196,14 +196,14 @@ func TestDoc_UnmarshalXML(t *testing.T) {
 			</header>
 		</response>
 	</apidoc>`
-	a.Error(doc.fromXML(&Block{Location: loc, Data: []byte(data)}))
+	a.Error(doc.fromXML(&core.Block{Location: loc, Data: []byte(data)}))
 }
 
 func TestDoc_Sanitize(t *testing.T) {
 	a := assert.New(t)
 	doc := NewAPIDoc()
 	a.NotNil(doc)
-	doc.Block = &Block{}
+	doc.Block = &core.Block{}
 
 	// api.tags 不存在于 doc
 	doc.Tags = []*Tag{
@@ -216,14 +216,14 @@ func TestDoc_Sanitize(t *testing.T) {
 			doc:    doc,
 			Path:   &Path{},
 			Method: http.MethodGet,
-			Block:  &Block{},
+			Block:  &core.Block{},
 		},
 		{
 			Tags:   []string{"not-exists", "tag1"},
 			doc:    doc,
 			Path:   &Path{},
 			Method: http.MethodGet,
-			Block:  &Block{},
+			Block:  &core.Block{},
 		},
 	}
 	a.Error(doc.Sanitize())
@@ -239,14 +239,14 @@ func TestDoc_Sanitize(t *testing.T) {
 			doc:     doc,
 			Path:    &Path{},
 			Method:  http.MethodGet,
-			Block:   &Block{},
+			Block:   &core.Block{},
 		},
 		{
 			Servers: []string{"not-exists", "tag1"},
 			doc:     doc,
 			Path:    &Path{},
 			Method:  http.MethodGet,
-			Block:   &Block{},
+			Block:   &core.Block{},
 		},
 	}
 	a.Error(doc.Sanitize())

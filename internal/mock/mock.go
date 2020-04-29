@@ -12,9 +12,9 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 const (
@@ -25,7 +25,7 @@ const (
 // Mock 管理 mock 数据
 type Mock struct {
 	h       *core.MessageHandler
-	doc     *spec.APIDoc
+	doc     *ast.APIDoc
 	mux     *mux.Mux
 	servers map[string]string
 }
@@ -35,8 +35,8 @@ type Mock struct {
 // h 用于处理各类输出消息，仅在 ServeHTTP 中的消息才输出到 h；
 // d doc.APIDoc 实例，调用方需要保证该数据类型的正确性；
 // servers 用于指定 d.Servers 中每一个服务对应的路由前缀
-func New(h *core.MessageHandler, d *spec.APIDoc, servers map[string]string) (http.Handler, error) {
-	c, err := version.SemVerCompatible(d.APIDoc, vars.Version())
+func New(h *core.MessageHandler, d *ast.APIDoc, servers map[string]string) (http.Handler, error) {
+	c, err := version.SemVerCompatible(d.APIDoc.V(), vars.Version())
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +98,8 @@ func Load(h *core.MessageHandler, path core.URI, servers map[string]string) (htt
 	}
 
 	// 加载并验证
-	d := spec.NewAPIDoc()
-	if err = d.ParseBlock(&spec.Block{Location: loc, Data: data}); err != nil {
+	d := &ast.APIDoc{}
+	if err = d.Parse(core.Block{Location: loc, Data: data}); err != nil {
 		return nil, err
 	}
 
@@ -111,7 +111,7 @@ func (m *Mock) parse() error {
 		handler := m.buildAPI(api)
 
 		if len(api.Servers) == 0 {
-			err := m.mux.Handle(api.Path.Path, handler, string(api.Method))
+			err := m.mux.Handle(api.Path.Path.V(), handler, api.Method.V())
 			if err != nil {
 				return err
 			}
@@ -125,7 +125,7 @@ func (m *Mock) parse() error {
 				continue
 			}
 
-			err := prefix.Handle(api.Path.Path, handler, string(api.Method))
+			err := prefix.Handle(api.Path.Path.V(), handler, api.Method.V())
 			if err != nil {
 				return err
 			}
@@ -143,9 +143,9 @@ func (m *Mock) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	m.mux.ServeHTTP(w, r)
 }
 
-func hasServer(tags []string, key string) bool {
+func hasServer(tags []*ast.Element, key string) bool {
 	for _, tag := range tags {
-		if key == tag {
+		if key == tag.Content.Value {
 			return true
 		}
 	}

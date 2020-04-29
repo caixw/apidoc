@@ -42,18 +42,16 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.0.0" created="2020-03-22T10:10:07+08:00" version="1.1.1">
+<apidoc version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
-   
        <p>这是一个用于测试的文档用例</p>
        状态码：
        <ul>
            <li>40300:xxx</li>
            <li>40301:xxx</li>
        </ul>
-   
-       ]]></description>
+   ]]></description>
 	<contact name="name">
 		<url>https://example.com</url>
 		<email>example@example.com</email>
@@ -63,7 +61,7 @@ var data = []*FileInfo{{
 	<tag name="t2" title="标签2"></tag>
 	<server name="admin" url="https://api.example.com/admin">
 		<description type="html"><![CDATA[
-       后台管理接口，
+       后台管理接口，<br /><br /><br /><br /><p style="color:red">admin</p>
        ]]></description>
 	</server>
 	<server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" summary="客户端接口"></server>
@@ -72,17 +70,15 @@ var data = []*FileInfo{{
 		<path path="/users">
 			<query name="page" type="number" default="0" summary="页码"></query>
 			<query name="size" type="number" default="20">
-				<description type="markdown"><![CDATA[数量]]></description>
+				<description><![CDATA[数量]]></description>
 			</query>
 		</path>
-		<description type="markdown"><![CDATA[
-   
+		<description><![CDATA[
    <p>这是关于接口的详细说明文档</p><br />
    可以是一个 HTML 内容
-   
    ]]></description>
 		<response name="user" type="object" array="true" status="200">
-			<param xml-attr="true" name="count" type="number" summary="summary"></param>
+			<param xml-attr="true" name="count" type="number" optional="false" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
 				<param xml-attr="true" name="id" type="number" summary="用户 ID"></param>
 				<param xml-attr="true" name="name" type="string" summary="用户名"></param>
@@ -94,7 +90,7 @@ var data = []*FileInfo{{
 			</param>
 		</response>
 		<header name="name" type="string">
-			<description type="markdown"><![CDATA[desc]]></description>
+			<description><![CDATA[desc]]></description>
 		</header>
 		<header name="name1" type="string" summary="name1 desc"></header>
 		<tag>t1</tag>
@@ -103,14 +99,12 @@ var data = []*FileInfo{{
 	</api>
 	<api method="POST" summary="添加用户">
 		<path path="/users"></path>
-		<description type="markdown"><![CDATA[
-   
+		<description><![CDATA[
    这是关于接口的详细说明文档<br />
    可以是一个 HTML 内容
-   
    ]]></description>
 		<request type="object">
-			<param name="count" type="number" summary="summary"></param>
+			<param name="count" type="number" optional="false" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" summary="用户 ID"></param>
 				<param name="name" type="string" summary="用户名"></param>
@@ -122,7 +116,7 @@ var data = []*FileInfo{{
 			<header name="content-type" type="string" summary="application/json"></header>
 		</request>
 		<request name="users" type="object" mimetype="application/xml">
-			<param name="count" type="number" summary="summary"></param>
+			<param name="count" type="number" optional="false" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" summary="用户 ID"></param>
 				<param name="name" type="string" summary="用户名"></param>
@@ -132,17 +126,15 @@ var data = []*FileInfo{{
 				</param>
 			</param>
 			<example mimetype="application/xml"><![CDATA[
-           
                <users count="20">
                    <user id="20" name="xx"></user>
                    <user id="21" name="xx"></user>
                </users>
-           
            ]]></example>
 		</request>
 		<response array="true" status="200" mimetype="application/json"></response>
 		<header name="name" type="string">
-			<description type="markdown"><![CDATA[desc]]></description>
+			<description><![CDATA[desc]]></description>
 		</header>
 		<header name="name1" type="string" summary="name1 desc"></header>
 		<tag>t2</tag>
@@ -153,12 +145,10 @@ var data = []*FileInfo{{
 		<path path="/users/{id}">
 			<param name="id" type="number" summary="用户 ID"></param>
 		</path>
-		<description type="markdown"><![CDATA[
-   
+		<description><![CDATA[
    这是关于接口的详细说明文档<br />
    可以是一个 HTML 内容<br />
-   
-       ]]></description>
+   ]]></description>
 		<server>admin</server>
 	</api>
 	<api method="GET" summary="获取用户详情">
@@ -171,12 +161,10 @@ var data = []*FileInfo{{
 				</enum>
 			</query>
 		</path>
-		<description type="markdown"><![CDATA[
-   
+		<description><![CDATA[
    这是关于接口的详细说明文档
    可以是一个 HTML 内容
-   
-       ]]></description>
+   ]]></description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="id" type="number" summary="用户 ID"></param>
 			<param name="name" type="string" summary="用户名"></param>
@@ -190,19 +178,17 @@ var data = []*FileInfo{{
 	<api method="GET" summary="获取用户日志">
 		<path path="/users/{id}/logs">
 			<param name="id" type="number">
-				<description type="markdown"><![CDATA[用户 ID]]></description>
+				<description><![CDATA[用户 ID]]></description>
 			</param>
 			<query name="page" type="number" default="0" summary="页码"></query>
 			<query name="size" type="number" default="20">
-				<description type="markdown"><![CDATA[数量]]></description>
+				<description><![CDATA[数量]]></description>
 			</query>
 		</path>
 		<description type="html"><![CDATA[
-   
    <p>这是关于接口的详细说明文档</p>
    <p style="color:red">可以是一个 HTML 内容</p>
-   
-       ]]></description>
+   ]]></description>
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="count" type="number" optional="true" summary="summary"></param>
 			<param name="list" type="object" array="true" summary="list">
@@ -210,7 +196,7 @@ var data = []*FileInfo{{
 				<param name="name" type="string" optional="true" summary="desc"></param>
 				<param name="groups" type="string" optional="true" array="true" summary="desc">
 					<enum value="xx1">
-						<description type="markdown"><![CDATA[xx]]></description>
+						<description></description>
 					</enum>
 					<enum value="xx2" summary="xx"></enum>
 				</param>
@@ -229,30 +215,26 @@ var data = []*FileInfo{{
 		</response>
 		<callback method="POST" summary="回调函数">
 			<description type="html"><![CDATA[
-   
            <p style="color:red">这是一个回调函数的详细说明</p>
            <p>为一个 html 文档</p>
-   
-       ]]></description>
+   ]]></description>
 			<response type="string" status="200" mimetype="text/plain"></response>
 			<request type="object" mimetype="application/json">
 				<param name="id" type="number" default="1" summary="id"></param>
 				<param name="age" type="number" summary="age"></param>
 				<example mimetype="application/json"><![CDATA[
-               
                {
                    id:1,
                    sex: male,
                }
-               
                ]]></example>
 			</request>
 		</callback>
 		<server>client</server>
 	</api>
 	<response name="result" type="object" status="400">
-		<param xml-attr="true" name="code" type="number" summary="状态码"></param>
-		<param name="message" type="string" summary="错误信息"></param>
+		<param xml-attr="true" name="code" type="number" optional="false" summary="状态码"></param>
+		<param name="message" type="string" optional="false" summary="错误信息"></param>
 		<param name="detail" type="object" array="true" summary="错误明细">
 			<param name="id" type="string" summary="id"></param>
 			<param name="message" type="string" summary="message"></param>

@@ -11,13 +11,12 @@ import (
 	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/core/messagetest"
 	"github.com/caixw/apidoc/v6/internal/lang"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 func TestParseInputs(t *testing.T) {
 	a := assert.New(t)
 
-	blocks := make(chan spec.Block, 100)
+	blocks := make(chan core.Block, 100)
 	erro, _, h := messagetest.MessageHandler()
 	php := &Input{
 		Lang:      "php",
@@ -44,7 +43,7 @@ func TestParseInputs(t *testing.T) {
 func TestInput_parseFile(t *testing.T) {
 	a := assert.New(t)
 
-	blocks := make(chan spec.Block, 100)
+	blocks := make(chan core.Block, 100)
 	erro, _, h := messagetest.MessageHandler()
 	o := &Input{
 		Lang:      "c++",
@@ -60,7 +59,7 @@ func TestInput_parseFile(t *testing.T) {
 	a.Empty(erro.String())
 
 	// 非 utf8 编码
-	blocks = make(chan spec.Block, 100)
+	blocks = make(chan core.Block, 100)
 	erro, _, h = messagetest.MessageHandler()
 	o = &Input{
 		Lang:      "php",
@@ -80,12 +79,6 @@ func TestInput_parseFile(t *testing.T) {
    <server>test</server>
    </api>
 `).
-		Equal(string(blk.Raw), `// <api method="GET">
-// <path path="/apis/gbk" />
-// <description>1223 中文 45 </description>
-// <server>test</server>
-// </api>
-`).
 		Equal(blk.Location.Range, core.Range{
 			Start: core.Position{Line: 5, Character: 0},
 			End:   core.Position{Line: 10, Character: 0},
@@ -93,7 +86,7 @@ func TestInput_parseFile(t *testing.T) {
 	a.Empty(erro.String())
 
 	// 文件不存在
-	blocks = make(chan spec.Block, 100)
+	blocks = make(chan core.Block, 100)
 	erro, _, h = messagetest.MessageHandler()
 	o = &Input{
 		Lang: "c++",
@@ -106,7 +99,7 @@ func TestInput_parseFile(t *testing.T) {
 	a.NotEmpty(erro.String())
 
 	// 没有正确的结束符号
-	blocks = make(chan spec.Block, 100)
+	blocks = make(chan core.Block, 100)
 	erro, _, h = messagetest.MessageHandler()
 	o = &Input{
 		Lang: "c++",

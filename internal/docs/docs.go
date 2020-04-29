@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // 默认页面
@@ -23,7 +23,7 @@ const indexPage = "index.xml"
 // 可以以前缀的方式指定，比如：v5/ 表示以 v5/ 开头的所有文件。
 var styles = []string{
 	"icon.svg",
-	spec.MajorVersion + "/",
+	ast.MajorVersion + "/",
 }
 
 // FileInfo 被打包文件的信息
@@ -33,6 +33,19 @@ type FileInfo struct {
 
 	ContentType string
 	Content     []byte
+}
+
+// StylesheetURL 生成 apidoc.xsl 文件的 URL 地址
+//
+// 相对于 docs 目录
+func StylesheetURL(prefix string) string {
+	if prefix == "" {
+		return ast.MajorVersion + "/apidoc.xsl"
+	}
+	if prefix[len(prefix)-1] != '/' {
+		prefix += "/"
+	}
+	return prefix + ast.MajorVersion + "/apidoc.xsl"
 }
 
 // Handler 返回文件服务中间件

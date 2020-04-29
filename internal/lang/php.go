@@ -23,14 +23,15 @@ func newPHPDocBlock() Blocker {
 }
 
 func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
-	if !l.match("<<<") {
+	prev := l.Position()
+
+	if !l.Match("<<<") {
 		return false
 	}
 
-	prev := l.prev
-	token := l.delim('\n')
-	if len(token) == 1 { // <<< 之后直接是换行符，则应该退回 <<< 字符
-		l.current = prev
+	token, found := l.Delim('\n', true)
+	if !found || len(token) <= 1 { // <<< 之后直接是换行符，则应该退回 <<< 字符
+		l.Move(prev)
 		return false
 	}
 	token = token[:len(token)-1] // l.delim 会带上换行符，需要去掉
@@ -46,17 +47,17 @@ func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 	return true
 }
 
-func (b *phpDocBlock) EndFunc(l *Lexer) (raw, data []byte, ok bool) {
+func (b *phpDocBlock) EndFunc(l *Lexer) (data []byte, ok bool) {
 	for {
 		switch {
-		case l.atEOF:
-			return nil, nil, false
-		case l.match(b.token1):
-			return nil, nil, true
-		case l.match(b.token2):
-			return nil, nil, true
+		case l.AtEOF():
+			return nil, false
+		case l.Match(b.token1):
+			return nil, true
+		case l.Match(b.token2):
+			return nil, true
 		default:
-			l.next(1)
+			l.Next(1)
 		}
 	}
 }

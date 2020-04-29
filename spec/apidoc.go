@@ -50,12 +50,12 @@ type APIDoc struct {
 	// 表示所有接口都支持的文档类型
 	Mimetypes []string `xml:"mimetype"`
 
-	Block *Block `xml:"-"`
+	Block *core.Block `xml:"-"`
 }
 
 // Valid 验证文档内容的正确性
 func Valid(content []byte) error {
-	return NewAPIDoc().fromXML(&Block{Data: content})
+	return NewAPIDoc().fromXML(&core.Block{Data: content})
 }
 
 // NewAPIDoc 返回 APIDoc 实例
@@ -87,21 +87,21 @@ func (doc *APIDoc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Title == "" {
-		return doc.Block.localeError("apidoc/title", locale.ErrRequired)
+		return core.NewLocaleError(doc.Block.Location, "apidoc/title", locale.ErrRequired)
 	}
 
 	// Tag.Name 查重
 	if findDupTag(shadow.Tags) != "" {
-		return doc.Block.localeError("apidoc/tag/@name", locale.ErrDuplicateValue)
+		return core.NewLocaleError(doc.Block.Location, "apidoc/tag/@name", locale.ErrDuplicateValue)
 	}
 
 	// Server.Name 查重
 	if findDupServer(shadow.Servers) != "" {
-		return doc.Block.localeError("apidoc/server/@name", locale.ErrDuplicateValue)
+		return core.NewLocaleError(doc.Block.Location, "apidoc/tag/@name", locale.ErrDuplicateValue)
 	}
 
 	if len(shadow.Mimetypes) == 0 {
-		return doc.Block.localeError("apidoc/mimetype", locale.ErrRequired)
+		return core.NewLocaleError(doc.Block.Location, "apidoc/mimetype", locale.ErrRequired)
 	}
 
 	// 操作 clone 进行比较，不影响原文档的排序
@@ -110,7 +110,7 @@ func (doc *APIDoc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	sort.Strings(clone)
 	for index := 1; index < len(clone); index++ {
 		if clone[index] == clone[index-1] {
-			return doc.Block.localeError("apidoc/mimetype", locale.ErrDuplicateValue)
+			return core.NewLocaleError(doc.Block.Location, "apidoc/mimetype", locale.ErrDuplicateValue)
 		}
 	}
 

@@ -7,13 +7,10 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/spec/spectest"
+	"github.com/caixw/apidoc/v6/internal/ast/asttest"
+	"github.com/caixw/apidoc/v6/internal/docs"
+	"github.com/caixw/apidoc/v6/internal/vars"
 )
-
-func TestStylesheet(t *testing.T) {
-	a := assert.New(t)
-	a.NotEmpty(stylesheetURL)
-}
 
 func TestOptions_contains(t *testing.T) {
 	a := assert.New(t)
@@ -45,15 +42,15 @@ func TestOutput_Sanitize(t *testing.T) {
 	o = &Output{Type: ApidocXML}
 	o.Path = "./testdir/apidoc.json"
 	a.NotError(o.Sanitize())
-	a.Equal(o.Style, stylesheetURL).
+	a.Equal(o.Style, docs.StylesheetURL(vars.OfficialURL)).
 		Equal(2, len(o.procInst)).
-		Contains(o.procInst[1], stylesheetURL)
+		Contains(o.procInst[1], docs.StylesheetURL(vars.OfficialURL))
 }
 
 func TestOptions_buffer(t *testing.T) {
 	a := assert.New(t)
 
-	doc := spectest.Get()
+	doc := asttest.Get()
 	o := &Output{
 		Type: OpenapiJSON,
 		Path: "./openapi.json",
@@ -61,7 +58,7 @@ func TestOptions_buffer(t *testing.T) {
 	a.NotError(o.Sanitize())
 	a.NotError(o.buffer(doc))
 
-	doc = spectest.Get()
+	doc = asttest.Get()
 	o = &Output{}
 	a.NotError(o.Sanitize())
 	buf, err := o.buffer(doc)
@@ -71,13 +68,13 @@ func TestOptions_buffer(t *testing.T) {
 func TestFilterDoc(t *testing.T) {
 	a := assert.New(t)
 
-	d := spectest.Get()
+	d := asttest.Get()
 	o := &Output{}
 	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(3, len(d.Tags))
 
-	d = spectest.Get()
+	d = asttest.Get()
 	o = &Output{
 		Tags: []string{"t1"},
 	}
@@ -86,7 +83,7 @@ func TestFilterDoc(t *testing.T) {
 	a.Equal(1, len(d.Tags)).
 		Equal(2, len(d.Apis))
 
-	d = spectest.Get()
+	d = asttest.Get()
 	o = &Output{
 		Tags: []string{"t1", "t2"},
 	}
@@ -95,7 +92,7 @@ func TestFilterDoc(t *testing.T) {
 	a.Equal(2, len(d.Tags)).
 		Equal(2, len(d.Apis))
 
-	d = spectest.Get()
+	d = asttest.Get()
 	o = &Output{
 		Tags: []string{"tag1"},
 	}
@@ -104,7 +101,7 @@ func TestFilterDoc(t *testing.T) {
 	a.Equal(1, len(d.Tags)).
 		Equal(1, len(d.Apis))
 
-	d = spectest.Get()
+	d = asttest.Get()
 	o = &Output{
 		Tags: []string{"not-exists"},
 	}

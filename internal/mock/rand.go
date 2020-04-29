@@ -8,7 +8,7 @@ import (
 
 	"github.com/issue9/rands"
 
-	"github.com/caixw/apidoc/v6/spec"
+	"github.com/caixw/apidoc/v6/internal/ast"
 )
 
 var randOptions = &struct {
@@ -41,13 +41,17 @@ func generateBool() bool {
 	return (rand.Int() % 2) == 0
 }
 
-func generateNumber(p *spec.Param) int64 {
-	if p.IsEnum() {
+func isEnum(p *ast.Param) bool {
+	return len(p.Enums) > 0
+}
+
+func generateNumber(p *ast.Param) int64 {
+	if isEnum(p) {
 		index := 0
 		if !test {
 			index = rand.Intn(len(p.Enums))
 		}
-		v, err := strconv.ParseInt(p.Enums[index].Value, 10, 32)
+		v, err := strconv.ParseInt(p.Enums[index].Value.V(), 10, 32)
 		if err != nil { // 这属于文档定义错误，直接 panic
 			panic(err)
 		}
@@ -60,13 +64,13 @@ func generateNumber(p *spec.Param) int64 {
 	return rand.Int63n(int64(randOptions.maxNumber))
 }
 
-func generateString(p *spec.Param) string {
-	if p.IsEnum() {
+func generateString(p *ast.Param) string {
+	if isEnum(p) {
 		index := 0
 		if !test {
 			index = rand.Intn(len(p.Enums))
 		}
-		return p.Enums[index].Value
+		return p.Enums[index].Value.V()
 	}
 
 	if test {

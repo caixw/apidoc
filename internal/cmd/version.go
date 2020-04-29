@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v6"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 func initVersion() {
@@ -20,7 +20,7 @@ func initVersion() {
 
 func version(w io.Writer) error {
 	goVersion := strings.TrimLeft(runtime.Version(), "go")
-	msg := locale.Sprintf(locale.Version, apidoc.Version(), spec.Version, vars.CommitHash(), goVersion)
+	msg := locale.Sprintf(locale.Version, apidoc.Version(), ast.Version, vars.CommitHash(), goVersion)
 	_, err := fmt.Fprintln(w, msg)
 	return err
 }

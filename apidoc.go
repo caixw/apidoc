@@ -20,11 +20,11 @@ import (
 
 	"github.com/caixw/apidoc/v6/build"
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/locale"
 	"github.com/caixw/apidoc/v6/internal/mock"
 	"github.com/caixw/apidoc/v6/internal/vars"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // Config 配置文件映身的结构
@@ -142,28 +142,21 @@ func ViewFile(status int, url string, path core.URI, contentType string, dir cor
 }
 
 // Valid 验证文档内容的正确性
-func Valid(content []byte) error {
-	return spec.Valid(content)
+func Valid(b core.Block) error {
+	return (&ast.APIDoc{}).Parse(b)
 }
 
 // Mock 生成 Mock 中间件
 //
-// 调用者需要保证 d 的正确性。
-func Mock(h *core.MessageHandler, d *spec.APIDoc, servers map[string]string) (http.Handler, error) {
-	return mock.New(h, d, servers)
-}
-
-// MockBuffer 生成 Mock 中间件
-//
 // data 为文档内容；
 // servers 为文档中所有 server 以及对应的路由前缀。
-func MockBuffer(h *core.MessageHandler, data []byte, servers map[string]string) (http.Handler, error) {
-	d := spec.NewAPIDoc()
-	if err := d.ParseBlock(&spec.Block{Data: data}); err != nil {
+func Mock(h *core.MessageHandler, data []byte, servers map[string]string) (http.Handler, error) {
+	d := &ast.APIDoc{}
+	if err := d.Parse(core.Block{Data: data}); err != nil {
 		return nil, err
 	}
 
-	return Mock(h, d, servers)
+	return mock.New(h, d, servers)
 }
 
 // MockFile 生成 Mock 中间件
@@ -178,10 +171,8 @@ func MockFile(h *core.MessageHandler, path core.URI, servers map[string]string) 
 var procInst = regexp.MustCompile(`<\?xml .+ ?>`)
 
 func addStylesheet(data []byte) []byte {
-	stylesheet := "./" + spec.MajorVersion + "/apidoc.xsl"
-
 	pi := `
-<?xml-stylesheet type="text/xsl" href="` + stylesheet + `"?>`
+<?xml-stylesheet type="text/xsl" href="` + docs.StylesheetURL("./") + `"?>`
 
 	if rslt := procInst.Find(data); len(rslt) > 0 {
 		return procInst.ReplaceAll(data, append(rslt, []byte(pi)...))

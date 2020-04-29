@@ -18,7 +18,7 @@ func (doc *APIDoc) DeleteFile(file core.URI) {
 	}
 
 	if doc.Block.Location.URI == file {
-		doc.Block = &Block{}
+		doc.Block = &core.Block{}
 		doc.Mimetypes = doc.Mimetypes[:0]
 		doc.Title = ""
 		doc.Responses = doc.Responses[:0]
@@ -40,7 +40,7 @@ var (
 )
 
 // ParseBlock 分析 b 的内容并填充到 doc
-func (doc *APIDoc) ParseBlock(b *Block) error {
+func (doc *APIDoc) ParseBlock(b *core.Block) error {
 	index := bytes.IndexByte(b.Data, '<')
 	if index < 0 {
 		return nil
@@ -59,13 +59,13 @@ func (doc *APIDoc) ParseBlock(b *Block) error {
 	return nil
 }
 
-func (doc *APIDoc) fromXML(b *Block) error {
+func (doc *APIDoc) fromXML(b *core.Block) error {
 	doc.Block = b
 	return xml.Unmarshal(b.Data, doc)
 }
 
 // appendAPI 从 b.Data 中解析新的 API 对象
-func (doc *APIDoc) appendAPI(b *Block) error {
+func (doc *APIDoc) appendAPI(b *core.Block) error {
 	api := &API{
 		Block: b,
 		doc:   doc,

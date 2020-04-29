@@ -10,15 +10,15 @@ import (
 	"strings"
 
 	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // 缩进的字符串
 const indent = "    "
 
 type jsonValidator struct {
-	param   *spec.Param
+	param   *ast.Param
 	decoder *json.Decoder
 
 	// 按顺序表示的状态
@@ -36,7 +36,7 @@ type jsonBuilder struct {
 	indentString string
 }
 
-func validJSON(p *spec.Request, content []byte) error {
+func validJSON(p *ast.Request, content []byte) error {
 	if p == nil {
 		if bytes.Equal(content, []byte("null")) {
 			return nil
@@ -44,7 +44,7 @@ func validJSON(p *spec.Request, content []byte) error {
 		return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 
-	if (p.Type == spec.None) && len(content) == 0 {
+	if p.Type.V() == ast.TypeNone && len(content) == 0 {
 		return nil
 	}
 
@@ -85,11 +85,11 @@ func (validator *jsonValidator) valid() error {
 		case string: // json string
 			switch validator.state() {
 			case ':': // 字符串类型的值
-				err = validator.validValue(spec.String, v)
+				err = validator.validValue(ast.TypeString, v)
 				validator.popState()
 				validator.popName()
 			case '[':
-				err = validator.validValue(spec.String, v)
+				err = validator.validValue(ast.TypeString, v)
 			default: // 属性名
 				validator.pushState(':')
 				validator.pushName(v)
@@ -120,13 +120,13 @@ func (validator *jsonValidator) valid() error {
 				}
 			}
 		case bool: // json bool
-			err = validator.validValue(spec.Bool, v)
+			err = validator.validValue(ast.TypeBool, v)
 			if validator.state() != '[' {
 				validator.popState()
 				validator.popName()
 			}
 		case float64, json.Number: // json number
-			err = validator.validValue(spec.Number, v)
+			err = validator.validValue(ast.TypeNumber, v)
 			if validator.state() != '[' { // 只有键值对结束时，才弹出键名
 				validator.popState()
 				validator.popName()
@@ -140,7 +140,7 @@ func (validator *jsonValidator) valid() error {
 }
 
 // 如果 t == "" 表示不需要验证类型，比如 null 可以赋值给任何类型
-func (validator *jsonValidator) validValue(t spec.Type, v interface{}) error {
+func (validator *jsonValidator) validValue(t string, v interface{}) error {
 	field := strings.Join(validator.names, ".")
 
 	p := validator.find()
@@ -152,13 +152,13 @@ func (validator *jsonValidator) validValue(t spec.Type, v interface{}) error {
 		return nil
 	}
 
-	if p.Type != t {
+	if p.Type.V() != t {
 		return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
 	}
 
-	if p.IsEnum() {
+	if isEnum(p) {
 		for _, enum := range p.Enums {
-			if enum.Value == fmt.Sprint(v) {
+			if enum.Value.V() == fmt.Sprint(v) {
 				return nil
 			}
 		}
@@ -201,12 +201,12 @@ func (validator *jsonValidator) popName() *jsonValidator {
 }
 
 // 如果 names 为空，返回 validator.param
-func (validator *jsonValidator) find() *spec.Param {
+func (validator *jsonValidator) find() *ast.Param {
 	p := validator.param
 	for _, name := range validator.names {
 		found := false
 		for _, pp := range p.Items {
-			if pp.Name == name {
+			if pp.Name.V() == name {
 				p = pp
 				found = true
 				break
@@ -272,8 +272,8 @@ func (builder *jsonBuilder) writeValue(v interface{}) *jsonBuilder {
 	return builder
 }
 
-func buildJSON(p *spec.Request) ([]byte, error) {
-	if p != nil && p.Type == spec.None {
+func buildJSON(p *ast.Request) ([]byte, error) {
+	if p != nil && p.Type.V() == ast.TypeNone {
 		return nil, nil
 	}
 
@@ -288,13 +288,13 @@ func buildJSON(p *spec.Request) ([]byte, error) {
 	return builder.buf.Bytes(), nil
 }
 
-func writeJSON(builder *jsonBuilder, p *spec.Param, chkArray bool) error {
+func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool) error {
 	if p == nil {
 		builder.writeValue(nil)
 		return builder.err
 	}
 
-	if p.Array && chkArray {
+	if p.Array.V() && chkArray {
 		builder.writeStrings("[\n").incrIndent()
 
 		size := generateSliceSize()
@@ -317,21 +317,21 @@ func writeJSON(builder *jsonBuilder, p *spec.Param, chkArray bool) error {
 		return builder.err
 	}
 
-	switch p.Type {
-	case spec.None:
+	switch p.Type.V() {
+	case ast.TypeNone:
 		builder.writeValue(nil)
-	case spec.Bool:
+	case ast.TypeBool:
 		builder.writeValue(generateBool())
-	case spec.Number:
+	case ast.TypeNumber:
 		builder.writeValue(generateNumber(p))
-	case spec.String:
+	case ast.TypeString:
 		builder.writeValue(generateString(p))
-	case spec.Object:
+	case ast.TypeObject:
 		builder.writeStrings("{\n").incrIndent()
 
 		last := len(p.Items) - 1
 		for index, item := range p.Items {
-			builder.writeIndent().writeStrings(`"`, item.Name, `"`, ": ")
+			builder.writeIndent().writeStrings(`"`, item.Name.V(), `"`, ": ")
 
 			if err := writeJSON(builder, item, true); err != nil {
 				return err
