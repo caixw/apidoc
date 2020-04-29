@@ -2,7 +2,11 @@
 
 package protocol
 
-import "path"
+import (
+	"path"
+
+	"github.com/caixw/apidoc/v6/core"
+)
 
 // InitializeParams 初始化请求的参数
 type InitializeParams struct {
@@ -20,7 +24,7 @@ type InitializeParams struct {
 
 	// The rootUri of the workspace. Is null if no
 	// folder is open. If both `rootPath` and `rootUri` are set `rootUri` wins.
-	RootURI DocumentURI `json:"rootUri,omitempty"`
+	RootURI core.URI `json:"rootUri,omitempty"`
 
 	// User provided initialization options.
 	InitializationOptions interface{} `json:"initializationOptions,omitempty"`
@@ -64,7 +68,7 @@ func (p *InitializeParams) Folders() []WorkspaceFolder {
 	if p.RootPath != "" {
 		return []WorkspaceFolder{{
 			Name: path.Base(p.RootPath),
-			URI:  FileURI(p.RootPath),
+			URI:  core.URI(p.RootPath),
 		}}
 	}
 

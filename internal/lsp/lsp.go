@@ -12,8 +12,8 @@ import (
 
 	"github.com/issue9/jsonrpc"
 
+	"github.com/caixw/apidoc/v6/core"
 	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/message"
 )
 
 // Version lsp 的版本
@@ -33,7 +33,7 @@ func Serve(header bool, t string, addr string, infolog, errlog *log.Logger) erro
 		return serveTCP(header, t, addr, infolog, errlog)
 	}
 
-	return message.NewLocaleError("", "", 0, locale.ErrInvalidValue)
+	return core.NewLocaleError(core.Location{}, "", 0, locale.ErrInvalidValue)
 }
 
 func serveStdio(header bool, infolog, errlog *log.Logger) error {

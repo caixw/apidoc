@@ -55,6 +55,9 @@ type WorkDoneProgressOptions struct {
 	WorkDoneProgress bool `json:"workDoneProgress,omitempty"`
 }
 
+// CancelParams The base protocol offers support for request cancellation
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#cancelRequest
 type CancelParams struct {
 	// The request id to cancel.
 	ID *jsonrpc.ID

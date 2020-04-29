@@ -204,7 +204,6 @@ options 可以是以下參數
 
 	// 錯誤信息，可能在地方用到
 	ErrInvalidUTF8Character:      "無效的 UTF8 字符",
-	ErrInvalidURIScheme:          "無效的 uri 協議",
 	ErrInvalidXML:                "无效的 XML 文檔",
 	ErrIsNotAPIDoc:               "並非有效的 apidoc 的文檔格式",
 	ErrInvalidContentTypeCharset: "報頭 ContentType 中指定的字符集無效 ",
@@ -225,7 +224,7 @@ options 可以是以下參數
 	ErrReadRemoteFile:            "讀取遠程文件 %s 時返回狀態碼 %d",
 	ErrServerNotInitialized:      "服務未初始化",
 	ErrInvalidLSPState:           "無效的 LSP 狀態",
-	ErrInvalidURIScheme:          "無效的 uri 協議",
+	ErrInvalidURIScheme:          "無效的 URI 協議",
 	ErrFileNotFound:              "未找到文件 %s",
 
 	// logs

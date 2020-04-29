@@ -176,7 +176,7 @@ type ReferenceOptions struct {
 	WorkDoneProgressOptions
 }
 
-// Completion options.
+// CompletionOptions completion options.
 type CompletionOptions struct {
 	WorkDoneProgressOptions
 

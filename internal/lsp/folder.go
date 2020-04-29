@@ -3,22 +3,21 @@
 package lsp
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 	"strings"
 
 	"github.com/caixw/apidoc/v6/build"
+	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
-	"github.com/caixw/apidoc/v6/message"
-	"github.com/caixw/apidoc/v6/spec"
 )
 
 // 表示项目文件夹
 type folder struct {
 	protocol.WorkspaceFolder
-	doc *spec.APIDoc
-	h   *message.Handler
+	doc *ast.APIDoc
+	h   *core.MessageHandler
 	cfg *build.Config
 }
 
@@ -28,22 +27,17 @@ func (f *folder) close() error {
 }
 
 // uri 是否与属于项目匹配
-func (f *folder) matchURI(uri protocol.DocumentURI) bool {
+func (f *folder) matchURI(uri core.URI) bool {
 	return strings.HasPrefix(string(uri), string(f.URI))
 }
 
-func (f *folder) matchPosition(uri protocol.DocumentURI, pos protocol.Position) (bool, error) {
-	file, err := uri.File()
-	if err != nil {
-		return false, err
-	}
-
-	var block *spec.Block
-	if f.doc.Block.File == file {
+func (f *folder) matchPosition(uri core.URI, pos protocol.Position) (bool, error) {
+	var block *core.Block
+	if f.doc.Block.Location.URI == uri {
 		block = f.doc.Block
 	} else {
 		for _, api := range f.doc.Apis {
-			if api.Block.File == file {
+			if api.Block.Location.URI == uri {
 				block = api.Block
 				break
 			}
@@ -52,10 +46,11 @@ func (f *folder) matchPosition(uri protocol.DocumentURI, pos protocol.Position) 
 	if block == nil {
 		return false, nil
 	}
-	return pos.Line >= block.Line && pos.Line <= bytes.Count(block.Data, []byte{'\n'})+block.Line, nil
+	return pos.Line >= block.Location.Range.Start.Line &&
+		pos.Line <= block.Location.Range.End.Line, nil
 }
 
-func (f *folder) openFile(uri protocol.DocumentURI) error {
+func (f *folder) openFile(uri core.URI) error {
 	file, err := uri.File()
 	if err != nil {
 		return err
@@ -73,32 +68,22 @@ func (f *folder) openFile(uri protocol.DocumentURI) error {
 		return fmt.Errorf("xxx")
 	}
 
-	build.ParseFile(f.doc, f.h, file, input)
+	build.ParseFile(f.doc, f.h, uri, input)
 
 	return nil
 }
 
-func (f *folder) closeFile(uri protocol.DocumentURI) error {
-	file, err := uri.File()
-	if err != nil {
-		return err
-	}
-
-	f.doc.DeleteFile(file)
+func (f *folder) closeFile(uri core.URI) error {
+	f.doc.DeleteFile(uri)
 	return nil
 }
 
-func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) error {
+func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) {
 	for _, f := range folders {
-		h := message.NewHandler(s.messageHandler)
-		file, err := f.URI.File()
-		if err != nil {
-			return err
-		}
-
-		cfg := build.LoadConfig(h, file)
+		h := core.NewMessageHandler(s.messageHandler)
+		cfg := build.LoadConfig(h, f.URI)
 		if cfg == nil {
-			cfg, err = build.DetectConfig(file, true)
+			cfg, err = build.DetectConfig(f.URI, true)
 			if err != nil {
 				return err
 			}
@@ -106,7 +91,7 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) error {
 
 		s.folders = append(s.folders, &folder{
 			WorkspaceFolder: f,
-			doc:             spec.New(),
+			doc:             &ast.APIDoc{},
 			h:               h,
 			cfg:             cfg,
 		})
@@ -115,20 +100,20 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) error {
 	return nil
 }
 
-func (s *server) messageHandler(msg *message.Message) {
+func (s *server) messageHandler(msg *core.Message) {
 	switch msg.Type {
-	case message.Erro:
+	case core.Erro:
 		// TODO
-	case message.Warn:
+	case core.Warn:
 		// TODO
-	case message.Succ: // 仅处理错误和警告
-	case message.Info: // 仅处理错误和警告
+	case core.Succ: // 仅处理错误和警告
+	case core.Info: // 仅处理错误和警告
 	default:
 		panic("unreached")
 	}
 }
 
-func (s *server) getMatchFolder(uri protocol.DocumentURI) *folder {
+func (s *server) getMatchFolder(uri core.URI) *folder {
 	for _, f := range s.folders {
 		if f.matchURI(uri) {
 			return f

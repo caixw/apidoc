@@ -2,9 +2,11 @@
 
 package protocol
 
+import "github.com/caixw/apidoc/v6/core"
+
 type WorkspaceFolder struct {
 	// The associated URI for this workspace folder.
-	URI DocumentURI `json:"uri"`
+	URI core.URI `json:"uri"`
 
 	// The name of the workspace folder. Used to refer to this
 	// workspace folder in the user interface.

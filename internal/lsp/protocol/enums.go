@@ -12,6 +12,7 @@ const (
 // SymbolKind A symbol kind.
 type SymbolKind int
 
+// SymbolKind 的各类枚举值
 const (
 	SymbolKindFile SymbolKind = iota + 1
 	SymbolKindModule
@@ -45,13 +46,13 @@ const (
 type ResourceOperationKind string
 
 const (
-	// Supports creating new files and folders.
+	// ResourceOperationKindCreate supports creating new files and folders.
 	ResourceOperationKindCreate ResourceOperationKind = "create"
 
-	// Supports renaming existing files and folders.
+	// ResourceOperationKindRename supports renaming existing files and folders.
 	ResourceOperationKindRename ResourceOperationKind = "rename"
 
-	// Supports deleting existing files and folders.
+	// ResourceOperationKindDelete supports deleting existing files and folders.
 	ResourceOperationKindDelete ResourceOperationKind = "delete"
 )
 
@@ -59,21 +60,22 @@ type FailureHandlingKind string
 
 const (
 
-	// Applying the workspace change is simply aborted if one of the changes provided
-	// fails. All operations executed before the failing operation stay executed.
+	// FailureHandlingKindAbort applying the workspace change is simply aborted
+	// if one of the changes provided fails.
+	// All operations executed before the failing operation stay executed.
 	FailureHandlingKindAbort FailureHandlingKind = "abort"
 
-	// All operations are executed transactionally. That means they either all
-	// succeed or no changes at all are applied to the workspace.
+	// FailureHandlingKindTransactional all operations are executed transactionally.
+	// That means they either all succeed or no changes at all are applied to the workspace.
 	FailureHandlingKindTransactional FailureHandlingKind = "transactional"
 
-	// If the workspace edit contains only textual file changes they are executed transactionally.
+	// FailureHandlingKindTextOnlyTransactional if the workspace edit contains only textual file changes they are executed transactionally.
 	// If resource changes (create, rename or delete file) are part of the change the failure
 	// handling strategy is abort.
 	FailureHandlingKindTextOnlyTransactional FailureHandlingKind = "textOnlyTransactional"
 
-	// The client tries to undo the operations already executed. But there is no
-	// guarantee that this succeeds.
+	// FailureHandlingKindUndo The client tries to undo the operations already executed.
+	// But there is no guarantee that this succeeds.
 	FailureHandlingKindUndo FailureHandlingKind = "undo"
 )
 
@@ -138,7 +140,7 @@ const (
 	CodeActionKinSourceOrganizeImports CodeActionKind = "source.organizeImports"
 )
 
-// Describes the content type that a client supports in various
+// MarkupKind describes the content type that a client supports in various
 // result literals like `Hover`, `ParameterInfo` or `CompletionItem`.
 //
 // Please note that `MarkupKinds` must not start with a `$`. This kinds
@@ -146,16 +148,17 @@ const (
 type MarkupKind string
 
 const (
-	// Plain text is supported as a content format
+	// MarkupKindPlainText plain text is supported as a content format
 	MarkupKindPlainText MarkupKind = "plaintext"
 
-	// Markdown is supported as a content format
+	// MarkupKinMarkdown markdown is supported as a content format
 	MarkupKinMarkdown MarkupKind = "markdown"
 )
 
-// The kind of a completion entry.
+// CompletionItemKind the kind of a completion entry.
 type CompletionItemKind int
 
+// CompletionItemKind 的各类枚举值
 const (
 	CompletionItemKindText CompletionItemKind = iota + 1
 	CompletionItemKindMethod
@@ -188,13 +191,13 @@ const (
 type TextDocumentSyncKind int
 
 const (
-	// Documents should not be synced at all.
+	// TextDocumentSyncKindNone documents should not be synced at all.
 	TextDocumentSyncKindNone TextDocumentSyncKind = iota
 
-	// Documents are synced by always sending the full content of the document.
+	// TextDocumentSyncKindFull documents are synced by always sending the full content of the document.
 	TextDocumentSyncKindFull
 
-	// Documents are synced by sending the full content on open.
+	// TextDocumentSyncKindIncremental documents are synced by sending the full content on open.
 	// After that only incremental updates to the document are send.
 	TextDocumentSyncKindIncremental
 )

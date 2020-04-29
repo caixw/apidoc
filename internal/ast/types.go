@@ -316,3 +316,8 @@ func (r *Request) Param() *Param {
 		Description: r.Description,
 	}
 }
+
+// DeleteFile 删除与 uri 相关的文档内容
+func (doc *APIDoc) DeleteFile(uri core.URI) {
+	// TODO
+}

@@ -2,18 +2,20 @@
 
 package protocol
 
+import "github.com/caixw/apidoc/v6/core"
+
 // TextDocumentIdentifier text documents are identified using a URI.
 // On the protocol level, URIs are passed as strings.
 // The corresponding JSON structure looks like this:
 type TextDocumentIdentifier struct {
 	// The text document's URI.
-	URI DocumentURI `json:"uri"`
+	URI core.URI `json:"uri"`
 }
 
 // TextDocumentItem an item to transfer a text document from the client to the server.
 type TextDocumentItem struct {
 	// The text document's URI.
-	URI DocumentURI `json:"uri"`
+	URI core.URI `json:"uri"`
 
 	// The text document's language identifier.
 	LanguageID string `json:"languageId"`

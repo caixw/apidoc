@@ -38,11 +38,7 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 		}
 	}
 
-	file, err := in.TextDocument.URI.File()
-	if err != nil {
-		return err
-	}
-	f.doc.DeleteFile(file)
+	f.doc.DeleteFile(in.TextDocument.URI)
 	return f.openFile(in.TextDocument.URI)
 }
 
