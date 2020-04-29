@@ -9,7 +9,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/ast"
 )
 
 func TestJSONValidator_find(t *testing.T) {

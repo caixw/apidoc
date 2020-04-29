@@ -5,7 +5,7 @@ package build
 import (
 	"os"
 
-	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v7/core"
 )
 
 // 获取 path 的绝对路径

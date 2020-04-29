@@ -9,10 +9,10 @@ import (
 	"encoding/xml"
 	"os"
 
-	"github.com/caixw/apidoc/v6/internal/ast"
-	"github.com/caixw/apidoc/v6/internal/docs"
-	"github.com/caixw/apidoc/v6/internal/lang"
-	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/lang"
+	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 const fileHeader = "\n<!-- 该文件由工具自动生成，请勿手动修改！-->\n\n"

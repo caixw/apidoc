@@ -6,8 +6,8 @@ import (
 	"encoding/xml"
 	"strings"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // Type 表示参数类型

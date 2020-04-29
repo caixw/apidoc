@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"encoding/xml"
 
-	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v7/core"
 )
 
 // DeleteFile 从文档中删除与文件 file 相关的文档内容

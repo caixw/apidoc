@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/caixw/apidoc/v6/build"
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/ast"
-	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
+	"github.com/caixw/apidoc/v7/build"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
 
 // 表示项目文件夹

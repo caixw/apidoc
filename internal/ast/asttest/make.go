@@ -8,8 +8,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/caixw/apidoc/v6/internal/ast/asttest"
-	"github.com/caixw/apidoc/v6/internal/token"
+	"github.com/caixw/apidoc/v7/internal/ast/asttest"
+	"github.com/caixw/apidoc/v7/internal/token"
 )
 
 func main() {

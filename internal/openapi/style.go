@@ -3,8 +3,8 @@
 package openapi
 
 import (
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // Style.Style 的可选值

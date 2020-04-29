@@ -1,4 +1,4 @@
-module github.com/caixw/apidoc/v6
+module github.com/caixw/apidoc/v7
 
 require (
 	github.com/issue9/assert v1.3.4

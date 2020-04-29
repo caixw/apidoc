@@ -6,9 +6,9 @@ import (
 	"flag"
 	"io"
 
-	build2 "github.com/caixw/apidoc/v6/build"
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	build2 "github.com/caixw/apidoc/v7/build"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 var testFlagSet *flag.FlagSet

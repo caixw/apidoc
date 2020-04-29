@@ -11,8 +11,8 @@ import (
 	"github.com/issue9/assert"
 	"github.com/issue9/utils"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/spec"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/spec"
 )
 
 // Filename 文档的文件名

@@ -5,7 +5,7 @@ package core
 import (
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // MessageType 表示氐的类型

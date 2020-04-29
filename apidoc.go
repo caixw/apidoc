@@ -19,14 +19,14 @@ import (
 
 	"golang.org/x/text/language"
 
-	"github.com/caixw/apidoc/v6/build"
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/ast"
-	"github.com/caixw/apidoc/v6/internal/docs"
-	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/internal/lsp"
-	"github.com/caixw/apidoc/v6/internal/mock"
-	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v7/build"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/lsp"
+	"github.com/caixw/apidoc/v7/internal/mock"
+	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 // Config 配置文件映身的结构
@@ -88,7 +88,7 @@ func Test(h *core.MessageHandler, i ...*build.Input) {
 // 的代码搭建一个简易的 https://apidoc.tools 网站。
 //
 // /docs 存放了整个项目的文档内容。其中根目录中包含网站的相关内容，
-// 而 /v6 这些以版本号开头的则是查看 xml 文档的工具代码。
+// 而 /v7 这些以版本号开头的则是查看 xml 文档的工具代码。
 // 同时这一份代码也被编译在代码中。如果你不需要修改文档内容，
 // 则可以直接传递空的 dir，表示采用内置的文档，否则指向指定的目录，
 // 如果指向了自定义的目录，需要保证目录结构和文件名与 /docs 相同。

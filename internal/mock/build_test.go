@@ -11,7 +11,7 @@ import (
 	"github.com/issue9/assert"
 	"github.com/issue9/qheader"
 
-	"github.com/caixw/apidoc/v6/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/ast"
 )
 
 func TestFindRequestByContentType(t *testing.T) {

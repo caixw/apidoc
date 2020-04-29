@@ -11,9 +11,9 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/lang"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/lang"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // Input 指定输入内容的相关信息。

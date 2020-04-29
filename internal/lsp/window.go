@@ -2,7 +2,7 @@
 
 package lsp
 
-import "github.com/caixw/apidoc/v6/internal/lsp/protocol"
+import "github.com/caixw/apidoc/v7/internal/lsp/protocol"
 
 // window/showMessage
 //

@@ -5,7 +5,7 @@ package spec
 import (
 	"encoding/xml"
 
-	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v7/core"
 )
 
 // 富文本可用的类型

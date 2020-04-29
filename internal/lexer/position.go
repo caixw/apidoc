@@ -5,7 +5,7 @@ package lexer
 import (
 	"unicode/utf8"
 
-	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v7/core"
 )
 
 // Position 描述 Lexer 中的定位信息

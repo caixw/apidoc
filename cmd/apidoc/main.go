@@ -8,7 +8,7 @@
 //  apidoc help cmd
 package main
 
-import "github.com/caixw/apidoc/v6/internal/cmd"
+import "github.com/caixw/apidoc/v7/internal/cmd"
 
 func main() {
 	cmd.Exec()

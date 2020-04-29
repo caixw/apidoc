@@ -7,8 +7,8 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // Decoder 实现从 p 中解码内容到当前对象的值

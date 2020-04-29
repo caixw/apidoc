@@ -3,9 +3,9 @@
 package lang
 
 import (
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/lexer"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/lexer"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // Lexer 是对一个文本内容的包装，方便 blocker 等接口操作。

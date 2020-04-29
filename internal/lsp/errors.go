@@ -6,7 +6,7 @@ import (
 	"github.com/issue9/jsonrpc"
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // 错误代码，部分为 lsp 特有

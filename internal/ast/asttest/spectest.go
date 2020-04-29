@@ -10,9 +10,9 @@ import (
 	"github.com/issue9/assert"
 	"github.com/issue9/utils"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/ast"
-	"github.com/caixw/apidoc/v6/internal/token"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/token"
 )
 
 // Filename 文档的文件名

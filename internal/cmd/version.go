@@ -8,10 +8,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/caixw/apidoc/v6"
-	"github.com/caixw/apidoc/v6/internal/ast"
-	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v7"
+	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 func initVersion() {

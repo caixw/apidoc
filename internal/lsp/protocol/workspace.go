@@ -2,7 +2,7 @@
 
 package protocol
 
-import "github.com/caixw/apidoc/v6/core"
+import "github.com/caixw/apidoc/v7/core"
 
 type WorkspaceFolder struct {
 	// The associated URI for this workspace folder.

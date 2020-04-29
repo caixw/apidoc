@@ -6,8 +6,8 @@ package token
 import (
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // StartElement 表示 XML 的元素

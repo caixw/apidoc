@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/caixw/apidoc/v6/spec/spectest"
+	"github.com/caixw/apidoc/v7/spec/spectest"
 )
 
 func main() {

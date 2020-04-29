@@ -8,9 +8,9 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/core/messagetest"
-	"github.com/caixw/apidoc/v6/internal/docs"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
+	"github.com/caixw/apidoc/v7/internal/docs"
 )
 
 func TestLoadConfig(t *testing.T) {

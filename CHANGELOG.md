@@ -10,7 +10,7 @@
 - 采用与 LSP 相同的方式定位错误信息；
 - 采用新的编码与解码试(internal/ast)；
 - 分离程序版本和文档版本；
-- 添加 LSP 子命令；
+- 添加 lsp 子命令；
 
 ### Fixed
 
@@ -23,7 +23,7 @@
 
 ## [v6.0.1]
 
-## Fixed
+### Fixed
 
 - 修正 Chrome 与 Safari 无法正确显示文档的错误；
 - 修正命令行 `apidoc static` 导致 panic 的错误；

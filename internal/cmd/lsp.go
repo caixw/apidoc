@@ -8,8 +8,8 @@ import (
 	"io"
 	"log"
 
-	"github.com/caixw/apidoc/v6"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 var lspFlagSet *flag.FlagSet

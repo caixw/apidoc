@@ -11,10 +11,10 @@ import (
 	"github.com/issue9/mux/v2"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/ast"
-	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 const (

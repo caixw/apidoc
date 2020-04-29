@@ -7,9 +7,9 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/internal/ast/asttest"
-	"github.com/caixw/apidoc/v6/internal/docs"
-	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v7/internal/ast/asttest"
+	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 func TestOptions_contains(t *testing.T) {

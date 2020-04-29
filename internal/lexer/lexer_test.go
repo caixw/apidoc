@@ -7,7 +7,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v7/core"
 )
 
 func TestNewLexer(t *testing.T) {

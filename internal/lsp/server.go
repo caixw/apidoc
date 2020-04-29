@@ -8,7 +8,7 @@ import (
 
 	"github.com/issue9/jsonrpc"
 
-	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
+	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
 
 type serverState int

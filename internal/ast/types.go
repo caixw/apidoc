@@ -5,9 +5,9 @@ package ast
 import (
 	"io"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/internal/token"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/token"
 )
 
 // ErrNoDocFormat 表示内容并不是一个文档格式

@@ -7,8 +7,8 @@ import (
 
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // Semver 描述文档中与版本相关的信息

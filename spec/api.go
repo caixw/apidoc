@@ -6,8 +6,8 @@ import (
 	"bytes"
 	"encoding/xml"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // API 表示 <api> 顶层元素

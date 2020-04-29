@@ -10,8 +10,8 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v6/internal/ast/asttest"
-	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v7/internal/ast/asttest"
+	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 func TestJSON(t *testing.T) {

@@ -10,11 +10,11 @@ import (
 	"github.com/issue9/assert/rest"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/core/messagetest"
-	"github.com/caixw/apidoc/v6/internal/ast/asttest"
-	"github.com/caixw/apidoc/v6/internal/docs"
-	"github.com/caixw/apidoc/v6/internal/vars"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
+	"github.com/caixw/apidoc/v7/internal/ast/asttest"
+	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 func TestVersion(t *testing.T) {
@@ -119,7 +119,6 @@ func TestMock(t *testing.T) {
 
 	h.Stop()
 	srv.Close()
-
 }
 
 func TestMockFile(t *testing.T) {

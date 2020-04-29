@@ -6,7 +6,7 @@ package messagetest
 import (
 	"bytes"
 
-	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v7/core"
 )
 
 // MessageHandler 返回一个用于测试的 message.MessageHandler 实例

@@ -3,8 +3,8 @@
 package lsp
 
 import (
-	"github.com/caixw/apidoc/v6/internal/locale"
-	"github.com/caixw/apidoc/v6/internal/lsp/protocol"
+	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
 
 // initialize

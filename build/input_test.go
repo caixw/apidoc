@@ -8,9 +8,9 @@ import (
 	"github.com/issue9/assert"
 	"golang.org/x/text/encoding/simplifiedchinese"
 
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/core/messagetest"
-	"github.com/caixw/apidoc/v6/internal/lang"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
+	"github.com/caixw/apidoc/v7/internal/lang"
 )
 
 func TestParseInputs(t *testing.T) {

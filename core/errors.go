@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // HTTPError 表示 HTTP 状态码的错误

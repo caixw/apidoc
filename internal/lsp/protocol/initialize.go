@@ -5,7 +5,7 @@ package protocol
 import (
 	"path"
 
-	"github.com/caixw/apidoc/v6/core"
+	"github.com/caixw/apidoc/v7/core"
 )
 
 // InitializeParams 初始化请求的参数

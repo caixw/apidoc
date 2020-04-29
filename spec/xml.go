@@ -3,8 +3,8 @@
 package spec
 
 import (
-	"github.com/caixw/apidoc/v6/core"
-	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // XML 仅作用于 XML 的几个属性
