@@ -11,6 +11,7 @@ package apidoc
 
 import (
 	"bytes"
+	"log"
 	"mime"
 	"net/http"
 	"path/filepath"
@@ -23,6 +24,7 @@ import (
 	"github.com/caixw/apidoc/v6/internal/ast"
 	"github.com/caixw/apidoc/v6/internal/docs"
 	"github.com/caixw/apidoc/v6/internal/locale"
+	"github.com/caixw/apidoc/v6/internal/lsp"
 	"github.com/caixw/apidoc/v6/internal/mock"
 	"github.com/caixw/apidoc/v6/internal/vars"
 )
@@ -43,6 +45,11 @@ func Init(tag language.Tag) error {
 // 为一个正常的 semver(https://semver.org/lang/zh-CN/) 格式字符串。
 func Version() string {
 	return vars.Version()
+}
+
+// LSPVersion 获取当前支持的 LSP 版本
+func LSPVersion() string {
+	return lsp.Version
 }
 
 // Build 解析文档并输出文档内容
@@ -112,6 +119,14 @@ func View(status int, url string, data []byte, contentType string, dir core.URI,
 
 		Static(dir, stylesheet).ServeHTTP(w, r)
 	})
+}
+
+// ServeLSP 提供 language server protocol 服务
+//
+// header 表示传递内容是否带报头；
+// t 表示允许连接的类型，目前可以是 tcp、udp、stdio 和 ipc
+func ServeLSP(header bool, t, addr string, infolog, errlog *log.Logger) error {
+	return lsp.Serve(header, t, addr, infolog, errlog)
 }
 
 // ViewFile 返回查看文件的中间件

@@ -49,7 +49,14 @@ options 可以是以下參數：
 %s
 
 path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔。`,
-	Version:                    "版本：%s\n文檔：%s\n提交：%s\nGo：%s",
+	CmdLSPUsage: `啟動 language server protocol 服務
+
+用法：
+apidoc lsp [options]
+
+options 可以是以下參數
+%s`,
+	Version:                    "版本：%s\n文檔：%s\n提交：%s\nLSP：%s\nGo：%s",
 	CmdNotFound:                "子命令 %s 未找到\n",
 	FlagMockPortUsage:          "指定 mock 服務的端口號",
 	FlagMockServersUsage:       "指定 mock 服務時，文檔中 server 變量對應的路由前綴",
@@ -59,6 +66,9 @@ path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔
 	FlagStaticStylesheetUsage:  "指定 static 是否只啟用樣式文件內容",
 	FlagStaticContentTypeUsage: "指定 static 的 content-type 值，不指定，則根據擴展名自動獲取",
 	FlagStaticURLUsage:         "指定 static 服務中文檔的輸出地址",
+	FlagLSPPortUsage:           "指定 language server protocol 服務的端口號",
+	FlagLSPModeUsage:           "指定 language server protocol 的運行方式，可以是 websocket、tcp 和 udp",
+	FlagLSPHeaderUsage:         "指定 language server protocol 傳遞內容是否帶報頭信息",
 
 	VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
 	Complete:            "完成！文檔保存在：%s，總用時：%v",
@@ -72,6 +82,8 @@ path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔
 	DeprecatedWarn:      "%s %s 將於 %s 被廢棄",
 	GeneratorBy:         "當前文檔由 %s 生成",
 	ServerStart:         "服務啟動，可通過 %s 訪問",
+	RequestRPC:          "訪問 RPC：%s",
+	UnimplementedRPC:    "未實現該 RPC 服務 %s",
 
 	// 文檔樹中各個字段的介紹
 	UsageAPIDoc:            "用於描述整個文檔的相關內容，只能出現壹次。",
@@ -191,22 +203,30 @@ path 表示需要展示的文檔路徑，為空表示沒有需要展示的文檔
 	UsageServerDescription: "服務的詳細描述",
 
 	// 錯誤信息，可能在地方用到
-	ErrRequired:              "不能為空",
-	ErrInvalidFormat:         "格式不正確",
-	ErrDirNotExists:          "目錄不存在",
-	ErrNotFoundEndFlag:       "找不到結束符號",
-	ErrNotFoundSupportedLang: "該目錄下沒有支持的語言文件",
-	ErrDirIsEmpty:            "目錄下沒有需要解析的文件",
-	ErrInvalidValue:          "無效的值",
-	ErrPathNotMatchParams:    "地址參數不匹配",
-	ErrDuplicateValue:        "重復的值",
-	ErrMessage:               "%s 位於 %s",
-	ErrNotFound:              "未找到該值",
-	ErrReadRemoteFile:        "讀取遠程文件 %s 時返回狀態碼 %d",
-	ErrInvalidUTF8Character:  "無效的 UTF8 字符",
-	ErrInvalidURIScheme:      "無效的 uri 協議",
-	ErrInvalidXML:            "无效的 XML 文檔",
-	ErrIsNotAPIDoc:           "並非有效的 apidoc 的文檔格式",
+	ErrInvalidUTF8Character:      "無效的 UTF8 字符",
+	ErrInvalidURIScheme:          "無效的 uri 協議",
+	ErrInvalidXML:                "无效的 XML 文檔",
+	ErrIsNotAPIDoc:               "並非有效的 apidoc 的文檔格式",
+	ErrInvalidContentTypeCharset: "報頭 ContentType 中指定的字符集無效 ",
+	ErrInvalidContentLength:      "報頭 ContentLength 無效",
+	ErrBodyIsEmpty:               "請求的報文為空",
+	ErrInvalidHeaderFormat:       "無效的報頭格式",
+	ErrRequired:                  "不能為空",
+	ErrInvalidFormat:             "格式不正確",
+	ErrDirNotExists:              "目錄不存在",
+	ErrNotFoundEndFlag:           "找不到結束符號",
+	ErrNotFoundSupportedLang:     "該目錄下沒有支持的語言文件",
+	ErrDirIsEmpty:                "目錄下沒有需要解析的文件",
+	ErrInvalidValue:              "無效的值",
+	ErrPathNotMatchParams:        "地址參數不匹配",
+	ErrDuplicateValue:            "重復的值",
+	ErrMessage:                   "%s 位於 %s",
+	ErrNotFound:                  "未找到該值",
+	ErrReadRemoteFile:            "讀取遠程文件 %s 時返回狀態碼 %d",
+	ErrServerNotInitialized:      "服務未初始化",
+	ErrInvalidLSPState:           "無效的 LSP 狀態",
+	ErrInvalidURIScheme:          "無效的 uri 協議",
+	ErrFileNotFound:              "未找到文件 %s",
 
 	// logs
 	InfoPrefix:    "[信息] ",

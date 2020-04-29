@@ -48,7 +48,14 @@ options 可以是以下参数：
 %s
 
 path 表示需要展示的文档路径，为空表示没有需要展示的文档。`
-	Version                    = "版本：%s\n文档：%s\n提交：%s\nGo：%s"
+	CmdLSPUsage = `启动 language server protocol 服务
+
+用法：
+apidoc lsp [options]
+
+options 可以是以下参数
+%s`
+	Version                    = "版本：%s\n文档：%s\n提交：%s\nLSP：%s\nGo：%s"
 	CmdNotFound                = "子命令 %s 未找到\n"
 	FlagMockPortUsage          = "指定 mock 服务的端口号"
 	FlagMockServersUsage       = "指定 mock 服务时，文档中 server 变量对应的路由前缀"
@@ -58,6 +65,9 @@ path 表示需要展示的文档路径，为空表示没有需要展示的文档
 	FlagStaticStylesheetUsage  = "指定 static 是否只启用样式文件内容"
 	FlagStaticContentTypeUsage = "指定 static 的 content-type 值，不指定，则根据扩展名自动获取"
 	FlagStaticURLUsage         = "指定 static 服务中文档的输出地址"
+	FlagLSPPortUsage           = "指定 language server protocol 服务的端口号"
+	FlagLSPModeUsage           = "指定 language server protocol 的运行方式，可以是 websocket、tcp 和 udp"
+	FlagLSPHeaderUsage         = "指定 language server protocol 传递内容是否带报头信息"
 
 	VersionInCompatible = "当前程序与配置文件中指定的版本号不兼容"
 	Complete            = "完成！文档保存在：%s，总用时：%v"
@@ -71,6 +81,8 @@ path 表示需要展示的文档路径，为空表示没有需要展示的文档
 	DeprecatedWarn      = "%s %s 将于 %s 被废弃"
 	GeneratorBy         = "当前文档由 %s 生成"
 	ServerStart         = "服务启动，可通过 %s 访问"
+	RequestRPC          = "访问 RPC：%s"
+	UnimplementedRPC    = "未实现该 RPC 服务 %s"
 
 	// 文档树中各个字段的介绍
 	UsageAPIDoc            = "usage-apidoc"
@@ -190,22 +202,30 @@ path 表示需要展示的文档路径，为空表示没有需要展示的文档
 	UsageServerDescription = "usage-server-description"
 
 	// 错误信息，可能在地方用到
-	ErrRequired              = "不能为空"
-	ErrInvalidFormat         = "格式不正确"
-	ErrDirNotExists          = "目录不存在"
-	ErrNotFoundEndFlag       = "找不到结束符号"
-	ErrNotFoundSupportedLang = "该目录下没有支持的语言文件"
-	ErrDirIsEmpty            = "目录下没有需要解析的文件"
-	ErrInvalidValue          = "无效的值"
-	ErrPathNotMatchParams    = "地址参数不匹配"
-	ErrDuplicateValue        = "重复的值"
-	ErrMessage               = "%s 位于 %s"
-	ErrNotFound              = "未找到该值"
-	ErrReadRemoteFile        = "读取远程文件 %s 时返回状态码 %d"
-	ErrInvalidUTF8Character  = "无效的 UTF8 字符"
-	ErrInvalidURIScheme      = "无效的 URI 协议"
-	ErrInvalidXML            = "无效的 XML 文档"
-	ErrIsNotAPIDoc           = "并非有效的 apidoc 的文档格式"
+	ErrInvalidUTF8Character      = "无效的 UTF8 字符"
+	ErrInvalidURIScheme          = "无效的 URI 协议"
+	ErrInvalidXML                = "无效的 XML 文档"
+	ErrIsNotAPIDoc               = "并非有效的 apidoc 的文档格式"
+	ErrInvalidContentTypeCharset = "报头 ContentType 中指定的字符集无效 "
+	ErrInvalidContentLength      = "报头 ContentLength 无效"
+	ErrBodyIsEmpty               = "请求的报文为空"
+	ErrInvalidHeaderFormat       = "无效的报头格式"
+	ErrRequired                  = "不能为空"
+	ErrInvalidFormat             = "格式不正确"
+	ErrDirNotExists              = "目录不存在"
+	ErrNotFoundEndFlag           = "找不到结束符号"
+	ErrNotFoundSupportedLang     = "该目录下没有支持的语言文件"
+	ErrDirIsEmpty                = "目录下没有需要解析的文件"
+	ErrInvalidValue              = "无效的值"
+	ErrPathNotMatchParams        = "地址参数不匹配"
+	ErrDuplicateValue            = "重复的值"
+	ErrMessage                   = "%s 位于 %s"
+	ErrNotFound                  = "未找到该值"
+	ErrReadRemoteFile            = "读取远程文件 %s 时返回状态码 %d"
+	ErrServerNotInitialized      = "服务未初始化"
+	ErrInvalidLSPState           = "无效的 LSP 状态"
+	ErrInvalidURIScheme          = "无效的 uri 协议"
+	ErrFileNotFound              = "未找到文件 %s"
 
 	// logs
 	InfoPrefix    = "[INFO] "
