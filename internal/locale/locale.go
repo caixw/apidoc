@@ -6,11 +6,10 @@ package locale
 import (
 	"errors"
 
+	"github.com/issue9/utils"
 	"golang.org/x/text/language"
 	"golang.org/x/text/language/display"
 	"golang.org/x/text/message"
-
-	"github.com/caixw/apidoc/v7/internal/locale/syslocale"
 )
 
 var (
@@ -34,10 +33,10 @@ func addLocale(tag language.Tag, messages map[string]string) {
 // Init 初始化 locale 包
 //
 // 如果传递了 language.Und，则采用系统当前的本地化信息。
-// 如果获取系统的本地化信息依然失败，则会失放 zh-Hans 作为默认值。
+// 如果获取系统的本地化信息依然失败，则会使用 zh-Hans 作为默认值。
 func Init(tag language.Tag) (err error) {
 	if tag == language.Und {
-		tag, err = syslocale.Get()
+		tag, err = utils.GetSystemLanguageTag()
 		if err != nil {
 			return err
 		}
