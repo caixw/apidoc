@@ -6,9 +6,8 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+	"github.com/issue9/utils"
 	"golang.org/x/text/language"
-
-	"github.com/caixw/apidoc/v7/internal/locale/syslocale"
 )
 
 func TestDisplayNames(t *testing.T) {
@@ -52,7 +51,7 @@ func TestInit(t *testing.T) {
 		Equal(Errorf(ErrRequired).Error(), zhHant[ErrRequired])
 
 	// 设置为系统语言
-	systag, err := syslocale.Get()
+	systag, err := utils.GetSystemLanguageTag()
 	a.NotError(err)
 
 	// 设置为 Und，依然会采用系统语言
