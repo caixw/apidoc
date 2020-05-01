@@ -41,8 +41,8 @@ func TestHandler(t *testing.T) {
 	})
 	a.NotError(h)
 
-	h.Error(Erro, NewLocaleError(Location{URI: "erro.go"}, "", locale.ErrRequired))
-	h.Error(Warn, NewLocaleError(Location{URI: "warn.go"}, "", locale.ErrRequired))
+	h.Error(Erro, NewSyntaxError(Location{URI: "erro.go"}, "", locale.ErrRequired))
+	h.Error(Warn, NewSyntaxError(Location{URI: "warn.go"}, "", locale.ErrRequired))
 
 	time.Sleep(1 * time.Second) // 等待 channel 完成
 	a.Equal(erro.String(), "erro")
@@ -50,7 +50,7 @@ func TestHandler(t *testing.T) {
 
 	h.Stop()
 	a.Panic(func() { // 已经关闭 messages
-		h.Error(Erro, NewLocaleError(Location{URI: "erro"}, "", locale.ErrRequired))
+		h.Error(Erro, NewSyntaxError(Location{URI: "erro"}, "", locale.ErrRequired))
 	})
 }
 

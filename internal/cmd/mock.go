@@ -29,7 +29,7 @@ func (srv servers) Set(v string) error {
 	for _, pair := range pairs {
 		index := strings.IndexByte(pair, '=')
 		if index <= 0 {
-			return locale.Errorf(locale.ErrInvalidValue)
+			return locale.NewError(locale.ErrInvalidValue)
 		}
 
 		var v string

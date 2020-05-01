@@ -37,12 +37,12 @@ type Config = build.Config
 //
 // 如果不成功返回 false，比如设置了个不支持的本地化 ID。
 func SetLocale(tag language.Tag) bool {
-	return locale.SetLocale(tag)
+	return locale.SetLanguageTag(tag)
 }
 
 // Locale 获取当前设置的本地化 ID
 func Locale() language.Tag {
-	return locale.Locale()
+	return locale.LanguageTag()
 }
 
 // Locales 返回当前所有支持的本地信息

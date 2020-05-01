@@ -71,13 +71,13 @@ func parsePath(path string) (params map[string]struct{}, err error) {
 		switch b {
 		case '{':
 			if start != -1 {
-				return nil, locale.Errorf(locale.ErrInvalidFormat)
+				return nil, locale.NewError(locale.ErrInvalidFormat)
 			}
 
 			start = i + 1
 		case '}':
 			if start == -1 {
-				return nil, locale.Errorf(locale.ErrInvalidFormat)
+				return nil, locale.NewError(locale.ErrInvalidFormat)
 			}
 
 			if params == nil {
@@ -90,7 +90,7 @@ func parsePath(path string) (params map[string]struct{}, err error) {
 	}
 
 	if start != -1 { // 没有结束符号
-		return nil, locale.Errorf(locale.ErrInvalidFormat)
+		return nil, locale.NewError(locale.ErrInvalidFormat)
 	}
 
 	return params, nil

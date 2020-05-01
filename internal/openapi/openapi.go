@@ -95,11 +95,11 @@ func (oa *OpenAPI) sanitize() *core.SyntaxError {
 	}
 
 	if !version.SemVerValid(oa.OpenAPI) {
-		return core.NewLocaleError(core.Location{}, "openapi", locale.ErrInvalidFormat)
+		return core.NewSyntaxError(core.Location{}, "openapi", locale.ErrInvalidFormat)
 	}
 
 	if oa.Info == nil {
-		return core.NewLocaleError(core.Location{}, "info", locale.ErrRequired)
+		return core.NewSyntaxError(core.Location{}, "info", locale.ErrRequired)
 	}
 	if err := oa.Info.sanitize(); err != nil {
 		err.Field = "info." + err.Field
@@ -121,7 +121,7 @@ func (oa *OpenAPI) sanitize() *core.SyntaxError {
 	}
 
 	if len(oa.Paths) == 0 {
-		return core.NewLocaleError(core.Location{}, "paths", locale.ErrRequired)
+		return core.NewSyntaxError(core.Location{}, "paths", locale.ErrRequired)
 	}
 	for k, path := range oa.Paths {
 		if err := path.sanitize(); err != nil {
@@ -202,7 +202,7 @@ func (c *Components) sanitize() *core.SyntaxError {
 
 func (ext *ExternalDocumentation) sanitize() *core.SyntaxError {
 	if !is.URL(ext.URL) {
-		return core.NewLocaleError(core.Location{}, "url", locale.ErrInvalidFormat)
+		return core.NewSyntaxError(core.Location{}, "url", locale.ErrInvalidFormat)
 	}
 
 	return nil
@@ -219,7 +219,7 @@ func (l *Link) sanitize() *core.SyntaxError {
 
 func (tag *Tag) sanitize() *core.SyntaxError {
 	if tag.Name == "" {
-		return core.NewLocaleError(core.Location{}, "name", locale.ErrInvalidFormat)
+		return core.NewSyntaxError(core.Location{}, "name", locale.ErrInvalidFormat)
 	}
 
 	if tag.ExternalDocs != nil {

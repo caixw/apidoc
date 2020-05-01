@@ -87,21 +87,21 @@ func (doc *APIDoc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	if shadow.Title == "" {
-		return core.NewLocaleError(doc.Block.Location, "apidoc/title", locale.ErrRequired)
+		return core.NewSyntaxError(doc.Block.Location, "apidoc/title", locale.ErrRequired)
 	}
 
 	// Tag.Name 查重
 	if findDupTag(shadow.Tags) != "" {
-		return core.NewLocaleError(doc.Block.Location, "apidoc/tag/@name", locale.ErrDuplicateValue)
+		return core.NewSyntaxError(doc.Block.Location, "apidoc/tag/@name", locale.ErrDuplicateValue)
 	}
 
 	// Server.Name 查重
 	if findDupServer(shadow.Servers) != "" {
-		return core.NewLocaleError(doc.Block.Location, "apidoc/tag/@name", locale.ErrDuplicateValue)
+		return core.NewSyntaxError(doc.Block.Location, "apidoc/tag/@name", locale.ErrDuplicateValue)
 	}
 
 	if len(shadow.Mimetypes) == 0 {
-		return core.NewLocaleError(doc.Block.Location, "apidoc/mimetype", locale.ErrRequired)
+		return core.NewSyntaxError(doc.Block.Location, "apidoc/mimetype", locale.ErrRequired)
 	}
 
 	// 操作 clone 进行比较，不影响原文档的排序
@@ -110,7 +110,7 @@ func (doc *APIDoc) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	sort.Strings(clone)
 	for index := 1; index < len(clone); index++ {
 		if clone[index] == clone[index-1] {
-			return core.NewLocaleError(doc.Block.Location, "apidoc/mimetype", locale.ErrDuplicateValue)
+			return core.NewSyntaxError(doc.Block.Location, "apidoc/mimetype", locale.ErrDuplicateValue)
 		}
 	}
 

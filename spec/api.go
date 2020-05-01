@@ -68,7 +68,7 @@ func (api *API) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	// 报头不能为 object
 	for _, header := range shadow.Headers {
 		if header.Type == Object {
-			err := locale.Errorf(locale.ErrInvalidValue)
+			err := locale.NewError(locale.ErrInvalidValue)
 			field = field + "/header[" + header.Name + "].type"
 			return fixedSyntaxError(api.Block.Location, err, field)
 		}
@@ -87,17 +87,17 @@ func (api *API) sanitize(field string) error {
 
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag) {
-			return core.NewLocaleError(api.Block.Location, field+"/tag/@name", locale.ErrInvalidValue)
+			return core.NewSyntaxError(api.Block.Location, field+"/tag/@name", locale.ErrInvalidValue)
 		}
 	}
 
 	if len(api.Servers) == 0 {
-		return core.NewLocaleError(api.Block.Location, field+"/server", locale.ErrRequired)
+		return core.NewSyntaxError(api.Block.Location, field+"/server", locale.ErrRequired)
 	}
 
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv) {
-			return core.NewLocaleError(api.Block.Location, field+"/server/@name", locale.ErrInvalidValue)
+			return core.NewSyntaxError(api.Block.Location, field+"/server/@name", locale.ErrInvalidValue)
 		}
 	}
 

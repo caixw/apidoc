@@ -71,7 +71,7 @@ func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler, uri core.U
 					End:   l.Position().Position,
 				},
 			}
-			h.Error(core.Erro, core.NewLocaleError(loc, "", locale.ErrNotFoundEndFlag))
+			h.Error(core.Erro, core.NewSyntaxError(loc, "", locale.ErrNotFoundEndFlag))
 			return
 		}
 

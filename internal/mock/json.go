@@ -41,7 +41,7 @@ func validJSON(p *ast.Request, content []byte) error {
 		if bytes.Equal(content, []byte("null")) {
 			return nil
 		}
-		return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
+		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 
 	if p.Type.V() == ast.TypeNone && len(content) == 0 {
@@ -49,7 +49,7 @@ func validJSON(p *ast.Request, content []byte) error {
 	}
 
 	if !json.Valid(content) {
-		return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
+		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 
 	validator := &jsonValidator{
@@ -145,7 +145,7 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 
 	p := validator.find()
 	if p == nil {
-		return core.NewLocaleError(core.Location{}, field, locale.ErrNotFound)
+		return core.NewSyntaxError(core.Location{}, field, locale.ErrNotFound)
 	}
 
 	if t == "" {
@@ -153,7 +153,7 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 	}
 
 	if p.Type.V() != t {
-		return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
+		return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 	}
 
 	if isEnum(p) {
@@ -162,7 +162,7 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 				return nil
 			}
 		}
-		return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidValue)
+		return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
 	}
 
 	return nil

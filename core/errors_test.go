@@ -14,8 +14,8 @@ var _ error = &SyntaxError{}
 func TestNewLocaleError(t *testing.T) {
 	a := assert.New(t)
 
-	err1 := NewLocaleError(Location{}, "", "msg")
-	err2 := NewLocaleError(Location{}, "field", "msg")
+	err1 := NewSyntaxError(Location{}, "", "msg")
+	err2 := NewSyntaxError(Location{}, "field", "msg")
 	a.NotEqual(err1.Error(), err2.Error())
 }
 
@@ -23,6 +23,6 @@ func TestWithError(t *testing.T) {
 	a := assert.New(t)
 
 	err := errors.New("test")
-	serr := WithError(Location{}, "field", err)
-	a.Equal(serr.Message, err.Error())
+	serr := NewSyntaxErrorWithError(Location{}, "field", err)
+	a.Equal(serr.Err.Error(), err.Error())
 }

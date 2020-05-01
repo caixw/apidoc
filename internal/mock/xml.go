@@ -28,7 +28,7 @@ func validXML(p *ast.Request, content []byte) error {
 		if p == nil || p.Type.V() == ast.TypeNone {
 			return nil
 		}
-		return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
+		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 
 	validator := &xmlValidator{
@@ -82,7 +82,7 @@ func (validator *xmlValidator) validValue(v string) error {
 
 	p := validator.find()
 	if p == nil {
-		return core.NewLocaleError(core.Location{}, field, locale.ErrNotFound)
+		return core.NewSyntaxError(core.Location{}, field, locale.ErrNotFound)
 	}
 
 	return validXMLParamValue(p, field, v)
@@ -94,20 +94,20 @@ func validXMLParamValue(p *ast.Param, field, v string) error {
 	switch p.Type.V() {
 	case ast.TypeNone:
 		if v != "" {
-			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidValue)
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
 		}
 	case ast.TypeNumber:
 		if !is.Number(v) {
-			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
 	case ast.TypeBool:
 		if _, err := strconv.ParseBool(v); err != nil {
-			return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
 	case ast.TypeString:
 		return nil
 	default: // case doc.Object:
-		return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidFormat)
+		return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 	}
 
 	if isEnum(p) {
@@ -116,7 +116,7 @@ func validXMLParamValue(p *ast.Param, field, v string) error {
 				return nil
 			}
 		}
-		return core.NewLocaleError(core.Location{}, field, locale.ErrInvalidValue)
+		return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
 	}
 
 	return nil
@@ -363,6 +363,6 @@ func getXMLValue(p *ast.Param) (interface{}, error) {
 	case ast.TypeString:
 		return generateString(p), nil
 	default: // doc.Object:
-		return nil, core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
+		return nil, core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 }

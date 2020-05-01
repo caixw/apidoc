@@ -63,17 +63,17 @@ func (api *API) sanitize() error {
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag.Content.Value) {
 			loc := core.Location{URI: api.Block.Location.URI, Range: tag.Content.Range}
-			return core.NewLocaleError(loc, "", locale.ErrInvalidValue)
+			return core.NewSyntaxError(loc, "", locale.ErrInvalidValue)
 		}
 	}
 
 	if len(api.Servers) == 0 {
-		return core.NewLocaleError(api.Block.Location, "", locale.ErrRequired)
+		return core.NewSyntaxError(api.Block.Location, "", locale.ErrRequired)
 	}
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv.Content.Value) {
 			loc := core.Location{URI: api.Block.Location.URI, Range: srv.Content.Range}
-			return core.NewLocaleError(loc, "", locale.ErrInvalidValue)
+			return core.NewSyntaxError(loc, "", locale.ErrInvalidValue)
 		}
 	}
 

@@ -28,7 +28,7 @@ func parseType(val string) (Type, error) {
 	case None, Bool, Object, Number, String:
 		return Type(val), nil
 	default:
-		return None, locale.Errorf(locale.ErrInvalidFormat)
+		return None, locale.NewError(locale.ErrInvalidFormat)
 	}
 }
 
@@ -93,5 +93,5 @@ func (t Type) fmtString() (string, error) {
 	if valid {
 		return string(t), nil
 	}
-	return "", locale.Errorf(locale.ErrInvalidValue)
+	return "", locale.NewError(locale.ErrInvalidValue)
 }

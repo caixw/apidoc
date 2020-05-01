@@ -23,9 +23,9 @@ const (
 )
 
 func newError(r core.Range, key message.Reference, v ...interface{}) error {
-	return core.NewLocaleError(core.Location{Range: r}, "", key, v...)
+	return core.NewSyntaxError(core.Location{Range: r}, "", key, v...)
 }
 
 func withError(r core.Range, err error) error {
-	return core.WithError(core.Location{Range: r}, "", err)
+	return core.NewSyntaxErrorWithError(core.Location{Range: r}, "", err)
 }

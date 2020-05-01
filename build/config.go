@@ -61,7 +61,7 @@ func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
 		}
 	}
 
-	msg := core.NewLocaleError(core.Location{}, wd.Append(vars.AllowConfigFilenames[0]).String(), locale.ErrRequired)
+	msg := core.NewSyntaxError(core.Location{}, wd.Append(vars.AllowConfigFilenames[0]).String(), locale.ErrRequired)
 	h.Error(core.Erro, msg)
 	return nil
 }
@@ -69,12 +69,12 @@ func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
 func loadFile(wd, path core.URI) (*Config, error) {
 	data, err := path.ReadAll(nil)
 	if err != nil {
-		return nil, core.WithError(core.Location{URI: path}, "", err)
+		return nil, core.NewSyntaxErrorWithError(core.Location{URI: path}, "", err)
 	}
 
 	cfg := &Config{}
 	if err = yaml.Unmarshal(data, cfg); err != nil {
-		return nil, core.WithError(core.Location{URI: path}, "", err)
+		return nil, core.NewSyntaxErrorWithError(core.Location{URI: path}, "", err)
 	}
 	cfg.wd = wd
 
@@ -89,25 +89,25 @@ func (cfg *Config) sanitize(file core.URI) error {
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(ast.Version, cfg.Version)
 	if err != nil {
-		return core.WithError(core.Location{URI: file}, "version", err)
+		return core.NewSyntaxErrorWithError(core.Location{URI: file}, "version", err)
 	}
 	if !compatible {
-		return core.NewLocaleError(core.Location{URI: file}, "version", locale.VersionInCompatible)
+		return core.NewSyntaxError(core.Location{URI: file}, "version", locale.VersionInCompatible)
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return core.NewLocaleError(core.Location{URI: file}, "inputs", locale.ErrRequired)
+		return core.NewSyntaxError(core.Location{URI: file}, "inputs", locale.ErrRequired)
 	}
 
 	if cfg.Output == nil {
-		return core.NewLocaleError(core.Location{URI: file}, "output", locale.ErrRequired)
+		return core.NewSyntaxError(core.Location{URI: file}, "output", locale.ErrRequired)
 	}
 
 	for index, i := range cfg.Inputs {
 		field := "inputs[" + strconv.Itoa(index) + "]"
 
 		if i.Dir, err = abs(i.Dir, cfg.wd); err != nil {
-			return core.WithError(core.Location{URI: file}, field+".path", err)
+			return core.NewSyntaxErrorWithError(core.Location{URI: file}, field+".path", err)
 		}
 
 		if err := i.Sanitize(); err != nil {
@@ -120,7 +120,7 @@ func (cfg *Config) sanitize(file core.URI) error {
 	}
 
 	if cfg.Output.Path, err = abs(cfg.Output.Path, cfg.wd); err != nil {
-		return core.WithError(core.Location{URI: file}, "output.path", err)
+		return core.NewSyntaxErrorWithError(core.Location{URI: file}, "output.path", err)
 	}
 	return cfg.Output.Sanitize()
 }

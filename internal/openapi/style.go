@@ -31,7 +31,7 @@ func (style *Style) sanitize() *core.SyntaxError {
 	switch style.Style {
 	case StyleMatrix, StyleLabel, StyleForm, StyleSimple, StyleSpaceDelimited, StylePipeDelimited, StyleDeepObject:
 	default:
-		return core.NewLocaleError(core.Location{}, "style", locale.ErrInvalidValue)
+		return core.NewSyntaxError(core.Location{}, "style", locale.ErrInvalidValue)
 	}
 
 	return nil

@@ -37,7 +37,7 @@ func New(b core.Block) (*Lexer, error) {
 					End:   core.Position{Line: p.Line, Character: p.Character + size},
 				},
 			}
-			return nil, core.NewLocaleError(loc, "", locale.ErrInvalidUTF8Character)
+			return nil, core.NewSyntaxError(loc, "", locale.ErrInvalidUTF8Character)
 		}
 
 		p.Offset += size

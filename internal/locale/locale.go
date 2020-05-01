@@ -4,8 +4,6 @@
 package locale
 
 import (
-	"errors"
-
 	"golang.org/x/text/language"
 	"golang.org/x/text/language/display"
 	"golang.org/x/text/message"
@@ -20,7 +18,17 @@ var (
 	displayNames  = map[language.Tag]string{}
 )
 
-func addLocale(tag language.Tag, messages map[string]string) {
+// Err 为错误信息提供本地化的缓存机制
+type Err struct {
+	Key    message.Reference
+	Values []interface{}
+}
+
+func (err *Err) Error() string {
+	return Sprintf(err.Key, err.Values...)
+}
+
+func setMessages(tag language.Tag, messages map[string]string) {
 	for key, val := range messages {
 		if err := message.SetString(tag, key, val); err != nil {
 			panic(err)
@@ -29,8 +37,8 @@ func addLocale(tag language.Tag, messages map[string]string) {
 	displayNames[tag] = display.Self.Name(tag)
 }
 
-// SetLocale 初始化 locale 包
-func SetLocale(tag language.Tag) bool {
+// SetLanguageTag 切换本地化环境
+func SetLanguageTag(tag language.Tag) bool {
 	if _, found := displayNames[tag]; !found {
 		return false
 	}
@@ -40,8 +48,8 @@ func SetLocale(tag language.Tag) bool {
 	return true
 }
 
-// Locale 获取当前的本地化 ID
-func Locale() language.Tag {
+// LanguageTag 获取当前的本地化 ID
+func LanguageTag() language.Tag {
 	return localeTag
 }
 
@@ -60,9 +68,9 @@ func Sprintf(key message.Reference, v ...interface{}) string {
 	return localePrinter.Sprintf(key, v...)
 }
 
-// Errorf 类似 fmt.Errorf，与特定的本地化绑定。
-func Errorf(key message.Reference, v ...interface{}) error {
-	return errors.New(Sprintf(key, v...))
+// NewError 类似 fmt.NewError，与特定的本地化绑定。
+func NewError(key message.Reference, v ...interface{}) error {
+	return &Err{Key: key, Values: v}
 }
 
 // Translate 功能与 Sprintf 类似，但是可以指定本地化 ID 值。

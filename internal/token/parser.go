@@ -311,7 +311,7 @@ func (p *Parser) getName() ([]byte, core.Range) {
 //
 // 其中的 URI 采用 p.l.Location.URI
 func (p *Parser) NewError(start, end core.Position, key message.Reference, v ...interface{}) error {
-	return core.NewLocaleError(core.Location{
+	return core.NewSyntaxError(core.Location{
 		URI:   p.Location.URI,
 		Range: core.Range{Start: start, End: end},
 	}, "", key, v...)
@@ -319,7 +319,7 @@ func (p *Parser) NewError(start, end core.Position, key message.Reference, v ...
 
 // WithError 重新包含 err
 func (p *Parser) WithError(start, end core.Position, err error) error {
-	return core.WithError(core.Location{
+	return core.NewSyntaxErrorWithError(core.Location{
 		URI:   p.Location.URI,
 		Range: core.Range{Start: start, End: end},
 	}, "", err)

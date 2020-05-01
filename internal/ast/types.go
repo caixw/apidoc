@@ -13,7 +13,7 @@ import (
 // ErrNoDocFormat 表示内容并不是一个文档格式
 //
 // 比如普通的注释内容等。
-var ErrNoDocFormat = locale.Errorf(locale.ErrIsNotAPIDoc)
+var ErrNoDocFormat = locale.NewError(locale.ErrIsNotAPIDoc)
 
 // 表示支持的各种数据类型
 const (
@@ -265,7 +265,7 @@ func (doc *APIDoc) Parse(b core.Block) error {
 		return token.Decode(p, api)
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
-			return core.NewLocaleError(b.Location, "", locale.ErrDuplicateValue)
+			return core.NewSyntaxError(b.Location, "", locale.ErrDuplicateValue)
 		}
 		return token.Decode(p, doc)
 	}

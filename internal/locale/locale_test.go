@@ -10,6 +10,8 @@ import (
 	"golang.org/x/text/language"
 )
 
+var _ error = &Err{}
+
 func TestDisplayNames(t *testing.T) {
 	a := assert.New(t)
 
@@ -35,29 +37,29 @@ func TestSetLocale(t *testing.T) {
 	a := assert.New(t)
 
 	tag := language.MustParse("zh-Hans")
-	a.True(SetLocale(tag)).
+	a.True(SetLanguageTag(tag)).
 		Equal(localeTag, tag).
 		NotEqual(Sprintf(ErrRequired), zhHant[ErrRequired]).
 		Equal(Sprintf(ErrRequired), zhHans[ErrRequired]).
-		Equal(Errorf(ErrRequired).Error(), zhHans[ErrRequired])
+		Equal(NewError(ErrRequired).Error(), zhHans[ErrRequired])
 
 	// zh-cn 应该会转换到 zh-hans
 	tag = language.MustParse("zh-CN")
-	a.True(SetLocale(tag)).
-		Equal(Locale(), tag).
+	a.True(SetLanguageTag(tag)).
+		Equal(LanguageTag(), tag).
 		NotEqual(Sprintf(ErrRequired), zhHant[ErrRequired]).
 		Equal(Sprintf(ErrRequired), zhHans[ErrRequired]).
-		Equal(Errorf(ErrRequired).Error(), zhHans[ErrRequired])
+		Equal(NewError(ErrRequired).Error(), zhHans[ErrRequired])
 
 	tag = language.MustParse("zh-Hant")
-	a.True(SetLocale(tag)).
-		Equal(Locale(), tag).
+	a.True(SetLanguageTag(tag)).
+		Equal(LanguageTag(), tag).
 		Equal(Sprintf(ErrRequired), zhHant[ErrRequired]).
-		Equal(Errorf(ErrRequired).Error(), zhHant[ErrRequired])
+		Equal(NewError(ErrRequired).Error(), zhHant[ErrRequired])
 
 	// 设置为系统语言
-	systag, err := utils.GetSystemLanguageTag()
+	systemTag, err := utils.GetSystemLanguageTag()
 	a.NotError(err)
-	a.True(SetLocale(systag)).
-		Equal(systag, localeTag)
+	a.True(SetLanguageTag(systemTag)).
+		Equal(systemTag, LanguageTag())
 }

@@ -67,7 +67,7 @@ func (uri URI) File() (string, error) {
 	}
 
 	if u.Scheme != SchemeFile && u.Scheme != "" {
-		return "", locale.Errorf(locale.ErrInvalidURIScheme)
+		return "", locale.NewError(locale.ErrInvalidURIScheme)
 	}
 
 	return u.Path, nil
@@ -118,7 +118,7 @@ func (uri URI) Exists() (bool, error) {
 	case SchemeHTTP, SchemeHTTPS:
 		return remoteFileIsExists(string(uri))
 	default:
-		return false, locale.Errorf(locale.ErrInvalidURIScheme)
+		return false, locale.NewError(locale.ErrInvalidURIScheme)
 	}
 }
 
@@ -137,7 +137,7 @@ func (uri URI) ReadAll(enc encoding.Encoding) ([]byte, error) {
 	case SchemeHTTP, SchemeHTTPS:
 		return readRemoteFile(string(uri), enc)
 	default:
-		return nil, locale.Errorf(locale.ErrInvalidURIScheme)
+		return nil, locale.NewError(locale.ErrInvalidURIScheme)
 	}
 }
 
@@ -149,7 +149,7 @@ func (uri URI) WriteAll(data []byte) error {
 	}
 
 	if u.Scheme != SchemeFile {
-		return locale.Errorf(locale.ErrInvalidURIScheme)
+		return locale.NewError(locale.ErrInvalidURIScheme)
 	}
 
 	return ioutil.WriteFile(u.Path, data, os.ModePerm)
@@ -220,8 +220,7 @@ func readRemoteFile(url string, enc encoding.Encoding) ([]byte, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode > 300 {
-		msg := locale.Sprintf(locale.ErrReadRemoteFile, url, resp.StatusCode)
-		return nil, NewHTTPError(resp.StatusCode, msg)
+		return nil, NewHTTPError(resp.StatusCode, locale.ErrReadRemoteFile, url, resp.StatusCode)
 	}
 
 	if enc == nil || enc == encoding.Nop {

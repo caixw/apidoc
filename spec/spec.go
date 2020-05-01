@@ -29,9 +29,9 @@ func fixedSyntaxError(loc core.Location, err error, field string) error {
 		return err
 	}
 
-	return core.WithError(loc, field, err)
+	return core.NewSyntaxErrorWithError(loc, field, err)
 }
 
 func newSyntaxError(loc core.Location, field string, key message.Reference, val ...interface{}) error {
-	return core.NewLocaleError(loc, field, key, val...)
+	return core.NewSyntaxError(loc, field, key, val...)
 }

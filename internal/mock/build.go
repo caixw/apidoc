@@ -50,11 +50,11 @@ func (m *Mock) buildAPI(api *ast.API) http.Handler {
 func validRequest(requests []*ast.Request, r *http.Request) error {
 	ct := r.Header.Get("Content-Type")
 	if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") { // 用户提交的 content-type 必须是明确的值
-		return core.NewLocaleError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
+		return core.NewSyntaxError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
 	}
 	req := findRequestByContentType(requests, ct)
 	if req == nil {
-		return core.NewLocaleError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
+		return core.NewSyntaxError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
 	}
 
 	for _, header := range req.Headers {
@@ -77,7 +77,7 @@ func validRequest(requests []*ast.Request, r *http.Request) error {
 	case "application/xml", "text/xml":
 		return validXML(req, content)
 	default:
-		return core.NewLocaleError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
+		return core.NewSyntaxError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
 	}
 }
 
@@ -93,7 +93,7 @@ func (m *Mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 		// 仅在 api.Responses 无法匹配任何内容的时候，才从 doc.Responses 中查找内容
 		resp, accept = findResponseByAccept(m.doc.Mimetypes, m.doc.Responses, accepts)
 		if resp == nil {
-			m.handleError(w, r, "headers[Accept]", locale.Errorf(locale.ErrInvalidValue))
+			m.handleError(w, r, "headers[Accept]", locale.NewError(locale.ErrInvalidValue))
 			return
 		}
 	}
@@ -115,7 +115,7 @@ func (m *Mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 		case ast.TypeString:
 			w.Header().Set(item.Name.V(), generateString(item))
 		default:
-			m.handleError(w, r, "response.headers", locale.Errorf(locale.ErrInvalidFormat))
+			m.handleError(w, r, "response.headers", locale.NewError(locale.ErrInvalidFormat))
 			return
 		}
 	}
@@ -200,7 +200,7 @@ func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 
 		serr.Location.URI = file
 	} else {
-		err = core.WithError(core.Location{URI: file}, field, err)
+		err = core.NewSyntaxErrorWithError(core.Location{URI: file}, field, err)
 	}
 
 	m.h.Error(core.Erro, err)
@@ -256,23 +256,23 @@ func validSimpleParam(p *ast.Param, val string) error {
 			(p.Default != nil && p.Default.V() != "") {
 			return nil
 		}
-		return core.NewLocaleError(core.Location{}, "", locale.ErrRequired)
+		return core.NewSyntaxError(core.Location{}, "", locale.ErrRequired)
 	}
 
 	switch p.Type.V() {
 	case ast.TypeBool:
 		if _, err := strconv.ParseBool(val); err != nil {
-			return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
+			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 		}
 	case ast.TypeNumber:
 		if !is.Number(val) {
-			return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidFormat)
+			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 		}
 	case ast.TypeString:
 	case ast.TypeObject:
 	case ast.TypeNone:
 		if val != "" {
-			return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidValue)
+			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidValue)
 		}
 	}
 
@@ -286,7 +286,7 @@ func validSimpleParam(p *ast.Param, val string) error {
 		}
 
 		if !found {
-			return core.NewLocaleError(core.Location{}, "", locale.ErrInvalidValue)
+			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidValue)
 		}
 	}
 
@@ -311,6 +311,6 @@ func buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 	case "application/xml", "text/xml":
 		return buildXML(p)
 	default:
-		return nil, core.NewLocaleError(core.Location{}, "headers[accept]", locale.ErrInvalidValue)
+		return nil, core.NewSyntaxError(core.Location{}, "headers[accept]", locale.ErrInvalidValue)
 	}
 }

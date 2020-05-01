@@ -235,5 +235,5 @@ options 可以是以下參數
 }
 
 func init() {
-	addLocale(language.MustParse("zh-Hant"), zhHant)
+	setMessages(language.MustParse("zh-Hant"), zhHant)
 }

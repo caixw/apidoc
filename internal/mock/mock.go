@@ -41,7 +41,7 @@ func New(h *core.MessageHandler, d *ast.APIDoc, servers map[string]string) (http
 		return nil, err
 	}
 	if !c {
-		return nil, locale.Errorf(locale.VersionInCompatible)
+		return nil, locale.NewError(locale.VersionInCompatible)
 	}
 
 	m := &Mock{
@@ -79,7 +79,7 @@ func Load(h *core.MessageHandler, path core.URI, servers map[string]string) (htt
 					End: p,
 				},
 			}
-			return nil, core.NewLocaleError(loc, "", locale.ErrInvalidUTF8Character)
+			return nil, core.NewSyntaxError(loc, "", locale.ErrInvalidUTF8Character)
 		}
 
 		offset += size

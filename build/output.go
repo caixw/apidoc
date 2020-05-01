@@ -67,7 +67,7 @@ func (o *Output) contains(tags ...string) bool {
 // Sanitize 验证 options 的数据是否都合规
 func (o *Output) Sanitize() error {
 	if o == nil {
-		return core.NewLocaleError(core.Location{}, "", locale.ErrRequired)
+		return core.NewSyntaxError(core.Location{}, "", locale.ErrRequired)
 	}
 
 	if o.Type == "" {
@@ -82,7 +82,7 @@ func (o *Output) Sanitize() error {
 	case OpenapiYAML:
 		o.marshal = openapi.YAML
 	default:
-		return core.NewLocaleError(core.Location{}, "type", locale.ErrInvalidValue)
+		return core.NewSyntaxError(core.Location{}, "type", locale.ErrInvalidValue)
 	}
 
 	o.xml = strings.HasSuffix(o.Type, "+xml")
@@ -103,7 +103,7 @@ func (o *Output) Sanitize() error {
 			return err
 		}
 		if u.Scheme != core.SchemeFile {
-			return core.NewLocaleError(core.Location{}, "path", locale.ErrInvalidURIScheme)
+			return core.NewSyntaxError(core.Location{}, "path", locale.ErrInvalidURIScheme)
 		}
 	}
 
