@@ -14,6 +14,11 @@ func TestDisplayNames(t *testing.T) {
 	a := assert.New(t)
 
 	a.Equal(len(DisplayNames()), 3)
+
+	tag := language.MustParse("zh-Hans")
+	ds := DisplayNames()
+	ds[tag] = "123"
+	a.NotEqual(ds[tag], displayNames[tag])
 }
 
 func TestTranslate(t *testing.T) {

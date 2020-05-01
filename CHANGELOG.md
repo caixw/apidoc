@@ -11,7 +11,11 @@
 - 采用新的编码与解码试(internal/ast)；
 - 分离程序版本和文档版本；
 - 添加 lsp 子命令；
+
+### Changed
+
 - 可以通过 SetLocale 随时设置本地化信息，同时也添加一系列相关的操作函数；
+- Locales() 现在返回一个 map 副本；
 
 ### Fixed
 

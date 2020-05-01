@@ -47,7 +47,12 @@ func Locale() language.Tag {
 
 // DisplayNames 所有支持语言的列表
 func DisplayNames() map[language.Tag]string {
-	return displayNames
+	ret := make(map[language.Tag]string, len(displayNames))
+	for k, v := range displayNames {
+		ret[k] = v
+	}
+
+	return ret
 }
 
 // Sprintf 类似 fmt.Sprintf，与特定的本地化绑定。
