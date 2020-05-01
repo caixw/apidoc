@@ -11,7 +11,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7"
 )
 
 func TestLocale(t *testing.T) {
@@ -30,7 +30,7 @@ func TestLocale(t *testing.T) {
 
 	a.NotError(doLocale(w))
 	ls := lines(w)
-	a.Equal(len(ls), len(locale.DisplayNames()))
+	a.Equal(len(ls), len(apidoc.Locales()))
 	for _, l := range ls {
 		cnt := strings.Count(l, strings.Repeat(" ", tail))
 		a.True(cnt >= 1) // 至少两列

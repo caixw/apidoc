@@ -26,11 +26,11 @@ func TestTranslate(t *testing.T) {
 	})
 }
 
-func TestInit(t *testing.T) {
+func TestSetLocale(t *testing.T) {
 	a := assert.New(t)
 
 	tag := language.MustParse("zh-Hans")
-	a.NotError(Init(tag)).
+	a.True(SetLocale(tag)).
 		Equal(localeTag, tag).
 		NotEqual(Sprintf(ErrRequired), zhHant[ErrRequired]).
 		Equal(Sprintf(ErrRequired), zhHans[ErrRequired]).
@@ -38,23 +38,21 @@ func TestInit(t *testing.T) {
 
 	// zh-cn 应该会转换到 zh-hans
 	tag = language.MustParse("zh-CN")
-	a.NotError(Init(tag)).
-		Equal(localeTag, tag).
+	a.True(SetLocale(tag)).
+		Equal(Locale(), tag).
 		NotEqual(Sprintf(ErrRequired), zhHant[ErrRequired]).
 		Equal(Sprintf(ErrRequired), zhHans[ErrRequired]).
 		Equal(Errorf(ErrRequired).Error(), zhHans[ErrRequired])
 
 	tag = language.MustParse("zh-Hant")
-	a.NotError(Init(tag)).
-		Equal(localeTag, tag).
+	a.True(SetLocale(tag)).
+		Equal(Locale(), tag).
 		Equal(Sprintf(ErrRequired), zhHant[ErrRequired]).
 		Equal(Errorf(ErrRequired).Error(), zhHant[ErrRequired])
 
 	// 设置为系统语言
 	systag, err := utils.GetSystemLanguageTag()
 	a.NotError(err)
-
-	// 设置为 Und，依然会采用系统语言
-	a.NotError(Init(language.Und)).
+	a.True(SetLocale(systag)).
 		Equal(systag, localeTag)
 }

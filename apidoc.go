@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"regexp"
 
+	"github.com/issue9/utils"
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v7/build"
@@ -32,12 +33,26 @@ import (
 // Config 配置文件映身的结构
 type Config = build.Config
 
-// Init 初始化包
+// SetLocale 设置当前的本地化 ID
 //
-// 如果传递了 language.Und，则采用系统当前的本地化信息。
-// 如果获取系统的本地化信息依然失败，则会失放 zh-Hans 作为默认值。
-func Init(tag language.Tag) error {
-	return locale.Init(tag)
+// 如果不成功返回 false，比如设置了个不支持的本地化 ID。
+func SetLocale(tag language.Tag) bool {
+	return locale.SetLocale(tag)
+}
+
+// Locale 获取当前设置的本地化 ID
+func Locale() language.Tag {
+	return locale.Locale()
+}
+
+// Locales 返回当前所有支持的本地信息
+func Locales() map[language.Tag]string {
+	return locale.DisplayNames()
+}
+
+// SystemLocale 返回当前系统的本地化 ID
+func SystemLocale() (language.Tag, error) {
+	return utils.GetSystemLanguageTag()
 }
 
 // Version 当前程序的版本号

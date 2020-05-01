@@ -6,7 +6,6 @@ package locale
 import (
 	"errors"
 
-	"github.com/issue9/utils"
 	"golang.org/x/text/language"
 	"golang.org/x/text/language/display"
 	"golang.org/x/text/message"
@@ -30,21 +29,20 @@ func addLocale(tag language.Tag, messages map[string]string) {
 	displayNames[tag] = display.Self.Name(tag)
 }
 
-// Init 初始化 locale 包
-//
-// 如果传递了 language.Und，则采用系统当前的本地化信息。
-// 如果获取系统的本地化信息依然失败，则会使用 zh-Hans 作为默认值。
-func Init(tag language.Tag) (err error) {
-	if tag == language.Und {
-		tag, err = utils.GetSystemLanguageTag()
-		if err != nil {
-			return err
-		}
+// SetLocale 初始化 locale 包
+func SetLocale(tag language.Tag) bool {
+	if _, found := displayNames[tag]; !found {
+		return false
 	}
 
 	localeTag = tag
 	localePrinter = message.NewPrinter(localeTag)
-	return nil
+	return true
+}
+
+// Locale 获取当前的本地化 ID
+func Locale() language.Tag {
+	return localeTag
 }
 
 // DisplayNames 所有支持语言的列表

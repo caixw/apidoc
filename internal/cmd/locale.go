@@ -7,6 +7,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
@@ -15,11 +16,11 @@ func initLocale() {
 }
 
 func doLocale(w io.Writer) error {
-	locales := make(map[string]string, len(locale.DisplayNames()))
+	locales := make(map[string]string, len(apidoc.Locales()))
 
 	// 计算各列的最大长度值
 	var maxID int
-	for k, v := range locale.DisplayNames() {
+	for k, v := range apidoc.Locales() {
 		id := k.String()
 		calcMaxWidth(id, &maxID)
 		locales[id] = v
