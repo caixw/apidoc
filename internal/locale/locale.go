@@ -74,9 +74,14 @@ func Sprintf(key message.Reference, v ...interface{}) string {
 	return localePrinter.Sprintf(key, v...)
 }
 
-// NewError 类似 fmt.NewError，与特定的本地化绑定。
+// New 声明新的 Locale 对象
+func New(key message.Reference, v ...interface{}) *Locale {
+	return &Locale{Key: key, Values: v}
+}
+
+// NewError 返回本地化的错误对象
 func NewError(key message.Reference, v ...interface{}) error {
-	return &Err{Key: key, Values: v}
+	return (*Err)(New(key, v))
 }
 
 // Translate 功能与 Sprintf 类似，但是可以指定本地化 ID 值。
