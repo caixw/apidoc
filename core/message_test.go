@@ -64,7 +64,7 @@ func TestHandler_Stop(t *testing.T) {
 	})
 	a.NotError(h)
 
-	h.Message(Erro, locale.ErrRequired)
+	h.Locale(Erro, locale.ErrRequired)
 	h.Stop() // 此处会阻塞，等待完成
 	a.True(exit)
 }

@@ -41,7 +41,7 @@ func detect(io.Writer) error {
 		return err
 	}
 
-	h.Message(core.Succ, locale.ConfigWriteSuccess, uri)
+	h.Locale(core.Succ, locale.ConfigWriteSuccess, uri)
 	return nil
 }
 

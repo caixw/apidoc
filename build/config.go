@@ -143,7 +143,7 @@ func (cfg *Config) Build(start time.Time) {
 		return
 	}
 
-	cfg.h.Message(core.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(start))
+	cfg.h.Locale(core.Succ, locale.Complete, cfg.Output.Path, time.Now().Sub(start))
 }
 
 // Buffer 根据 wd 目录下的配置文件生成文档内容并保存至内存

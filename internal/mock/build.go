@@ -19,9 +19,9 @@ import (
 
 func (m *Mock) buildAPI(api *ast.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m.h.Message(core.Succ, locale.RequestAPI, r.Method, r.URL.Path)
+		m.h.Locale(core.Succ, locale.RequestAPI, r.Method, r.URL.Path)
 		if api.Deprecated != nil {
-			m.h.Message(core.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated)
+			m.h.Locale(core.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated)
 		}
 
 		if err := validQueryArrayParam(api.Path.Queries, r); err != nil {

@@ -37,7 +37,7 @@ func (t MessageType) String() string {
 // Message 输出消息的具体结构
 type Message struct {
 	Type    MessageType
-	Message string
+	Message interface{}
 }
 
 // HandlerFunc 错误处理函数
@@ -79,18 +79,20 @@ func (h *MessageHandler) Stop() {
 	<-h.stop
 }
 
-// Message 发送普通的文本信息，内容由 key 和 val 组成本地化信息
-func (h *MessageHandler) Message(t MessageType, key message.Reference, val ...interface{}) {
+// Message 发送消息
+func (h *MessageHandler) Message(t MessageType, msg interface{}) {
 	h.messages <- &Message{
 		Type:    t,
-		Message: locale.Sprintf(key, val...),
+		Message: msg,
 	}
+}
+
+// Locale 发送普通的文本信息
+func (h *MessageHandler) Locale(t MessageType, key message.Reference, val ...interface{}) {
+	h.Message(t, locale.New(key, val...))
 }
 
 // Error 将一条错误信息作为消息发送出去
 func (h *MessageHandler) Error(t MessageType, err error) {
-	h.messages <- &Message{
-		Type:    t,
-		Message: err.Error(),
-	}
+	h.Message(t, err)
 }

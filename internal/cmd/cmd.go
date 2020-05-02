@@ -72,27 +72,22 @@ func usage(w io.Writer) error {
 }
 
 func newHandlerFunc() core.HandlerFunc {
-	erroPrefix := locale.Sprintf(locale.ErrorPrefix)
-	warnPrefix := locale.Sprintf(locale.WarnPrefix)
-	infoPrefix := locale.Sprintf(locale.InfoPrefix)
-	succPrefix := locale.Sprintf(locale.SuccessPrefix)
-
 	return func(msg *core.Message) {
 		switch msg.Type {
 		case core.Erro:
-			printMessage(erroOut, erroColor, erroPrefix, msg.Message)
+			printMessage(erroOut, erroColor, locale.ErrorPrefix, msg.Message)
 		case core.Warn:
-			printMessage(warnOut, warnColor, warnPrefix, msg.Message)
+			printMessage(warnOut, warnColor, locale.WarnPrefix, msg.Message)
 		case core.Succ:
-			printMessage(succOut, succColor, succPrefix, msg.Message)
+			printMessage(succOut, succColor, locale.InfoPrefix, msg.Message)
 		default: // message.Info 采用相同的值
-			printMessage(infoOut, infoColor, infoPrefix, msg.Message)
+			printMessage(infoOut, infoColor, locale.SuccessPrefix, msg.Message)
 		}
 	}
 }
 
-func printMessage(out io.Writer, color colors.Color, prefix, msg string) {
-	if _, err := colors.Fprint(out, color, colors.Default, prefix); err != nil {
+func printMessage(out io.Writer, color colors.Color, prefix message.Reference, msg interface{}) {
+	if _, err := colors.Fprint(out, color, colors.Default, locale.New(prefix)); err != nil {
 		panic(err)
 	}
 

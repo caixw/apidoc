@@ -31,10 +31,10 @@ func TestNewHandlerFunc(t *testing.T) {
 	h := core.NewMessageHandler(f)
 	a.NotNil(h)
 
-	h.Message(core.Erro, "erro")
-	h.Message(core.Warn, "warn")
-	h.Message(core.Info, "info")
-	h.Message(core.Succ, "succ")
+	h.Locale(core.Erro, "erro")
+	h.Locale(core.Warn, "warn")
+	h.Locale(core.Info, "info")
+	h.Locale(core.Succ, "succ")
 	h.Stop()
 
 	a.Contains(erro.String(), "erro")

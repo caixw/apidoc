@@ -53,7 +53,7 @@ func Test(h *core.MessageHandler, i ...*Input) {
 		h.Error(core.Erro, err)
 		return
 	}
-	h.Message(core.Succ, locale.TestSuccess)
+	h.Locale(core.Succ, locale.TestSuccess)
 }
 
 func parse(h *core.MessageHandler, i ...*Input) (*ast.APIDoc, error) {

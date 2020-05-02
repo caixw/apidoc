@@ -5,6 +5,7 @@ package messagetest
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/caixw/apidoc/v7/core"
 )
@@ -17,9 +18,9 @@ func MessageHandler() (erro, succ *bytes.Buffer, h *core.MessageHandler) {
 	f := func(msg *core.Message) {
 		switch msg.Type {
 		case core.Erro:
-			erro.WriteString(msg.Message)
+			erro.WriteString(fmt.Sprint(msg.Message))
 		default:
-			succ.WriteString(msg.Message)
+			succ.WriteString(fmt.Sprint(msg.Message))
 		}
 	}
 

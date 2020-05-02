@@ -83,7 +83,7 @@ func doMock(io.Writer) error {
 	}
 
 	url := "http://localhost" + mockPort
-	h.Message(core.Succ, locale.ServerStart, url)
+	h.Locale(core.Succ, locale.ServerStart, url)
 
 	return http.ListenAndServe(mockPort, handler)
 }
