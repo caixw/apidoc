@@ -31,7 +31,7 @@ func (f *folder) matchURI(uri core.URI) bool {
 	return strings.HasPrefix(string(uri), string(f.URI))
 }
 
-func (f *folder) matchPosition(uri core.URI, pos protocol.Position) (bool, error) {
+func (f *folder) matchPosition(uri core.URI, pos core.Position) (bool, error) {
 	var block *core.Block
 	if f.doc.Block.Location.URI == uri {
 		block = f.doc.Block

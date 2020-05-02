@@ -49,7 +49,7 @@ type TextDocumentPositionParams struct {
 	TextDocument TextDocumentIdentifier `json:"textDocument"`
 
 	// The position inside the text document.
-	Position Position `json:"position"`
+	Position core.Position `json:"position"`
 }
 
 // TextDocumentClientCapabilities text document specific client capabilities.
@@ -486,7 +486,7 @@ type DidChangeTextDocumentParams struct {
 // the full content of the document.
 type TextDocumentContentChangeEvent struct {
 	// The range of the document that changed.
-	Range *Range `json:"range,omitempty"`
+	Range *core.Range `json:"range,omitempty"`
 
 	// The new text for the provided range.
 	// The new text of the whole document.
@@ -513,5 +513,5 @@ type Hover struct {
 
 	// An optional range is a range inside a text document
 	// that is used to visualize a hover, e.g. by changing the background color.
-	Range *Range `json:"range,omitempty"`
+	Range *core.Range `json:"range,omitempty"`
 }
