@@ -18,14 +18,20 @@ var (
 	displayNames  = map[language.Tag]string{}
 )
 
-// Err 为错误信息提供本地化的缓存机制
-type Err struct {
+type Locale struct {
 	Key    message.Reference
 	Values []interface{}
 }
 
+// Err 为错误信息提供本地化的缓存机制
+type Err Locale
+
+func (l *Locale) String() string {
+	return Sprintf(l.Key, l.Values...)
+}
+
 func (err *Err) Error() string {
-	return Sprintf(err.Key, err.Values...)
+	return (*Locale)(err).String()
 }
 
 func setMessages(tag language.Tag, messages map[string]string) {
