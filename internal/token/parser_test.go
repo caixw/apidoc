@@ -3,6 +3,7 @@
 package token
 
 import (
+	"errors"
 	"io"
 	"testing"
 
@@ -1360,4 +1361,31 @@ func TestParser_parseAttribute(t *testing.T) {
 				Equal(attr, item.attr, "not equal at %s\nv1=%+v\nv2=%+v", item.input, attr, item.attr)
 		}
 	}
+}
+
+func TestParser_withError(t *testing.T) {
+	a := assert.New(t)
+
+	err1 := errors.New("err1")
+	p, err := NewParser(core.Block{})
+	a.NotError(err).NotNil(p)
+
+	err = p.withError(core.Position{}, core.Position{}, err1)
+	serr, ok := err.(*core.SyntaxError)
+	a.True(ok).Equal(serr.Err, err1)
+
+	err2 := core.NewSyntaxErrorWithError(core.Location{}, "", err1)
+	err = p.withError(core.Position{}, core.Position{}, err2)
+	serr, ok = err.(*core.SyntaxError)
+	a.True(ok).Equal(serr.Err, err1)
+
+	err3 := core.NewSyntaxErrorWithError(core.Location{}, "", err2)
+	err = p.withError(core.Position{}, core.Position{}, err3)
+	serr, ok = err.(*core.SyntaxError)
+	a.True(ok).Equal(serr.Err, err1)
+
+	err4 := core.NewSyntaxErrorWithError(core.Location{}, "", err3)
+	err = p.withError(core.Position{}, core.Position{}, err4)
+	serr, ok = err.(*core.SyntaxError)
+	a.True(ok).Equal(serr.Err, err1)
 }

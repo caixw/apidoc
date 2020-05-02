@@ -33,6 +33,8 @@ var (
 )
 
 // Decode 将 p 中的 XML 内容解码至 v 对象中
+//
+// Decode 中所有返回的错误对象，都可以转换成 *core.SyntaxError
 func Decode(p *Parser, v interface{}) error {
 	var hasRoot bool
 	for {
@@ -61,7 +63,7 @@ func Decode(p *Parser, v interface{}) error {
 }
 
 func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
-	if err := n.decodeAttributes(start); err != nil {
+	if err := n.decodeAttributes(p, start); err != nil {
 		return nil, err
 	}
 
@@ -73,7 +75,7 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 }
 
 // 将 start 的属性内容解码到 obj.attrs 之中
-func (n *node) decodeAttributes(start *StartElement) error {
+func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
 	if start == nil {
 		return nil
 	}
@@ -89,14 +91,14 @@ func (n *node) decodeAttributes(start *StartElement) error {
 		var impl bool
 		if item.CanInterface() && item.Type().Implements(attrDecoderType) {
 			if err := item.Interface().(AttrDecoder).DecodeXMLAttr(attr); err != nil {
-				return err
+				return p.withError(attr.Value.Start, attr.Value.End, err)
 			}
 			impl = true
 		} else if item.CanAddr() {
 			pv := item.Addr()
 			if pv.CanInterface() && pv.Type().Implements(attrDecoderType) {
 				if err := pv.Interface().(AttrDecoder).DecodeXMLAttr(attr); err != nil {
-					return err
+					return p.withError(attr.Value.Start, attr.Value.End, err)
 				}
 				impl = true
 			}
@@ -119,7 +121,7 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
 			return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
 		} else if err != nil {
-			return nil, err
+			return nil, err // token 除了 EOF 就只有 core.SyntaxError，所以这里不用 withError 再次包装
 		}
 
 		switch elem := t.(type) {
@@ -165,9 +167,12 @@ func decodeElement(p *Parser, start *StartElement, v value) (err error) {
 	if !impl {
 		end, err = newNode(start.Name.Value, v.Value).decode(p, start)
 	}
-
 	if err != nil {
-		return err
+		e := start.End
+		if end != nil {
+			e = end.End
+		}
+		return p.withError(start.Start, e, err)
 	}
 	setElementValue(v.Value, v.usage, start, end)
 	return nil
@@ -192,10 +197,14 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 		}
 		end, err = newNode(start.Name.Value, elem).decode(p, start)
 	}
-
 	if err != nil {
-		return err
+		e := start.End
+		if end != nil {
+			e = end.End
+		}
+		return p.withError(start.Start, e, err)
 	}
+
 	setElementValue(elem, slice.usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return nil

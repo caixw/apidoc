@@ -56,6 +56,9 @@ func NewSyntaxError(loc Location, field string, key message.Reference, val ...in
 
 // NewSyntaxErrorWithError 声明 SyntaxError 实例，其中的提示信息由 err 返回
 func NewSyntaxErrorWithError(loc Location, field string, err error) *SyntaxError {
+	if serr, ok := err.(*SyntaxError); ok {
+		err = serr.Err
+	}
 	return &SyntaxError{
 		Err:      err,
 		Location: loc,

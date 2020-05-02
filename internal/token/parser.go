@@ -303,7 +303,6 @@ func (p *Parser) getName() ([]byte, core.Range) {
 	}
 
 	end := p.Position()
-
 	return p.Bytes(start.Offset, end.Offset), core.Range{Start: start.Position, End: end.Position}
 }
 
@@ -317,8 +316,12 @@ func (p *Parser) NewError(start, end core.Position, key message.Reference, v ...
 	}, "", key, v...)
 }
 
-// WithError 重新包含 err
-func (p *Parser) WithError(start, end core.Position, err error) error {
+// withError 重新包含 err
+func (p *Parser) withError(start, end core.Position, err error) error {
+	if serr, ok := err.(*core.SyntaxError); ok {
+		err = serr.Err
+	}
+
 	return core.NewSyntaxErrorWithError(core.Location{
 		URI:   p.Location.URI,
 		Range: core.Range{Start: start, End: end},

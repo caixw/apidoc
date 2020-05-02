@@ -17,7 +17,9 @@ func decode(a *assert.Assertion, xml string, v interface{}, hasErr bool) {
 		NotNil(p)
 
 	if hasErr {
-		a.Error(Decode(p, v))
+		err = Decode(p, v)
+		a.Error(err)
+		a.ErrorType(err, &core.SyntaxError{})
 		return
 	}
 	a.NotError(Decode(p, v))
@@ -707,9 +709,11 @@ func TestDecode(t *testing.T) {
 
 func TestObject_decodeAttributes(t *testing.T) {
 	a := assert.New(t)
+	p, err := NewParser(core.Block{})
+	a.NotError(err).NotNil(p)
 
 	o := &node{}
-	a.NotError(o.decodeAttributes(nil))
+	a.NotError(o.decodeAttributes(p, nil))
 
 	val := &struct {
 		ID   intTest    `apidoc:"id,attr,usage"`
@@ -717,7 +721,7 @@ func TestObject_decodeAttributes(t *testing.T) {
 	}{}
 	o = newNode("root", reflect.ValueOf(val))
 	a.NotNil(o)
-	err := o.decodeAttributes(&StartElement{
+	err = o.decodeAttributes(p, &StartElement{
 		Attributes: []*Attribute{
 			{Name: String{Value: "name"}, Value: String{Value: "name"}},
 			{Name: String{Value: "id"}, Value: String{Value: "10"}},
@@ -739,7 +743,7 @@ func TestObject_decodeAttributes(t *testing.T) {
 	}{}
 	o = newNode("root", reflect.ValueOf(val))
 	a.NotNil(o)
-	err = o.decodeAttributes(&StartElement{
+	err = o.decodeAttributes(p, &StartElement{
 		Attributes: []*Attribute{
 			{Name: String{Value: "name"}, Value: String{Value: "name"}},
 			{Name: String{Value: "id"}, Value: String{Value: "xx10"}},
@@ -755,7 +759,7 @@ func TestObject_decodeAttributes(t *testing.T) {
 	}{}
 	o = newNode("root", reflect.ValueOf(val2))
 	a.NotNil(o)
-	err = o.decodeAttributes(&StartElement{
+	err = o.decodeAttributes(p, &StartElement{
 		Attributes: []*Attribute{
 			{Name: String{Value: "name"}, Value: String{Value: "name"}},
 			{Name: String{Value: "id"}, Value: String{Value: "10"}},
@@ -783,7 +787,7 @@ func TestObject_decodeAttributes(t *testing.T) {
 	}{}
 	o = newNode("root", reflect.ValueOf(val4))
 	a.NotNil(o)
-	err = o.decodeAttributes(&StartElement{
+	err = o.decodeAttributes(p, &StartElement{
 		Attributes: []*Attribute{
 			{Name: String{Value: "name"}, Value: String{Value: "name"}},
 			{Name: String{Value: "id"}, Value: String{Value: "10"}},
@@ -799,7 +803,7 @@ func TestObject_decodeAttributes(t *testing.T) {
 	o = newNode("root", reflect.ValueOf(val5))
 	a.NotNil(o)
 	a.Panic(func() {
-		o.decodeAttributes(&StartElement{
+		o.decodeAttributes(p, &StartElement{
 			Attributes: []*Attribute{
 				{Name: String{Value: "name"}, Value: String{Value: "name"}},
 				{Name: String{Value: "id"}, Value: String{Value: "10"}},
