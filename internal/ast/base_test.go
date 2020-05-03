@@ -14,10 +14,20 @@ var (
 	_ token.AttrDecoder = &Attribute{}
 	_ token.AttrDecoder = &NumberAttribute{}
 	_ token.AttrDecoder = &BoolAttribute{}
+	_ token.AttrDecoder = &MethodAttribute{}
+	_ token.AttrDecoder = &StatusAttribute{}
+	_ token.AttrDecoder = &TypeAttribute{}
+	_ token.AttrDecoder = &VersionAttribute{}
+	_ token.AttrDecoder = &APIDocVersionAttribute{}
 
 	_ token.AttrEncoder = &Attribute{}
 	_ token.AttrEncoder = &NumberAttribute{}
 	_ token.AttrEncoder = &BoolAttribute{}
+	_ token.AttrEncoder = &MethodAttribute{}
+	_ token.AttrEncoder = &StatusAttribute{}
+	_ token.AttrEncoder = &TypeAttribute{}
+	_ token.AttrEncoder = &VersionAttribute{}
+	_ token.AttrEncoder = &APIDocVersionAttribute{}
 
 	_ token.Decoder = &Element{}
 	_ token.Encoder = &Element{}

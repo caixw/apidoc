@@ -78,10 +78,10 @@ func (i *intTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error)
 	}
 }
 
-func (i *intTest) DecodeXMLAttr(attr *Attribute) error {
+func (i *intTest) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	v, err := strconv.Atoi(strings.TrimSpace(attr.Value.Value))
 	if err != nil {
-		return err
+		return p.WithError(attr.Value.Start, attr.Value.End, err)
 	}
 	i.Value = v
 	return nil
@@ -117,7 +117,7 @@ func (i *stringTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, err
 	}
 }
 
-func (i *stringTest) DecodeXMLAttr(attr *Attribute) error {
+func (i *stringTest) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	i.Value = attr.Value.Value
 	return nil
 }
@@ -134,7 +134,7 @@ func (t *errIntTest) DecodeXML(p *Parser, start *StartElement) (core.Position, e
 	return core.Position{}, errors.New("Decoder.DecodeXML")
 }
 
-func (t *errIntTest) DecodeXMLAttr(attr *Attribute) error {
+func (t *errIntTest) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	return errors.New("AttrDecoder.DecodeXMLAttr")
 }
 

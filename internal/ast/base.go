@@ -75,7 +75,7 @@ type (
 )
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *Attribute) DecodeXMLAttr(attr *token.Attribute) error {
+func (a *Attribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
 	return nil
 }
@@ -94,17 +94,17 @@ func (a *Attribute) V() string {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (num *NumberAttribute) DecodeXMLAttr(attr *token.Attribute) error {
+func (num *NumberAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	v, err := strconv.Atoi(attr.Value.Value)
 	if err != nil {
-		return err
+		return p.WithError(attr.Value.Start, attr.Value.End, err)
 	}
 
 	num.Value = Number{
 		Range: attr.Value.Range,
 		Value: v,
 	}
-	return err
+	return nil
 }
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
@@ -121,17 +121,17 @@ func (num *NumberAttribute) V() int {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (b *BoolAttribute) DecodeXMLAttr(attr *token.Attribute) error {
+func (b *BoolAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	v, err := strconv.ParseBool(attr.Value.Value)
 	if err != nil {
-		return err
+		return p.WithError(attr.Value.Start, attr.Value.End, err)
 	}
 
 	b.Value = Bool{
 		Range: attr.Value.Range,
 		Value: v,
 	}
-	return err
+	return nil
 }
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
@@ -148,11 +148,11 @@ func (b *BoolAttribute) V() bool {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *MethodAttribute) DecodeXMLAttr(attr *token.Attribute) error {
+func (a *MethodAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
 	a.Value.Value = strings.ToUpper(a.Value.Value)
 	if !isValidMethod(a.Value.Value) {
-		return newError(attr.Value.Range, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
 	}
 	return nil
 }
@@ -168,14 +168,14 @@ func (a *MethodAttribute) V() string {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *StatusAttribute) DecodeXMLAttr(attr *token.Attribute) error {
+func (a *StatusAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	v := NumberAttribute{}
-	if err := v.DecodeXMLAttr(attr); err != nil {
+	if err := v.DecodeXMLAttr(p, attr); err != nil {
 		return err
 	}
 
 	if !isValidStatus(v.Value.Value) {
-		return newError(attr.Value.Range, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
 	}
 
 	*a = StatusAttribute(v)
@@ -193,10 +193,10 @@ func (a *StatusAttribute) V() int {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *TypeAttribute) DecodeXMLAttr(attr *token.Attribute) error {
+func (a *TypeAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
 	if !isValidType(a.Value.Value) {
-		return newError(attr.Value.Range, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
 	}
 	return nil
 }
@@ -212,10 +212,10 @@ func (a *TypeAttribute) V() string {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *VersionAttribute) DecodeXMLAttr(attr *token.Attribute) error {
+func (a *VersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
 	if !isValidVersion(a.Value.Value) {
-		return newError(attr.Value.Range, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
 	}
 	return nil
 }
@@ -231,16 +231,16 @@ func (a *VersionAttribute) V() string {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *APIDocVersionAttribute) DecodeXMLAttr(attr *token.Attribute) error {
+func (a *APIDocVersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
 
 	ok, err := version.SemVerCompatible(Version, attr.Value.Value)
 	if err != nil {
-		return withError(attr.Value.Range, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, err)
 	}
 
 	if !ok {
-		return newError(attr.Value.Range, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
 	}
 
 	return nil

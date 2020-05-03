@@ -24,7 +24,7 @@ type Decoder interface {
 
 // AttrDecoder 实现从 attr 中解码内容到当前对象的值
 type AttrDecoder interface {
-	DecodeXMLAttr(attr *Attribute) error
+	DecodeXMLAttr(p *Parser, attr *Attribute) error
 }
 
 var (
@@ -90,15 +90,15 @@ func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
 
 		var impl bool
 		if item.CanInterface() && item.Type().Implements(attrDecoderType) {
-			if err := item.Interface().(AttrDecoder).DecodeXMLAttr(attr); err != nil {
-				return p.withError(attr.Value.Start, attr.Value.End, err)
+			if err := item.Interface().(AttrDecoder).DecodeXMLAttr(p, attr); err != nil {
+				return err
 			}
 			impl = true
 		} else if item.CanAddr() {
 			pv := item.Addr()
 			if pv.CanInterface() && pv.Type().Implements(attrDecoderType) {
-				if err := pv.Interface().(AttrDecoder).DecodeXMLAttr(attr); err != nil {
-					return p.withError(attr.Value.Start, attr.Value.End, err)
+				if err := pv.Interface().(AttrDecoder).DecodeXMLAttr(p, attr); err != nil {
+					return err
 				}
 				impl = true
 			}
@@ -121,7 +121,7 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
 			return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
 		} else if err != nil {
-			return nil, err // token 除了 EOF 就只有 core.SyntaxError，所以这里不用 withError 再次包装
+			return nil, err
 		}
 
 		switch elem := t.(type) {
@@ -168,11 +168,7 @@ func decodeElement(p *Parser, start *StartElement, v value) (err error) {
 		end, err = newNode(start.Name.Value, v.Value).decode(p, start)
 	}
 	if err != nil {
-		e := start.End
-		if end != nil {
-			e = end.End
-		}
-		return p.withError(start.Start, e, err)
+		return err
 	}
 	setElementValue(v.Value, v.usage, start, end)
 	return nil
@@ -198,11 +194,7 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 		end, err = newNode(start.Name.Value, elem).decode(p, start)
 	}
 	if err != nil {
-		e := start.End
-		if end != nil {
-			e = end.End
-		}
-		return p.withError(start.Start, e, err)
+		return err
 	}
 
 	setElementValue(elem, slice.usage, start, end)

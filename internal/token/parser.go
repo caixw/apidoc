@@ -306,9 +306,7 @@ func (p *Parser) getName() ([]byte, core.Range) {
 	return p.Bytes(start.Offset, end.Offset), core.Range{Start: start.Position, End: end.Position}
 }
 
-// NewError 生成本地化的错误信息
-//
-// 其中的 URI 采用 p.l.Location.URI
+// NewError 生成 *core.SyntaxError 对象
 func (p *Parser) NewError(start, end core.Position, key message.Reference, v ...interface{}) error {
 	return core.NewSyntaxError(core.Location{
 		URI:   p.Location.URI,
@@ -316,8 +314,11 @@ func (p *Parser) NewError(start, end core.Position, key message.Reference, v ...
 	}, "", key, v...)
 }
 
-// withError 重新包含 err
-func (p *Parser) withError(start, end core.Position, err error) error {
+// WithError 将 err 包装成 *core.SyntaxError 类型
+//
+// 如果 err 本身就是 *core.SyntaxError 类型，则只取 err.Err
+// 作为返回对象有的 Err 字段，其它字段弃用。
+func (p *Parser) WithError(start, end core.Position, err error) error {
 	if serr, ok := err.(*core.SyntaxError); ok {
 		err = serr.Err
 	}
