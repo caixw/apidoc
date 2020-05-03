@@ -74,7 +74,7 @@ func (f *folder) openFile(uri core.URI) error {
 }
 
 func (f *folder) closeFile(uri core.URI) error {
-	f.doc.DeleteFile(uri)
+	f.doc.DeleteURI(uri)
 	return nil
 }
 

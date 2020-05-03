@@ -317,7 +317,27 @@ func (r *Request) Param() *Param {
 	}
 }
 
-// DeleteFile 删除与 uri 相关的文档内容
-func (doc *APIDoc) DeleteFile(uri core.URI) {
-	// TODO
+// DeleteURI 删除与 uri 相关的文档内容
+func (doc *APIDoc) DeleteURI(uri core.URI) {
+	for index, api := range doc.Apis {
+		if api.Block.Location.URI == uri {
+			doc.Apis = append(doc.Apis[:index], doc.Apis[index+1:]...)
+		}
+	}
+
+	if doc.Block.Location.URI == uri {
+		doc.Block = &core.Block{}
+		doc.Mimetypes = nil
+		doc.Title = nil
+		doc.Responses = nil
+		doc.APIDoc = nil
+		doc.Contact = nil
+		doc.Created = nil
+		doc.Description = nil
+		doc.Lang = nil
+		doc.License = nil
+		doc.Logo = nil
+		doc.Servers = nil
+		doc.Tags = nil
+	}
 }
