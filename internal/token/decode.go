@@ -19,11 +19,16 @@ type Decoder interface {
 	// end 表示 EndElement.End 的值。
 	//
 	// NOTE: 如果是自闭合标签，则不会调用该接口。
+	//
+	// 接口应该只返回 *core.SyntaxError 作为错误对象。
 	DecodeXML(p *Parser, start *StartElement) (end *EndElement, err error)
 }
 
 // AttrDecoder 实现从 attr 中解码内容到当前对象的值
 type AttrDecoder interface {
+	// 解析属性值
+	//
+	// 接口应该只返回 *core.SyntaxError 作为错误对象。
 	DecodeXMLAttr(p *Parser, attr *Attribute) error
 }
 
