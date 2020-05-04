@@ -50,6 +50,8 @@ var (
 	_ AttrDecoder = &stringTest{}
 	_ Encoder     = &stringTest{}
 	_ Decoder     = &stringTest{}
+
+	_ Sanitizer = &objectTest{}
 )
 
 func (i *intTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
@@ -128,6 +130,11 @@ func (i *stringTest) EncodeXML() (string, error) {
 
 func (i *stringTest) EncodeXMLAttr() (string, error) {
 	return i.Value, nil
+}
+
+func (o *objectTest) Sanitize(p *Parser) error {
+	o.ID.Value++
+	return nil
 }
 
 func (t *errIntTest) DecodeXML(p *Parser, start *StartElement) (core.Position, error) {

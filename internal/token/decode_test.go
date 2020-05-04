@@ -439,7 +439,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		ID: intTest{Value: 11, Base: Base{
+		ID: intTest{Value: 12, Base: Base{ // objectTest.Sanitize
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 38},
@@ -586,7 +586,7 @@ func TestDecode(t *testing.T) {
 					},
 				},
 			},
-			Value: 5,
+			Value: 6, // objectTest.Sanitize
 		},
 		Name: stringTest{
 			Base: Base{
@@ -650,7 +650,7 @@ func TestDecode(t *testing.T) {
 					},
 				},
 			},
-			Value: 7,
+			Value: 8, // objectTest.Sanitize
 		},
 		Name: stringTest{
 			Base: Base{

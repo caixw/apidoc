@@ -9,6 +9,34 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
+type sanitizer interface {
+	sanitize() error
+}
+
+func (e *Enum) sanitize() error {
+	if e.Value.V() == "" {
+		// TODO
+	}
+
+	if e.Description.V() == "" && e.Summary.V() == "" {
+		// TODO
+	}
+
+	return nil
+}
+
+func (e *Example) sanitize() error {
+	if e.Mimetype.V() == "" {
+		// TODO
+	}
+
+	if e.Content.Value.Value == "" {
+		// TODO
+	}
+
+	return nil
+}
+
 // Sanitize 检测内容是否合法
 func (doc *APIDoc) Sanitize() error {
 	// TODO
