@@ -9,6 +9,43 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestParseRootElement(t *testing.T) {
+	a := assert.New(t)
+
+	a.Panic(func() {
+		parseRootElement(nil)
+	})
+
+	var v1 struct{}
+	a.Panic(func() {
+		parseRootElement(v1)
+	})
+
+	a.Panic(func() {
+		parseRootElement(struct {
+			RootName string `apidoc:"-"`
+		}{})
+	})
+
+	a.Panic(func() {
+		parseRootElement(struct{}{})
+	})
+
+	a.Panic(func() {
+		parseRootElement(struct {
+			RootName string
+		}{})
+	})
+
+	v := parseRootElement(struct {
+		RootName string `apidoc:"root,attr,usage-key"`
+	}{})
+	a.False(v.omitempty).
+		Equal(v.name, "root").
+		Equal(v.usage, "usage-key").
+		True(v.IsValid())
+}
+
 func TestNewNode(t *testing.T) {
 	a := assert.New(t)
 
@@ -182,7 +219,7 @@ func TestNewNode(t *testing.T) {
 		}{}))
 	})
 
-	// 相同的 cdata
+	// 多个的 cdata
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
 			Attr2  int    `apidoc:"attr1,attr"`
@@ -200,7 +237,7 @@ func TestNewNode(t *testing.T) {
 		}{}))
 	})
 
-	// 相同的 content
+	// 多个的 content
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
 			Attr2 int    `apidoc:"attr1,attr"`
@@ -224,6 +261,22 @@ func TestNewNode(t *testing.T) {
 			Attr2  int   `apidoc:"attr1,attr"`
 			Elem1  int   `apidoc:"elem1,elem"`
 			Cdata1 CData `apidoc:",cdata"`
+		}{}))
+	})
+
+	// cdata 类型不正确
+	a.Panic(func() {
+		newNode("empty", reflect.ValueOf(&struct {
+			Attr2  int    `apidoc:"attr1,attr"`
+			Cdata1 String `apidoc:",cdata"`
+		}{}))
+	})
+
+	// content 类型不正确
+	a.Panic(func() {
+		newNode("empty", reflect.ValueOf(&struct {
+			Attr2   int    `apidoc:"attr1,attr"`
+			Content *CData `apidoc:",content"`
 		}{}))
 	})
 
@@ -254,7 +307,7 @@ func TestNewNode(t *testing.T) {
 		}{}))
 	})
 
-	// 相同的元素名
+	// 与匿名对象存在相同的元素名
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
 			anonymous
@@ -262,7 +315,7 @@ func TestNewNode(t *testing.T) {
 			Elem2 int `apidoc:"elem1,elem"`
 		}{}))
 	})
-	// 相同的元素名
+	// 与匿名对象存在相同的元素名
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
 			*anonymous

@@ -29,11 +29,34 @@ func TestDecode(t *testing.T) {
 	a := assert.New(t)
 
 	v := &struct {
-		Attr1 intTest `apidoc:"attr1,attr,usage"`
-		Elem1 intTest `apidoc:"elem1,elem,usage"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest  `apidoc:"attr1,attr,usage"`
+		Elem1    intTest  `apidoc:"elem1,elem,usage"`
 	}{}
 	b := `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
 	decode(a, b, v, false)
+	base := Base{
+		UsageKey: "usage-apidoc",
+		Range: core.Range{
+			Start: core.Position{Character: 0},
+			End:   core.Position{Character: 43},
+		},
+		XMLName: String{
+			Value: "apidoc",
+			Range: core.Range{
+				Start: core.Position{Character: 1},
+				End:   core.Position{Character: 7},
+			},
+		},
+		XMLNameEnd: String{
+			Value: "apidoc",
+			Range: core.Range{
+				Start: core.Position{Character: 36},
+				End:   core.Position{Character: 42},
+			},
+		},
+	}
 	attr1 := intTest{Value: 5,
 		Base: Base{
 			UsageKey: "usage",
@@ -71,13 +94,16 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		}}
-	a.Equal(v.Attr1, attr1).
+	a.Equal(v.Base, base).
+		Equal(v.Attr1, attr1).
 		Equal(v.Elem1, elem1)
 
 	// 自闭合标签，采用上一个相同的类型
 	v = &struct {
-		Attr1 intTest `apidoc:"attr1,attr,usage"`
-		Elem1 intTest `apidoc:"elem1,elem,usage"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest  `apidoc:"attr1,attr,usage"`
+		Elem1    intTest  `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1 /></apidoc>`
 	decode(a, b, v, false)
@@ -116,8 +142,10 @@ func TestDecode(t *testing.T) {
 
 	// 数组，单个元素
 	v2 := &struct {
-		Attr1 intTest   `apidoc:"attr1,attr,usage"`
-		Elem1 []intTest `apidoc:"elem1,elem,usage"`
+		Base
+		RootName struct{}  `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest   `apidoc:"attr1,attr,usage"`
+		Elem1    []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
 	attr1 = intTest{Value: 5, Base: Base{
@@ -161,8 +189,10 @@ func TestDecode(t *testing.T) {
 
 	// 数组，多个元素
 	v3 := &struct {
-		Attr1 intTest   `apidoc:"attr1,attr,usage"`
-		Elem1 []intTest `apidoc:"elem1,elem,usage"`
+		Base
+		RootName struct{}  `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest   `apidoc:"attr1,attr,usage"`
+		Elem1    []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1><elem1>7</elem1></apidoc>`
 	attr1 = intTest{Value: 5, Base: Base{
@@ -227,8 +257,10 @@ func TestDecode(t *testing.T) {
 
 	// 数组，多个元素，自闭合
 	v3 = &struct {
-		Attr1 intTest   `apidoc:"attr1,attr,usage"`
-		Elem1 []intTest `apidoc:"elem1,elem,usage"`
+		Base
+		RootName struct{}  `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest   `apidoc:"attr1,attr,usage"`
+		Elem1    []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1 /><elem1>7</elem1></apidoc>`
 	attr1 = intTest{Value: 5, Base: Base{
@@ -286,8 +318,10 @@ func TestDecode(t *testing.T) {
 
 	// content
 	v4 := &struct {
-		ID      intTest `apidoc:"attr1,attr,usage"`
-		Content String  `apidoc:",content"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		ID       intTest  `apidoc:"attr1,attr,usage"`
+		Content  String   `apidoc:",content"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
 	decode(a, b, v4, false)
@@ -312,7 +346,9 @@ func TestDecode(t *testing.T) {
 
 	// cdata
 	v5 := &struct {
-		Cdata *CData `apidoc:",cdata"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Cdata    *CData   `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5"><![CDATA[5555]]></apidoc>`
 	decode(a, b, v5, false)
@@ -329,16 +365,20 @@ func TestDecode(t *testing.T) {
 
 	// cdata 没有围绕 CDATA，则会被忽略
 	v6 := &struct {
-		Cdata CData `apidoc:",cdata"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Cdata    CData    `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
 	decode(a, b, v6, false)
 	a.Empty(v6.Cdata.Value.Value).True(v6.Cdata.IsEmpty())
 
 	v7 := &struct {
-		ID     *intTest    `apidoc:"id,attr,usage"`
-		Name   stringTest  `apidoc:"name,elem,usage"`
-		Object *objectTest `apidoc:"obj,elem,usage"`
+		Base
+		RootName struct{}    `apidoc:"apidoc,elem,usage-apidoc"`
+		ID       *intTest    `apidoc:"id,attr,usage"`
+		Name     stringTest  `apidoc:"name,elem,usage"`
+		Object   *objectTest `apidoc:"obj,elem,usage"`
 	}{}
 	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
 	decode(a, b, v7, false)
@@ -446,21 +486,27 @@ func TestDecode(t *testing.T) {
 
 	// 无效的属性值
 	v8 := &struct {
-		ID intTest `apidoc:"id,attr,usage"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		ID       intTest  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1xx"></apidoc></apidoc>`
 	decode(a, b, v8, true)
 
 	// StartElement.Close
 	v9 := &struct {
-		ID intTest `apidoc:"id,attr,usage"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		ID       intTest  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1" />`
 	decode(a, b, v9, false)
 
 	// 不存在的元素名
 	v10 := &struct {
-		ID intTest `apidoc:"id,elem,usage"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		ID       intTest  `apidoc:"id,elem,usage"`
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
@@ -469,7 +515,9 @@ func TestDecode(t *testing.T) {
 
 	// 数组元素未实现 Decoder 接口
 	v11 := &struct {
-		Elem []int `apidoc:"elem,elem,usage"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Elem     []int    `apidoc:"elem,elem,usage"`
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
@@ -478,8 +526,10 @@ func TestDecode(t *testing.T) {
 
 	// 多个数组，未实现 Decoder 的元素
 	v12 := &struct {
-		Attr1 intTest       `apidoc:"attr1,attr,usage"`
-		Elem1 []*objectTest `apidoc:"e,elem,usage"`
+		Base
+		RootName struct{}      `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest       `apidoc:"attr1,attr,usage"`
+		Elem1    []*objectTest `apidoc:"e,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5">
 	<e id="5"><name>6</name></e>
@@ -639,8 +689,10 @@ func TestDecode(t *testing.T) {
 		ID intTest `apidoc:"id,attr,usage"`
 	}
 	v13 := &struct {
-		Attr1 intTest `apidoc:"attr1,attr,usage"`
-		Elem1 []*obj  `apidoc:"elem2,elem,usage-elem2"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest  `apidoc:"attr1,attr,usage"`
+		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc attr1="5"><elem2 id="6" /></apidoc>`
 	attr1 = intTest{Value: 5, Base: Base{
@@ -697,8 +749,10 @@ func TestDecode(t *testing.T) {
 
 	// 闭合标签
 	v14 := &struct {
-		Attr1 intTest `apidoc:"attr1,attr,usage"`
-		Elem1 *obj    `apidoc:"elem2,elem,usage-elem2"`
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest  `apidoc:"attr1,attr,usage"`
+		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc attr1="5"><elem2 id="60" /></apidoc>`
 	decode(a, b, v14, false)

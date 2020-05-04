@@ -27,27 +27,12 @@ var (
 )
 
 // Encode 将 v 转换成 XML 内容
-//
-// v 必须包含一个名称为 RootName 的字段，由该字段的结构标签指定 XML 根元素的名称。比如：
-//  type Root struct {
-//      RootName struct{} `apidoc:"root"`
-//      // 其它字段 ...
-//  }
 func Encode(indent string, v interface{}) ([]byte, error) {
-	rv := reflect.ValueOf(v)
-	if !rv.IsValid() {
-		return nil, nil
-	}
-
-	root, found := getRealType(rv.Type()).FieldByName(rootElementTagName)
-	if !found {
-		panic(fmt.Sprintf("根元素 %s 未指定 %s 字段", getRealType(rv.Type()), rootElementTagName))
-	}
-
+	rv := parseRootElement(v)
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
 	e.Indent("", indent)
-	n := newNode(root.Tag.Get(tagName), rv)
+	n := newNode(rv.name, rv.Value)
 
 	if err := n.encode(e); err != nil {
 		return nil, err

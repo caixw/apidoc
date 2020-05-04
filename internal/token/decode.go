@@ -57,8 +57,8 @@ func Decode(p *Parser, v interface{}) error {
 			}
 			hasRoot = true
 
-			o := newNode(elem.Name.Value, reflect.ValueOf(v))
-			if _, err := o.decode(p, elem); err != nil {
+			rv := parseRootElement(v)
+			if err := decodeElement(p, elem, rv); err != nil {
 				return err
 			}
 		case *EndElement:

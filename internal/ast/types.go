@@ -34,7 +34,7 @@ type (
 	// APIDoc 对应 apidoc 元素
 	APIDoc struct {
 		token.Base
-		RootName struct{} `apidoc:"apidoc"`
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
 
 		// 程序的版本号
 		//
@@ -73,7 +73,7 @@ type (
 	// API 表示 <api> 顶层元素
 	API struct {
 		token.Base
-		RootName    struct{}          `apidoc:"api"`
+		RootName    struct{}          `apidoc:"api,elem,usage-apidoc"`
 		Version     *VersionAttribute `apidoc:"version,attr,usage-api-version,omitempty"`
 		Method      *MethodAttribute  `apidoc:"method,attr,usage-api-method"`
 		ID          *Attribute        `apidoc:"id,attr,usage-api-id,omitempty"`

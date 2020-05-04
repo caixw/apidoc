@@ -1,6 +1,28 @@
 // SPDX-License-Identifier: MIT
 
 // Package token 解析 xml 内容
+//
+// struct tag
+//
+// 标签属性分为 4 个字段，其中前三个是必填的：
+//  apidoc:"name,node-type,usage-key,omitempty"
+// 第一个标签指定名称，如果为空，则直接采用字段的名称；
+// 第二个标签指定标签的类型，可以是 elem 表示子元素，attr 表示属性，
+// cdata 表示当前 XML 元素子元素内容 CDATA 数据，content
+// 表示当前 XML 的子元素内容作为字符串保存至 content；
+// 第三个元素用于指定当前元素的使用说明的本地化 ID，
+// 加载后调用相关的方法会被翻译成本地化的语言内容返回；
+// 第四个参数表示是否忽略空值，与标准库的 omitempty 相同功能，默认为 false。
+//
+// 根对象
+//
+// 根对象必须添加一个 RootName 字段指定根名称以其它属性：
+//  type Root struct {
+//      RootName struct{} `apidoc:"root,elem,usage-key"`
+//      // 其它字段 ...
+//  }
+// 其 apidoc 标签值与其它的标签值格式相同，但是只有第一和第三个值是真实有效果的，
+// 另两个值会被忽略。
 package token
 
 import (

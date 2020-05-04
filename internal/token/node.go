@@ -45,6 +45,25 @@ type value struct {
 	usage string
 }
 
+func parseRootElement(v interface{}) value {
+	rv := reflect.ValueOf(v)
+	if !rv.IsValid() {
+		panic("参数 v 不是一个有效的根元素")
+	}
+
+	root, found := getRealType(rv.Type()).FieldByName(rootElementTagName)
+	if !found {
+		panic(fmt.Sprintf("根元素 %s 未指定 %s 字段", getRealType(rv.Type()), rootElementTagName))
+	}
+
+	name, _, usage, omitempty := parseTag(root)
+	if name == "-" {
+		panic(fmt.Sprintf("根元素 %s.%s 的标签值 %s 不能为 -", rv.Type(), rootElementTagName, tagName))
+	}
+
+	return initValue(name, rv, omitempty, usage)
+}
+
 func initValue(name string, v reflect.Value, omitempty bool, usage string) value {
 	return value{
 		name:      name,
