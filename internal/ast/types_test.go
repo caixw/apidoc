@@ -71,6 +71,28 @@ func TestAPIDoc(t *testing.T) {
 	a := assert.New(t)
 	doc := loadAPIDoc(a)
 
+	a.Equal(doc.Base, token.Base{
+		UsageKey: "usage-apidoc",
+		Range: core.Range{
+			Start: core.Position{Character: 0, Line: 2},
+			End:   core.Position{Character: 9, Line: 32},
+		},
+		XMLName: String{
+			Range: core.Range{
+				Start: core.Position{Character: 1, Line: 2},
+				End:   core.Position{Character: 7, Line: 2},
+			},
+			Value: "apidoc",
+		},
+		XMLNameEnd: String{
+			Range: core.Range{
+				Start: core.Position{Character: 2, Line: 32},
+				End:   core.Position{Character: 8, Line: 32},
+			},
+			Value: "apidoc",
+		},
+	})
+
 	a.Equal(doc.Version, &VersionAttribute{
 		Base: token.Base{
 			UsageKey: "usage-apidoc-version",
