@@ -92,11 +92,31 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 		return nil, err
 	}
 
-	if err := n.sanitizeOmitempty(p, start.Start, end.End); err != nil {
-		return nil, err
+	for _, attr := range n.attrs {
+		if attr.canNotEmpty() {
+			return nil, p.NewError(start.Start, end.End, attr.name, locale.ErrRequired)
+		}
+	}
+	for _, elem := range n.elems {
+		if elem.canNotEmpty() {
+			return nil, p.NewError(start.Start, end.End, elem.name, locale.ErrRequired)
+		}
+	}
+	if n.cdata.canNotEmpty() {
+		return nil, p.NewError(start.Start, end.End, "cdata", locale.ErrRequired)
+	}
+	if n.content.canNotEmpty() {
+		return nil, p.NewError(start.Start, end.End, "content", locale.ErrRequired)
 	}
 
 	return end, nil
+}
+
+// 当前表示的值必须是一个非空值
+func (v value) canNotEmpty() bool {
+	return v.name != "" && // cdata 和 content 在未初始化时 name 字段为空值
+		!v.omitempty &&
+		(!v.IsValid() || !v.CanInterface() || is.Empty(v.Interface(), true))
 }
 
 // 将 start 的属性内容解码到 obj.attrs 之中
@@ -276,35 +296,6 @@ func findEndElement(p *Parser, start *StartElement) error {
 			level--
 		}
 	}
-}
-
-func (n *node) sanitizeOmitempty(p *Parser, start, end core.Position) error {
-	for _, attr := range n.attrs {
-		if attr.canNotEmpty() {
-			return p.NewError(start, end, attr.name, locale.ErrRequired)
-		}
-	}
-
-	for _, elem := range n.elems {
-		if elem.canNotEmpty() {
-			return p.NewError(start, end, elem.name, locale.ErrRequired)
-		}
-	}
-
-	if n.cdata.canNotEmpty() {
-		return p.NewError(start, end, "cdata", locale.ErrRequired)
-	}
-
-	if n.content.canNotEmpty() {
-		return p.NewError(start, end, "content", locale.ErrRequired)
-	}
-
-	return nil
-}
-
-// 当前表示的值必须是一个非空值
-func (v value) canNotEmpty() bool {
-	return !v.omitempty && (!v.IsValid() || !v.CanInterface() || is.Empty(v.Interface(), true))
 }
 
 func setElementValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {

@@ -367,7 +367,7 @@ func TestDecode(t *testing.T) {
 	v6 := &struct {
 		Base
 		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
-		Cdata    CData    `apidoc:",cdata"`
+		Cdata    CData    `apidoc:",cdata,,omitempty"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
 	decode(a, b, v6, false)
