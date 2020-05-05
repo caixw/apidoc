@@ -214,6 +214,7 @@ options 可以是以下參數
 	ErrInvalidFormat:             "格式不正確",
 	ErrDirNotExists:              "目錄不存在",
 	ErrNotFoundEndFlag:           "找不到結束符號",
+	ErrNotFoundEndTag:            "找不到結束標簽",
 	ErrNotFoundSupportedLang:     "該目錄下沒有支持的語言文件",
 	ErrDirIsEmpty:                "目錄下沒有需要解析的文件",
 	ErrInvalidValue:              "無效的值",

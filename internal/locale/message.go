@@ -213,6 +213,7 @@ options 可以是以下参数
 	ErrInvalidFormat             = "格式不正确"
 	ErrDirNotExists              = "目录不存在"
 	ErrNotFoundEndFlag           = "找不到结束符号"
+	ErrNotFoundEndTag            = "找不到结束标签"
 	ErrNotFoundSupportedLang     = "该目录下没有支持的语言文件"
 	ErrDirIsEmpty                = "目录下没有需要解析的文件"
 	ErrInvalidValue              = "无效的值"

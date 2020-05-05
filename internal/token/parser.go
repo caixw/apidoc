@@ -92,7 +92,7 @@ func (p *Parser) parseComment(pos lexer.Position) (*Comment, error) {
 
 	data, found := p.DelimString("-->", false)
 	if !found {
-		return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+		return nil, p.NewError(p.Position().Position, p.Position().Position, "<!--", locale.ErrNotFoundEndTag)
 	}
 	end := p.Position()
 	p.Next(3) // 跳过 --> 三个字符
@@ -112,7 +112,7 @@ func (p *Parser) parseStartElement(pos lexer.Position) (*StartElement, error) {
 	start := p.Position()
 	name, found := p.DelimFunc(func(r rune) bool { return unicode.IsSpace(r) || r == '/' || r == '>' }, false)
 	if !found || len(name) == 0 {
-		return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+		return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
 	}
 
 	elem := &StartElement{
@@ -138,7 +138,7 @@ func (p *Parser) parseStartElement(pos lexer.Position) (*StartElement, error) {
 		return elem, nil
 	}
 
-	return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+	return nil, p.NewError(p.Position().Position, p.Position().Position, string(name), locale.ErrNotFoundEndTag)
 }
 
 // pos 表示当前元素的起始位置，包含了 < 元素
@@ -148,7 +148,7 @@ func (p *Parser) parseEndElement(pos lexer.Position) (*EndElement, error) {
 
 	name, found := p.Delim('>', false)
 	if !found || len(name) == 0 {
-		return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+		return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
 	}
 	end := p.Position()
 	p.Next(1) // 去掉 > 符号
@@ -170,7 +170,7 @@ func (p *Parser) parseCData(pos lexer.Position) (*CData, error) {
 	for {
 		v, found := p.DelimString("]]>", false)
 		if !found {
-			return nil, p.NewError(pos.Position, p.Position().Position, locale.ErrInvalidXML)
+			return nil, p.NewError(pos.Position, p.Position().Position, "<![CDATA[", locale.ErrNotFoundEndTag)
 		}
 		value = append(value, v...)
 
@@ -201,7 +201,7 @@ func (p *Parser) parseCData(pos lexer.Position) (*CData, error) {
 func (p *Parser) parseInstruction(pos lexer.Position) (*Instruction, error) {
 	name, nameRange := p.getName()
 	if len(name) == 0 {
-		return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+		return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
 	}
 	elem := &Instruction{
 		Name: String{
@@ -221,7 +221,7 @@ func (p *Parser) parseInstruction(pos lexer.Position) (*Instruction, error) {
 		return elem, nil
 	}
 
-	return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+	return nil, p.NewError(p.Position().Position, p.Position().Position, "<?", locale.ErrNotFoundEndTag)
 }
 
 func (p *Parser) parseAttributes() (attrs []*Attribute, err error) {
@@ -258,18 +258,18 @@ func (p *Parser) parseAttribute() (*Attribute, error) {
 
 	p.Spaces(0)
 	if !p.Match("=") {
-		return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+		return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
 	}
 
 	p.Spaces(0)
 	if !p.Match("\"") {
-		return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+		return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
 	}
 
 	pos = p.Position()
 	value, found := p.Delim('"', true)
 	if !found || len(value) == 0 {
-		return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+		return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
 	}
 	end := p.Position().SubRune('"') // 不包含 " 符号
 	attr.Value = String{
@@ -307,18 +307,18 @@ func (p *Parser) getName() ([]byte, core.Range) {
 }
 
 // NewError 生成 *core.SyntaxError 对象
-func (p *Parser) NewError(start, end core.Position, key message.Reference, v ...interface{}) error {
+func (p *Parser) NewError(start, end core.Position, field string, key message.Reference, v ...interface{}) error {
 	return core.NewSyntaxError(core.Location{
 		URI:   p.Location.URI,
 		Range: core.Range{Start: start, End: end},
-	}, "", key, v...)
+	}, field, key, v...)
 }
 
 // WithError 将 err 包装成 *core.SyntaxError 类型
 //
 // 如果 err 本身就是 *core.SyntaxError 类型，则只取 err.Err
 // 作为返回对象有的 Err 字段，其它字段弃用。
-func (p *Parser) WithError(start, end core.Position, err error) error {
+func (p *Parser) WithError(start, end core.Position, field string, err error) error {
 	if serr, ok := err.(*core.SyntaxError); ok {
 		err = serr.Err
 	}
@@ -326,5 +326,5 @@ func (p *Parser) WithError(start, end core.Position, err error) error {
 	return core.NewSyntaxErrorWithError(core.Location{
 		URI:   p.Location.URI,
 		Range: core.Range{Start: start, End: end},
-	}, "", err)
+	}, field, err)
 }

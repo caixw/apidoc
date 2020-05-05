@@ -97,7 +97,7 @@ func (a *Attribute) V() string {
 func (num *NumberAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	v, err := strconv.Atoi(attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Start, attr.Value.End, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
 	}
 
 	num.Value = Number{
@@ -124,7 +124,7 @@ func (num *NumberAttribute) V() int {
 func (b *BoolAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	v, err := strconv.ParseBool(attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Start, attr.Value.End, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
 	}
 
 	b.Value = Bool{
@@ -152,7 +152,7 @@ func (a *MethodAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) 
 	a.Value = attr.Value
 	a.Value.Value = strings.ToUpper(a.Value.Value)
 	if !isValidMethod(a.Value.Value) {
-		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
 	}
 	return nil
 }
@@ -175,7 +175,7 @@ func (a *StatusAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) 
 	}
 
 	if !isValidStatus(v.Value.Value) {
-		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
 	}
 
 	*a = StatusAttribute(v)
@@ -196,7 +196,7 @@ func (a *StatusAttribute) V() int {
 func (a *TypeAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
 	if !isValidType(a.Value.Value) {
-		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
 	}
 	return nil
 }
@@ -215,7 +215,7 @@ func (a *TypeAttribute) V() string {
 func (a *VersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
 	if !isValidVersion(a.Value.Value) {
-		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
 	}
 	return nil
 }
@@ -236,11 +236,11 @@ func (a *APIDocVersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attr
 
 	ok, err := version.SemVerCompatible(Version, attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Start, attr.Value.End, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
 	}
 
 	if !ok {
-		return p.NewError(attr.Value.Start, attr.Value.End, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
 	}
 
 	return nil
@@ -267,7 +267,7 @@ func (s *Element) DecodeXML(p *token.Parser, start *token.StartElement) (*token.
 		t, err := p.Token()
 		if err == io.EOF {
 			pos := p.Position().Position
-			return nil, p.NewError(pos, pos, locale.ErrInvalidXML)
+			return nil, p.NewError(pos, pos, "", locale.ErrInvalidXML)
 		} else if err != nil {
 			return nil, err
 		}
@@ -275,13 +275,13 @@ func (s *Element) DecodeXML(p *token.Parser, start *token.StartElement) (*token.
 		switch elem := t.(type) {
 		case *token.EndElement:
 			if elem.Name.Value != start.Name.Value {
-				return nil, p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
+				return nil, p.NewError(elem.Start, elem.End, start.Name.Value, locale.ErrNotFoundEndTag)
 			}
 			return elem, nil
 		case *token.String:
 			s.Content = *elem
 		case *token.Instruction:
-			return nil, p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
+			return nil, p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML)
 		}
 	}
 }

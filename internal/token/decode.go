@@ -53,7 +53,7 @@ func Decode(p *Parser, v interface{}) error {
 		switch elem := t.(type) {
 		case *StartElement:
 			if hasRoot { // 多个根元素
-				return p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
+				return p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML)
 			}
 			hasRoot = true
 
@@ -62,7 +62,7 @@ func Decode(p *Parser, v interface{}) error {
 				return err
 			}
 		case *EndElement:
-			return p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
+			return p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML)
 		}
 	}
 }
@@ -124,7 +124,7 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 		t, err := p.Token()
 		if err == io.EOF {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
-			return nil, p.NewError(p.Position().Position, p.Position().Position, locale.ErrInvalidXML)
+			return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
 		} else if err != nil {
 			return nil, err
 		}
@@ -132,7 +132,7 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 		switch elem := t.(type) {
 		case *EndElement: // 找到当前对象的结束标签
 			if elem.Name.Value != n.name {
-				return nil, p.NewError(elem.Start, elem.End, locale.ErrInvalidXML)
+				return nil, p.NewError(elem.Start, elem.End, n.name, locale.ErrNotFoundEndTag)
 			}
 			return elem, nil
 		case *CData:
@@ -232,7 +232,7 @@ func findEndElement(p *Parser, start *StartElement) error {
 	for {
 		t, err := p.Token()
 		if err == io.EOF {
-			return p.NewError(start.Start, start.End, locale.ErrInvalidXML) // 找不到相配的结束符号
+			return p.NewError(start.Start, start.End, start.Name.Value, locale.ErrNotFoundEndTag) // 找不到相配的结束符号
 		} else if err != nil {
 			return err
 		}

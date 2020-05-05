@@ -81,7 +81,7 @@ func (i *intTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error)
 func (i *intTest) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	v, err := strconv.Atoi(strings.TrimSpace(attr.Value.Value))
 	if err != nil {
-		return p.WithError(attr.Value.Start, attr.Value.End, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
 	}
 	i.Value = v
 	return nil
