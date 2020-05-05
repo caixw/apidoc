@@ -38,8 +38,7 @@ type node struct {
 // 表示 XML 节点的值的反射表示方式
 type value struct {
 	reflect.Value
-	zero      interface{} // 当前类型的零值
-	name      string      // 节点的名称
+	name      string // 节点的名称
 	omitempty bool
 
 	// 当前值可能未初始化，所以保存 usage 的值，
@@ -70,7 +69,6 @@ func initValue(name string, v reflect.Value, omitempty bool, usage string) value
 	return value{
 		name:      name,
 		Value:     v,
-		zero:      reflect.Zero(v.Type()).Interface(),
 		omitempty: omitempty,
 		usage:     usage,
 	}
