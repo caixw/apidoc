@@ -281,22 +281,22 @@ func findEndElement(p *Parser, start *StartElement) error {
 func (n *node) sanitizeOmitempty(p *Parser, start, end core.Position) error {
 	for _, attr := range n.attrs {
 		if attr.canNotEmpty() {
-			return p.NewError(start, end, locale.ErrRequired, attr.name)
+			return p.NewError(start, end, attr.name, locale.ErrRequired)
 		}
 	}
 
 	for _, elem := range n.elems {
 		if elem.canNotEmpty() {
-			return p.NewError(start, end, locale.ErrRequired, elem.name)
+			return p.NewError(start, end, elem.name, locale.ErrRequired)
 		}
 	}
 
 	if n.cdata.canNotEmpty() {
-		return p.NewError(start, end, locale.ErrRequired, "cdata")
+		return p.NewError(start, end, "cdata", locale.ErrRequired)
 	}
 
 	if n.content.canNotEmpty() {
-		return p.NewError(start, end, locale.ErrRequired, "content")
+		return p.NewError(start, end, "content", locale.ErrRequired)
 	}
 
 	return nil
