@@ -7,8 +7,6 @@ import (
 	"reflect"
 	"strings"
 	"unicode"
-
-	"github.com/issue9/is"
 )
 
 const tagName = "apidoc"
@@ -72,10 +70,6 @@ func initValue(name string, v reflect.Value, omitempty bool, usage string) value
 		omitempty: omitempty,
 		usage:     usage,
 	}
-}
-
-func (v value) isOmitempty() bool {
-	return v.omitempty && is.Empty(v.Value.Interface(), true)
 }
 
 func isPrimitive(v reflect.Value) bool {

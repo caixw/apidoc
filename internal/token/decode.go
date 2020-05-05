@@ -7,6 +7,8 @@ import (
 	"io"
 	"reflect"
 
+	"github.com/issue9/is"
+
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
@@ -85,7 +87,16 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 		return nil, nil
 	}
 
-	return n.decodeElements(p)
+	end, err := n.decodeElements(p)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := n.sanitizeOmitempty(p, start.Start, end.End); err != nil {
+		return nil, err
+	}
+
+	return end, nil
 }
 
 // 将 start 的属性内容解码到 obj.attrs 之中
@@ -265,6 +276,35 @@ func findEndElement(p *Parser, start *StartElement) error {
 			level--
 		}
 	}
+}
+
+func (n *node) sanitizeOmitempty(p *Parser, start, end core.Position) error {
+	for _, attr := range n.attrs {
+		if attr.canNotEmpty() {
+			return p.NewError(start, end, locale.ErrRequired, attr.name)
+		}
+	}
+
+	for _, elem := range n.elems {
+		if elem.canNotEmpty() {
+			return p.NewError(start, end, locale.ErrRequired, elem.name)
+		}
+	}
+
+	if n.cdata.canNotEmpty() {
+		return p.NewError(start, end, locale.ErrRequired, "cdata")
+	}
+
+	if n.content.canNotEmpty() {
+		return p.NewError(start, end, locale.ErrRequired, "content")
+	}
+
+	return nil
+}
+
+// 当前表示的值必须是一个非空值
+func (v value) canNotEmpty() bool {
+	return !v.omitempty && (!v.IsValid() || !v.CanInterface() || is.Empty(v.Interface(), true))
 }
 
 func setElementValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {
