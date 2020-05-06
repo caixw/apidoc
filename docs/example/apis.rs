@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 // <api method="GET" summary="获取用户" deprecated="1.1.11">
-//     <description>
+//     <description type="markdown">
 // <![CDATA[
 // <p>这是关于接口的详细说明文档</p><br />
 // 可以是一个 HTML 内容
@@ -9,13 +9,13 @@
 // </description>
 //     <path path="/users">
 //         <query name="page" type="number" default="0" summary="页码" />
-//         <query name="size" type="number" default="20"><description><![CDATA[数量]]></description></query>
+//         <query name="size" type="number" default="20"><description type="markdown"><![CDATA[数量]]></description></query>
 //     </path>
 //
 //     <tag>t1</tag>
 //     <tag>t2</tag>
 //     <server>admin</server>
-//     <header name="name" type="string"><description><![CDATA[desc]]></description></header>
+//     <header name="name" type="string"><description type="markdown"><![CDATA[desc]]></description></header>
 //     <header name="name1" type="string" summary="name1 desc" />
 //
 //     <response status="200" array="true" type="object" name="user">
@@ -34,7 +34,7 @@
 fn getList() {}
 
 // <api method="POST" summary="添加用户">
-//     <description>
+//     <description type="markdown">
 // <![CDATA[
 // 这是关于接口的详细说明文档<br />
 // 可以是一个 HTML 内容
@@ -46,7 +46,7 @@ fn getList() {}
 //     <server>admin</server>
 //     <server>old-client</server>
 //
-//     <header name="name" type="string"><description><![CDATA[desc]]></description></header>
+//     <header name="name" type="string"><description type="markdown"><![CDATA[desc]]></description></header>
 //     <header name="name1" type="string" summary="name1 desc" />
 //
 //     <request type="object">
@@ -88,7 +88,7 @@ fn post() {}
 
 // <api method="DELETE" summary="删除用户">
 //     <server>admin</server>
-//     <description>
+//     <description type="markdown">
 // <![CDATA[
 // 这是关于接口的详细说明文档<br />
 // 可以是一个 HTML 内容<br />
@@ -102,7 +102,7 @@ fn delete() {}
 
 // <api method="GET" summary="获取用户详情">
 //     <server>old-client</server>
-//     <description>
+//     <description type="markdown">
 // <![CDATA[
 // 这是关于接口的详细说明文档
 // 可以是一个 HTML 内容

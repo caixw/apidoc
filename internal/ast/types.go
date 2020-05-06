@@ -198,7 +198,7 @@ type (
 	// Richtext 富文本内容
 	Richtext struct {
 		token.Base
-		Type *Attribute `apidoc:"type,attr,usage-richtext-type,omitempty"` // 文档类型，可以是 html 或是 markdown
+		Type *Attribute `apidoc:"type,attr,usage-richtext-type"` // 文档类型，可以是 html 或是 markdown
 		Text *CData     `apidoc:",cdata"`
 	}
 

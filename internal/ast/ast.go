@@ -5,7 +5,7 @@ package ast
 
 const (
 	// Version 文档规范的版本
-	Version = "6.0.0"
+	Version = "6.1.0"
 
 	// MajorVersion 文档规范的主版本信息
 	MajorVersion = "v6"

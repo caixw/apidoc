@@ -75,7 +75,7 @@ func TestInput_parseFile(t *testing.T) {
 	blk := <-blocks
 	a.Equal(string(blk.Data), `   <api method="GET">
    <path path="/apis/gbk" />
-   <description><![CDATA[1223 中文 45 ]]></description>
+   <description type="markdown"><![CDATA[1223 中文 45 ]]></description>
    <server>test</server>
    </api>
 `).

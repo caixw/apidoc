@@ -9,9 +9,9 @@
 // ]]>
 //     </description>
 //     <path path="/users/{id}/logs">
-//         <param name="id" type="number"><description><![CDATA[用户 ID]]></description></param>
+//         <param name="id" type="number"><description type="markdown"><![CDATA[用户 ID]]></description></param>
 //         <query name="page" type="number" default="0" summary="页码" />
-//         <query name="size" type="number" default="20"><description><![CDATA[数量]]></description></query>
+//         <query name="size" type="number" default="20"><description type="markdown"><![CDATA[数量]]></description></query>
 //     </path>
 //
 //     <response status="200" array="true" type="object" mimetype="application/json">
@@ -22,7 +22,7 @@
 //             <param name="id" type="number" optional="true" summary="desc" />
 //             <param name="name" type="string" optional="true" summary="desc" />
 //             <param name="groups" type="string" array="true" optional="true" summary="desc">
-//                 <enum value="xx1"><description><![CDATA[xx]]></description></enum>
+//                 <enum value="xx1"><description type="markdown"><![CDATA[xx]]></description></enum>
 //                 <enum value="xx2" summary="xx" />
 //             </param>
 //         </param>

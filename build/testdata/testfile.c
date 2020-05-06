@@ -2,7 +2,7 @@
 
 // <api method="GET">
 // <path path="/apis" />
-// <description><![CDATA[desc]]></description>
+// <description type="markdown"><![CDATA[desc]]></description>
 // <server>test</server>
 // </api>
 void api() {
