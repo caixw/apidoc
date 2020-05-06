@@ -760,7 +760,7 @@ func TestDecode(t *testing.T) {
 		Equal(v14.Elem1.XMLName.Value, "elem2").
 		Equal(v14.Elem1.ID.Value, 60)
 
-	// attr1 不能为空
+	// omitempty attr1 不能为空
 	v14 = &struct {
 		Base
 		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
@@ -770,21 +770,39 @@ func TestDecode(t *testing.T) {
 	b = `<apidoc><elem2 id="60" /></apidoc>`
 	decode(a, b, v14, true)
 
-	// cdata 不能为空
+	// omitempty, elem2 数组，不能为空
 	v15 := &struct {
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
+	}{}
+	b = `<apidoc></apidoc>`
+	decode(a, b, v15, true)
+
+	v15 = &struct {
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
+	}{}
+	b = `<apidoc><elem2 id="60" /></apidoc>`
+	decode(a, b, v15, false)
+	a.Equal(1, len(v15.Elem1))
+
+	// omitempty, cdata 不能为空
+	v16 := &struct {
 		Base
 		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
 		CData    *CData   `apidoc:",cdata,"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decode(a, b, v15, true)
+	decode(a, b, v16, true)
 
 	// 是否能正常调用根的 Sanitizer 接口
-	v16 := &objectTest{}
+	v17 := &objectTest{}
 	b = `<attr id="7"><name>n</name></attr>`
-	decode(a, b, v16, false)
-	a.Equal(v16.ID.Value, 8).
-		Equal(v16.Name.Value, "n")
+	decode(a, b, v17, false)
+	a.Equal(v17.ID.Value, 8).
+		Equal(v17.Name.Value, "n")
 }
 
 func TestObject_decodeAttributes(t *testing.T) {
