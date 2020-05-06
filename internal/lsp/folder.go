@@ -46,8 +46,8 @@ func (f *folder) matchPosition(uri core.URI, pos core.Position) (bool, error) {
 	if r.IsEmpty() {
 		return false, nil
 	}
-	return pos.Line >= r.Start.Line &&
-		pos.Line <= r.End.Line, nil
+
+	return r.Contains(pos), nil
 }
 
 func (f *folder) openFile(uri core.URI) error {

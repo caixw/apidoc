@@ -45,6 +45,14 @@ func (r Range) IsEmpty() bool {
 	return r.End == r.Start
 }
 
+// Contains 是否包含了 p 这个点
+func (r Range) Contains(p Position) bool {
+	s := r.Start
+	e := r.End
+	return (s.Line < p.Line || (s.Line == p.Line && s.Character <= p.Character)) &&
+		(e.Line > p.Line || (e.Line == p.Line && e.Character >= p.Character))
+}
+
 func (l Location) String() string {
 	s := l.Range.Start
 	e := l.Range.End

@@ -34,3 +34,18 @@ func TestRange_IsEmpty(t *testing.T) {
 	r.End.Character = 55
 	a.True(r.IsEmpty())
 }
+
+func TestRange_Contains(t *testing.T) {
+	a := assert.New(t)
+
+	r := Range{
+		Start: Position{Line: 1, Character: 15},
+		End:   Position{Line: 5, Character: 16},
+	}
+
+	a.True(r.Contains(Position{Line: 1, Character: 15}))
+	a.True(r.Contains(Position{Line: 2, Character: 15}))
+	a.True(r.Contains(Position{Line: 5, Character: 15}))
+	a.False(r.Contains(Position{Line: 5, Character: 17}))
+	a.False(r.Contains(Position{Line: 0, Character: 17}))
+}
