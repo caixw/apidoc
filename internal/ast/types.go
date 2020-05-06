@@ -257,15 +257,18 @@ func (doc *APIDoc) Parse(b core.Block) error {
 	}
 	switch name {
 	case "api":
-		api := &API{doc: doc}
 		if doc.Apis == nil {
 			doc.Apis = make([]*API, 0, 100)
 		}
+
+		api := &API{doc: doc}
+		if err := token.Decode(p, api); err != nil {
+			return err
+		}
 		doc.Apis = append(doc.Apis, api)
-		return token.Decode(p, api)
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
-			return core.NewSyntaxError(b.Location, "", locale.ErrDuplicateValue)
+			return p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue)
 		}
 		return token.Decode(p, doc)
 	}

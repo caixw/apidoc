@@ -36,7 +36,6 @@ func TestParse(t *testing.T) {
 	h.Stop()
 	a.Empty(erro.String())
 
-	a.NotError(doc.Sanitize())
 	a.Equal(2, len(doc.Apis)).
 		Equal(doc.Version.V(), "1.1.1")
 	api := doc.Apis[0]
@@ -58,7 +57,6 @@ func TestParseFile(t *testing.T) {
 	uri, err := core.FileURI("./testdata/testfile.h")
 	a.NotError(err).NotEmpty(uri)
 	ParseFile(doc, h, uri, c)
-	a.NotError(doc.Sanitize())
 	a.Equal(0, len(doc.Apis)).
 		Equal(doc.Version.V(), "1.1.1")
 	h.Stop()
