@@ -60,8 +60,11 @@ func SystemLocale() (language.Tag, error) {
 // 包含了版本号，编译日期以及编译是的 Git 记录 ID。
 //
 // 为一个正常的 semver(https://semver.org/lang/zh-CN/) 格式字符串。
-func Version() string {
-	return vars.FullVersion()
+func Version(full bool) string {
+	if full {
+		return vars.FullVersion()
+	}
+	return vars.Version
 }
 
 // LSPVersion 获取当前支持的 LSP 版本

@@ -18,7 +18,7 @@ func initVersion() {
 
 func version(w io.Writer) error {
 	goVersion := strings.TrimLeft(runtime.Version(), "go")
-	msg := locale.Sprintf(locale.Version, apidoc.Version(), apidoc.DocVersion(), apidoc.LSPVersion(), goVersion)
+	msg := locale.Sprintf(locale.Version, apidoc.Version(true), apidoc.DocVersion(), apidoc.LSPVersion(), goVersion)
 	_, err := fmt.Fprintln(w, msg)
 	return err
 }

@@ -19,7 +19,10 @@ import (
 func TestVersion(t *testing.T) {
 	a := assert.New(t)
 
-	a.True(version.SemVerValid(Version()))
+	a.True(version.SemVerValid(Version(true)))
+	a.True(version.SemVerValid(Version(false)))
+	a.True(version.SemVerValid(DocVersion()))
+	a.True(version.SemVerValid(LSPVersion()))
 }
 
 func TestValid(t *testing.T) {
