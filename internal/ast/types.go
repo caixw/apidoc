@@ -34,6 +34,7 @@ type (
 	// APIDoc 对应 apidoc 元素
 	APIDoc struct {
 		token.Base
+		URI      core.URI `apidoc:"-"`
 		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
 
 		// 程序的版本号
@@ -66,8 +67,6 @@ type (
 
 		// 表示所有接口都支持的文档类型
 		Mimetypes []*Element `apidoc:"mimetype,elem,usage-apidoc-mimetypes"`
-
-		Block *core.Block `apidoc:"-"`
 	}
 
 	// API 表示 <api> 顶层元素
@@ -89,8 +88,8 @@ type (
 		Tags    []*Element `apidoc:"tag,elem,usage-api-tags,omitempty"`
 		Servers []*Element `apidoc:"server,elem,usage-api-servers,omitempty"`
 
-		Block *core.Block `apidoc:"-"`
-		doc   *APIDoc
+		URI core.URI `apidoc:"-"`
+		doc *APIDoc
 	}
 
 	// Link 表示一个链接
@@ -323,13 +322,12 @@ func (r *Request) Param() *Param {
 // DeleteURI 删除与 uri 相关的文档内容
 func (doc *APIDoc) DeleteURI(uri core.URI) {
 	for index, api := range doc.Apis {
-		if api.Block.Location.URI == uri {
+		if api.URI == uri {
 			doc.Apis = append(doc.Apis[:index], doc.Apis[index+1:]...)
 		}
 	}
 
-	if doc.Block.Location.URI == uri {
-		doc.Block = &core.Block{}
+	if doc.URI == uri {
 		doc.Mimetypes = nil
 		doc.Title = nil
 		doc.Responses = nil

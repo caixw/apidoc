@@ -215,9 +215,6 @@ func (api *API) sanitizeTags(p *token.Parser) error {
 		}
 	}
 
-	if len(api.Servers) == 0 {
-		return p.NewError(api.Block.Location.Range.Start, api.Block.Location.Range.End, "server", locale.ErrRequired)
-	}
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv.Content.Value) {
 			return p.NewError(srv.Content.Start, srv.Content.End, "content", locale.ErrInvalidValue)

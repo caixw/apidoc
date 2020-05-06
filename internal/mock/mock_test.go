@@ -460,10 +460,7 @@ const testAPIDoc = `<apidoc version="1.0.1">
 
 func TestNew(t *testing.T) {
 	a := assert.New(t)
-	d := &ast.APIDoc{
-		APIDoc: &ast.APIDocVersionAttribute{Value: ast.String{Value: ast.Version}},
-		Block:  &core.Block{Data: []byte(testAPIDoc)},
-	}
+	d := &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: ast.String{Value: ast.Version}}}
 	a.NotError(d.Parse(core.Block{Data: []byte(testAPIDoc)}))
 
 	erro, _, h := messagetest.MessageHandler()
