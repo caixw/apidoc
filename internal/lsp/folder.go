@@ -32,22 +32,22 @@ func (f *folder) matchURI(uri core.URI) bool {
 }
 
 func (f *folder) matchPosition(uri core.URI, pos core.Position) (bool, error) {
-	var block *core.Block
-	if f.doc.Block.Location.URI == uri {
-		block = f.doc.Block
+	var r core.Range
+	if f.URI == uri {
+		r = f.doc.Range
 	} else {
 		for _, api := range f.doc.Apis {
-			if api.Block.Location.URI == uri {
-				block = api.Block
+			if api.URI == uri {
+				r = api.Range
 				break
 			}
 		}
 	}
-	if block == nil {
+	if r.IsEmpty() {
 		return false, nil
 	}
-	return pos.Line >= block.Location.Range.Start.Line &&
-		pos.Line <= block.Location.Range.End.Line, nil
+	return pos.Line >= r.Start.Line &&
+		pos.Line <= r.End.Line, nil
 }
 
 func (f *folder) openFile(uri core.URI) error {

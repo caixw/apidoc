@@ -36,8 +36,9 @@ type errIntTest struct {
 // NOTE: objectTest 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
 type objectTest struct {
 	Base
-	ID   intTest    `apidoc:"id,attr,usage"`
-	Name stringTest `apidoc:"name,elem,usage"`
+	RootName struct{}   `apidoc:"apidoc,attr,usage-root"`
+	ID       intTest    `apidoc:"id,attr,usage"`
+	Name     stringTest `apidoc:"name,elem,usage"`
 }
 
 var (
@@ -50,6 +51,8 @@ var (
 	_ AttrDecoder = &stringTest{}
 	_ Encoder     = &stringTest{}
 	_ Decoder     = &stringTest{}
+
+	_ Sanitizer = &objectTest{}
 )
 
 func (i *intTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
@@ -128,6 +131,11 @@ func (i *stringTest) EncodeXML() (string, error) {
 
 func (i *stringTest) EncodeXMLAttr() (string, error) {
 	return i.Value, nil
+}
+
+func (o *objectTest) Sanitize(p *Parser) error {
+	o.ID.Value++
+	return nil
 }
 
 func (t *errIntTest) DecodeXML(p *Parser, start *StartElement) (core.Position, error) {

@@ -155,7 +155,7 @@
 				<param name="name" type="string" optional="true" summary="desc"></param>
 				<param name="groups" type="string" optional="true" array="true" summary="desc">
 					<enum value="xx1">
-						<description></description>
+						<description><![CDATA[xx]]></description>
 					</enum>
 					<enum value="xx2" summary="xx"></enum>
 				</param>

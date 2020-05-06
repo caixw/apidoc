@@ -66,11 +66,6 @@ func parse(h *core.MessageHandler, i ...*Input) (*ast.APIDoc, error) {
 	d := &ast.APIDoc{}
 	Parse(d, h, i...)
 
-	if err := d.Sanitize(); err != nil {
-		h.Error(core.Erro, err)
-		return nil, err
-	}
-
 	return d, nil
 }
 

@@ -367,7 +367,7 @@ func TestDecode(t *testing.T) {
 	v6 := &struct {
 		Base
 		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
-		Cdata    CData    `apidoc:",cdata"`
+		Cdata    CData    `apidoc:",cdata,,omitempty"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
 	decode(a, b, v6, false)
@@ -439,7 +439,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		ID: intTest{Value: 11, Base: Base{
+		ID: intTest{Value: 12, Base: Base{ // objectTest.Sanitize
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 38},
@@ -586,7 +586,7 @@ func TestDecode(t *testing.T) {
 					},
 				},
 			},
-			Value: 5,
+			Value: 6, // objectTest.Sanitize
 		},
 		Name: stringTest{
 			Base: Base{
@@ -650,7 +650,7 @@ func TestDecode(t *testing.T) {
 					},
 				},
 			},
-			Value: 7,
+			Value: 8, // objectTest.Sanitize
 		},
 		Name: stringTest{
 			Base: Base{
@@ -759,6 +759,50 @@ func TestDecode(t *testing.T) {
 	a.NotNil(v14.Elem1).
 		Equal(v14.Elem1.XMLName.Value, "elem2").
 		Equal(v14.Elem1.ID.Value, 60)
+
+	// omitempty attr1 不能为空
+	v14 = &struct {
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest  `apidoc:"attr1,attr,usage"`
+		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
+	}{}
+	b = `<apidoc><elem2 id="60" /></apidoc>`
+	decode(a, b, v14, true)
+
+	// omitempty, elem2 数组，不能为空
+	v15 := &struct {
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
+	}{}
+	b = `<apidoc></apidoc>`
+	decode(a, b, v15, true)
+
+	v15 = &struct {
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
+	}{}
+	b = `<apidoc><elem2 id="60" /></apidoc>`
+	decode(a, b, v15, false)
+	a.Equal(1, len(v15.Elem1))
+
+	// omitempty, cdata 不能为空
+	v16 := &struct {
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		CData    *CData   `apidoc:",cdata,"`
+	}{}
+	b = `<apidoc></apidoc>`
+	decode(a, b, v16, true)
+
+	// 是否能正常调用根的 Sanitizer 接口
+	v17 := &objectTest{}
+	b = `<attr id="7"><name>n</name></attr>`
+	decode(a, b, v17, false)
+	a.Equal(v17.ID.Value, 8).
+		Equal(v17.Name.Value, "n")
 }
 
 func TestObject_decodeAttributes(t *testing.T) {

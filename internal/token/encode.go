@@ -7,6 +7,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"reflect"
+
+	"github.com/issue9/is"
 )
 
 // Encoder 将元素内容编码成 XML 内容
@@ -192,4 +194,8 @@ func getElementValue(elem reflect.Value) (string, error) {
 	}
 
 	panic(fmt.Sprintf("%s 只能是 CData 或是 String 类型", elem.Type()))
+}
+
+func (v value) isOmitempty() bool {
+	return v.omitempty && is.Empty(v.Value.Interface(), true)
 }

@@ -7,6 +7,8 @@ import (
 	"io"
 	"reflect"
 
+	"github.com/issue9/is"
+
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
@@ -32,9 +34,18 @@ type AttrDecoder interface {
 	DecodeXMLAttr(p *Parser, attr *Attribute) error
 }
 
+// Sanitizer 用于验证和修改对象中的数据
+type Sanitizer interface {
+	// 验证数据是否正确
+	//
+	// 可以通过 p.NewError 和 p.WithError 返回 *core.SyntaxError 类型的错误
+	Sanitize(p *Parser) error
+}
+
 var (
 	attrDecoderType = reflect.TypeOf((*AttrDecoder)(nil)).Elem()
 	decoderType     = reflect.TypeOf((*Decoder)(nil)).Elem()
+	sanitizerType   = reflect.TypeOf((*Sanitizer)(nil)).Elem()
 )
 
 // Decode 将 p 中的 XML 内容解码至 v 对象中
@@ -76,7 +87,36 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 		return nil, nil
 	}
 
-	return n.decodeElements(p)
+	end, err := n.decodeElements(p)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, attr := range n.attrs {
+		if attr.canNotEmpty() {
+			return nil, p.NewError(start.Start, end.End, attr.name, locale.ErrRequired)
+		}
+	}
+	for _, elem := range n.elems {
+		if elem.canNotEmpty() {
+			return nil, p.NewError(start.Start, end.End, elem.name, locale.ErrRequired)
+		}
+	}
+	if n.cdata.canNotEmpty() {
+		return nil, p.NewError(start.Start, end.End, "cdata", locale.ErrRequired)
+	}
+	if n.content.canNotEmpty() {
+		return nil, p.NewError(start.Start, end.End, "content", locale.ErrRequired)
+	}
+
+	return end, nil
+}
+
+// 当前表示的值必须是一个非空值
+func (v value) canNotEmpty() bool {
+	return v.name != "" && // cdata 和 content 在未初始化时 name 字段为空值
+		!v.omitempty &&
+		(!v.IsValid() || !v.CanInterface() || is.Empty(v.Interface(), true))
 }
 
 // 将 start 的属性内容解码到 obj.attrs 之中
@@ -113,7 +153,9 @@ func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
 			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name.Value))
 		}
 
-		setValue(item.Value, item.usage, attr.Start, attr.End, attr.Name, String{})
+		if err := setValue(item.Value, item.usage, p, attr.Start, attr.End, attr.Name, String{}); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -131,29 +173,30 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 
 		switch elem := t.(type) {
 		case *EndElement: // 找到当前对象的结束标签
-			if elem.Name.Value != n.name {
-				return nil, p.NewError(elem.Start, elem.End, n.name, locale.ErrNotFoundEndTag)
+			if elem.Name.Value == n.name {
+				return elem, nil
 			}
-			return elem, nil
+			return nil, p.NewError(elem.Start, elem.End, n.name, locale.ErrNotFoundEndTag)
 		case *CData:
 			if n.cdata.IsValid() {
 				getRealValue(n.cdata.Value).Set(getRealValue(reflect.ValueOf(elem)))
-				setValue(n.cdata.Value, n.cdata.usage, elem.Start, elem.End, String{}, String{})
+				err = setValue(n.cdata.Value, n.cdata.usage, p, elem.Start, elem.End, String{}, String{})
 			}
 		case *String:
 			if n.content.IsValid() {
 				getRealValue(n.content.Value).Set(getRealValue(reflect.ValueOf(elem)))
-				setValue(n.content.Value, n.content.usage, elem.Start, elem.End, String{}, String{})
+				err = setValue(n.content.Value, n.content.usage, p, elem.Start, elem.End, String{}, String{})
 			}
 		case *StartElement:
 			item, found := n.elem(elem.Name.Value)
 			if !found {
 				panic(fmt.Sprintf("不存在的子元素 %s", elem.Name.Value))
 			}
+			err = decodeElement(p, elem, item)
+		}
 
-			if err = decodeElement(p, elem, item); err != nil {
-				return nil, err
-			}
+		if err != nil {
+			return nil, err
 		}
 	} // end for
 }
@@ -175,8 +218,7 @@ func decodeElement(p *Parser, start *StartElement, v value) (err error) {
 	if err != nil {
 		return err
 	}
-	setElementValue(v.Value, v.usage, start, end)
-	return nil
+	return setElementValue(v.Value, v.usage, p, start, end)
 }
 
 func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
@@ -202,7 +244,9 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 		return err
 	}
 
-	setElementValue(elem, slice.usage, start, end)
+	if err = setElementValue(elem, slice.usage, p, start, end); err != nil {
+		return err
+	}
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return nil
 }
@@ -251,15 +295,27 @@ func findEndElement(p *Parser, start *StartElement) error {
 	}
 }
 
-func setElementValue(v reflect.Value, usage string, start *StartElement, end *EndElement) {
+func setElementValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {
 	if end == nil {
-		setValue(v, usage, start.Start, start.End, start.Name, String{})
-		return
+		return setValue(v, usage, p, start.Start, start.End, start.Name, String{})
 	}
-	setValue(v, usage, start.Start, end.End, start.Name, end.Name)
+	return setValue(v, usage, p, start.Start, end.End, start.Name, end.Name)
 }
 
-func setValue(v reflect.Value, usage string, start, end core.Position, xmlName, xmlNameEnd String) {
+func setValue(v reflect.Value, usage string, p *Parser, start, end core.Position, xmlName, xmlNameEnd String) error {
+	if v.CanInterface() && v.Type().Implements(sanitizerType) {
+		if err := v.Interface().(Sanitizer).Sanitize(p); err != nil {
+			return err
+		}
+	} else if v.CanAddr() {
+		pv := v.Addr()
+		if pv.CanInterface() && pv.Type().Implements(sanitizerType) {
+			if err := pv.Interface().(Sanitizer).Sanitize(p); err != nil {
+				return err
+			}
+		}
+	}
+
 	v = getRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
@@ -278,4 +334,6 @@ func setValue(v reflect.Value, usage string, start, end core.Position, xmlName, 
 	if xmlNameEnd.Value != "" {
 		v.FieldByName(elementTagEndName).Set(reflect.ValueOf(xmlNameEnd))
 	}
+
+	return nil
 }

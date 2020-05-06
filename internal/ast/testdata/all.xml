@@ -38,10 +38,10 @@
             <query name="page" type="number" deprecated="0.1.1" summary="page" />
         </path>
 
-        <tag>g1</tag>
-        <tag>g2</tag>
-        <server>s1</server>
-        <server>s2</server>
+        <tag>tag1</tag>
+        <tag>tag2</tag>
+        <server>admin</server>
+        <server>client</server>
 
         <description type="html">
         <![CDATA[
@@ -56,7 +56,7 @@
         <response status="200" mimetype="json" type="object">
             <param name="id" type="number" default="1" summary="id" />
             <param name="sex" type="string" default="male" summary="sex">
-                <enum value="male"><description>男性</description></enum>
+                <enum value="male"><description><![CDATA[男性]]></description></enum>
                 <enum value="female" summary="女性" />
             </param>
             <param name="emails" type="string" array="true" summary="email" />
