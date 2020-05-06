@@ -18,6 +18,7 @@ var (
 	displayNames  = map[language.Tag]string{}
 )
 
+// Locale 提供缓存本地化信息
 type Locale struct {
 	Key    message.Reference
 	Values []interface{}

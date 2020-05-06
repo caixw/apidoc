@@ -60,6 +60,9 @@ func TestSetLocale(t *testing.T) {
 	// 设置为系统语言
 	systemTag, err := utils.GetSystemLanguageTag()
 	a.NotError(err)
-	a.True(SetLanguageTag(systemTag)).
-		Equal(systemTag, LanguageTag())
+	if SetLanguageTag(systemTag) {
+		a.Equal(systemTag, LanguageTag())
+	} else {
+		a.NotEqual(systemTag, LanguageTag())
+	}
 }
