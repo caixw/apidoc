@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"strings"
+	"time"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
@@ -15,6 +16,8 @@ import (
 	"github.com/caixw/apidoc/v7/internal/token"
 	"github.com/caixw/apidoc/v7/internal/vars"
 )
+
+const createdFormat = time.RFC3339
 
 // 几种输出的类型
 const (
@@ -117,6 +120,7 @@ func apidocMarshaler(d *ast.APIDoc) ([]byte, error) {
 func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 	filterDoc(d, o)
 
+	d.Created = &ast.Attribute{Value: ast.String{Value: time.Now().Format(createdFormat)}}
 	buf := new(bytes.Buffer)
 
 	if o.xml {
