@@ -759,6 +759,25 @@ func TestDecode(t *testing.T) {
 	a.NotNil(v14.Elem1).
 		Equal(v14.Elem1.XMLName.Value, "elem2").
 		Equal(v14.Elem1.ID.Value, 60)
+
+	// attr1 不能为空
+	v14 = &struct {
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		Attr1    intTest  `apidoc:"attr1,attr,usage"`
+		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
+	}{}
+	b = `<apidoc><elem2 id="60" /></apidoc>`
+	decode(a, b, v14, true)
+
+	// cdata 不能为空
+	v15 := &struct {
+		Base
+		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		CData    *CData   `apidoc:",cdata,"`
+	}{}
+	b = `<apidoc></apidoc>`
+	decode(a, b, v15, true)
 }
 
 func TestObject_decodeAttributes(t *testing.T) {
