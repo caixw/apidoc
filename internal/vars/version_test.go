@@ -6,14 +6,14 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-	v "github.com/issue9/version"
+	"github.com/issue9/version"
 )
 
 // 对一些堂量的基本检测。
 func TestVersion(t *testing.T) {
 	a := assert.New(t)
 
-	a.True(v.SemVerValid(version))
-	a.True(v.SemVerValid(fullVersion))
-	a.True(v.SemVerValid(Version()))
+	a.True(version.SemVerValid(Version))
+	a.True(version.SemVerValid(fullVersion))
+	a.True(version.SemVerValid(FullVersion()))
 }

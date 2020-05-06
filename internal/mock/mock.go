@@ -14,7 +14,6 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 const (
@@ -36,7 +35,7 @@ type Mock struct {
 // d doc.APIDoc 实例，调用方需要保证该数据类型的正确性；
 // servers 用于指定 d.Servers 中每一个服务对应的路由前缀
 func New(h *core.MessageHandler, d *ast.APIDoc, servers map[string]string) (http.Handler, error) {
-	c, err := version.SemVerCompatible(d.APIDoc.V(), vars.Version())
+	c, err := version.SemVerCompatible(d.APIDoc.V(), ast.Version)
 	if err != nil {
 		return nil, err
 	}

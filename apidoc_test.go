@@ -14,13 +14,11 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
 	"github.com/caixw/apidoc/v7/internal/docs"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 func TestVersion(t *testing.T) {
 	a := assert.New(t)
 
-	a.Equal(Version(), vars.Version())
 	a.True(version.SemVerValid(Version()))
 }
 
