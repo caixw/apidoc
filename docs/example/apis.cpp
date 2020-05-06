@@ -22,7 +22,7 @@
 //             <param name="id" type="number" optional="true" summary="desc" />
 //             <param name="name" type="string" optional="true" summary="desc" />
 //             <param name="groups" type="string" array="true" optional="true" summary="desc">
-//                 <enum value="xx1"><description>xx</description></enum>
+//                 <enum value="xx1"><description><![CDATA[xx]]></description></enum>
 //                 <enum value="xx2" summary="xx" />
 //             </param>
 //         </param>

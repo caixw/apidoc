@@ -778,6 +778,13 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc></apidoc>`
 	decode(a, b, v15, true)
+
+	// 是否能正常调用根的 Sanitizer 接口
+	v16 := &objectTest{}
+	b = `<attr id="7"><name>n</name></attr>`
+	decode(a, b, v16, false)
+	a.Equal(v16.ID.Value, 8).
+		Equal(v16.Name.Value, "n")
 }
 
 func TestObject_decodeAttributes(t *testing.T) {
