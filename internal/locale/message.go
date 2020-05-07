@@ -2,6 +2,13 @@
 
 package locale
 
+import "golang.org/x/text/language"
+
+func init() {
+	setMessages(language.MustParse("cmn-Hans"), zhHans) // 第一个初始化的作为默认值
+	setMessages(language.MustParse("cmn-Hant"), zhHant)
+}
+
 // 各个语言需要翻译的所有字符串
 const (
 	// 与 flag 包相关的处理

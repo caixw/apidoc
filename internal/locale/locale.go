@@ -10,13 +10,12 @@ import (
 )
 
 var (
-	// 当前使用的语言标签
-	//
 	// 保证有个初始化的值，部分包的测试功能依赖此变量
-	localeTag     = language.MustParse("zh-Hans")
+	localeTag     = language.MustParse("cmn-Hans")
 	localePrinter = message.NewPrinter(localeTag)
-	tags          = []language.Tag{}
-	displayNames  = map[language.Tag]string{}
+
+	tags         = []language.Tag{}
+	displayNames = map[language.Tag]string{}
 )
 
 // Locale 提供缓存本地化信息
@@ -49,8 +48,7 @@ func setMessages(tag language.Tag, messages map[string]string) {
 
 // SetLanguageTag 切换本地化环境
 func SetLanguageTag(tag language.Tag) {
-	matcher := language.NewMatcher(tags)
-	tag, _, _ = matcher.Match(tag)
+	tag, _, _ = language.NewMatcher(tags).Match(tag)
 	localeTag = tag
 	localePrinter = message.NewPrinter(localeTag)
 }
@@ -87,5 +85,6 @@ func NewError(key message.Reference, v ...interface{}) error {
 
 // Translate 功能与 Sprintf 类似，但是可以指定本地化 ID 值。
 func Translate(localeID string, key message.Reference, v ...interface{}) string {
-	return message.NewPrinter(language.MustParse(localeID)).Sprintf(key, v...)
+	tag, _ := language.MatchStrings(language.NewMatcher(tags), localeID)
+	return message.NewPrinter(tag).Sprintf(key, v...)
 }

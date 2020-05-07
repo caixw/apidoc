@@ -2,8 +2,6 @@
 
 package locale
 
-import "golang.org/x/text/language"
-
 var zhHans = map[string]string{
 	// 与 flag 包相关的处理
 	CmdUsage: `%s 是一个 RESTful API 文档生成工具
@@ -233,8 +231,4 @@ options 可以是以下参数
 	WarnPrefix:    "[警告] ",
 	ErrorPrefix:   "[错误] ",
 	SuccessPrefix: "[成功] ",
-}
-
-func init() {
-	setMessages(language.MustParse("cmn-Hans"), zhHans)
 }

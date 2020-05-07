@@ -24,12 +24,10 @@ func TestDisplayNames(t *testing.T) {
 
 func TestTranslate(t *testing.T) {
 	a := assert.New(t)
-	a.Equal(Translate("zh-hans", ErrRequired), zhHans[ErrRequired])
+	a.Equal(Translate("cmn-hans", ErrRequired), zhHans[ErrRequired])
 	a.Equal(Translate("zh-hant", ErrRequired), zhHant[ErrRequired])
 	a.NotEqual(Translate("zh-hant", ErrRequired), zhHans[ErrRequired])
-	a.Panic(func() {
-		Translate("not-well-format", ErrRequired)
-	})
+	Translate("not-well-format", zhHans[ErrRequired]) // 无效的 tag 格式
 }
 
 func TestSetLocale(t *testing.T) {
