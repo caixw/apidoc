@@ -290,10 +290,10 @@ func (doc *APIDoc) Sanitize(p *token.Parser) error {
 		ii := doc.Apis[i]
 		jj := doc.Apis[j]
 
-		if ii.Path.Path == jj.Path.Path {
-			return ii.Method.Value.Value < jj.Method.Value.Value
+		if ii.Path.Path.V() == jj.Path.Path.V() {
+			return ii.Method.V() < jj.Method.V()
 		}
-		return ii.Path.Path.Value.Value < jj.Path.Path.Value.Value
+		return ii.Path.Path.V() < jj.Path.Path.V()
 	})
 
 	for _, api := range doc.Apis {
