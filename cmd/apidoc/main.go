@@ -8,8 +8,17 @@
 //  apidoc help cmd
 package main
 
-import "github.com/caixw/apidoc/v7/internal/cmd"
+import (
+	"github.com/caixw/apidoc/v7"
+	"github.com/caixw/apidoc/v7/internal/cmd"
+)
 
 func main() {
+	tag, err := apidoc.SystemLocale()
+	if err != nil {
+		panic(err)
+	}
+
+	apidoc.SetLocale(tag)
 	cmd.Exec()
 }

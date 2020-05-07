@@ -15,6 +15,7 @@ var (
 	// 保证有个初始化的值，部分包的测试功能依赖此变量
 	localeTag     = language.MustParse("zh-Hans")
 	localePrinter = message.NewPrinter(localeTag)
+	tags          = []language.Tag{}
 	displayNames  = map[language.Tag]string{}
 )
 
@@ -41,18 +42,17 @@ func setMessages(tag language.Tag, messages map[string]string) {
 			panic(err)
 		}
 	}
+
 	displayNames[tag] = display.Self.Name(tag)
+	tags = append(tags, tag)
 }
 
 // SetLanguageTag 切换本地化环境
-func SetLanguageTag(tag language.Tag) bool {
-	if _, found := displayNames[tag]; !found {
-		return false
-	}
-
+func SetLanguageTag(tag language.Tag) {
+	matcher := language.NewMatcher(tags)
+	tag, _, _ = matcher.Match(tag)
 	localeTag = tag
 	localePrinter = message.NewPrinter(localeTag)
-	return true
 }
 
 // LanguageTag 获取当前的本地化 ID
