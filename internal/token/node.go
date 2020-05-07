@@ -226,7 +226,7 @@ func parseTag(field reflect.StructField) (string, nodeType, string, bool) {
 		node := getNodeType(props[1])
 		return getTagName(field, props[0]), node, getUsageKey(node, props[2]), getOmitempty(props[3])
 	default:
-		panic(fmt.Sprintf("无效的 struct tag %s，数量必须介于 [3,4] 之间", field.Name))
+		panic(fmt.Sprintf("无效的 struct tag %s:%s，数量必须介于 [3,4] 之间，当前 %d", field.Name, tag, len(props)))
 	}
 }
 

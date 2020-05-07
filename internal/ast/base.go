@@ -37,19 +37,19 @@ type (
 	// Attribute 表示 XML 属性
 	Attribute struct {
 		token.Base
-		Value String
+		Value String `apidoc:"-"`
 	}
 
 	// NumberAttribute 表示数值类型的属性
 	NumberAttribute struct {
 		token.Base
-		Value Number
+		Value Number `apidoc:"-"`
 	}
 
 	// BoolAttribute 表示布尔值类型的属性
 	BoolAttribute struct {
 		token.Base
-		Value Bool
+		Value Bool `apidoc:"-"`
 	}
 
 	// MethodAttribute 表示请求方法
@@ -70,7 +70,7 @@ type (
 	// Element 定义不包含子元素和属性的基本的 XML 元素
 	Element struct {
 		token.Base
-		Content String
+		Content String `apidoc:"-"`
 	}
 )
 
