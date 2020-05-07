@@ -17,11 +17,16 @@ var target = docs.Dir().Append("config.xml")
 type config struct {
 	XMLName struct{} `xml:"config"`
 
-	Name      string   `xml:"name"`
-	Version   string   `xml:"version"`
-	Repo      string   `xml:"repo"`
-	URL       string   `xml:"url"`
-	Languages []string `xml:"languages>language"`
+	Name      string     `xml:"name"`
+	Version   string     `xml:"version"`
+	Repo      string     `xml:"repo"`
+	URL       string     `xml:"url"`
+	Languages []language `xml:"languages>language"`
+}
+
+type language struct {
+	ID   string `xml:"id,attr"`
+	Name string `xml:",chardata"`
 }
 
 var defaultConfig = &config{
@@ -29,12 +34,13 @@ var defaultConfig = &config{
 	Version:   ast.Version,
 	Repo:      vars.RepoURL,
 	URL:       vars.OfficialURL,
-	Languages: make([]string, 0, len(lang.Langs())),
+	Languages: make([]language, 0, len(lang.Langs())),
 }
 
 func main() {
 	for _, lang := range lang.Langs() {
-		defaultConfig.Languages = append(defaultConfig.Languages, lang.DisplayName)
+		l := language{ID: lang.Name, Name: lang.DisplayName}
+		defaultConfig.Languages = append(defaultConfig.Languages, l)
 	}
 
 	makeutil.PanicError(makeutil.WriteXML(target, defaultConfig, "\t"))
