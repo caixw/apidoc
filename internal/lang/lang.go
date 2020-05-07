@@ -3,10 +3,7 @@
 // Package lang 管理各类语言提取注释代码块规则的定义
 package lang
 
-import (
-	"bytes"
-	"fmt"
-)
+import "fmt"
 
 // 所有支持的语言模型定义
 var langs = []*Language{
@@ -259,10 +256,4 @@ func GetByExt(ext string) *Language {
 // Langs 返回所有支持的语言
 func Langs() []*Language {
 	return langs
-}
-
-var newline = []byte{'\n'}
-
-func isNewline(bs []byte) bool {
-	return bytes.Equal(bs, newline)
 }
