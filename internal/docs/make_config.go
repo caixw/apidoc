@@ -5,18 +5,12 @@
 package main
 
 import (
-	"encoding/xml"
-	"io/ioutil"
-	"os"
-
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/docs"
 	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/vars"
 )
-
-const fileHeader = "\n<!-- 该文件由工具自动生成，请勿手动修改！-->\n\n"
 
 var target = docs.Dir().Append("config.xml")
 
@@ -43,17 +37,5 @@ func main() {
 		defaultConfig.Languages = append(defaultConfig.Languages, lang.DisplayName)
 	}
 
-	data, err := xml.MarshalIndent(defaultConfig, "", "\t")
-	makeutil.PanicError(err)
-
-	path, err := target.File()
-	makeutil.PanicError(err)
-
-	w := makeutil.NewWriter()
-	w.WString(xml.Header).
-		WString(fileHeader).
-		WBytes(data).
-		WString("\n") // 统一代码风格，文件末尾加一空行。
-
-	makeutil.PanicError(ioutil.WriteFile(path, w.Bytes(), os.ModePerm))
+	makeutil.PanicError(makeutil.WriteXML(target, defaultConfig, "\t"))
 }
