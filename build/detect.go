@@ -52,7 +52,7 @@ func detectInput(dir core.URI, recursive bool) ([]*Input, error) {
 	opts := make([]*Input, 0, len(langs))
 	for _, l := range langs {
 		opts = append(opts, &Input{
-			Lang:      l.Name,
+			Lang:      l.ID,
 			Dir:       "./",
 			Exts:      l.Exts,
 			Recursive: recursive,
@@ -81,7 +81,7 @@ func detectLanguage(exts map[string]int) []*language {
 
 		found := false
 		for _, item := range langs {
-			if item.Name == l.Name {
+			if item.ID == l.ID {
 				item.count += count
 				found = true
 				break

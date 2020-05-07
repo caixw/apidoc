@@ -9,28 +9,28 @@ import "fmt"
 var langs = []*Language{
 	{
 		DisplayName: "C#",
-		Name:        "c#",
+		ID:          "c#",
 		Exts:        []string{".cs"},
 		Blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "C/C++",
-		Name:        "c++",
+		ID:          "c++",
 		Exts:        []string{".h", ".c", ".cpp", ".cxx", ".hpp"},
 		Blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "D",
-		Name:        "d",
+		ID:          "d",
 		Exts:        []string{".d"},
 		Blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "Erlang",
-		Name:        "erlang",
+		ID:          "erlang",
 		Exts:        []string{".erl", ".hrl"},
 		Blocks: []Blocker{
 			newCStyleString(),
@@ -40,7 +40,7 @@ var langs = []*Language{
 
 	{
 		DisplayName: "Go",
-		Name:        "go",
+		ID:          "go",
 		Exts:        []string{".go"},
 		Blocks: []Blocker{
 			newCStyleString(),
@@ -53,7 +53,7 @@ var langs = []*Language{
 
 	{
 		DisplayName: "Groovy",
-		Name:        "groovy",
+		ID:          "groovy",
 		Exts:        []string{".groovy"},
 		Blocks: []Blocker{
 			newCStyleString(),
@@ -66,14 +66,14 @@ var langs = []*Language{
 
 	{
 		DisplayName: "Java",
-		Name:        "java",
+		ID:          "java",
 		Exts:        []string{".java"},
 		Blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "JavaScript",
-		Name:        "javascript",
+		ID:          "javascript",
 		Exts:        []string{".js"},
 		Blocks: []Blocker{
 			newCStyleString(),
@@ -88,14 +88,14 @@ var langs = []*Language{
 
 	{
 		DisplayName: "Kotlin",
-		Name:        "kotlin",
+		ID:          "kotlin",
 		Exts:        []string{".kt"},
 		Blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "Pascal/Delphi",
-		Name:        "pascal",
+		ID:          "pascal",
 		Exts:        []string{".pas", ".pp"},
 		Blocks: []Blocker{
 			newPascalStringBlock('\''),
@@ -107,7 +107,7 @@ var langs = []*Language{
 
 	{
 		DisplayName: "Perl",
-		Name:        "perl",
+		ID:          "perl",
 		Exts:        []string{".perl", ".prl", ".pl"},
 		Blocks: []Blocker{
 			newCStyleString(),
@@ -119,7 +119,7 @@ var langs = []*Language{
 
 	{
 		DisplayName: "PHP",
-		Name:        "php",
+		ID:          "php",
 		Exts:        []string{".php"},
 		Blocks: []Blocker{
 			newCStyleString(),
@@ -133,7 +133,7 @@ var langs = []*Language{
 
 	{
 		DisplayName: "Python",
-		Name:        "python",
+		ID:          "python",
 		Exts:        []string{".py"},
 		Blocks: []Blocker{
 			newMultipleComment(`"""`, `"""`, ""),
@@ -145,7 +145,7 @@ var langs = []*Language{
 
 	{
 		DisplayName: "Ruby",
-		Name:        "ruby",
+		ID:          "ruby",
 		Exts:        []string{".rb"},
 		Blocks: []Blocker{
 			newCStyleString(),
@@ -157,21 +157,21 @@ var langs = []*Language{
 
 	{
 		DisplayName: "Rust",
-		Name:        "rust",
+		ID:          "rust",
 		Exts:        []string{".rs"},
 		Blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "Scala",
-		Name:        "scala",
+		ID:          "scala",
 		Exts:        []string{".scala"},
 		Blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "Swift",
-		Name:        "swift",
+		ID:          "swift",
 		Exts:        []string{".swift"},
 		Blocks: []Blocker{
 			newString(`"""`, `"""`, `\`),
@@ -215,7 +215,7 @@ func newCStyleMultipleComment() Blocker {
 // Language 语言模块的定义
 type Language struct {
 	DisplayName string    // 显示友好的名称
-	Name        string    // 语言唯一名称，一律小写
+	ID          string    // 语言唯一名称，一律小写
 	Blocks      []Blocker // 注释块的解析规则定义
 	Exts        []string  // 扩展名列表，必须以 . 开头且小写
 }
@@ -225,7 +225,7 @@ type Language struct {
 // 若不存在，则返回 nil
 func Get(name string) *Language {
 	for _, lang := range langs {
-		if lang.Name == name {
+		if lang.ID == name {
 			return lang
 		}
 	}

@@ -19,7 +19,7 @@ func language(w io.Writer) error {
 	ls := lang.Langs()
 	langs := make([]*lang.Language, 1, len(ls)+1)
 	langs[0] = &lang.Language{
-		Name:        locale.Sprintf(locale.LangID),
+		ID:          locale.Sprintf(locale.LangID),
 		DisplayName: locale.Sprintf(locale.LangName),
 		Exts:        []string{locale.Sprintf(locale.LangExts)},
 	}
@@ -29,13 +29,13 @@ func language(w io.Writer) error {
 	var maxDisplay, maxName int
 	for _, l := range langs {
 		calcMaxWidth(l.DisplayName, &maxDisplay)
-		calcMaxWidth(l.Name, &maxName)
+		calcMaxWidth(l.ID, &maxName)
 	}
 	maxDisplay += tail
 	maxName += tail
 
 	for _, l := range langs {
-		n := l.Name + strings.Repeat(" ", maxName-len(l.Name))
+		n := l.ID + strings.Repeat(" ", maxName-len(l.ID))
 		d := l.DisplayName + strings.Repeat(" ", maxDisplay-len(l.DisplayName))
 		if _, err := fmt.Fprintln(w, n, d, strings.Join(l.Exts, " ")); err != nil {
 			return err

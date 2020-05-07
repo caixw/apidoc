@@ -29,11 +29,11 @@ func TestDetectLanguage(t *testing.T) {
 
 	langs := detectLanguage(exts)
 	a.Equal(len(langs), 3) // c++,php,swift
-	a.Equal(langs[0].Name, "c++").
+	a.Equal(langs[0].ID, "c++").
 		Equal(langs[0].count, 5)
-	a.Equal(langs[1].Name, "php").
+	a.Equal(langs[1].ID, "php").
 		Equal(langs[1].count, 2)
-	a.Equal(langs[2].Name, "swift").
+	a.Equal(langs[2].ID, "swift").
 		Equal(langs[2].count, 1)
 }
 
