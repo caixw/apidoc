@@ -98,6 +98,7 @@
                 <tr><td>locale</td><td>列出当前支持的本地化内容</td></tr>
                 <tr><td>detect</td><td>根据指定的目录生成配置文件</td></tr>
                 <tr><td>test</td><td>检测语法是否准确</td></tr>
+                <tr><td>lsp</td><td>启动 language server protocol 服务</td></tr>
             </tbody>
         </table>
         <p>mock 子命令可以根据文档生成一些符合要求的随机数据。这些数据每次请求都不相同，包括数量、长度、数值大小等。</p>
