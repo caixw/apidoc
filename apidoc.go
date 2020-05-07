@@ -17,7 +17,6 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/issue9/utils"
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v7/build"
@@ -48,11 +47,6 @@ func Locale() language.Tag {
 // Locales 返回当前所有支持的本地信息
 func Locales() map[language.Tag]string {
 	return locale.DisplayNames()
-}
-
-// SystemLocale 返回当前系统的本地化 ID
-func SystemLocale() (language.Tag, error) {
-	return utils.GetSystemLanguageTag()
 }
 
 // Version 当前程序的版本号
