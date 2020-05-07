@@ -11,8 +11,6 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 )
 
-const xmlFileHeader = "\n<!-- 该文件由工具自动生成，请勿手动修改！-->\n\n"
-
 // Writer 文本输出
 type Writer struct {
 	bytes.Buffer
@@ -42,11 +40,9 @@ func (w *Writer) WBytes(data []byte) *Writer {
 	return w
 }
 
-// End 结束写入过程
-//
-// 如果有错误，会触发 panic
-func (w *Writer) End() {
-	PanicError(w.err)
+// Err 返回当前所包含的错误
+func (w *Writer) Err() error {
+	return w.err
 }
 
 // WriteXML 将对象 v 编码成 XML 内容并写入 uri 指向的文件
@@ -62,8 +58,8 @@ func WriteXML(uri core.URI, v interface{}, indent string) error {
 	}
 
 	w := NewWriter()
-	w.WString(xml.Header).
-		WString(xmlFileHeader).
+	w.WString(xml.Header).WString("\n").
+		WString("<!-- ").WString(Header).WString(" -->\n\n").
 		WBytes(data).
 		WString("\n") // 统一代码风格，文件末尾加一空行。
 

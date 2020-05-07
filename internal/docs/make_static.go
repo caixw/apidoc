@@ -16,7 +16,6 @@ import (
 )
 
 const (
-	header   = "// 当前文件由工具自动生成，请勿手动修改！\n\n"
 	pkgName  = "docs"
 	varName  = "data"
 	distPath = "./static.go"
@@ -34,7 +33,6 @@ var allowFiles = map[string]string{
 	".htm":  "text/html; charset=utf-8",
 }
 
-// NOTE: 隐藏文件不会被打包
 func main() {
 	dir, err := docs.Dir().File()
 	makeutil.PanicError(err)
@@ -43,7 +41,7 @@ func main() {
 	makeutil.PanicError(err)
 
 	buf := makeutil.NewWriter()
-	buf.WString(header).
+	buf.WString("// ").WString(makeutil.Header).WString("\n\n").
 		WString("package ").WString(pkgName).WString("\n\n").
 		WString("var ").WString(varName).WString("= []*FileInfo{")
 	for _, info := range fis {
@@ -53,7 +51,7 @@ func main() {
 			WString("Content:[]byte(`").WBytes(info.Content).WString("`),\n").
 			WString("},\n")
 	}
-	buf.WString("}\n").End()
+	makeutil.PanicError(buf.WString("}\n").Err())
 
 	makeutil.PanicError(utils.DumpGoSource(distPath, buf.Bytes()))
 }
