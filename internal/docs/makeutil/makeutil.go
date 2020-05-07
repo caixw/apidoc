@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+// Package makeutil 为 internal/docs 中一系列生成工具提供的公共内容
 package makeutil
 
 // Header 表示输出文件的文件头内容

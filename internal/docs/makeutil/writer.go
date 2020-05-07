@@ -63,5 +63,8 @@ func WriteXML(uri core.URI, v interface{}, indent string) error {
 		WBytes(data).
 		WString("\n") // 统一代码风格，文件末尾加一空行。
 
+	if w.Err() != nil {
+		return w.Err()
+	}
 	return ioutil.WriteFile(path, w.Bytes(), os.ModePerm)
 }
