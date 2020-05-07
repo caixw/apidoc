@@ -5,12 +5,13 @@
 package main
 
 import (
-	"bufio"
 	"encoding/xml"
+	"io/ioutil"
 	"os"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/vars"
 )
@@ -37,45 +38,22 @@ var defaultConfig = &config{
 	Languages: make([]string, 0, len(lang.Langs())),
 }
 
-func chkError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 func main() {
 	for _, lang := range lang.Langs() {
 		defaultConfig.Languages = append(defaultConfig.Languages, lang.DisplayName)
 	}
 
 	data, err := xml.MarshalIndent(defaultConfig, "", "\t")
-	chkError(err)
+	makeutil.PanicError(err)
 
 	path, err := target.File()
-	chkError(err)
+	makeutil.PanicError(err)
 
-	file, err := os.Create(path)
-	chkError(err)
-	defer func() {
-		err = file.Close()
-		chkError(err)
-	}()
+	w := makeutil.NewWriter()
+	w.WString(xml.Header).
+		WString(fileHeader).
+		WBytes(data).
+		WString("\n") // 统一代码风格，文件末尾加一空行。
 
-	w := bufio.NewWriter(file)
-
-	_, err = w.WriteString(xml.Header)
-	chkError(err)
-
-	_, err = w.WriteString(fileHeader)
-	chkError(err)
-
-	_, err = w.Write(data)
-	chkError(err)
-
-	// 统一代码风格，文件末尾加一空行。
-	_, err = w.WriteString("\n")
-	chkError(err)
-
-	err = w.Flush()
-	chkError(err)
+	makeutil.PanicError(ioutil.WriteFile(path, w.Bytes(), os.ModePerm))
 }
