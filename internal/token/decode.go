@@ -68,8 +68,8 @@ func Decode(p *Parser, v interface{}) error {
 			}
 			hasRoot = true
 
-			rv := parseRootElement(v)
-			if err := decodeElement(p, elem, rv); err != nil {
+			n := newNode("", reflect.ValueOf(v))
+			if err := decodeElement(p, elem, n.value); err != nil {
 				return err
 			}
 		case *EndElement:
@@ -92,6 +92,7 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 		return nil, err
 	}
 
+	// 判断 omitempty 属性
 	for _, attr := range n.attrs {
 		if attr.canNotEmpty() {
 			return nil, p.NewError(start.Start, end.End, attr.name, locale.ErrRequired)
@@ -173,10 +174,10 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 
 		switch elem := t.(type) {
 		case *EndElement: // 找到当前对象的结束标签
-			if elem.Name.Value == n.name {
+			if elem.Name.Value == n.value.name {
 				return elem, nil
 			}
-			return nil, p.NewError(elem.Start, elem.End, n.name, locale.ErrNotFoundEndTag)
+			return nil, p.NewError(elem.Start, elem.End, n.value.name, locale.ErrNotFoundEndTag)
 		case *CData:
 			if n.cdata.IsValid() {
 				getRealValue(n.cdata.Value).Set(getRealValue(reflect.ValueOf(elem)))
@@ -201,7 +202,7 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 	} // end for
 }
 
-func decodeElement(p *Parser, start *StartElement, v value) (err error) {
+func decodeElement(p *Parser, start *StartElement, v value) error {
 	v.Value = getRealValue(v.Value)
 	k := v.Kind()
 	switch {

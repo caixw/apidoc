@@ -36,40 +36,22 @@ var stringNodeMap = map[string]nodeType{
 
 // 表示一个 XML 标签节点
 type node struct {
-	name           string  // 标签名称
 	attrs          []value // 当前标签的属性值列表
 	elems          []value // 当前标签的元素列表
 	cdata, content value   // 当前标签如果没有子元素，则可能有普通的内容或是 CDATA 内容
+	value          value   // 当前节点本身代表的值
 }
 
 // 表示 XML 节点的值的反射表示方式
 type value struct {
 	reflect.Value
-	name      string // 节点的名称
 	omitempty bool
+	typeName  string // 当前节点的类型名称
+	name      string // 节点的名称
 
 	// 当前值可能未初始化，所以保存 usage 的值，
 	// 等 value 初始化之后再赋值给 Base.UsageKey
 	usage string
-}
-
-func parseRootElement(v interface{}) value {
-	rv := reflect.ValueOf(v)
-	if !rv.IsValid() {
-		panic("参数 v 不是一个有效的根元素")
-	}
-
-	root, found := getRealType(rv.Type()).FieldByName(rootElementTagName)
-	if !found {
-		panic(fmt.Sprintf("根元素 %s 未指定 %s 字段", getRealType(rv.Type()), rootElementTagName))
-	}
-
-	name, _, usage, omitempty := parseTag(root)
-	if name == "-" {
-		panic(fmt.Sprintf("根元素 %s.%s 的标签值 %s 不能为 -", rv.Type(), rootElementTagName, tagName))
-	}
-
-	return initValue(name, rv, omitempty, usage)
 }
 
 func initValue(name string, v reflect.Value, omitempty bool, usage string) value {
@@ -92,13 +74,13 @@ func newNode(name string, rv reflect.Value) *node {
 
 	num := rt.NumField()
 	if num == 0 {
-		return &node{name: name}
+		return &node{value: value{name: name}}
 	}
 
 	n := &node{
-		name:  name,
 		attrs: make([]value, 0, num),
 		elems: make([]value, 0, num),
+		value: value{name: name},
 	}
 
 	for i := 0; i < num; i++ {
@@ -114,21 +96,28 @@ func newNode(name string, rv reflect.Value) *node {
 			continue
 		}
 
-		if unicode.IsLower(rune(field.Name[0])) || field.Name == rootElementTagName {
+		if unicode.IsLower(rune(field.Name[0])) {
 			continue
 		}
 
-		name, node, usage, omitempty := parseTag(field)
-		if name == "-" {
+		fieldName, node, usage, omitempty := parseTag(field)
+		if fieldName == "-" {
 			continue
 		}
 
 		v := rv.Field(i)
 		switch node {
 		case attrNode:
-			n.appendAttr(initValue(name, v, omitempty, usage))
+			n.appendAttr(initValue(fieldName, v, omitempty, usage))
 		case elemNode:
-			n.appendElem(initValue(name, v, omitempty, usage))
+			n.appendElem(initValue(fieldName, v, omitempty, usage))
+		case metaNode:
+			n.value.typeName = fieldName
+			n.value.usage = usage
+			n.value.Value = rv
+			if n.value.name == "" {
+				n.value.name = fieldName
+			}
 		case cdataNode:
 			if n.cdata.IsValid() {
 				panic("已经定义了一个节点用于表示 cdata 内容")
@@ -142,7 +131,7 @@ func newNode(name string, rv reflect.Value) *node {
 			if getRealType(field.Type) != cdataType {
 				panic("cdata 的类型只能是 *CData")
 			}
-			n.cdata = initValue(name, v, omitempty, usage)
+			n.cdata = initValue(fieldName, v, omitempty, usage)
 		case contentNode:
 			if n.content.IsValid() {
 				panic("已经定义了一个节点用于表示 content 内容")
@@ -156,7 +145,7 @@ func newNode(name string, rv reflect.Value) *node {
 			if getRealType(field.Type) != contentType {
 				panic("content 的类型只能是 *String")
 			}
-			n.content = initValue(name, v, omitempty, usage)
+			n.content = initValue(fieldName, v, omitempty, usage)
 		}
 	}
 

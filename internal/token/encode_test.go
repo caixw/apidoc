@@ -23,14 +23,14 @@ func TestEncode(t *testing.T) {
 	}{
 		{
 			object: &struct {
-				RootName string `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string `apidoc:"apidoc,meta,usage-apidoc"`
 			}{},
 			xml: "<apidoc></apidoc>",
 		},
 
 		{
 			object: &struct {
-				RootName string  `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
 				ID       intTest `apidoc:"id,attr,usage"`
 			}{
 				ID: intTest{Value: 11},
@@ -40,7 +40,7 @@ func TestEncode(t *testing.T) {
 
 		{ // 非 omitempty 属性，必须带上零值
 			object: &struct {
-				RootName string  `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
 				ID       intTest `apidoc:"id,attr,usage"`
 			}{},
 			xml: `<apidoc id="0"></apidoc>`,
@@ -48,7 +48,7 @@ func TestEncode(t *testing.T) {
 
 		{ // omitempty
 			object: &struct {
-				RootName string  `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
 				ID       intTest `apidoc:"id,attr,usage,omitempty"`
 			}{},
 			xml: `<apidoc></apidoc>`,
@@ -56,7 +56,7 @@ func TestEncode(t *testing.T) {
 
 		{ // omitempty
 			object: &struct {
-				RootName string   `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string   `apidoc:"apidoc,meta,usage-apidoc"`
 				ID       *intTest `apidoc:"id,attr,usage,omitempty"`
 			}{},
 			xml: `<apidoc></apidoc>`,
@@ -64,7 +64,7 @@ func TestEncode(t *testing.T) {
 
 		{
 			object: &struct {
-				RootName string      `apidoc:"root,elem,usage-apidoc"`
+				RootName string      `apidoc:"root,meta,usage-apidoc"`
 				ID       intTest     `apidoc:"id,attr,usage"`
 				Name     *stringTest `apidoc:",attr,usage"`
 			}{
@@ -76,7 +76,7 @@ func TestEncode(t *testing.T) {
 
 		{ // 数组
 			object: &struct {
-				RootName string        `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string        `apidoc:"apidoc,meta,usage-apidoc"`
 				ID       []intTest     `apidoc:"id,elem,usage"`
 				Name     []*stringTest `apidoc:",elem,usage"`
 			}{
@@ -88,7 +88,7 @@ func TestEncode(t *testing.T) {
 
 		{
 			object: &struct {
-				RootName string     `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string     `apidoc:"apidoc,meta,usage-apidoc"`
 				ID       *intTest   `apidoc:"id,attr,usage"`
 				Name     stringTest `apidoc:"name,elem,usage"`
 			}{
@@ -100,7 +100,7 @@ func TestEncode(t *testing.T) {
 
 		{
 			object: &struct {
-				RootName string  `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
 				ID       intTest `apidoc:"id,attr,usage"`
 				CData    CData   `apidoc:",cdata,"`
 			}{
@@ -112,7 +112,7 @@ func TestEncode(t *testing.T) {
 
 		{
 			object: &struct {
-				RootName string  `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
 				ID       int     `apidoc:"id,attr,usage"`
 				Content  *String `apidoc:",content"`
 			}{
@@ -124,7 +124,7 @@ func TestEncode(t *testing.T) {
 
 		{ // 嵌套
 			object: &struct {
-				RootName string      `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string      `apidoc:"apidoc,meta,usage-apidoc"`
 				Object   *nestObject `apidoc:"object,elem,usage"`
 			}{
 				Object: &nestObject{
@@ -137,7 +137,7 @@ func TestEncode(t *testing.T) {
 
 		{ // 嵌套 cdata
 			object: &struct {
-				RootName string `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string `apidoc:"apidoc,meta,usage-apidoc"`
 				Cdata    *CData `apidoc:",cdata"`
 			}{
 				Cdata: &CData{Value: String{Value: "12"}},
@@ -147,7 +147,7 @@ func TestEncode(t *testing.T) {
 
 		{ // 嵌套 content
 			object: &struct {
-				RootName string  `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
 				Content  *String `apidoc:",content"`
 			}{
 				Content: &String{Value: "11"},
@@ -157,7 +157,7 @@ func TestEncode(t *testing.T) {
 
 		{ // 嵌套，omitempty 属性
 			object: &struct {
-				RootName string      `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string      `apidoc:"apidoc,meta,usage-apidoc"`
 				Object   *nestObject `apidoc:"object,elem,usage,omitempty"`
 			}{},
 			xml: `<apidoc></apidoc>`,
@@ -165,7 +165,7 @@ func TestEncode(t *testing.T) {
 
 		{ // 嵌套，omitempty 属性
 			object: &struct {
-				RootName string      `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string      `apidoc:"apidoc,meta,usage-apidoc"`
 				Object   *nestObject `apidoc:"object,elem,usage,omitempty"`
 			}{
 				Object: &nestObject{
@@ -177,7 +177,7 @@ func TestEncode(t *testing.T) {
 
 		{ // 嵌套，数组，omitempty 属性
 			object: &struct {
-				RootName string        `apidoc:"aa,elem,usage-apidoc"`
+				RootName string        `apidoc:"aa,meta,usage-apidoc"`
 				Object   []*nestObject `apidoc:"object,elem,usage,omitempty"`
 			}{
 				Object: []*nestObject{
@@ -190,7 +190,7 @@ func TestEncode(t *testing.T) {
 
 		{ // 嵌套，omitempty 属性
 			object: &struct {
-				RootName string      `apidoc:"apidoc,elem,usage-apidoc"`
+				RootName string      `apidoc:"apidoc,meta,usage-apidoc"`
 				Object   *nestObject `apidoc:"object,elem,usage"`
 			}{
 				Object: &nestObject{},

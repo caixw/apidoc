@@ -30,7 +30,7 @@ var (
 
 // Encode 将 v 转换成 XML 内容
 func Encode(indent string, v interface{}) ([]byte, error) {
-	rv := parseRootElement(v)
+	rv := initValue("", reflect.ValueOf(v), false, "")
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
 	e.Indent("", indent)
@@ -84,7 +84,7 @@ func (n *node) encodeElements(e *xml.Encoder, start xml.StartElement) (err error
 		}
 	}
 
-	return e.EncodeToken(xml.EndElement{Name: xml.Name{Local: n.name}})
+	return e.EncodeToken(xml.EndElement{Name: xml.Name{Local: n.value.name}})
 }
 
 func encodeElement(e *xml.Encoder, v value) (err error) {
@@ -136,7 +136,7 @@ func encodeElement(e *xml.Encoder, v value) (err error) {
 
 func (n *node) buildStartElement() (xml.StartElement, error) {
 	start := xml.StartElement{
-		Name: xml.Name{Local: n.name},
+		Name: xml.Name{Local: n.value.name},
 		Attr: make([]xml.Attr, 0, len(n.attrs)),
 	}
 

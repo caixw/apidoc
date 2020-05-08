@@ -9,43 +9,6 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestParseRootElement(t *testing.T) {
-	a := assert.New(t)
-
-	a.Panic(func() {
-		parseRootElement(nil)
-	})
-
-	var v1 struct{}
-	a.Panic(func() {
-		parseRootElement(v1)
-	})
-
-	a.Panic(func() {
-		parseRootElement(struct {
-			RootName string `apidoc:"-"`
-		}{})
-	})
-
-	a.Panic(func() {
-		parseRootElement(struct{}{})
-	})
-
-	a.Panic(func() {
-		parseRootElement(struct {
-			RootName string
-		}{})
-	})
-
-	v := parseRootElement(struct {
-		RootName string `apidoc:"root,attr,usage-key"`
-	}{})
-	a.False(v.omitempty).
-		Equal(v.name, "root").
-		Equal(v.usage, "usage-key").
-		True(v.IsValid())
-}
-
 func TestNewNode(t *testing.T) {
 	a := assert.New(t)
 
@@ -187,7 +150,7 @@ func TestNewNode(t *testing.T) {
 			Equal(len(o.attrs), item.attrs, "not equal %d\nv1=%d,v2=%d", i, len(o.attrs), item.attrs).
 			Equal(item.cdata, o.cdata.IsValid(), "not equal at %d\nv1=%v,v2=%v", i, item.cdata, o.cdata.IsValid()).
 			Equal(item.content, o.content.IsValid(), "not equal at %d\nv1=%v,v2=%v", i, item.content, o.content.IsValid()).
-			Equal(o.name, item.inputName)
+			Equal(o.value.name, item.inputName)
 
 		for k, v := range o.attrs {
 			a.True(v.IsValid(), "value.IsValid() == false 位于 %d:%d.attrs", i, k)
