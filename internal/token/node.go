@@ -18,12 +18,21 @@ const (
 	elemNode
 	cdataNode
 	contentNode
+	metaNode // 用于描述节点的一些无数据
 )
 
 var (
 	cdataType   = reflect.TypeOf(CData{})
 	contentType = reflect.TypeOf(String{})
 )
+
+var stringNodeMap = map[string]nodeType{
+	"attr":    attrNode,
+	"elem":    elemNode,
+	"cdata":   cdataNode,
+	"content": contentNode,
+	"meta":    metaNode,
+}
 
 // 表示一个 XML 标签节点
 type node struct {
@@ -238,18 +247,10 @@ func getTagName(field reflect.StructField, name string) string {
 }
 
 func getNodeType(v string) nodeType {
-	switch strings.ToLower(strings.TrimSpace(v)) {
-	case "attr":
-		return attrNode
-	case "elem":
-		return elemNode
-	case "cdata":
-		return cdataNode
-	case "content":
-		return contentNode
-	default:
-		panic("无效的 struct tag，第二个元素必须得是 attr、cdata、content 或是 elem")
+	if node, found := stringNodeMap[strings.ToLower(strings.TrimSpace(v))]; found {
+		return node
 	}
+	panic(fmt.Sprintf("无效的 struct tag:%s", v))
 }
 
 func getOmitempty(v string) bool {
