@@ -5,18 +5,16 @@
 package main
 
 import (
-	l "golang.org/x/text/language"
-
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/docs"
 	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 	"github.com/caixw/apidoc/v7/internal/lang"
+	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/token"
 	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 var target = docs.Dir().Append("config.xml")
-var typesTarget = docs.Dir().Append("types.cmn-hans.xml")
 
 type config struct {
 	XMLName struct{} `xml:"config"`
@@ -43,12 +41,16 @@ var defaultConfig = &config{
 
 func main() {
 	for _, lang := range lang.Langs() {
-		l := language{ID: lang.Name, Name: lang.DisplayName}
+		l := language{ID: lang.ID, Name: lang.DisplayName}
 		defaultConfig.Languages = append(defaultConfig.Languages, l)
 	}
 	makeutil.PanicError(makeutil.WriteXML(target, defaultConfig, "\t"))
 
-	types, err := token.NewTypes(&ast.APIDoc{}, l.MustParse("cmn-hans"))
-	makeutil.PanicError(err)
-	makeutil.PanicError(makeutil.WriteXML(typesTarget, types, "\t"))
+	for tag := range locale.DisplayNames() {
+		types, err := token.NewTypes(&ast.APIDoc{}, tag)
+		makeutil.PanicError(err)
+
+		target := docs.Dir().Append("types." + tag.String() + ".xml")
+		makeutil.PanicError(makeutil.WriteXML(target, types, "\t"))
+	}
 }
