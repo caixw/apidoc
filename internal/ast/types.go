@@ -160,7 +160,7 @@ type (
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-param-deprecated,omitempty"`
 		Default     *Attribute        `apidoc:"default,attr,usage-param-default,omitempty"`
 		Optional    *BoolAttribute    `apidoc:"optional,attr,usage-param-optional,omitempty"`
-		Array       *BoolAttribute    `apidoc:"array,attr,usage-parm-array,omitempty"`
+		Array       *BoolAttribute    `apidoc:"array,attr,usage-param-array,omitempty"`
 		Items       []*Param          `apidoc:"param,elem,usage-param-items,omitempty"`
 		Reference   *Attribute        `apidoc:"ref,attr,usage-param-reference,omitempty"`
 		Summary     *Attribute        `apidoc:"summary,attr,usage-param-summary,omitempty"`
