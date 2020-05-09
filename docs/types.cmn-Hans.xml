@@ -88,7 +88,7 @@
 		<item name="@deprecated" type="string" array="false" required="false">表示在大于等于该版本号时不再启作用</item>
 		<item name="@default" type="string" array="false" required="false">默认值</item>
 		<item name="@optional" type="bool" array="false" required="false">是否为可选的参数</item>
-		<item name="@array" type="bool" array="false" required="false">usage-parm-array</item>
+		<item name="@array" type="bool" array="false" required="false">是否为数组</item>
 		<item name="@ref" type="string" array="false" required="false">usage-param-reference</item>
 		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
 		<item name="@array-style" type="bool" array="false" required="false">以数组的方式展示数据</item>

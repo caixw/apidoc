@@ -131,7 +131,7 @@
             </xsl:call-template>
         </xsl:for-each>
 
-        <xsl:if test="$id='usage'">
+        <xsl:if test="$id='spec'">
             <xsl:for-each select="document(/docs/@types)/types/type">
                 <xsl:call-template name="type">
                     <xsl:with-param name="type" select="." />

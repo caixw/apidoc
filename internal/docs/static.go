@@ -42,7 +42,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-09T13:16:19+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-09T17:36:02+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -1000,7 +1000,7 @@ function initGotoTop() {
             </xsl:call-template>
         </xsl:for-each>
 
-        <xsl:if test="$id='usage'">
+        <xsl:if test="$id='spec'">
             <xsl:for-each select="document(/docs/@types)/types/type">
                 <xsl:call-template name="type">
                     <xsl:with-param name="type" select="." />
@@ -1178,7 +1178,7 @@ function initGotoTop() {
 		<item name="@deprecated" type="string" array="false" required="false">表示在大于等于该版本号时不再启作用</item>
 		<item name="@default" type="string" array="false" required="false">默认值</item>
 		<item name="@optional" type="bool" array="false" required="false">是否为可选的参数</item>
-		<item name="@array" type="bool" array="false" required="false">usage-parm-array</item>
+		<item name="@array" type="bool" array="false" required="false">是否为数组</item>
 		<item name="@ref" type="string" array="false" required="false">usage-param-reference</item>
 		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
 		<item name="@array-style" type="bool" array="false" required="false">以数组的方式展示数据</item>
@@ -1328,7 +1328,7 @@ function initGotoTop() {
 		<item name="@deprecated" type="string" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
 		<item name="@default" type="string" array="false" required="false">默認值</item>
 		<item name="@optional" type="bool" array="false" required="false">是否為可選的參數</item>
-		<item name="@array" type="bool" array="false" required="false">usage-parm-array</item>
+		<item name="@array" type="bool" array="false" required="false">是否為數組</item>
 		<item name="@ref" type="string" array="false" required="false">usage-param-reference</item>
 		<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
 		<item name="@array-style" type="bool" array="false" required="false">以數組的方式展示數據</item>
