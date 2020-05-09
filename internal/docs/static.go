@@ -1,4 +1,4 @@
-// 当前文件由工具自动生成，请勿手动修改！
+// 该文件由工具自动生成，请勿手动修改！
 
 package docs
 
@@ -7,7 +7,7 @@ var data = []*FileInfo{{
 	ContentType: "application/xml; charset=utf-8",
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
-<!-- 该文件由工具自动生成，请勿手动修改！-->
+<!-- 该文件由工具自动生成，请勿手动修改！ -->
 
 <config>
 	<name>apidoc</name>
@@ -15,23 +15,23 @@ var data = []*FileInfo{{
 	<repo>https://github.com/caixw/apidoc</repo>
 	<url>https://apidoc.tools</url>
 	<languages>
-		<language>C#</language>
-		<language>C/C++</language>
-		<language>D</language>
-		<language>Erlang</language>
-		<language>Go</language>
-		<language>Groovy</language>
-		<language>Java</language>
-		<language>JavaScript</language>
-		<language>Kotlin</language>
-		<language>Pascal/Delphi</language>
-		<language>Perl</language>
-		<language>PHP</language>
-		<language>Python</language>
-		<language>Ruby</language>
-		<language>Rust</language>
-		<language>Scala</language>
-		<language>Swift</language>
+		<language id="c#">C#</language>
+		<language id="c++">C/C++</language>
+		<language id="d">D</language>
+		<language id="erlang">Erlang</language>
+		<language id="go">Go</language>
+		<language id="groovy">Groovy</language>
+		<language id="java">Java</language>
+		<language id="javascript">JavaScript</language>
+		<language id="kotlin">Kotlin</language>
+		<language id="pascal">Pascal/Delphi</language>
+		<language id="perl">Perl</language>
+		<language id="php">PHP</language>
+		<language id="python">Python</language>
+		<language id="ruby">Ruby</language>
+		<language id="rust">Rust</language>
+		<language id="scala">Scala</language>
+		<language id="swift">Swift</language>
 	</languages>
 </config>
 `),
@@ -42,7 +42,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-07T17:51:22+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-09T17:36:02+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -66,6 +66,37 @@ var data = []*FileInfo{{
 	</server>
 	<server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" summary="客户端接口"></server>
 	<server name="client" url="https://api.example.com" summary="客户端接口"></server>
+	<api method="GET" summary="获取用户" deprecated="1.1.11">
+		<path path="/users">
+			<query name="page" type="number" default="0" summary="页码"></query>
+			<query name="size" type="number" default="20">
+				<description type="markdown"><![CDATA[数量]]></description>
+			</query>
+		</path>
+		<description type="markdown"><![CDATA[
+   <p>这是关于接口的详细说明文档</p><br />
+   可以是一个 HTML 内容
+   ]]></description>
+		<response name="user" type="object" array="true" status="200">
+			<param xml-attr="true" name="count" type="number" optional="false" summary="summary"></param>
+			<param name="list" type="object" array="true" summary="list">
+				<param xml-attr="true" name="id" type="number" summary="用户 ID"></param>
+				<param xml-attr="true" name="name" type="string" summary="用户名"></param>
+				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
+					<param name="id" type="string" summary="权限组 ID"></param>
+					<param name="name" type="string" summary="权限组名称"></param>
+				</param>
+				<description type="html"><![CDATA[<span style="color:red">list description</span>]]></description>
+			</param>
+		</response>
+		<header name="name" type="string">
+			<description type="markdown"><![CDATA[desc]]></description>
+		</header>
+		<header name="name1" type="string" summary="name1 desc"></header>
+		<tag>t1</tag>
+		<tag>t2</tag>
+		<server>admin</server>
+	</api>
 	<api method="GET" summary="获取用户日志">
 		<path path="/users/{id}/logs">
 			<param name="id" type="number">
@@ -122,37 +153,6 @@ var data = []*FileInfo{{
 			</request>
 		</callback>
 		<server>client</server>
-	</api>
-	<api method="GET" summary="获取用户" deprecated="1.1.11">
-		<path path="/users">
-			<query name="page" type="number" default="0" summary="页码"></query>
-			<query name="size" type="number" default="20">
-				<description type="markdown"><![CDATA[数量]]></description>
-			</query>
-		</path>
-		<description type="markdown"><![CDATA[
-   <p>这是关于接口的详细说明文档</p><br />
-   可以是一个 HTML 内容
-   ]]></description>
-		<response name="user" type="object" array="true" status="200">
-			<param xml-attr="true" name="count" type="number" optional="false" summary="summary"></param>
-			<param name="list" type="object" array="true" summary="list">
-				<param xml-attr="true" name="id" type="number" summary="用户 ID"></param>
-				<param xml-attr="true" name="name" type="string" summary="用户名"></param>
-				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
-					<param name="id" type="string" summary="权限组 ID"></param>
-					<param name="name" type="string" summary="权限组名称"></param>
-				</param>
-				<description type="html"><![CDATA[<span style="color:red">list description</span>]]></description>
-			</param>
-		</response>
-		<header name="name" type="string">
-			<description type="markdown"><![CDATA[desc]]></description>
-		</header>
-		<header name="name1" type="string" summary="name1 desc"></header>
-		<tag>t1</tag>
-		<tag>t2</tag>
-		<server>admin</server>
 	</api>
 	<api method="POST" summary="添加用户">
 		<path path="/users"></path>
@@ -259,6 +259,195 @@ var data = []*FileInfo{{
     <circle cx="530" cy="385" r="300" fill-opacity="0" stroke-width="16" />
     <circle cx="-15" cy="385" r="300" fill-opacity="0" stroke-width="16" />
 </svg>
+`),
+	},
+	{
+		Name:        "index.cmn-Hant.xml",
+		ContentType: "application/xml; charset=utf-8",
+		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="./index.xsl"?>
+
+<!--
+這是官網首頁內容，同時也是簡體中文的本地化內容。
+
+其它語言的本化地內容，需要重新改寫本文件中除註釋外的所有內容。
+-->
+
+<docs lang="cmn-Hant" types="types.cmn-Hant.xml">
+    <title>apidoc | RESTful API 文檔處理工具</title>
+    <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 國際 (CC BY 4.0)</license>
+
+    <!-- 類型描述中表格的相關本化地信息 -->
+    <type-locale>
+        <header>
+            <name>名稱</name>
+            <type>類型</type>
+            <required>必填</required>
+            <description>描述</description>
+        </header>
+    </type-locale>
+
+    <doc id="about" title="關於">
+        <p>apidoc 是壹個簡單的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文檔生成工具，它從代碼註釋中提取特定格式的內容生成文檔。支持諸如 Go、Java、C++、Rust 等大部分開發語言，具體可使用 <code>apidoc lang</code> 命令行查看所有的支持列表。</p>
+
+        <p>apidoc 擁有以下特點：</p>
+        <ol>
+            <li>跨平臺，linux、windows、macOS 等都支持；</li>
+            <li>支持語言廣泛，即使是不支持，也很方便擴展；</li>
+            <li>支持多個不同語言的多個項目生成壹份文檔；</li>
+            <li>輸出模板可自定義；</li>
+            <li>根據文檔生成 mock 數據；</li>
+        </ol>
+
+        <p>以下是壹段簡短的 C 語言風格代碼下的示例：</p>
+        <pre><code class="language-markup"><![CDATA[/**
+ * <api method="GET" summary="獲取所有的用戶信息">
+ *     <path path="/users">
+ *         <query name="page" type="number" default="0">顯示第幾頁的內容</query>
+ *         <query name="size" type="number" default="20">每頁顯示的數量</query>
+ *     </path>
+ *     <tag>user</tag>
+ *     <server>users</server>
+ *     <response status="200" type="object" mimetype="application/json">
+ *         <param name="count" type="int" optional="false" summary="符合條件的所有用戶數量" />
+ *         <param name="users" type="object" array="true" summary="用戶列表">
+ *             <param name="id" type="int" summary="唯壹 ID" />
+ *             <param name="name" type="string" summary="姓名" />
+ *         </param>
+ *     </response>
+ *     <response status="500" mimetype="application/json" type="obj">
+ *         <param name="code" type="int" summary="錯誤代碼" />
+ *         <param name="msg" type="string" summary="錯誤內容" />
+ *     </response>
+ * </api>
+ */]]></code></pre>
+        <p>多行註釋中，每壹行中以<code>空白字符+symbol+空白字符</code>開頭的，這些字符將會被過濾，symbol 表示該註釋塊的起始字符中的任意字符。比如以上代碼中，所有的 <var>*</var> 將被過濾。</p>
+    </doc>
+
+    <doc id="usage" title="使用" />
+
+
+    <!--######################### 以下为文档内容的子项 ###########################-->
+
+    <doc id="spec" title="文檔格式">
+        <p>文檔采用 XML 格式。存在兩個頂級標簽：<code>apidoc</code> 和 <code>api</code>，用於描述整體內容和具體接口信息。</p>
+
+        <p>文檔被從註釋中提取之後，最終會被合並成壹個 XML 文件，在該文件中 <code>api</code> 作為 <code>apidoc</code> 的壹個子元素存在，如果妳的項目不想把文檔寫在註釋中，也可以直接編寫壹個完整的 XML 文件，將 <code>api</code> 作為 <code>apidoc</code> 的壹個子元素。</p>
+
+        <p>具體可參考<a href="./example/index.xml">示例代碼。</a></p>
+
+        <p>以下是對各個 XML 元素以及參數介紹，其中以 <code>@</code> 開頭的表示 XML 屬性；<code>.</code> 表示為當前元素的內容；其它表示子元素。</p>
+    </doc>
+
+    <doc id="install" title="安裝" parent="usage">
+          <p>可以直接從 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找妳需要的版本下載，放入 <code>PATH</code> 中即可使用。如果沒有妳需要的平臺文件，則需要從源代碼編譯：</p>
+        <ul>
+            <li>下載 Go 編譯工具</li>
+            <li>下載源代碼</li>
+            <li>執行代碼中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 進行編譯</li>
+            <li>編譯好的文件存放在 cmd/apidoc 下，可以將該文件放置在 PATH 目錄</li>
+        </ul>
+    </doc>
+
+    <doc id="env" title="環境變量" parent="usage">
+        <p>apidoc 會讀取 <var>LANG</var> 的環境變量作為其本地化的依據，若想指定其它語種，可以手動指定 <var>LANG</var> 環境變量：<samp>LANG=zh-Hant apidoc</samp>。在 windows 系統中，若不存在 <var>LANG</var> 環境變量，則會調用 <samp>GetUserDefaultLocaleName</samp> 函數來獲取相應的語言信息。</p>
+    </doc>
+
+    <doc id="cli" title="命令行" parent="usage">
+        <p>可以通過 <samp>apidoc help</samp> 查看命令行支持的子命令。主要包含了以下幾個：</p>
+        <table>
+            <thead><tr><th>子命令</th><th>描述</th></tr></thead>
+            <tbody>
+                <tr><td>help</td><td>顯示子命令的描述信息</td></tr>
+                <tr><td>build</td><td>生成文檔內容</td></tr>
+                <tr><td>mock</td><td>根據文檔提供 mock 服務</td></tr>
+                <tr><td>static</td><td>提供查看文檔的本地服務</td></tr>
+                <tr><td>version</td><td>顯示版本信息</td></tr>
+                <tr><td>lang</td><td>列出當前支持的語言</td></tr>
+                <tr><td>locale</td><td>列出當前支持的本地化內容</td></tr>
+                <tr><td>detect</td><td>根據指定的目錄生成配置文件</td></tr>
+                <tr><td>test</td><td>檢測語法是否準確</td></tr>
+                <tr><td>lsp</td><td>啟動 language server protocol 服務</td></tr>
+            </tbody>
+        </table>
+        <p>mock 子命令可以根據文檔生成壹些符合要求的隨機數據。這些數據每次請求都不相同，包括數量、長度、數值大小等。</p>
+    </doc>
+
+    <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">
+        <p>配置文件名固定為 <code>.apidoc.yaml</code>，格式為 YAML，可參考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通過命令 <code>apidoc detect</code> 生成。主要包含了以幾個配置項：</p>
+        <table>
+            <thead><tr><th>名稱</th><th>類型</th><th>選填</th><th>描述</th></tr></thead>
+            <tbody>
+                <tr>
+                    <th>version</th>
+                    <td>string</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>產生此配置文件的 apidoc 版本</td>
+                </tr>
+                <tr>
+                    <th>inputs</th>
+                    <td>object[]</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>指定輸入的數據，同壹項目只能解析壹種語言。</td>
+                </tr>
+                <tr>
+                    <th>input.dir</th>
+                    <td>string</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>需要解析的源文件所在目錄</td>
+                </tr>
+                <tr>
+                    <th>input.recursive</th>
+                    <td>bool</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>是否解析子目錄下的源文件</td>
+                </tr>
+                <tr>
+                    <th>input.encoding</th>
+                    <td>string</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>編碼，默認為 <code>utf-8</code>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</td>
+                </tr>
+                <tr>
+                    <th>input.lang</th>
+                    <td>string</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>源文件類型。具體支持的類型可通過 -l 參數進行查找</td>
+                </tr>
+                <tr>
+                    <th>output</th>
+                    <td>object</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>控制輸出行為</td>
+                </tr>
+            </tbody>
+            <tr>
+                <th>output.path</th>
+                <td>string</td>
+                <td><input type="checkbox" checked="true" disabled="true" /></td>
+                <td>指定輸出的文件名，包含路徑信息。</td>
+            </tr>
+            <tr>
+                <th>output.tags</th>
+                <td>string[]</td>
+                <td><input type="checkbox" disabled="true" /></td>
+                <td>只輸出與這些標簽相關聯的文檔，默認為全部。</td>
+            </tr>
+            <tr>
+                <th>output.style</th>
+                <td>string</td>
+                <td><input type="checkbox" disabled="true" /></td>
+                <td>為 XML 文件指定的 XSL 文件。</td>
+            </tr>
+        </table>
+    </doc>
+
+    <footer>
+        <license>
+            <p>當前頁面內容托管於 </p><p>，並采用</p><p>進行許可。</p>
+        </license>
+    </footer>
+</docs>
 `),
 	},
 	{
@@ -498,7 +687,7 @@ function initGotoTop() {
 其它语言的本化地内容，需要重新改写本文件中除注释外的所有内容。
 -->
 
-<docs lang="zh-hans">
+<docs lang="cmn-Hans" types="types.cmn-Hans.xml">
     <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
@@ -551,6 +740,9 @@ function initGotoTop() {
 
     <doc id="usage" title="使用" />
 
+
+    <!--######################### 以下为文档内容的子项 ###########################-->
+
     <doc id="spec" title="文档格式">
         <p>文档采用 XML 格式。存在两个顶级标签：<code>apidoc</code> 和 <code>api</code>，用于描述整体内容和具体接口信息。</p>
 
@@ -589,191 +781,80 @@ function initGotoTop() {
                 <tr><td>locale</td><td>列出当前支持的本地化内容</td></tr>
                 <tr><td>detect</td><td>根据指定的目录生成配置文件</td></tr>
                 <tr><td>test</td><td>检测语法是否准确</td></tr>
+                <tr><td>lsp</td><td>启动 language server protocol 服务</td></tr>
             </tbody>
         </table>
         <p>mock 子命令可以根据文档生成一些符合要求的随机数据。这些数据每次请求都不相同，包括数量、长度、数值大小等。</p>
     </doc>
 
-    <!-- 配置文件的类型定义 -->
-    <types parent="usage">
-        <type name=".apidoc.yaml">
-            <description>
-                <p>配置文件名固定为 <code>.apidoc.yaml</code>，格式为 YAML，可参考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通过命令 <code>apidoc detect</code> 生成。主要包含了以几个配置项：</p>
-            </description>
-            <item name="version" >产生此配置文件的 apidoc 版本</item>
-            <item name="inputs">指定输入的数据，同一项目只能解析一种语言。</item>
-            <item name="inputs.dir">需要解析的源文件所在目录</item>
-            <item name="inputs.recursive">是否解析子目录下的源文件</item>
-            <item name="inputs.encoding">编码，默认为 <code>utf-8</code>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的内容。</item>
-            <item name="inputs.lang">源文件类型。具体支持的类型可通过 -l 参数进行查找</item>
-            <item name="output">控制输出行为</item>
-            <item name="output.path">指定输出的文件名，包含路径信息。</item>
-            <item name="output.tags">只输出与这些标签相关联的文档，默认为全部。</item>
-            <item name="output.style">为 XML 文件指定的 XSL 文件。</item>
-        </type>
-    </types>
-
-    <types parent="spec">
-        <type name="apidoc">
-            <description><p>用于描述整个文档的相关内容，只能出现一次。</p></description>
-            <item name="@version">文档的版本</item>
-            <item name="@lang">内容的本地化 ID，比如 <samp><var>zh-hans</var></samp> 等。</item>
-            <item name="@logo">图标，默认采用官网的 <var>https://apidoc.tools/icon.svg</var>，同时作用于 favicon 和 logo，只支持 SVG 格式。</item>
-            <item name="@created">文档的生成时间</item>
-            <item name="title">文档的标题</item>
-            <item name="description">文档的整体介绍，可以是使用 HTML 内容。</item>
-            <item name="contract">联系人信息</item>
-            <item name="license">内容的版权信息</item>
-            <item name="tag">可以用的标签列表</item>
-            <item name="server">API 基地址列表，每个 API 最少应该有一个 server。</item>
-            <item name="mimetype">接口所支持的 mimetype 类型</item>
-            <item name="response">表示所有 API 都有可能返回的內容</item>
-            <item name="api">API 文档内容</item>
-        </type>
-
-        <type name="link">
-            <description><p>用于描述链接，一般转换为 HTML 的 a 标签。</p></description>
-            <item name="@url">链接指向的 URL</item>
-            <item name="@text">链接的文本内容</item>
-        </type>
-
-        <type name="contact">
-            <description><p>用于描述联系方式</p></description>
-            <item name="@url">链接的 URL，与邮箱必须二选一必填</item>
-            <item name="@email">邮件地址，与 url 必须二选一必填</item>
-            <item name=".">联系人名称</item>
-        </type>
-
-        <type name="tag">
-            <description><p>定义标签，标签相当于关键字，作用于 API，相当于启到分类的作用。</p></description>
-            <item name="@name">标签的唯一 ID，推荐采用英文字母表示。</item>
-            <item name="@title">标签名称</item>
-            <item name="@deprecated">表示该标签在大于等于该版本号时不再启作用</item>
-        </type>
-
-        <type name="server">
-            <description><p>定义服务器的相关信息，作用于 API，决定该 API 与哪个服务器相关联。</p></description>
-            <item name="@name">唯一 ID，推荐采用英文字母表示。</item>
-            <item name="@url">服务基地址</item>
-            <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
-            <item name="@summary">简要的描述内容，或者通过 <code>description</code> 提供一份富文本内容。</item>
-            <item name="description">对该服务的具体描述，可以使用 HTML 内容</item>
-        </type>
-
-        <type name="api">
-            <description><p>定义接口的具体内容</p></description>
-            <item name="@version">表示此接口在该版本中添加</item>
-            <item name="@method">请求方法</item>
-            <item name="@summary">简要介绍</item>
-            <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
-            <item name="@id">唯一 ID</item>
-            <item name="description">该接口的详细介绍，为 HTML 内容。</item>
-            <item name="path">定义路径信息</item>
-            <item name="request">定义可用的请求信息</item>
-            <item name="response">定义可能的返回信息</item>
-            <item name="callback">定义回调接口内容</item>
-            <item name="tag">关联的标签</item>
-            <item name="server">关联的服务</item>
-            <item name="header">传递的报头内容，如果是某个 mimetype 专用的，可以放在 request 元素中。</item>
-        </type>
-
-        <type name="path">
-            <description><p>用于定义请求时与路径相关的内容</p></description>
-            <item name="@path">接口地址</item>
-            <item name="param">地址中的参数</item>
-            <item name="query">地址中的查询参数</item>
-        </type>
-
-        <type name="request">
-            <description><p>定义了请求和返回的相关内容</p></description>
-            <item name="@xml-ns">XML 标签的命名空间</item>
-            <item name="@xml-ns-prefix">XML 标签的命名空间名称前缀</item>
-            <item name="@xml-wrapped">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
-            <item name="@name">当 mimetype 为 <var>application/xml</var> 时，此值表示 XML 的顶层元素名称，否则无用。</item>
-            <item name="@type">值的类型，可以是 <del title="建议使用空值代替"><var>none</var></del>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和 空值；空值表示不输出任何内容。</item>
-            <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
-            <item name="@summary">简要介绍</item>
-            <item name="@array">是否为数组</item>
-            <item name="@status">状态码。在 request 中，该值不可用，否则为必填项。</item>
-            <item name="@mimetype">媒体类型，比如 <var>application/json</var> 等。</item>
-            <item name="description">详细介绍，为 HTML 内容。</item>
-            <item name="enum">当前参数可用的枚举值</item>
-            <item name="param">子类型，比如对象的子元素。</item>
-            <item name="example">示例代码。</item>
-            <item name="header">传递的报头内容</item>
-        </type>
-
-        <type name="param">
-            <description><p>参数类型，基本上可以作为 <code>request</code> 的子集使用。</p></description>
-            <item name="@xml-attr">是否作为父元素的属性，仅作用于 XML 元素。</item>
-            <item name="@xml-extract">将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。</item>
-            <item name="@xml-ns">XML 标签的命名空间</item>
-            <item name="@xml-ns-prefix">XML 标签的命名空间名称前缀</item>
-            <item name="@xml-attr">是否作为父元素的属性，仅用于 XML 的请求。</item>
-            <item name="@xml-wrapped">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
-            <item name="@name">值的名称</item>
-            <item name="@type">值的类型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
-            <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
-            <item name="@default">默认值</item>
-            <item name="@optional">是否为可选的参数</item>
-            <item name="@summary">简要介绍</item>
-            <item name="@array">是否为数组</item>
-            <item name="@array-style">是否以数组的形式展示数据，默认采用 form 形式，仅在 <code>@array</code> 为 <var>true</var> 时有效。</item>
-            <item name="description">详细介绍，为 HTML 内容。</item>
-            <item name="enum">当前参数可用的枚举值</item>
-            <item name="param">子类型，比如对象的子元素。</item>
-        </type>
-
-        <type name="enum">
-            <description><p>定义枚举类型的数所的枚举值</p></description>
-            <item name="@value">枚举值</item>
-            <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
-            <item name=".">该值的详细介绍</item>
-        </type>
-
-        <type name="example">
-            <description><p>示例代码</p></description>
-            <item name="@mimetype">代码的 mimetype 类型。</item>
-            <item name=".">示例代码的内容，需要使用 CDATA 包含代码。</item>
-        </type>
-
-        <type name="header">
-            <description><p>定义了请求和返回的报头结构</p></description>
-            <item name="@name">报头的名称</item>
-            <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
-            <item name="@summary">对报头的描述</item>
-            <item name="description">对报头的描述</item>
-        </type>
-
-        <type name="callback">
-            <description><p>定义接口回调的相关内容</p></description>
-            <item name="@method">请求方法</item>
-            <item name="@summary">简要介绍</item>
-            <item name="@deprecated">表示在大于等于该版本号时不再启作用</item>
-            <item name="description">该接口的详细介绍</item>
-            <item name="path">定义路径信息</item>
-            <item name="request">定义可用的请求信息</item>
-            <item name="response">定义可能的返回信息</item>
-        </type>
-
-        <type name="richtext">
-            <description><p>富文本信息，可以以不同的格式展示数据。</p></description>
-            <item name="@type">富文本的格式，目前可以是 <var>html</var> 或是 <var>markdown</var></item>
-            <item name=".">实际的文本内容，根据 <code>@type</code> 属性确定渲染的方式。</item>
-        </type>
-
-        <type name="version">
-            <description>
-                <p>版本号格式，遵循 <a href="https://semver.org/lang/zh-CN/">semver</a> 的规则。比如 <samp>1.1.1</samp>、<samp>0.1.0</samp> 等。</p>
-            </description>
-        </type>
-
-        <type name="date">
-            <description>
-                <p>采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的时间，比如：<samp>2019-12-16T00:35:48+08:00</samp></p>
-            </description>
-        </type>
-    </types>
+    <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">
+        <p>配置文件名固定为 <code>.apidoc.yaml</code>，格式为 YAML，可参考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通过命令 <code>apidoc detect</code> 生成。主要包含了以几个配置项：</p>
+        <table>
+            <thead><tr><th>名称</th><th>类型</th><th>选填</th><th>描述</th></tr></thead>
+            <tbody>
+                <tr>
+                    <th>version</th>
+                    <td>string</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>产生此配置文件的 apidoc 版本</td>
+                </tr>
+                <tr>
+                    <th>inputs</th>
+                    <td>object[]</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>指定输入的数据，同一项目只能解析一种语言。</td>
+                </tr>
+                <tr>
+                    <th>input.dir</th>
+                    <td>string</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>需要解析的源文件所在目录</td>
+                </tr>
+                <tr>
+                    <th>input.recursive</th>
+                    <td>bool</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>是否解析子目录下的源文件</td>
+                </tr>
+                <tr>
+                    <th>input.encoding</th>
+                    <td>string</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>编码，默认为 <code>utf-8</code>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的内容。</td>
+                </tr>
+                <tr>
+                    <th>input.lang</th>
+                    <td>string</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>源文件类型。具体支持的类型可通过 -l 参数进行查找</td>
+                </tr>
+                <tr>
+                    <th>output</th>
+                    <td>object</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>控制输出行为</td>
+                </tr>
+            </tbody>
+            <tr>
+                <th>output.path</th>
+                <td>string</td>
+                <td><input type="checkbox" checked="true" disabled="true" /></td>
+                <td>指定输出的文件名，包含路径信息。</td>
+            </tr>
+            <tr>
+                <th>output.tags</th>
+                <td>string[]</td>
+                <td><input type="checkbox" disabled="true" /></td>
+                <td>只输出与这些标签相关联的文档，默认为全部。</td>
+            </tr>
+            <tr>
+                <th>output.style</th>
+                <td>string</td>
+                <td><input type="checkbox" disabled="true" /></td>
+                <td>为 XML 文件指定的 XSL 文件。</td>
+            </tr>
+        </table>
+    </doc>
 
     <footer>
         <license>
@@ -919,12 +1000,14 @@ function initGotoTop() {
             </xsl:call-template>
         </xsl:for-each>
 
-        <xsl:for-each select="document('types.xml')/types/types[@parent=$id]/type">
-            <xsl:call-template name="type">
-                <xsl:with-param name="type" select="." />
-                <xsl:with-param name="parent" select="$id" />
-            </xsl:call-template>
-        </xsl:for-each>
+        <xsl:if test="$id='spec'">
+            <xsl:for-each select="document(/docs/@types)/types/type">
+                <xsl:call-template name="type">
+                    <xsl:with-param name="type" select="." />
+                    <xsl:with-param name="parent" select="$id" />
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:if>
     </article>
 </xsl:template>
 
@@ -967,7 +1050,7 @@ function initGotoTop() {
                                 <xsl:with-param name="chk" select="@required" />
                             </xsl:call-template>
                         </td>
-                        <td><xsl:copy-of select="$type-locale/item[@name=$name]/node()" /></td>
+                        <td><xsl:copy-of select="node()" /></td>
                     </tr>
                     </xsl:for-each>
                 </tbody>
@@ -992,476 +1075,313 @@ function initGotoTop() {
 `),
 	},
 	{
-		Name:        "index.zh-hant.xml",
-		ContentType: "application/xml; charset=utf-8",
-		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="./index.xsl"?>
-
-<!--
-這是官網首頁內容，同時也是簡體中文的本地化內容。
-
-其它語言的本化地內容，需要重新改寫本文件中除註釋外的所有內容。
--->
-
-<docs lang="zh-hant">
-    <title>apidoc | RESTful API 文檔處理工具</title>
-    <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 國際 (CC BY 4.0)</license>
-
-    <!-- 類型描述中表格的相關本化地信息 -->
-    <type-locale>
-        <header>
-            <name>名稱</name>
-            <type>類型</type>
-            <required>必填</required>
-            <description>描述</description>
-        </header>
-    </type-locale>
-
-    <doc id="about" title="關於">
-        <p>apidoc 是壹個簡單的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文檔生成工具，它從代碼註釋中提取特定格式的內容生成文檔。支持諸如 Go、Java、C++、Rust 等大部分開發語言，具體可使用 <code>apidoc lang</code> 命令行查看所有的支持列表。</p>
-
-        <p>apidoc 擁有以下特點：</p>
-        <ol>
-            <li>跨平臺，linux、windows、macOS 等都支持；</li>
-            <li>支持語言廣泛，即使是不支持，也很方便擴展；</li>
-            <li>支持多個不同語言的多個項目生成壹份文檔；</li>
-            <li>輸出模板可自定義；</li>
-            <li>根據文檔生成 mock 數據；</li>
-        </ol>
-
-        <p>以下是壹段簡短的 C 語言風格代碼下的示例：</p>
-        <pre><code class="language-markup"><![CDATA[/**
- * <api method="GET" summary="獲取所有的用戶信息">
- *     <path path="/users">
- *         <query name="page" type="number" default="0">顯示第幾頁的內容</query>
- *         <query name="size" type="number" default="20">每頁顯示的數量</query>
- *     </path>
- *     <tag>user</tag>
- *     <server>users</server>
- *     <response status="200" type="object" mimetype="application/json">
- *         <param name="count" type="int" optional="false" summary="符合條件的所有用戶數量" />
- *         <param name="users" type="object" array="true" summary="用戶列表">
- *             <param name="id" type="int" summary="唯壹 ID" />
- *             <param name="name" type="string" summary="姓名" />
- *         </param>
- *     </response>
- *     <response status="500" mimetype="application/json" type="obj">
- *         <param name="code" type="int" summary="錯誤代碼" />
- *         <param name="msg" type="string" summary="錯誤內容" />
- *     </response>
- * </api>
- */]]></code></pre>
-        <p>多行註釋中，每壹行中以<code>空白字符+symbol+空白字符</code>開頭的，這些字符將會被過濾，symbol 表示該註釋塊的起始字符中的任意字符。比如以上代碼中，所有的 <var>*</var> 將被過濾。</p>
-    </doc>
-
-    <doc id="usage" title="使用" />
-
-    <doc id="spec" title="文檔格式">
-        <p>文檔采用 XML 格式。存在兩個頂級標簽：<code>apidoc</code> 和 <code>api</code>，用於描述整體內容和具體接口信息。</p>
-
-        <p>文檔被從註釋中提取之後，最終會被合並成壹個 XML 文件，在該文件中 <code>api</code> 作為 <code>apidoc</code> 的壹個子元素存在，如果妳的項目不想把文檔寫在註釋中，也可以直接編寫壹個完整的 XML 文件，將 <code>api</code> 作為 <code>apidoc</code> 的壹個子元素。</p>
-
-        <p>具體可參考<a href="./example/index.xml">示例代碼。</a></p>
-
-        <p>以下是對各個 XML 元素以及參數介紹，其中以 <code>@</code> 開頭的表示 XML 屬性；<code>.</code> 表示為當前元素的內容；其它表示子元素。</p>
-    </doc>
-
-    <doc id="install" title="安裝" parent="usage">
-          <p>可以直接從 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找妳需要的版本下載，放入 <code>PATH</code> 中即可使用。如果沒有妳需要的平臺文件，則需要從源代碼編譯：</p>
-        <ul>
-            <li>下載 Go 編譯工具</li>
-            <li>下載源代碼</li>
-            <li>執行代碼中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 進行編譯</li>
-            <li>編譯好的文件存放在 cmd/apidoc 下，可以將該文件放置在 PATH 目錄</li>
-        </ul>
-    </doc>
-
-    <doc id="env" title="環境變量" parent="usage">
-        <p>apidoc 會讀取 <var>LANG</var> 的環境變量作為其本地化的依據，若想指定其它語種，可以手動指定 <var>LANG</var> 環境變量：<samp>LANG=zh-Hant apidoc</samp>。在 windows 系統中，若不存在 <var>LANG</var> 環境變量，則會調用 <samp>GetUserDefaultLocaleName</samp> 函數來獲取相應的語言信息。</p>
-    </doc>
-
-    <doc id="cli" title="命令行" parent="usage">
-        <p>可以通過 <samp>apidoc help</samp> 查看命令行支持的子命令。主要包含了以下幾個：</p>
-        <table>
-            <thead><tr><th>子命令</th><th>描述</th></tr></thead>
-            <tbody>
-                <tr><td>help</td><td>顯示子命令的描述信息</td></tr>
-                <tr><td>build</td><td>生成文檔內容</td></tr>
-                <tr><td>mock</td><td>根據文檔提供 mock 服務</td></tr>
-                <tr><td>static</td><td>提供查看文檔的本地服務</td></tr>
-                <tr><td>version</td><td>顯示版本信息</td></tr>
-                <tr><td>lang</td><td>列出當前支持的語言</td></tr>
-                <tr><td>locale</td><td>列出當前支持的本地化內容</td></tr>
-                <tr><td>detect</td><td>根據指定的目錄生成配置文件</td></tr>
-                <tr><td>test</td><td>檢測語法是否準確</td></tr>
-            </tbody>
-        </table>
-        <p>mock 子命令可以根據文檔生成壹些符合要求的隨機數據。這些數據每次請求都不相同，包括數量、長度、數值大小等。</p>
-    </doc>
-
-    <!-- 配置文件的類型定義 -->
-    <types parent="usage">
-        <type name=".apidoc.yaml">
-            <description>
-                <p>配置文件名固定為 <code>.apidoc.yaml</code>，格式為 YAML，可參考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通過命令 <code>apidoc detect</code> 生成。主要包含了以幾個配置項：</p>
-            </description>
-            <item name="version" >產生此配置文件的 apidoc 版本</item>
-            <item name="inputs">指定輸入的數據，同壹項目只能解析壹種語言。</item>
-            <item name="inputs.dir">需要解析的源文件所在目錄</item>
-            <item name="inputs.recursive">是否解析子目錄下的源文件</item>
-            <item name="inputs.encoding">編碼，默認為 <code>utf-8</code>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</item>
-            <item name="inputs.lang">源文件類型。具體支持的類型可通過 -l 參數進行查找</item>
-            <item name="output">控制輸出行為</item>
-            <item name="output.path">指定輸出的文件名，包含路徑信息。</item>
-            <item name="output.type">指定輸出的文件格式，值可以是 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>，其中 <var>apidoc+xml</var> 為默認值。</item>
-            <item name="output.tags">只輸出與這些標簽相關聯的文檔，默認為全部。</item>
-            <item name="output.style">為 XML 文件指定的 XSL 文件。</item>
-        </type>
-    </types>
-
-    <types parent="spec">
-        <type name="apidoc">
-            <description><p>用於描述整個文檔的相關內容，只能出現壹次。</p></description>
-            <item name="@version">文檔的版本</item>
-            <item name="@lang">內容的本地化 ID，比如 <samp><var>zh-hans</var></samp> 等。</item>
-            <item name="@logo">圖標，默認采用官網的 <var>https://apidoc.tools/icon.svg</var>，同時作用於 favicon 和 logo，只支持 SVG 格式。</item>
-            <item name="@created">文檔的生成時間</item>
-            <item name="title">文檔的標題</item>
-            <item name="description">文檔的整體介紹，可以是使用 HTML 內容。</item>
-            <item name="contract">聯系人信息</item>
-            <item name="license">內容的版權信息</item>
-            <item name="tag">可以用的標簽列表</item>
-            <item name="server">API 基地址列表，每個 API 最少應該有壹個 server。</item>
-            <item name="mimetype">接口所支持的 mimetype 類型</item>
-            <item name="response">表示所有 API 都有可能返回的內容</item>
-            <item name="api">API 文檔內容</item>
-        </type>
-
-        <type name="link">
-            <description><p>用於描述鏈接，壹般轉換為 HTML 的 a 標簽。</p></description>
-            <item name="@url">鏈接指向的 URL</item>
-            <item name="@text">鏈接的文本內容</item>
-        </type>
-
-        <type name="contact">
-            <description><p>用於描述聯系方式</p></description>
-            <item name="@url">鏈接的 URL，與郵箱必須二選壹必填</item>
-            <item name="@email">郵件地址，與 url 必須二選壹必填</item>
-            <item name=".">聯系人名稱</item>
-        </type>
-
-        <type name="tag">
-            <description><p>定義標簽，標簽相當於關鍵字，作用於 API，相當於啟到分類的作用。</p></description>
-            <item name="@name">標簽的唯壹 ID，推薦采用英文字母表示。</item>
-            <item name="@title">標簽名稱</item>
-            <item name="@deprecated">表示該標簽在大於等於該版本號時不再啟作用</item>
-        </type>
-
-        <type name="server">
-            <description><p>定義服務器的相關信息，作用於 API，決定該 API 與哪個服務器相關聯。</p></description>
-            <item name="@name">唯壹 ID，推薦采用英文字母表示。</item>
-            <item name="@url">服務基地址</item>
-            <item name="@deprecated">表示在大於等於該版本號時不再啟作用</item>
-            <item name="@summary">簡要的描述內容，或者通過 <code>description</code> 提供壹份富文本內容。</item>
-            <item name="description">對該服務的具體描述，可以使用 HTML 內容</item>
-        </type>
-
-        <type name="api">
-            <description><p>定義接口的具體內容</p></description>
-            <item name="@version">表示此接口在該版本中添加</item>
-            <item name="@method">請求方法</item>
-            <item name="@summary">簡要介紹</item>
-            <item name="@deprecated">表示在大於等於該版本號時不再啟作用</item>
-            <item name="@id">唯壹 ID</item>
-            <item name="description">該接口的詳細介紹，為 HTML 內容。</item>
-            <item name="path">定義路徑信息</item>
-            <item name="request">定義可用的請求信息</item>
-            <item name="response">定義可能的返回信息</item>
-            <item name="callback">定義回調接口內容</item>
-            <item name="tag">關聯的標簽</item>
-            <item name="server">關聯的服務</item>
-            <item name="header">傳遞的報頭內容，如果是某個 mimetype 專用的，可以放在 request 元素中。</item>
-        </type>
-
-        <type name="path">
-            <description><p>用於定義請求時與路徑相關的內容</p></description>
-            <item name="@path">接口地址</item>
-            <item name="param">地址中的參數</item>
-            <item name="query">地址中的查詢參數</item>
-        </type>
-
-        <type name="request">
-            <description><p>定義了請求和返回的相關內容</p></description>
-            <item name="@xml-ns">XML 標簽的命名空間</item>
-            <item name="@xml-ns-prefix">XML 標簽的命名空間名稱前綴</item>
-            <item name="@xml-wrapped">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
-            <item name="@name">當 mimetype 為 <var>application/xml</var> 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
-            <item name="@type">值的類型，可以是 <del title="建議使用空值代替"><var>none</var></del>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和 空值；空值表示不輸出任何內容。</item>
-            <item name="@deprecated">表示在大於等於該版本號時不再啟作用</item>
-            <item name="@summary">簡要介紹</item>
-            <item name="@array">是否為數組</item>
-            <item name="@status">狀態碼。在 request 中，該值不可用，否則為必填項。</item>
-            <item name="@mimetype">媒體類型，比如 <var>application/json</var> 等。</item>
-            <item name="description">詳細介紹，為 HTML 內容。</item>
-            <item name="enum">當前參數可用的枚舉值</item>
-            <item name="param">子類型，比如對象的子元素。</item>
-            <item name="example">示例代碼。</item>
-            <item name="header">傳遞的報頭內容</item>
-        </type>
-
-        <type name="param">
-            <description><p>參數類型，基本上可以作為 <code>request</code> 的子集使用。</p></description>
-            <item name="@xml-attr">是否作為父元素的屬性，僅作用於 XML 元素。</item>
-            <item name="@xml-extract">將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。</item>
-            <item name="@xml-ns">XML 標簽的命名空間</item>
-            <item name="@xml-ns-prefix">XML 標簽的命名空間名稱前綴</item>
-            <item name="@xml-attr">是否作為父元素的屬性，僅用於 XML 的請求。</item>
-            <item name="@xml-wrapped">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
-            <item name="@name">值的名稱</item>
-            <item name="@type">值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
-            <item name="@deprecated">表示在大於等於該版本號時不再啟作用</item>
-            <item name="@default">默認值</item>
-            <item name="@optional">是否為可選的參數</item>
-            <item name="@summary">簡要介紹</item>
-            <item name="@array">是否為數組</item>
-            <item name="@array-style">是否以數組的形式展示數據，默認采用 form 形式，僅在 <code>@array</code> 為 <var>true</var> 時有效。</item>
-            <item name="description">詳細介紹，為 HTML 內容。</item>
-            <item name="enum">當前參數可用的枚舉值</item>
-            <item name="param">子類型，比如對象的子元素。</item>
-        </type>
-
-        <type name="enum">
-            <description><p>定義枚舉類型的數所的枚舉值</p></description>
-            <item name="@value">枚舉值</item>
-            <item name="@deprecated">表示在大於等於該版本號時不再啟作用</item>
-            <item name=".">該值的詳細介紹</item>
-        </type>
-
-        <type name="example">
-            <description><p>示例代碼</p></description>
-            <item name="@mimetype">代碼的 mimetype 類型。</item>
-            <item name=".">示例代碼的內容，需要使用 CDATA 包含代碼。</item>
-        </type>
-
-        <type name="header">
-            <description><p>定義了請求和返回的報頭結構</p></description>
-            <item name="@name">報頭的名稱</item>
-            <item name="@deprecated">表示在大於等於該版本號時不再啟作用</item>
-            <item name="@summary">對報頭的描述</item>
-            <item name="description">對報頭的描述</item>
-        </type>
-
-        <type name="callback">
-            <description><p>定義接口回調的相關內容</p></description>
-            <item name="@method">請求方法</item>
-            <item name="@summary">簡要介紹</item>
-            <item name="@deprecated">表示在大於等於該版本號時不再啟作用</item>
-            <item name="description">該接口的詳細介紹</item>
-            <item name="path">定義路徑信息</item>
-            <item name="request">定義可用的請求信息</item>
-            <item name="response">定義可能的返回信息</item>
-        </type>
-
-        <type name="richtext">
-            <description><p>富文本信息，可以以不同的格式展示數據。</p></description>
-            <item name="@type">富文本的格式，目前可以是 <var>html</var> 或是 <var>markdown</var></item>
-            <item name=".">實際的文本內容，根據 <code>@type</code> 屬性確定渲染的方式。</item>
-        </type>
-
-        <type name="version">
-            <description>
-                <p>版本號格式，遵循 <a href="https://semver.org/lang/zh-CN/">semver</a> 的規則。比如 <samp>1.1.1</samp>、<samp>0.1.0</samp> 等。</p>
-            </description>
-        </type>
-
-        <type name="date">
-            <description>
-                <p>采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp></p>
-            </description>
-        </type>
-    </types>
-
-    <footer>
-        <license>
-            <p>當前頁面內容托管於 </p><p>，並采用</p><p>進行許可。</p>
-        </license>
-    </footer>
-</docs>
-`),
-	},
-	{
 		Name:        "locales.xml",
 		ContentType: "application/xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
 
 <locales>
-    <locale id="zh-hans" href="index.xml" title="简体中文" />
-    <locale id="zh-hant" href="index.zh-hant.xml" title="繁体中文" />
+    <locale id="cmn-Hans" href="index.xml" title="简体中文" />
+    <locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁体中文" />
 </locales>
 `),
 	},
 	{
-		Name:        "types.xml",
+		Name:        "types.cmn-Hans.xml",
 		ContentType: "application/xml; charset=utf-8",
-		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
+		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 该文件由工具自动生成，请勿手动修改！ -->
 
 <types>
+	<type name="apidoc">
+		<usage>用于描述整个文档的相关内容，只能出现一次。</usage>
+		<item name="@apidoc" type="string" array="false" required="false">文档的版本要号</item>
+		<item name="@lang" type="string" array="false" required="false">文档内容的本地化 ID，比如 &lt;samp&gt;zh-Hans&lt;/samp&gt;、&lt;samp&gt;en-US&lt;/samp&gt; 等。</item>
+		<item name="@logo" type="string" array="false" required="false">文档的图标，仅可使用 SVG 格式图标。</item>
+		<item name="@created" type="string" array="false" required="false">文档的创建时间</item>
+		<item name="@version" type="string" array="false" required="false">文档的版本号，需要遵守 semver 的约定。</item>
+		<item name="title" type="string" array="false" required="true">文档的标题</item>
+		<item name="description" type="richtext" array="false" required="false">文档的整体描述内容</item>
+		<item name="contact" type="contact" array="false" required="false">文档作者的联系方式</item>
+		<item name="license" type="link" array="false" required="false">文档的版权信息</item>
+		<item name="tag" type="tag" array="true" required="false">文档中定义的所有标签</item>
+		<item name="server" type="server" array="true" required="false">API 基地址列表，每个 API 最少应该有一个 server。</item>
+		<item name="api" type="api" array="true" required="false">文档中的 API 文档</item>
+		<item name="response" type="request" array="true" required="false">文档中所有 API 文档都需要支持的返回内容</item>
+		<item name="mimetype" type="string" array="true" required="true">文档所支持的 mimetype</item>
+	</type>
+	<type name="string">
+		<usage>usage-string</usage>
+	</type>
+	<type name="richtext">
+		<usage>富文本内容</usage>
+		<item name="@type" type="string" array="false" required="true">指定内容的格式</item>
+		<item name="." type="string" array="false" required="true"></item>
+	</type>
+	<type name="contact">
+		<usage>用于描述联系方式</usage>
+		<item name="@name" type="string" array="false" required="true">联系人的名称</item>
+		<item name="url" type="string" array="false" required="false">联系人的 URL</item>
+		<item name="email" type="string" array="false" required="false">联系人的电子邮件</item>
+	</type>
+	<type name="link">
+		<usage>用于描述链接信息，一般转换为 HTML 的 a 标签。</usage>
+		<item name="@text" type="string" array="false" required="true">链接的字面文字</item>
+		<item name="@url" type="string" array="false" required="true">链接指向的文本</item>
+	</type>
+	<type name="tag">
+		<usage>用于对各个 API 进行分类</usage>
+		<item name="@name" type="string" array="false" required="true">usage-tag-name</item>
+		<item name="@title" type="string" array="false" required="true">标签的字面名称</item>
+		<item name="@deprecated" type="string" array="false" required="false">该标签在大于该版本时被弃用</item>
+	</type>
+	<type name="server">
+		<usage>用于指定各个 API 的服务器地址</usage>
+		<item name="@name" type="string" array="false" required="true">服务唯一 ID</item>
+		<item name="@url" type="string" array="false" required="true">usage-server-url</item>
+		<item name="@deprecated" type="string" array="false" required="false">服务在大于该版本时被弃用</item>
+		<item name="@summary" type="string" array="false" required="false">服务的摘要信息</item>
+		<item name="description" type="richtext" array="false" required="false">服务的详细描述</item>
+	</type>
+	<type name="api">
+		<usage>用于描述整个文档的相关内容，只能出现一次。</usage>
+		<item name="@version" type="string" array="false" required="false">表示此接口在该版本中添加</item>
+		<item name="@method" type="string" array="false" required="true">当前接口所支持的请求方法</item>
+		<item name="@id" type="string" array="false" required="false">接口的唯一 ID</item>
+		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
+		<item name="@deprecated" type="string" array="false" required="false">在此版本之后将会被弃用</item>
+		<item name="path" type="path" array="false" required="true">定义路径信息</item>
+		<item name="description" type="richtext" array="false" required="false">该接口的详细介绍，为 HTML 内容。</item>
+		<item name="request" type="request" array="true" required="false">定义可用的请求信息</item>
+		<item name="response" type="request" array="true" required="false">定义可能的返回信息</item>
+		<item name="callback" type="callback" array="false" required="false">定义回调接口内容</item>
+		<item name="header" type="param" array="true" required="false">传递的报头内容，如果是某个 mimetype 专用的，可以放在 request 元素中。</item>
+		<item name="tag" type="string" array="true" required="false">关联的标签</item>
+		<item name="server" type="string" array="true" required="false">关联的服务</item>
+	</type>
+	<type name="path">
+		<usage>用于定义请求时与路径相关的内容</usage>
+		<item name="@path" type="string" array="false" required="true">接口地址</item>
+		<item name="@ref" type="string" array="false" required="false">usage-path-reference</item>
+		<item name="param" type="param" array="true" required="false">地址中的参数</item>
+		<item name="query" type="param" array="true" required="false">地址中的查询参数</item>
+	</type>
+	<type name="param">
+		<usage>参数类型，基本上可以作为 request 的子集使用。</usage>
+		<item name="@xml-attr" type="bool" array="false" required="false">usage-xml-xml-attr</item>
+		<item name="@xml-extract" type="bool" array="false" required="false">usage-xml-xml-extract</item>
+		<item name="@xml-ns" type="string" array="false" required="false">usage-xml-xml-ns</item>
+		<item name="@xml-ns-prefix" type="string" array="false" required="false">usage-xml-xml-prefix</item>
+		<item name="@xml-wrapped" type="string" array="false" required="false">usage-xml-xml-wrapped</item>
+		<item name="@name" type="string" array="false" required="true">值的名称</item>
+		<item name="@type" type="string" array="false" required="true">值的类型，可以是 &lt;var&gt;string&lt;/var&gt;、&lt;var&gt;number&lt;/var&gt;、&lt;var&gt;bool&lt;/var&gt; 和 &lt;var&gt;object&lt;/var&gt;</item>
+		<item name="@deprecated" type="string" array="false" required="false">表示在大于等于该版本号时不再启作用</item>
+		<item name="@default" type="string" array="false" required="false">默认值</item>
+		<item name="@optional" type="bool" array="false" required="false">是否为可选的参数</item>
+		<item name="@array" type="bool" array="false" required="false">是否为数组</item>
+		<item name="@ref" type="string" array="false" required="false">usage-param-reference</item>
+		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
+		<item name="@array-style" type="bool" array="false" required="false">以数组的方式展示数据</item>
+		<item name="param" type="param" array="true" required="false">子类型，比如对象的子元素。</item>
+		<item name="enum" type="enum" array="true" required="false">当前参数可用的枚举值</item>
+		<item name="description" type="richtext" array="false" required="false">详细介绍，为 HTML 内容。</item>
+	</type>
+	<type name="enum">
+		<usage>定义枚举类型的数所的枚举值</usage>
+		<item name="@deprecated" type="string" array="false" required="false">该属性弃用的版本号</item>
+		<item name="@value" type="string" array="false" required="true">枚举值</item>
+		<item name="@summary" type="string" array="false" required="false">枚举值的说明</item>
+		<item name="description" type="richtext" array="false" required="false">usage-enum-description</item>
+	</type>
+	<type name="request">
+		<usage>定义了请求和返回的相关内容</usage>
+		<item name="@xml-attr" type="bool" array="false" required="false">usage-xml-xml-attr</item>
+		<item name="@xml-extract" type="bool" array="false" required="false">usage-xml-xml-extract</item>
+		<item name="@xml-ns" type="string" array="false" required="false">usage-xml-xml-ns</item>
+		<item name="@xml-ns-prefix" type="string" array="false" required="false">usage-xml-xml-prefix</item>
+		<item name="@xml-wrapped" type="string" array="false" required="false">usage-xml-xml-wrapped</item>
+		<item name="@name" type="string" array="false" required="false">当 mimetype 为 &lt;var&gt;application/xml&lt;/var&gt; 时，此值表示 XML 的顶层元素名称，否则无用。</item>
+		<item name="@type" type="string" array="false" required="false">值的类型，可以是 &lt;var&gt;none&lt;/var&gt;、&lt;var&gt;string&lt;/var&gt;、&lt;var&gt;number&lt;/var&gt;、&lt;var&gt;bool&lt;/var&gt;、&lt;var&gt;object&lt;/var&gt; 和空值；空值表示不输出任何内容。</item>
+		<item name="@deprecated" type="string" array="false" required="false">表示在大于等于该版本号时不再启作用</item>
+		<item name="@array" type="bool" array="false" required="false">是否为数组</item>
+		<item name="@ref" type="string" array="false" required="false">usage-request-reference</item>
+		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
+		<item name="@status" type="number" array="false" required="false">usage-request-status</item>
+		<item name="@mimetype" type="string" array="false" required="false">媒体类型，比如 application/json 等。</item>
+		<item name="enum" type="enum" array="true" required="false">当前参数可用的枚举值</item>
+		<item name="param" type="param" array="true" required="false">子类型，比如对象的子元素。</item>
+		<item name="example" type="example" array="true" required="false">示例代码</item>
+		<item name="header" type="param" array="true" required="false">传递的报头内容</item>
+		<item name="description" type="richtext" array="false" required="false">详细介绍，为 HTML 内容。</item>
+	</type>
+	<type name="example">
+		<usage>示例代码</usage>
+		<item name="@mimetype" type="string" array="false" required="true">特定于类型的示例代码</item>
+		<item name="@summary" type="string" array="false" required="false">示例代码的概要信息</item>
+		<item name="." type="string" array="false" required="true"></item>
+	</type>
+	<type name="callback">
+		<usage>定义回调信息</usage>
+		<item name="@method" type="string" array="false" required="true">回调的请求方法</item>
+		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
+		<item name="@deprecated" type="string" array="false" required="false">usage-callback-deprecated</item>
+		<item name="@ref" type="string" array="false" required="false">usage-callback-reference</item>
+		<item name="path" type="path" array="false" required="false">定义回调的地址</item>
+		<item name="description" type="richtext" array="false" required="false">该接口的详细介绍</item>
+		<item name="response" type="request" array="true" required="false">定义可能的返回信息</item>
+		<item name="request" type="request" array="true" required="true">定义可用的请求信息</item>
+		<item name="header" type="param" array="true" required="false">传递的报头内容</item>
+	</type>
+</types>
+`),
+	},
+	{
+		Name:        "types.cmn-Hant.xml",
+		ContentType: "application/xml; charset=utf-8",
+		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
-    <!-- 配置文件的类型定义 -->
-    <types parent="usage">
-        <type name=".apidoc.yaml">
-            <item name="version" type="version" required="true" />
-            <item name="inputs" type="object[]" required="true" />
-            <item name="inputs.dir" type="string" required="true" />
-            <item name="inputs.recursive" type="bool" required="false" />
-            <item name="inputs.encoding" type="string" required="false" />
-            <item name="inputs.lang" type="string" required="true" />
-            <item name="output" type="object" required="true" />
-            <item name="output.path" type="string" required="true" />
-            <item name="output.type" type="string" required="false" />
-            <item name="output.tags" type="string[]" required="false" />
-            <item name="output.style" type="string" required="false" />
-        </type>
-    </types>
+<!-- 该文件由工具自动生成，请勿手动修改！ -->
 
-    <types parent="spec">
-        <type name="apidoc">
-            <item name="@version" type="version" required="true" />
-            <item name="@lang" type="string" required="false" />
-            <item name="@logo" type="string" required="false" />
-            <item name="@created" type="date" required="false" />
-            <item name="title" type="string" required="true" />
-            <item name="description" type="richtext" required="false" />
-            <item name="contract" type="contract" required="false" />
-            <item name="license" type="link" required="false" />
-            <item name="tag" type="tag[]" required="false" />
-            <item name="server" type="server[]" required="true" />
-            <item name="mimetype" type="string[]" required="true" />
-            <item name="response" type="request[]" required="false" />
-            <item name="api" type="api[]" required="false" />
-        </type>
-
-        <type name="link">
-            <item name="@url" type="string" required="true" />
-            <item name="@text" type="string" required="true" />
-        </type>
-
-        <type name="contact">
-            <item name="@url" type="string" required="true" />
-            <item name="@email" type="string" required="true" />
-            <item name="." type="string" required="true" />
-        </type>
-
-        <type name="tag">
-            <item name="@name" type="string" required="true" />
-            <item name="@title" type="string" required="true" />
-            <item name="@deprecated" type="version" required="false" />
-        </type>
-
-        <type name="server">
-            <item name="@name" type="string" required="true" />
-            <item name="@url" type="string" required="true" />
-            <item name="@summary" type="string" required="false" />
-            <item name="@deprecated" type="version" required="false" />
-            <item name="description" type="richtext" required="false" />
-        </type>
-
-        <type name="api">
-            <item name="@version" type="version" required="false" />
-            <item name="@method" type="string" required="true" />
-            <item name="@summary" type="string" required="true" />
-            <item name="@deprecated" type="version" required="false" />
-            <item name="@id" type="string" required="false" />
-            <item name="description" type="richtext" required="false" />
-            <item name="path" type="path" required="false" />
-            <item name="request" type="request[]" required="false" />
-            <item name="response" type="request[]" required="false" />
-            <item name="callback" type="callback" required="false" />
-            <item name="tag" type="string[]" required="false" />
-            <item name="server" type="string[]" required="false" />
-            <item name="header" type="header[]" required="false" />
-        </type>
-
-        <type name="path">
-            <item name="@path" type="string" required="true" />
-            <item name="param" type="param[]" required="false" />
-            <item name="query" type="param[]" required="false" />
-        </type>
-
-        <type name="request">
-            <item name="@xml-ns" type="bool" required="false" />
-            <item name="@xml-ns-prefix" type="bool" required="false" />
-            <item name="@xml-wrapped" type="string" required="false" />
-            <item name="@name" type="string" required="true" />
-            <item name="@type" type="string" required="false" />
-            <item name="@deprecated" type="version" required="false" />
-            <item name="@summary" type="string" required="true" />
-            <item name="@array" type="bool" required="false" />
-            <item name="@status" type="number" required="true" />
-            <item name="@mimetype" type="string" required="false" />
-            <item name="description" type="richtext" required="false" />
-            <item name="enum" type="enum[]" required="false" />
-            <item name="param" type="param[]" required="false" />
-            <item name="example" type="example[]" required="false" />
-            <item name="header" type="header[]" required="false" />
-        </type>
-
-        <type name="param">
-            <item name="@xml-attr" type="bool" required="false" />
-            <item name="@xml-extract" type="bool" required="false" />
-            <item name="@xml-ns" type="bool" required="false" />
-            <item name="@xml-ns-prefix" type="bool" required="false" />
-            <item name="@xml-wrapped" type="string" required="false" />
-            <item name="@name" type="string" required="true" />
-            <item name="@type" type="string" required="true" />
-            <item name="@deprecated" type="version" required="false" />
-            <item name="@default" type="string" required="false" />
-            <item name="@optional" type="bool" required="false" />
-            <item name="@summary" type="string" required="true" />
-            <item name="@array" type="bool" required="false" />
-            <item name="description" type="richtext" required="false" />
-            <item name="@array-style" type="bool" required="false" />
-            <item name="enum" type="enum[]" required="false" />
-            <item name="param" type="param[]" required="false" />
-        </type>
-
-        <type name="enum">
-            <item name="@value" type="string" required="true" />
-            <item name="@deprecated" type="version" required="false" />
-            <item name="." type="string" required="true" />
-        </type>
-
-        <type name="example">
-            <item name="@mimetype" type="string" required="true" />
-            <item name="." type="string" required="true" />
-        </type>
-
-        <type name="header">
-            <item name="@name" type="string" required="true" />
-            <item name="@deprecated" type="version" required="false" />
-            <item name="@summary" type="string" required="true" />
-            <item name="description" type="richtext" required="true" />
-        </type>
-
-        <type name="callback">
-            <item name="@method" type="string" required="true" />
-            <item name="@summary" type="string" required="true" />
-            <item name="@deprecated" type="version" required="false" />
-            <item name="description" type="richtext" required="false" />
-            <item name="path" type="path" required="true" />
-            <item name="request" type="request[]" required="true" />
-            <item name="response" type="request[]" required="true" />
-        </type>
-
-        <type name="richtext">
-            <item name="@type" type="string" required="true" />
-            <item name="." type="string" required="true" />
-        </type>
-
-        <type name="version" />
-
-        <type name="date" />
-    </types>
+<types>
+	<type name="apidoc">
+		<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
+		<item name="@apidoc" type="string" array="false" required="false">文檔的版本要號</item>
+		<item name="@lang" type="string" array="false" required="false">文檔內容的本地化 ID，比如 &lt;samp&gt;zh-Hans&lt;/samp&gt;、&lt;samp&gt;en-US&lt;/samp&gt; 等。</item>
+		<item name="@logo" type="string" array="false" required="false">文檔的圖標，僅可使用 SVG 格式圖標。</item>
+		<item name="@created" type="string" array="false" required="false">文檔的創建時間</item>
+		<item name="@version" type="string" array="false" required="false">文檔的版本號，需要遵守 semver 的約定。</item>
+		<item name="title" type="string" array="false" required="true">文檔的標題</item>
+		<item name="description" type="richtext" array="false" required="false">文檔的整體描述內容</item>
+		<item name="contact" type="contact" array="false" required="false">文檔作者的聯系方式</item>
+		<item name="license" type="link" array="false" required="false">文檔的版權信息</item>
+		<item name="tag" type="tag" array="true" required="false">文檔中定義的所有標簽</item>
+		<item name="server" type="server" array="true" required="false">API 基地址列表，每個 API 最少應該有壹個 server。</item>
+		<item name="api" type="api" array="true" required="false">文檔中的 API 文檔</item>
+		<item name="response" type="request" array="true" required="false">文檔中所有 API 文檔都需要支持的返回內容</item>
+		<item name="mimetype" type="string" array="true" required="true">文檔所支持的 mimetype</item>
+	</type>
+	<type name="string">
+		<usage>usage-string</usage>
+	</type>
+	<type name="richtext">
+		<usage>富文本內容</usage>
+		<item name="@type" type="string" array="false" required="true">指定內容的格式</item>
+		<item name="." type="string" array="false" required="true"></item>
+	</type>
+	<type name="contact">
+		<usage>用於描述聯系方式</usage>
+		<item name="@name" type="string" array="false" required="true">聯系人的名稱</item>
+		<item name="url" type="string" array="false" required="false">聯系人的 URL</item>
+		<item name="email" type="string" array="false" required="false">聯系人的電子郵件</item>
+	</type>
+	<type name="link">
+		<usage>用於描述鏈接信息，壹般轉換為 HTML 的 a 標簽。</usage>
+		<item name="@text" type="string" array="false" required="true">鏈接的字面文字</item>
+		<item name="@url" type="string" array="false" required="true">鏈接指向的文本</item>
+	</type>
+	<type name="tag">
+		<usage>用於對各個 API 進行分類</usage>
+		<item name="@name" type="string" array="false" required="true">usage-tag-name</item>
+		<item name="@title" type="string" array="false" required="true">標簽的字面名稱</item>
+		<item name="@deprecated" type="string" array="false" required="false">該標簽在大於該版本時被棄用</item>
+	</type>
+	<type name="server">
+		<usage>用於指定各個 API 的服務器地址</usage>
+		<item name="@name" type="string" array="false" required="true">服務唯壹 ID</item>
+		<item name="@url" type="string" array="false" required="true">usage-server-url</item>
+		<item name="@deprecated" type="string" array="false" required="false">服務在大於該版本時被棄用</item>
+		<item name="@summary" type="string" array="false" required="false">服務的摘要信息</item>
+		<item name="description" type="richtext" array="false" required="false">服務的詳細描述</item>
+	</type>
+	<type name="api">
+		<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
+		<item name="@version" type="string" array="false" required="false">表示此接口在該版本中添加</item>
+		<item name="@method" type="string" array="false" required="true">當前接口所支持的請求方法</item>
+		<item name="@id" type="string" array="false" required="false">接口的唯壹 ID</item>
+		<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
+		<item name="@deprecated" type="string" array="false" required="false">在此版本之後將會被棄用</item>
+		<item name="path" type="path" array="false" required="true">定義路徑信息</item>
+		<item name="description" type="richtext" array="false" required="false">該接口的詳細介紹，為 HTML 內容。</item>
+		<item name="request" type="request" array="true" required="false">定義可用的請求信息</item>
+		<item name="response" type="request" array="true" required="false">定義可能的返回信息</item>
+		<item name="callback" type="callback" array="false" required="false">定義回調接口內容</item>
+		<item name="header" type="param" array="true" required="false">傳遞的報頭內容，如果是某個 mimetype 專用的，可以放在 request 元素中。</item>
+		<item name="tag" type="string" array="true" required="false">關聯的標簽</item>
+		<item name="server" type="string" array="true" required="false">關聯的服務</item>
+	</type>
+	<type name="path">
+		<usage>用於定義請求時與路徑相關的內容</usage>
+		<item name="@path" type="string" array="false" required="true">接口地址</item>
+		<item name="@ref" type="string" array="false" required="false">usage-path-reference</item>
+		<item name="param" type="param" array="true" required="false">地址中的參數</item>
+		<item name="query" type="param" array="true" required="false">地址中的查詢參數</item>
+	</type>
+	<type name="param">
+		<usage>參數類型，基本上可以作為 request 的子集使用。</usage>
+		<item name="@xml-attr" type="bool" array="false" required="false">usage-xml-xml-attr</item>
+		<item name="@xml-extract" type="bool" array="false" required="false">usage-xml-xml-extract</item>
+		<item name="@xml-ns" type="string" array="false" required="false">usage-xml-xml-ns</item>
+		<item name="@xml-ns-prefix" type="string" array="false" required="false">usage-xml-xml-prefix</item>
+		<item name="@xml-wrapped" type="string" array="false" required="false">usage-xml-xml-wrapped</item>
+		<item name="@name" type="string" array="false" required="true">值的名稱</item>
+		<item name="@type" type="string" array="false" required="true">值的類型，可以是 &lt;var&gt;string&lt;/var&gt;、&lt;var&gt;number&lt;/var&gt;、&lt;var&gt;bool&lt;/var&gt; 和 &lt;var&gt;object&lt;/var&gt;</item>
+		<item name="@deprecated" type="string" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
+		<item name="@default" type="string" array="false" required="false">默認值</item>
+		<item name="@optional" type="bool" array="false" required="false">是否為可選的參數</item>
+		<item name="@array" type="bool" array="false" required="false">是否為數組</item>
+		<item name="@ref" type="string" array="false" required="false">usage-param-reference</item>
+		<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
+		<item name="@array-style" type="bool" array="false" required="false">以數組的方式展示數據</item>
+		<item name="param" type="param" array="true" required="false">子類型，比如對象的子元素。</item>
+		<item name="enum" type="enum" array="true" required="false">當前參數可用的枚舉值</item>
+		<item name="description" type="richtext" array="false" required="false">詳細介紹，為 HTML 內容。</item>
+	</type>
+	<type name="enum">
+		<usage>定義枚舉類型的數所的枚舉值</usage>
+		<item name="@deprecated" type="string" array="false" required="false">該屬性棄用的版本號</item>
+		<item name="@value" type="string" array="false" required="true">枚舉值</item>
+		<item name="@summary" type="string" array="false" required="false">枚舉值的說明</item>
+		<item name="description" type="richtext" array="false" required="false">usage-enum-description</item>
+	</type>
+	<type name="request">
+		<usage>定義了請求和返回的相關內容</usage>
+		<item name="@xml-attr" type="bool" array="false" required="false">usage-xml-xml-attr</item>
+		<item name="@xml-extract" type="bool" array="false" required="false">usage-xml-xml-extract</item>
+		<item name="@xml-ns" type="string" array="false" required="false">usage-xml-xml-ns</item>
+		<item name="@xml-ns-prefix" type="string" array="false" required="false">usage-xml-xml-prefix</item>
+		<item name="@xml-wrapped" type="string" array="false" required="false">usage-xml-xml-wrapped</item>
+		<item name="@name" type="string" array="false" required="false">當 mimetype 為 &lt;var&gt;application/xml&lt;/var&gt; 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
+		<item name="@type" type="string" array="false" required="false">值的類型，可以是 &lt;var&gt;none&lt;/var&gt;、&lt;var&gt;string&lt;/var&gt;、&lt;var&gt;number&lt;/var&gt;、&lt;var&gt;bool&lt;/var&gt;、&lt;var&gt;object&lt;/var&gt; 和空值；空值表示不輸出任何內容。</item>
+		<item name="@deprecated" type="string" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
+		<item name="@array" type="bool" array="false" required="false">是否為數組</item>
+		<item name="@ref" type="string" array="false" required="false">usage-request-reference</item>
+		<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
+		<item name="@status" type="number" array="false" required="false">usage-request-status</item>
+		<item name="@mimetype" type="string" array="false" required="false">媒體類型，比如 application/json 等。</item>
+		<item name="enum" type="enum" array="true" required="false">當前參數可用的枚舉值</item>
+		<item name="param" type="param" array="true" required="false">子類型，比如對象的子元素。</item>
+		<item name="example" type="example" array="true" required="false">示例代碼</item>
+		<item name="header" type="param" array="true" required="false">傳遞的報頭內容</item>
+		<item name="description" type="richtext" array="false" required="false">詳細介紹，為 HTML 內容。</item>
+	</type>
+	<type name="example">
+		<usage>示例代碼</usage>
+		<item name="@mimetype" type="string" array="false" required="true">特定於類型的示例代碼</item>
+		<item name="@summary" type="string" array="false" required="false">示例代碼的概要信息</item>
+		<item name="." type="string" array="false" required="true"></item>
+	</type>
+	<type name="callback">
+		<usage>定義回調信息</usage>
+		<item name="@method" type="string" array="false" required="true">回調的請求方法</item>
+		<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
+		<item name="@deprecated" type="string" array="false" required="false">usage-callback-deprecated</item>
+		<item name="@ref" type="string" array="false" required="false">usage-callback-reference</item>
+		<item name="path" type="path" array="false" required="false">定義回調的地址</item>
+		<item name="description" type="richtext" array="false" required="false">該接口的詳細介紹</item>
+		<item name="response" type="request" array="true" required="false">定義可能的返回信息</item>
+		<item name="request" type="request" array="true" required="true">定義可用的請求信息</item>
+		<item name="header" type="param" array="true" required="false">傳遞的報頭內容</item>
+	</type>
 </types>
 `),
 	},

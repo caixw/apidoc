@@ -35,7 +35,7 @@ type (
 	APIDoc struct {
 		token.Base
 		URI      core.URI `apidoc:"-"`
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 
 		// 程序的版本号
 		//
@@ -72,7 +72,8 @@ type (
 	// API 表示 <api> 顶层元素
 	API struct {
 		token.Base
-		RootName    struct{}          `apidoc:"api,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"api,meta,usage-apidoc"`
+
 		Version     *VersionAttribute `apidoc:"version,attr,usage-api-version,omitempty"`
 		Method      *MethodAttribute  `apidoc:"method,attr,usage-api-method"`
 		ID          *Attribute        `apidoc:"id,attr,usage-api-id,omitempty"`
@@ -95,6 +96,8 @@ type (
 	// Link 表示一个链接
 	Link struct {
 		token.Base
+		RootName struct{} `apidoc:"link,meta,usage-link"`
+
 		Text *Attribute `apidoc:"text,attr,usage-link-text"`
 		URL  *Attribute `apidoc:"url,attr,usage-link-url"`
 	}
@@ -102,6 +105,8 @@ type (
 	// Contact 描述联系方式
 	Contact struct {
 		token.Base
+		RootName struct{} `apidoc:"contact,meta,usage-contact"`
+
 		Name  *Attribute `apidoc:"name,attr,usage-contact-name"`
 		URL   *Element   `apidoc:"url,elem,usage-contact-url,omitempty"`
 		Email *Element   `apidoc:"email,elem,usage-contact-email,omitempty"`
@@ -110,6 +115,8 @@ type (
 	// Callback 描述回调信息
 	Callback struct {
 		token.Base
+		RootName struct{} `apidoc:"callback,meta,usage-callback"`
+
 		Method      *MethodAttribute  `apidoc:"method,attr,usage-callback-method"`
 		Path        *Path             `apidoc:"path,elem,usage-callback-path,omitempty"`
 		Summary     *Attribute        `apidoc:"summary,attr,usage-callback-summary,omitempty"`
@@ -124,6 +131,8 @@ type (
 	// Enum 表示枚举值
 	Enum struct {
 		token.Base
+		RootName struct{} `apidoc:"enum,meta,usage-enum"`
+
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-enum-deprecated,omitempty"`
 		Value       *Attribute        `apidoc:"value,attr,usage-enum-value"`
 		Summary     *Attribute        `apidoc:"summary,attr,usage-enum-summary,omitempty"`
@@ -133,6 +142,8 @@ type (
 	// Example 示例代码
 	Example struct {
 		token.Base
+		RootName struct{} `apidoc:"example,meta,usage-example"`
+
 		Mimetype *Attribute `apidoc:"mimetype,attr,usage-example-mimetype"`
 		Content  *CData     `apidoc:",cdata"`
 		Summary  *Attribute `apidoc:"summary,attr,usage-example-summary,omitempty"`
@@ -141,13 +152,15 @@ type (
 	// Param 表示参数类型
 	Param struct {
 		token.Base
+		RootName struct{} `apidoc:"param,meta,usage-param"`
+
 		XML
 		Name        *Attribute        `apidoc:"name,attr,usage-param-name"`
 		Type        *TypeAttribute    `apidoc:"type,attr,usage-param-type"`
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-param-deprecated,omitempty"`
 		Default     *Attribute        `apidoc:"default,attr,usage-param-default,omitempty"`
 		Optional    *BoolAttribute    `apidoc:"optional,attr,usage-param-optional,omitempty"`
-		Array       *BoolAttribute    `apidoc:"array,attr,usage-parm-array,omitempty"`
+		Array       *BoolAttribute    `apidoc:"array,attr,usage-param-array,omitempty"`
 		Items       []*Param          `apidoc:"param,elem,usage-param-items,omitempty"`
 		Reference   *Attribute        `apidoc:"ref,attr,usage-param-reference,omitempty"`
 		Summary     *Attribute        `apidoc:"summary,attr,usage-param-summary,omitempty"`
@@ -167,6 +180,8 @@ type (
 	// Path 路径信息
 	Path struct {
 		token.Base
+		RootName struct{} `apidoc:"path,meta,usage-path"`
+
 		Path      *Attribute `apidoc:"path,attr,usage-path-path"`
 		Reference *Attribute `apidoc:"ref,attr,usage-path-reference,omitempty"`
 		Params    []*Param   `apidoc:"param,elem,usage-path-params,omitempty"`
@@ -176,8 +191,9 @@ type (
 	// Request 请求内容
 	Request struct {
 		token.Base
-		XML
+		RootName struct{} `apidoc:"request,meta,usage-request"`
 
+		XML
 		// 一般无用，但是用于描述 XML 对象时，可以用来表示顶层元素的名称
 		Name *Attribute `apidoc:"name,attr,usage-request-name,omitempty"`
 
@@ -198,6 +214,8 @@ type (
 	// Richtext 富文本内容
 	Richtext struct {
 		token.Base
+		RootName struct{} `apidoc:"richtext,meta,usage-richtext"`
+
 		Type *Attribute `apidoc:"type,attr,usage-richtext-type"` // 文档类型，可以是 html 或是 markdown
 		Text *CData     `apidoc:",cdata"`
 	}
@@ -205,6 +223,8 @@ type (
 	// Tag 标签内容
 	Tag struct {
 		token.Base
+		RootName struct{} `apidoc:"tag,meta,usage-tag"`
+
 		Name       *Attribute        `apidoc:"name,attr,usage-tag-name"`   // 标签的唯一 ID
 		Title      *Attribute        `apidoc:"title,attr,usage-tag-title"` // 显示的名称
 		Deprecated *VersionAttribute `apidoc:"deprecated,attr,usage-tag-deprecated,omitempty"`
@@ -213,6 +233,8 @@ type (
 	// Server 服务信息
 	Server struct {
 		token.Base
+		RootName struct{} `apidoc:"server,meta,usage-server"`
+
 		Name        *Attribute        `apidoc:"name,attr,usage-server-name"` // 字面名称，需要唯一
 		URL         *Attribute        `apidoc:"url,attr,usage-server-url"`
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-server-deprecated,omitempty"`

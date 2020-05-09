@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bytes"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -13,10 +12,10 @@ import (
 	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 )
 
 const (
-	header   = "// 当前文件由工具自动生成，请勿手动修改！\n\n"
 	pkgName  = "docs"
 	varName  = "data"
 	distPath = "./static.go"
@@ -35,50 +34,26 @@ var allowFiles = map[string]string{
 }
 
 func main() {
-	if err := pack(); err != nil {
-		panic(err)
-	}
-}
-
-// NOTE: 隐藏文件不会被打包
-func pack() error {
 	dir, err := docs.Dir().File()
-	if err != nil {
-		return err
-	}
+	makeutil.PanicError(err)
 
 	fis, err := getFileInfos(dir)
-	if err != nil {
-		return err
-	}
+	makeutil.PanicError(err)
 
-	buf := bytes.NewBufferString(header)
-
-	ws := func(str ...string) {
-		for _, s := range str {
-			if err == nil {
-				_, err = buf.WriteString(s)
-			}
-		}
-	}
-
-	ws("package ", pkgName, "\n\n")
-
-	ws("var ", varName, "= []*FileInfo{")
+	buf := makeutil.NewWriter()
+	buf.WString("// ").WString(makeutil.Header).WString("\n\n").
+		WString("package ").WString(pkgName).WString("\n\n").
+		WString("var ").WString(varName).WString("= []*FileInfo{")
 	for _, info := range fis {
-		if err = dump(buf, info); err != nil {
-			return err
-		}
+		buf.WString("{\n").
+			WString("Name:\"").WString(info.Name).WString("\",\n").
+			WString("ContentType:\"").WString(info.ContentType).WString("\",\n").
+			WString("Content:[]byte(`").WBytes(info.Content).WString("`),\n").
+			WString("},\n")
 	}
+	makeutil.PanicError(buf.WString("}\n").Err())
 
-	// end var pack.FileInfo
-	ws("}\n")
-
-	if err != nil {
-		return err
-	}
-
-	return utils.DumpGoFile(distPath, buf.String())
+	makeutil.PanicError(utils.DumpGoSource(distPath, buf.Bytes()))
 }
 
 func getFileInfos(root string) ([]*docs.FileInfo, error) {
@@ -122,23 +97,4 @@ func getFileInfos(root string) ([]*docs.FileInfo, error) {
 	}
 
 	return fis, nil
-}
-
-func dump(buf *bytes.Buffer, file *docs.FileInfo) (err error) {
-	ws := func(str ...string) {
-		for _, s := range str {
-			if err == nil {
-				_, err = buf.WriteString(s)
-			}
-		}
-	}
-
-	ws("{\n")
-
-	ws("Name:\"", file.Name, "\",\n")
-	ws("ContentType:\"", file.ContentType, "\",\n")
-	ws("Content:[]byte(`", string(file.Content), "`),\n")
-
-	ws("},\n")
-	return err
 }

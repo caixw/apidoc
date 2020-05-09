@@ -30,7 +30,7 @@ func TestDecode(t *testing.T) {
 
 	v := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    intTest  `apidoc:"elem1,elem,usage"`
 	}{}
@@ -101,7 +101,7 @@ func TestDecode(t *testing.T) {
 	// 自闭合标签，采用上一个相同的类型
 	v = &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    intTest  `apidoc:"elem1,elem,usage"`
 	}{}
@@ -143,7 +143,7 @@ func TestDecode(t *testing.T) {
 	// 数组，单个元素
 	v2 := &struct {
 		Base
-		RootName struct{}  `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{}  `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest   `apidoc:"attr1,attr,usage"`
 		Elem1    []intTest `apidoc:"elem1,elem,usage"`
 	}{}
@@ -190,7 +190,7 @@ func TestDecode(t *testing.T) {
 	// 数组，多个元素
 	v3 := &struct {
 		Base
-		RootName struct{}  `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{}  `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest   `apidoc:"attr1,attr,usage"`
 		Elem1    []intTest `apidoc:"elem1,elem,usage"`
 	}{}
@@ -258,7 +258,7 @@ func TestDecode(t *testing.T) {
 	// 数组，多个元素，自闭合
 	v3 = &struct {
 		Base
-		RootName struct{}  `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{}  `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest   `apidoc:"attr1,attr,usage"`
 		Elem1    []intTest `apidoc:"elem1,elem,usage"`
 	}{}
@@ -319,7 +319,7 @@ func TestDecode(t *testing.T) {
 	// content
 	v4 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       intTest  `apidoc:"attr1,attr,usage"`
 		Content  String   `apidoc:",content"`
 	}{}
@@ -347,7 +347,7 @@ func TestDecode(t *testing.T) {
 	// cdata
 	v5 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Cdata    *CData   `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5"><![CDATA[5555]]></apidoc>`
@@ -366,7 +366,7 @@ func TestDecode(t *testing.T) {
 	// cdata 没有围绕 CDATA，则会被忽略
 	v6 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Cdata    CData    `apidoc:",cdata,,omitempty"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
@@ -375,7 +375,7 @@ func TestDecode(t *testing.T) {
 
 	v7 := &struct {
 		Base
-		RootName struct{}    `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{}    `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       *intTest    `apidoc:"id,attr,usage"`
 		Name     stringTest  `apidoc:"name,elem,usage"`
 		Object   *objectTest `apidoc:"obj,elem,usage"`
@@ -487,7 +487,7 @@ func TestDecode(t *testing.T) {
 	// 无效的属性值
 	v8 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       intTest  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1xx"></apidoc></apidoc>`
@@ -496,7 +496,7 @@ func TestDecode(t *testing.T) {
 	// StartElement.Close
 	v9 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       intTest  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1" />`
@@ -505,7 +505,7 @@ func TestDecode(t *testing.T) {
 	// 不存在的元素名
 	v10 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       intTest  `apidoc:"id,elem,usage"`
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
@@ -516,7 +516,7 @@ func TestDecode(t *testing.T) {
 	// 数组元素未实现 Decoder 接口
 	v11 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Elem     []int    `apidoc:"elem,elem,usage"`
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
@@ -527,7 +527,7 @@ func TestDecode(t *testing.T) {
 	// 多个数组，未实现 Decoder 的元素
 	v12 := &struct {
 		Base
-		RootName struct{}      `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{}      `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest       `apidoc:"attr1,attr,usage"`
 		Elem1    []*objectTest `apidoc:"e,elem,usage"`
 	}{}
@@ -690,7 +690,7 @@ func TestDecode(t *testing.T) {
 	}
 	v13 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
@@ -750,7 +750,7 @@ func TestDecode(t *testing.T) {
 	// 闭合标签
 	v14 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
@@ -763,7 +763,7 @@ func TestDecode(t *testing.T) {
 	// omitempty attr1 不能为空
 	v14 = &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
@@ -773,7 +773,7 @@ func TestDecode(t *testing.T) {
 	// omitempty, elem2 数组，不能为空
 	v15 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc></apidoc>`
@@ -781,7 +781,7 @@ func TestDecode(t *testing.T) {
 
 	v15 = &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc><elem2 id="60" /></apidoc>`
@@ -791,7 +791,7 @@ func TestDecode(t *testing.T) {
 	// omitempty, cdata 不能为空
 	v16 := &struct {
 		Base
-		RootName struct{} `apidoc:"apidoc,elem,usage-apidoc"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		CData    *CData   `apidoc:",cdata,"`
 	}{}
 	b = `<apidoc></apidoc>`

@@ -63,13 +63,15 @@ type Attribute struct {
 // String 表示 XML 的字符串数据
 type String struct {
 	core.Range
-	Value string
+	Value    string   `apidoc:"-"`
+	RootName struct{} `apidoc:"string,meta,usage-string"`
 }
 
 // CData 表示 XML 的 CDATA 数据
 type CData struct {
 	core.Range
-	Value String
+	Value    String   `apidoc:"-"`
+	RootName struct{} `apidoc:"string,meta,usage-string"`
 }
 
 // Comment 表示 XML 的注释
@@ -80,11 +82,10 @@ type Comment struct {
 
 // 这些常量对应 Base 中相关字段的名称
 const (
-	rangeName          = "Range"
-	usageKeyName       = "UsageKey"
-	elementTagName     = "XMLName"
-	elementTagEndName  = "XMLNameEnd"
-	rootElementTagName = "RootName"
+	rangeName         = "Range"
+	usageKeyName      = "UsageKey"
+	elementTagName    = "XMLName"
+	elementTagEndName = "XMLNameEnd"
 )
 
 // Base 每一个 XML 节点必须包含的内容

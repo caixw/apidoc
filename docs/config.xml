@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- 该文件由工具自动生成，请勿手动修改！-->
+<!-- 该文件由工具自动生成，请勿手动修改！ -->
 
 <config>
 	<name>apidoc</name>
@@ -8,22 +8,22 @@
 	<repo>https://github.com/caixw/apidoc</repo>
 	<url>https://apidoc.tools</url>
 	<languages>
-		<language>C#</language>
-		<language>C/C++</language>
-		<language>D</language>
-		<language>Erlang</language>
-		<language>Go</language>
-		<language>Groovy</language>
-		<language>Java</language>
-		<language>JavaScript</language>
-		<language>Kotlin</language>
-		<language>Pascal/Delphi</language>
-		<language>Perl</language>
-		<language>PHP</language>
-		<language>Python</language>
-		<language>Ruby</language>
-		<language>Rust</language>
-		<language>Scala</language>
-		<language>Swift</language>
+		<language id="c#">C#</language>
+		<language id="c++">C/C++</language>
+		<language id="d">D</language>
+		<language id="erlang">Erlang</language>
+		<language id="go">Go</language>
+		<language id="groovy">Groovy</language>
+		<language id="java">Java</language>
+		<language id="javascript">JavaScript</language>
+		<language id="kotlin">Kotlin</language>
+		<language id="pascal">Pascal/Delphi</language>
+		<language id="perl">Perl</language>
+		<language id="php">PHP</language>
+		<language id="python">Python</language>
+		<language id="ruby">Ruby</language>
+		<language id="rust">Rust</language>
+		<language id="scala">Scala</language>
+		<language id="swift">Swift</language>
 	</languages>
 </config>

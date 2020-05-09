@@ -131,12 +131,14 @@
             </xsl:call-template>
         </xsl:for-each>
 
-        <xsl:for-each select="document('types.xml')/types/types[@parent=$id]/type">
-            <xsl:call-template name="type">
-                <xsl:with-param name="type" select="." />
-                <xsl:with-param name="parent" select="$id" />
-            </xsl:call-template>
-        </xsl:for-each>
+        <xsl:if test="$id='spec'">
+            <xsl:for-each select="document(/docs/@types)/types/type">
+                <xsl:call-template name="type">
+                    <xsl:with-param name="type" select="." />
+                    <xsl:with-param name="parent" select="$id" />
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:if>
     </article>
 </xsl:template>
 
@@ -179,7 +181,7 @@
                                 <xsl:with-param name="chk" select="@required" />
                             </xsl:call-template>
                         </td>
-                        <td><xsl:copy-of select="$type-locale/item[@name=$name]/node()" /></td>
+                        <td><xsl:copy-of select="node()" /></td>
                     </tr>
                     </xsl:for-each>
                 </tbody>

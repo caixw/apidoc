@@ -5,28 +5,30 @@
 package main
 
 import (
-	"bufio"
-	"encoding/xml"
-	"os"
-
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 	"github.com/caixw/apidoc/v7/internal/lang"
+	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/token"
 	"github.com/caixw/apidoc/v7/internal/vars"
 )
-
-const fileHeader = "\n<!-- 该文件由工具自动生成，请勿手动修改！-->\n\n"
 
 var target = docs.Dir().Append("config.xml")
 
 type config struct {
 	XMLName struct{} `xml:"config"`
 
-	Name      string   `xml:"name"`
-	Version   string   `xml:"version"`
-	Repo      string   `xml:"repo"`
-	URL       string   `xml:"url"`
-	Languages []string `xml:"languages>language"`
+	Name      string     `xml:"name"`
+	Version   string     `xml:"version"`
+	Repo      string     `xml:"repo"`
+	URL       string     `xml:"url"`
+	Languages []language `xml:"languages>language"`
+}
+
+type language struct {
+	ID   string `xml:"id,attr"`
+	Name string `xml:",chardata"`
 }
 
 var defaultConfig = &config{
@@ -34,48 +36,21 @@ var defaultConfig = &config{
 	Version:   ast.Version,
 	Repo:      vars.RepoURL,
 	URL:       vars.OfficialURL,
-	Languages: make([]string, 0, len(lang.Langs())),
-}
-
-func chkError(err error) {
-	if err != nil {
-		panic(err)
-	}
+	Languages: make([]language, 0, len(lang.Langs())),
 }
 
 func main() {
 	for _, lang := range lang.Langs() {
-		defaultConfig.Languages = append(defaultConfig.Languages, lang.DisplayName)
+		l := language{ID: lang.ID, Name: lang.DisplayName}
+		defaultConfig.Languages = append(defaultConfig.Languages, l)
 	}
+	makeutil.PanicError(makeutil.WriteXML(target, defaultConfig, "\t"))
 
-	data, err := xml.MarshalIndent(defaultConfig, "", "\t")
-	chkError(err)
+	for tag := range locale.DisplayNames() {
+		types, err := token.NewTypes(&ast.APIDoc{}, tag)
+		makeutil.PanicError(err)
 
-	path, err := target.File()
-	chkError(err)
-
-	file, err := os.Create(path)
-	chkError(err)
-	defer func() {
-		err = file.Close()
-		chkError(err)
-	}()
-
-	w := bufio.NewWriter(file)
-
-	_, err = w.WriteString(xml.Header)
-	chkError(err)
-
-	_, err = w.WriteString(fileHeader)
-	chkError(err)
-
-	_, err = w.Write(data)
-	chkError(err)
-
-	// 统一代码风格，文件末尾加一空行。
-	_, err = w.WriteString("\n")
-	chkError(err)
-
-	err = w.Flush()
-	chkError(err)
+		target := docs.Dir().Append("types." + tag.String() + ".xml")
+		makeutil.PanicError(makeutil.WriteXML(target, types, "\t"))
+	}
 }
