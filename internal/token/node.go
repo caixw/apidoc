@@ -115,7 +115,7 @@ func newNode(name string, rv reflect.Value) *node {
 			n.value.typeName = fieldName
 			n.value.usage = usage
 			n.value.Value = rv
-			if n.value.name == "" {
+			if n.value.name == "" { // 顶层元素可能没有 name，此处就和 fieldName 相同
 				n.value.name = fieldName
 			}
 		case cdataNode:
