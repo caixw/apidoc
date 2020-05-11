@@ -13,7 +13,11 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-const cdataEscape = "]]]]><![CDATA[>"
+const (
+	cdataStart  = "<![CDATA["
+	cdataEnd    = "]]>"
+	cdataEscape = "]]]]><![CDATA[>"
+)
 
 // Parser 代码块的解析器
 type Parser struct {
@@ -168,9 +172,9 @@ func (p *Parser) parseCData(pos lexer.Position) (*CData, error) {
 	var value []byte
 
 	for {
-		v, found := p.DelimString("]]>", false)
+		v, found := p.DelimString(cdataEnd, false)
 		if !found {
-			return nil, p.NewError(pos.Position, p.Position().Position, "<![CDATA[", locale.ErrNotFoundEndTag)
+			return nil, p.NewError(pos.Position, p.Position().Position, cdataStart, locale.ErrNotFoundEndTag)
 		}
 		value = append(value, v...)
 
@@ -186,13 +190,27 @@ func (p *Parser) parseCData(pos lexer.Position) (*CData, error) {
 	}
 
 	end := p.Position()
-	p.Next(3) // 去掉 ]]>
+	p.Next(len(cdataEnd)) // 将 ]]> 从流中去掉
 
 	return &CData{
 		Range: core.Range{Start: pos.Position, End: p.Position().Position},
 		Value: String{
 			Range: core.Range{Start: start.Position, End: end.Position},
 			Value: string(value),
+		},
+		XMLName: String{
+			Value: cdataStart,
+			Range: core.Range{
+				Start: pos.Position,
+				End:   core.Position{Line: pos.Line, Character: pos.Character + len(cdataStart)},
+			},
+		},
+		XMLNameEnd: String{
+			Value: cdataEnd,
+			Range: core.Range{
+				Start: end.Position,
+				End:   core.Position{Line: end.Line, Character: end.Character + len(cdataEnd)},
+			},
 		},
 	}, nil
 }

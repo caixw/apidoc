@@ -231,6 +231,20 @@ func TestParser_Token(t *testing.T) {
 						},
 						Value: "<h1>h1</h1>",
 					},
+					XMLName: String{
+						Value: cdataStart,
+						Range: core.Range{
+							Start: core.Position{Line: 14, Character: 20},
+							End:   core.Position{Line: 14, Character: 29},
+						},
+					},
+					XMLNameEnd: String{
+						Value: cdataEnd,
+						Range: core.Range{
+							Start: core.Position{Line: 14, Character: 40},
+							End:   core.Position{Line: 14, Character: 43},
+						},
+					},
 				},
 
 				&EndElement{
@@ -787,6 +801,20 @@ func TestParser_parseCData(t *testing.T) {
 					},
 					Value: "<h1>\nxxx",
 				},
+				XMLName: String{
+					Value: cdataStart,
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 11, Character: 31},
+					},
+				},
+				XMLNameEnd: String{
+					Value: cdataEnd,
+					Range: core.Range{
+						Start: core.Position{Line: 12, Character: 3},
+						End:   core.Position{Line: 12, Character: 6},
+					},
+				},
 			},
 		},
 		{ // cdata 转义
@@ -802,6 +830,20 @@ func TestParser_parseCData(t *testing.T) {
 						End:   core.Position{Line: 12, Character: 3},
 					},
 					Value: "<h1>]]]]><![CDATA[>\nxxx",
+				},
+				XMLName: String{
+					Value: cdataStart,
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 11, Character: 31},
+					},
+				},
+				XMLNameEnd: String{
+					Value: cdataEnd,
+					Range: core.Range{
+						Start: core.Position{Line: 12, Character: 3},
+						End:   core.Position{Line: 12, Character: 6},
+					},
 				},
 			},
 		},
@@ -819,6 +861,20 @@ func TestParser_parseCData(t *testing.T) {
 						End:   core.Position{Line: 13, Character: 3},
 					},
 					Value: "<h1>]]]]><![CDATA[>\n12]]]]><![CDATA[>34\nxxx",
+				},
+				XMLName: String{
+					Value: cdataStart,
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 11, Character: 31},
+					},
+				},
+				XMLNameEnd: String{
+					Value: cdataEnd,
+					Range: core.Range{
+						Start: core.Position{Line: 13, Character: 3},
+						End:   core.Position{Line: 13, Character: 6},
+					},
 				},
 			},
 		},

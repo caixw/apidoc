@@ -181,7 +181,7 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 		case *CData:
 			if n.cdata.IsValid() {
 				getRealValue(n.cdata.Value).Set(getRealValue(reflect.ValueOf(elem)))
-				err = setValue(n.cdata.Value, n.cdata.usage, p, elem.Start, elem.End, String{}, String{})
+				err = setValue(n.cdata.Value, n.cdata.usage, p, elem.Start, elem.End, elem.XMLName, elem.XMLNameEnd)
 			}
 		case *String:
 			if n.content.IsValid() {
