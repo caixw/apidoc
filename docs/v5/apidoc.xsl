@@ -523,7 +523,7 @@ xsl 2.0 可以直接采用 base-uri(document(''))
     <xsl:apply-templates select="processing-instruction('xml-stylesheet')" />
 </xsl:variable>
 
-<xsl:template match="processing-instruction('xml-stylesheet')">
+<xsl:template match="processing-instruction('xml-stylesheet')[1]">
     <xsl:variable name="v1" select="substring-after(., 'href=&quot;')" />
     <!-- NOTE: 此处假定当前文件叫作 apidoc.xsl，如果不是的话，需要另外处理此代码 -->
     <xsl:variable name="v2" select="substring-before($v1, 'apidoc.xsl&quot;')" />

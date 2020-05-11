@@ -122,7 +122,7 @@ func Static(dir core.URI, stylesheet bool) http.Handler {
 // 与 Buffer 结合，可以提供一个完整的文档查看功能。
 //
 // status 是新文档的返回的状态码；
-// url 表示文档在路由中的地址，必须以 / 开头；
+// url 表示文档在路由中的地址；
 // data 表示文档的实际内容，会添加 xml-stylesheet 指令，并指向当前的 apidoc.xsl；
 // contentType 表示文档的 Content-Type 报头值；
 // dir 和 stylesheet 则和 Static 相同。

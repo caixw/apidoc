@@ -42,7 +42,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-09T17:36:02+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-11T22:56:05+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -66,37 +66,6 @@ var data = []*FileInfo{{
 	</server>
 	<server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" summary="客户端接口"></server>
 	<server name="client" url="https://api.example.com" summary="客户端接口"></server>
-	<api method="GET" summary="获取用户" deprecated="1.1.11">
-		<path path="/users">
-			<query name="page" type="number" default="0" summary="页码"></query>
-			<query name="size" type="number" default="20">
-				<description type="markdown"><![CDATA[数量]]></description>
-			</query>
-		</path>
-		<description type="markdown"><![CDATA[
-   <p>这是关于接口的详细说明文档</p><br />
-   可以是一个 HTML 内容
-   ]]></description>
-		<response name="user" type="object" array="true" status="200">
-			<param xml-attr="true" name="count" type="number" optional="false" summary="summary"></param>
-			<param name="list" type="object" array="true" summary="list">
-				<param xml-attr="true" name="id" type="number" summary="用户 ID"></param>
-				<param xml-attr="true" name="name" type="string" summary="用户名"></param>
-				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
-					<param name="id" type="string" summary="权限组 ID"></param>
-					<param name="name" type="string" summary="权限组名称"></param>
-				</param>
-				<description type="html"><![CDATA[<span style="color:red">list description</span>]]></description>
-			</param>
-		</response>
-		<header name="name" type="string">
-			<description type="markdown"><![CDATA[desc]]></description>
-		</header>
-		<header name="name1" type="string" summary="name1 desc"></header>
-		<tag>t1</tag>
-		<tag>t2</tag>
-		<server>admin</server>
-	</api>
 	<api method="GET" summary="获取用户日志">
 		<path path="/users/{id}/logs">
 			<param name="id" type="number">
@@ -153,6 +122,37 @@ var data = []*FileInfo{{
 			</request>
 		</callback>
 		<server>client</server>
+	</api>
+	<api method="GET" summary="获取用户" deprecated="1.1.11">
+		<path path="/users">
+			<query name="page" type="number" default="0" summary="页码"></query>
+			<query name="size" type="number" default="20">
+				<description type="markdown"><![CDATA[数量]]></description>
+			</query>
+		</path>
+		<description type="markdown"><![CDATA[
+   <p>这是关于接口的详细说明文档</p><br />
+   可以是一个 HTML 内容
+   ]]></description>
+		<response name="user" type="object" array="true" status="200">
+			<param xml-attr="true" name="count" type="number" optional="false" summary="summary"></param>
+			<param name="list" type="object" array="true" summary="list">
+				<param xml-attr="true" name="id" type="number" summary="用户 ID"></param>
+				<param xml-attr="true" name="name" type="string" summary="用户名"></param>
+				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
+					<param name="id" type="string" summary="权限组 ID"></param>
+					<param name="name" type="string" summary="权限组名称"></param>
+				</param>
+				<description type="html"><![CDATA[<span style="color:red">list description</span>]]></description>
+			</param>
+		</response>
+		<header name="name" type="string">
+			<description type="markdown"><![CDATA[desc]]></description>
+		</header>
+		<header name="name1" type="string" summary="name1 desc"></header>
+		<tag>t1</tag>
+		<tag>t2</tag>
+		<server>admin</server>
 	</api>
 	<api method="POST" summary="添加用户">
 		<path path="/users"></path>
@@ -2443,7 +2443,7 @@ xsl 2.0 可以直接采用 base-uri(document(''))
     <xsl:apply-templates select="processing-instruction('xml-stylesheet')" />
 </xsl:variable>
 
-<xsl:template match="processing-instruction('xml-stylesheet')">
+<xsl:template match="processing-instruction('xml-stylesheet')[1]">
     <xsl:variable name="v1" select="substring-after(., 'href=&quot;')" />
     <!-- NOTE: 此处假定当前文件叫作 apidoc.xsl，如果不是的话，需要另外处理此代码 -->
     <xsl:variable name="v2" select="substring-before($v1, 'apidoc.xsl&quot;')" />
@@ -3967,7 +3967,7 @@ xsl 2.0 可以直接采用 base-uri(document(''))
     <xsl:apply-templates select="processing-instruction('xml-stylesheet')" />
 </xsl:variable>
 
-<xsl:template match="processing-instruction('xml-stylesheet')">
+<xsl:template match="processing-instruction('xml-stylesheet')[1]">
     <xsl:variable name="v1" select="substring-after(., 'href=&quot;')" />
     <!-- NOTE: 此处假定当前文件叫作 apidoc.xsl，如果不是的话，需要另外处理此代码 -->
     <xsl:variable name="v2" select="substring-before($v1, 'apidoc.xsl&quot;')" />
