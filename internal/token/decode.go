@@ -164,7 +164,7 @@ func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
 
 func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 	for {
-		t, _, err := p.Token()
+		t, r, err := p.Token()
 		if err == io.EOF {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
 			return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
@@ -194,6 +194,9 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 			if err = decodeElement(p, elem, item); err != nil {
 				return nil, err
 			}
+		case *Comment: // 忽略注释内容
+		default:
+			return nil, p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
 		}
 	}
 }
