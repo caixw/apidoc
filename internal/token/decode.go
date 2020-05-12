@@ -300,17 +300,8 @@ func setElementValue(v reflect.Value, usage string, p *Parser, start *StartEleme
 }
 
 func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute) error {
-	if v.CanInterface() && v.Type().Implements(sanitizerType) {
-		if err := v.Interface().(Sanitizer).Sanitize(p); err != nil {
-			return err
-		}
-	} else if v.CanAddr() {
-		pv := v.Addr()
-		if pv.CanInterface() && pv.Type().Implements(sanitizerType) {
-			if err := pv.Interface().(Sanitizer).Sanitize(p); err != nil {
-				return err
-			}
-		}
+	if err := callSanitizer(v, p); err != nil {
+		return err
 	}
 
 	v = getRealValue(v)
@@ -326,17 +317,8 @@ func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute
 }
 
 func setValue(v reflect.Value, usage string, p *Parser, start, end core.Position, xmlName, xmlNameEnd String) error {
-	if v.CanInterface() && v.Type().Implements(sanitizerType) {
-		if err := v.Interface().(Sanitizer).Sanitize(p); err != nil {
-			return err
-		}
-	} else if v.CanAddr() {
-		pv := v.Addr()
-		if pv.CanInterface() && pv.Type().Implements(sanitizerType) {
-			if err := pv.Interface().(Sanitizer).Sanitize(p); err != nil {
-				return err
-			}
-		}
+	if err := callSanitizer(v, p); err != nil {
+		return err
 	}
 
 	v = getRealValue(v)
@@ -345,18 +327,21 @@ func setValue(v reflect.Value, usage string, p *Parser, start, end core.Position
 	}
 
 	v.FieldByName(rangeName).Set(reflect.ValueOf(core.Range{Start: start, End: end}))
+	v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
+	v.FieldByName(elementTagName).Set(reflect.ValueOf(xmlName))
+	v.FieldByName(elementTagEndName).Set(reflect.ValueOf(xmlNameEnd))
 
-	if usage != "" { // CDATA 和 content 节点类型的 usage 内容为空
-		v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
+	return nil
+}
+
+func callSanitizer(v reflect.Value, p *Parser) error {
+	if v.CanInterface() && v.Type().Implements(sanitizerType) {
+		return v.Interface().(Sanitizer).Sanitize(p)
+	} else if v.CanAddr() {
+		pv := v.Addr()
+		if pv.CanInterface() && pv.Type().Implements(sanitizerType) {
+			return pv.Interface().(Sanitizer).Sanitize(p)
+		}
 	}
-
-	if xmlName.Value != "" { // CDATA 和 content 节点的 StartTag 肯定为空
-		v.FieldByName(elementTagName).Set(reflect.ValueOf(xmlName))
-	}
-
-	if xmlNameEnd.Value != "" {
-		v.FieldByName(elementTagEndName).Set(reflect.ValueOf(xmlNameEnd))
-	}
-
 	return nil
 }
