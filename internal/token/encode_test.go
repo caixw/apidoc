@@ -8,6 +8,19 @@ import (
 	"github.com/issue9/assert"
 )
 
+var (
+	_ Encoder = &CData{}
+	_ Encoder = &String{}
+)
+
+func (cdata *CData) EncodeXML() (string, error) {
+	return cdata.Value.Value, nil
+}
+
+func (s *String) EncodeXML() (string, error) {
+	return s.Value, nil
+}
+
 func TestEncode(t *testing.T) {
 	a := assert.New(t)
 
@@ -122,6 +135,18 @@ func TestEncode(t *testing.T) {
 			xml: `<apidoc id="11">&lt;111</apidoc>`,
 		},
 
+		{
+			object: &struct {
+				RootName string `apidoc:"apidoc,meta,usage-apidoc"`
+				ID       int    `apidoc:"id,attr,usage"`
+				Content  string `apidoc:",content"`
+			}{
+				ID:      11,
+				Content: "<111",
+			},
+			xml: `<apidoc id="11">&lt;111</apidoc>`,
+		},
+
 		{ // 嵌套
 			object: &struct {
 				RootName string      `apidoc:"apidoc,meta,usage-apidoc"`
@@ -211,12 +236,4 @@ func TestEncode(t *testing.T) {
 		a.NotError(err, "err %s at %d", err, i).
 			Equal(string(xml), item.xml, "not equal at %d\nv1=%s\nv2=%s", i, string(xml), item.xml)
 	}
-
-	// content 和 cdata 的类型不正确
-	a.Panic(func() {
-		Encode("", &struct {
-			RootName string `apidoc:"-"`
-			Content  string `apidoc:",content"`
-		}{})
-	})
 }

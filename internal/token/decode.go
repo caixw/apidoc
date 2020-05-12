@@ -180,11 +180,11 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 			return nil, p.NewError(elem.Start, elem.End, n.value.name, locale.ErrNotFoundEndTag)
 		case *CData:
 			if n.cdata.IsValid() {
-				getRealValue(n.cdata.Value).Set(getRealValue(reflect.ValueOf(elem)))
+				setContentValue(n.cdata.Value, reflect.ValueOf(elem))
 			}
 		case *String:
 			if n.content.IsValid() {
-				getRealValue(n.content.Value).Set(getRealValue(reflect.ValueOf(elem)))
+				setContentValue(n.content.Value, reflect.ValueOf(elem))
 			}
 		case *StartElement:
 			item, found := n.elem(elem.Name.Value)
@@ -198,6 +198,19 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 		default:
 			return nil, p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
 		}
+	}
+}
+
+func setContentValue(target, source reflect.Value) {
+	target = getRealValue(target)
+	source = getRealValue(source)
+
+	st := source.Type()
+	num := st.NumField()
+	for i := 0; i < num; i++ {
+		name := st.Field(i).Name
+		target.FieldByName(name).
+			Set(source.Field(i))
 	}
 }
 

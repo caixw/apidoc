@@ -8,15 +8,16 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/token"
 )
 
 func TestNewServer(t *testing.T) {
 	a := assert.New(t)
 
 	input := &ast.Server{
-		URL:     &ast.Attribute{Value: ast.String{Value: "https://example.com"}},
-		Name:    &ast.Attribute{Value: ast.String{Value: "name"}},
-		Summary: &ast.Attribute{Value: ast.String{Value: "summary"}},
+		URL:     &ast.Attribute{Value: token.String{Value: "https://example.com"}},
+		Name:    &ast.Attribute{Value: token.String{Value: "name"}},
+		Summary: &ast.Attribute{Value: token.String{Value: "summary"}},
 	}
 
 	output := newServer(input)
@@ -24,7 +25,7 @@ func TestNewServer(t *testing.T) {
 		Equal(output.URL, "https://example.com").
 		Equal(output.Description, "summary")
 
-	input.Description = &ast.Richtext{Text: &ast.CData{Value: ast.String{Value: "desc"}}}
+	input.Description = &ast.Richtext{Text: &ast.CData{Value: token.String{Value: "desc"}}}
 	output = newServer(input)
 	a.NotNil(output).
 		Equal(output.URL, "https://example.com").

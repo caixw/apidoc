@@ -23,69 +23,69 @@ const Filename = "index.xml"
 // 同时当前目录下的 index.xml 文件与此返回对象内容是相同的。
 func Get() *ast.APIDoc {
 	return &ast.APIDoc{
-		APIDoc:  &ast.APIDocVersionAttribute{Value: ast.String{Value: ast.Version}},
-		Version: &ast.VersionAttribute{Value: ast.String{Value: "1.0.1"}},
-		Title:   &ast.Element{Content: ast.String{Value: "test"}},
+		APIDoc:  &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}},
+		Version: &ast.VersionAttribute{Value: token.String{Value: "1.0.1"}},
+		Title:   &ast.Element{Content: ast.Content{Value: "test"}},
 		Description: &ast.Richtext{
-			Text: &ast.CData{Value: ast.String{Value: "<p>desc</p>"}},
-			Type: &ast.Attribute{Value: ast.String{Value: ast.RichtextTypeHTML}},
+			Text: &ast.CData{Value: token.String{Value: "<p>desc</p>"}},
+			Type: &ast.Attribute{Value: token.String{Value: ast.RichtextTypeHTML}},
 		},
 		Servers: []*ast.Server{
 			{
-				URL:     &ast.Attribute{Value: ast.String{Value: "https://example.com/admin"}},
-				Name:    &ast.Attribute{Value: ast.String{Value: "admin"}},
-				Summary: &ast.Attribute{Value: ast.String{Value: "admin"}},
+				URL:     &ast.Attribute{Value: token.String{Value: "https://example.com/admin"}},
+				Name:    &ast.Attribute{Value: token.String{Value: "admin"}},
+				Summary: &ast.Attribute{Value: token.String{Value: "admin"}},
 			},
 			{
-				URL:     &ast.Attribute{Value: ast.String{Value: "https://example.com"}},
-				Name:    &ast.Attribute{Value: ast.String{Value: "client"}},
-				Summary: &ast.Attribute{Value: ast.String{Value: "client"}},
+				URL:     &ast.Attribute{Value: token.String{Value: "https://example.com"}},
+				Name:    &ast.Attribute{Value: token.String{Value: "client"}},
+				Summary: &ast.Attribute{Value: token.String{Value: "client"}},
 			},
 		},
 		Tags: []*ast.Tag{
 			{
-				Name:  &ast.Attribute{Value: ast.String{Value: "t1"}},
-				Title: &ast.Attribute{Value: ast.String{Value: "t1"}},
+				Name:  &ast.Attribute{Value: token.String{Value: "t1"}},
+				Title: &ast.Attribute{Value: token.String{Value: "t1"}},
 			},
 			{
-				Name:  &ast.Attribute{Value: ast.String{Value: "t2"}},
-				Title: &ast.Attribute{Value: ast.String{Value: "t2"}},
+				Name:  &ast.Attribute{Value: token.String{Value: "t2"}},
+				Title: &ast.Attribute{Value: token.String{Value: "t2"}},
 			},
 			{
-				Name:  &ast.Attribute{Value: ast.String{Value: "tag1"}},
-				Title: &ast.Attribute{Value: ast.String{Value: "tag1"}},
+				Name:  &ast.Attribute{Value: token.String{Value: "tag1"}},
+				Title: &ast.Attribute{Value: token.String{Value: "tag1"}},
 			},
 		},
 		Mimetypes: []*ast.Element{
-			{Content: ast.String{Value: "application/json"}},
-			{Content: ast.String{Value: "application/xml"}},
+			{Content: ast.Content{Value: "application/json"}},
+			{Content: ast.Content{Value: "application/xml"}},
 		},
 		Apis: []*ast.API{
 			{
-				Method: &ast.MethodAttribute{Value: ast.String{Value: http.MethodGet}},
+				Method: &ast.MethodAttribute{Value: token.String{Value: http.MethodGet}},
 				Tags: []*ast.Element{
-					{Content: ast.String{Value: "t1"}},
-					{Content: ast.String{Value: "t2"}},
+					{Content: ast.Content{Value: "t1"}},
+					{Content: ast.Content{Value: "t2"}},
 				},
-				Path: &ast.Path{Path: &ast.Attribute{Value: ast.String{Value: "/users"}}},
+				Path: &ast.Path{Path: &ast.Attribute{Value: token.String{Value: "/users"}}},
 				Servers: []*ast.Element{
-					{Content: ast.String{Value: "admin"}},
-					{Content: ast.String{Value: "client"}},
+					{Content: ast.Content{Value: "admin"}},
+					{Content: ast.Content{Value: "client"}},
 				},
 				Requests: []*ast.Request{
 					{
-						Summary: &ast.Attribute{Value: ast.String{Value: "request"}},
+						Summary: &ast.Attribute{Value: token.String{Value: "request"}},
 						Headers: []*ast.Param{
 							{
-								Type:    &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
-								Name:    &ast.Attribute{Value: ast.String{Value: "authorization"}},
-								Summary: &ast.Attribute{Value: ast.String{Value: "authorization"}},
+								Type:    &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+								Name:    &ast.Attribute{Value: token.String{Value: "authorization"}},
+								Summary: &ast.Attribute{Value: token.String{Value: "authorization"}},
 							},
 						},
 						Examples: []*ast.Example{
 							{
-								Mimetype: &ast.Attribute{Value: ast.String{Value: "application/json"}},
-								Content:  &ast.CData{Value: ast.String{Value: "xxx"}},
+								Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}},
+								Content:  &ast.CData{Value: token.String{Value: "xxx"}},
 							},
 						},
 					},
@@ -93,53 +93,53 @@ func Get() *ast.APIDoc {
 				Responses: []*ast.Request{
 					{
 						Description: &ast.Richtext{
-							Type: &ast.Attribute{Value: ast.String{Value: "html"}},
-							Text: &ast.CData{Value: ast.String{Value: "<p>desc</p>"}},
+							Type: &ast.Attribute{Value: token.String{Value: "html"}},
+							Text: &ast.CData{Value: token.String{Value: "<p>desc</p>"}},
 						},
-						Type:   &ast.TypeAttribute{Value: ast.String{Value: ast.TypeObject}},
+						Type:   &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
 						Status: &ast.StatusAttribute{Value: ast.Number{Value: http.StatusOK}},
 						Headers: []*ast.Param{
 							{
-								Type:    &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
-								Name:    &ast.Attribute{Value: ast.String{Value: "authorization"}},
-								Summary: &ast.Attribute{Value: ast.String{Value: "authorization"}},
+								Type:    &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+								Name:    &ast.Attribute{Value: token.String{Value: "authorization"}},
+								Summary: &ast.Attribute{Value: token.String{Value: "authorization"}},
 							},
 						},
 						Examples: []*ast.Example{
 							{
-								Mimetype: &ast.Attribute{Value: ast.String{Value: "application/json"}},
-								Content:  &ast.CData{Value: ast.String{Value: "xxx"}},
+								Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}},
+								Content:  &ast.CData{Value: token.String{Value: "xxx"}},
 							},
 						},
 						Items: []*ast.Param{
 							{
-								Summary: &ast.Attribute{Value: ast.String{Value: "summary"}},
-								Type:    &ast.TypeAttribute{Value: ast.String{Value: ast.TypeString}},
-								Name:    &ast.Attribute{Value: ast.String{Value: "name"}},
+								Summary: &ast.Attribute{Value: token.String{Value: "summary"}},
+								Type:    &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+								Name:    &ast.Attribute{Value: token.String{Value: "name"}},
 							},
 						},
 					},
 				},
 			},
 			{
-				Method: &ast.MethodAttribute{Value: ast.String{Value: http.MethodPost}},
+				Method: &ast.MethodAttribute{Value: token.String{Value: http.MethodPost}},
 				Tags: []*ast.Element{
-					{Content: ast.String{Value: "t1"}},
-					{Content: ast.String{Value: "tag1"}},
+					{Content: ast.Content{Value: "t1"}},
+					{Content: ast.Content{Value: "tag1"}},
 				},
-				Path:       &ast.Path{Path: &ast.Attribute{Value: ast.String{Value: "/users"}}},
-				Deprecated: &ast.VersionAttribute{Value: ast.String{Value: "1.0.1"}},
-				Summary:    &ast.Attribute{Value: ast.String{Value: "summary"}},
+				Path:       &ast.Path{Path: &ast.Attribute{Value: token.String{Value: "/users"}}},
+				Deprecated: &ast.VersionAttribute{Value: token.String{Value: "1.0.1"}},
+				Summary:    &ast.Attribute{Value: token.String{Value: "summary"}},
 				Servers: []*ast.Element{
-					{Content: ast.String{Value: "admin"}},
+					{Content: ast.Content{Value: "admin"}},
 				},
 				Responses: []*ast.Request{
 					{
 						Description: &ast.Richtext{
-							Type: &ast.Attribute{Value: ast.String{Value: "html"}},
-							Text: &ast.CData{Value: ast.String{Value: "<p>desc</p>"}},
+							Type: &ast.Attribute{Value: token.String{Value: "html"}},
+							Text: &ast.CData{Value: token.String{Value: "<p>desc</p>"}},
 						},
-						Type: &ast.TypeAttribute{Value: ast.String{Value: ast.TypeNone}},
+						Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}},
 					},
 				},
 			},

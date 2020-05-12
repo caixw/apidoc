@@ -79,14 +79,14 @@ func TestAPIDoc(t *testing.T) {
 				End:   core.Position{Character: 9, Line: 32},
 			},
 		},
-		StartTag: String{
+		StartTag: token.String{
 			Range: core.Range{
 				Start: core.Position{Character: 1, Line: 2},
 				End:   core.Position{Character: 7, Line: 2},
 			},
 			Value: "apidoc",
 		},
-		EndTag: String{
+		EndTag: token.String{
 			Range: core.Range{
 				Start: core.Position{Character: 2, Line: 32},
 				End:   core.Position{Character: 8, Line: 32},
@@ -104,7 +104,7 @@ func TestAPIDoc(t *testing.T) {
 					End:   core.Position{Character: 23, Line: 2},
 				},
 			},
-			AttributeName: String{
+			AttributeName: token.String{
 				Range: core.Range{
 					Start: core.Position{Character: 8, Line: 2},
 					End:   core.Position{Character: 15, Line: 2},
@@ -113,7 +113,7 @@ func TestAPIDoc(t *testing.T) {
 			},
 		},
 
-		Value: String{
+		Value: token.String{
 			Range: core.Range{
 				Start: core.Position{Character: 17, Line: 2},
 				End:   core.Position{Character: 22, Line: 2},
@@ -132,7 +132,7 @@ func TestAPIDoc(t *testing.T) {
 					End:   core.Position{Character: 47, Line: 10},
 				},
 			},
-			StartTag: String{
+			StartTag: token.String{
 				Range: core.Range{
 					Start: core.Position{Character: 5, Line: 10},
 					End:   core.Position{Character: 8, Line: 10},
@@ -149,7 +149,7 @@ func TestAPIDoc(t *testing.T) {
 						End:   core.Position{Character: 20, Line: 10},
 					},
 				},
-				AttributeName: String{
+				AttributeName: token.String{
 					Range: core.Range{
 						Start: core.Position{Character: 9, Line: 10},
 						End:   core.Position{Character: 13, Line: 10},
@@ -157,7 +157,7 @@ func TestAPIDoc(t *testing.T) {
 					Value: "name",
 				},
 			},
-			Value: String{
+			Value: token.String{
 				Range: core.Range{
 					Start: core.Position{Character: 15, Line: 10},
 					End:   core.Position{Character: 19, Line: 10},
@@ -174,7 +174,7 @@ func TestAPIDoc(t *testing.T) {
 						End:   core.Position{Character: 44, Line: 10},
 					},
 				},
-				AttributeName: String{
+				AttributeName: token.String{
 					Range: core.Range{
 						Start: core.Position{Character: 21, Line: 10},
 						End:   core.Position{Character: 26, Line: 10},
@@ -182,7 +182,7 @@ func TestAPIDoc(t *testing.T) {
 					Value: "title",
 				},
 			},
-			Value: String{
+			Value: token.String{
 				Range: core.Range{
 					Start: core.Position{Character: 28, Line: 10},
 					End:   core.Position{Character: 43, Line: 10},

@@ -18,7 +18,7 @@ const (
 	elemNode
 	cdataNode
 	contentNode
-	metaNode // 用于描述节点的一些无数据
+	metaNode // 用于描述节点的一些元数据
 )
 
 var (
@@ -128,9 +128,6 @@ func newNode(name string, rv reflect.Value) *node {
 			if len(n.elems) > 0 {
 				panic("cdata 与子元素不能同时存在")
 			}
-			if getRealType(field.Type) != cdataType {
-				panic("cdata 的类型只能是 *CData")
-			}
 			n.cdata = initValue(fieldName, v, omitempty, usage)
 		case contentNode:
 			if n.content.IsValid() {
@@ -141,9 +138,6 @@ func newNode(name string, rv reflect.Value) *node {
 			}
 			if len(n.elems) > 0 {
 				panic("content 与子元素不能同时存在")
-			}
-			if getRealType(field.Type) != contentType {
-				panic("content 的类型只能是 *String")
 			}
 			n.content = initValue(fieldName, v, omitempty, usage)
 		}

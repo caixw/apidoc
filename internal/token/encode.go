@@ -53,7 +53,7 @@ func (n *node) encode(e *xml.Encoder) error {
 	}
 
 	if n.cdata.IsValid() && !n.cdata.isOmitempty() {
-		chardata, err := getElementValue(n.cdata.Value)
+		chardata, err := getContentValue(n.cdata.Value)
 		if err != nil {
 			return err
 		}
@@ -64,7 +64,7 @@ func (n *node) encode(e *xml.Encoder) error {
 	}
 
 	if n.content.IsValid() && !n.content.isOmitempty() {
-		chardata, err := getElementValue(n.content.Value)
+		chardata, err := getContentValue(n.content.Value)
 		if err != nil {
 			return err
 		}
@@ -172,28 +172,18 @@ func getAttributeValue(elem reflect.Value) (string, error) {
 	return fmt.Sprint(elem.Interface()), nil
 }
 
-// 获取 CData 和 String 的编码内容，适用于 content 和 cdata 节点类型。
-func getElementValue(elem reflect.Value) (string, error) {
+// 获取 cdata 和 content 节点的的内容
+func getContentValue(elem reflect.Value) (string, error) {
 	elem = getRealValue(elem)
-	if elem.CanInterface() {
-		switch {
-		case elem.Type() == cdataType:
-			return elem.Interface().(CData).Value.Value, nil
-		case elem.Type() == contentType:
-			return elem.Interface().(String).Value, nil
-		}
+	if elem.CanInterface() && elem.Type().Implements(encoderType) {
+		return elem.Interface().(Encoder).EncodeXML()
 	} else if elem.CanAddr() {
-		if pv := elem.Addr(); pv.CanInterface() {
-			switch {
-			case pv.Type() == cdataType:
-				return elem.Interface().(CData).Value.Value, nil
-			case pv.Type() == contentType:
-				return pv.Interface().(String).Value, nil
-			}
+		if pv := elem.Addr(); pv.CanInterface() && pv.Type().Implements(encoderType) {
+			return pv.Interface().(Encoder).EncodeXML()
 		}
 	}
 
-	panic(fmt.Sprintf("%s 只能是 CData 或是 String 类型", elem.Type()))
+	return fmt.Sprint(elem.Interface()), nil
 }
 
 func (v value) isOmitempty() bool {

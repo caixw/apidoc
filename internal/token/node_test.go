@@ -227,22 +227,6 @@ func TestNewNode(t *testing.T) {
 		}{}))
 	})
 
-	// cdata 类型不正确
-	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
-			Attr2  int    `apidoc:"attr1,attr"`
-			Cdata1 String `apidoc:",cdata"`
-		}{}))
-	})
-
-	// content 类型不正确
-	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
-			Attr2   int    `apidoc:"attr1,attr"`
-			Content *CData `apidoc:",content"`
-		}{}))
-	})
-
 	// 同时存在 content 和 elems
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {

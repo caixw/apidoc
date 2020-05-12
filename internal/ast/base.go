@@ -16,10 +16,18 @@ import (
 
 type (
 	// CData 表示 XML 的 CDATA 数据
-	CData = token.CData
+	CData struct {
+		token.BaseTag
+		Value    token.String `apidoc:"-"`
+		RootName struct{}     `apidoc:"string,meta,usage-string"`
+	}
 
-	// String 表示一段普通的 XML 字符串
-	String = token.String
+	// Content 表示一段普通的 XML 字符串
+	Content struct {
+		token.Base
+		Value    string   `apidoc:"-"`
+		RootName struct{} `apidoc:"string,meta,usage-string"`
+	}
 
 	// Number 表示 XML 的数值类型
 	Number struct {
@@ -36,8 +44,8 @@ type (
 	// Attribute 表示 XML 属性
 	Attribute struct {
 		token.BaseAttribute
-		Value    String   `apidoc:"-"`
-		RootName struct{} `apidoc:"string,meta,usage-string"`
+		Value    token.String `apidoc:"-"`
+		RootName struct{}     `apidoc:"string,meta,usage-string"`
 	}
 
 	// NumberAttribute 表示数值类型的属性
@@ -72,10 +80,20 @@ type (
 	// Element 定义不包含子元素和属性的基本的 XML 元素
 	Element struct {
 		token.BaseTag
-		Content  String   `apidoc:",content"`
+		Content  Content  `apidoc:",content"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}
 )
+
+// EncodeXML Encoder.EncodeXML
+func (cdata *CData) EncodeXML() (string, error) {
+	return cdata.Value.Value, nil
+}
+
+// EncodeXML Encoder.EncodeXML
+func (s *Content) EncodeXML() (string, error) {
+	return s.Value, nil
+}
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *Attribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
