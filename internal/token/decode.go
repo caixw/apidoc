@@ -54,7 +54,7 @@ var (
 func Decode(p *Parser, v interface{}) error {
 	var hasRoot bool
 	for {
-		t, err := p.Token()
+		t, _, err := p.Token()
 		if err == io.EOF {
 			return nil
 		} else if err != nil {
@@ -164,7 +164,7 @@ func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
 
 func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 	for {
-		t, err := p.Token()
+		t, _, err := p.Token()
 		if err == io.EOF {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
 			return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
@@ -271,7 +271,7 @@ func callDecodeXML(v reflect.Value, p *Parser, start *StartElement) (end *EndEle
 func findEndElement(p *Parser, start *StartElement) error {
 	level := 0
 	for {
-		t, err := p.Token()
+		t, _, err := p.Token()
 		if err == io.EOF {
 			return p.NewError(start.Start, start.End, start.Name.Value, locale.ErrNotFoundEndTag) // 找不到相配的结束符号
 		} else if err != nil {

@@ -496,13 +496,15 @@ func TestParser_Token(t *testing.T) {
 			NotNil(p, "nil at %s", item.input)
 
 		for i, elem := range item.elems {
-			e, err := p.Token()
+			e, r, err := p.Token()
 			if elem == nil {
 				a.Equal(err, io.EOF, "%s no io.EOF at %s:%d", err, item.input, i)
 				a.Nil(e, "not nil at %s:%d", item.input, i)
+				a.True(r.IsEmpty())
 			} else {
 				a.NotError(err, "error %s at %d", err, i)
 				a.Equal(e, elem, "not equal at %s:%d\nv1=%#v\nv2=%#v", item.input, i, e, elem)
+				a.False(r.IsEmpty())
 			}
 		}
 	}
@@ -662,14 +664,16 @@ func TestParser_parseStartElement(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		elem, err := p.parseStartElement(p.Position())
+		elem, r, err := p.parseStartElement(p.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
+			a.True(r.IsEmpty())
 		} else {
 			a.NotError(err, "error %s at %s", err, item.input).
-				Equal(elem, item.elem, "not equal at %s\nv1=%+v\nv2=%+v", item.input, elem, item.elem)
+				Equal(elem, item.elem, "not equal at %s\nv1=%+v\nv2=%+v", item.input, elem, item.elem).
+				Equal(r, elem.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, elem.Range)
 		}
 	}
 }
@@ -739,14 +743,16 @@ func TestParser_parseEndElement(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		elem, err := p.parseEndElement(p.Position())
+		elem, r, err := p.parseEndElement(p.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
+			a.True(r.IsEmpty())
 		} else {
 			a.NotError(err, "error %s at %s", err, item.input).
-				Equal(elem, item.elem, "not equal at %s\nv1=%+v\nv2=%+v", item.input, elem, item.elem)
+				Equal(elem, item.elem, "not equal at %s\nv1=%+v\nv2=%+v", item.input, elem, item.elem).
+				Equal(r, elem.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, elem.Range)
 		}
 	}
 }
@@ -891,14 +897,16 @@ func TestParser_parseCData(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		cdata, err := p.parseCData(p.Position())
+		cdata, r, err := p.parseCData(p.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
+			a.True(r.IsEmpty())
 		} else {
 			a.NotError(err, "error %s at %s", err, item.input).
-				Equal(cdata, item.cdata, "not equal at %s\nv1=%+v\nv2=%+v", item.input, cdata, item.cdata)
+				Equal(cdata, item.cdata, "not equal at %s\nv1=%+v\nv2=%+v", item.input, cdata, item.cdata).
+				Equal(r, cdata.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, cdata.Range)
 		}
 	}
 }
@@ -1076,14 +1084,16 @@ func TestParser_parseInstruction(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		pi, err := p.parseInstruction(p.Position())
+		pi, r, err := p.parseInstruction(p.Position())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
+			a.True(r.IsEmpty())
 		} else {
 			a.NotError(err, "error %s at %s", err, item.input).
-				Equal(pi, item.pi, "not equal at %s\nv1=%+v\nv2=%+v", item.input, pi, item.pi)
+				Equal(pi, item.pi, "not equal at %s\nv1=%+v\nv2=%+v", item.input, pi, item.pi).
+				Equal(r, pi.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, pi.Range)
 		}
 	}
 }

@@ -268,7 +268,7 @@ func (s *Element) EncodeXML() (string, error) {
 // DecodeXML Decoder.DecodeXML
 func (s *Element) DecodeXML(p *token.Parser, start *token.StartElement) (*token.EndElement, error) {
 	for {
-		t, err := p.Token()
+		t, _, err := p.Token()
 		if err == io.EOF {
 			pos := p.Position().Position
 			return nil, p.NewError(pos, pos, "", locale.ErrInvalidXML)

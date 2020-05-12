@@ -300,7 +300,7 @@ func (doc *APIDoc) Parse(b core.Block) error {
 func getTagName(p *token.Parser) (string, error) {
 	start := p.Position()
 	for {
-		t, err := p.Token()
+		t, _, err := p.Token()
 		if err == io.EOF {
 			return "", ErrNoDocFormat
 		} else if err != nil {
