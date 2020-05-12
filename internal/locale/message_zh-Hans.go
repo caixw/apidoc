@@ -200,6 +200,9 @@ options 可以是以下参数
 	UsageServerSummary:     "服务的摘要信息",
 	UsageServerDescription: "服务的详细描述",
 
+	// 基本类型
+	UsageString: "普通的字符串类型",
+
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character:      "无效的 UTF8 字符",
 	ErrInvalidXML:                "无效的 XML 文档",

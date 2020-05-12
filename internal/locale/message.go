@@ -208,6 +208,9 @@ options 可以是以下参数
 	UsageServerSummary     = "usage-server-summary"
 	UsageServerDescription = "usage-server-description"
 
+	// 基本类型
+	UsageString = "usage-string"
+
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character      = "无效的 UTF8 字符"
 	ErrInvalidXML                = "无效的 XML 文档"
