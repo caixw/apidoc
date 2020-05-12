@@ -215,7 +215,7 @@ func decodeElement(p *Parser, start *StartElement, v value) error {
 	if err != nil {
 		return err
 	}
-	return setElementValue(v.Value, v.usage, p, start, end)
+	return setTagValue(v.Value, v.usage, p, start, end)
 }
 
 func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
@@ -241,7 +241,7 @@ func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
 		return err
 	}
 
-	if err = setElementValue(elem, slice.usage, p, start, end); err != nil {
+	if err = setTagValue(elem, slice.usage, p, start, end); err != nil {
 		return err
 	}
 	slice.Value.Set(reflect.Append(slice.Value, elem))
@@ -292,11 +292,26 @@ func findEndElement(p *Parser, start *StartElement) error {
 	}
 }
 
-func setElementValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {
-	if end == nil {
-		return setValue(v, usage, p, start.Start, start.End, start.Name, String{})
+func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {
+	if err := callSanitizer(v, p); err != nil {
+		return err
 	}
-	return setValue(v, usage, p, start.Start, end.End, start.Name, end.Name)
+
+	v = getRealValue(v)
+	if v.Kind() != reflect.Struct {
+		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
+	}
+
+	v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
+	v.FieldByName(elementTagName).Set(reflect.ValueOf(start.Name))
+	if end == nil {
+		v.FieldByName(rangeName).Set(reflect.ValueOf(start.Range))
+	} else {
+		v.FieldByName(rangeName).Set(reflect.ValueOf(core.Range{Start: start.Start, End: end.End}))
+		v.FieldByName(elementTagEndName).Set(reflect.ValueOf(end.Name))
+	}
+
+	return nil
 }
 
 func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute) error {
@@ -312,24 +327,6 @@ func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute
 	v.FieldByName(rangeName).Set(reflect.ValueOf(attr.Range))
 	v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
 	v.FieldByName(attributeNameName).Set(reflect.ValueOf(attr.Name))
-
-	return nil
-}
-
-func setValue(v reflect.Value, usage string, p *Parser, start, end core.Position, xmlName, xmlNameEnd String) error {
-	if err := callSanitizer(v, p); err != nil {
-		return err
-	}
-
-	v = getRealValue(v)
-	if v.Kind() != reflect.Struct {
-		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
-	}
-
-	v.FieldByName(rangeName).Set(reflect.ValueOf(core.Range{Start: start, End: end}))
-	v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
-	v.FieldByName(elementTagName).Set(reflect.ValueOf(xmlName))
-	v.FieldByName(elementTagEndName).Set(reflect.ValueOf(xmlNameEnd))
 
 	return nil
 }
