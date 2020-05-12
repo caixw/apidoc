@@ -197,24 +197,26 @@ func (p *Parser) parseCData(pos lexer.Position) (*CData, core.Range, error) {
 
 	r := core.Range{Start: pos.Position, End: p.Position().Position}
 	return &CData{
-		Range: r,
+		Base: Base{
+			Range: r,
+			XMLName: String{
+				Value: cdataStart,
+				Range: core.Range{
+					Start: pos.Position,
+					End:   core.Position{Line: pos.Line, Character: pos.Character + len(cdataStart)},
+				},
+			},
+			XMLNameEnd: String{
+				Value: cdataEnd,
+				Range: core.Range{
+					Start: end.Position,
+					End:   core.Position{Line: end.Line, Character: end.Character + len(cdataEnd)},
+				},
+			},
+		},
 		Value: String{
 			Range: core.Range{Start: start.Position, End: end.Position},
 			Value: string(value),
-		},
-		XMLName: String{
-			Value: cdataStart,
-			Range: core.Range{
-				Start: pos.Position,
-				End:   core.Position{Line: pos.Line, Character: pos.Character + len(cdataStart)},
-			},
-		},
-		XMLNameEnd: String{
-			Value: cdataEnd,
-			Range: core.Range{
-				Start: end.Position,
-				End:   core.Position{Line: end.Line, Character: end.Character + len(cdataEnd)},
-			},
 		},
 	}, r, nil
 }

@@ -68,11 +68,9 @@ type String struct {
 
 // CData 表示 XML 的 CDATA 数据
 type CData struct {
-	core.Range
-	Value      String   `apidoc:"-"`
-	RootName   struct{} `apidoc:"string,meta,usage-string"`
-	XMLName    String   `apidoc:"-"`
-	XMLNameEnd String   `apidoc:"-"`
+	Base
+	Value    String   `apidoc:"-"`
+	RootName struct{} `apidoc:"string,meta,usage-string"`
 }
 
 // Comment 表示 XML 的注释

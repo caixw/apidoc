@@ -357,22 +357,24 @@ func TestDecode(t *testing.T) {
 			Start: core.Position{Character: 27},
 			End:   core.Position{Character: 31},
 		}},
-		Range: core.Range{
-			Start: core.Position{Character: 18},
-			End:   core.Position{Character: 34},
-		},
-		XMLName: String{
-			Value: cdataStart,
+		Base: Base{
 			Range: core.Range{
 				Start: core.Position{Character: 18},
-				End:   core.Position{Character: 27},
-			},
-		},
-		XMLNameEnd: String{
-			Value: cdataEnd,
-			Range: core.Range{
-				Start: core.Position{Character: 31},
 				End:   core.Position{Character: 34},
+			},
+			XMLName: String{
+				Value: cdataStart,
+				Range: core.Range{
+					Start: core.Position{Character: 18},
+					End:   core.Position{Character: 27},
+				},
+			},
+			XMLNameEnd: String{
+				Value: cdataEnd,
+				Range: core.Range{
+					Start: core.Position{Character: 31},
+					End:   core.Position{Character: 34},
+				},
 			},
 		},
 	})
