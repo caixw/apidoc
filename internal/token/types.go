@@ -49,7 +49,7 @@ func NewTypes(v interface{}, tag language.Tag) (*Types, error) {
 
 func (types *Types) dumpToTypes(n *node) error {
 	t := &Type{
-		Name:  n.value.typeName,
+		Name:  n.typeName,
 		Usage: locale.Sprintf(n.value.usage),
 		Items: make([]*Item, 0, len(n.attrs)+len(n.elems)),
 	}
@@ -71,7 +71,7 @@ func (types *Types) dumpToTypes(n *node) error {
 			v = reflect.New(typ).Elem()
 		}
 
-		if nn := newNode(elem.name, v); nn.value.typeName != "" && !types.typeExists(nn.value.typeName) {
+		if nn := newNode(elem.name, v); nn.typeName != "" && !types.typeExists(nn.typeName) {
 			if err := types.dumpToTypes(nn); err != nil {
 				return err
 			}

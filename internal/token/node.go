@@ -40,17 +40,17 @@ type node struct {
 	elems          []value // 当前标签的元素列表
 	cdata, content value   // 当前标签如果没有子元素，则可能有普通的内容或是 CDATA 内容
 	value          value   // 当前节点本身代表的值
+	typeName       string  // 当前节点的类型名称
 }
 
 // 表示 XML 节点的值的反射表示方式
 type value struct {
 	reflect.Value
 	omitempty bool
-	typeName  string // 当前节点的类型名称
 	name      string // 节点的名称
 
 	// 当前值可能未初始化，所以保存 usage 的值，
-	// 等 value 初始化之后再赋值给 BaseTag.UsageKey
+	// 等 value 初始化之后再赋值给 Base.UsageKey
 	usage string
 }
 
@@ -112,7 +112,7 @@ func newNode(name string, rv reflect.Value) *node {
 		case elemNode:
 			n.appendElem(initValue(fieldName, v, omitempty, usage))
 		case metaNode:
-			n.value.typeName = fieldName
+			n.typeName = fieldName
 			n.value.usage = usage
 			n.value.Value = rv
 			if n.value.name == "" { // 顶层元素可能没有 name，此处就和 fieldName 相同
