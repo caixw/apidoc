@@ -220,19 +220,19 @@ func TestParser_Token(t *testing.T) {
 				}, // end StartElement
 
 				&CData{
-					Base: Base{
+					BaseTag: BaseTag{
 						Range: core.Range{
 							Start: core.Position{Line: 14, Character: 20},
 							End:   core.Position{Line: 14, Character: 43},
 						},
-						XMLName: String{
+						StartTag: String{
 							Value: cdataStart,
 							Range: core.Range{
 								Start: core.Position{Line: 14, Character: 20},
 								End:   core.Position{Line: 14, Character: 29},
 							},
 						},
-						XMLNameEnd: String{
+						EndTag: String{
 							Value: cdataEnd,
 							Range: core.Range{
 								Start: core.Position{Line: 14, Character: 40},
@@ -798,19 +798,19 @@ func TestParser_parseCData(t *testing.T) {
 		{
 			input: "<h1>\nxxx]]>",
 			cdata: &CData{
-				Base: Base{
+				BaseTag: BaseTag{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 12, Character: 6},
 					},
-					XMLName: String{
+					StartTag: String{
 						Value: cdataStart,
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 22},
 							End:   core.Position{Line: 11, Character: 31},
 						},
 					},
-					XMLNameEnd: String{
+					EndTag: String{
 						Value: cdataEnd,
 						Range: core.Range{
 							Start: core.Position{Line: 12, Character: 3},
@@ -830,19 +830,19 @@ func TestParser_parseCData(t *testing.T) {
 		{ // cdata 转义
 			input: "<h1>]]]]><![CDATA[>\nxxx]]>",
 			cdata: &CData{
-				Base: Base{
+				BaseTag: BaseTag{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 12, Character: 6},
 					},
-					XMLName: String{
+					StartTag: String{
 						Value: cdataStart,
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 22},
 							End:   core.Position{Line: 11, Character: 31},
 						},
 					},
-					XMLNameEnd: String{
+					EndTag: String{
 						Value: cdataEnd,
 						Range: core.Range{
 							Start: core.Position{Line: 12, Character: 3},
@@ -863,19 +863,19 @@ func TestParser_parseCData(t *testing.T) {
 		{
 			input: "<h1>]]]]><![CDATA[>\n12]]]]><![CDATA[>34\nxxx]]>",
 			cdata: &CData{
-				Base: Base{
+				BaseTag: BaseTag{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 13, Character: 6},
 					},
-					XMLName: String{
+					StartTag: String{
 						Value: cdataStart,
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 22},
 							End:   core.Position{Line: 11, Character: 31},
 						},
 					},
-					XMLNameEnd: String{
+					EndTag: String{
 						Value: cdataEnd,
 						Range: core.Range{
 							Start: core.Position{Line: 13, Character: 3},

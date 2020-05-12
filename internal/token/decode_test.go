@@ -29,27 +29,27 @@ func TestDecode(t *testing.T) {
 	a := assert.New(t)
 
 	v := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    intTest  `apidoc:"elem1,elem,usage"`
 	}{}
 	b := `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
 	decode(a, b, v, false)
-	base := Base{
+	base := BaseTag{
 		UsageKey: "usage-apidoc",
 		Range: core.Range{
 			Start: core.Position{Character: 0},
 			End:   core.Position{Character: 43},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "apidoc",
 			Range: core.Range{
 				Start: core.Position{Character: 1},
 				End:   core.Position{Character: 7},
 			},
 		},
-		XMLNameEnd: String{
+		EndTag: String{
 			Value: "apidoc",
 			Range: core.Range{
 				Start: core.Position{Character: 36},
@@ -58,13 +58,13 @@ func TestDecode(t *testing.T) {
 		},
 	}
 	attr1 := intTest{Value: 5,
-		Base: Base{
+		BaseTag: BaseTag{
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
 				End:   core.Position{Character: 17},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "attr1",
 				Range: core.Range{
 					Start: core.Position{Character: 8},
@@ -73,20 +73,20 @@ func TestDecode(t *testing.T) {
 			},
 		}}
 	elem1 := intTest{Value: 6,
-		Base: Base{
+		BaseTag: BaseTag{
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 18},
 				End:   core.Position{Character: 34},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "elem1",
 				Range: core.Range{
 					Start: core.Position{Character: 19},
 					End:   core.Position{Character: 24},
 				},
 			},
-			XMLNameEnd: String{
+			EndTag: String{
 				Value: "elem1",
 				Range: core.Range{
 					Start: core.Position{Character: 28},
@@ -94,13 +94,13 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		}}
-	a.Equal(v.Base, base).
+	a.Equal(v.BaseTag, base).
 		Equal(v.Attr1, attr1).
 		Equal(v.Elem1, elem1)
 
 	// 自闭合标签，采用上一个相同的类型
 	v = &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    intTest  `apidoc:"elem1,elem,usage"`
@@ -108,13 +108,13 @@ func TestDecode(t *testing.T) {
 	b = `<apidoc attr1="5"><elem1 /></apidoc>`
 	decode(a, b, v, false)
 	attr1 = intTest{Value: 5,
-		Base: Base{
+		BaseTag: BaseTag{
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
 				End:   core.Position{Character: 17},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "attr1",
 				Range: core.Range{
 					Start: core.Position{Character: 8},
@@ -123,13 +123,13 @@ func TestDecode(t *testing.T) {
 			},
 		}}
 	elem1 = intTest{Value: 0,
-		Base: Base{
+		BaseTag: BaseTag{
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 18},
 				End:   core.Position{Character: 27},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "elem1",
 				Range: core.Range{
 					Start: core.Position{Character: 19},
@@ -142,19 +142,19 @@ func TestDecode(t *testing.T) {
 
 	// 数组，单个元素
 	v2 := &struct {
-		Base
+		BaseTag
 		RootName struct{}  `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest   `apidoc:"attr1,attr,usage"`
 		Elem1    []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
-	attr1 = intTest{Value: 5, Base: Base{
+	attr1 = intTest{Value: 5, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 8},
 			End:   core.Position{Character: 17},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -162,20 +162,20 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem1 = intTest{Value: 6, Base: Base{
+	elem1 = intTest{Value: 6, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 18},
 			End:   core.Position{Character: 34},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "elem1",
 			Range: core.Range{
 				Start: core.Position{Character: 19},
 				End:   core.Position{Character: 24},
 			},
 		},
-		XMLNameEnd: String{
+		EndTag: String{
 			Value: "elem1",
 			Range: core.Range{
 				Start: core.Position{Character: 28},
@@ -189,19 +189,19 @@ func TestDecode(t *testing.T) {
 
 	// 数组，多个元素
 	v3 := &struct {
-		Base
+		BaseTag
 		RootName struct{}  `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest   `apidoc:"attr1,attr,usage"`
 		Elem1    []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1><elem1>7</elem1></apidoc>`
-	attr1 = intTest{Value: 5, Base: Base{
+	attr1 = intTest{Value: 5, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 8},
 			End:   core.Position{Character: 17},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -209,20 +209,20 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem1 = intTest{Value: 6, Base: Base{
+	elem1 = intTest{Value: 6, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 18},
 			End:   core.Position{Character: 34},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "elem1",
 			Range: core.Range{
 				Start: core.Position{Character: 19},
 				End:   core.Position{Character: 24},
 			},
 		},
-		XMLNameEnd: String{
+		EndTag: String{
 			Value: "elem1",
 			Range: core.Range{
 				Start: core.Position{Character: 28},
@@ -230,20 +230,20 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem2 := intTest{Value: 7, Base: Base{
+	elem2 := intTest{Value: 7, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 34},
 			End:   core.Position{Character: 50},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "elem1",
 			Range: core.Range{
 				Start: core.Position{Character: 35},
 				End:   core.Position{Character: 40},
 			},
 		},
-		XMLNameEnd: String{
+		EndTag: String{
 			Value: "elem1",
 			Range: core.Range{
 				Start: core.Position{Character: 44},
@@ -257,19 +257,19 @@ func TestDecode(t *testing.T) {
 
 	// 数组，多个元素，自闭合
 	v3 = &struct {
-		Base
+		BaseTag
 		RootName struct{}  `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest   `apidoc:"attr1,attr,usage"`
 		Elem1    []intTest `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1 /><elem1>7</elem1></apidoc>`
-	attr1 = intTest{Value: 5, Base: Base{
+	attr1 = intTest{Value: 5, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 8},
 			End:   core.Position{Character: 17},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -277,13 +277,13 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem1 = intTest{Base: Base{
+	elem1 = intTest{BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 18},
 			End:   core.Position{Character: 27},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "elem1",
 			Range: core.Range{
 				Start: core.Position{Character: 19},
@@ -291,20 +291,20 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem2 = intTest{Value: 7, Base: Base{
+	elem2 = intTest{Value: 7, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 27},
 			End:   core.Position{Character: 43},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "elem1",
 			Range: core.Range{
 				Start: core.Position{Character: 28},
 				End:   core.Position{Character: 33},
 			},
 		},
-		XMLNameEnd: String{
+		EndTag: String{
 			Value: "elem1",
 			Range: core.Range{
 				Start: core.Position{Character: 37},
@@ -318,7 +318,7 @@ func TestDecode(t *testing.T) {
 
 	// content
 	v4 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       intTest  `apidoc:"attr1,attr,usage"`
 		Content  String   `apidoc:",content"`
@@ -329,13 +329,13 @@ func TestDecode(t *testing.T) {
 		Start: core.Position{Character: 18},
 		End:   core.Position{Character: 22},
 	}})
-	a.Equal(v4.ID, intTest{Value: 5, Base: Base{
+	a.Equal(v4.ID, intTest{Value: 5, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 8},
 			End:   core.Position{Character: 17},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -346,7 +346,7 @@ func TestDecode(t *testing.T) {
 
 	// cdata
 	v5 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Cdata    *CData   `apidoc:",cdata"`
 	}{}
@@ -357,19 +357,19 @@ func TestDecode(t *testing.T) {
 			Start: core.Position{Character: 27},
 			End:   core.Position{Character: 31},
 		}},
-		Base: Base{
+		BaseTag: BaseTag{
 			Range: core.Range{
 				Start: core.Position{Character: 18},
 				End:   core.Position{Character: 34},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: cdataStart,
 				Range: core.Range{
 					Start: core.Position{Character: 18},
 					End:   core.Position{Character: 27},
 				},
 			},
-			XMLNameEnd: String{
+			EndTag: String{
 				Value: cdataEnd,
 				Range: core.Range{
 					Start: core.Position{Character: 31},
@@ -381,7 +381,7 @@ func TestDecode(t *testing.T) {
 
 	// cdata 没有围绕 CDATA，则会被忽略
 	v6 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Cdata    CData    `apidoc:",cdata,,omitempty"`
 	}{}
@@ -390,7 +390,7 @@ func TestDecode(t *testing.T) {
 	a.Empty(v6.Cdata.Value.Value).True(v6.Cdata.IsEmpty())
 
 	v7 := &struct {
-		Base
+		BaseTag
 		RootName struct{}    `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       *intTest    `apidoc:"id,attr,usage"`
 		Name     stringTest  `apidoc:"name,elem,usage"`
@@ -398,13 +398,13 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
 	decode(a, b, v7, false)
-	a.Equal(v7.ID, &intTest{Value: 11, Base: Base{
+	a.Equal(v7.ID, &intTest{Value: 11, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 8},
 			End:   core.Position{Character: 15},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "id",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -412,20 +412,20 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}})
-	a.Equal(v7.Name, stringTest{Value: "name", Base: Base{
+	a.Equal(v7.Name, stringTest{Value: "name", BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 16},
 			End:   core.Position{Character: 33},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "name",
 			Range: core.Range{
 				Start: core.Position{Character: 17},
 				End:   core.Position{Character: 21},
 			},
 		},
-		XMLNameEnd: String{
+		EndTag: String{
 			Value: "name",
 			Range: core.Range{
 				Start: core.Position{Character: 28},
@@ -434,20 +434,20 @@ func TestDecode(t *testing.T) {
 		},
 	}})
 	a.Equal(v7.Object, &objectTest{
-		Base: Base{
+		BaseTag: BaseTag{
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 33},
 				End:   core.Position{Character: 66},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "obj",
 				Range: core.Range{
 					Start: core.Position{Character: 34},
 					End:   core.Position{Character: 37},
 				},
 			},
-			XMLNameEnd: String{
+			EndTag: String{
 				Value: "obj",
 				Range: core.Range{
 					Start: core.Position{Character: 62},
@@ -455,13 +455,13 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		ID: intTest{Value: 12, Base: Base{ // objectTest.Sanitize
+		ID: intTest{Value: 12, BaseTag: BaseTag{ // objectTest.Sanitize
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 38},
 				End:   core.Position{Character: 45},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "id",
 				Range: core.Range{
 					Start: core.Position{Character: 38},
@@ -469,20 +469,20 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		}},
-		Name: stringTest{Value: "n", Base: Base{
+		Name: stringTest{Value: "n", BaseTag: BaseTag{
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 46},
 				End:   core.Position{Character: 60},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "name",
 				Range: core.Range{
 					Start: core.Position{Character: 47},
 					End:   core.Position{Character: 51},
 				},
 			},
-			XMLNameEnd: String{
+			EndTag: String{
 				Value: "name",
 				Range: core.Range{
 					Start: core.Position{Character: 55},
@@ -502,7 +502,7 @@ func TestDecode(t *testing.T) {
 
 	// 无效的属性值
 	v8 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       intTest  `apidoc:"id,attr,usage"`
 	}{}
@@ -511,7 +511,7 @@ func TestDecode(t *testing.T) {
 
 	// StartElement.Close
 	v9 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       intTest  `apidoc:"id,attr,usage"`
 	}{}
@@ -520,7 +520,7 @@ func TestDecode(t *testing.T) {
 
 	// 不存在的元素名
 	v10 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		ID       intTest  `apidoc:"id,elem,usage"`
 	}{}
@@ -531,7 +531,7 @@ func TestDecode(t *testing.T) {
 
 	// 数组元素未实现 Decoder 接口
 	v11 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Elem     []int    `apidoc:"elem,elem,usage"`
 	}{}
@@ -542,7 +542,7 @@ func TestDecode(t *testing.T) {
 
 	// 多个数组，未实现 Decoder 的元素
 	v12 := &struct {
-		Base
+		BaseTag
 		RootName struct{}      `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest       `apidoc:"attr1,attr,usage"`
 		Elem1    []*objectTest `apidoc:"e,elem,usage"`
@@ -551,13 +551,13 @@ func TestDecode(t *testing.T) {
 	<e id="5"><name>6</name></e>
 	<e id="7"><name>7</name></e>
 </apidoc>`
-	attr1 = intTest{Value: 5, Base: Base{
+	attr1 = intTest{Value: 5, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 8},
 			End:   core.Position{Character: 17},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -566,20 +566,20 @@ func TestDecode(t *testing.T) {
 		},
 	}}
 	e1 := &objectTest{
-		Base: Base{
+		BaseTag: BaseTag{
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 1, Line: 1},
 				End:   core.Position{Character: 29, Line: 1},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "e",
 				Range: core.Range{
 					Start: core.Position{Character: 2, Line: 1},
 					End:   core.Position{Character: 3, Line: 1},
 				},
 			},
-			XMLNameEnd: String{
+			EndTag: String{
 				Value: "e",
 				Range: core.Range{
 					Start: core.Position{Character: 27, Line: 1},
@@ -588,13 +588,13 @@ func TestDecode(t *testing.T) {
 			},
 		},
 		ID: intTest{
-			Base: Base{
+			BaseTag: BaseTag{
 				UsageKey: "usage",
 				Range: core.Range{
 					Start: core.Position{Character: 4, Line: 1},
 					End:   core.Position{Character: 10, Line: 1},
 				},
-				XMLName: String{
+				StartTag: String{
 					Value: "id",
 					Range: core.Range{
 						Start: core.Position{Character: 4, Line: 1},
@@ -605,20 +605,20 @@ func TestDecode(t *testing.T) {
 			Value: 6, // objectTest.Sanitize
 		},
 		Name: stringTest{
-			Base: Base{
+			BaseTag: BaseTag{
 				UsageKey: "usage",
 				Range: core.Range{
 					Start: core.Position{Character: 11, Line: 1},
 					End:   core.Position{Character: 25, Line: 1},
 				},
-				XMLName: String{
+				StartTag: String{
 					Value: "name",
 					Range: core.Range{
 						Start: core.Position{Character: 12, Line: 1},
 						End:   core.Position{Character: 16, Line: 1},
 					},
 				},
-				XMLNameEnd: String{
+				EndTag: String{
 					Value: "name",
 					Range: core.Range{
 						Start: core.Position{Character: 20, Line: 1},
@@ -630,20 +630,20 @@ func TestDecode(t *testing.T) {
 		},
 	}
 	e2 := &objectTest{
-		Base: Base{
+		BaseTag: BaseTag{
 			UsageKey: "usage",
 			Range: core.Range{
 				Start: core.Position{Character: 1, Line: 2},
 				End:   core.Position{Character: 29, Line: 2},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "e",
 				Range: core.Range{
 					Start: core.Position{Character: 2, Line: 2},
 					End:   core.Position{Character: 3, Line: 2},
 				},
 			},
-			XMLNameEnd: String{
+			EndTag: String{
 				Value: "e",
 				Range: core.Range{
 					Start: core.Position{Character: 27, Line: 2},
@@ -652,13 +652,13 @@ func TestDecode(t *testing.T) {
 			},
 		},
 		ID: intTest{
-			Base: Base{
+			BaseTag: BaseTag{
 				UsageKey: "usage",
 				Range: core.Range{
 					Start: core.Position{Character: 4, Line: 2},
 					End:   core.Position{Character: 10, Line: 2},
 				},
-				XMLName: String{
+				StartTag: String{
 					Value: "id",
 					Range: core.Range{
 						Start: core.Position{Character: 4, Line: 2},
@@ -669,20 +669,20 @@ func TestDecode(t *testing.T) {
 			Value: 8, // objectTest.Sanitize
 		},
 		Name: stringTest{
-			Base: Base{
+			BaseTag: BaseTag{
 				UsageKey: "usage",
 				Range: core.Range{
 					Start: core.Position{Character: 11, Line: 2},
 					End:   core.Position{Character: 25, Line: 2},
 				},
-				XMLName: String{
+				StartTag: String{
 					Value: "name",
 					Range: core.Range{
 						Start: core.Position{Character: 12, Line: 2},
 						End:   core.Position{Character: 16, Line: 2},
 					},
 				},
-				XMLNameEnd: String{
+				EndTag: String{
 					Value: "name",
 					Range: core.Range{
 						Start: core.Position{Character: 20, Line: 2},
@@ -701,23 +701,23 @@ func TestDecode(t *testing.T) {
 
 	// 数组，闭合标签带属性
 	type obj struct {
-		Base
+		BaseTag
 		ID intTest `apidoc:"id,attr,usage"`
 	}
 	v13 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc attr1="5"><elem2 id="6" /></apidoc>`
-	attr1 = intTest{Value: 5, Base: Base{
+	attr1 = intTest{Value: 5, BaseTag: BaseTag{
 		UsageKey: "usage",
 		Range: core.Range{
 			Start: core.Position{Character: 8},
 			End:   core.Position{Character: 17},
 		},
-		XMLName: String{
+		StartTag: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -726,13 +726,13 @@ func TestDecode(t *testing.T) {
 		},
 	}}
 	obj1 := &obj{
-		Base: Base{
+		BaseTag: BaseTag{
 			UsageKey: "usage-elem2",
 			Range: core.Range{
 				Start: core.Position{Character: 18},
 				End:   core.Position{Character: 34},
 			},
-			XMLName: String{
+			StartTag: String{
 				Value: "elem2",
 				Range: core.Range{
 					Start: core.Position{Character: 19},
@@ -742,13 +742,13 @@ func TestDecode(t *testing.T) {
 		},
 		ID: intTest{
 			Value: 6,
-			Base: Base{
+			BaseTag: BaseTag{
 				UsageKey: "usage",
 				Range: core.Range{
 					Start: core.Position{Character: 25},
 					End:   core.Position{Character: 31},
 				},
-				XMLName: String{
+				StartTag: String{
 					Value: "id",
 					Range: core.Range{
 						Start: core.Position{Character: 25},
@@ -765,7 +765,7 @@ func TestDecode(t *testing.T) {
 
 	// 闭合标签
 	v14 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
@@ -773,12 +773,12 @@ func TestDecode(t *testing.T) {
 	b = `<apidoc attr1="5"><elem2 id="60" /></apidoc>`
 	decode(a, b, v14, false)
 	a.NotNil(v14.Elem1).
-		Equal(v14.Elem1.XMLName.Value, "elem2").
+		Equal(v14.Elem1.StartTag.Value, "elem2").
 		Equal(v14.Elem1.ID.Value, 60)
 
 	// omitempty attr1 不能为空
 	v14 = &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intTest  `apidoc:"attr1,attr,usage"`
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
@@ -788,7 +788,7 @@ func TestDecode(t *testing.T) {
 
 	// omitempty, elem2 数组，不能为空
 	v15 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
@@ -796,7 +796,7 @@ func TestDecode(t *testing.T) {
 	decode(a, b, v15, true)
 
 	v15 = &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
@@ -806,7 +806,7 @@ func TestDecode(t *testing.T) {
 
 	// omitempty, cdata 不能为空
 	v16 := &struct {
-		Base
+		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		CData    *CData   `apidoc:",cdata,"`
 	}{}
@@ -842,13 +842,13 @@ func TestObject_decodeAttributes(t *testing.T) {
 		},
 	})
 	a.NotError(err)
-	a.Equal(val.ID, intTest{Value: 10, Base: Base{
+	a.Equal(val.ID, intTest{Value: 10, BaseTag: BaseTag{
 		UsageKey: "usage",
-		XMLName:  String{Value: "id"},
+		StartTag: String{Value: "id"},
 	}})
-	a.Equal(val.Name, stringTest{Value: "name", Base: Base{
+	a.Equal(val.Name, stringTest{Value: "name", BaseTag: BaseTag{
 		UsageKey: "usage",
-		XMLName:  String{Value: "name"},
+		StartTag: String{Value: "name"},
 	}})
 
 	val = &struct {
@@ -881,17 +881,17 @@ func TestObject_decodeAttributes(t *testing.T) {
 		},
 	})
 	a.NotError(err).
-		Equal(val2.ID, intTest{Value: 10, Base: Base{
+		Equal(val2.ID, intTest{Value: 10, BaseTag: BaseTag{
 			UsageKey: "usage",
-			XMLName:  String{Value: "id"},
+			StartTag: String{Value: "id"},
 		}})
-	a.Equal(val2.Name, stringTest{Value: "name", Base: Base{
+	a.Equal(val2.Name, stringTest{Value: "name", BaseTag: BaseTag{
 		UsageKey: "usage",
-		XMLName:  String{Value: "name"},
+		StartTag: String{Value: "name"},
 	}})
-	a.Equal(val2.Attr1, intTest{Value: 11, Base: Base{
+	a.Equal(val2.Attr1, intTest{Value: 11, BaseTag: BaseTag{
 		UsageKey: "usage",
-		XMLName:  String{Value: "attr1"},
+		StartTag: String{Value: "attr1"},
 	}})
 
 	// 测试 AttrDecoder，返回错误

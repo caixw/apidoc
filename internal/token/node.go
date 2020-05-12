@@ -50,7 +50,7 @@ type value struct {
 	name      string // 节点的名称
 
 	// 当前值可能未初始化，所以保存 usage 的值，
-	// 等 value 初始化之后再赋值给 Base.UsageKey
+	// 等 value 初始化之后再赋值给 BaseTag.UsageKey
 	usage string
 }
 

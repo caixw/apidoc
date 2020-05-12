@@ -36,21 +36,21 @@ type (
 
 	// Attribute 表示 XML 属性
 	Attribute struct {
-		token.Base
+		token.BaseTag
 		Value    String   `apidoc:"-"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}
 
 	// NumberAttribute 表示数值类型的属性
 	NumberAttribute struct {
-		token.Base
+		token.BaseTag
 		Value    Number   `apidoc:"-"`
 		RootName struct{} `apidoc:"number,meta,usage-number"`
 	}
 
 	// BoolAttribute 表示布尔值类型的属性
 	BoolAttribute struct {
-		token.Base
+		token.BaseTag
 		Value    Bool     `apidoc:"-"`
 		RootName struct{} `apidoc:"bool,meta,usage-bool"`
 	}
@@ -72,7 +72,7 @@ type (
 
 	// Element 定义不包含子元素和属性的基本的 XML 元素
 	Element struct {
-		token.Base
+		token.BaseTag
 		Content  String   `apidoc:"-"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}

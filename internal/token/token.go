@@ -68,7 +68,7 @@ type String struct {
 
 // CData 表示 XML 的 CDATA 数据
 type CData struct {
-	Base
+	BaseTag
 	Value    String   `apidoc:"-"`
 	RootName struct{} `apidoc:"string,meta,usage-string"`
 }
@@ -79,31 +79,23 @@ type Comment struct {
 	Value String
 }
 
-// 这些常量对应 Base 中相关字段的名称
+// 这些常量对应 BaseTag 中相关字段的名称
 const (
 	rangeName         = "Range"
 	usageKeyName      = "UsageKey"
-	elementTagName    = "XMLName"
-	elementTagEndName = "XMLNameEnd"
+	elementTagName    = "StartTag"
+	elementTagEndName = "EndTag"
 )
 
-// Base 每一个 XML 节点必须包含的内容
-type Base struct {
+// BaseTag 每一个 XML 节点必须包含的内容
+type BaseTag struct {
 	core.Range
-
-	// 表示对当前元素的一个说明内容的翻译 ID
-	UsageKey message.Reference `apidoc:"-"`
-
-	// 表示标签名或是属性名
-	XMLName String `apidoc:"-"`
-
-	// 表示标签的结束名称
-	//
-	// 如果是属性或是自闭合的标签，此值为空。
-	XMLNameEnd String `apidoc:"-"`
+	UsageKey message.Reference `apidoc:"-"` // 表示对当前元素的一个说明内容的翻译 ID
+	StartTag String            `apidoc:"-"` // 表示起始标签名
+	EndTag   String            `apidoc:"-"` // 表示标签的结束名称，如果是自闭合的标签，此值为空。
 }
 
 // Usage 返回该节点的说明内容
-func (b *Base) Usage() string {
+func (b *BaseTag) Usage() string {
 	return locale.Sprintf(b.UsageKey)
 }

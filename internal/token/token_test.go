@@ -19,23 +19,23 @@ type anonymous struct {
 }
 
 type intTest struct {
-	Base
+	BaseTag
 	Value int
 }
 
 type stringTest struct {
-	Base
+	BaseTag
 	Value string
 }
 
 type errIntTest struct {
-	Base
+	BaseTag
 	Value int
 }
 
 // NOTE: objectTest 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
 type objectTest struct {
-	Base
+	BaseTag
 	RootName struct{}   `apidoc:"apidoc,meta,usage-root"`
 	ID       intTest    `apidoc:"id,attr,usage"`
 	Name     stringTest `apidoc:"name,elem,usage"`

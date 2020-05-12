@@ -324,7 +324,7 @@ func setValue(v reflect.Value, usage string, p *Parser, start, end core.Position
 		v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
 	}
 
-	if xmlName.Value != "" { // CDATA 和 content 节点的 XMLName 肯定为空
+	if xmlName.Value != "" { // CDATA 和 content 节点的 StartTag 肯定为空
 		v.FieldByName(elementTagName).Set(reflect.ValueOf(xmlName))
 	}
 

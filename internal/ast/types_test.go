@@ -71,20 +71,20 @@ func TestAPIDoc(t *testing.T) {
 	a := assert.New(t)
 	doc := loadAPIDoc(a)
 
-	a.Equal(doc.Base, token.Base{
+	a.Equal(doc.BaseTag, token.BaseTag{
 		UsageKey: "usage-apidoc",
 		Range: core.Range{
 			Start: core.Position{Character: 0, Line: 2},
 			End:   core.Position{Character: 9, Line: 32},
 		},
-		XMLName: String{
+		StartTag: String{
 			Range: core.Range{
 				Start: core.Position{Character: 1, Line: 2},
 				End:   core.Position{Character: 7, Line: 2},
 			},
 			Value: "apidoc",
 		},
-		XMLNameEnd: String{
+		EndTag: String{
 			Range: core.Range{
 				Start: core.Position{Character: 2, Line: 32},
 				End:   core.Position{Character: 8, Line: 32},
@@ -94,13 +94,13 @@ func TestAPIDoc(t *testing.T) {
 	})
 
 	a.Equal(doc.Version, &VersionAttribute{
-		Base: token.Base{
+		BaseTag: token.BaseTag{
 			UsageKey: "usage-apidoc-version",
 			Range: core.Range{
 				Start: core.Position{Character: 8, Line: 2},
 				End:   core.Position{Character: 23, Line: 2},
 			},
-			XMLName: String{
+			StartTag: String{
 				Range: core.Range{
 					Start: core.Position{Character: 8, Line: 2},
 					End:   core.Position{Character: 15, Line: 2},
@@ -120,13 +120,13 @@ func TestAPIDoc(t *testing.T) {
 
 	a.Equal(len(doc.Tags), 2)
 	tag := &Tag{
-		Base: token.Base{
+		BaseTag: token.BaseTag{
 			UsageKey: "usage-apidoc-tags",
 			Range: core.Range{
 				Start: core.Position{Character: 4, Line: 10},
 				End:   core.Position{Character: 47, Line: 10},
 			},
-			XMLName: String{
+			StartTag: String{
 				Range: core.Range{
 					Start: core.Position{Character: 5, Line: 10},
 					End:   core.Position{Character: 8, Line: 10},
@@ -135,13 +135,13 @@ func TestAPIDoc(t *testing.T) {
 			},
 		},
 		Name: &Attribute{
-			Base: token.Base{
+			BaseTag: token.BaseTag{
 				UsageKey: "usage-tag-name",
 				Range: core.Range{
 					Start: core.Position{Character: 9, Line: 10},
 					End:   core.Position{Character: 20, Line: 10},
 				},
-				XMLName: String{
+				StartTag: String{
 					Range: core.Range{
 						Start: core.Position{Character: 9, Line: 10},
 						End:   core.Position{Character: 13, Line: 10},
@@ -158,13 +158,13 @@ func TestAPIDoc(t *testing.T) {
 			},
 		},
 		Title: &Attribute{
-			Base: token.Base{
+			BaseTag: token.BaseTag{
 				UsageKey: "usage-tag-title",
 				Range: core.Range{
 					Start: core.Position{Character: 21, Line: 10},
 					End:   core.Position{Character: 44, Line: 10},
 				},
-				XMLName: String{
+				StartTag: String{
 					Range: core.Range{
 						Start: core.Position{Character: 21, Line: 10},
 						End:   core.Position{Character: 26, Line: 10},
@@ -185,7 +185,7 @@ func TestAPIDoc(t *testing.T) {
 
 	tag = doc.Tags[1]
 	a.Equal(tag.Deprecated.V(), "1.0.1").
-		Empty(tag.XMLNameEnd.Value).
+		Empty(tag.EndTag.Value).
 		Equal(tag.UsageKey, "usage-apidoc-tags")
 
 	a.Equal(2, len(doc.Servers))
@@ -231,7 +231,7 @@ func TestAPIDoc_all(t *testing.T) {
 	doc := &APIDoc{}
 	a.NotError(doc.Parse(core.Block{Data: data}))
 
-	a.Equal(doc.Version.V(), "1.1.1").False(doc.Version.XMLName.IsEmpty())
+	a.Equal(doc.Version.V(), "1.1.1").False(doc.Version.StartTag.IsEmpty())
 
 	a.Equal(len(doc.Tags), 2)
 	tag := doc.Tags[0]

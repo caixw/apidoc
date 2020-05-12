@@ -180,17 +180,17 @@ func chkEnumsType(t *TypeAttribute, enums []*Enum, p *token.Parser) error {
 	case TypeNumber:
 		for _, enum := range enums {
 			if !is.Number(enum.Value.V()) {
-				return p.NewError(enum.Start, enum.End, enum.XMLName.Value, locale.ErrInvalidFormat)
+				return p.NewError(enum.Start, enum.End, enum.StartTag.Value, locale.ErrInvalidFormat)
 			}
 		}
 	case TypeBool:
 		for _, enum := range enums {
 			if _, err := strconv.ParseBool(enum.Value.V()); err != nil {
-				return p.NewError(enum.Start, enum.End, enum.XMLName.Value, locale.ErrInvalidFormat)
+				return p.NewError(enum.Start, enum.End, enum.StartTag.Value, locale.ErrInvalidFormat)
 			}
 		}
 	case TypeObject, TypeNone:
-		return p.NewError(t.Start, t.End, t.XMLName.Value, locale.ErrInvalidValue)
+		return p.NewError(t.Start, t.End, t.StartTag.Value, locale.ErrInvalidValue)
 	}
 
 	return nil
@@ -240,43 +240,43 @@ func getDuplicateItems(items []*Param) (core.Range, bool) {
 func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 	if xml.XMLAttr.V() {
 		if isArray || hasItems {
-			return p.NewError(xml.XMLAttr.Start, xml.XMLAttr.End, xml.XMLAttr.XMLName.Value, locale.ErrInvalidValue)
+			return p.NewError(xml.XMLAttr.Start, xml.XMLAttr.End, xml.XMLAttr.StartTag.Value, locale.ErrInvalidValue)
 		}
 
 		if xml.XMLWrapped.V() != "" {
-			return p.NewError(xml.XMLWrapped.Start, xml.XMLWrapped.End, xml.XMLWrapped.XMLName.Value, locale.ErrInvalidValue)
+			return p.NewError(xml.XMLWrapped.Start, xml.XMLWrapped.End, xml.XMLWrapped.StartTag.Value, locale.ErrInvalidValue)
 		}
 
 		if xml.XMLExtract.V() {
-			return p.NewError(xml.XMLExtract.Start, xml.XMLExtract.End, xml.XMLExtract.XMLName.Value, locale.ErrInvalidValue)
+			return p.NewError(xml.XMLExtract.Start, xml.XMLExtract.End, xml.XMLExtract.StartTag.Value, locale.ErrInvalidValue)
 		}
 
 		if xml.XMLNS.V() != "" {
-			return p.NewError(xml.XMLNS.Start, xml.XMLNS.End, xml.XMLNS.XMLName.Value, locale.ErrInvalidValue)
+			return p.NewError(xml.XMLNS.Start, xml.XMLNS.End, xml.XMLNS.StartTag.Value, locale.ErrInvalidValue)
 		}
 
 		if xml.XMLNSPrefix.V() != "" {
-			return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.XMLName.Value, locale.ErrInvalidValue)
+			return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.StartTag.Value, locale.ErrInvalidValue)
 		}
 	}
 
 	if xml.XMLWrapped.V() != "" && !isArray {
-		return p.NewError(xml.XMLWrapped.Start, xml.XMLWrapped.End, xml.XMLWrapped.XMLName.Value, locale.ErrInvalidValue)
+		return p.NewError(xml.XMLWrapped.Start, xml.XMLWrapped.End, xml.XMLWrapped.StartTag.Value, locale.ErrInvalidValue)
 	}
 
 	if xml.XMLExtract.V() {
 		if xml.XMLNS.V() != "" {
-			return p.NewError(xml.XMLNS.Start, xml.XMLNS.End, xml.XMLNS.XMLName.Value, locale.ErrInvalidValue)
+			return p.NewError(xml.XMLNS.Start, xml.XMLNS.End, xml.XMLNS.StartTag.Value, locale.ErrInvalidValue)
 		}
 
 		if xml.XMLNSPrefix.V() != "" {
-			return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.XMLName.Value, locale.ErrInvalidValue)
+			return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.StartTag.Value, locale.ErrInvalidValue)
 		}
 	}
 
 	// 有命名空间，必须要有前缀
 	if xml.XMLNS.V() != "" && xml.XMLNSPrefix.V() == "" {
-		return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.XMLName.Value, locale.ErrInvalidValue)
+		return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.StartTag.Value, locale.ErrInvalidValue)
 	}
 
 	return nil
