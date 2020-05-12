@@ -55,7 +55,8 @@ type Attribute struct {
 // String 表示 XML 的字符串数据
 type String struct {
 	core.Range
-	Value string
+	Value    string   `apidoc:"-"`
+	RootName struct{} `apidoc:"string,meta,usage-string"`
 }
 
 // CData 表示 XML 的 CDATA 数据

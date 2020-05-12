@@ -3,7 +3,6 @@
 package ast
 
 import (
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -73,7 +72,7 @@ type (
 	// Element 定义不包含子元素和属性的基本的 XML 元素
 	Element struct {
 		token.BaseTag
-		Content  String   `apidoc:"-"`
+		Content  String   `apidoc:",content"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}
 )
@@ -258,36 +257,6 @@ func (a *APIDocVersionAttribute) EncodeXMLAttr() (string, error) {
 // V 返回当前属性实际表示的值
 func (a *APIDocVersionAttribute) V() string {
 	return (*Attribute)(a).V()
-}
-
-// EncodeXML Encoder.EncodeXML
-func (s *Element) EncodeXML() (string, error) {
-	return s.Content.Value, nil
-}
-
-// DecodeXML Decoder.DecodeXML
-func (s *Element) DecodeXML(p *token.Parser, start *token.StartElement) (*token.EndElement, error) {
-	for {
-		t, _, err := p.Token()
-		if err == io.EOF {
-			pos := p.Position().Position
-			return nil, p.NewError(pos, pos, "", locale.ErrInvalidXML)
-		} else if err != nil {
-			return nil, err
-		}
-
-		switch elem := t.(type) {
-		case *token.EndElement:
-			if elem.Name.Value != start.Name.Value {
-				return nil, p.NewError(elem.Start, elem.End, start.Name.Value, locale.ErrNotFoundEndTag)
-			}
-			return elem, nil
-		case *token.String:
-			s.Content = *elem
-		case *token.Instruction:
-			return nil, p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML)
-		}
-	}
 }
 
 // V 返回当前属性实际表示的值
