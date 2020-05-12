@@ -37,10 +37,12 @@ func TestDecode(t *testing.T) {
 	b := `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
 	decode(a, b, v, false)
 	base := BaseTag{
-		UsageKey: "usage-apidoc",
-		Range: core.Range{
-			Start: core.Position{Character: 0},
-			End:   core.Position{Character: 43},
+		Base: Base{
+			UsageKey: "usage-apidoc",
+			Range: core.Range{
+				Start: core.Position{Character: 0},
+				End:   core.Position{Character: 43},
+			},
 		},
 		StartTag: String{
 			Value: "apidoc",
@@ -59,10 +61,12 @@ func TestDecode(t *testing.T) {
 	}
 	attr1 := intTest{Value: 5,
 		BaseTag: BaseTag{
-			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 17},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 17},
+				},
 			},
 			StartTag: String{
 				Value: "attr1",
@@ -74,10 +78,12 @@ func TestDecode(t *testing.T) {
 		}}
 	elem1 := intTest{Value: 6,
 		BaseTag: BaseTag{
-			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 18},
-				End:   core.Position{Character: 34},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 18},
+					End:   core.Position{Character: 34},
+				},
 			},
 			StartTag: String{
 				Value: "elem1",
@@ -109,10 +115,12 @@ func TestDecode(t *testing.T) {
 	decode(a, b, v, false)
 	attr1 = intTest{Value: 5,
 		BaseTag: BaseTag{
-			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 17},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 17},
+				},
 			},
 			StartTag: String{
 				Value: "attr1",
@@ -124,10 +132,12 @@ func TestDecode(t *testing.T) {
 		}}
 	elem1 = intTest{Value: 0,
 		BaseTag: BaseTag{
-			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 18},
-				End:   core.Position{Character: 27},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 18},
+					End:   core.Position{Character: 27},
+				},
 			},
 			StartTag: String{
 				Value: "elem1",
@@ -149,10 +159,12 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
 	attr1 = intTest{Value: 5, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 8},
-			End:   core.Position{Character: 17},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 17},
+			},
 		},
 		StartTag: String{
 			Value: "attr1",
@@ -163,10 +175,12 @@ func TestDecode(t *testing.T) {
 		},
 	}}
 	elem1 = intTest{Value: 6, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 18},
-			End:   core.Position{Character: 34},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 18},
+				End:   core.Position{Character: 34},
+			},
 		},
 		StartTag: String{
 			Value: "elem1",
@@ -196,10 +210,12 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1><elem1>7</elem1></apidoc>`
 	attr1 = intTest{Value: 5, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 8},
-			End:   core.Position{Character: 17},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 17},
+			},
 		},
 		StartTag: String{
 			Value: "attr1",
@@ -210,10 +226,12 @@ func TestDecode(t *testing.T) {
 		},
 	}}
 	elem1 = intTest{Value: 6, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 18},
-			End:   core.Position{Character: 34},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 18},
+				End:   core.Position{Character: 34},
+			},
 		},
 		StartTag: String{
 			Value: "elem1",
@@ -231,10 +249,12 @@ func TestDecode(t *testing.T) {
 		},
 	}}
 	elem2 := intTest{Value: 7, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 34},
-			End:   core.Position{Character: 50},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 34},
+				End:   core.Position{Character: 50},
+			},
 		},
 		StartTag: String{
 			Value: "elem1",
@@ -264,10 +284,12 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc attr1="5"><elem1 /><elem1>7</elem1></apidoc>`
 	attr1 = intTest{Value: 5, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 8},
-			End:   core.Position{Character: 17},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 17},
+			},
 		},
 		StartTag: String{
 			Value: "attr1",
@@ -278,10 +300,12 @@ func TestDecode(t *testing.T) {
 		},
 	}}
 	elem1 = intTest{BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 18},
-			End:   core.Position{Character: 27},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 18},
+				End:   core.Position{Character: 27},
+			},
 		},
 		StartTag: String{
 			Value: "elem1",
@@ -292,10 +316,12 @@ func TestDecode(t *testing.T) {
 		},
 	}}
 	elem2 = intTest{Value: 7, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 27},
-			End:   core.Position{Character: 43},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 27},
+				End:   core.Position{Character: 43},
+			},
 		},
 		StartTag: String{
 			Value: "elem1",
@@ -330,10 +356,12 @@ func TestDecode(t *testing.T) {
 		End:   core.Position{Character: 22},
 	}})
 	a.Equal(v4.ID, intTest{Value: 5, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 8},
-			End:   core.Position{Character: 17},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 17},
+			},
 		},
 		StartTag: String{
 			Value: "attr1",
@@ -358,9 +386,11 @@ func TestDecode(t *testing.T) {
 			End:   core.Position{Character: 31},
 		}},
 		BaseTag: BaseTag{
-			Range: core.Range{
-				Start: core.Position{Character: 18},
-				End:   core.Position{Character: 34},
+			Base: Base{
+				Range: core.Range{
+					Start: core.Position{Character: 18},
+					End:   core.Position{Character: 34},
+				},
 			},
 			StartTag: String{
 				Value: cdataStart,
@@ -399,10 +429,12 @@ func TestDecode(t *testing.T) {
 	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
 	decode(a, b, v7, false)
 	a.Equal(v7.ID, &intTest{Value: 11, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 8},
-			End:   core.Position{Character: 15},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 15},
+			},
 		},
 		StartTag: String{
 			Value: "id",
@@ -413,10 +445,12 @@ func TestDecode(t *testing.T) {
 		},
 	}})
 	a.Equal(v7.Name, stringTest{Value: "name", BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 16},
-			End:   core.Position{Character: 33},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 16},
+				End:   core.Position{Character: 33},
+			},
 		},
 		StartTag: String{
 			Value: "name",
@@ -435,10 +469,12 @@ func TestDecode(t *testing.T) {
 	}})
 	a.Equal(v7.Object, &objectTest{
 		BaseTag: BaseTag{
-			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 33},
-				End:   core.Position{Character: 66},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 33},
+					End:   core.Position{Character: 66},
+				},
 			},
 			StartTag: String{
 				Value: "obj",
@@ -456,10 +492,12 @@ func TestDecode(t *testing.T) {
 			},
 		},
 		ID: intTest{Value: 12, BaseTag: BaseTag{ // objectTest.Sanitize
-			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 38},
-				End:   core.Position{Character: 45},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 38},
+					End:   core.Position{Character: 45},
+				},
 			},
 			StartTag: String{
 				Value: "id",
@@ -470,10 +508,12 @@ func TestDecode(t *testing.T) {
 			},
 		}},
 		Name: stringTest{Value: "n", BaseTag: BaseTag{
-			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 46},
-				End:   core.Position{Character: 60},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 46},
+					End:   core.Position{Character: 60},
+				},
 			},
 			StartTag: String{
 				Value: "name",
@@ -552,10 +592,12 @@ func TestDecode(t *testing.T) {
 	<e id="7"><name>7</name></e>
 </apidoc>`
 	attr1 = intTest{Value: 5, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 8},
-			End:   core.Position{Character: 17},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 17},
+			},
 		},
 		StartTag: String{
 			Value: "attr1",
@@ -567,10 +609,12 @@ func TestDecode(t *testing.T) {
 	}}
 	e1 := &objectTest{
 		BaseTag: BaseTag{
-			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 1, Line: 1},
-				End:   core.Position{Character: 29, Line: 1},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 1, Line: 1},
+					End:   core.Position{Character: 29, Line: 1},
+				},
 			},
 			StartTag: String{
 				Value: "e",
@@ -589,10 +633,12 @@ func TestDecode(t *testing.T) {
 		},
 		ID: intTest{
 			BaseTag: BaseTag{
-				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 4, Line: 1},
-					End:   core.Position{Character: 10, Line: 1},
+				Base: Base{
+					UsageKey: "usage",
+					Range: core.Range{
+						Start: core.Position{Character: 4, Line: 1},
+						End:   core.Position{Character: 10, Line: 1},
+					},
 				},
 				StartTag: String{
 					Value: "id",
@@ -606,10 +652,12 @@ func TestDecode(t *testing.T) {
 		},
 		Name: stringTest{
 			BaseTag: BaseTag{
-				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 11, Line: 1},
-					End:   core.Position{Character: 25, Line: 1},
+				Base: Base{
+					UsageKey: "usage",
+					Range: core.Range{
+						Start: core.Position{Character: 11, Line: 1},
+						End:   core.Position{Character: 25, Line: 1},
+					},
 				},
 				StartTag: String{
 					Value: "name",
@@ -631,10 +679,12 @@ func TestDecode(t *testing.T) {
 	}
 	e2 := &objectTest{
 		BaseTag: BaseTag{
-			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 1, Line: 2},
-				End:   core.Position{Character: 29, Line: 2},
+			Base: Base{
+				UsageKey: "usage",
+				Range: core.Range{
+					Start: core.Position{Character: 1, Line: 2},
+					End:   core.Position{Character: 29, Line: 2},
+				},
 			},
 			StartTag: String{
 				Value: "e",
@@ -653,10 +703,12 @@ func TestDecode(t *testing.T) {
 		},
 		ID: intTest{
 			BaseTag: BaseTag{
-				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 4, Line: 2},
-					End:   core.Position{Character: 10, Line: 2},
+				Base: Base{
+					UsageKey: "usage",
+					Range: core.Range{
+						Start: core.Position{Character: 4, Line: 2},
+						End:   core.Position{Character: 10, Line: 2},
+					},
 				},
 				StartTag: String{
 					Value: "id",
@@ -670,10 +722,12 @@ func TestDecode(t *testing.T) {
 		},
 		Name: stringTest{
 			BaseTag: BaseTag{
-				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 11, Line: 2},
-					End:   core.Position{Character: 25, Line: 2},
+				Base: Base{
+					UsageKey: "usage",
+					Range: core.Range{
+						Start: core.Position{Character: 11, Line: 2},
+						End:   core.Position{Character: 25, Line: 2},
+					},
 				},
 				StartTag: String{
 					Value: "name",
@@ -712,10 +766,12 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc attr1="5"><elem2 id="6" /></apidoc>`
 	attr1 = intTest{Value: 5, BaseTag: BaseTag{
-		UsageKey: "usage",
-		Range: core.Range{
-			Start: core.Position{Character: 8},
-			End:   core.Position{Character: 17},
+		Base: Base{
+			UsageKey: "usage",
+			Range: core.Range{
+				Start: core.Position{Character: 8},
+				End:   core.Position{Character: 17},
+			},
 		},
 		StartTag: String{
 			Value: "attr1",
@@ -727,10 +783,12 @@ func TestDecode(t *testing.T) {
 	}}
 	obj1 := &obj{
 		BaseTag: BaseTag{
-			UsageKey: "usage-elem2",
-			Range: core.Range{
-				Start: core.Position{Character: 18},
-				End:   core.Position{Character: 34},
+			Base: Base{
+				UsageKey: "usage-elem2",
+				Range: core.Range{
+					Start: core.Position{Character: 18},
+					End:   core.Position{Character: 34},
+				},
 			},
 			StartTag: String{
 				Value: "elem2",
@@ -743,10 +801,12 @@ func TestDecode(t *testing.T) {
 		ID: intTest{
 			Value: 6,
 			BaseTag: BaseTag{
-				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 25},
-					End:   core.Position{Character: 31},
+				Base: Base{
+					UsageKey: "usage",
+					Range: core.Range{
+						Start: core.Position{Character: 25},
+						End:   core.Position{Character: 31},
+					},
 				},
 				StartTag: String{
 					Value: "id",
@@ -843,11 +903,11 @@ func TestObject_decodeAttributes(t *testing.T) {
 	})
 	a.NotError(err)
 	a.Equal(val.ID, intTest{Value: 10, BaseTag: BaseTag{
-		UsageKey: "usage",
+		Base:     Base{UsageKey: "usage"},
 		StartTag: String{Value: "id"},
 	}})
 	a.Equal(val.Name, stringTest{Value: "name", BaseTag: BaseTag{
-		UsageKey: "usage",
+		Base:     Base{UsageKey: "usage"},
 		StartTag: String{Value: "name"},
 	}})
 
@@ -882,15 +942,15 @@ func TestObject_decodeAttributes(t *testing.T) {
 	})
 	a.NotError(err).
 		Equal(val2.ID, intTest{Value: 10, BaseTag: BaseTag{
-			UsageKey: "usage",
+			Base:     Base{UsageKey: "usage"},
 			StartTag: String{Value: "id"},
 		}})
 	a.Equal(val2.Name, stringTest{Value: "name", BaseTag: BaseTag{
-		UsageKey: "usage",
+		Base:     Base{UsageKey: "usage"},
 		StartTag: String{Value: "name"},
 	}})
 	a.Equal(val2.Attr1, intTest{Value: 11, BaseTag: BaseTag{
-		UsageKey: "usage",
+		Base:     Base{UsageKey: "usage"},
 		StartTag: String{Value: "attr1"},
 	}})
 

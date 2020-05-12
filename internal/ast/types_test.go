@@ -72,10 +72,12 @@ func TestAPIDoc(t *testing.T) {
 	doc := loadAPIDoc(a)
 
 	a.Equal(doc.BaseTag, token.BaseTag{
-		UsageKey: "usage-apidoc",
-		Range: core.Range{
-			Start: core.Position{Character: 0, Line: 2},
-			End:   core.Position{Character: 9, Line: 32},
+		Base: token.Base{
+			UsageKey: "usage-apidoc",
+			Range: core.Range{
+				Start: core.Position{Character: 0, Line: 2},
+				End:   core.Position{Character: 9, Line: 32},
+			},
 		},
 		StartTag: String{
 			Range: core.Range{
@@ -95,10 +97,12 @@ func TestAPIDoc(t *testing.T) {
 
 	a.Equal(doc.Version, &VersionAttribute{
 		BaseTag: token.BaseTag{
-			UsageKey: "usage-apidoc-version",
-			Range: core.Range{
-				Start: core.Position{Character: 8, Line: 2},
-				End:   core.Position{Character: 23, Line: 2},
+			Base: token.Base{
+				UsageKey: "usage-apidoc-version",
+				Range: core.Range{
+					Start: core.Position{Character: 8, Line: 2},
+					End:   core.Position{Character: 23, Line: 2},
+				},
 			},
 			StartTag: String{
 				Range: core.Range{
@@ -121,10 +125,12 @@ func TestAPIDoc(t *testing.T) {
 	a.Equal(len(doc.Tags), 2)
 	tag := &Tag{
 		BaseTag: token.BaseTag{
-			UsageKey: "usage-apidoc-tags",
-			Range: core.Range{
-				Start: core.Position{Character: 4, Line: 10},
-				End:   core.Position{Character: 47, Line: 10},
+			Base: token.Base{
+				UsageKey: "usage-apidoc-tags",
+				Range: core.Range{
+					Start: core.Position{Character: 4, Line: 10},
+					End:   core.Position{Character: 47, Line: 10},
+				},
 			},
 			StartTag: String{
 				Range: core.Range{
@@ -136,10 +142,12 @@ func TestAPIDoc(t *testing.T) {
 		},
 		Name: &Attribute{
 			BaseTag: token.BaseTag{
-				UsageKey: "usage-tag-name",
-				Range: core.Range{
-					Start: core.Position{Character: 9, Line: 10},
-					End:   core.Position{Character: 20, Line: 10},
+				Base: token.Base{
+					UsageKey: "usage-tag-name",
+					Range: core.Range{
+						Start: core.Position{Character: 9, Line: 10},
+						End:   core.Position{Character: 20, Line: 10},
+					},
 				},
 				StartTag: String{
 					Range: core.Range{
@@ -159,10 +167,12 @@ func TestAPIDoc(t *testing.T) {
 		},
 		Title: &Attribute{
 			BaseTag: token.BaseTag{
-				UsageKey: "usage-tag-title",
-				Range: core.Range{
-					Start: core.Position{Character: 21, Line: 10},
-					End:   core.Position{Character: 44, Line: 10},
+				Base: token.Base{
+					UsageKey: "usage-tag-title",
+					Range: core.Range{
+						Start: core.Position{Character: 21, Line: 10},
+						End:   core.Position{Character: 44, Line: 10},
+					},
 				},
 				StartTag: String{
 					Range: core.Range{

@@ -198,7 +198,7 @@ func (p *Parser) parseCData(pos lexer.Position) (*CData, core.Range, error) {
 	r := core.Range{Start: pos.Position, End: p.Position().Position}
 	return &CData{
 		BaseTag: BaseTag{
-			Range: r,
+			Base: Base{Range: r},
 			StartTag: String{
 				Value: cdataStart,
 				Range: core.Range{

@@ -221,9 +221,11 @@ func TestParser_Token(t *testing.T) {
 
 				&CData{
 					BaseTag: BaseTag{
-						Range: core.Range{
-							Start: core.Position{Line: 14, Character: 20},
-							End:   core.Position{Line: 14, Character: 43},
+						Base: Base{
+							Range: core.Range{
+								Start: core.Position{Line: 14, Character: 20},
+								End:   core.Position{Line: 14, Character: 43},
+							},
 						},
 						StartTag: String{
 							Value: cdataStart,
@@ -799,9 +801,11 @@ func TestParser_parseCData(t *testing.T) {
 			input: "<h1>\nxxx]]>",
 			cdata: &CData{
 				BaseTag: BaseTag{
-					Range: core.Range{
-						Start: core.Position{Line: 11, Character: 22},
-						End:   core.Position{Line: 12, Character: 6},
+					Base: Base{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 12, Character: 6},
+						},
 					},
 					StartTag: String{
 						Value: cdataStart,
@@ -831,9 +835,11 @@ func TestParser_parseCData(t *testing.T) {
 			input: "<h1>]]]]><![CDATA[>\nxxx]]>",
 			cdata: &CData{
 				BaseTag: BaseTag{
-					Range: core.Range{
-						Start: core.Position{Line: 11, Character: 22},
-						End:   core.Position{Line: 12, Character: 6},
+					Base: Base{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 12, Character: 6},
+						},
 					},
 					StartTag: String{
 						Value: cdataStart,
@@ -864,9 +870,11 @@ func TestParser_parseCData(t *testing.T) {
 			input: "<h1>]]]]><![CDATA[>\n12]]]]><![CDATA[>34\nxxx]]>",
 			cdata: &CData{
 				BaseTag: BaseTag{
-					Range: core.Range{
-						Start: core.Position{Line: 11, Character: 22},
-						End:   core.Position{Line: 13, Character: 6},
+					Base: Base{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 13, Character: 6},
+						},
 					},
 					StartTag: String{
 						Value: cdataStart,

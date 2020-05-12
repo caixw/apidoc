@@ -87,15 +87,20 @@ const (
 	elementTagEndName = "EndTag"
 )
 
-// BaseTag 每一个 XML 节点必须包含的内容
-type BaseTag struct {
+// Base 所有 XML 节点的基本元素
+type Base struct {
 	core.Range
 	UsageKey message.Reference `apidoc:"-"` // 表示对当前元素的一个说明内容的翻译 ID
-	StartTag String            `apidoc:"-"` // 表示起始标签名
-	EndTag   String            `apidoc:"-"` // 表示标签的结束名称，如果是自闭合的标签，此值为空。
+}
+
+// BaseTag 每一个 XML 标签必须包含的内容
+type BaseTag struct {
+	Base
+	StartTag String `apidoc:"-"` // 表示起始标签名
+	EndTag   String `apidoc:"-"` // 表示标签的结束名称，如果是自闭合的标签，此值为空。
 }
 
 // Usage 返回该节点的说明内容
-func (b *BaseTag) Usage() string {
+func (b *Base) Usage() string {
 	return locale.Sprintf(b.UsageKey)
 }
