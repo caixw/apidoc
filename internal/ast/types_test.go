@@ -96,7 +96,7 @@ func TestAPIDoc(t *testing.T) {
 	})
 
 	a.Equal(doc.Version, &VersionAttribute{
-		BaseTag: token.BaseTag{
+		BaseAttribute: token.BaseAttribute{
 			Base: token.Base{
 				UsageKey: "usage-apidoc-version",
 				Range: core.Range{
@@ -104,7 +104,7 @@ func TestAPIDoc(t *testing.T) {
 					End:   core.Position{Character: 23, Line: 2},
 				},
 			},
-			StartTag: String{
+			AttributeName: String{
 				Range: core.Range{
 					Start: core.Position{Character: 8, Line: 2},
 					End:   core.Position{Character: 15, Line: 2},
@@ -141,7 +141,7 @@ func TestAPIDoc(t *testing.T) {
 			},
 		},
 		Name: &Attribute{
-			BaseTag: token.BaseTag{
+			BaseAttribute: token.BaseAttribute{
 				Base: token.Base{
 					UsageKey: "usage-tag-name",
 					Range: core.Range{
@@ -149,7 +149,7 @@ func TestAPIDoc(t *testing.T) {
 						End:   core.Position{Character: 20, Line: 10},
 					},
 				},
-				StartTag: String{
+				AttributeName: String{
 					Range: core.Range{
 						Start: core.Position{Character: 9, Line: 10},
 						End:   core.Position{Character: 13, Line: 10},
@@ -166,7 +166,7 @@ func TestAPIDoc(t *testing.T) {
 			},
 		},
 		Title: &Attribute{
-			BaseTag: token.BaseTag{
+			BaseAttribute: token.BaseAttribute{
 				Base: token.Base{
 					UsageKey: "usage-tag-title",
 					Range: core.Range{
@@ -174,7 +174,7 @@ func TestAPIDoc(t *testing.T) {
 						End:   core.Position{Character: 44, Line: 10},
 					},
 				},
-				StartTag: String{
+				AttributeName: String{
 					Range: core.Range{
 						Start: core.Position{Character: 21, Line: 10},
 						End:   core.Position{Character: 26, Line: 10},
@@ -241,7 +241,7 @@ func TestAPIDoc_all(t *testing.T) {
 	doc := &APIDoc{}
 	a.NotError(doc.Parse(core.Block{Data: data}))
 
-	a.Equal(doc.Version.V(), "1.1.1").False(doc.Version.StartTag.IsEmpty())
+	a.Equal(doc.Version.V(), "1.1.1").False(doc.Version.AttributeName.IsEmpty())
 
 	a.Equal(len(doc.Tags), 2)
 	tag := doc.Tags[0]

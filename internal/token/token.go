@@ -85,6 +85,7 @@ const (
 	usageKeyName      = "UsageKey"
 	elementTagName    = "StartTag"
 	elementTagEndName = "EndTag"
+	attributeNameName = "AttributeName"
 )
 
 // Base 所有 XML 节点的基本元素
@@ -93,7 +94,13 @@ type Base struct {
 	UsageKey message.Reference `apidoc:"-"` // 表示对当前元素的一个说明内容的翻译 ID
 }
 
-// BaseTag 每一个 XML 标签必须包含的内容
+// BaseAttribute 所有 XML 属性节点的基本元素
+type BaseAttribute struct {
+	Base
+	AttributeName String `apidoc:"-"`
+}
+
+// BaseTag 所有 XML 标签的基本元素
 type BaseTag struct {
 	Base
 	StartTag String `apidoc:"-"` // 表示起始标签名

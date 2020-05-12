@@ -27,39 +27,39 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1",
 			inputNode: &struct {
-				Attr1 intTest `apidoc:"attr1,attr,usage"`
+				Attr1 intAttr `apidoc:"attr1,attr,usage"`
 			}{},
 			attrs: 1,
 		},
 		{
 			inputName: "attr2",
 			inputNode: &struct {
-				Attr1 intTest `apidoc:"attr1,attr,usage"`
-				Attr2 intTest `apidoc:"attr2,attr,usage"`
+				Attr1 intAttr `apidoc:"attr1,attr,usage"`
+				Attr2 intAttr `apidoc:"attr2,attr,usage"`
 			}{},
 			attrs: 2,
 		},
 		{
 			inputName: "attr1",
 			inputNode: &struct {
-				Attr1 intTest `apidoc:"-"`
-				Attr2 intTest `apidoc:"attr2,attr,usage"`
+				Attr1 intTag  `apidoc:"-"`
+				Attr2 intAttr `apidoc:"attr2,attr,usage"`
 			}{},
 			attrs: 1,
 		},
 		{
 			inputName: "attr1_attr2_array",
 			inputNode: &struct {
-				Attr1 intTest   `apidoc:"attr1,attr,usage"`
-				Attr2 []intTest `apidoc:"attr2,attr,usage"`
+				Attr1 intAttr   `apidoc:"attr1,attr,usage"`
+				Attr2 []intAttr `apidoc:"attr2,attr,usage"`
 			}{},
 			attrs: 2,
 		},
 		{
 			inputName: "attr2_content",
 			inputNode: &struct {
-				Attr1   intTest `apidoc:"attr1,attr,usage"`
-				Attr2   intTest `apidoc:"attr2,attr,usage"`
+				Attr1   intAttr `apidoc:"attr1,attr,usage"`
+				Attr2   intAttr `apidoc:"attr2,attr,usage"`
 				Content String  `apidoc:",content,"`
 			}{},
 			attrs:   2,
@@ -68,8 +68,8 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_elem1",
 			inputNode: &struct {
-				Attr1 intTest `apidoc:"attr1,attr,usage"`
-				Elem1 intTest `apidoc:"elem1,elem,usage"`
+				Attr1 intAttr `apidoc:"attr1,attr,usage"`
+				Elem1 intTag  `apidoc:"elem1,elem,usage"`
 			}{},
 			attrs: 1,
 			elems: 1,
@@ -77,9 +77,9 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_elem2",
 			inputNode: &struct {
-				Attr1 intTest `apidoc:"attr1,attr,usage"`
-				Elem1 intTest `apidoc:"elem1,elem,usage"`
-				Elem2 intTest `apidoc:"elem2,elem,usage"`
+				Attr1 intAttr `apidoc:"attr1,attr,usage"`
+				Elem1 intTag  `apidoc:"elem1,elem,usage"`
+				Elem2 intTag  `apidoc:"elem2,elem,usage"`
 			}{},
 			attrs: 1,
 			elems: 2,
@@ -87,9 +87,9 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_elem1",
 			inputNode: &struct {
-				Attr1 intTest `apidoc:"attr1,attr,usage"`
-				Elem1 intTest `apidoc:"-"`
-				Elem2 intTest `apidoc:"elem2,elem,usage"`
+				Attr1 intAttr `apidoc:"attr1,attr,usage"`
+				Elem1 intTag  `apidoc:"-"`
+				Elem2 intTag  `apidoc:"elem2,elem,usage"`
 			}{},
 			attrs: 1,
 			elems: 1,
@@ -97,7 +97,7 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_cdata",
 			inputNode: &struct {
-				Attr1 intTest `apidoc:"attr1,attr,usage"`
+				Attr1 intAttr `apidoc:"attr1,attr,usage"`
 				Cdata *CData  `apidoc:",cdata"`
 			}{},
 			attrs: 1,
@@ -107,7 +107,7 @@ func TestNewNode(t *testing.T) {
 			inputName: "elem2",
 			inputNode: &struct {
 				anonymous
-				Elem2 intTest `apidoc:"elem2,elem,usage"`
+				Elem2 intTag `apidoc:"elem2,elem,usage"`
 			}{},
 			attrs: 1,
 			elems: 2,
@@ -115,8 +115,8 @@ func TestNewNode(t *testing.T) {
 		{ // 包含小字名称的字段
 			inputName: "elem1",
 			inputNode: &struct {
-				elem1 intTest `apidoc:"elem1,elem,usage"`
-				Elem2 intTest `apidoc:"elem2,elem,usage"`
+				elem1 intTag `apidoc:"elem1,elem,usage"`
+				Elem2 intTag `apidoc:"elem2,elem,usage"`
 			}{},
 			elems: 1,
 		},
@@ -124,7 +124,7 @@ func TestNewNode(t *testing.T) {
 			inputName: "attr1_elem2_anonymous",
 			inputNode: &struct {
 				*anonymous
-				Elem2 intTest `apidoc:"elem2,elem,usage"`
+				Elem2 intTag `apidoc:"elem2,elem,usage"`
 			}{
 				anonymous: &anonymous{},
 			},

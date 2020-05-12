@@ -31,8 +31,8 @@ func TestDecode(t *testing.T) {
 	v := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		Attr1    intTest  `apidoc:"attr1,attr,usage"`
-		Elem1    intTest  `apidoc:"elem1,elem,usage"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
+		Elem1    intTag   `apidoc:"elem1,elem,usage"`
 	}{}
 	b := `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
 	decode(a, b, v, false)
@@ -59,8 +59,8 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}
-	attr1 := intTest{Value: 5,
-		BaseTag: BaseTag{
+	attr1 := intAttr{Value: 5,
+		BaseAttribute: BaseAttribute{
 			Base: Base{
 				UsageKey: "usage",
 				Range: core.Range{
@@ -68,7 +68,7 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 17},
 				},
 			},
-			StartTag: String{
+			AttributeName: String{
 				Value: "attr1",
 				Range: core.Range{
 					Start: core.Position{Character: 8},
@@ -76,7 +76,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		}}
-	elem1 := intTest{Value: 6,
+	elem1 := intTag{Value: 6,
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
@@ -108,13 +108,13 @@ func TestDecode(t *testing.T) {
 	v = &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		Attr1    intTest  `apidoc:"attr1,attr,usage"`
-		Elem1    intTest  `apidoc:"elem1,elem,usage"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
+		Elem1    intTag   `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1 /></apidoc>`
 	decode(a, b, v, false)
-	attr1 = intTest{Value: 5,
-		BaseTag: BaseTag{
+	attr1 = intAttr{Value: 5,
+		BaseAttribute: BaseAttribute{
 			Base: Base{
 				UsageKey: "usage",
 				Range: core.Range{
@@ -122,7 +122,7 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 17},
 				},
 			},
-			StartTag: String{
+			AttributeName: String{
 				Value: "attr1",
 				Range: core.Range{
 					Start: core.Position{Character: 8},
@@ -130,7 +130,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		}}
-	elem1 = intTest{Value: 0,
+	elem1 = intTag{Value: 0,
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
@@ -153,12 +153,12 @@ func TestDecode(t *testing.T) {
 	// 数组，单个元素
 	v2 := &struct {
 		BaseTag
-		RootName struct{}  `apidoc:"apidoc,meta,usage-apidoc"`
-		Attr1    intTest   `apidoc:"attr1,attr,usage"`
-		Elem1    []intTest `apidoc:"elem1,elem,usage"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
+		Elem1    []intTag `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
-	attr1 = intTest{Value: 5, BaseTag: BaseTag{
+	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -166,7 +166,7 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		StartTag: String{
+		AttributeName: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -174,7 +174,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem1 = intTest{Value: 6, BaseTag: BaseTag{
+	elem1 = intTag{Value: 6, BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -199,17 +199,17 @@ func TestDecode(t *testing.T) {
 	}}
 	decode(a, b, v2, false)
 	a.Equal(v2.Attr1, attr1).
-		Equal(v2.Elem1, []intTest{elem1})
+		Equal(v2.Elem1, []intTag{elem1})
 
 	// 数组，多个元素
 	v3 := &struct {
 		BaseTag
-		RootName struct{}  `apidoc:"apidoc,meta,usage-apidoc"`
-		Attr1    intTest   `apidoc:"attr1,attr,usage"`
-		Elem1    []intTest `apidoc:"elem1,elem,usage"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
+		Elem1    []intTag `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1>6</elem1><elem1>7</elem1></apidoc>`
-	attr1 = intTest{Value: 5, BaseTag: BaseTag{
+	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -217,7 +217,7 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		StartTag: String{
+		AttributeName: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -225,7 +225,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem1 = intTest{Value: 6, BaseTag: BaseTag{
+	elem1 = intTag{Value: 6, BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -248,7 +248,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem2 := intTest{Value: 7, BaseTag: BaseTag{
+	elem2 := intTag{Value: 7, BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -273,17 +273,17 @@ func TestDecode(t *testing.T) {
 	}}
 	decode(a, b, v3, false)
 	a.Equal(v3.Attr1, attr1).
-		Equal(v3.Elem1, []intTest{elem1, elem2})
+		Equal(v3.Elem1, []intTag{elem1, elem2})
 
 	// 数组，多个元素，自闭合
 	v3 = &struct {
 		BaseTag
-		RootName struct{}  `apidoc:"apidoc,meta,usage-apidoc"`
-		Attr1    intTest   `apidoc:"attr1,attr,usage"`
-		Elem1    []intTest `apidoc:"elem1,elem,usage"`
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
+		Elem1    []intTag `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1 /><elem1>7</elem1></apidoc>`
-	attr1 = intTest{Value: 5, BaseTag: BaseTag{
+	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -291,7 +291,7 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		StartTag: String{
+		AttributeName: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -299,7 +299,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem1 = intTest{BaseTag: BaseTag{
+	elem1 = intTag{BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -315,7 +315,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	elem2 = intTest{Value: 7, BaseTag: BaseTag{
+	elem2 = intTag{Value: 7, BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -340,13 +340,13 @@ func TestDecode(t *testing.T) {
 	}}
 	decode(a, b, v3, false)
 	a.Equal(v3.Attr1, attr1).
-		Equal(v3.Elem1, []intTest{elem1, elem2})
+		Equal(v3.Elem1, []intTag{elem1, elem2})
 
 	// content
 	v4 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		ID       intTest  `apidoc:"attr1,attr,usage"`
+		ID       intAttr  `apidoc:"attr1,attr,usage"`
 		Content  String   `apidoc:",content"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
@@ -355,7 +355,7 @@ func TestDecode(t *testing.T) {
 		Start: core.Position{Character: 18},
 		End:   core.Position{Character: 22},
 	}})
-	a.Equal(v4.ID, intTest{Value: 5, BaseTag: BaseTag{
+	a.Equal(v4.ID, intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -363,7 +363,7 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		StartTag: String{
+		AttributeName: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -421,14 +421,14 @@ func TestDecode(t *testing.T) {
 
 	v7 := &struct {
 		BaseTag
-		RootName struct{}    `apidoc:"apidoc,meta,usage-apidoc"`
-		ID       *intTest    `apidoc:"id,attr,usage"`
-		Name     stringTest  `apidoc:"name,elem,usage"`
-		Object   *objectTest `apidoc:"obj,elem,usage"`
+		RootName struct{}   `apidoc:"apidoc,meta,usage-apidoc"`
+		ID       *intAttr   `apidoc:"id,attr,usage"`
+		Name     stringTag  `apidoc:"name,elem,usage"`
+		Object   *objectTag `apidoc:"obj,elem,usage"`
 	}{}
 	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
 	decode(a, b, v7, false)
-	a.Equal(v7.ID, &intTest{Value: 11, BaseTag: BaseTag{
+	a.Equal(v7.ID, &intAttr{Value: 11, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -436,7 +436,7 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 15},
 			},
 		},
-		StartTag: String{
+		AttributeName: String{
 			Value: "id",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -444,7 +444,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}})
-	a.Equal(v7.Name, stringTest{Value: "name", BaseTag: BaseTag{
+	a.Equal(v7.Name, stringTag{Value: "name", BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -467,7 +467,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}})
-	a.Equal(v7.Object, &objectTest{
+	a.Equal(v7.Object, &objectTag{
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
@@ -491,7 +491,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		ID: intTest{Value: 12, BaseTag: BaseTag{ // objectTest.Sanitize
+		ID: intAttr{Value: 12, BaseAttribute: BaseAttribute{ // objectTag.Sanitize
 			Base: Base{
 				UsageKey: "usage",
 				Range: core.Range{
@@ -499,7 +499,7 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 45},
 				},
 			},
-			StartTag: String{
+			AttributeName: String{
 				Value: "id",
 				Range: core.Range{
 					Start: core.Position{Character: 38},
@@ -507,7 +507,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		}},
-		Name: stringTest{Value: "n", BaseTag: BaseTag{
+		Name: stringTag{Value: "n", BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
 				Range: core.Range{
@@ -544,7 +544,7 @@ func TestDecode(t *testing.T) {
 	v8 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		ID       intTest  `apidoc:"id,attr,usage"`
+		ID       intAttr  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1xx"></apidoc></apidoc>`
 	decode(a, b, v8, true)
@@ -553,7 +553,7 @@ func TestDecode(t *testing.T) {
 	v9 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		ID       intTest  `apidoc:"id,attr,usage"`
+		ID       intAttr  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1" />`
 	decode(a, b, v9, false)
@@ -562,7 +562,7 @@ func TestDecode(t *testing.T) {
 	v10 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		ID       intTest  `apidoc:"id,elem,usage"`
+		ID       intTag   `apidoc:"id,elem,usage"`
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
@@ -583,15 +583,15 @@ func TestDecode(t *testing.T) {
 	// 多个数组，未实现 Decoder 的元素
 	v12 := &struct {
 		BaseTag
-		RootName struct{}      `apidoc:"apidoc,meta,usage-apidoc"`
-		Attr1    intTest       `apidoc:"attr1,attr,usage"`
-		Elem1    []*objectTest `apidoc:"e,elem,usage"`
+		RootName struct{}     `apidoc:"apidoc,meta,usage-apidoc"`
+		Attr1    intAttr      `apidoc:"attr1,attr,usage"`
+		Elem1    []*objectTag `apidoc:"e,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5">
 	<e id="5"><name>6</name></e>
 	<e id="7"><name>7</name></e>
 </apidoc>`
-	attr1 = intTest{Value: 5, BaseTag: BaseTag{
+	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -599,7 +599,7 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		StartTag: String{
+		AttributeName: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -607,7 +607,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	e1 := &objectTest{
+	e1 := &objectTag{
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
@@ -631,8 +631,8 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		ID: intTest{
-			BaseTag: BaseTag{
+		ID: intAttr{
+			BaseAttribute: BaseAttribute{
 				Base: Base{
 					UsageKey: "usage",
 					Range: core.Range{
@@ -640,7 +640,7 @@ func TestDecode(t *testing.T) {
 						End:   core.Position{Character: 10, Line: 1},
 					},
 				},
-				StartTag: String{
+				AttributeName: String{
 					Value: "id",
 					Range: core.Range{
 						Start: core.Position{Character: 4, Line: 1},
@@ -648,9 +648,9 @@ func TestDecode(t *testing.T) {
 					},
 				},
 			},
-			Value: 6, // objectTest.Sanitize
+			Value: 6, // objectTag.Sanitize
 		},
-		Name: stringTest{
+		Name: stringTag{
 			BaseTag: BaseTag{
 				Base: Base{
 					UsageKey: "usage",
@@ -677,7 +677,7 @@ func TestDecode(t *testing.T) {
 			Value: "6",
 		},
 	}
-	e2 := &objectTest{
+	e2 := &objectTag{
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
@@ -701,8 +701,8 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		ID: intTest{
-			BaseTag: BaseTag{
+		ID: intAttr{
+			BaseAttribute: BaseAttribute{
 				Base: Base{
 					UsageKey: "usage",
 					Range: core.Range{
@@ -710,7 +710,7 @@ func TestDecode(t *testing.T) {
 						End:   core.Position{Character: 10, Line: 2},
 					},
 				},
-				StartTag: String{
+				AttributeName: String{
 					Value: "id",
 					Range: core.Range{
 						Start: core.Position{Character: 4, Line: 2},
@@ -718,9 +718,9 @@ func TestDecode(t *testing.T) {
 					},
 				},
 			},
-			Value: 8, // objectTest.Sanitize
+			Value: 8, // objectTag.Sanitize
 		},
-		Name: stringTest{
+		Name: stringTag{
 			BaseTag: BaseTag{
 				Base: Base{
 					UsageKey: "usage",
@@ -756,16 +756,16 @@ func TestDecode(t *testing.T) {
 	// 数组，闭合标签带属性
 	type obj struct {
 		BaseTag
-		ID intTest `apidoc:"id,attr,usage"`
+		ID intAttr `apidoc:"id,attr,usage"`
 	}
 	v13 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		Attr1    intTest  `apidoc:"attr1,attr,usage"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc attr1="5"><elem2 id="6" /></apidoc>`
-	attr1 = intTest{Value: 5, BaseTag: BaseTag{
+	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
 			Range: core.Range{
@@ -773,7 +773,7 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		StartTag: String{
+		AttributeName: String{
 			Value: "attr1",
 			Range: core.Range{
 				Start: core.Position{Character: 8},
@@ -798,9 +798,9 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		ID: intTest{
+		ID: intAttr{
 			Value: 6,
-			BaseTag: BaseTag{
+			BaseAttribute: BaseAttribute{
 				Base: Base{
 					UsageKey: "usage",
 					Range: core.Range{
@@ -808,7 +808,7 @@ func TestDecode(t *testing.T) {
 						End:   core.Position{Character: 31},
 					},
 				},
-				StartTag: String{
+				AttributeName: String{
 					Value: "id",
 					Range: core.Range{
 						Start: core.Position{Character: 25},
@@ -827,7 +827,7 @@ func TestDecode(t *testing.T) {
 	v14 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		Attr1    intTest  `apidoc:"attr1,attr,usage"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc attr1="5"><elem2 id="60" /></apidoc>`
@@ -840,7 +840,7 @@ func TestDecode(t *testing.T) {
 	v14 = &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		Attr1    intTest  `apidoc:"attr1,attr,usage"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc><elem2 id="60" /></apidoc>`
@@ -874,7 +874,7 @@ func TestDecode(t *testing.T) {
 	decode(a, b, v16, true)
 
 	// 是否能正常调用根的 Sanitizer 接口
-	v17 := &objectTest{}
+	v17 := &objectTag{}
 	b = `<attr id="7"><name>n</name></attr>`
 	decode(a, b, v17, false)
 	a.Equal(v17.ID.Value, 8).
@@ -890,8 +890,8 @@ func TestObject_decodeAttributes(t *testing.T) {
 	a.NotError(o.decodeAttributes(p, nil))
 
 	val := &struct {
-		ID   intTest    `apidoc:"id,attr,usage"`
-		Name stringTest `apidoc:"name,attr,usage"`
+		ID   intAttr    `apidoc:"id,attr,usage"`
+		Name stringAttr `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val))
 	a.NotNil(o)
@@ -902,18 +902,18 @@ func TestObject_decodeAttributes(t *testing.T) {
 		},
 	})
 	a.NotError(err)
-	a.Equal(val.ID, intTest{Value: 10, BaseTag: BaseTag{
-		Base:     Base{UsageKey: "usage"},
-		StartTag: String{Value: "id"},
+	a.Equal(val.ID, intAttr{Value: 10, BaseAttribute: BaseAttribute{
+		Base:          Base{UsageKey: "usage"},
+		AttributeName: String{Value: "id"},
 	}})
-	a.Equal(val.Name, stringTest{Value: "name", BaseTag: BaseTag{
-		Base:     Base{UsageKey: "usage"},
-		StartTag: String{Value: "name"},
+	a.Equal(val.Name, stringAttr{Value: "name", BaseAttribute: BaseAttribute{
+		Base:          Base{UsageKey: "usage"},
+		AttributeName: String{Value: "name"},
 	}})
 
 	val = &struct {
-		ID   intTest    `apidoc:"id,attr,usage"`
-		Name stringTest `apidoc:"name,attr,usage"`
+		ID   intAttr    `apidoc:"id,attr,usage"`
+		Name stringAttr `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val))
 	a.NotNil(o)
@@ -928,8 +928,8 @@ func TestObject_decodeAttributes(t *testing.T) {
 	// 带匿名成员
 	val2 := &struct {
 		anonymous
-		ID   intTest    `apidoc:"id,attr,usage"`
-		Name stringTest `apidoc:"name,attr,usage"`
+		ID   intAttr    `apidoc:"id,attr,usage"`
+		Name stringAttr `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val2))
 	a.NotNil(o)
@@ -941,23 +941,23 @@ func TestObject_decodeAttributes(t *testing.T) {
 		},
 	})
 	a.NotError(err).
-		Equal(val2.ID, intTest{Value: 10, BaseTag: BaseTag{
-			Base:     Base{UsageKey: "usage"},
-			StartTag: String{Value: "id"},
+		Equal(val2.ID, intAttr{Value: 10, BaseAttribute: BaseAttribute{
+			Base:          Base{UsageKey: "usage"},
+			AttributeName: String{Value: "id"},
 		}})
-	a.Equal(val2.Name, stringTest{Value: "name", BaseTag: BaseTag{
-		Base:     Base{UsageKey: "usage"},
-		StartTag: String{Value: "name"},
+	a.Equal(val2.Name, stringAttr{Value: "name", BaseAttribute: BaseAttribute{
+		Base:          Base{UsageKey: "usage"},
+		AttributeName: String{Value: "name"},
 	}})
-	a.Equal(val2.Attr1, intTest{Value: 11, BaseTag: BaseTag{
-		Base:     Base{UsageKey: "usage"},
-		StartTag: String{Value: "attr1"},
+	a.Equal(val2.Attr1, intAttr{Value: 11, BaseAttribute: BaseAttribute{
+		Base:          Base{UsageKey: "usage"},
+		AttributeName: String{Value: "attr1"},
 	}})
 
 	// 测试 AttrDecoder，返回错误
 	val4 := &struct {
-		ID   errIntTest `apidoc:"id,attr,usage"`
-		Name stringTest `apidoc:"name,attr,usage"`
+		ID   errAttr    `apidoc:"id,attr,usage"`
+		Name stringAttr `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val4))
 	a.NotNil(o)
@@ -971,8 +971,8 @@ func TestObject_decodeAttributes(t *testing.T) {
 
 	// 未实现 AttrDecoder
 	val5 := &struct {
-		ID   int        `apidoc:"id,attr,usage"`
-		Name stringTest `apidoc:"name,attr,usage"`
+		ID   int       `apidoc:"id,attr,usage"`
+		Name stringTag `apidoc:"name,attr,usage"`
 	}{}
 	o = newNode("root", reflect.ValueOf(val5))
 	a.NotNil(o)

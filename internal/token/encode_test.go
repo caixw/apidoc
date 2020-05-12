@@ -12,8 +12,8 @@ func TestEncode(t *testing.T) {
 	a := assert.New(t)
 
 	type nestObject struct {
-		ID   *intTest `apidoc:"id,elem,usage,omitempty"`
-		Name string   `apidoc:"name,attr,usage,omitempty"`
+		ID   *intTag    `apidoc:"id,elem,usage,omitempty"`
+		Name stringAttr `apidoc:"name,attr,usage,omitempty"`
 	}
 
 	data := []*struct {
@@ -31,9 +31,9 @@ func TestEncode(t *testing.T) {
 		{
 			object: &struct {
 				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
-				ID       intTest `apidoc:"id,attr,usage"`
+				ID       intAttr `apidoc:"id,attr,usage"`
 			}{
-				ID: intTest{Value: 11},
+				ID: intAttr{Value: 11},
 			},
 			xml: `<apidoc id="11"></apidoc>`,
 		},
@@ -41,7 +41,7 @@ func TestEncode(t *testing.T) {
 		{ // 非 omitempty 属性，必须带上零值
 			object: &struct {
 				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
-				ID       intTest `apidoc:"id,attr,usage"`
+				ID       intAttr `apidoc:"id,attr,usage"`
 			}{},
 			xml: `<apidoc id="0"></apidoc>`,
 		},
@@ -49,7 +49,7 @@ func TestEncode(t *testing.T) {
 		{ // omitempty
 			object: &struct {
 				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
-				ID       intTest `apidoc:"id,attr,usage,omitempty"`
+				ID       intAttr `apidoc:"id,attr,usage,omitempty"`
 			}{},
 			xml: `<apidoc></apidoc>`,
 		},
@@ -57,7 +57,7 @@ func TestEncode(t *testing.T) {
 		{ // omitempty
 			object: &struct {
 				RootName string   `apidoc:"apidoc,meta,usage-apidoc"`
-				ID       *intTest `apidoc:"id,attr,usage,omitempty"`
+				ID       *intAttr `apidoc:"id,attr,usage,omitempty"`
 			}{},
 			xml: `<apidoc></apidoc>`,
 		},
@@ -65,35 +65,35 @@ func TestEncode(t *testing.T) {
 		{
 			object: &struct {
 				RootName string      `apidoc:"root,meta,usage-apidoc"`
-				ID       intTest     `apidoc:"id,attr,usage"`
-				Name     *stringTest `apidoc:",attr,usage"`
+				ID       intAttr     `apidoc:"id,attr,usage"`
+				Name     *stringAttr `apidoc:",attr,usage"`
 			}{
-				ID:   intTest{Value: 11},
-				Name: &stringTest{Value: "name"},
+				ID:   intAttr{Value: 11},
+				Name: &stringAttr{Value: "name"},
 			},
 			xml: `<root id="11" Name="name"></root>`,
 		},
 
 		{ // 数组
 			object: &struct {
-				RootName string        `apidoc:"apidoc,meta,usage-apidoc"`
-				ID       []intTest     `apidoc:"id,elem,usage"`
-				Name     []*stringTest `apidoc:",elem,usage"`
+				RootName string       `apidoc:"apidoc,meta,usage-apidoc"`
+				ID       []intTag     `apidoc:"id,elem,usage"`
+				Name     []*stringTag `apidoc:",elem,usage"`
 			}{
-				ID:   []intTest{{Value: 11}, {Value: 12}},
-				Name: []*stringTest{{Value: "name1"}, {Value: "name2"}},
+				ID:   []intTag{{Value: 11}, {Value: 12}},
+				Name: []*stringTag{{Value: "name1"}, {Value: "name2"}},
 			},
 			xml: `<apidoc><id>11</id><id>12</id><Name>name1</Name><Name>name2</Name></apidoc>`,
 		},
 
 		{
 			object: &struct {
-				RootName string     `apidoc:"apidoc,meta,usage-apidoc"`
-				ID       *intTest   `apidoc:"id,attr,usage"`
-				Name     stringTest `apidoc:"name,elem,usage"`
+				RootName string    `apidoc:"apidoc,meta,usage-apidoc"`
+				ID       *intAttr  `apidoc:"id,attr,usage"`
+				Name     stringTag `apidoc:"name,elem,usage"`
 			}{
-				ID:   &intTest{Value: 11},
-				Name: stringTest{Value: "name"},
+				ID:   &intAttr{Value: 11},
+				Name: stringTag{Value: "name"},
 			},
 			xml: `<apidoc id="11"><name>name</name></apidoc>`,
 		},
@@ -101,10 +101,10 @@ func TestEncode(t *testing.T) {
 		{
 			object: &struct {
 				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
-				ID       intTest `apidoc:"id,attr,usage"`
+				ID       intAttr `apidoc:"id,attr,usage"`
 				CData    CData   `apidoc:",cdata,"`
 			}{
-				ID:    intTest{Value: 11},
+				ID:    intAttr{Value: 11},
 				CData: CData{Value: String{Value: "<h1>h1</h1>"}},
 			},
 			xml: `<apidoc id="11"><![CDATA[<h1>h1</h1>]]></apidoc>`,
@@ -128,8 +128,8 @@ func TestEncode(t *testing.T) {
 				Object   *nestObject `apidoc:"object,elem,usage"`
 			}{
 				Object: &nestObject{
-					ID:   &intTest{Value: 12},
-					Name: "name",
+					ID:   &intTag{Value: 12},
+					Name: stringAttr{Value: "name"},
 				},
 			},
 			xml: `<apidoc><object name="name"><id>12</id></object></apidoc>`,
@@ -169,7 +169,7 @@ func TestEncode(t *testing.T) {
 				Object   *nestObject `apidoc:"object,elem,usage,omitempty"`
 			}{
 				Object: &nestObject{
-					ID: &intTest{Value: 12},
+					ID: &intTag{Value: 12},
 				},
 			},
 			xml: `<apidoc><object><id>12</id></object></apidoc>`,
@@ -181,8 +181,8 @@ func TestEncode(t *testing.T) {
 				Object   []*nestObject `apidoc:"object,elem,usage,omitempty"`
 			}{
 				Object: []*nestObject{
-					{ID: &intTest{Value: 12}},
-					{ID: &intTest{Value: 22}},
+					{ID: &intTag{Value: 12}},
+					{ID: &intTag{Value: 22}},
 				},
 			},
 			xml: `<aa><object><id>12</id></object><object><id>22</id></object></aa>`,

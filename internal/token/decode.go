@@ -154,7 +154,7 @@ func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
 			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name.Value))
 		}
 
-		if err := setValue(item.Value, item.usage, p, attr.Start, attr.End, attr.Name, String{}); err != nil {
+		if err := setAttributeValue(item.Value, item.usage, p, attr); err != nil {
 			return err
 		}
 	}
@@ -297,6 +297,32 @@ func setElementValue(v reflect.Value, usage string, p *Parser, start *StartEleme
 		return setValue(v, usage, p, start.Start, start.End, start.Name, String{})
 	}
 	return setValue(v, usage, p, start.Start, end.End, start.Name, end.Name)
+}
+
+func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute) error {
+	if v.CanInterface() && v.Type().Implements(sanitizerType) {
+		if err := v.Interface().(Sanitizer).Sanitize(p); err != nil {
+			return err
+		}
+	} else if v.CanAddr() {
+		pv := v.Addr()
+		if pv.CanInterface() && pv.Type().Implements(sanitizerType) {
+			if err := pv.Interface().(Sanitizer).Sanitize(p); err != nil {
+				return err
+			}
+		}
+	}
+
+	v = getRealValue(v)
+	if v.Kind() != reflect.Struct {
+		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
+	}
+
+	v.FieldByName(rangeName).Set(reflect.ValueOf(attr.Range))
+	v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
+	v.FieldByName(attributeNameName).Set(reflect.ValueOf(attr.Name))
+
+	return nil
 }
 
 func setValue(v reflect.Value, usage string, p *Parser, start, end core.Position, xmlName, xmlNameEnd String) error {

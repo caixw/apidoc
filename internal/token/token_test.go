@@ -13,49 +13,74 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 )
 
-type anonymous struct {
-	Attr1 intTest `apidoc:"attr1,attr,usage"`
-	Elem1 intTest `apidoc:"elem1,elem,usage"`
-}
+type (
+	anonymous struct {
+		Attr1 intAttr `apidoc:"attr1,attr,usage"`
+		Elem1 intTag  `apidoc:"elem1,elem,usage"`
+	}
 
-type intTest struct {
-	BaseTag
-	Value int
-}
+	intTag struct {
+		BaseTag
+		Value int `apidoc:"-"`
+	}
 
-type stringTest struct {
-	BaseTag
-	Value string
-}
+	stringTag struct {
+		BaseTag
+		Value string `apidoc:"-"`
+	}
 
-type errIntTest struct {
-	BaseTag
-	Value int
-}
+	errTag struct {
+		BaseTag
+		Value int `apidoc:"-"`
+	}
 
-// NOTE: objectTest 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
-type objectTest struct {
-	BaseTag
-	RootName struct{}   `apidoc:"apidoc,meta,usage-root"`
-	ID       intTest    `apidoc:"id,attr,usage"`
-	Name     stringTest `apidoc:"name,elem,usage"`
-}
+	// NOTE: objectTag 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
+	objectTag struct {
+		BaseTag
+		RootName struct{}  `apidoc:"apidoc,meta,usage-root"`
+		ID       intAttr   `apidoc:"id,attr,usage"`
+		Name     stringTag `apidoc:"name,elem,usage"`
+	}
 
-var (
-	_ AttrEncoder = &intTest{}
-	_ AttrDecoder = &intTest{}
-	_ Encoder     = &intTest{}
-	_ Decoder     = &intTest{}
+	intAttr struct {
+		BaseAttribute
+		Value int `apidoc:"-"`
+	}
 
-	_ AttrEncoder = &stringTest{}
-	_ AttrDecoder = &stringTest{}
-	_ Encoder     = &stringTest{}
-	_ Decoder     = &stringTest{}
+	stringAttr struct {
+		BaseAttribute
+		Value string `apidoc:"-"`
+	}
 
-	_ Sanitizer = &objectTest{}
+	errAttr struct {
+		BaseAttribute
+		Value int `apidoc:"-"`
+	}
+
+	// NOTE: objectTag 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
+	objectAttr struct {
+		BaseAttribute
+		RootName struct{}  `apidoc:"apidoc,meta,usage-root"`
+		ID       intTag    `apidoc:"id,attr,usage"`
+		Name     stringTag `apidoc:"name,elem,usage"`
+	}
 )
 
-func (i *intTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
+var (
+	_ AttrEncoder = &intAttr{}
+	_ AttrDecoder = &intAttr{}
+	_ Encoder     = &intTag{}
+	_ Decoder     = &intTag{}
+
+	_ AttrEncoder = &stringAttr{}
+	_ AttrDecoder = &stringAttr{}
+	_ Encoder     = &stringTag{}
+	_ Decoder     = &stringTag{}
+
+	_ Sanitizer = &objectTag{}
+)
+
+func (i *intTag) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
 	for {
 		t, _, err := p.Token()
 		if err == io.EOF {
@@ -81,7 +106,7 @@ func (i *intTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error)
 	}
 }
 
-func (i *intTest) DecodeXMLAttr(p *Parser, attr *Attribute) error {
+func (i *intAttr) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	v, err := strconv.Atoi(strings.TrimSpace(attr.Value.Value))
 	if err != nil {
 		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
@@ -90,15 +115,15 @@ func (i *intTest) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	return nil
 }
 
-func (i *intTest) EncodeXML() (string, error) {
+func (i *intTag) EncodeXML() (string, error) {
 	return strconv.Itoa(i.Value), nil
 }
 
-func (i *intTest) EncodeXMLAttr() (string, error) {
+func (i *intAttr) EncodeXMLAttr() (string, error) {
 	return strconv.Itoa(i.Value), nil
 }
 
-func (i *stringTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
+func (i *stringTag) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
 	for {
 		t, _, err := p.Token()
 		if err == io.EOF {
@@ -120,36 +145,41 @@ func (i *stringTest) DecodeXML(p *Parser, start *StartElement) (*EndElement, err
 	}
 }
 
-func (i *stringTest) DecodeXMLAttr(p *Parser, attr *Attribute) error {
+func (i *stringAttr) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	i.Value = attr.Value.Value
 	return nil
 }
 
-func (i *stringTest) EncodeXML() (string, error) {
+func (i *stringTag) EncodeXML() (string, error) {
 	return i.Value, nil
 }
 
-func (i *stringTest) EncodeXMLAttr() (string, error) {
+func (i *stringAttr) EncodeXMLAttr() (string, error) {
 	return i.Value, nil
 }
 
-func (o *objectTest) Sanitize(p *Parser) error {
+func (o *objectTag) Sanitize(p *Parser) error {
 	o.ID.Value++
 	return nil
 }
 
-func (t *errIntTest) DecodeXML(p *Parser, start *StartElement) (core.Position, error) {
+func (o *objectAttr) Sanitize(p *Parser) error {
+	o.ID.Value++
+	return nil
+}
+
+func (t *errTag) DecodeXML(p *Parser, start *StartElement) (core.Position, error) {
 	return core.Position{}, errors.New("Decoder.DecodeXML")
 }
 
-func (t *errIntTest) DecodeXMLAttr(p *Parser, attr *Attribute) error {
+func (t *errAttr) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	return errors.New("AttrDecoder.DecodeXMLAttr")
 }
 
-func (t *errIntTest) EncodeXML() (string, error) {
+func (t *errTag) EncodeXML() (string, error) {
 	return "", errors.New("Encoder.EncodeXML")
 }
 
-func (t *errIntTest) EncodeXMLAttr() (string, error) {
+func (t *errAttr) EncodeXMLAttr() (string, error) {
 	return "", errors.New("AttrEncoder.EncodeXMLAttr")
 }

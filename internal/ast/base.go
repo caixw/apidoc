@@ -36,21 +36,21 @@ type (
 
 	// Attribute 表示 XML 属性
 	Attribute struct {
-		token.BaseTag
+		token.BaseAttribute
 		Value    String   `apidoc:"-"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}
 
 	// NumberAttribute 表示数值类型的属性
 	NumberAttribute struct {
-		token.BaseTag
+		token.BaseAttribute
 		Value    Number   `apidoc:"-"`
 		RootName struct{} `apidoc:"number,meta,usage-number"`
 	}
 
 	// BoolAttribute 表示布尔值类型的属性
 	BoolAttribute struct {
-		token.BaseTag
+		token.BaseAttribute
 		Value    Bool     `apidoc:"-"`
 		RootName struct{} `apidoc:"bool,meta,usage-bool"`
 	}
