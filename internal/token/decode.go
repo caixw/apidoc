@@ -181,25 +181,21 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 		case *CData:
 			if n.cdata.IsValid() {
 				getRealValue(n.cdata.Value).Set(getRealValue(reflect.ValueOf(elem)))
-				err = setValue(n.cdata.Value, n.cdata.usage, p, elem.Start, elem.End, elem.XMLName, elem.XMLNameEnd)
 			}
 		case *String:
 			if n.content.IsValid() {
 				getRealValue(n.content.Value).Set(getRealValue(reflect.ValueOf(elem)))
-				err = setValue(n.content.Value, n.content.usage, p, elem.Start, elem.End, String{}, String{})
 			}
 		case *StartElement:
 			item, found := n.elem(elem.Name.Value)
 			if !found {
 				panic(fmt.Sprintf("不存在的子元素 %s", elem.Name.Value))
 			}
-			err = decodeElement(p, elem, item)
+			if err = decodeElement(p, elem, item); err != nil {
+				return nil, err
+			}
 		}
-
-		if err != nil {
-			return nil, err
-		}
-	} // end for
+	}
 }
 
 func decodeElement(p *Parser, start *StartElement, v value) error {
