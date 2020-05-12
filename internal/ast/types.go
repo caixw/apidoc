@@ -267,6 +267,10 @@ func (r *Richtext) V() string {
 //
 // 如果内容不是文档内容，刚将返回 ErrNoDocFormat
 func (doc *APIDoc) Parse(b core.Block) error {
+	if len(b.Data) < minSize {
+		return ErrNoDocFormat
+	}
+
 	p, err := token.NewParser(b)
 	if err != nil {
 		return err
