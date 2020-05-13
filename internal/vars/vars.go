@@ -18,6 +18,8 @@ const (
 	//
 	// 当未调用相关函数设置 ID，或是设置为一个不支持的 ID 时，
 	// 系统最终会采用此 ID。
+	//
+	// NOTE: 注意大小写需要与 internal/locale 的相同。
 	DefaultLocaleID = "cmn-Hans"
 )
 

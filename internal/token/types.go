@@ -37,7 +37,7 @@ type Item struct {
 
 // NewTypes 分析 v，返回 Type 类型的数据
 func NewTypes(v interface{}, tag language.Tag) (*Types, error) {
-	locale.SetLanguageTag(tag)
+	locale.SetTag(tag)
 
 	n := newNode("", reflect.ValueOf(v))
 	types := &Types{}

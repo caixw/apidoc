@@ -5,7 +5,6 @@ package locale
 
 import (
 	"golang.org/x/text/language"
-	"golang.org/x/text/language/display"
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v7/internal/vars"
@@ -16,8 +15,7 @@ var (
 	localeTag     = language.MustParse(vars.DefaultLocaleID)
 	localePrinter = message.NewPrinter(localeTag)
 
-	tags         = []language.Tag{}
-	displayNames = map[language.Tag]string{}
+	tags = []language.Tag{}
 )
 
 // Locale 提供缓存本地化信息
@@ -46,8 +44,6 @@ func setMessages(id string, messages map[string]string) {
 		}
 	}
 
-	displayNames[tag] = display.Self.Name(tag)
-
 	// 保证 DefaultLocaleID 为第一个数组元素
 	if id == vars.DefaultLocaleID {
 		ts := make([]language.Tag, 0, len(tags)+1)
@@ -57,25 +53,22 @@ func setMessages(id string, messages map[string]string) {
 	}
 }
 
-// SetLanguageTag 切换本地化环境
-func SetLanguageTag(tag language.Tag) {
+// SetTag 切换本地化环境
+func SetTag(tag language.Tag) {
 	tag, _, _ = language.NewMatcher(tags).Match(tag)
 	localeTag = tag
 	localePrinter = message.NewPrinter(localeTag)
 }
 
-// LanguageTag 获取当前的本地化 ID
-func LanguageTag() language.Tag {
+// Tag 获取当前的本地化 ID
+func Tag() language.Tag {
 	return localeTag
 }
 
-// DisplayNames 所有支持语言的列表
-func DisplayNames() map[language.Tag]string {
-	ret := make(map[language.Tag]string, len(displayNames))
-	for k, v := range displayNames {
-		ret[k] = v
-	}
-
+// Tags 所有支持语言的列表
+func Tags() []language.Tag {
+	ret := make([]language.Tag, len(tags))
+	copy(ret, tags)
 	return ret
 }
 

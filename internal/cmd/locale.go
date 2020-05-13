@@ -7,6 +7,8 @@ import (
 	"io"
 	"strings"
 
+	"golang.org/x/text/language/display"
+
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
@@ -20,10 +22,10 @@ func doLocale(w io.Writer) error {
 
 	// 计算各列的最大长度值
 	var maxID int
-	for k, v := range apidoc.Locales() {
-		id := k.String()
+	for _, tag := range apidoc.Locales() {
+		id := tag.String()
 		calcMaxWidth(id, &maxID)
-		locales[id] = v
+		locales[id] = display.Self.Name(tag)
 	}
 	maxID += tail
 

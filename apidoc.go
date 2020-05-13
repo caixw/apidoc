@@ -34,17 +34,17 @@ type Config = build.Config
 
 // SetLocale 设置当前的本地化 ID
 func SetLocale(tag language.Tag) {
-	locale.SetLanguageTag(tag)
+	locale.SetTag(tag)
 }
 
 // Locale 获取当前设置的本地化 ID
 func Locale() language.Tag {
-	return locale.LanguageTag()
+	return locale.Tag()
 }
 
-// Locales 返回当前所有支持的本地信息
-func Locales() map[language.Tag]string {
-	return locale.DisplayNames()
+// Locales 返回当前所有支持的本地化信息
+func Locales() []language.Tag {
+	return locale.Tags()
 }
 
 // Version 当前程序的版本号
