@@ -30,12 +30,11 @@ var (
 
 // Encode 将 v 转换成 XML 内容
 func Encode(indent string, v interface{}) ([]byte, error) {
-	rv := newValue("", reflect.ValueOf(v), false, "")
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
 	e.Indent("", indent)
-	n := newNode(rv.name, rv.Value)
 
+	n := newNode("", reflect.ValueOf(v))
 	if err := n.encode(e); err != nil {
 		return nil, err
 	}

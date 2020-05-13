@@ -54,7 +54,7 @@ var (
 func Decode(p *Parser, v interface{}) error {
 	var hasRoot bool
 	for {
-		t, _, err := p.Token()
+		t, r, err := p.Token()
 		if err == io.EOF {
 			return nil
 		} else if err != nil {
@@ -68,12 +68,13 @@ func Decode(p *Parser, v interface{}) error {
 			}
 			hasRoot = true
 
-			n := newNode("", reflect.ValueOf(v))
-			if err := decodeElement(p, elem, &n.value); err != nil {
+			vv := parseValue(reflect.ValueOf(v))
+			if err := decodeElement(p, elem, vv); err != nil {
 				return err
 			}
-		case *EndElement:
-			return p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML)
+		case *Comment, *String: // 忽略注释和普通的文本内容
+		default:
+			return p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
 		}
 	}
 }
@@ -103,10 +104,10 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 			return nil, p.NewError(start.Start, end.End, elem.name, locale.ErrRequired)
 		}
 	}
-	if n.cdata.canNotEmpty() {
+	if n.cdata != nil && n.cdata.canNotEmpty() {
 		return nil, p.NewError(start.Start, end.End, "cdata", locale.ErrRequired)
 	}
-	if n.content.canNotEmpty() {
+	if n.content != nil && n.content.canNotEmpty() {
 		return nil, p.NewError(start.Start, end.End, "content", locale.ErrRequired)
 	}
 
@@ -115,8 +116,7 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 
 // 当前表示的值必须是一个非空值
 func (v *value) canNotEmpty() bool {
-	return v != nil &&
-		v.name != "" && // cdata 和 content 在未初始化时 name 字段为空值
+	return v.name != "" && // cdata 和 content 在未初始化时 name 字段为空值
 		!v.omitempty &&
 		(!v.CanInterface() || is.Empty(v.Interface(), true))
 }

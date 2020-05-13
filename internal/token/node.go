@@ -58,6 +58,25 @@ func newValue(name string, v reflect.Value, omitempty bool, usage string) *value
 	}
 }
 
+// 分析 v 中是否带有 meta 类型的字段，如果有，则生成相应的 value 对象，否则返回 nil
+func parseValue(v reflect.Value) *value {
+	v = getRealValue(v)
+	t := v.Type()
+
+	num := t.NumField()
+	for i := 0; i < num; i++ {
+		field := t.Field(i)
+		if field.Anonymous || unicode.IsLower(rune(field.Name[0])) {
+			continue
+		}
+
+		if name, node, usage, omitempty := parseTag(field); node == metaNode {
+			return newValue(name, v, omitempty, usage)
+		}
+	}
+	return nil
+}
+
 func isPrimitive(v reflect.Value) bool {
 	return v.IsValid() &&
 		(v.Kind() == reflect.String || (v.Kind() >= reflect.Bool && v.Kind() <= reflect.Complex128))
