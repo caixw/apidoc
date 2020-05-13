@@ -2,11 +2,9 @@
 
 package locale
 
-import "golang.org/x/text/language"
-
 func init() {
-	setMessages(language.MustParse("cmn-Hans"), cmnHans) // 第一个初始化的作为默认值
-	setMessages(language.MustParse("cmn-Hant"), cmnHant)
+	setMessages("cmn-Hant", cmnHant)
+	setMessages("cmn-Hans", cmnHans)
 }
 
 // 各个语言需要翻译的所有字符串

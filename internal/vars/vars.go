@@ -13,6 +13,12 @@ const (
 
 	// 官网
 	OfficialURL = "https://apidoc.tools"
+
+	// 默认的本地化语言 ID
+	//
+	// 当未调用相关函数设置 ID，或是设置为一个不支持的 ID 时，
+	// 系统最终会采用此 ID。
+	DefaultLocaleID = "cmn-Hans"
 )
 
 // AllowConfigFilenames 允许的配置文件名

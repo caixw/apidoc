@@ -7,11 +7,13 @@ import (
 	"golang.org/x/text/language"
 	"golang.org/x/text/language/display"
 	"golang.org/x/text/message"
+
+	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 var (
 	// 保证有个初始化的值，部分包的测试功能依赖此变量
-	localeTag     = language.MustParse("cmn-Hans")
+	localeTag     = language.MustParse(vars.DefaultLocaleID)
 	localePrinter = message.NewPrinter(localeTag)
 
 	tags         = []language.Tag{}
@@ -35,7 +37,9 @@ func (err *Err) Error() string {
 	return (*Locale)(err).String()
 }
 
-func setMessages(tag language.Tag, messages map[string]string) {
+func setMessages(id string, messages map[string]string) {
+	tag := language.MustParse(id)
+
 	for key, val := range messages {
 		if err := message.SetString(tag, key, val); err != nil {
 			panic(err)
@@ -43,7 +47,14 @@ func setMessages(tag language.Tag, messages map[string]string) {
 	}
 
 	displayNames[tag] = display.Self.Name(tag)
-	tags = append(tags, tag)
+
+	// 保证 DefaultLocaleID 为第一个数组元素
+	if id == vars.DefaultLocaleID {
+		ts := make([]language.Tag, 0, len(tags)+1)
+		tags = append(append(ts, tag), tags...)
+	} else {
+		tags = append(tags, tag)
+	}
 }
 
 // SetLanguageTag 切换本地化环境

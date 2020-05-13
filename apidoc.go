@@ -33,8 +33,6 @@ import (
 type Config = build.Config
 
 // SetLocale 设置当前的本地化 ID
-//
-// 如果不成功返回 false，比如设置了个不支持的本地化 ID。
 func SetLocale(tag language.Tag) {
 	locale.SetLanguageTag(tag)
 }
