@@ -2,7 +2,7 @@
 
 package locale
 
-var zhHans = map[string]string{
+var cmnHans = map[string]string{
 	// 与 flag 包相关的处理
 	CmdUsage: `%s 是一个 RESTful API 文档生成工具
 
