@@ -21,11 +21,6 @@ const (
 	metaNode // 用于描述节点的一些元数据
 )
 
-var (
-	cdataType   = reflect.TypeOf(CData{})
-	contentType = reflect.TypeOf(String{})
-)
-
 var stringNodeMap = map[string]nodeType{
 	"attr":    attrNode,
 	"elem":    elemNode,
