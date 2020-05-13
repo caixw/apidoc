@@ -78,12 +78,12 @@ func (types *Types) dumpToTypes(n *node) error {
 		}
 	}
 
-	if n.cdata.IsValid() {
+	if n.cdata != nil {
 		typ := getRealType(n.cdata.Type())
 		t.appendItem(".", typ, n.cdata.usage, !n.cdata.omitempty)
 	}
 
-	if n.content.IsValid() {
+	if n.content != nil {
 		typ := getRealType(n.content.Type())
 		t.appendItem(".", typ, n.content.usage, !n.content.omitempty)
 	}

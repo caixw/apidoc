@@ -3,6 +3,7 @@
 package token
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -236,4 +237,41 @@ func TestEncode(t *testing.T) {
 		a.NotError(err, "err %s at %d", err, i).
 			Equal(string(xml), item.xml, "not equal at %d\nv1=%s\nv2=%s", i, string(xml), item.xml)
 	}
+}
+
+func TestNode_isOmitempty(t *testing.T) {
+	a := assert.New(t)
+
+	v := &value{omitempty: false}
+	a.False(v.isOmitempty())
+
+	v = newValue("elem", reflect.ValueOf(int(0)), true, "usage")
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(int(5))
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf(uint(0))
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(uint(5))
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf(float64(0))
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(float32(5))
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf([]byte{})
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf([]byte{0})
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf(false)
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(true)
+	a.False(v.isOmitempty())
+
+	v.Value = reflect.ValueOf(map[string]string{})
+	a.True(v.isOmitempty())
+	v.Value = reflect.ValueOf(map[string]string{"id": "0"})
+	a.False(v.isOmitempty())
 }

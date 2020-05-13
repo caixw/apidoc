@@ -148,8 +148,8 @@ func TestNewNode(t *testing.T) {
 		o := newNode(item.inputName, reflect.ValueOf(item.inputNode))
 		a.Equal(len(o.elems), item.elems, "not equal %d\nv1=%d,v2=%d", i, len(o.elems), item.elems).
 			Equal(len(o.attrs), item.attrs, "not equal %d\nv1=%d,v2=%d", i, len(o.attrs), item.attrs).
-			Equal(item.cdata, o.cdata.IsValid(), "not equal at %d\nv1=%v,v2=%v", i, item.cdata, o.cdata.IsValid()).
-			Equal(item.content, o.content.IsValid(), "not equal at %d\nv1=%v,v2=%v", i, item.content, o.content.IsValid()).
+			Equal(item.cdata, o.cdata != nil, "not equal at %d\nv1=%v,v2=%v", i, item.cdata, o.cdata != nil).
+			Equal(item.content, o.content != nil, "not equal at %d\nv1=%v,v2=%v", i, item.content, o.content != nil).
 			Equal(o.value.name, item.inputName)
 
 		for k, v := range o.attrs {
@@ -292,43 +292,6 @@ func TestNewNode(t *testing.T) {
 			Content String `apidoc:",content"`
 		}{}))
 	})
-}
-
-func TestNode_isOmitempty(t *testing.T) {
-	a := assert.New(t)
-
-	v := value{omitempty: false}
-	a.False(v.isOmitempty())
-
-	v = initValue("elem", reflect.ValueOf(int(0)), true, "usage")
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(int(5))
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf(uint(0))
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(uint(5))
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf(float64(0))
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(float32(5))
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf([]byte{})
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf([]byte{0})
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf(false)
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(true)
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf(map[string]string{})
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(map[string]string{"id": "0"})
-	a.False(v.isOmitempty())
 }
 
 func TestParseTag(t *testing.T) {

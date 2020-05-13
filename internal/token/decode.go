@@ -69,7 +69,7 @@ func Decode(p *Parser, v interface{}) error {
 			hasRoot = true
 
 			n := newNode("", reflect.ValueOf(v))
-			if err := decodeElement(p, elem, n.value); err != nil {
+			if err := decodeElement(p, elem, &n.value); err != nil {
 				return err
 			}
 		case *EndElement:
@@ -114,10 +114,11 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 }
 
 // 当前表示的值必须是一个非空值
-func (v value) canNotEmpty() bool {
-	return v.name != "" && // cdata 和 content 在未初始化时 name 字段为空值
+func (v *value) canNotEmpty() bool {
+	return v != nil &&
+		v.name != "" && // cdata 和 content 在未初始化时 name 字段为空值
 		!v.omitempty &&
-		(!v.IsValid() || !v.CanInterface() || is.Empty(v.Interface(), true))
+		(!v.CanInterface() || is.Empty(v.Interface(), true))
 }
 
 // 将 start 的属性内容解码到 obj.attrs 之中
@@ -179,11 +180,11 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 			}
 			return nil, p.NewError(elem.Start, elem.End, n.value.name, locale.ErrNotFoundEndTag)
 		case *CData:
-			if n.cdata.IsValid() {
+			if n.cdata != nil {
 				setContentValue(n.cdata.Value, reflect.ValueOf(elem))
 			}
 		case *String:
-			if n.content.IsValid() {
+			if n.content != nil {
 				setContentValue(n.content.Value, reflect.ValueOf(elem))
 			}
 		case *StartElement:
@@ -214,7 +215,7 @@ func setContentValue(target, source reflect.Value) {
 	}
 }
 
-func decodeElement(p *Parser, start *StartElement, v value) error {
+func decodeElement(p *Parser, start *StartElement, v *value) error {
 	v.Value = getRealValue(v.Value)
 	k := v.Kind()
 	switch {
@@ -234,7 +235,7 @@ func decodeElement(p *Parser, start *StartElement, v value) error {
 	return setTagValue(v.Value, v.usage, p, start, end)
 }
 
-func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
+func decodeSlice(p *Parser, start *StartElement, slice *value) (err error) {
 	// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
 	// 所以要过滤与 start 想匹配的结束符号才算结束。
 	if !start.Close && (start.Name.Value != slice.name) {

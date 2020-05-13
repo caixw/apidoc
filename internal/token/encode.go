@@ -30,7 +30,7 @@ var (
 
 // Encode 将 v 转换成 XML 内容
 func Encode(indent string, v interface{}) ([]byte, error) {
-	rv := initValue("", reflect.ValueOf(v), false, "")
+	rv := newValue("", reflect.ValueOf(v), false, "")
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
 	e.Indent("", indent)
@@ -52,7 +52,7 @@ func (n *node) encode(e *xml.Encoder) error {
 		return err
 	}
 
-	if n.cdata.IsValid() && !n.cdata.isOmitempty() {
+	if n.cdata != nil && !n.cdata.isOmitempty() {
 		chardata, err := getContentValue(n.cdata.Value)
 		if err != nil {
 			return err
@@ -63,7 +63,7 @@ func (n *node) encode(e *xml.Encoder) error {
 		}{chardata}, start)
 	}
 
-	if n.content.IsValid() && !n.content.isOmitempty() {
+	if n.content != nil && !n.content.isOmitempty() {
 		chardata, err := getContentValue(n.content.Value)
 		if err != nil {
 			return err
@@ -87,7 +87,7 @@ func (n *node) encodeElements(e *xml.Encoder, start xml.StartElement) (err error
 	return e.EncodeToken(xml.EndElement{Name: xml.Name{Local: n.value.name}})
 }
 
-func encodeElement(e *xml.Encoder, v value) (err error) {
+func encodeElement(e *xml.Encoder, v *value) (err error) {
 	if v.isOmitempty() {
 		return nil
 	}
@@ -124,7 +124,7 @@ func encodeElement(e *xml.Encoder, v value) (err error) {
 
 	if v.Kind() == reflect.Array || v.Kind() == reflect.Slice {
 		for i := 0; i < v.Len(); i++ {
-			if err := encodeElement(e, initValue(v.name, v.Index(i), v.omitempty, v.usage)); err != nil {
+			if err := encodeElement(e, newValue(v.name, v.Index(i), v.omitempty, v.usage)); err != nil {
 				return err
 			}
 		}
@@ -186,6 +186,6 @@ func getContentValue(elem reflect.Value) (string, error) {
 	return fmt.Sprint(elem.Interface()), nil
 }
 
-func (v value) isOmitempty() bool {
+func (v *value) isOmitempty() bool {
 	return v.omitempty && is.Empty(v.Value.Interface(), true)
 }
