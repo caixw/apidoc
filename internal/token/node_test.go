@@ -270,6 +270,28 @@ func TestNewNode(t *testing.T) {
 			Elem2 int `apidoc:"elem1,elem"`
 		}{}))
 	})
+
+	// 同时存在 cdata 和 elems
+	type anonymous1 struct {
+		CData CData `apidoc:",cdata"`
+	}
+	a.Panic(func() {
+		newNode("anonymous-content", reflect.ValueOf(&struct {
+			anonymous1
+			Elem2 int `apidoc:"elem1,elem"`
+		}{}))
+	})
+
+	// 同时存在两个 content
+	type anonymous2 struct {
+		Content String `apidoc:",content"`
+	}
+	a.Panic(func() {
+		newNode("anonymous-content", reflect.ValueOf(&struct {
+			*anonymous2
+			Content String `apidoc:",content"`
+		}{}))
+	})
 }
 
 func TestNode_isOmitempty(t *testing.T) {

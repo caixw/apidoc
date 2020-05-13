@@ -86,13 +86,7 @@ func newNode(name string, rv reflect.Value) *node {
 	for i := 0; i < num; i++ {
 		field := rt.Field(i)
 		if field.Anonymous {
-			anonymous := newNode("", rv.Field(i))
-			for _, attr := range anonymous.attrs {
-				n.appendAttr(attr)
-			}
-			for _, elem := range anonymous.elems {
-				n.appendElem(elem)
-			}
+			n.appendAnonymous(rv.Field(i))
 			continue
 		}
 
@@ -119,31 +113,59 @@ func newNode(name string, rv reflect.Value) *node {
 				n.value.name = fieldName
 			}
 		case cdataNode:
-			if n.cdata.IsValid() {
-				panic("已经定义了一个节点用于表示 cdata 内容")
-			}
-			if n.content.IsValid() {
-				panic("cdata 与 content 不能同时存在")
-			}
-			if len(n.elems) > 0 {
-				panic("cdata 与子元素不能同时存在")
-			}
-			n.cdata = initValue(fieldName, v, omitempty, usage)
+			n.setCData(initValue(fieldName, v, omitempty, usage))
 		case contentNode:
-			if n.content.IsValid() {
-				panic("已经定义了一个节点用于表示 content 内容")
-			}
-			if n.cdata.IsValid() {
-				panic("cdata 与 content 不能同时存在")
-			}
-			if len(n.elems) > 0 {
-				panic("content 与子元素不能同时存在")
-			}
-			n.content = initValue(fieldName, v, omitempty, usage)
+			n.setContent(initValue(fieldName, v, omitempty, usage))
 		}
 	}
 
 	return n
+}
+
+func (n *node) appendAnonymous(v reflect.Value) {
+	anonymous := newNode("", v)
+
+	for _, attr := range anonymous.attrs {
+		n.appendAttr(attr)
+	}
+
+	for _, elem := range anonymous.elems {
+		n.appendElem(elem)
+	}
+
+	if anonymous.cdata.IsValid() {
+		n.setCData(anonymous.cdata)
+	}
+
+	if anonymous.content.IsValid() {
+		n.setContent(anonymous.content)
+	}
+}
+
+func (n *node) setCData(v value) {
+	if n.cdata.IsValid() {
+		panic("已经定义了一个节点用于表示 cdata 内容")
+	}
+	if n.content.IsValid() {
+		panic("cdata 与 content 不能同时存在")
+	}
+	if len(n.elems) > 0 {
+		panic("cdata 与子元素不能同时存在")
+	}
+	n.cdata = v
+}
+
+func (n *node) setContent(v value) {
+	if n.content.IsValid() {
+		panic("已经定义了一个节点用于表示 content 内容")
+	}
+	if n.cdata.IsValid() {
+		panic("cdata 与 content 不能同时存在")
+	}
+	if len(n.elems) > 0 {
+		panic("content 与子元素不能同时存在")
+	}
+	n.content = v
 }
 
 func (n *node) elem(name string) (value, bool) {
