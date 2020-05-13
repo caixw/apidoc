@@ -65,7 +65,7 @@ func isPrimitive(v reflect.Value) bool {
 
 func newNode(name string, rv reflect.Value) *node {
 	rv = getRealValue(rv)
-	rt := rv.Type()
+	rt := getRealType(rv.Type())
 
 	num := rt.NumField()
 	if num == 0 {

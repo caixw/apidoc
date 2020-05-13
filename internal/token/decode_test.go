@@ -927,7 +927,7 @@ func TestObject_decodeAttributes(t *testing.T) {
 
 	// 带匿名成员
 	val2 := &struct {
-		anonymous
+		Anonymous
 		ID   intAttr    `apidoc:"id,attr,usage"`
 		Name stringAttr `apidoc:"name,attr,usage"`
 	}{}

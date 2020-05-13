@@ -14,7 +14,7 @@ import (
 )
 
 type (
-	anonymous struct {
+	Anonymous struct {
 		Attr1 intAttr `apidoc:"attr1,attr,usage"`
 		Elem1 intTag  `apidoc:"elem1,elem,usage"`
 	}

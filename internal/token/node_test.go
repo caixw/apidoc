@@ -106,7 +106,7 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "elem2",
 			inputNode: &struct {
-				anonymous
+				Anonymous
 				Elem2 intTag `apidoc:"elem2,elem,usage"`
 			}{},
 			attrs: 1,
@@ -123,10 +123,10 @@ func TestNewNode(t *testing.T) {
 		{ // 匿名字段小写不受影响
 			inputName: "attr1_elem2_anonymous",
 			inputNode: &struct {
-				*anonymous
+				*Anonymous
 				Elem2 intTag `apidoc:"elem2,elem,usage"`
 			}{
-				anonymous: &anonymous{},
+				Anonymous: &Anonymous{},
 			},
 			attrs: 1,
 			elems: 2,
@@ -134,10 +134,10 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_elem2_anonymous",
 			inputNode: &struct {
-				*anonymous
-				Elem2 *anonymous `apidoc:"elem2,elem,usage"`
+				*Anonymous
+				Elem2 *Anonymous `apidoc:"elem2,elem,usage"`
 			}{
-				anonymous: &anonymous{},
+				Anonymous: &Anonymous{},
 			},
 			attrs: 1,
 			elems: 2,
@@ -257,7 +257,7 @@ func TestNewNode(t *testing.T) {
 	// 与匿名对象存在相同的元素名
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			anonymous
+			Anonymous
 			Attr1 int `apidoc:"attr1,attr"`
 			Elem2 int `apidoc:"elem1,elem"`
 		}{}))
@@ -265,30 +265,30 @@ func TestNewNode(t *testing.T) {
 	// 与匿名对象存在相同的元素名
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			*anonymous
+			*Anonymous
 			Attr1 int `apidoc:"attr1,attr"`
 			Elem2 int `apidoc:"elem1,elem"`
 		}{}))
 	})
 
 	// 同时存在 cdata 和 elems
-	type anonymous1 struct {
+	type Anonymous1 struct {
 		CData CData `apidoc:",cdata"`
 	}
 	a.Panic(func() {
 		newNode("anonymous-content", reflect.ValueOf(&struct {
-			anonymous1
+			Anonymous1
 			Elem2 int `apidoc:"elem1,elem"`
 		}{}))
 	})
 
 	// 同时存在两个 content
-	type anonymous2 struct {
+	type Anonymous2 struct {
 		Content String `apidoc:",content"`
 	}
 	a.Panic(func() {
 		newNode("anonymous-content", reflect.ValueOf(&struct {
-			*anonymous2
+			*Anonymous2
 			Content String `apidoc:",content"`
 		}{}))
 	})
