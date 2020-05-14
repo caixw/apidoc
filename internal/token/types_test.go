@@ -9,11 +9,12 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 func TestNewTypes(t *testing.T) {
 	a := assert.New(t)
-	id := "cmn-Hans"
+	id := vars.DefaultLocaleID
 
 	ts, err := NewTypes(&objectTag{}, language.MustParse(id))
 	a.NotError(err).NotNil(ts)
