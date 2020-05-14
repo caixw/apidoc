@@ -18,8 +18,8 @@ func TestFileURI(t *testing.T) {
 	a := assert.New(t)
 
 	path := "/path/file"
-	uri, err := FileURI(path)
-	a.NotError(err).Equal(uri, SchemeFile+"://"+path)
+	uri := FileURI(path)
+	a.Equal(uri, SchemeFile+"://"+path)
 	file, err := uri.File()
 	a.NotError(err).Equal(path, file)
 
@@ -35,9 +35,10 @@ func TestURI_File(t *testing.T) {
 	file, err := uri.File()
 	a.NotError(err).Equal(file, "/path.php")
 
+	// 不管路径格式是否准确
 	uri = URI(" :/php")
 	file, err = uri.File()
-	a.Error(err).Empty(file)
+	a.NotError(err).Equal(file, " :/php")
 
 	uri = URI("https://example.com/path.php")
 	file, err = uri.File()
@@ -67,30 +68,16 @@ func TestURI_Append(t *testing.T) {
 	}
 }
 
-func TestURI_IsNoScheme(t *testing.T) {
-	a := assert.New(t)
-
-	a.True(URI("").IsNoScheme())
-	a.True(URI("a").IsNoScheme())
-	a.True(URI("./file.php").IsNoScheme())
-	a.True(URI("/file.php").IsNoScheme())
-	a.False(URI("file:///file.php").IsNoScheme())
-
-	a.True(URI("c:\\file.php").IsNoScheme())
-	a.True(URI("c:\\").IsNoScheme())
-	a.False(URI("c:/file.php").IsNoScheme())
-}
-
 func TestURI_Exists(t *testing.T) {
 	a := assert.New(t)
 
-	uri, err := FileURI("./not-exists")
-	a.NotError(err).NotEmpty(uri)
+	uri := FileURI("./not-exists")
+	a.NotEmpty(uri)
 	exists, err := uri.Exists()
 	a.NotError(err).False(exists)
 
-	uri, err = FileURI("./uri.go")
-	a.NotError(err).NotEmpty(uri)
+	uri = FileURI("./uri.go")
+	a.NotEmpty(uri)
 	exists, err = uri.Exists()
 	a.NotError(err).True(exists)
 
@@ -126,16 +113,16 @@ func TestURI_Exists(t *testing.T) {
 func TestURI_ReadAll(t *testing.T) {
 	a := assert.New(t)
 
-	uri, err := FileURI("./not-exists")
-	a.NotError(err).NotEmpty(uri)
+	uri := FileURI("./not-exists")
+	a.NotEmpty(uri)
 	data, err := uri.ReadAll(nil)
 	a.Error(err).Nil(data)
 
 	data, err = uri.ReadAll(simplifiedchinese.GB18030)
 	a.Error(err).Nil(data)
 
-	uri, err = FileURI("./uri.go")
-	a.NotError(err).NotEmpty(uri)
+	uri = FileURI("./uri.go")
+	a.NotEmpty(uri)
 	data, err = uri.ReadAll(encoding.Nop)
 	a.NotError(err).NotNil(data)
 
@@ -143,8 +130,8 @@ func TestURI_ReadAll(t *testing.T) {
 	data, err = uri.ReadAll(encoding.Nop)
 	a.NotError(err).NotNil(data)
 
-	uri, err = FileURI("./gbk.php")
-	a.NotError(err).NotEmpty(uri)
+	uri = FileURI("./gbk.php")
+	a.NotEmpty(uri)
 	data, err = uri.ReadAll(simplifiedchinese.GB18030)
 	a.NotError(err).NotNil(data)
 	a.Contains(string(data), "这是一个 GBK 编码的文件").

@@ -54,8 +54,8 @@ func TestParseFile(t *testing.T) {
 
 	doc := &ast.APIDoc{}
 	erro, _, h := messagetest.MessageHandler()
-	uri, err := core.FileURI("./testdata/testfile.h")
-	a.NotError(err).NotEmpty(uri)
+	uri := core.FileURI("./testdata/testfile.h")
+	a.NotEmpty(uri)
 	ParseFile(doc, h, uri, c)
 	a.Equal(0, len(doc.Apis)).
 		Equal(doc.Version.V(), "1.1.1")

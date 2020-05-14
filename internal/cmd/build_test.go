@@ -14,12 +14,12 @@ func TestGetPath(t *testing.T) {
 	a := assert.New(t)
 	fs := flag.NewFlagSet("test", flag.ContinueOnError)
 
-	curr, err := core.FileURI("./")
-	a.NotError(err).NotEmpty(curr)
+	curr := core.FileURI("./")
+	a.NotEmpty(curr)
 
-	uri, err := getPath(fs)
-	a.NotError(err).Equal(curr, uri)
+	uri := getPath(fs)
+	a.Equal(curr, uri)
 
-	uri, err = getPath(nil)
-	a.NotError(err).Equal(curr, uri)
+	uri = getPath(nil)
+	a.Equal(curr, uri)
 }

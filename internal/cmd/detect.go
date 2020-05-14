@@ -26,10 +26,7 @@ func detect(io.Writer) error {
 	h := core.NewMessageHandler(newHandlerFunc())
 	defer h.Stop()
 
-	uri, err := getPath(detectFlagSet)
-	if err != nil {
-		return err
-	}
+	uri := getPath(detectFlagSet)
 
 	cfg, err := build.DetectConfig(uri, detectRecursive)
 	if err != nil {

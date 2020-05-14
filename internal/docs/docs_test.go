@@ -5,6 +5,7 @@ package docs
 import (
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -13,6 +14,22 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 )
+
+func TestDir(t *testing.T) {
+	a := assert.New(t)
+
+	abs, err := filepath.Abs("../../docs")
+	a.NotError(err).NotEmpty(abs)
+	p1 := core.FileURI(abs)
+	a.NotEmpty(p1)
+
+	p2 := Dir()
+	a.NotEmpty(p2)
+	a.Equal(p1, p2)
+
+	exists, err := Dir().Exists()
+	a.NotError(err).True(exists)
+}
 
 func TestStylesheetURL(t *testing.T) {
 	a := assert.New(t)

@@ -101,11 +101,8 @@ func (o *Output) Sanitize() error {
 	}
 
 	if len(o.Path) > 0 {
-		u, err := o.Path.Parse()
-		if err != nil {
-			return err
-		}
-		if u.Scheme != core.SchemeFile {
+		scheme, _ := o.Path.Parse()
+		if scheme != core.SchemeFile && scheme != "" {
 			return core.NewSyntaxError(core.Location{}, "path", locale.ErrInvalidURIScheme)
 		}
 	}
