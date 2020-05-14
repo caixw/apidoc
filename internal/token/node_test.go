@@ -106,7 +106,7 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "elem2",
 			inputNode: &struct {
-				anonymous
+				Anonymous
 				Elem2 intTag `apidoc:"elem2,elem,usage"`
 			}{},
 			attrs: 1,
@@ -123,10 +123,10 @@ func TestNewNode(t *testing.T) {
 		{ // 匿名字段小写不受影响
 			inputName: "attr1_elem2_anonymous",
 			inputNode: &struct {
-				*anonymous
+				*Anonymous
 				Elem2 intTag `apidoc:"elem2,elem,usage"`
 			}{
-				anonymous: &anonymous{},
+				Anonymous: &Anonymous{},
 			},
 			attrs: 1,
 			elems: 2,
@@ -134,10 +134,10 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr1_elem2_anonymous",
 			inputNode: &struct {
-				*anonymous
-				Elem2 *anonymous `apidoc:"elem2,elem,usage"`
+				*Anonymous
+				Elem2 *Anonymous `apidoc:"elem2,elem,usage"`
 			}{
-				anonymous: &anonymous{},
+				Anonymous: &Anonymous{},
 			},
 			attrs: 1,
 			elems: 2,
@@ -148,8 +148,8 @@ func TestNewNode(t *testing.T) {
 		o := newNode(item.inputName, reflect.ValueOf(item.inputNode))
 		a.Equal(len(o.elems), item.elems, "not equal %d\nv1=%d,v2=%d", i, len(o.elems), item.elems).
 			Equal(len(o.attrs), item.attrs, "not equal %d\nv1=%d,v2=%d", i, len(o.attrs), item.attrs).
-			Equal(item.cdata, o.cdata.IsValid(), "not equal at %d\nv1=%v,v2=%v", i, item.cdata, o.cdata.IsValid()).
-			Equal(item.content, o.content.IsValid(), "not equal at %d\nv1=%v,v2=%v", i, item.content, o.content.IsValid()).
+			Equal(item.cdata, o.cdata != nil, "not equal at %d\nv1=%v,v2=%v", i, item.cdata, o.cdata != nil).
+			Equal(item.content, o.content != nil, "not equal at %d\nv1=%v,v2=%v", i, item.content, o.content != nil).
 			Equal(o.value.name, item.inputName)
 
 		for k, v := range o.attrs {
@@ -227,22 +227,6 @@ func TestNewNode(t *testing.T) {
 		}{}))
 	})
 
-	// cdata 类型不正确
-	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
-			Attr2  int    `apidoc:"attr1,attr"`
-			Cdata1 String `apidoc:",cdata"`
-		}{}))
-	})
-
-	// content 类型不正确
-	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
-			Attr2   int    `apidoc:"attr1,attr"`
-			Content *CData `apidoc:",content"`
-		}{}))
-	})
-
 	// 同时存在 content 和 elems
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
@@ -273,7 +257,7 @@ func TestNewNode(t *testing.T) {
 	// 与匿名对象存在相同的元素名
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			anonymous
+			Anonymous
 			Attr1 int `apidoc:"attr1,attr"`
 			Elem2 int `apidoc:"elem1,elem"`
 		}{}))
@@ -281,48 +265,33 @@ func TestNewNode(t *testing.T) {
 	// 与匿名对象存在相同的元素名
 	a.Panic(func() {
 		newNode("empty", reflect.ValueOf(&struct {
-			*anonymous
+			*Anonymous
 			Attr1 int `apidoc:"attr1,attr"`
 			Elem2 int `apidoc:"elem1,elem"`
 		}{}))
 	})
-}
 
-func TestNode_isOmitempty(t *testing.T) {
-	a := assert.New(t)
+	// 同时存在 cdata 和 elems
+	type Anonymous1 struct {
+		CData CData `apidoc:",cdata"`
+	}
+	a.Panic(func() {
+		newNode("anonymous-content", reflect.ValueOf(&struct {
+			Anonymous1
+			Elem2 int `apidoc:"elem1,elem"`
+		}{}))
+	})
 
-	v := value{omitempty: false}
-	a.False(v.isOmitempty())
-
-	v = initValue("elem", reflect.ValueOf(int(0)), true, "usage")
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(int(5))
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf(uint(0))
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(uint(5))
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf(float64(0))
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(float32(5))
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf([]byte{})
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf([]byte{0})
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf(false)
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(true)
-	a.False(v.isOmitempty())
-
-	v.Value = reflect.ValueOf(map[string]string{})
-	a.True(v.isOmitempty())
-	v.Value = reflect.ValueOf(map[string]string{"id": "0"})
-	a.False(v.isOmitempty())
+	// 同时存在两个 content
+	type Anonymous2 struct {
+		Content String `apidoc:",content"`
+	}
+	a.Panic(func() {
+		newNode("anonymous-content", reflect.ValueOf(&struct {
+			*Anonymous2
+			Content String `apidoc:",content"`
+		}{}))
+	})
 }
 
 func TestParseTag(t *testing.T) {

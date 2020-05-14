@@ -4,7 +4,6 @@ package token
 
 import (
 	"reflect"
-	"unicode"
 
 	"golang.org/x/text/language"
 
@@ -49,61 +48,60 @@ func NewTypes(v interface{}, tag language.Tag) (*Types, error) {
 
 func (types *Types) dumpToTypes(n *node) error {
 	t := &Type{
-		Name:  n.value.typeName,
+		Name:  n.typeName,
 		Usage: locale.Sprintf(n.value.usage),
 		Items: make([]*Item, 0, len(n.attrs)+len(n.elems)),
 	}
 	types.Types = append(types.Types, t) // 保证子元素在后显示
 
 	for _, attr := range n.attrs {
-		typ := getRealType(attr.Type())
-		t.appendItem("@"+attr.name, typ, attr.usage, !attr.omitempty)
+		t.appendItem("@"+attr.name, attr.Value, attr.usage, !attr.omitempty)
 	}
 
 	for _, elem := range n.elems {
+		t.appendItem(elem.name, elem.Value, elem.usage, !elem.omitempty)
+
 		typ := getRealType(elem.Type())
 		v := getRealValue(elem.Value)
-
-		t.appendItem(elem.name, typ, elem.usage, !elem.omitempty)
 
 		if typ.Kind() == reflect.Slice || typ.Kind() == reflect.Array {
 			typ = getRealType(typ.Elem())
 			v = reflect.New(typ).Elem()
 		}
 
-		if nn := newNode(elem.name, v); nn.value.typeName != "" && !types.typeExists(nn.value.typeName) {
+		if nn := newNode(elem.name, v); nn.typeName != "" && !types.typeExists(nn.typeName) {
 			if err := types.dumpToTypes(nn); err != nil {
 				return err
 			}
 		}
 	}
 
-	if n.cdata.IsValid() {
-		typ := getRealType(n.cdata.Type())
-		t.appendItem(".", typ, n.cdata.usage, !n.cdata.omitempty)
+	if n.cdata != nil {
+		t.appendItem(".", n.cdata.Value, n.cdata.usage, !n.cdata.omitempty)
 	}
 
-	if n.content.IsValid() {
-		typ := getRealType(n.content.Type())
-		t.appendItem(".", typ, n.content.usage, !n.content.omitempty)
+	if n.content != nil {
+		t.appendItem(".", n.content.Value, n.content.usage, !n.content.omitempty)
 	}
 
 	return nil
 }
 
-func (t *Type) appendItem(name string, typ reflect.Type, usageKey string, req bool) {
+func (t *Type) appendItem(name string, v reflect.Value, usageKey string, req bool) {
 	var isSlice bool
+	typ := getRealValue(v).Type()
 	for typ.Kind() == reflect.Slice || typ.Kind() == reflect.Array {
 		isSlice = true
 		typ = typ.Elem()
 	}
-	for typ.Kind() == reflect.Ptr {
-		typ = typ.Elem()
-	}
 
+	tt := typ.Name()
+	if vv := parseValue(reflect.New(typ).Elem()); vv != nil {
+		tt = vv.name
+	}
 	t.Items = append(t.Items, &Item{
 		Name:     name,
-		Type:     findMetaData(typ),
+		Type:     tt,
 		Required: req,
 		Array:    isSlice,
 		Usage:    locale.Sprintf(usageKey),
@@ -117,21 +115,4 @@ func (types *Types) typeExists(typeName string) bool {
 		}
 	}
 	return false
-}
-
-func findMetaData(t reflect.Type) string {
-	rt := getRealType(t)
-
-	num := rt.NumField()
-	for i := 0; i < num; i++ {
-		field := rt.Field(i)
-		if field.Anonymous || unicode.IsLower(rune(field.Name[0])) {
-			continue
-		}
-
-		if fieldName, node, _, _ := parseTag(field); node == metaNode {
-			return fieldName
-		}
-	}
-	return ""
 }

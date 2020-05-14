@@ -21,7 +21,8 @@
 		<item name="mimetype" type="string" array="true" required="true">文檔所支持的 mimetype</item>
 	</type>
 	<type name="string">
-		<usage>usage-string</usage>
+		<usage>普通的字符串類型</usage>
+		<item name="." type="string" array="false" required="true"></item>
 	</type>
 	<type name="richtext">
 		<usage>富文本內容</usage>

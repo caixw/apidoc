@@ -120,8 +120,8 @@ func apidocMarshaler(d *ast.APIDoc) ([]byte, error) {
 func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 	filterDoc(d, o)
 
-	d.Created = &ast.Attribute{Value: ast.String{Value: time.Now().Format(createdFormat)}}
-	d.APIDoc = &ast.APIDocVersionAttribute{Value: ast.String{Value: ast.Version}}
+	d.Created = &ast.Attribute{Value: token.String{Value: time.Now().Format(createdFormat)}}
+	d.APIDoc = &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}
 	buf := new(bytes.Buffer)
 
 	if o.xml {

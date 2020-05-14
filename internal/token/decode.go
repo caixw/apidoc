@@ -54,7 +54,7 @@ var (
 func Decode(p *Parser, v interface{}) error {
 	var hasRoot bool
 	for {
-		t, _, err := p.Token()
+		t, r, err := p.Token()
 		if err == io.EOF {
 			return nil
 		} else if err != nil {
@@ -68,12 +68,13 @@ func Decode(p *Parser, v interface{}) error {
 			}
 			hasRoot = true
 
-			n := newNode("", reflect.ValueOf(v))
-			if err := decodeElement(p, elem, n.value); err != nil {
+			vv := parseValue(reflect.ValueOf(v))
+			if err := decodeElement(p, elem, vv); err != nil {
 				return err
 			}
-		case *EndElement:
-			return p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML)
+		case *Comment, *String: // 忽略注释和普通的文本内容
+		default:
+			return p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
 		}
 	}
 }
@@ -103,10 +104,10 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 			return nil, p.NewError(start.Start, end.End, elem.name, locale.ErrRequired)
 		}
 	}
-	if n.cdata.canNotEmpty() {
+	if n.cdata != nil && n.cdata.canNotEmpty() {
 		return nil, p.NewError(start.Start, end.End, "cdata", locale.ErrRequired)
 	}
-	if n.content.canNotEmpty() {
+	if n.content != nil && n.content.canNotEmpty() {
 		return nil, p.NewError(start.Start, end.End, "content", locale.ErrRequired)
 	}
 
@@ -114,10 +115,10 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 }
 
 // 当前表示的值必须是一个非空值
-func (v value) canNotEmpty() bool {
+func (v *value) canNotEmpty() bool {
 	return v.name != "" && // cdata 和 content 在未初始化时 name 字段为空值
 		!v.omitempty &&
-		(!v.IsValid() || !v.CanInterface() || is.Empty(v.Interface(), true))
+		(!v.CanInterface() || is.Empty(v.Interface(), true))
 }
 
 // 将 start 的属性内容解码到 obj.attrs 之中
@@ -164,7 +165,7 @@ func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
 
 func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 	for {
-		t, _, err := p.Token()
+		t, r, err := p.Token()
 		if err == io.EOF {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
 			return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
@@ -179,12 +180,12 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 			}
 			return nil, p.NewError(elem.Start, elem.End, n.value.name, locale.ErrNotFoundEndTag)
 		case *CData:
-			if n.cdata.IsValid() {
-				getRealValue(n.cdata.Value).Set(getRealValue(reflect.ValueOf(elem)))
+			if n.cdata != nil {
+				setContentValue(n.cdata.Value, reflect.ValueOf(elem))
 			}
 		case *String:
-			if n.content.IsValid() {
-				getRealValue(n.content.Value).Set(getRealValue(reflect.ValueOf(elem)))
+			if n.content != nil {
+				setContentValue(n.content.Value, reflect.ValueOf(elem))
 			}
 		case *StartElement:
 			item, found := n.elem(elem.Name.Value)
@@ -194,11 +195,27 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 			if err = decodeElement(p, elem, item); err != nil {
 				return nil, err
 			}
+		case *Comment: // 忽略注释内容
+		default:
+			return nil, p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
 		}
 	}
 }
 
-func decodeElement(p *Parser, start *StartElement, v value) error {
+func setContentValue(target, source reflect.Value) {
+	target = getRealValue(target)
+	source = getRealValue(source)
+
+	st := source.Type()
+	num := st.NumField()
+	for i := 0; i < num; i++ {
+		name := st.Field(i).Name
+		target.FieldByName(name).
+			Set(source.Field(i))
+	}
+}
+
+func decodeElement(p *Parser, start *StartElement, v *value) error {
 	v.Value = getRealValue(v.Value)
 	k := v.Kind()
 	switch {
@@ -218,7 +235,7 @@ func decodeElement(p *Parser, start *StartElement, v value) error {
 	return setTagValue(v.Value, v.usage, p, start, end)
 }
 
-func decodeSlice(p *Parser, start *StartElement, slice value) (err error) {
+func decodeSlice(p *Parser, start *StartElement, slice *value) (err error) {
 	// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
 	// 所以要过滤与 start 想匹配的结束符号才算结束。
 	if !start.Close && (start.Name.Value != slice.name) {

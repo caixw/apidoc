@@ -6,7 +6,7 @@
 //
 // 标签属性分为 4 个字段，其中前三个是必填的：
 //  apidoc:"name,node-type,usage-key,omitempty"
-// name 表示当前标签的名称；
+// name 表示当前标签的名称，或是节点表示的类型；
 // node-type 表示当前节点的类型，可以是以下值：
 //  - elem 表示这是一个子元素；
 //  - attr 表示为一个 XML 属性；
@@ -61,8 +61,7 @@ type String struct {
 // CData 表示 XML 的 CDATA 数据
 type CData struct {
 	BaseTag
-	Value    String   `apidoc:"-"`
-	RootName struct{} `apidoc:"string,meta,usage-string"`
+	Value String
 }
 
 // Comment 表示 XML 的注释

@@ -42,7 +42,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-11T22:56:05+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-13T01:03:24+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -66,63 +66,6 @@ var data = []*FileInfo{{
 	</server>
 	<server name="old-client" url="https://api.example.com/client" deprecated="1.1.1" summary="客户端接口"></server>
 	<server name="client" url="https://api.example.com" summary="客户端接口"></server>
-	<api method="GET" summary="获取用户日志">
-		<path path="/users/{id}/logs">
-			<param name="id" type="number">
-				<description type="markdown"><![CDATA[用户 ID]]></description>
-			</param>
-			<query name="page" type="number" default="0" summary="页码"></query>
-			<query name="size" type="number" default="20">
-				<description type="markdown"><![CDATA[数量]]></description>
-			</query>
-		</path>
-		<description type="html"><![CDATA[
-   <p>这是关于接口的详细说明文档</p>
-   <p style="color:red">可以是一个 HTML 内容</p>
-   ]]></description>
-		<response type="object" array="true" status="200" mimetype="application/json">
-			<param name="count" type="number" optional="true" summary="summary"></param>
-			<param name="list" type="object" array="true" summary="list">
-				<param name="id" type="number" optional="true" summary="desc"></param>
-				<param name="name" type="string" optional="true" summary="desc"></param>
-				<param name="groups" type="string" optional="true" array="true" summary="desc">
-					<enum value="xx1">
-						<description type="markdown"><![CDATA[xx]]></description>
-					</enum>
-					<enum value="xx2" summary="xx"></enum>
-				</param>
-			</param>
-			<example mimetype="application/json"><![CDATA[
-   {
-    count: 5,
-    list: [
-      {id:1, name: 'name1', 'groups': [1,2]},
-      {id:2, name: 'name2', 'groups': [1,2]}
-    ]
-   }
-           ]]></example>
-			<header name="name" type="string" summary="desc"></header>
-			<header name="name1" type="string" summary="desc1"></header>
-		</response>
-		<callback method="POST" summary="回调函数">
-			<description type="html"><![CDATA[
-           <p style="color:red">这是一个回调函数的详细说明</p>
-           <p>为一个 html 文档</p>
-   ]]></description>
-			<response type="string" status="200" mimetype="text/plain"></response>
-			<request type="object" mimetype="application/json">
-				<param name="id" type="number" default="1" summary="id"></param>
-				<param name="age" type="number" summary="age"></param>
-				<example mimetype="application/json"><![CDATA[
-               {
-                   id:1,
-                   sex: male,
-               }
-               ]]></example>
-			</request>
-		</callback>
-		<server>client</server>
-	</api>
 	<api method="GET" summary="获取用户" deprecated="1.1.11">
 		<path path="/users">
 			<query name="page" type="number" default="0" summary="页码"></query>
@@ -197,6 +140,63 @@ var data = []*FileInfo{{
 		<tag>t2</tag>
 		<server>admin</server>
 		<server>old-client</server>
+	</api>
+	<api method="GET" summary="获取用户日志">
+		<path path="/users/{id}/logs">
+			<param name="id" type="number">
+				<description type="markdown"><![CDATA[用户 ID]]></description>
+			</param>
+			<query name="page" type="number" default="0" summary="页码"></query>
+			<query name="size" type="number" default="20">
+				<description type="markdown"><![CDATA[数量]]></description>
+			</query>
+		</path>
+		<description type="html"><![CDATA[
+   <p>这是关于接口的详细说明文档</p>
+   <p style="color:red">可以是一个 HTML 内容</p>
+   ]]></description>
+		<response type="object" array="true" status="200" mimetype="application/json">
+			<param name="count" type="number" optional="true" summary="summary"></param>
+			<param name="list" type="object" array="true" summary="list">
+				<param name="id" type="number" optional="true" summary="desc"></param>
+				<param name="name" type="string" optional="true" summary="desc"></param>
+				<param name="groups" type="string" optional="true" array="true" summary="desc">
+					<enum value="xx1">
+						<description type="markdown"><![CDATA[xx]]></description>
+					</enum>
+					<enum value="xx2" summary="xx"></enum>
+				</param>
+			</param>
+			<example mimetype="application/json"><![CDATA[
+   {
+    count: 5,
+    list: [
+      {id:1, name: 'name1', 'groups': [1,2]},
+      {id:2, name: 'name2', 'groups': [1,2]}
+    ]
+   }
+           ]]></example>
+			<header name="name" type="string" summary="desc"></header>
+			<header name="name1" type="string" summary="desc1"></header>
+		</response>
+		<callback method="POST" summary="回调函数">
+			<description type="html"><![CDATA[
+           <p style="color:red">这是一个回调函数的详细说明</p>
+           <p>为一个 html 文档</p>
+   ]]></description>
+			<response type="string" status="200" mimetype="text/plain"></response>
+			<request type="object" mimetype="application/json">
+				<param name="id" type="number" default="1" summary="id"></param>
+				<param name="age" type="number" summary="age"></param>
+				<example mimetype="application/json"><![CDATA[
+               {
+                   id:1,
+                   sex: male,
+               }
+               ]]></example>
+			</request>
+		</callback>
+		<server>client</server>
 	</api>
 	<api method="DELETE" summary="删除用户">
 		<path path="/users/{id}">
@@ -1111,7 +1111,8 @@ function initGotoTop() {
 		<item name="mimetype" type="string" array="true" required="true">文档所支持的 mimetype</item>
 	</type>
 	<type name="string">
-		<usage>usage-string</usage>
+		<usage>普通的字符串类型</usage>
+		<item name="." type="string" array="false" required="true"></item>
 	</type>
 	<type name="richtext">
 		<usage>富文本内容</usage>
@@ -1261,7 +1262,8 @@ function initGotoTop() {
 		<item name="mimetype" type="string" array="true" required="true">文檔所支持的 mimetype</item>
 	</type>
 	<type name="string">
-		<usage>usage-string</usage>
+		<usage>普通的字符串類型</usage>
+		<item name="." type="string" array="false" required="true"></item>
 	</type>
 	<type name="richtext">
 		<usage>富文本內容</usage>

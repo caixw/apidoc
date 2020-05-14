@@ -18,12 +18,7 @@ const (
 	elemNode
 	cdataNode
 	contentNode
-	metaNode // 用于描述节点的一些无数据
-)
-
-var (
-	cdataType   = reflect.TypeOf(CData{})
-	contentType = reflect.TypeOf(String{})
+	metaNode // 用于描述节点的一些元数据
 )
 
 var stringNodeMap = map[string]nodeType{
@@ -36,31 +31,50 @@ var stringNodeMap = map[string]nodeType{
 
 // 表示一个 XML 标签节点
 type node struct {
-	attrs          []value // 当前标签的属性值列表
-	elems          []value // 当前标签的元素列表
-	cdata, content value   // 当前标签如果没有子元素，则可能有普通的内容或是 CDATA 内容
-	value          value   // 当前节点本身代表的值
+	attrs          []*value // 当前标签的属性值列表
+	elems          []*value // 当前标签的元素列表
+	cdata, content *value   // 当前标签如果没有子元素，则可能有普通的内容或是 CDATA 内容
+	value          value    // 当前节点本身代表的值
+	typeName       string   // 当前节点的类型名称
 }
 
 // 表示 XML 节点的值的反射表示方式
 type value struct {
 	reflect.Value
 	omitempty bool
-	typeName  string // 当前节点的类型名称
 	name      string // 节点的名称
 
 	// 当前值可能未初始化，所以保存 usage 的值，
-	// 等 value 初始化之后再赋值给 BaseTag.UsageKey
+	// 等 value 初始化之后再赋值给 Base.UsageKey
 	usage string
 }
 
-func initValue(name string, v reflect.Value, omitempty bool, usage string) value {
-	return value{
+func newValue(name string, v reflect.Value, omitempty bool, usage string) *value {
+	return &value{
 		name:      name,
 		Value:     v,
 		omitempty: omitempty,
 		usage:     usage,
 	}
+}
+
+// 分析 v 中是否带有 meta 类型的字段，如果有，则生成相应的 value 对象，否则返回 nil
+func parseValue(v reflect.Value) *value {
+	v = getRealValue(v)
+	t := v.Type()
+
+	num := t.NumField()
+	for i := 0; i < num; i++ {
+		field := t.Field(i)
+		if field.Anonymous || unicode.IsLower(rune(field.Name[0])) {
+			continue
+		}
+
+		if name, node, usage, omitempty := parseTag(field); node == metaNode {
+			return newValue(name, v, omitempty, usage)
+		}
+	}
+	return nil
 }
 
 func isPrimitive(v reflect.Value) bool {
@@ -70,7 +84,7 @@ func isPrimitive(v reflect.Value) bool {
 
 func newNode(name string, rv reflect.Value) *node {
 	rv = getRealValue(rv)
-	rt := rv.Type()
+	rt := getRealType(rv.Type())
 
 	num := rt.NumField()
 	if num == 0 {
@@ -78,21 +92,15 @@ func newNode(name string, rv reflect.Value) *node {
 	}
 
 	n := &node{
-		attrs: make([]value, 0, num),
-		elems: make([]value, 0, num),
+		attrs: make([]*value, 0, num),
+		elems: make([]*value, 0, num),
 		value: value{name: name},
 	}
 
 	for i := 0; i < num; i++ {
 		field := rt.Field(i)
 		if field.Anonymous {
-			anonymous := newNode("", rv.Field(i))
-			for _, attr := range anonymous.attrs {
-				n.appendAttr(attr)
-			}
-			for _, elem := range anonymous.elems {
-				n.appendElem(elem)
-			}
+			n.appendAnonymous(rv.Field(i))
 			continue
 		}
 
@@ -108,65 +116,87 @@ func newNode(name string, rv reflect.Value) *node {
 		v := rv.Field(i)
 		switch node {
 		case attrNode:
-			n.appendAttr(initValue(fieldName, v, omitempty, usage))
+			n.appendAttr(newValue(fieldName, v, omitempty, usage))
 		case elemNode:
-			n.appendElem(initValue(fieldName, v, omitempty, usage))
+			n.appendElem(newValue(fieldName, v, omitempty, usage))
 		case metaNode:
-			n.value.typeName = fieldName
+			n.typeName = fieldName
 			n.value.usage = usage
 			n.value.Value = rv
 			if n.value.name == "" { // 顶层元素可能没有 name，此处就和 fieldName 相同
 				n.value.name = fieldName
 			}
 		case cdataNode:
-			if n.cdata.IsValid() {
-				panic("已经定义了一个节点用于表示 cdata 内容")
-			}
-			if n.content.IsValid() {
-				panic("cdata 与 content 不能同时存在")
-			}
-			if len(n.elems) > 0 {
-				panic("cdata 与子元素不能同时存在")
-			}
-			if getRealType(field.Type) != cdataType {
-				panic("cdata 的类型只能是 *CData")
-			}
-			n.cdata = initValue(fieldName, v, omitempty, usage)
+			n.setCData(newValue(fieldName, v, omitempty, usage))
 		case contentNode:
-			if n.content.IsValid() {
-				panic("已经定义了一个节点用于表示 content 内容")
-			}
-			if n.cdata.IsValid() {
-				panic("cdata 与 content 不能同时存在")
-			}
-			if len(n.elems) > 0 {
-				panic("content 与子元素不能同时存在")
-			}
-			if getRealType(field.Type) != contentType {
-				panic("content 的类型只能是 *String")
-			}
-			n.content = initValue(fieldName, v, omitempty, usage)
+			n.setContent(newValue(fieldName, v, omitempty, usage))
 		}
 	}
 
 	return n
 }
 
-func (n *node) elem(name string) (value, bool) {
+func (n *node) appendAnonymous(v reflect.Value) {
+	anonymous := newNode("", v)
+
+	for _, attr := range anonymous.attrs {
+		n.appendAttr(attr)
+	}
+
+	for _, elem := range anonymous.elems {
+		n.appendElem(elem)
+	}
+
+	if anonymous.cdata != nil {
+		n.setCData(anonymous.cdata)
+	}
+
+	if anonymous.content != nil {
+		n.setContent(anonymous.content)
+	}
+}
+
+func (n *node) setCData(v *value) {
+	if n.cdata != nil {
+		panic("已经定义了一个节点用于表示 cdata 内容")
+	}
+	if n.content != nil {
+		panic("cdata 与 content 不能同时存在")
+	}
+	if len(n.elems) > 0 {
+		panic("cdata 与子元素不能同时存在")
+	}
+	n.cdata = v
+}
+
+func (n *node) setContent(v *value) {
+	if n.content != nil {
+		panic("已经定义了一个节点用于表示 content 内容")
+	}
+	if n.cdata != nil {
+		panic("cdata 与 content 不能同时存在")
+	}
+	if len(n.elems) > 0 {
+		panic("content 与子元素不能同时存在")
+	}
+	n.content = v
+}
+
+func (n *node) elem(name string) (*value, bool) {
 	return n.findElem(name, n.elems)
 }
 
-func (n *node) attr(name string) (value, bool) {
+func (n *node) attr(name string) (*value, bool) {
 	return n.findElem(name, n.attrs)
 }
 
-func (n *node) findElem(name string, elems []value) (value, bool) {
+func (n *node) findElem(name string, elems []*value) (*value, bool) {
 	for _, e := range elems {
 		if e.name == name {
 			return e, true
 		}
 	}
-	return value{}, false
+	return nil, false
 }
 
 func getRealType(t reflect.Type) reflect.Type {
@@ -187,15 +217,15 @@ func getRealValue(v reflect.Value) reflect.Value {
 	return v
 }
 
-func (n *node) appendAttr(v value) {
+func (n *node) appendAttr(v *value) {
 	if _, found := n.attr(v.name); found {
 		panic(fmt.Sprintf("存在重复的属性名称 %s", v.name))
 	}
 	n.attrs = append(n.attrs, v)
 }
 
-func (n *node) appendElem(v value) {
-	if n.content.IsValid() || n.cdata.IsValid() {
+func (n *node) appendElem(v *value) {
+	if n.content != nil || n.cdata != nil {
 		panic("elems 不能同时与 content 和 cdata 存在")
 	}
 

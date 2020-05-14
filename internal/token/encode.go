@@ -30,12 +30,11 @@ var (
 
 // Encode 将 v 转换成 XML 内容
 func Encode(indent string, v interface{}) ([]byte, error) {
-	rv := initValue("", reflect.ValueOf(v), false, "")
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
 	e.Indent("", indent)
-	n := newNode(rv.name, rv.Value)
 
+	n := newNode("", reflect.ValueOf(v))
 	if err := n.encode(e); err != nil {
 		return nil, err
 	}
@@ -52,8 +51,8 @@ func (n *node) encode(e *xml.Encoder) error {
 		return err
 	}
 
-	if n.cdata.IsValid() && !n.cdata.isOmitempty() {
-		chardata, err := getElementValue(n.cdata.Value)
+	if n.cdata != nil && !n.cdata.isOmitempty() {
+		chardata, err := getContentValue(n.cdata.Value)
 		if err != nil {
 			return err
 		}
@@ -63,8 +62,8 @@ func (n *node) encode(e *xml.Encoder) error {
 		}{chardata}, start)
 	}
 
-	if n.content.IsValid() && !n.content.isOmitempty() {
-		chardata, err := getElementValue(n.content.Value)
+	if n.content != nil && !n.content.isOmitempty() {
+		chardata, err := getContentValue(n.content.Value)
 		if err != nil {
 			return err
 		}
@@ -87,7 +86,7 @@ func (n *node) encodeElements(e *xml.Encoder, start xml.StartElement) (err error
 	return e.EncodeToken(xml.EndElement{Name: xml.Name{Local: n.value.name}})
 }
 
-func encodeElement(e *xml.Encoder, v value) (err error) {
+func encodeElement(e *xml.Encoder, v *value) (err error) {
 	if v.isOmitempty() {
 		return nil
 	}
@@ -124,7 +123,7 @@ func encodeElement(e *xml.Encoder, v value) (err error) {
 
 	if v.Kind() == reflect.Array || v.Kind() == reflect.Slice {
 		for i := 0; i < v.Len(); i++ {
-			if err := encodeElement(e, initValue(v.name, v.Index(i), v.omitempty, v.usage)); err != nil {
+			if err := encodeElement(e, newValue(v.name, v.Index(i), v.omitempty, v.usage)); err != nil {
 				return err
 			}
 		}
@@ -172,30 +171,20 @@ func getAttributeValue(elem reflect.Value) (string, error) {
 	return fmt.Sprint(elem.Interface()), nil
 }
 
-// 获取 CData 和 String 的编码内容，适用于 content 和 cdata 节点类型。
-func getElementValue(elem reflect.Value) (string, error) {
+// 获取 cdata 和 content 节点的的内容
+func getContentValue(elem reflect.Value) (string, error) {
 	elem = getRealValue(elem)
-	if elem.CanInterface() {
-		switch {
-		case elem.Type() == cdataType:
-			return elem.Interface().(CData).Value.Value, nil
-		case elem.Type() == contentType:
-			return elem.Interface().(String).Value, nil
-		}
+	if elem.CanInterface() && elem.Type().Implements(encoderType) {
+		return elem.Interface().(Encoder).EncodeXML()
 	} else if elem.CanAddr() {
-		if pv := elem.Addr(); pv.CanInterface() {
-			switch {
-			case pv.Type() == cdataType:
-				return elem.Interface().(CData).Value.Value, nil
-			case pv.Type() == contentType:
-				return pv.Interface().(String).Value, nil
-			}
+		if pv := elem.Addr(); pv.CanInterface() && pv.Type().Implements(encoderType) {
+			return pv.Interface().(Encoder).EncodeXML()
 		}
 	}
 
-	panic(fmt.Sprintf("%s 只能是 CData 或是 String 类型", elem.Type()))
+	return fmt.Sprint(elem.Interface()), nil
 }
 
-func (v value) isOmitempty() bool {
+func (v *value) isOmitempty() bool {
 	return v.omitempty && is.Empty(v.Value.Interface(), true)
 }

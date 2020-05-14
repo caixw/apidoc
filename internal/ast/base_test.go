@@ -28,9 +28,6 @@ var (
 	_ token.AttrEncoder = &TypeAttribute{}
 	_ token.AttrEncoder = &VersionAttribute{}
 	_ token.AttrEncoder = &APIDocVersionAttribute{}
-
-	_ token.Decoder = &Element{}
-	_ token.Encoder = &Element{}
 )
 
 func TestIsValidMethod(t *testing.T) {

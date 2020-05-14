@@ -3,7 +3,6 @@
 package ast
 
 import (
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -17,10 +16,18 @@ import (
 
 type (
 	// CData 表示 XML 的 CDATA 数据
-	CData = token.CData
+	CData struct {
+		token.BaseTag
+		Value    token.String `apidoc:"-"`
+		RootName struct{}     `apidoc:"string,meta,usage-string"`
+	}
 
-	// String 表示一段普通的 XML 字符串
-	String = token.String
+	// Content 表示一段普通的 XML 字符串
+	Content struct {
+		token.Base
+		Value    string   `apidoc:"-"`
+		RootName struct{} `apidoc:"string,meta,usage-string"`
+	}
 
 	// Number 表示 XML 的数值类型
 	Number struct {
@@ -37,8 +44,8 @@ type (
 	// Attribute 表示 XML 属性
 	Attribute struct {
 		token.BaseAttribute
-		Value    String   `apidoc:"-"`
-		RootName struct{} `apidoc:"string,meta,usage-string"`
+		Value    token.String `apidoc:"-"`
+		RootName struct{}     `apidoc:"string,meta,usage-string"`
 	}
 
 	// NumberAttribute 表示数值类型的属性
@@ -73,10 +80,20 @@ type (
 	// Element 定义不包含子元素和属性的基本的 XML 元素
 	Element struct {
 		token.BaseTag
-		Content  String   `apidoc:"-"`
+		Content  Content  `apidoc:",content"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}
 )
+
+// EncodeXML Encoder.EncodeXML
+func (cdata *CData) EncodeXML() (string, error) {
+	return cdata.Value.Value, nil
+}
+
+// EncodeXML Encoder.EncodeXML
+func (s *Content) EncodeXML() (string, error) {
+	return s.Value, nil
+}
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *Attribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
@@ -258,36 +275,6 @@ func (a *APIDocVersionAttribute) EncodeXMLAttr() (string, error) {
 // V 返回当前属性实际表示的值
 func (a *APIDocVersionAttribute) V() string {
 	return (*Attribute)(a).V()
-}
-
-// EncodeXML Encoder.EncodeXML
-func (s *Element) EncodeXML() (string, error) {
-	return s.Content.Value, nil
-}
-
-// DecodeXML Decoder.DecodeXML
-func (s *Element) DecodeXML(p *token.Parser, start *token.StartElement) (*token.EndElement, error) {
-	for {
-		t, _, err := p.Token()
-		if err == io.EOF {
-			pos := p.Position().Position
-			return nil, p.NewError(pos, pos, "", locale.ErrInvalidXML)
-		} else if err != nil {
-			return nil, err
-		}
-
-		switch elem := t.(type) {
-		case *token.EndElement:
-			if elem.Name.Value != start.Name.Value {
-				return nil, p.NewError(elem.Start, elem.End, start.Name.Value, locale.ErrNotFoundEndTag)
-			}
-			return elem, nil
-		case *token.String:
-			s.Content = *elem
-		case *token.Instruction:
-			return nil, p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML)
-		}
-	}
 }
 
 // V 返回当前属性实际表示的值
