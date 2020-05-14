@@ -313,3 +313,63 @@ func TestAPI(t *testing.T) {
 		Equal(cb.Requests[0].Mimetype.V(), "json").
 		Equal(cb.Responses[0].Status.V(), 200)
 }
+
+func TestAPIDoc_DeleteURI(t *testing.T) {
+	a := assert.New(t)
+
+	d := &APIDoc{}
+	d.APIDoc = &APIDocVersionAttribute{Value: token.String{Value: "1.0.0"}}
+	d.URI = core.URI("uri1")
+	d.Apis = []*API{
+		{
+			URI: core.URI("uri1"),
+		},
+		{
+			URI: core.URI("uri2"),
+		},
+		{
+			URI: core.URI("uri3"),
+		},
+	}
+
+	d.DeleteURI(core.URI("uri3"))
+	a.Equal(2, len(d.Apis)).NotNil(d.APIDoc)
+
+	d.DeleteURI(core.URI("uri1"))
+	a.Equal(1, len(d.Apis)).Nil(d.APIDoc)
+
+	d.DeleteURI(core.URI("uri2"))
+	a.Equal(0, len(d.Apis)).Nil(d.APIDoc)
+}
+
+func TestRequest_Param(t *testing.T) {
+	a := assert.New(t)
+
+	var req *Request
+	a.Nil(req.Param())
+
+	req = &Request{Type: &TypeAttribute{Value: token.String{Value: TypeObject}}}
+	param := req.Param()
+	a.Equal(req.Type, param.Type)
+}
+
+func TestAPIDoc_Parse(t *testing.T) {
+	a := assert.New(t)
+
+	d := &APIDoc{}
+	err := d.Parse(core.Block{Data: []byte("<api>")})
+	a.Equal(err, ErrNoDocFormat)
+
+	// 直接结束标签
+	err = d.Parse(core.Block{Data: []byte("</api>")})
+	a.Equal(err, ErrNoDocFormat)
+
+	// 多个 apidoc 标签
+	d.Title = &Element{Content: Content{Value: "title"}}
+	err = d.Parse(core.Block{Data: []byte("<apidoc />")})
+	a.Error(err)
+
+	// 未知标签
+	err = d.Parse(core.Block{Data: []byte("<tag />")})
+	a.Equal(err, ErrNoDocFormat)
+}

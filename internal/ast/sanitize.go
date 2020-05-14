@@ -20,7 +20,6 @@ func (api *API) Sanitize(p *token.Parser) error {
 			return p.NewError(header.Type.Start, header.Type.End, "header", locale.ErrInvalidValue)
 		}
 	}
-
 	return nil
 }
 
@@ -29,7 +28,6 @@ func (e *Enum) Sanitize(p *token.Parser) error {
 	if e.Description.V() == "" && e.Summary.V() == "" {
 		return p.NewError(e.Start, e.End, "summary", locale.ErrRequired)
 	}
-
 	return nil
 }
 
