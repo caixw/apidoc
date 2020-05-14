@@ -291,15 +291,19 @@ func (doc *APIDoc) Parse(b core.Block) error {
 			return err
 		}
 		doc.Apis = append(doc.Apis, api)
-		return nil
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
 			return p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue)
 		}
-		return token.Decode(p, doc)
+		if err = token.Decode(p, doc); err != nil {
+			return err
+		}
 	default:
 		return ErrNoDocFormat
 	}
+
+	doc.sortAPIs()
+	return nil
 }
 
 // 获取根标签的名称

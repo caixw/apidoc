@@ -282,8 +282,20 @@ func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 
 // Sanitize 检测内容是否合法
 func (doc *APIDoc) Sanitize(p *token.Parser) error {
-	// doc.Apis 是多线程导入的，无法保证其顺序，
-	// 此处可以保证输出内容是按一定顺序排列的。
+	for _, api := range doc.Apis {
+		if api.doc == nil {
+			api.doc = doc // 保证单文件的文档能正常解析
+			api.URI = doc.URI
+		}
+		if err := api.sanitizeTags(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (doc *APIDoc) sortAPIs() {
 	sort.SliceStable(doc.Apis, func(i, j int) bool {
 		ii := doc.Apis[i]
 		jj := doc.Apis[j]
@@ -293,18 +305,6 @@ func (doc *APIDoc) Sanitize(p *token.Parser) error {
 		}
 		return ii.Path.Path.V() < jj.Path.Path.V()
 	})
-
-	for _, api := range doc.Apis {
-		if api.doc == nil {
-			api.doc = doc // 保证单文件的文档能正常解析
-			api.URI = doc.URI
-		}
-		if err := api.sanitizeTags(p); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func (doc *APIDoc) tagExists(tag string) bool {
@@ -325,20 +325,30 @@ func (doc *APIDoc) serverExists(srv string) bool {
 	return false
 }
 
-func (api *API) sanitizeTags(p *token.Parser) error {
+func (api *API) sanitizeTags() error {
 	if api.doc == nil {
 		panic("api.doc 未获取正确的值")
 	}
 
 	for _, tag := range api.Tags {
 		if !api.doc.tagExists(tag.Content.Value) {
-			return p.NewError(tag.Content.Start, tag.Content.End, "content", locale.ErrInvalidValue)
+			loc := core.Location{URI: api.URI,
+				Range: core.Range{
+					Start: tag.Content.Start,
+					End:   tag.Content.End,
+				}}
+			return core.NewSyntaxError(loc, "content", locale.ErrInvalidValue)
 		}
 	}
 
 	for _, srv := range api.Servers {
 		if !api.doc.serverExists(srv.Content.Value) {
-			return p.NewError(srv.Content.Start, srv.Content.End, "content", locale.ErrInvalidValue)
+			loc := core.Location{URI: api.URI,
+				Range: core.Range{
+					Start: srv.Content.Start,
+					End:   srv.Content.End,
+				}}
+			return core.NewSyntaxError(loc, "content", locale.ErrInvalidValue)
 		}
 	}
 
