@@ -95,9 +95,13 @@ func (t *Type) appendItem(name string, v reflect.Value, usageKey string, req boo
 		typ = typ.Elem()
 	}
 
+	tt := typ.Name()
+	if vv := parseValue(reflect.New(typ).Elem()); vv != nil {
+		tt = vv.name
+	}
 	t.Items = append(t.Items, &Item{
 		Name:     name,
-		Type:     parseValue(reflect.New(typ).Elem()).name,
+		Type:     tt,
 		Required: req,
 		Array:    isSlice,
 		Usage:    locale.Sprintf(usageKey),

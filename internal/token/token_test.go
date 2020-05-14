@@ -21,12 +21,14 @@ type (
 
 	intTag struct {
 		BaseTag
-		Value int `apidoc:"-"`
+		Value    int      `apidoc:"-"`
+		RootName struct{} `apidoc:"number,meta,usage-number"`
 	}
 
 	stringTag struct {
 		BaseTag
-		Value string `apidoc:"-"`
+		Value    string   `apidoc:"-"`
+		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}
 
 	errTag struct {
@@ -44,12 +46,14 @@ type (
 
 	intAttr struct {
 		BaseAttribute
-		Value int `apidoc:"-"`
+		Value    int      `apidoc:"-"`
+		RootName struct{} `apidoc:"number,meta,usage-number"`
 	}
 
 	stringAttr struct {
 		BaseAttribute
-		Value string `apidoc:"-"`
+		Value    string   `apidoc:"-"`
+		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}
 
 	errAttr struct {
@@ -57,7 +61,7 @@ type (
 		Value int `apidoc:"-"`
 	}
 
-	// NOTE: objectTag 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
+	// NOTE: objectAttr 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
 	objectAttr struct {
 		BaseAttribute
 		RootName struct{}  `apidoc:"apidoc,meta,usage-root"`
