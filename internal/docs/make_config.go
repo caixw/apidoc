@@ -46,7 +46,7 @@ func main() {
 	}
 	makeutil.PanicError(makeutil.WriteXML(target, defaultConfig, "\t"))
 
-	for tag := range locale.DisplayNames() {
+	for _, tag := range locale.Tags() {
 		types, err := token.NewTypes(&ast.APIDoc{}, tag)
 		makeutil.PanicError(err)
 
