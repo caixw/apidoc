@@ -12,10 +12,10 @@ import (
 )
 
 func initLang() {
-	command.New("lang", language, buildUsage(locale.CmdLangUsage))
+	command.New("lang", doLang, buildUsage(locale.CmdLangUsage))
 }
 
-func language(w io.Writer) error {
+func doLang(w io.Writer) error {
 	ls := lang.Langs()
 	langs := make([]*lang.Language, 1, len(ls)+1)
 	langs[0] = &lang.Language{

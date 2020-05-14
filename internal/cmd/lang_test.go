@@ -14,7 +14,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/lang"
 )
 
-func TestLanguage(t *testing.T) {
+func TestDoLang(t *testing.T) {
 	a := assert.New(t)
 	w := new(bytes.Buffer)
 
@@ -28,7 +28,7 @@ func TestLanguage(t *testing.T) {
 		return lines
 	}
 
-	a.NotError(language(w))
+	a.NotError(doLang(w))
 	ls := lines(w)
 	a.Equal(len(ls), len(lang.Langs())+1)
 	for _, l := range ls {
