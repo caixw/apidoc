@@ -8,13 +8,13 @@
 </xsl:variable>
 
 <xsl:variable name="types-file">
-    <xsl:value-of select="document('locales.xml')/locales/locale[@id=$curr-lang]/@types" />
+    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@types" />
 </xsl:variable>
 
 <!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
 <xsl:variable name="curr-lang-title">
     <xsl:variable name="title">
-        <xsl:value-of select="document('locales.xml')/locales/locale[@id=$curr-lang]/@title" />
+        <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@title" />
     </xsl:variable>
 
     <xsl:choose>
@@ -95,7 +95,7 @@
                         <span aria-hiddren="true">&#160;&#x25bc;</span>
                     </a>
                     <ul>
-                        <xsl:for-each select="document('locales.xml')/locales/locale">
+                        <xsl:for-each select="document('config.xml')/config/locales/locale">
                             <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
                         </xsl:for-each>
                     </ul>

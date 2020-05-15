@@ -33,6 +33,10 @@ var data = []*FileInfo{{
 		<language id="scala">Scala</language>
 		<language id="swift">Swift</language>
 	</languages>
+	<locales>
+		<locale id="cmn-Hans" href="index.xml" title="简体中文" types="types.cmn-Hans.xml"></locale>
+		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" types="types.cmn-Hant.xml"></locale>
+	</locales>
 </config>
 `),
 },
@@ -42,7 +46,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-15T22:06:08+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-15T22:23:48+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -877,13 +881,13 @@ function initGotoTop() {
 </xsl:variable>
 
 <xsl:variable name="types-file">
-    <xsl:value-of select="document('locales.xml')/locales/locale[@id=$curr-lang]/@types" />
+    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@types" />
 </xsl:variable>
 
 <!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
 <xsl:variable name="curr-lang-title">
     <xsl:variable name="title">
-        <xsl:value-of select="document('locales.xml')/locales/locale[@id=$curr-lang]/@title" />
+        <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@title" />
     </xsl:variable>
 
     <xsl:choose>
@@ -964,7 +968,7 @@ function initGotoTop() {
                         <span aria-hiddren="true">&#160;&#x25bc;</span>
                     </a>
                     <ul>
-                        <xsl:for-each select="document('locales.xml')/locales/locale">
+                        <xsl:for-each select="document('config.xml')/config/locales/locale">
                             <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
                         </xsl:for-each>
                     </ul>
@@ -1074,17 +1078,6 @@ function initGotoTop() {
 </xsl:template>
 
 </xsl:stylesheet>
-`),
-	},
-	{
-		Name:        "locales.xml",
-		ContentType: "application/xml; charset=utf-8",
-		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
-
-<locales>
-    <locale id="cmn-Hans" href="index.xml" title="简体中文" types="types.cmn-Hans.xml" />
-    <locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁体中文" types="types.cmn-Hant.xml" />
-</locales>
 `),
 	},
 	{
