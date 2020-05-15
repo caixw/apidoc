@@ -134,11 +134,7 @@ func recursivePath(o *Input) ([]core.URI, error) {
 		if fi.IsDir() && !o.Recursive && path != local {
 			return filepath.SkipDir
 		} else if extIsEnabled(filepath.Ext(path)) {
-			uri, err := core.FileURI(path)
-			if err != nil {
-				return err
-			}
-			uris = append(uris, uri)
+			uris = append(uris, core.FileURI(path))
 		}
 		return nil
 	}

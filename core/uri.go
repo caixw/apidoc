@@ -5,9 +5,7 @@ package core
 import (
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/issue9/utils"
@@ -22,6 +20,8 @@ const (
 	SchemeFile  = "file"
 	SchemeHTTP  = "http"
 	SchemeHTTPS = "https"
+
+	separator = "://"
 )
 
 // URI 定义 URI
@@ -42,42 +42,27 @@ type URI string
 
 // FileURI 根据本地文件路径构建 URI 实例
 //
-// NOTE: 如果 path 不是绝对路径，会被转换成绝对路径，
-// 如果仅需要一个表示相对的路径的 URI 类型，可以采用：
-//  URI(path)
-// 的方式直接将字符串转换成 URI 类型。
-func FileURI(path string) (URI, error) {
-	if !filepath.IsAbs(path) {
-		p, err := filepath.Abs(path)
-		if err != nil {
-			return "", err
-		}
-		path = p
+// 如果已经存在协议，则不作任何改变返回。
+func FileURI(path string) URI {
+	if index := strings.Index(path, separator); index > -1 {
+		return URI(path)
 	}
-
-	u := &url.URL{Scheme: SchemeFile, Path: path}
-	return URI(u.String()), nil
+	return URI(SchemeFile + separator + path)
 }
 
 // File 返回 file:// 协议关联的文件路径
 func (uri URI) File() (string, error) {
-	u, err := uri.Parse()
-	if err != nil {
-		return "", err
+	if scheme, path := uri.Parse(); scheme == SchemeFile || scheme == "" {
+		return path, nil
 	}
-
-	if u.Scheme != SchemeFile && u.Scheme != "" {
-		return "", locale.NewError(locale.ErrInvalidURIScheme)
-	}
-
-	return u.Path, nil
+	return "", locale.NewError(locale.ErrInvalidURIScheme)
 }
 
 func (uri URI) String() string {
 	return string(uri)
 }
 
-// Append 追加 path 至 URI，生成新的 URI。
+// Append 追加 path 至 URI 生成新的 URI
 func (uri URI) Append(path string) URI {
 	if path == "" {
 		return uri
@@ -107,14 +92,10 @@ func isPathSeparator(b byte) bool {
 //
 // 如果是非本地文件，通过 http 的状态码是否为 400 以内加以判断。
 func (uri URI) Exists() (bool, error) {
-	u, err := uri.Parse()
-	if err != nil {
-		return false, err
-	}
-
-	switch u.Scheme {
-	case SchemeFile:
-		return localFileIsExists(u.Path), nil
+	scheme, path := uri.Parse()
+	switch scheme {
+	case SchemeFile, "":
+		return utils.FileExists(path), nil
 	case SchemeHTTP, SchemeHTTPS:
 		return remoteFileIsExists(string(uri))
 	default:
@@ -126,14 +107,10 @@ func (uri URI) Exists() (bool, error) {
 //
 // 目前仅支持 file、http 和 https 协议
 func (uri URI) ReadAll(enc encoding.Encoding) ([]byte, error) {
-	u, err := uri.Parse()
-	if err != nil {
-		return nil, err
-	}
-
-	switch u.Scheme {
-	case SchemeFile:
-		return readLocalFile(u.Path, enc)
+	scheme, path := uri.Parse()
+	switch scheme {
+	case SchemeFile, "":
+		return readLocalFile(path, enc)
 	case SchemeHTTP, SchemeHTTPS:
 		return readRemoteFile(string(uri), enc)
 	default:
@@ -143,48 +120,20 @@ func (uri URI) ReadAll(enc encoding.Encoding) ([]byte, error) {
 
 // WriteAll 写入内容至 uri
 func (uri URI) WriteAll(data []byte) error {
-	u, err := uri.Parse()
-	if err != nil {
-		return err
+	if scheme, path := uri.Parse(); scheme == SchemeFile || scheme == "" {
+		return ioutil.WriteFile(path, data, os.ModePerm)
 	}
-
-	if u.Scheme != SchemeFile {
-		return locale.NewError(locale.ErrInvalidURIScheme)
-	}
-
-	return ioutil.WriteFile(u.Path, data, os.ModePerm)
+	return locale.NewError(locale.ErrInvalidURIScheme)
 }
 
 // Parse 分析 uri，获取其各个部分的内容
-func (uri URI) Parse() (*url.URL, error) {
-	if uri.IsNoScheme() {
-		return &url.URL{
-			Scheme: SchemeFile,
-			Path:   string(uri),
-		}, nil
+func (uri URI) Parse() (schema, path string) {
+	uris := string(uri)
+	index := strings.Index(uris, separator)
+	if index == -1 {
+		return "", uris
 	}
-
-	return url.ParseRequestURI(string(uri))
-}
-
-// IsNoScheme 是否不包含协议部分
-func (uri URI) IsNoScheme() bool {
-	str := string(uri)
-
-	if str == "" || str[0] == '.' || str[0] == '/' || str[0] == os.PathSeparator {
-		return true
-	}
-
-	if index := strings.IndexByte(str, ':'); index > 0 {
-		// 可能是 windows 的 c:\path 格式
-		return len(str) > index+1 && str[index+1] == '\\'
-	}
-
-	return true
-}
-
-func localFileIsExists(path string) bool {
-	return utils.FileExists(path)
+	return uris[:index], uris[index+len(separator):]
 }
 
 func remoteFileIsExists(url string) (bool, error) {

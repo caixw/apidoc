@@ -81,8 +81,8 @@ func TestConfig_sanitize(t *testing.T) {
 func TestConfig_SaveToFile(t *testing.T) {
 	a := assert.New(t)
 
-	wd, err := core.FileURI("./")
-	a.NotError(err).NotEmpty(wd)
+	wd := core.FileURI("./")
+	a.NotEmpty(wd)
 	cfg, err := DetectConfig(wd, true)
 	a.NotError(err).NotNil(cfg)
 	a.NotError(cfg.SaveToFile(wd.Append(".apidoc.yaml")))

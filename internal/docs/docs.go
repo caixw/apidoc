@@ -13,6 +13,7 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/issue9/utils"
 )
 
 // 默认页面
@@ -26,6 +27,8 @@ var styles = []string{
 	ast.MajorVersion + "/",
 }
 
+var docsDir = core.FileURI(utils.CurrentPath("../../docs"))
+
 // FileInfo 被打包文件的信息
 type FileInfo struct {
 	// 相对于打包根目录的地址，同时也会被作为路由地址
@@ -33,6 +36,11 @@ type FileInfo struct {
 
 	ContentType string
 	Content     []byte
+}
+
+// Dir 指向 /docs 的路径
+func Dir() core.URI {
+	return docsDir
 }
 
 // StylesheetURL 生成 apidoc.xsl 文件的 URL 地址
@@ -54,13 +62,8 @@ func Handler(folder core.URI, stylesheet bool) http.Handler {
 		return embeddedHandler(stylesheet)
 	}
 
-	u, err := folder.Parse()
-	if err != nil {
-		panic(err)
-	}
-
-	switch u.Scheme {
-	case core.SchemeFile:
+	switch scheme, _ := folder.Parse(); scheme {
+	case core.SchemeFile, "":
 		return localHandler(folder, stylesheet)
 	case core.SchemeHTTP, core.SchemeHTTPS:
 		return remoteHandler(folder, stylesheet)

@@ -30,12 +30,7 @@ func (u uri) Get() interface{} {
 }
 
 func (u *uri) Set(v string) error {
-	fu, err := core.FileURI(v)
-	if err != nil {
-		return err
-	}
-
-	*u = uri(fu)
+	*u = uri(core.FileURI(v))
 	return nil
 }
 
@@ -55,11 +50,7 @@ func initStatic() {
 func static(io.Writer) (err error) {
 	var path core.URI
 	if staticFlagSet.NArg() != 0 {
-		uri, err := getPath(staticFlagSet)
-		if err != nil {
-			return err
-		}
-		path = uri
+		path = getPath(staticFlagSet)
 	}
 
 	h := core.NewMessageHandler(newHandlerFunc())

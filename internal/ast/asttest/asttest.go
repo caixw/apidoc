@@ -157,8 +157,8 @@ func XML(a *assert.Assertion) []byte {
 
 // URI 返回测试文件基于 URI 的表示方式
 func URI(a *assert.Assertion) core.URI {
-	p, err := core.FileURI(pp(a, Filename))
-	a.NotError(err).NotEmpty(p)
+	p := core.FileURI(pp(a, Filename))
+	a.NotEmpty(p)
 	return p
 }
 

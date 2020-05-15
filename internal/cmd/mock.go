@@ -69,15 +69,10 @@ func initMock() {
 }
 
 func doMock(io.Writer) error {
-	uri, err := getPath(mockFlagSet)
-	if err != nil {
-		return err
-	}
-
 	h := core.NewMessageHandler(newHandlerFunc())
 	defer h.Stop()
 
-	handler, err := apidoc.MockFile(h, uri, mockServers)
+	handler, err := apidoc.MockFile(h, getPath(mockFlagSet), mockServers)
 	if err != nil {
 		return err
 	}

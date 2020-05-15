@@ -14,8 +14,8 @@ func TestAbs(t *testing.T) {
 	a := assert.New(t)
 	hd, err := os.UserHomeDir()
 	a.NotError(err).NotNil(hd)
-	hdURI, err := core.FileURI(hd)
-	a.NotError(err).NotEmpty(hdURI)
+	hdURI := core.FileURI(hd)
+	a.NotEmpty(hdURI)
 
 	data := []*struct {
 		path, wd, result string
