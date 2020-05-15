@@ -81,6 +81,12 @@ func (types *Types) dumpToTypes(n *node) error {
 
 	for _, attr := range n.attrs {
 		t.appendItem("@"+attr.name, attr.Value, attr.usage, !attr.omitempty)
+
+		if nn := newNode(attr.name, attr.Value); nn.typeName != "" && !types.typeExists(nn.typeName) {
+			if err := types.dumpToTypes(nn); err != nil {
+				return err
+			}
+		}
 	}
 
 	for _, elem := range n.elems {
