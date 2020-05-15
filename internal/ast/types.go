@@ -240,11 +240,11 @@ type (
 
 	// XML 仅作用于 XML 的几个属性
 	XML struct {
-		XMLAttr     *BoolAttribute `apidoc:"xml-attr,attr,usage-xml-xml-attr,omitempty"`        // 作为父元素的 XML 属性存在
-		XMLExtract  *BoolAttribute `apidoc:"xml-extract,attr,usage-xml-xml-extract,omitempty"`  // 提取当前内容作为父元素的内容
-		XMLNS       *Attribute     `apidoc:"xml-ns,attr,usage-xml-xml-ns,omitempty"`            // 命名空间
-		XMLNSPrefix *Attribute     `apidoc:"xml-ns-prefix,attr,usage-xml-xml-prefix,omitempty"` // 命名空间前缀
-		XMLWrapped  *Attribute     `apidoc:"xml-wrapped,attr,usage-xml-xml-wrapped,omitempty"`  // 如果当前元素是数组，是否将其包含在 wrapped 中
+		XMLAttr     *BoolAttribute `apidoc:"xml-attr,attr,usage-xml-attr,omitempty"`        // 作为父元素的 XML 属性存在
+		XMLExtract  *BoolAttribute `apidoc:"xml-extract,attr,usage-xml-extract,omitempty"`  // 提取当前内容作为父元素的内容
+		XMLNS       *Attribute     `apidoc:"xml-ns,attr,usage-xml-ns,omitempty"`            // 命名空间
+		XMLNSPrefix *Attribute     `apidoc:"xml-ns-prefix,attr,usage-xml-prefix,omitempty"` // 命名空间前缀
+		XMLWrapped  *Attribute     `apidoc:"xml-wrapped,attr,usage-xml-wrapped,omitempty"`  // 如果当前元素是数组，是否将其包含在 wrapped 中
 	}
 )
 

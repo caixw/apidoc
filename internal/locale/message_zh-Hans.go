@@ -128,6 +128,7 @@ options 可以是以下参数
 	UsageCallbackMethod:      "回调的请求方法",
 	UsageCallbackPath:        "定义回调的地址",
 	UsageCallbackSummary:     "简要介绍",
+	UsageCallbackDeprecated:  "在此版本之后将会被弃用",
 	UsageCallbackDescription: "该接口的详细介绍",
 	UsageCallbackResponses:   "定义可能的返回信息",
 	UsageCallbackRequests:    "定义可用的请求信息",
@@ -197,9 +198,16 @@ options 可以是以下参数
 	UsageServer:            "用于指定各个 API 的服务器地址",
 	UsageServerName:        "服务唯一 ID",
 	UsageServerTitle:       "服务的字面名称",
+	UsageServerURL:         "服务的基地址，与该服务关联的 API，访问地址都是相对于此地址的。",
 	UsageServerDeprecated:  "服务在大于该版本时被弃用",
 	UsageServerSummary:     "服务的摘要信息",
 	UsageServerDescription: "服务的详细描述",
+
+	UsageXMLAttr:    "是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。",
+	UsageXMLExtract: "将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。",
+	UsageXMLNS:      "XML 标签的命名空间",
+	UsageXMLPrefix:  "XML 标签的命名空间名称前缀",
+	UsageXMLWrapped: "如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。",
 
 	// 基本类型
 	UsageString: "普通的字符串类型",

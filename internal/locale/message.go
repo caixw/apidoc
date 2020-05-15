@@ -134,6 +134,7 @@ options 可以是以下参数
 	UsageCallbackMethod      = "usage-callback-method"
 	UsageCallbackPath        = "usage-callback-path"
 	UsageCallbackSummary     = "usage-callback-summary"
+	UsageCallbackDeprecated  = "usage-callback-deprecated"
 	UsageCallbackDescription = "usage-callback-description"
 	UsageCallbackResponses   = "usage-callback-responses"
 	UsageCallbackRequests    = "usage-callback-requests"
@@ -196,16 +197,23 @@ options 可以是以下参数
 	UsageRichtextText = "usage-richtext-text"
 
 	UsageTag           = "usage-tag"
-	UsageTagName       = "usage-tag-id"
+	UsageTagName       = "usage-tag-name"
 	UsageTagTitle      = "usage-tag-title"
 	UsageTagDeprecated = "usage-tag-deprecated"
 
 	UsageServer            = "usage-server"
 	UsageServerName        = "usage-server-name"
 	UsageServerTitle       = "usage-server-title"
+	UsageServerURL         = "usage-server-url"
 	UsageServerDeprecated  = "usage-server-deprecated"
 	UsageServerSummary     = "usage-server-summary"
 	UsageServerDescription = "usage-server-description"
+
+	UsageXMLAttr    = "usage-xml-attr"
+	UsageXMLExtract = "usage-xml-extract"
+	UsageXMLNS      = "usage-xml-ns"
+	UsageXMLPrefix  = "usage-xml-prefix"
+	UsageXMLWrapped = "usage-xml-wrapped"
 
 	// 基本类型
 	UsageString = "usage-string"
