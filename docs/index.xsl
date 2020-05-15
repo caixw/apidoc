@@ -135,7 +135,6 @@
             <xsl:for-each select="document(/docs/@types)/types/type">
                 <xsl:call-template name="type">
                     <xsl:with-param name="type" select="." />
-                    <xsl:with-param name="parent" select="$id" />
                 </xsl:call-template>
             </xsl:for-each>
         </xsl:if>
@@ -144,21 +143,17 @@
 
 <!-- 以下两个变量仅用于 type 模板，在模板中无法直接使用 /docs 元素，所以使用变量引用 -->
 <xsl:variable name="header-locale" select="/docs/type-locale/header" />
-<xsl:variable name="doc-types" select="/docs/types" />
 
 <!-- 将类型显示为一个 table -->
 <xsl:template name="type">
     <xsl:param name="type" />
-    <xsl:param name="parent" />
-
-    <xsl:variable name="type-locale" select="$doc-types[@parent=$parent]/type[@name=$type/@name]" />
 
     <article id="type_{$type/@name}">
         <h3>
             <xsl:value-of select="$type/@name" />
             <a class="link" href="#type_{$type/@name}">&#160;&#160;&#128279;</a>
         </h3>
-        <xsl:copy-of select="$type-locale/description/node()" />
+        <xsl:copy-of select="$type/usage/node()" />
         <xsl:if test="item">
             <table>
                 <thead>
