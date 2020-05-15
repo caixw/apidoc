@@ -170,7 +170,12 @@
                     <xsl:variable name="name" select="@name" />
                     <tr>
                         <th><xsl:value-of select="@name" /></th>
-                        <td><xsl:value-of select="@type" /></td>
+                        <td>
+                            <a href="#type_{@type}">
+                                <xsl:value-of select="@type" />
+                                <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+                            </a>
+                        </td>
                         <td>
                             <xsl:call-template name="checkbox">
                                 <xsl:with-param name="chk" select="@required" />
