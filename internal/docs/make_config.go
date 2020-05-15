@@ -12,7 +12,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/token"
 	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
@@ -74,12 +73,4 @@ func main() {
 	}
 
 	makeutil.PanicError(makeutil.WriteXML(target, defaultConfig, "\t"))
-
-	for _, tag := range tags {
-		types, err := token.NewTypes(&ast.APIDoc{}, tag)
-		makeutil.PanicError(err)
-
-		target := docs.Dir().Append("types." + tag.String() + ".xml")
-		makeutil.PanicError(makeutil.WriteXML(target, types, "\t"))
-	}
 }
