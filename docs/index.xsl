@@ -37,7 +37,7 @@
             <link rel="canonical" href="{document('config.xml')/config/url}" />
             <link rel="stylesheet" type="text/css" href="./index.css" />
             <link rel="license" href="{/docs/liense/@url}" />
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/themes/prism-tomorrow.min.css" />
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism-tomorrow.min.css" />
             <script src="./index.js" />
         </head>
 
@@ -65,8 +65,8 @@
                 <a href="#" class="goto-top" />
             </footer>
 
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/components/prism-core.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/autoloader/prism-autoloader.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/components/prism-core.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/plugins/autoloader/prism-autoloader.min.js"></script>
         </body>
     </html>
 </xsl:template>
