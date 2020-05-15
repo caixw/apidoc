@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <locales>
-    <locale id="cmn-Hans" href="index.xml" title="简体中文" />
-    <locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁体中文" />
+    <locale id="cmn-Hans" href="index.xml" title="简体中文" types="types.cmn-Hans.xml" />
+    <locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁体中文" types="types.cmn-Hant.xml" />
 </locales>

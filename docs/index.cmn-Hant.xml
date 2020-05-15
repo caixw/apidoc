@@ -7,7 +7,7 @@
 其它語言的本化地內容，需要重新改寫本文件中除註釋外的所有內容。
 -->
 
-<docs lang="cmn-Hant" types="types.cmn-Hant.xml">
+<docs lang="cmn-Hant">
     <title>apidoc | RESTful API 文檔處理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 國際 (CC BY 4.0)</license>
 

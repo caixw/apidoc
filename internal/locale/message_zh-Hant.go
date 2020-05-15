@@ -178,7 +178,7 @@ options 可以是以下參數
 	UsageRequestStatus:      "狀態碼。在 request 中，該值不可用，否則為必填項。",
 	UsageRequestEnums:       "當前參數可用的枚舉值",
 	UsageRequestDescription: "詳細介紹，為 HTML 內容。",
-	UsageRequestMimetype:    "媒體類型，比如 application/json 等。",
+	UsageRequestMimetype:    "媒體類型，比如 <var>application/json</var> 等。",
 	UsageRequestExamples:    "示例代碼",
 	UsageRequestHeaders:     "傳遞的報頭內容",
 
