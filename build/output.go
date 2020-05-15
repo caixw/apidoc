@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/issue9/version"
+
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/docs"
@@ -30,6 +32,12 @@ type marshaler func(*ast.APIDoc) ([]byte, error)
 
 // Output 指定了渲染输出的相关设置项。
 type Output struct {
+	// 文档的版本号
+	//
+	// 该值会覆盖文档中 apidoc.version 的值，方便用户通过代码层面进行版本号同步，
+	// 该值无法通过配置文件设置，只能由代码进行设置。
+	Version string `yaml:"-"`
+
 	// 导出的文件类型格式，默认为 apidoc 的 XML 文件。
 	Type string `yaml:"type,omitempty"`
 
@@ -77,6 +85,12 @@ func (o *Output) Sanitize() error {
 		o.Type = ApidocXML
 	}
 
+	if o.Version != "" {
+		if !version.SemVerValid(o.Version) {
+			return core.NewSyntaxError(core.Location{}, "version", locale.ErrInvalidFormat)
+		}
+	}
+
 	switch o.Type {
 	case ApidocXML:
 		o.marshal = apidocMarshaler
@@ -116,6 +130,10 @@ func apidocMarshaler(d *ast.APIDoc) ([]byte, error) {
 
 func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 	filterDoc(d, o)
+
+	if o.Version != "" {
+		d.Version.Value.Value = o.Version
+	}
 
 	d.Created = &ast.Attribute{Value: token.String{Value: time.Now().Format(createdFormat)}}
 	d.APIDoc = &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}

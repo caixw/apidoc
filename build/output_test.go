@@ -45,6 +45,11 @@ func TestOutput_Sanitize(t *testing.T) {
 	a.Equal(o.Style, docs.StylesheetURL(vars.OfficialURL)).
 		Equal(2, len(o.procInst)).
 		Contains(o.procInst[1], docs.StylesheetURL(vars.OfficialURL))
+
+	o.Version = "1.0.0"
+	a.NotError(o.Sanitize())
+	o.Version = "1"
+	a.Error(o.Sanitize())
 }
 
 func TestOptions_buffer(t *testing.T) {
