@@ -23,9 +23,10 @@ func TestFileURI(t *testing.T) {
 	file, err := uri.File()
 	a.NotError(err).Equal(path, file)
 
-	uri = URI(path)
+	uri = FileURI("file:///path")
+	a.Equal(uri, "file:///path")
 	file, err = uri.File()
-	a.NotError(err).Equal(path, file).Equal(path, uri.String())
+	a.NotError(err).Equal("/path", file)
 }
 
 func TestURI_File(t *testing.T) {

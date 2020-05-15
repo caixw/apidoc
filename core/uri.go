@@ -20,7 +20,8 @@ const (
 	SchemeFile  = "file"
 	SchemeHTTP  = "http"
 	SchemeHTTPS = "https"
-	separator   = "://"
+
+	separator = "://"
 )
 
 // URI 定义 URI
@@ -61,7 +62,7 @@ func (uri URI) String() string {
 	return string(uri)
 }
 
-// Append 追加 path 至 URI，生成新的 URI。
+// Append 追加 path 至 URI 生成新的 URI
 func (uri URI) Append(path string) URI {
 	if path == "" {
 		return uri
