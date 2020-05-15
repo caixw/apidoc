@@ -18,15 +18,13 @@ type (
 	// CData 表示 XML 的 CDATA 数据
 	CData struct {
 		token.BaseTag
-		Value    token.String `apidoc:"-"`
-		RootName struct{}     `apidoc:"string,meta,usage-string"`
+		Value token.String `apidoc:"-"`
 	}
 
 	// Content 表示一段普通的 XML 字符串
 	Content struct {
 		token.Base
-		Value    string   `apidoc:"-"`
-		RootName struct{} `apidoc:"string,meta,usage-string"`
+		Value string `apidoc:"-"`
 	}
 
 	// Number 表示 XML 的数值类型
