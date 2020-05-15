@@ -97,6 +97,7 @@ options 可以是以下參數
 	UsageAPIDocTags:        "文檔中定義的所有標簽",
 	UsageAPIDocServers:     "API 基地址列表，每個 API 最少應該有壹個 server。",
 	UsageAPIDocAPIs:        "文檔中的 API 文檔",
+	UsageAPIDocHeaders:     "文檔中所有 API 都包含的公共報頭",
 	UsageAPIDocResponses:   "文檔中所有 API 文檔都需要支持的返回內容",
 	UsageAPIDocMimetypes:   "文檔所支持的 mimetype",
 

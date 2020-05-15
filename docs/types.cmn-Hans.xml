@@ -17,6 +17,7 @@
 		<item name="tag" type="tag" array="true" required="false">文档中定义的所有标签</item>
 		<item name="server" type="server" array="true" required="false">API 基地址列表，每个 API 最少应该有一个 server。</item>
 		<item name="api" type="api" array="true" required="false">文档中的 API 文档</item>
+		<item name="header" type="param" array="true" required="false">文档中所有 API 都包含的公共报头</item>
 		<item name="response" type="request" array="true" required="false">文档中所有 API 文档都需要支持的返回内容</item>
 		<item name="mimetype" type="string" array="true" required="true">文档所支持的 mimetype</item>
 	</type>

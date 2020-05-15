@@ -21,6 +21,9 @@
         </description>
     </server>
 
+    <header type="string" name="Authorization" summary="token 值" />
+    <header type="string" name="Accept" summary="能接受的字符集" />
+
     <mimetype>application/xml</mimetype>
     <mimetype>application/json</mimetype>
 

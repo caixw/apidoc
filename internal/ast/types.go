@@ -62,6 +62,9 @@ type (
 		Servers     []*Server         `apidoc:"server,elem,usage-apidoc-servers,omitempty"`
 		Apis        []*API            `apidoc:"api,elem,usage-apidoc-apis,omitempty"`
 
+		// 公共的报头，所有 API 默认都采用此报头
+		Headers []*Param `apidoc:"header,elem,usage-apidoc-headers,omitempty"`
+
 		// 表示所有 API 都有可能返回的内容
 		Responses []*Request `apidoc:"response,elem,usage-apidoc-responses,omitempty"`
 

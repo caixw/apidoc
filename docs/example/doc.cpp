@@ -29,6 +29,9 @@
 //     </response>
 //     <response status="404" summary="not found" />
 //
+//    <header type="string" name="Authorization" summary="token 值" />
+//    <header type="string" name="Accept" summary="能接受的字符集" />
+//
 //     <description type="html">
 // <![CDATA[
 //     <p>这是一个用于测试的文档用例</p>

@@ -46,7 +46,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-16T01:38:07+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-16T01:58:37+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -236,6 +236,8 @@ var data = []*FileInfo{{
 		</callback>
 		<server>client</server>
 	</api>
+	<header name="Authorization" type="string" summary="token 值"></header>
+	<header name="Accept" type="string" summary="能接受的字符集"></header>
 	<response name="result" type="object" status="400">
 		<param xml-attr="true" name="code" type="number" optional="false" summary="状态码"></param>
 		<param name="message" type="string" optional="false" summary="错误信息"></param>
@@ -1102,6 +1104,7 @@ function initGotoTop() {
 		<item name="tag" type="tag" array="true" required="false">文档中定义的所有标签</item>
 		<item name="server" type="server" array="true" required="false">API 基地址列表，每个 API 最少应该有一个 server。</item>
 		<item name="api" type="api" array="true" required="false">文档中的 API 文档</item>
+		<item name="header" type="param" array="true" required="false">文档中所有 API 都包含的公共报头</item>
 		<item name="response" type="request" array="true" required="false">文档中所有 API 文档都需要支持的返回内容</item>
 		<item name="mimetype" type="string" array="true" required="true">文档所支持的 mimetype</item>
 	</type>
@@ -1260,6 +1263,7 @@ function initGotoTop() {
 		<item name="tag" type="tag" array="true" required="false">文檔中定義的所有標簽</item>
 		<item name="server" type="server" array="true" required="false">API 基地址列表，每個 API 最少應該有壹個 server。</item>
 		<item name="api" type="api" array="true" required="false">文檔中的 API 文檔</item>
+		<item name="header" type="param" array="true" required="false">文檔中所有 API 都包含的公共報頭</item>
 		<item name="response" type="request" array="true" required="false">文檔中所有 API 文檔都需要支持的返回內容</item>
 		<item name="mimetype" type="string" array="true" required="true">文檔所支持的 mimetype</item>
 	</type>

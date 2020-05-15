@@ -103,6 +103,7 @@ options 可以是以下参数
 	UsageAPIDocTags        = "usage-apidoc-tags"
 	UsageAPIDocServers     = "usage-apidoc-servers"
 	UsageAPIDocAPIs        = "usage-apidoc-apis"
+	UsageAPIDocHeaders     = "usage-apidoc-headers"
 	UsageAPIDocResponses   = "usage-apidoc-responses"
 	UsageAPIDocMimetypes   = "usage-apidoc-mimetypes"
 

@@ -76,7 +76,7 @@ func TestAPIDoc(t *testing.T) {
 			UsageKey: "usage-apidoc",
 			Range: core.Range{
 				Start: core.Position{Character: 0, Line: 2},
-				End:   core.Position{Character: 9, Line: 32},
+				End:   core.Position{Character: 9, Line: 35},
 			},
 		},
 		StartTag: token.String{
@@ -88,8 +88,8 @@ func TestAPIDoc(t *testing.T) {
 		},
 		EndTag: token.String{
 			Range: core.Range{
-				Start: core.Position{Character: 2, Line: 32},
-				End:   core.Position{Character: 8, Line: 32},
+				Start: core.Position{Character: 2, Line: 35},
+				End:   core.Position{Character: 8, Line: 35},
 			},
 			Value: "apidoc",
 		},
