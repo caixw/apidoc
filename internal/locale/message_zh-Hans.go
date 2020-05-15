@@ -133,10 +133,11 @@ options 可以是以下参数
 	UsageCallbackRequests:    "定义可用的请求信息",
 	UsageCallbackHeaders:     "传递的报头内容",
 
-	UsageEnum:           "定义枚举类型的数所的枚举值",
-	UsageEnumDeprecated: "该属性弃用的版本号",
-	UsageEnumValue:      "枚举值",
-	UsageEnumSummary:    "枚举值的说明",
+	UsageEnum:            "定义枚举类型的数所的枚举值",
+	UsageEnumDeprecated:  "该属性弃用的版本号",
+	UsageEnumValue:       "枚举值",
+	UsageEnumSummary:     "枚举值的说明",
+	UsageEnumDescription: "枚举值的详细说明",
 
 	UsageExample:         "示例代码",
 	UsageExampleMimetype: "特定于类型的示例代码",

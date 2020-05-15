@@ -133,10 +133,11 @@ options 可以是以下參數
 	UsageCallbackRequests:    "定義可用的請求信息",
 	UsageCallbackHeaders:     "傳遞的報頭內容",
 
-	UsageEnum:           "定義枚舉類型的數所的枚舉值",
-	UsageEnumDeprecated: "該屬性棄用的版本號",
-	UsageEnumValue:      "枚舉值",
-	UsageEnumSummary:    "枚舉值的說明",
+	UsageEnum:            "定義枚舉類型的數所的枚舉值",
+	UsageEnumDeprecated:  "該屬性棄用的版本號",
+	UsageEnumValue:       "枚舉值",
+	UsageEnumSummary:     "枚舉值的說明",
+	UsageEnumDescription: "枚舉值的詳細說明",
 
 	UsageExample:         "示例代碼",
 	UsageExampleMimetype: "特定於類型的示例代碼",

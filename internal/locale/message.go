@@ -139,10 +139,11 @@ options 可以是以下参数
 	UsageCallbackRequests    = "usage-callback-requests"
 	UsageCallbackHeaders     = "usage-callback-headers"
 
-	UsageEnum           = "usage-enum"
-	UsageEnumDeprecated = "usage-enum-deprecated"
-	UsageEnumValue      = "usage-enum-value"
-	UsageEnumSummary    = "usage-enum-summary"
+	UsageEnum            = "usage-enum"
+	UsageEnumDeprecated  = "usage-enum-deprecated"
+	UsageEnumValue       = "usage-enum-value"
+	UsageEnumSummary     = "usage-enum-summary"
+	UsageEnumDescription = "usage-enum-description"
 
 	UsageExample         = "usage-example"
 	UsageExampleMimetype = "usage-example-mimetype"
