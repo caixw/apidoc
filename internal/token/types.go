@@ -4,6 +4,7 @@ package token
 
 import (
 	"reflect"
+	"sort"
 
 	"golang.org/x/text/language"
 
@@ -61,6 +62,13 @@ func (types *Types) sanitize() {
 			t.Items = nil
 		}
 	}
+
+	sort.SliceStable(types.Types, func(i, j int) bool {
+		if types.Types[i].Items == nil {
+			return false
+		}
+		return types.Types[j].Items == nil
+	})
 }
 
 func (types *Types) dumpToTypes(n *node) error {
