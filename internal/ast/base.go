@@ -62,6 +62,13 @@ type (
 		RootName struct{} `apidoc:"bool,meta,usage-bool"`
 	}
 
+	// VersionAttribute 表示版本号属性
+	VersionAttribute struct {
+		token.BaseAttribute
+		Value    token.String `apidoc:"-"`
+		RootName struct{}     `apidoc:"version,meta,usage-version"`
+	}
+
 	// MethodAttribute 表示请求方法
 	MethodAttribute Attribute
 
@@ -70,9 +77,6 @@ type (
 
 	// TypeAttribute 表示方法类型属性
 	TypeAttribute Attribute
-
-	// VersionAttribute 表示版本号属性
-	VersionAttribute Attribute
 
 	// APIDocVersionAttribute 版本号属性，同时对版本号进行比较
 	APIDocVersionAttribute Attribute
@@ -248,7 +252,7 @@ func (a *VersionAttribute) EncodeXMLAttr() (string, error) {
 
 // V 返回当前属性实际表示的值
 func (a *VersionAttribute) V() string {
-	return (*Attribute)(a).V()
+	return a.Value.Value
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr

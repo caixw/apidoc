@@ -212,9 +212,10 @@ options 可以是以下参数
 	UsageXMLWrapped = "usage-xml-wrapped"
 
 	// 基本类型
-	UsageString = "usage-string"
-	UsageNumber = "usage-number"
-	UsageBool   = "usage-bool"
+	UsageString  = "usage-string"
+	UsageNumber  = "usage-number"
+	UsageBool    = "usage-bool"
+	UsageVersion = "usage-version"
 
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character      = "无效的 UTF8 字符"

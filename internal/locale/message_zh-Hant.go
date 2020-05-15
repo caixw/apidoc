@@ -206,9 +206,10 @@ options 可以是以下參數
 	UsageXMLWrapped: "如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。",
 
 	// 基本类型
-	UsageString: "普通的字符串類型",
-	UsageNumber: "普通的數值類型",
-	UsageBool:   "布爾值類型，取值為 <var>true</var> 或是 <var>false</var>",
+	UsageString:  "普通的字符串類型",
+	UsageNumber:  "普通的數值類型",
+	UsageBool:    "布爾值類型，取值為 <var>true</var> 或是 <var>false</var>",
+	UsageVersion: `版本號，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 規則`,
 
 	// 錯誤信息，可能在地方用到
 	ErrInvalidUTF8Character:      "無效的 UTF8 字符",
