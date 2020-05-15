@@ -144,7 +144,7 @@ type (
 		RootName struct{} `apidoc:"example,meta,usage-example"`
 
 		Mimetype *Attribute `apidoc:"mimetype,attr,usage-example-mimetype"`
-		Content  *CData     `apidoc:",cdata"`
+		Content  *CData     `apidoc:",cdata,usage-example-content"`
 		Summary  *Attribute `apidoc:"summary,attr,usage-example-summary,omitempty"`
 	}
 
@@ -213,7 +213,7 @@ type (
 		RootName struct{} `apidoc:"richtext,meta,usage-richtext"`
 
 		Type *Attribute `apidoc:"type,attr,usage-richtext-type"` // 文档类型，可以是 html 或是 markdown
-		Text *CData     `apidoc:",cdata"`
+		Text *CData     `apidoc:",cdata,usage-richtext-text"`
 	}
 
 	// Tag 标签内容

@@ -393,14 +393,6 @@ func TestParseTag(t *testing.T) {
 		parseTag(field)
 	})
 
-	// elem 未指定 usage
-	a.Panic(func() {
-		field := reflect.StructField{
-			Tag: reflect.StructTag(tagName + `:"field,elem,"`),
-		}
-		parseTag(field)
-	})
-
 	// 数量太多
 	a.Panic(func() {
 		field := reflect.StructField{
