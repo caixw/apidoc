@@ -287,19 +287,19 @@ func (doc *APIDoc) Parse(b core.Block) error {
 		}
 
 		api := &API{doc: doc}
-		if err := token.Decode(p, api); err != nil {
-			return err
-		}
 		doc.Apis = append(doc.Apis, api)
+		err = token.Decode(p, api)
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
 			return p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue)
 		}
-		if err = token.Decode(p, doc); err != nil {
-			return err
-		}
+		err = token.Decode(p, doc)
 	default:
 		return ErrNoDocFormat
+	}
+
+	if err != nil {
+		return err
 	}
 
 	doc.sortAPIs()
