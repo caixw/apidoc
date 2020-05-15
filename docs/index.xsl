@@ -171,10 +171,8 @@
                     <tr>
                         <th><xsl:value-of select="@name" /></th>
                         <td>
-                            <a href="#type_{@type}">
-                                <xsl:value-of select="@type" />
-                                <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
-                            </a>
+                            <a href="#type_{@type}"><xsl:value-of select="@type" /></a>
+                            <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
                         </td>
                         <td>
                             <xsl:call-template name="checkbox">

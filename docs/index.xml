@@ -154,25 +154,25 @@
                     <td><input type="checkbox" checked="true" disabled="true" /></td>
                     <td>控制输出行为</td>
                 </tr>
+                <tr>
+                    <th>output.path</th>
+                    <td>string</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>指定输出的文件名，包含路径信息。</td>
+                </tr>
+                <tr>
+                    <th>output.tags</th>
+                    <td>string[]</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>只输出与这些标签相关联的文档，默认为全部。</td>
+                </tr>
+                <tr>
+                    <th>output.style</th>
+                    <td>string</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>为 XML 文件指定的 XSL 文件。</td>
+                </tr>
             </tbody>
-            <tr>
-                <th>output.path</th>
-                <td>string</td>
-                <td><input type="checkbox" checked="true" disabled="true" /></td>
-                <td>指定输出的文件名，包含路径信息。</td>
-            </tr>
-            <tr>
-                <th>output.tags</th>
-                <td>string[]</td>
-                <td><input type="checkbox" disabled="true" /></td>
-                <td>只输出与这些标签相关联的文档，默认为全部。</td>
-            </tr>
-            <tr>
-                <th>output.style</th>
-                <td>string</td>
-                <td><input type="checkbox" disabled="true" /></td>
-                <td>为 XML 文件指定的 XSL 文件。</td>
-            </tr>
         </table>
     </doc>
 
