@@ -20,9 +20,14 @@ type Types struct {
 type Type struct {
 	XMLName struct{} `xml:"type"`
 
-	Name  string  `xml:"name,attr"`
-	Usage string  `xml:"usage"`
-	Items []*Item `xml:"item"`
+	Name  string   `xml:"name,attr"`
+	Usage InnerXML `xml:"usage"`
+	Items []*Item  `xml:"item"`
+}
+
+// InnerXML 可以用于在字符串嵌套 HTML
+type InnerXML struct {
+	Text string `xml:",innerxml"`
 }
 
 // Item 用于描述文档类型中的单条记录内容
@@ -31,7 +36,7 @@ type Item struct {
 	Type     string `xml:"type,attr"` // 变量的类型
 	Array    bool   `xml:"array,attr"`
 	Required bool   `xml:"required,attr"`
-	Usage    string `xml:",chardata"`
+	Usage    string `xml:",innerxml"`
 }
 
 // NewTypes 分析 v，返回 Type 类型的数据
@@ -49,7 +54,7 @@ func NewTypes(v interface{}, tag language.Tag) (*Types, error) {
 func (types *Types) dumpToTypes(n *node) error {
 	t := &Type{
 		Name:  n.typeName,
-		Usage: locale.Sprintf(n.value.usage),
+		Usage: InnerXML{Text: locale.Sprintf(n.value.usage)},
 		Items: make([]*Item, 0, len(n.attrs)+len(n.elems)),
 	}
 	types.Types = append(types.Types, t) // 保证子元素在后显示

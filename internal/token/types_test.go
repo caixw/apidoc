@@ -21,7 +21,7 @@ func TestNewTypes(t *testing.T) {
 	ts2 := &Types{Types: []*Type{
 		{
 			Name:  "apidoc",
-			Usage: locale.Translate(id, "usage-root"),
+			Usage: InnerXML{locale.Translate(id, "usage-root")},
 			Items: []*Item{
 				{
 					Name:     "@id",
@@ -41,7 +41,7 @@ func TestNewTypes(t *testing.T) {
 		},
 		{
 			Name:  "string",
-			Usage: locale.Translate(id, "usage-string"),
+			Usage: InnerXML{Text: locale.Translate(id, "usage-string")},
 			Items: []*Item{},
 		},
 	}}
