@@ -17,8 +17,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
-const createdFormat = time.RFC3339
-
 // 几种输出的类型
 const (
 	ApidocXML   = "apidoc+xml"
@@ -117,7 +115,7 @@ func apidocMarshaler(d *ast.APIDoc) ([]byte, error) {
 func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 	filterDoc(d, o)
 
-	d.Created = &ast.Attribute{Value: token.String{Value: time.Now().Format(createdFormat)}}
+	d.Created = &ast.DateAttribute{Value: ast.Date{Value: time.Now()}}
 	d.APIDoc = &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}
 	buf := new(bytes.Buffer)
 

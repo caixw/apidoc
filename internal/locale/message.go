@@ -216,6 +216,7 @@ options 可以是以下参数
 	UsageNumber  = "usage-number"
 	UsageBool    = "usage-bool"
 	UsageVersion = "usage-version"
+	UsageDate    = "usage-date"
 
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character      = "无效的 UTF8 字符"

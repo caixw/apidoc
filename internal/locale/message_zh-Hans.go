@@ -210,6 +210,7 @@ options 可以是以下参数
 	UsageNumber:  "普通的数值类型",
 	UsageBool:    "布尔值类型，取值为 <var>true</var> 或是 <var>false</var>",
 	UsageVersion: `版本号，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 规则`,
+	UsageDate:    `采用 <a href="https://semver.org/lang/zh-CN/">RFC3339</a> 格式表示的时间，比如：<samp>2019-12-16T00:35:48+08:00</samp>`,
 
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character:      "无效的 UTF8 字符",

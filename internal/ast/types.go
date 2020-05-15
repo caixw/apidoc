@@ -52,7 +52,7 @@ type (
 		// 如果采用默认的 xsl 转换，会替换掉页面上的图标和 favicon 图标
 		Logo *Attribute `apidoc:"logo,attr,usage-apidoc-logo,omitempty"`
 
-		Created     *Attribute        `apidoc:"created,attr,usage-apidoc-created,omitempty"` // 文档的生成时间
+		Created     *DateAttribute    `apidoc:"created,attr,usage-apidoc-created,omitempty"` // 文档的生成时间
 		Version     *VersionAttribute `apidoc:"version,attr,usage-apidoc-version,omitempty"` // 文档的版本
 		Title       *Element          `apidoc:"title,elem,usage-apidoc-title"`
 		Description *Richtext         `apidoc:"description,elem,usage-apidoc-description,omitempty"`

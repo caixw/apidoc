@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/issue9/version"
 
@@ -13,6 +14,8 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/token"
 )
+
+const dateFormat = time.RFC3339
 
 type (
 	// CData 表示 XML 的 CDATA 数据
@@ -41,6 +44,12 @@ type (
 		Value bool
 	}
 
+	// Date 日期类型
+	Date struct {
+		core.Range
+		Value time.Time
+	}
+
 	// Attribute 表示 XML 属性
 	Attribute struct {
 		token.BaseAttribute
@@ -67,6 +76,13 @@ type (
 		token.BaseAttribute
 		Value    token.String `apidoc:"-"`
 		RootName struct{}     `apidoc:"version,meta,usage-version"`
+	}
+
+	// DateAttribute 日期属性
+	DateAttribute struct {
+		token.BaseAttribute
+		Value    Date     `apidoc:"-"`
+		RootName struct{} `apidoc:"date,meta,usage-date"`
 	}
 
 	// MethodAttribute 表示请求方法
@@ -107,7 +123,7 @@ func (a *Attribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error 
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (a *Attribute) EncodeXMLAttr() (string, error) {
-	return a.Value.Value, nil
+	return a.V(), nil
 }
 
 // V 返回当前属性实际表示的值
@@ -134,7 +150,7 @@ func (num *NumberAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (num *NumberAttribute) EncodeXMLAttr() (string, error) {
-	return strconv.Itoa(num.Value.Value), nil
+	return strconv.Itoa(num.V()), nil
 }
 
 // V 返回当前属性实际表示的值
@@ -161,7 +177,7 @@ func (b *BoolAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) er
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (b *BoolAttribute) EncodeXMLAttr() (string, error) {
-	return strconv.FormatBool(b.Value.Value), nil
+	return strconv.FormatBool(b.V()), nil
 }
 
 // V 返回当前属性实际表示的值
@@ -209,7 +225,7 @@ func (a *StatusAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) 
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (a *StatusAttribute) EncodeXMLAttr() (string, error) {
-	return strconv.Itoa(a.Value.Value), nil
+	return strconv.Itoa(a.V()), nil
 }
 
 // V 返回当前属性实际表示的值
@@ -228,7 +244,7 @@ func (a *TypeAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) er
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (a *TypeAttribute) EncodeXMLAttr() (string, error) {
-	return a.Value.Value, nil
+	return a.V(), nil
 }
 
 // V 返回当前属性实际表示的值
@@ -247,12 +263,36 @@ func (a *VersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute)
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (a *VersionAttribute) EncodeXMLAttr() (string, error) {
-	return a.Value.Value, nil
+	return a.V(), nil
 }
 
 // V 返回当前属性实际表示的值
 func (a *VersionAttribute) V() string {
 	return a.Value.Value
+}
+
+// DecodeXMLAttr AttrDecoder.DecodeXMLAttr
+func (d *DateAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+	t, err := time.Parse(dateFormat, attr.Value.Value)
+	if err != nil {
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
+	}
+
+	d.Value = Date{
+		Range: attr.Value.Range,
+		Value: t,
+	}
+	return nil
+}
+
+// EncodeXMLAttr AttrEncoder.EncodeXMLAttr
+func (d *DateAttribute) EncodeXMLAttr() (string, error) {
+	return d.V().Format(dateFormat), nil
+}
+
+// V 返回当前属性实际表示的值
+func (d *DateAttribute) V() time.Time {
+	return d.Value.Value
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
@@ -273,7 +313,7 @@ func (a *APIDocVersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attr
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (a *APIDocVersionAttribute) EncodeXMLAttr() (string, error) {
-	return a.Value.Value, nil
+	return a.V(), nil
 }
 
 // V 返回当前属性实际表示的值
