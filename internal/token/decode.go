@@ -310,10 +310,6 @@ func findEndElement(p *Parser, start *StartElement) error {
 }
 
 func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {
-	if err := callSanitizer(v, p); err != nil {
-		return err
-	}
-
 	v = getRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
@@ -328,14 +324,11 @@ func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, 
 		v.FieldByName(elementTagEndName).Set(reflect.ValueOf(end.Name))
 	}
 
-	return nil
+	// Sanitize 在最后调用，可以保证 Sanitize 调用中可以取 v.Range 的值
+	return callSanitizer(v, p)
 }
 
 func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute) error {
-	if err := callSanitizer(v, p); err != nil {
-		return err
-	}
-
 	v = getRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
@@ -345,7 +338,7 @@ func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute
 	v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
 	v.FieldByName(attributeNameName).Set(reflect.ValueOf(attr.Name))
 
-	return nil
+	return callSanitizer(v, p)
 }
 
 func callSanitizer(v reflect.Value, p *Parser) error {
