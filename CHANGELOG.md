@@ -6,16 +6,17 @@
 
 - 为 param 数据添加 array-style 字段，用以描述数组在查询参数的表现形式；
 - 添加 core 包；
-- 去掉了 core.Block.Raw 字段；
 - 采用与 LSP 相同的方式定位错误信息；
 - 采用新的编码与解码方式(internal/ast)；
-- 分离程序版本和文档版本；
 - 添加 lsp 子命令；
+- 代码可通过 build.Output.Version 修改文档中的版本号；
 
 ### Changed
 
 - 可以通过 SetLocale 随时设置本地化信息，同时也添加一系列相关的操作函数；
 - Locales() 现在返回一个 map 副本；
+- 去掉了 core.Block.Raw 字段；
+- 分离程序版本和文档版本；
 
 ### Fixed
 
