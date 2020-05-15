@@ -14,6 +14,7 @@ import (
 	"github.com/issue9/cmdopt"
 	"github.com/issue9/term/colors"
 	"github.com/issue9/utils"
+	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v7"
@@ -43,8 +44,9 @@ var command *cmdopt.CmdOpt
 
 func init() {
 	tag, err := utils.GetSystemLanguageTag()
-	if err != nil {
-		panic(err)
+	if err != nil { // 无法获取系统语言，则采用默认值
+		fmt.Fprintln(warnOut, err, tag)
+		tag = language.MustParse(vars.DefaultLocaleID)
 	}
 	apidoc.SetLocale(tag)
 
