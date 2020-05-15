@@ -122,7 +122,6 @@ type (
 		Summary     *Attribute        `apidoc:"summary,attr,usage-callback-summary,omitempty"`
 		Description *Richtext         `apidoc:"description,elem,usage-callback-description,omitempty"`
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-callback-deprecated,omitempty"`
-		Reference   *Attribute        `apidoc:"ref,attr,usage-callback-reference,omitempty"`
 		Responses   []*Request        `apidoc:"response,elem,usage-callback-responses,omitempty"`
 		Requests    []*Request        `apidoc:"request,elem,usage-callback-requests"` // 至少一个
 		Headers     []*Param          `apidoc:"header,elem,usage-callback-headers,omitempty"`
@@ -162,7 +161,6 @@ type (
 		Optional    *BoolAttribute    `apidoc:"optional,attr,usage-param-optional,omitempty"`
 		Array       *BoolAttribute    `apidoc:"array,attr,usage-param-array,omitempty"`
 		Items       []*Param          `apidoc:"param,elem,usage-param-items,omitempty"`
-		Reference   *Attribute        `apidoc:"ref,attr,usage-param-reference,omitempty"`
 		Summary     *Attribute        `apidoc:"summary,attr,usage-param-summary,omitempty"`
 		Enums       []*Enum           `apidoc:"enum,elem,usage-param-enums,omitempty"`
 		Description *Richtext         `apidoc:"description,elem,usage-param-description,omitempty"`
@@ -182,10 +180,9 @@ type (
 		token.BaseTag
 		RootName struct{} `apidoc:"path,meta,usage-path"`
 
-		Path      *Attribute `apidoc:"path,attr,usage-path-path"`
-		Reference *Attribute `apidoc:"ref,attr,usage-path-reference,omitempty"`
-		Params    []*Param   `apidoc:"param,elem,usage-path-params,omitempty"`
-		Queries   []*Param   `apidoc:"query,elem,usage-path-queries,omitempty"`
+		Path    *Attribute `apidoc:"path,attr,usage-path-path"`
+		Params  []*Param   `apidoc:"param,elem,usage-path-params,omitempty"`
+		Queries []*Param   `apidoc:"query,elem,usage-path-queries,omitempty"`
 	}
 
 	// Request 请求内容
@@ -202,7 +199,6 @@ type (
 		Enums       []*Enum           `apidoc:"enum,elem,usage-request-enums,omitempty"`
 		Array       *BoolAttribute    `apidoc:"array,attr,usage-request-array,omitempty"`
 		Items       []*Param          `apidoc:"param,elem,usage-request-items,omitempty"`
-		Reference   *Attribute        `apidoc:"ref,attr,usage-request-reference,omitempty"`
 		Summary     *Attribute        `apidoc:"summary,attr,usage-request-summary,omitempty"`
 		Status      *StatusAttribute  `apidoc:"status,attr,usage-request-status,omitempty"`
 		Mimetype    *Attribute        `apidoc:"mimetype,attr,usage-request-mimetype,omitempty"`
@@ -344,7 +340,6 @@ func (r *Request) Param() *Param {
 		Optional:    &BoolAttribute{Value: Bool{Value: true}},
 		Array:       r.Array,
 		Items:       r.Items,
-		Reference:   r.Reference,
 		Summary:     r.Summary,
 		Enums:       r.Enums,
 		Description: r.Description,
