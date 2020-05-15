@@ -33,6 +33,10 @@ var data = []*FileInfo{{
 		<language id="scala">Scala</language>
 		<language id="swift">Swift</language>
 	</languages>
+	<locales>
+		<locale id="cmn-Hans" href="index.xml" title="简体中文" types="types.cmn-Hans.xml"></locale>
+		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" types="types.cmn-Hant.xml"></locale>
+	</locales>
 </config>
 `),
 },
@@ -42,7 +46,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-13T01:03:24+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-16T01:38:07+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -141,6 +145,40 @@ var data = []*FileInfo{{
 		<server>admin</server>
 		<server>old-client</server>
 	</api>
+	<api method="DELETE" summary="删除用户">
+		<path path="/users/{id}">
+			<param name="id" type="number" summary="用户 ID"></param>
+		</path>
+		<description type="markdown"><![CDATA[
+   这是关于接口的详细说明文档<br />
+   可以是一个 HTML 内容<br />
+   ]]></description>
+		<server>admin</server>
+	</api>
+	<api method="GET" summary="获取用户详情">
+		<path path="/users/{id}">
+			<param name="id" type="number" summary="用户 ID"></param>
+			<query name="state" type="string" default="[normal,lock]" array="true" summary="state">
+				<enum value="normal" summary="正常"></enum>
+				<enum value="lock">
+					<description type="html"><![CDATA[<span style="color:red">锁定</span>]]></description>
+				</enum>
+			</query>
+		</path>
+		<description type="markdown"><![CDATA[
+   这是关于接口的详细说明文档
+   可以是一个 HTML 内容
+   ]]></description>
+		<response type="object" array="true" status="200" mimetype="application/json">
+			<param name="id" type="number" summary="用户 ID"></param>
+			<param name="name" type="string" summary="用户名"></param>
+			<param name="groups" type="string" optional="true" summary="用户所在的权限组">
+				<param name="id" type="string" summary="权限组 ID"></param>
+				<param name="name" type="string" summary="权限组名称"></param>
+			</param>
+		</response>
+		<server>old-client</server>
+	</api>
 	<api method="GET" summary="获取用户日志">
 		<path path="/users/{id}/logs">
 			<param name="id" type="number">
@@ -198,40 +236,6 @@ var data = []*FileInfo{{
 		</callback>
 		<server>client</server>
 	</api>
-	<api method="DELETE" summary="删除用户">
-		<path path="/users/{id}">
-			<param name="id" type="number" summary="用户 ID"></param>
-		</path>
-		<description type="markdown"><![CDATA[
-   这是关于接口的详细说明文档<br />
-   可以是一个 HTML 内容<br />
-   ]]></description>
-		<server>admin</server>
-	</api>
-	<api method="GET" summary="获取用户详情">
-		<path path="/users/{id}">
-			<param name="id" type="number" summary="用户 ID"></param>
-			<query name="state" type="string" default="[normal,lock]" array="true" summary="state">
-				<enum value="normal" summary="正常"></enum>
-				<enum value="lock">
-					<description type="html"><![CDATA[<span style="color:red">锁定</span>]]></description>
-				</enum>
-			</query>
-		</path>
-		<description type="markdown"><![CDATA[
-   这是关于接口的详细说明文档
-   可以是一个 HTML 内容
-   ]]></description>
-		<response type="object" array="true" status="200" mimetype="application/json">
-			<param name="id" type="number" summary="用户 ID"></param>
-			<param name="name" type="string" summary="用户名"></param>
-			<param name="groups" type="string" optional="true" summary="用户所在的权限组">
-				<param name="id" type="string" summary="权限组 ID"></param>
-				<param name="name" type="string" summary="权限组名称"></param>
-			</param>
-		</response>
-		<server>old-client</server>
-	</api>
 	<response name="result" type="object" status="400">
 		<param xml-attr="true" name="code" type="number" optional="false" summary="状态码"></param>
 		<param name="message" type="string" optional="false" summary="错误信息"></param>
@@ -273,7 +277,7 @@ var data = []*FileInfo{{
 其它語言的本化地內容，需要重新改寫本文件中除註釋外的所有內容。
 -->
 
-<docs lang="cmn-Hant" types="types.cmn-Hant.xml">
+<docs lang="cmn-Hant">
     <title>apidoc | RESTful API 文檔處理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 國際 (CC BY 4.0)</license>
 
@@ -420,25 +424,25 @@ var data = []*FileInfo{{
                     <td><input type="checkbox" checked="true" disabled="true" /></td>
                     <td>控制輸出行為</td>
                 </tr>
+                <tr>
+                    <th>output.path</th>
+                    <td>string</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>指定輸出的文件名，包含路徑信息。</td>
+                </tr>
+                <tr>
+                    <th>output.tags</th>
+                    <td>string[]</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>只輸出與這些標簽相關聯的文檔，默認為全部。</td>
+                </tr>
+                <tr>
+                    <th>output.style</th>
+                    <td>string</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>為 XML 文件指定的 XSL 文件。</td>
+                </tr>
             </tbody>
-            <tr>
-                <th>output.path</th>
-                <td>string</td>
-                <td><input type="checkbox" checked="true" disabled="true" /></td>
-                <td>指定輸出的文件名，包含路徑信息。</td>
-            </tr>
-            <tr>
-                <th>output.tags</th>
-                <td>string[]</td>
-                <td><input type="checkbox" disabled="true" /></td>
-                <td>只輸出與這些標簽相關聯的文檔，默認為全部。</td>
-            </tr>
-            <tr>
-                <th>output.style</th>
-                <td>string</td>
-                <td><input type="checkbox" disabled="true" /></td>
-                <td>為 XML 文件指定的 XSL 文件。</td>
-            </tr>
         </table>
     </doc>
 
@@ -516,11 +520,11 @@ ul, ol {
 
 a {
     text-decoration: none;
-    color: var(--accent-color);
+    color: var(--color);
 }
 
 a:hover {
-    opacity: .7;
+    color: var(--accent-color);
 }
 
 p {
@@ -687,7 +691,7 @@ function initGotoTop() {
 其它语言的本化地内容，需要重新改写本文件中除注释外的所有内容。
 -->
 
-<docs lang="cmn-Hans" types="types.cmn-Hans.xml">
+<docs lang="cmn-Hans">
     <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
@@ -834,25 +838,25 @@ function initGotoTop() {
                     <td><input type="checkbox" checked="true" disabled="true" /></td>
                     <td>控制输出行为</td>
                 </tr>
+                <tr>
+                    <th>output.path</th>
+                    <td>string</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>指定输出的文件名，包含路径信息。</td>
+                </tr>
+                <tr>
+                    <th>output.tags</th>
+                    <td>string[]</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>只输出与这些标签相关联的文档，默认为全部。</td>
+                </tr>
+                <tr>
+                    <th>output.style</th>
+                    <td>string</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>为 XML 文件指定的 XSL 文件。</td>
+                </tr>
             </tbody>
-            <tr>
-                <th>output.path</th>
-                <td>string</td>
-                <td><input type="checkbox" checked="true" disabled="true" /></td>
-                <td>指定输出的文件名，包含路径信息。</td>
-            </tr>
-            <tr>
-                <th>output.tags</th>
-                <td>string[]</td>
-                <td><input type="checkbox" disabled="true" /></td>
-                <td>只输出与这些标签相关联的文档，默认为全部。</td>
-            </tr>
-            <tr>
-                <th>output.style</th>
-                <td>string</td>
-                <td><input type="checkbox" disabled="true" /></td>
-                <td>为 XML 文件指定的 XSL 文件。</td>
-            </tr>
         </table>
     </doc>
 
@@ -876,10 +880,14 @@ function initGotoTop() {
     <xsl:value-of select="/docs/@lang" />
 </xsl:variable>
 
-<!-- 获取当前文档的语言名称，如果水存在，则直接采用 @lang 属性 -->
+<xsl:variable name="types-file">
+    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@types" />
+</xsl:variable>
+
+<!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
 <xsl:variable name="curr-lang-title">
     <xsl:variable name="title">
-        <xsl:value-of select="document('locales.xml')/locales/locale[@id=$curr-lang]/@title" />
+        <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@title" />
     </xsl:variable>
 
     <xsl:choose>
@@ -906,7 +914,7 @@ function initGotoTop() {
             <link rel="canonical" href="{document('config.xml')/config/url}" />
             <link rel="stylesheet" type="text/css" href="./index.css" />
             <link rel="license" href="{/docs/liense/@url}" />
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/themes/prism-tomorrow.min.css" />
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism-tomorrow.min.css" />
             <script src="./index.js" />
         </head>
 
@@ -934,8 +942,8 @@ function initGotoTop() {
                 <a href="#" class="goto-top" />
             </footer>
 
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/components/prism-core.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/autoloader/prism-autoloader.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/components/prism-core.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/plugins/autoloader/prism-autoloader.min.js"></script>
         </body>
     </html>
 </xsl:template>
@@ -960,7 +968,7 @@ function initGotoTop() {
                         <span aria-hiddren="true">&#160;&#x25bc;</span>
                     </a>
                     <ul>
-                        <xsl:for-each select="document('locales.xml')/locales/locale">
+                        <xsl:for-each select="document('config.xml')/config/locales/locale">
                             <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
                         </xsl:for-each>
                     </ul>
@@ -1001,10 +1009,9 @@ function initGotoTop() {
         </xsl:for-each>
 
         <xsl:if test="$id='spec'">
-            <xsl:for-each select="document(/docs/@types)/types/type">
+            <xsl:for-each select="document($types-file)/types/type">
                 <xsl:call-template name="type">
                     <xsl:with-param name="type" select="." />
-                    <xsl:with-param name="parent" select="$id" />
                 </xsl:call-template>
             </xsl:for-each>
         </xsl:if>
@@ -1013,21 +1020,17 @@ function initGotoTop() {
 
 <!-- 以下两个变量仅用于 type 模板，在模板中无法直接使用 /docs 元素，所以使用变量引用 -->
 <xsl:variable name="header-locale" select="/docs/type-locale/header" />
-<xsl:variable name="doc-types" select="/docs/types" />
 
 <!-- 将类型显示为一个 table -->
 <xsl:template name="type">
     <xsl:param name="type" />
-    <xsl:param name="parent" />
-
-    <xsl:variable name="type-locale" select="$doc-types[@parent=$parent]/type[@name=$type/@name]" />
 
     <article id="type_{$type/@name}">
         <h3>
             <xsl:value-of select="$type/@name" />
             <a class="link" href="#type_{$type/@name}">&#160;&#160;&#128279;</a>
         </h3>
-        <xsl:copy-of select="$type-locale/description/node()" />
+        <xsl:copy-of select="$type/usage/node()" />
         <xsl:if test="item">
             <table>
                 <thead>
@@ -1044,7 +1047,10 @@ function initGotoTop() {
                     <xsl:variable name="name" select="@name" />
                     <tr>
                         <th><xsl:value-of select="@name" /></th>
-                        <td><xsl:value-of select="@type" /></td>
+                        <td>
+                            <a href="#type_{@type}"><xsl:value-of select="@type" /></a>
+                            <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+                        </td>
                         <td>
                             <xsl:call-template name="checkbox">
                                 <xsl:with-param name="chk" select="@required" />
@@ -1075,17 +1081,6 @@ function initGotoTop() {
 `),
 	},
 	{
-		Name:        "locales.xml",
-		ContentType: "application/xml; charset=utf-8",
-		Content: []byte(`<?xml version="1.0" encoding="utf-8"?>
-
-<locales>
-    <locale id="cmn-Hans" href="index.xml" title="简体中文" />
-    <locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁体中文" />
-</locales>
-`),
-	},
-	{
 		Name:        "types.cmn-Hans.xml",
 		ContentType: "application/xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
@@ -1096,10 +1091,10 @@ function initGotoTop() {
 	<type name="apidoc">
 		<usage>用于描述整个文档的相关内容，只能出现一次。</usage>
 		<item name="@apidoc" type="string" array="false" required="false">文档的版本要号</item>
-		<item name="@lang" type="string" array="false" required="false">文档内容的本地化 ID，比如 &lt;samp&gt;zh-Hans&lt;/samp&gt;、&lt;samp&gt;en-US&lt;/samp&gt; 等。</item>
+		<item name="@lang" type="string" array="false" required="false">文档内容的本地化 ID，比如 <samp>zh-Hans</samp>、<samp>en-US</samp> 等。</item>
 		<item name="@logo" type="string" array="false" required="false">文档的图标，仅可使用 SVG 格式图标。</item>
-		<item name="@created" type="string" array="false" required="false">文档的创建时间</item>
-		<item name="@version" type="string" array="false" required="false">文档的版本号，需要遵守 semver 的约定。</item>
+		<item name="@created" type="date" array="false" required="false">文档的创建时间</item>
+		<item name="@version" type="version" array="false" required="false">文档的版本号，需要遵守 semver 的约定。</item>
 		<item name="title" type="string" array="false" required="true">文档的标题</item>
 		<item name="description" type="richtext" array="false" required="false">文档的整体描述内容</item>
 		<item name="contact" type="contact" array="false" required="false">文档作者的联系方式</item>
@@ -1110,14 +1105,10 @@ function initGotoTop() {
 		<item name="response" type="request" array="true" required="false">文档中所有 API 文档都需要支持的返回内容</item>
 		<item name="mimetype" type="string" array="true" required="true">文档所支持的 mimetype</item>
 	</type>
-	<type name="string">
-		<usage>普通的字符串类型</usage>
-		<item name="." type="string" array="false" required="true"></item>
-	</type>
 	<type name="richtext">
 		<usage>富文本内容</usage>
 		<item name="@type" type="string" array="false" required="true">指定内容的格式</item>
-		<item name="." type="string" array="false" required="true"></item>
+		<item name="." type="string" array="false" required="true">富文本的实际内容</item>
 	</type>
 	<type name="contact">
 		<usage>用于描述联系方式</usage>
@@ -1132,25 +1123,25 @@ function initGotoTop() {
 	</type>
 	<type name="tag">
 		<usage>用于对各个 API 进行分类</usage>
-		<item name="@name" type="string" array="false" required="true">usage-tag-name</item>
+		<item name="@name" type="string" array="false" required="true">标签的唯一 ID</item>
 		<item name="@title" type="string" array="false" required="true">标签的字面名称</item>
-		<item name="@deprecated" type="string" array="false" required="false">该标签在大于该版本时被弃用</item>
+		<item name="@deprecated" type="version" array="false" required="false">该标签在大于该版本时被弃用</item>
 	</type>
 	<type name="server">
 		<usage>用于指定各个 API 的服务器地址</usage>
 		<item name="@name" type="string" array="false" required="true">服务唯一 ID</item>
-		<item name="@url" type="string" array="false" required="true">usage-server-url</item>
-		<item name="@deprecated" type="string" array="false" required="false">服务在大于该版本时被弃用</item>
+		<item name="@url" type="string" array="false" required="true">服务的基地址，与该服务关联的 API，访问地址都是相对于此地址的。</item>
+		<item name="@deprecated" type="version" array="false" required="false">服务在大于该版本时被弃用</item>
 		<item name="@summary" type="string" array="false" required="false">服务的摘要信息</item>
 		<item name="description" type="richtext" array="false" required="false">服务的详细描述</item>
 	</type>
 	<type name="api">
 		<usage>用于描述整个文档的相关内容，只能出现一次。</usage>
-		<item name="@version" type="string" array="false" required="false">表示此接口在该版本中添加</item>
+		<item name="@version" type="version" array="false" required="false">表示此接口在该版本中添加</item>
 		<item name="@method" type="string" array="false" required="true">当前接口所支持的请求方法</item>
 		<item name="@id" type="string" array="false" required="false">接口的唯一 ID</item>
 		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
-		<item name="@deprecated" type="string" array="false" required="false">在此版本之后将会被弃用</item>
+		<item name="@deprecated" type="version" array="false" required="false">在此版本之后将会被弃用</item>
 		<item name="path" type="path" array="false" required="true">定义路径信息</item>
 		<item name="description" type="richtext" array="false" required="false">该接口的详细介绍，为 HTML 内容。</item>
 		<item name="request" type="request" array="true" required="false">定义可用的请求信息</item>
@@ -1163,24 +1154,22 @@ function initGotoTop() {
 	<type name="path">
 		<usage>用于定义请求时与路径相关的内容</usage>
 		<item name="@path" type="string" array="false" required="true">接口地址</item>
-		<item name="@ref" type="string" array="false" required="false">usage-path-reference</item>
 		<item name="param" type="param" array="true" required="false">地址中的参数</item>
 		<item name="query" type="param" array="true" required="false">地址中的查询参数</item>
 	</type>
 	<type name="param">
 		<usage>参数类型，基本上可以作为 request 的子集使用。</usage>
-		<item name="@xml-attr" type="bool" array="false" required="false">usage-xml-xml-attr</item>
-		<item name="@xml-extract" type="bool" array="false" required="false">usage-xml-xml-extract</item>
-		<item name="@xml-ns" type="string" array="false" required="false">usage-xml-xml-ns</item>
-		<item name="@xml-ns-prefix" type="string" array="false" required="false">usage-xml-xml-prefix</item>
-		<item name="@xml-wrapped" type="string" array="false" required="false">usage-xml-xml-wrapped</item>
+		<item name="@xml-attr" type="bool" array="false" required="false">是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。</item>
+		<item name="@xml-extract" type="bool" array="false" required="false">将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。</item>
+		<item name="@xml-ns" type="string" array="false" required="false">XML 标签的命名空间</item>
+		<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 标签的命名空间名称前缀</item>
+		<item name="@xml-wrapped" type="string" array="false" required="false">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
 		<item name="@name" type="string" array="false" required="true">值的名称</item>
-		<item name="@type" type="string" array="false" required="true">值的类型，可以是 &lt;var&gt;string&lt;/var&gt;、&lt;var&gt;number&lt;/var&gt;、&lt;var&gt;bool&lt;/var&gt; 和 &lt;var&gt;object&lt;/var&gt;</item>
-		<item name="@deprecated" type="string" array="false" required="false">表示在大于等于该版本号时不再启作用</item>
+		<item name="@type" type="string" array="false" required="true">值的类型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
+		<item name="@deprecated" type="version" array="false" required="false">表示在大于等于该版本号时不再启作用</item>
 		<item name="@default" type="string" array="false" required="false">默认值</item>
 		<item name="@optional" type="bool" array="false" required="false">是否为可选的参数</item>
 		<item name="@array" type="bool" array="false" required="false">是否为数组</item>
-		<item name="@ref" type="string" array="false" required="false">usage-param-reference</item>
 		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
 		<item name="@array-style" type="bool" array="false" required="false">以数组的方式展示数据</item>
 		<item name="param" type="param" array="true" required="false">子类型，比如对象的子元素。</item>
@@ -1189,26 +1178,25 @@ function initGotoTop() {
 	</type>
 	<type name="enum">
 		<usage>定义枚举类型的数所的枚举值</usage>
-		<item name="@deprecated" type="string" array="false" required="false">该属性弃用的版本号</item>
+		<item name="@deprecated" type="version" array="false" required="false">该属性弃用的版本号</item>
 		<item name="@value" type="string" array="false" required="true">枚举值</item>
 		<item name="@summary" type="string" array="false" required="false">枚举值的说明</item>
-		<item name="description" type="richtext" array="false" required="false">usage-enum-description</item>
+		<item name="description" type="richtext" array="false" required="false">枚举值的详细说明</item>
 	</type>
 	<type name="request">
 		<usage>定义了请求和返回的相关内容</usage>
-		<item name="@xml-attr" type="bool" array="false" required="false">usage-xml-xml-attr</item>
-		<item name="@xml-extract" type="bool" array="false" required="false">usage-xml-xml-extract</item>
-		<item name="@xml-ns" type="string" array="false" required="false">usage-xml-xml-ns</item>
-		<item name="@xml-ns-prefix" type="string" array="false" required="false">usage-xml-xml-prefix</item>
-		<item name="@xml-wrapped" type="string" array="false" required="false">usage-xml-xml-wrapped</item>
-		<item name="@name" type="string" array="false" required="false">当 mimetype 为 &lt;var&gt;application/xml&lt;/var&gt; 时，此值表示 XML 的顶层元素名称，否则无用。</item>
-		<item name="@type" type="string" array="false" required="false">值的类型，可以是 &lt;var&gt;none&lt;/var&gt;、&lt;var&gt;string&lt;/var&gt;、&lt;var&gt;number&lt;/var&gt;、&lt;var&gt;bool&lt;/var&gt;、&lt;var&gt;object&lt;/var&gt; 和空值；空值表示不输出任何内容。</item>
-		<item name="@deprecated" type="string" array="false" required="false">表示在大于等于该版本号时不再启作用</item>
+		<item name="@xml-attr" type="bool" array="false" required="false">是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。</item>
+		<item name="@xml-extract" type="bool" array="false" required="false">将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。</item>
+		<item name="@xml-ns" type="string" array="false" required="false">XML 标签的命名空间</item>
+		<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 标签的命名空间名称前缀</item>
+		<item name="@xml-wrapped" type="string" array="false" required="false">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
+		<item name="@name" type="string" array="false" required="false">当 mimetype 为 <var>application/xml</var> 时，此值表示 XML 的顶层元素名称，否则无用。</item>
+		<item name="@type" type="string" array="false" required="false">值的类型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不输出任何内容。</item>
+		<item name="@deprecated" type="version" array="false" required="false">表示在大于等于该版本号时不再启作用</item>
 		<item name="@array" type="bool" array="false" required="false">是否为数组</item>
-		<item name="@ref" type="string" array="false" required="false">usage-request-reference</item>
 		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
-		<item name="@status" type="number" array="false" required="false">usage-request-status</item>
-		<item name="@mimetype" type="string" array="false" required="false">媒体类型，比如 application/json 等。</item>
+		<item name="@status" type="number" array="false" required="false">状态码。在 request 中，该值不可用，否则为必填项。</item>
+		<item name="@mimetype" type="string" array="false" required="false">媒体类型，比如 <var>application/json</var> 等。</item>
 		<item name="enum" type="enum" array="true" required="false">当前参数可用的枚举值</item>
 		<item name="param" type="param" array="true" required="false">子类型，比如对象的子元素。</item>
 		<item name="example" type="example" array="true" required="false">示例代码</item>
@@ -1219,19 +1207,33 @@ function initGotoTop() {
 		<usage>示例代码</usage>
 		<item name="@mimetype" type="string" array="false" required="true">特定于类型的示例代码</item>
 		<item name="@summary" type="string" array="false" required="false">示例代码的概要信息</item>
-		<item name="." type="string" array="false" required="true"></item>
+		<item name="." type="string" array="false" required="true">示例代码的内容，需要使用 CDATA 包含代码。</item>
 	</type>
 	<type name="callback">
 		<usage>定义回调信息</usage>
 		<item name="@method" type="string" array="false" required="true">回调的请求方法</item>
 		<item name="@summary" type="string" array="false" required="false">简要介绍</item>
-		<item name="@deprecated" type="string" array="false" required="false">usage-callback-deprecated</item>
-		<item name="@ref" type="string" array="false" required="false">usage-callback-reference</item>
+		<item name="@deprecated" type="version" array="false" required="false">在此版本之后将会被弃用</item>
 		<item name="path" type="path" array="false" required="false">定义回调的地址</item>
 		<item name="description" type="richtext" array="false" required="false">该接口的详细介绍</item>
 		<item name="response" type="request" array="true" required="false">定义可能的返回信息</item>
 		<item name="request" type="request" array="true" required="true">定义可用的请求信息</item>
 		<item name="header" type="param" array="true" required="false">传递的报头内容</item>
+	</type>
+	<type name="string">
+		<usage>普通的字符串类型</usage>
+	</type>
+	<type name="date">
+		<usage>采用 <a href="https://semver.org/lang/zh-CN/">RFC3339</a> 格式表示的时间，比如：<samp>2019-12-16T00:35:48+08:00</samp></usage>
+	</type>
+	<type name="version">
+		<usage>版本号，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 规则</usage>
+	</type>
+	<type name="bool">
+		<usage>布尔值类型，取值为 <var>true</var> 或是 <var>false</var></usage>
+	</type>
+	<type name="number">
+		<usage>普通的数值类型</usage>
 	</type>
 </types>
 `),
@@ -1247,10 +1249,10 @@ function initGotoTop() {
 	<type name="apidoc">
 		<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
 		<item name="@apidoc" type="string" array="false" required="false">文檔的版本要號</item>
-		<item name="@lang" type="string" array="false" required="false">文檔內容的本地化 ID，比如 &lt;samp&gt;zh-Hans&lt;/samp&gt;、&lt;samp&gt;en-US&lt;/samp&gt; 等。</item>
+		<item name="@lang" type="string" array="false" required="false">文檔內容的本地化 ID，比如 <samp>zh-Hans</samp>、<samp>en-US</samp> 等。</item>
 		<item name="@logo" type="string" array="false" required="false">文檔的圖標，僅可使用 SVG 格式圖標。</item>
-		<item name="@created" type="string" array="false" required="false">文檔的創建時間</item>
-		<item name="@version" type="string" array="false" required="false">文檔的版本號，需要遵守 semver 的約定。</item>
+		<item name="@created" type="date" array="false" required="false">文檔的創建時間</item>
+		<item name="@version" type="version" array="false" required="false">文檔的版本號，需要遵守 semver 的約定。</item>
 		<item name="title" type="string" array="false" required="true">文檔的標題</item>
 		<item name="description" type="richtext" array="false" required="false">文檔的整體描述內容</item>
 		<item name="contact" type="contact" array="false" required="false">文檔作者的聯系方式</item>
@@ -1261,14 +1263,10 @@ function initGotoTop() {
 		<item name="response" type="request" array="true" required="false">文檔中所有 API 文檔都需要支持的返回內容</item>
 		<item name="mimetype" type="string" array="true" required="true">文檔所支持的 mimetype</item>
 	</type>
-	<type name="string">
-		<usage>普通的字符串類型</usage>
-		<item name="." type="string" array="false" required="true"></item>
-	</type>
 	<type name="richtext">
 		<usage>富文本內容</usage>
 		<item name="@type" type="string" array="false" required="true">指定內容的格式</item>
-		<item name="." type="string" array="false" required="true"></item>
+		<item name="." type="string" array="false" required="true">富文本的實際內容</item>
 	</type>
 	<type name="contact">
 		<usage>用於描述聯系方式</usage>
@@ -1283,25 +1281,25 @@ function initGotoTop() {
 	</type>
 	<type name="tag">
 		<usage>用於對各個 API 進行分類</usage>
-		<item name="@name" type="string" array="false" required="true">usage-tag-name</item>
+		<item name="@name" type="string" array="false" required="true">標簽的唯壹 ID</item>
 		<item name="@title" type="string" array="false" required="true">標簽的字面名稱</item>
-		<item name="@deprecated" type="string" array="false" required="false">該標簽在大於該版本時被棄用</item>
+		<item name="@deprecated" type="version" array="false" required="false">該標簽在大於該版本時被棄用</item>
 	</type>
 	<type name="server">
 		<usage>用於指定各個 API 的服務器地址</usage>
 		<item name="@name" type="string" array="false" required="true">服務唯壹 ID</item>
-		<item name="@url" type="string" array="false" required="true">usage-server-url</item>
-		<item name="@deprecated" type="string" array="false" required="false">服務在大於該版本時被棄用</item>
+		<item name="@url" type="string" array="false" required="true">服務的基地址，與該服務關聯的 API，訪問地址都是相對於此地址的。</item>
+		<item name="@deprecated" type="version" array="false" required="false">服務在大於該版本時被棄用</item>
 		<item name="@summary" type="string" array="false" required="false">服務的摘要信息</item>
 		<item name="description" type="richtext" array="false" required="false">服務的詳細描述</item>
 	</type>
 	<type name="api">
 		<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
-		<item name="@version" type="string" array="false" required="false">表示此接口在該版本中添加</item>
+		<item name="@version" type="version" array="false" required="false">表示此接口在該版本中添加</item>
 		<item name="@method" type="string" array="false" required="true">當前接口所支持的請求方法</item>
 		<item name="@id" type="string" array="false" required="false">接口的唯壹 ID</item>
 		<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
-		<item name="@deprecated" type="string" array="false" required="false">在此版本之後將會被棄用</item>
+		<item name="@deprecated" type="version" array="false" required="false">在此版本之後將會被棄用</item>
 		<item name="path" type="path" array="false" required="true">定義路徑信息</item>
 		<item name="description" type="richtext" array="false" required="false">該接口的詳細介紹，為 HTML 內容。</item>
 		<item name="request" type="request" array="true" required="false">定義可用的請求信息</item>
@@ -1314,24 +1312,22 @@ function initGotoTop() {
 	<type name="path">
 		<usage>用於定義請求時與路徑相關的內容</usage>
 		<item name="@path" type="string" array="false" required="true">接口地址</item>
-		<item name="@ref" type="string" array="false" required="false">usage-path-reference</item>
 		<item name="param" type="param" array="true" required="false">地址中的參數</item>
 		<item name="query" type="param" array="true" required="false">地址中的查詢參數</item>
 	</type>
 	<type name="param">
 		<usage>參數類型，基本上可以作為 request 的子集使用。</usage>
-		<item name="@xml-attr" type="bool" array="false" required="false">usage-xml-xml-attr</item>
-		<item name="@xml-extract" type="bool" array="false" required="false">usage-xml-xml-extract</item>
-		<item name="@xml-ns" type="string" array="false" required="false">usage-xml-xml-ns</item>
-		<item name="@xml-ns-prefix" type="string" array="false" required="false">usage-xml-xml-prefix</item>
-		<item name="@xml-wrapped" type="string" array="false" required="false">usage-xml-xml-wrapped</item>
+		<item name="@xml-attr" type="bool" array="false" required="false">是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。</item>
+		<item name="@xml-extract" type="bool" array="false" required="false">將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。</item>
+		<item name="@xml-ns" type="string" array="false" required="false">XML 標簽的命名空間</item>
+		<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
+		<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>
 		<item name="@name" type="string" array="false" required="true">值的名稱</item>
-		<item name="@type" type="string" array="false" required="true">值的類型，可以是 &lt;var&gt;string&lt;/var&gt;、&lt;var&gt;number&lt;/var&gt;、&lt;var&gt;bool&lt;/var&gt; 和 &lt;var&gt;object&lt;/var&gt;</item>
-		<item name="@deprecated" type="string" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
+		<item name="@type" type="string" array="false" required="true">值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
+		<item name="@deprecated" type="version" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
 		<item name="@default" type="string" array="false" required="false">默認值</item>
 		<item name="@optional" type="bool" array="false" required="false">是否為可選的參數</item>
 		<item name="@array" type="bool" array="false" required="false">是否為數組</item>
-		<item name="@ref" type="string" array="false" required="false">usage-param-reference</item>
 		<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
 		<item name="@array-style" type="bool" array="false" required="false">以數組的方式展示數據</item>
 		<item name="param" type="param" array="true" required="false">子類型，比如對象的子元素。</item>
@@ -1340,26 +1336,25 @@ function initGotoTop() {
 	</type>
 	<type name="enum">
 		<usage>定義枚舉類型的數所的枚舉值</usage>
-		<item name="@deprecated" type="string" array="false" required="false">該屬性棄用的版本號</item>
+		<item name="@deprecated" type="version" array="false" required="false">該屬性棄用的版本號</item>
 		<item name="@value" type="string" array="false" required="true">枚舉值</item>
 		<item name="@summary" type="string" array="false" required="false">枚舉值的說明</item>
-		<item name="description" type="richtext" array="false" required="false">usage-enum-description</item>
+		<item name="description" type="richtext" array="false" required="false">枚舉值的詳細說明</item>
 	</type>
 	<type name="request">
 		<usage>定義了請求和返回的相關內容</usage>
-		<item name="@xml-attr" type="bool" array="false" required="false">usage-xml-xml-attr</item>
-		<item name="@xml-extract" type="bool" array="false" required="false">usage-xml-xml-extract</item>
-		<item name="@xml-ns" type="string" array="false" required="false">usage-xml-xml-ns</item>
-		<item name="@xml-ns-prefix" type="string" array="false" required="false">usage-xml-xml-prefix</item>
-		<item name="@xml-wrapped" type="string" array="false" required="false">usage-xml-xml-wrapped</item>
-		<item name="@name" type="string" array="false" required="false">當 mimetype 為 &lt;var&gt;application/xml&lt;/var&gt; 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
-		<item name="@type" type="string" array="false" required="false">值的類型，可以是 &lt;var&gt;none&lt;/var&gt;、&lt;var&gt;string&lt;/var&gt;、&lt;var&gt;number&lt;/var&gt;、&lt;var&gt;bool&lt;/var&gt;、&lt;var&gt;object&lt;/var&gt; 和空值；空值表示不輸出任何內容。</item>
-		<item name="@deprecated" type="string" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
+		<item name="@xml-attr" type="bool" array="false" required="false">是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。</item>
+		<item name="@xml-extract" type="bool" array="false" required="false">將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。</item>
+		<item name="@xml-ns" type="string" array="false" required="false">XML 標簽的命名空間</item>
+		<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
+		<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>
+		<item name="@name" type="string" array="false" required="false">當 mimetype 為 <var>application/xml</var> 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
+		<item name="@type" type="string" array="false" required="false">值的類型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不輸出任何內容。</item>
+		<item name="@deprecated" type="version" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
 		<item name="@array" type="bool" array="false" required="false">是否為數組</item>
-		<item name="@ref" type="string" array="false" required="false">usage-request-reference</item>
 		<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
-		<item name="@status" type="number" array="false" required="false">usage-request-status</item>
-		<item name="@mimetype" type="string" array="false" required="false">媒體類型，比如 application/json 等。</item>
+		<item name="@status" type="number" array="false" required="false">狀態碼。在 request 中，該值不可用，否則為必填項。</item>
+		<item name="@mimetype" type="string" array="false" required="false">媒體類型，比如 <var>application/json</var> 等。</item>
 		<item name="enum" type="enum" array="true" required="false">當前參數可用的枚舉值</item>
 		<item name="param" type="param" array="true" required="false">子類型，比如對象的子元素。</item>
 		<item name="example" type="example" array="true" required="false">示例代碼</item>
@@ -1370,19 +1365,33 @@ function initGotoTop() {
 		<usage>示例代碼</usage>
 		<item name="@mimetype" type="string" array="false" required="true">特定於類型的示例代碼</item>
 		<item name="@summary" type="string" array="false" required="false">示例代碼的概要信息</item>
-		<item name="." type="string" array="false" required="true"></item>
+		<item name="." type="string" array="false" required="true">示例代碼的內容，需要使用 CDATA 包含代碼。</item>
 	</type>
 	<type name="callback">
 		<usage>定義回調信息</usage>
 		<item name="@method" type="string" array="false" required="true">回調的請求方法</item>
 		<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
-		<item name="@deprecated" type="string" array="false" required="false">usage-callback-deprecated</item>
-		<item name="@ref" type="string" array="false" required="false">usage-callback-reference</item>
+		<item name="@deprecated" type="version" array="false" required="false">在此版本之後將會被棄用</item>
 		<item name="path" type="path" array="false" required="false">定義回調的地址</item>
 		<item name="description" type="richtext" array="false" required="false">該接口的詳細介紹</item>
 		<item name="response" type="request" array="true" required="false">定義可能的返回信息</item>
 		<item name="request" type="request" array="true" required="true">定義可用的請求信息</item>
 		<item name="header" type="param" array="true" required="false">傳遞的報頭內容</item>
+	</type>
+	<type name="string">
+		<usage>普通的字符串類型</usage>
+	</type>
+	<type name="date">
+		<usage>采用 <a href="https://semver.org/lang/zh-CN/">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp></usage>
+	</type>
+	<type name="version">
+		<usage>版本號，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 規則</usage>
+	</type>
+	<type name="bool">
+		<usage>布爾值類型，取值為 <var>true</var> 或是 <var>false</var></usage>
+	</type>
+	<type name="number">
+		<usage>普通的數值類型</usage>
 	</type>
 </types>
 `),
@@ -3297,9 +3306,6 @@ footer {
 footer .wrap {
     margin: 0 auto;
     max-width: var(--max-width);
-    display: flex;
-    flex-flow: wrap;
-    justify-content: space-between;
 }
 `),
 	},
@@ -3440,8 +3446,7 @@ function prettyDescription() {
 
         <footer>
         <div class="wrap">
-            <xsl:if test="apidoc/license"><xsl:copy-of select="$locale-license" /></xsl:if>
-            <xsl:copy-of select="$locale-generator" />
+            <p><xsl:copy-of select="$locale-generator" /></p>
         </div>
         </footer>
     </body>
@@ -4240,36 +4245,25 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 </xsl:variable>
 
-<!-- license -->
-<xsl:variable name="locale-license">
-    <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
-        <xsl:with-param name="text">
-            文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>
-        </xsl:with-param>
-    </xsl:call-template>
-
-    <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
-        <xsl:with-param name="text">
-            文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>
-        </xsl:with-param>
-    </xsl:call-template>
-</xsl:variable>
-
 <!-- generator -->
 <xsl:variable name="locale-generator">
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hans'" />
         <xsl:with-param name="text">
-            由 <a href="https://apidoc.tools">apidoc</a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>
+            <xsl:if test="apidoc/license">
+            文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>。
+            </xsl:if>
+            包含了 <xsl:value-of select="count(apidoc/api)" /> 个接口声明，由 <a href="https://apidoc.tools">apidoc</a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>。
         </xsl:with-param>
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hant'" />
         <xsl:with-param name="text">
-            由 <a href="https://apidoc.tools">apidoc</a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>
+            <xsl:if test="apidoc/license">
+            文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>。
+            </xsl:if>
+            包含了 <xsl:value-of select="count(apidoc/api)" /> 個接口聲明，由 <a href="https://apidoc.tools">apidoc</a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>。
         </xsl:with-param>
     </xsl:call-template>
 </xsl:variable>

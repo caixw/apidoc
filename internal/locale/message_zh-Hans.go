@@ -178,7 +178,7 @@ options 可以是以下参数
 	UsageRequestStatus:      "状态码。在 request 中，该值不可用，否则为必填项。",
 	UsageRequestEnums:       "当前参数可用的枚举值",
 	UsageRequestDescription: "详细介绍，为 HTML 内容。",
-	UsageRequestMimetype:    "媒体类型，比如 application/json 等。",
+	UsageRequestMimetype:    "媒体类型，比如 <var>application/json</var> 等。",
 	UsageRequestExamples:    "示例代码",
 	UsageRequestHeaders:     "传递的报头内容",
 
@@ -206,7 +206,11 @@ options 可以是以下参数
 	UsageXMLWrapped: "如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。",
 
 	// 基本类型
-	UsageString: "普通的字符串类型",
+	UsageString:  "普通的字符串类型",
+	UsageNumber:  "普通的数值类型",
+	UsageBool:    "布尔值类型，取值为 <var>true</var> 或是 <var>false</var>",
+	UsageVersion: `版本号，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 规则`,
+	UsageDate:    `采用 <a href="https://semver.org/lang/zh-CN/">RFC3339</a> 格式表示的时间，比如：<samp>2019-12-16T00:35:48+08:00</samp>`,
 
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character:      "无效的 UTF8 字符",

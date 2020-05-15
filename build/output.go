@@ -19,8 +19,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
-const createdFormat = time.RFC3339
-
 // 几种输出的类型
 const (
 	ApidocXML   = "apidoc+xml"
@@ -135,7 +133,7 @@ func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 		d.Version.Value.Value = o.Version
 	}
 
-	d.Created = &ast.Attribute{Value: token.String{Value: time.Now().Format(createdFormat)}}
+	d.Created = &ast.DateAttribute{Value: ast.Date{Value: time.Now()}}
 	d.APIDoc = &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}
 	buf := new(bytes.Buffer)
 

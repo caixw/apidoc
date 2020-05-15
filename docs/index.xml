@@ -7,7 +7,7 @@
 其它语言的本化地内容，需要重新改写本文件中除注释外的所有内容。
 -->
 
-<docs lang="cmn-Hans" types="types.cmn-Hans.xml">
+<docs lang="cmn-Hans">
     <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
@@ -154,25 +154,25 @@
                     <td><input type="checkbox" checked="true" disabled="true" /></td>
                     <td>控制输出行为</td>
                 </tr>
+                <tr>
+                    <th>output.path</th>
+                    <td>string</td>
+                    <td><input type="checkbox" checked="true" disabled="true" /></td>
+                    <td>指定输出的文件名，包含路径信息。</td>
+                </tr>
+                <tr>
+                    <th>output.tags</th>
+                    <td>string[]</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>只输出与这些标签相关联的文档，默认为全部。</td>
+                </tr>
+                <tr>
+                    <th>output.style</th>
+                    <td>string</td>
+                    <td><input type="checkbox" disabled="true" /></td>
+                    <td>为 XML 文件指定的 XSL 文件。</td>
+                </tr>
             </tbody>
-            <tr>
-                <th>output.path</th>
-                <td>string</td>
-                <td><input type="checkbox" checked="true" disabled="true" /></td>
-                <td>指定输出的文件名，包含路径信息。</td>
-            </tr>
-            <tr>
-                <th>output.tags</th>
-                <td>string[]</td>
-                <td><input type="checkbox" disabled="true" /></td>
-                <td>只输出与这些标签相关联的文档，默认为全部。</td>
-            </tr>
-            <tr>
-                <th>output.style</th>
-                <td>string</td>
-                <td><input type="checkbox" disabled="true" /></td>
-                <td>为 XML 文件指定的 XSL 文件。</td>
-            </tr>
         </table>
     </doc>
 

@@ -4,6 +4,7 @@ package token
 
 import (
 	"reflect"
+	"sort"
 
 	"golang.org/x/text/language"
 
@@ -22,7 +23,7 @@ type Type struct {
 
 	Name  string   `xml:"name,attr"`
 	Usage InnerXML `xml:"usage"`
-	Items []*Item  `xml:"item"`
+	Items []*Item  `xml:"item,omitempty"`
 }
 
 // InnerXML 可以用于在字符串嵌套 HTML
@@ -48,7 +49,26 @@ func NewTypes(v interface{}, tag language.Tag) (*Types, error) {
 	if err := types.dumpToTypes(n); err != nil {
 		return nil, err
 	}
+
+	types.sanitize()
+
 	return types, nil
+}
+
+// 清除一些无用的数据
+func (types *Types) sanitize() {
+	for _, t := range types.Types {
+		if len(t.Items) == 1 && t.Items[0].Name == "." {
+			t.Items = nil
+		}
+	}
+
+	sort.SliceStable(types.Types, func(i, j int) bool {
+		if len(types.Types[i].Items) == 0 {
+			return false
+		}
+		return len(types.Types[j].Items) == 0
+	})
 }
 
 func (types *Types) dumpToTypes(n *node) error {
@@ -61,6 +81,12 @@ func (types *Types) dumpToTypes(n *node) error {
 
 	for _, attr := range n.attrs {
 		t.appendItem("@"+attr.name, attr.Value, attr.usage, !attr.omitempty)
+
+		if nn := newNode(attr.name, attr.Value); nn.typeName != "" && !types.typeExists(nn.typeName) {
+			if err := types.dumpToTypes(nn); err != nil {
+				return err
+			}
+		}
 	}
 
 	for _, elem := range n.elems {

@@ -7,10 +7,14 @@
     <xsl:value-of select="/docs/@lang" />
 </xsl:variable>
 
-<!-- 获取当前文档的语言名称，如果水存在，则直接采用 @lang 属性 -->
+<xsl:variable name="types-file">
+    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@types" />
+</xsl:variable>
+
+<!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
 <xsl:variable name="curr-lang-title">
     <xsl:variable name="title">
-        <xsl:value-of select="document('locales.xml')/locales/locale[@id=$curr-lang]/@title" />
+        <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@title" />
     </xsl:variable>
 
     <xsl:choose>
@@ -91,7 +95,7 @@
                         <span aria-hiddren="true">&#160;&#x25bc;</span>
                     </a>
                     <ul>
-                        <xsl:for-each select="document('locales.xml')/locales/locale">
+                        <xsl:for-each select="document('config.xml')/config/locales/locale">
                             <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
                         </xsl:for-each>
                     </ul>
@@ -132,7 +136,7 @@
         </xsl:for-each>
 
         <xsl:if test="$id='spec'">
-            <xsl:for-each select="document(/docs/@types)/types/type">
+            <xsl:for-each select="document($types-file)/types/type">
                 <xsl:call-template name="type">
                     <xsl:with-param name="type" select="." />
                 </xsl:call-template>
@@ -170,7 +174,10 @@
                     <xsl:variable name="name" select="@name" />
                     <tr>
                         <th><xsl:value-of select="@name" /></th>
-                        <td><xsl:value-of select="@type" /></td>
+                        <td>
+                            <a href="#type_{@type}"><xsl:value-of select="@type" /></a>
+                            <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+                        </td>
                         <td>
                             <xsl:call-template name="checkbox">
                                 <xsl:with-param name="chk" select="@required" />

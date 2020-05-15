@@ -256,36 +256,25 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 </xsl:variable>
 
-<!-- license -->
-<xsl:variable name="locale-license">
-    <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
-        <xsl:with-param name="text">
-            文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>
-        </xsl:with-param>
-    </xsl:call-template>
-
-    <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
-        <xsl:with-param name="text">
-            文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>
-        </xsl:with-param>
-    </xsl:call-template>
-</xsl:variable>
-
 <!-- generator -->
 <xsl:variable name="locale-generator">
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hans'" />
         <xsl:with-param name="text">
-            由 <a href="https://apidoc.tools">apidoc</a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>
+            <xsl:if test="apidoc/license">
+            文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>。
+            </xsl:if>
+            包含了 <xsl:value-of select="count(apidoc/api)" /> 个接口声明，由 <a href="https://apidoc.tools">apidoc</a> 生成于 <time><xsl:value-of select="apidoc/@created" /></time>。
         </xsl:with-param>
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'zh-hant'" />
         <xsl:with-param name="text">
-            由 <a href="https://apidoc.tools">apidoc</a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>
+            <xsl:if test="apidoc/license">
+            文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>。
+            </xsl:if>
+            包含了 <xsl:value-of select="count(apidoc/api)" /> 個接口聲明，由 <a href="https://apidoc.tools">apidoc</a> 生成於 <time><xsl:value-of select="apidoc/@created" /></time>。
         </xsl:with-param>
     </xsl:call-template>
 </xsl:variable>

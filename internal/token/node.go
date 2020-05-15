@@ -249,10 +249,10 @@ func parseTag(field reflect.StructField) (string, nodeType, string, bool) {
 		return getTagName(field, props[0]), getNodeType(props[1]), "", false
 	case 3:
 		node := getNodeType(props[1])
-		return getTagName(field, props[0]), node, getUsageKey(node, props[2]), false
+		return getTagName(field, props[0]), node, props[2], false
 	case 4:
 		node := getNodeType(props[1])
-		return getTagName(field, props[0]), node, getUsageKey(node, props[2]), getOmitempty(props[3])
+		return getTagName(field, props[0]), node, props[2], getOmitempty(props[3])
 	default:
 		panic(fmt.Sprintf("无效的 struct tag %s:%s，数量必须介于 [3,4] 之间，当前 %d", field.Name, tag, len(props)))
 	}
@@ -281,15 +281,4 @@ func getOmitempty(v string) bool {
 	default:
 		panic("无效的 struct tag，第四个元素必须得是 omitempty 或是空值")
 	}
-}
-
-func getUsageKey(node nodeType, v string) string {
-	need := (node != cdataNode) && (node != contentNode)
-
-	if v == "" && need {
-		panic("无效的 struct tag，当类型为 cdata 和 content，不能指定 usage 属性")
-	} else if v != "" && !need {
-		panic("无效的 struct tag，当类型不为 cdata 和 content，必须指定 usage 属性")
-	}
-	return v
 }

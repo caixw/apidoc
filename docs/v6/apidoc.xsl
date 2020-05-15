@@ -36,8 +36,7 @@
 
         <footer>
         <div class="wrap">
-            <xsl:if test="apidoc/license"><xsl:copy-of select="$locale-license" /></xsl:if>
-            <xsl:copy-of select="$locale-generator" />
+            <p><xsl:copy-of select="$locale-generator" /></p>
         </div>
         </footer>
     </body>

@@ -40,6 +40,11 @@ func TestNewTypes(t *testing.T) {
 			},
 		},
 		{
+			Name:  "number",
+			Usage: InnerXML{Text: locale.Translate(id, "usage-number")},
+			Items: []*Item{},
+		},
+		{
 			Name:  "string",
 			Usage: InnerXML{Text: locale.Translate(id, "usage-string")},
 			Items: []*Item{},
