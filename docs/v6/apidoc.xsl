@@ -185,7 +185,7 @@
             <xsl:call-template name="requests">
                 <xsl:with-param name="requests" select="request" />
                 <xsl:with-param name="path" select="path" />
-                <xsl:with-param name="headers" select="header" />
+                <xsl:with-param name="headers" select="header | /apidoc/header" />
             </xsl:call-template>
         </div>
         <div class="responses">
