@@ -64,10 +64,10 @@ func (types *Types) sanitize() {
 	}
 
 	sort.SliceStable(types.Types, func(i, j int) bool {
-		if types.Types[i].Items == nil {
+		if len(types.Types[i].Items) == 0 {
 			return false
 		}
-		return types.Types[j].Items == nil
+		return len(types.Types[j].Items) == 0
 	})
 }
 
