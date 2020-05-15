@@ -22,7 +22,7 @@ type Type struct {
 
 	Name  string   `xml:"name,attr"`
 	Usage InnerXML `xml:"usage"`
-	Items []*Item  `xml:"item"`
+	Items []*Item  `xml:"item,omitempty"`
 }
 
 // InnerXML 可以用于在字符串嵌套 HTML
@@ -48,7 +48,19 @@ func NewTypes(v interface{}, tag language.Tag) (*Types, error) {
 	if err := types.dumpToTypes(n); err != nil {
 		return nil, err
 	}
+
+	types.sanitize()
+
 	return types, nil
+}
+
+// 清除一些无用的数据
+func (types *Types) sanitize() {
+	for _, t := range types.Types {
+		if len(t.Items) == 1 && t.Items[0].Name == "." {
+			t.Items = nil
+		}
+	}
 }
 
 func (types *Types) dumpToTypes(n *node) error {
