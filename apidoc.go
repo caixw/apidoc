@@ -29,7 +29,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
-// Config 配置文件映身的结构
+// Config 配置文件映射的结构
 type Config = build.Config
 
 // SetLocale 设置当前的本地化 ID
@@ -74,7 +74,7 @@ func DocVersion() string {
 // 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
 // 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
 //
-// NOTE: 需要先调用 Init() 初始化本地化信息
+// NOTE: 如果需要从配置文件进行构建文档，可以采用 Config.Build
 func Build(h *core.MessageHandler, o *build.Output, i ...*build.Input) error {
 	return build.Build(h, o, i...)
 }
@@ -84,14 +84,12 @@ func Build(h *core.MessageHandler, o *build.Output, i ...*build.Input) error {
 // 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
 // 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
 //
-// NOTE: 需要先调用 Init() 初始化本地化信息
+// NOTE: 如果需要从配置文件进行构建文档，可以采用 Config.Buffer
 func Buffer(h *core.MessageHandler, o *build.Output, i ...*build.Input) (*bytes.Buffer, error) {
 	return build.Buffer(h, o, i...)
 }
 
 // Test 测试文档语法，并将结果输出到 h
-//
-// NOTE: 需要先调用 Init() 初始化本地化信息
 func Test(h *core.MessageHandler, i ...*build.Input) {
 	build.Test(h, i...)
 }
