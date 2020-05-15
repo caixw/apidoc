@@ -213,6 +213,8 @@ options 可以是以下参数
 
 	// 基本类型
 	UsageString = "usage-string"
+	UsageNumber = "usage-number"
+	UsageBool   = "usage-bool"
 
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character      = "无效的 UTF8 字符"

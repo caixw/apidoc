@@ -207,6 +207,8 @@ options 可以是以下参数
 
 	// 基本类型
 	UsageString: "普通的字符串类型",
+	UsageNumber: "普通的数值类型",
+	UsageBool:   "布尔值类型，取值为 <var>true</var> 或是 <var>false</var>",
 
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character:      "无效的 UTF8 字符",
