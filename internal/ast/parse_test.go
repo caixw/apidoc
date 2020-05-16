@@ -3,6 +3,7 @@
 package ast
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -56,6 +57,18 @@ func TestAPIDoc_Parse(t *testing.T) {
 	// 未知标签
 	err = d.Parse(core.Block{Data: []byte("<tag />")})
 	a.Equal(err, ErrNoDocFormat)
+
+	// 先解析 api，再解析 apidoc，不会覆盖 apidoc.APIs
+	d = &APIDoc{
+		Apis: []*API{
+			{
+				Method: &MethodAttribute{Value: token.String{Value: http.MethodGet}},
+			},
+		},
+	}
+	err = d.Parse(core.Block{Data: []byte(`<apidoc><title>title</title><mimetype>application/json</mimetype></apidoc>`)})
+	a.NotError(err)
+	a.Equal(1, len(d.Apis))
 }
 
 func TestGetTagName(t *testing.T) {
