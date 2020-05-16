@@ -51,6 +51,10 @@ table {
     width: 100%;
 }
 
+table tr {
+    cursor: pointer;
+}
+
 table th, table td {
     font-weight: normal;
     text-align: left;
@@ -59,7 +63,7 @@ table th, table td {
 
 table tr:hover th,
 table tr:hover td {
-    border-bottom: 1px solid var(--border-color);
+    opacity: .7;
 }
 
 ul, ol, ul li, ol li {
