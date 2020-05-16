@@ -12,7 +12,9 @@ import (
 
 	"github.com/issue9/jsonrpc"
 
+	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
@@ -109,4 +111,11 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 	})
 
 	return srv.Serve(ctx)
+}
+
+// 分析 path 的内容，并将其中的文档解析至 doc
+func parseFile(doc *ast.APIDoc, h *core.MessageHandler, uri core.URI, i *build.Input) {
+	doc.ParseBlocks(h, func(blocks chan core.Block) {
+		i.ParseFile(blocks, h, uri)
+	})
 }

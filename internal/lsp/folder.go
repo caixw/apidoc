@@ -68,8 +68,7 @@ func (f *folder) openFile(uri core.URI) error {
 		return fmt.Errorf("xxx")
 	}
 
-	build.ParseFile(f.doc, f.h, uri, input)
-
+	parseFile(f.doc, f.h, uri, input)
 	return nil
 }
 

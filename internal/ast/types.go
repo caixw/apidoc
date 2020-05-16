@@ -3,8 +3,6 @@
 package ast
 
 import (
-	"io"
-
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/token"
@@ -257,74 +255,6 @@ func (r *Richtext) V() string {
 		return ""
 	}
 	return r.Text.Value.Value
-}
-
-// Parse 将注释块的内容添加到当前文档
-//
-// 分析注释块内容，如果正确，则添加到当前文档中，
-// 或是在出错时，返回错误信息。
-//
-// 如果内容不是文档内容，刚将返回 ErrNoDocFormat
-func (doc *APIDoc) Parse(b core.Block) error {
-	if len(b.Data) < minSize {
-		return ErrNoDocFormat
-	}
-
-	p, err := token.NewParser(b)
-	if err != nil {
-		return err
-	}
-
-	name, err := getTagName(p)
-	if err != nil {
-		return err
-	}
-	switch name {
-	case "api":
-		if doc.Apis == nil {
-			doc.Apis = make([]*API, 0, 100)
-		}
-
-		api := &API{doc: doc}
-		doc.Apis = append(doc.Apis, api)
-		err = token.Decode(p, api)
-	case "apidoc":
-		if doc.Title != nil { // 多个 apidoc 标签
-			return p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue)
-		}
-		err = token.Decode(p, doc)
-	default:
-		return ErrNoDocFormat
-	}
-
-	if err != nil {
-		return err
-	}
-
-	doc.sortAPIs()
-	return nil
-}
-
-// 获取根标签的名称
-func getTagName(p *token.Parser) (string, error) {
-	start := p.Position()
-	for {
-		t, _, err := p.Token()
-		if err == io.EOF {
-			return "", ErrNoDocFormat
-		} else if err != nil {
-			return "", err
-		}
-
-		switch elem := t.(type) {
-		case *token.StartElement:
-			p.Move(start)
-			return elem.Name.Value, nil
-		case *token.EndElement, *token.CData:
-			return "", ErrNoDocFormat
-		default: // 其它标签忽略
-		}
-	}
 }
 
 // Param 转换成 Param 对象

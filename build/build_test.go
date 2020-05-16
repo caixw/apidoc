@@ -7,9 +7,7 @@ import (
 
 	"github.com/issue9/assert"
 
-	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
-	"github.com/caixw/apidoc/v7/internal/ast"
 )
 
 func TestParse(t *testing.T) {
@@ -30,9 +28,9 @@ func TestParse(t *testing.T) {
 	}
 	a.NotError(c.Sanitize())
 
-	doc := &ast.APIDoc{}
 	erro, _, h := messagetest.MessageHandler()
-	Parse(doc, h, php, c)
+	doc, err := parse(h, php, c)
+	a.NotError(err).NotNil(doc)
 	h.Stop()
 	a.Empty(erro.String())
 
@@ -40,25 +38,4 @@ func TestParse(t *testing.T) {
 		Equal(doc.Version.V(), "1.1.1")
 	api := doc.Apis[0]
 	a.Equal(api.Method.V(), "GET")
-}
-
-func TestParseFile(t *testing.T) {
-	a := assert.New(t)
-
-	c := &Input{
-		Lang:      "c++",
-		Dir:       "./testdata",
-		Recursive: true,
-	}
-	a.NotError(c.Sanitize())
-
-	doc := &ast.APIDoc{}
-	erro, _, h := messagetest.MessageHandler()
-	uri := core.FileURI("./testdata/testfile.h")
-	a.NotEmpty(uri)
-	ParseFile(doc, h, uri, c)
-	a.Equal(0, len(doc.Apis)).
-		Equal(doc.Version.V(), "1.1.1")
-	h.Stop()
-	a.Empty(erro.String())
 }

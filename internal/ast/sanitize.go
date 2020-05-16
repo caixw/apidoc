@@ -33,6 +33,10 @@ func (e *Enum) Sanitize(p *token.Parser) error {
 
 // Sanitize token.Sanitizer
 func (p *Path) Sanitize(pp *token.Parser) error {
+	if p.Path == nil || p.Path.V() == "" {
+		return pp.NewError(p.Start, p.End, "path", locale.ErrRequired)
+	}
+
 	params, err := parsePath(p.Path.V())
 	if err != nil {
 		return pp.NewError(p.Path.Start, p.Path.End, "path", locale.ErrInvalidFormat)

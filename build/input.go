@@ -155,7 +155,7 @@ func parseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) 
 		for _, path := range o.paths {
 			wg.Add(1)
 			go func(path core.URI, o *Input) {
-				o.parseFile(blocks, h, path)
+				o.ParseFile(blocks, h, path)
 				wg.Done()
 			}(path, o)
 		}
@@ -163,8 +163,8 @@ func parseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) 
 	wg.Wait()
 }
 
-// 分析 uri 指向的文件
-func (o *Input) parseFile(blocks chan core.Block, h *core.MessageHandler, uri core.URI) {
+// ParseFile 分析 uri 指向的文件
+func (o *Input) ParseFile(blocks chan core.Block, h *core.MessageHandler, uri core.URI) {
 	data, err := uri.ReadAll(o.encoding)
 	if err != nil {
 		h.Error(core.Erro, core.NewSyntaxErrorWithError(core.Location{URI: uri}, "", err))

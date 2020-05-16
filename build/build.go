@@ -64,45 +64,9 @@ func parse(h *core.MessageHandler, i ...*Input) (*ast.APIDoc, error) {
 	}
 
 	d := &ast.APIDoc{}
-	Parse(d, h, i...)
+	d.ParseBlocks(h, func(blocks chan core.Block) {
+		parseInputs(blocks, h, i...)
+	})
 
 	return d, nil
-}
-
-// Parse 分析从 o 中获取的代码块
-//
-// 所有与解析有关的错误均通过 h 输出。
-// 如果是配置文件的错误，则通过 error 返回
-func Parse(doc *ast.APIDoc, h *core.MessageHandler, o ...*Input) {
-	parse2APIDoc(doc, h, func(blocks chan core.Block) {
-		parseInputs(blocks, h, o...)
-	})
-}
-
-// ParseFile 分析 path 的内容，并将其中的文档解析至 doc
-func ParseFile(doc *ast.APIDoc, h *core.MessageHandler, uri core.URI, o *Input) {
-	parse2APIDoc(doc, h, func(blocks chan core.Block) {
-		o.parseFile(blocks, h, uri)
-	})
-}
-
-func parse2APIDoc(doc *ast.APIDoc, h *core.MessageHandler, g func(chan core.Block)) {
-	done := make(chan struct{})
-	blocks := make(chan core.Block, 50)
-
-	go func() {
-		for block := range blocks {
-			err := doc.Parse(block)
-			if err == ast.ErrNoDocFormat {
-				continue
-			} else if err != nil {
-				h.Error(core.Erro, err)
-			}
-		}
-		done <- struct{}{}
-	}()
-
-	g(blocks)
-	close(blocks)
-	<-done
 }

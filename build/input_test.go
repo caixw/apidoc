@@ -40,7 +40,7 @@ func TestParseInputs(t *testing.T) {
 	a.Empty(erro.String())
 }
 
-func TestInput_parseFile(t *testing.T) {
+func TestInput_ParseFile(t *testing.T) {
 	a := assert.New(t)
 
 	blocks := make(chan core.Block, 100)
@@ -51,7 +51,7 @@ func TestInput_parseFile(t *testing.T) {
 		Recursive: true,
 	}
 	a.NotError(o.Sanitize())
-	o.parseFile(blocks, h, "./testdata/testfile.c")
+	o.ParseFile(blocks, h, "./testdata/testfile.c")
 	h.Stop()
 	close(blocks)
 
@@ -68,7 +68,7 @@ func TestInput_parseFile(t *testing.T) {
 		Encoding:  "gbk",
 	}
 	a.NotError(o.Sanitize())
-	o.parseFile(blocks, h, "./testdata/gbk.php")
+	o.ParseFile(blocks, h, "./testdata/gbk.php")
 	h.Stop()
 	close(blocks)
 	a.Equal(1, len(blocks))
@@ -93,7 +93,7 @@ func TestInput_parseFile(t *testing.T) {
 		Dir:  "./testdata",
 	}
 	a.NotError(o.Sanitize())
-	o.parseFile(blocks, h, "./testdata/not-exists.php")
+	o.ParseFile(blocks, h, "./testdata/not-exists.php")
 	close(blocks)
 	h.Stop()
 	a.NotEmpty(erro.String())
@@ -106,7 +106,7 @@ func TestInput_parseFile(t *testing.T) {
 		Dir:  "./testdata",
 	}
 	a.NotError(o.Sanitize())
-	o.parseFile(blocks, h, "./testdata/testfile.1")
+	o.ParseFile(blocks, h, "./testdata/testfile.1")
 	h.Stop()
 	close(blocks)
 	a.NotEmpty(erro.String())
