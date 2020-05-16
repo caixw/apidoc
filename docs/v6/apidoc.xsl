@@ -339,6 +339,17 @@
 <xsl:param name="mimetype" />
 
 <h5 class="status"><xsl:value-of select="$response/@status" /></h5>
+<div>
+<xsl:choose>
+    <xsl:when test="$response/description">
+        <xsl:attribute name="data-type">
+            <xsl:value-of select="$response/description/@type" />
+        </xsl:attribute>
+        <pre><xsl:copy-of select="$response/description/node()" /></pre>
+    </xsl:when>
+    <xsl:otherwise><xsl:value-of select="$response/@summary" /></xsl:otherwise>
+</xsl:choose>
+</div>
 <xsl:call-template name="top-param">
     <xsl:with-param name="mimetype" select="$mimetype" />
     <xsl:with-param name="param" select="$response" />
