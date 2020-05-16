@@ -85,33 +85,36 @@ func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
 	}
 
 	if start.Close {
-		return nil, nil
+		return nil, n.decodeCheckOmitempty(p, start.Start, start.End)
 	}
 
 	end, err := n.decodeElements(p)
 	if err != nil {
 		return nil, err
 	}
+	return end, n.decodeCheckOmitempty(p, start.Start, end.End)
+}
 
-	// 判断 omitempty 属性
+// 判断 omitempty 属性
+func (n *node) decodeCheckOmitempty(p *Parser, start, end core.Position) error {
 	for _, attr := range n.attrs {
 		if attr.canNotEmpty() {
-			return nil, p.NewError(start.Start, end.End, attr.name, locale.ErrRequired)
+			return p.NewError(start, end, attr.name, locale.ErrRequired)
 		}
 	}
 	for _, elem := range n.elems {
 		if elem.canNotEmpty() {
-			return nil, p.NewError(start.Start, end.End, elem.name, locale.ErrRequired)
+			return p.NewError(start, end, elem.name, locale.ErrRequired)
 		}
 	}
 	if n.cdata != nil && n.cdata.canNotEmpty() {
-		return nil, p.NewError(start.Start, end.End, "cdata", locale.ErrRequired)
+		return p.NewError(start, end, "cdata", locale.ErrRequired)
 	}
 	if n.content != nil && n.content.canNotEmpty() {
-		return nil, p.NewError(start.Start, end.End, "content", locale.ErrRequired)
+		return p.NewError(start, end, "content", locale.ErrRequired)
 	}
 
-	return end, nil
+	return nil
 }
 
 // 当前表示的值必须是一个非空值

@@ -836,49 +836,84 @@ func TestDecode(t *testing.T) {
 		Equal(v14.Elem1.StartTag.Value, "elem2").
 		Equal(v14.Elem1.ID.Value, 60)
 
+	// 是否能正常调用根的 Sanitizer 接口
+	v15 := &objectTag{}
+	b = `<attr id="7"><name>n</name></attr>`
+	decode(a, b, v15, false)
+	a.Equal(v15.ID.Value, 8).
+		Equal(v15.Name.Value, "n")
+
+}
+
+func TestDecode_omitempty(t *testing.T) {
+	a := assert.New(t)
+
+	type obj struct {
+		BaseTag
+		ID intAttr `apidoc:"id,attr,usage"`
+	}
+
 	// omitempty attr1 不能为空
-	v14 = &struct {
+	v1 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
-	b = `<apidoc><elem2 id="60" /></apidoc>`
-	decode(a, b, v14, true)
+	b := `<apidoc><elem2 id="60" /></apidoc>`
+	decode(a, b, v1, true)
 
 	// omitempty, elem2 数组，不能为空
-	v15 := &struct {
+	v2 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decode(a, b, v15, true)
+	decode(a, b, v2, true)
 
-	v15 = &struct {
+	v2 = &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc><elem2 id="60" /></apidoc>`
-	decode(a, b, v15, false)
-	a.Equal(1, len(v15.Elem1))
+	decode(a, b, v2, false)
+	a.Equal(1, len(v2.Elem1))
 
 	// omitempty, cdata 不能为空
-	v16 := &struct {
+	v3 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		CData    *CData   `apidoc:",cdata,"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decode(a, b, v16, true)
+	decode(a, b, v3, true)
 
-	// 是否能正常调用根的 Sanitizer 接口
-	v17 := &objectTag{}
-	b = `<attr id="7"><name>n</name></attr>`
-	decode(a, b, v17, false)
-	a.Equal(v17.ID.Value, 8).
-		Equal(v17.Name.Value, "n")
+	// omitempty attr1 不能为空，自闭合标签
+	v4 := &struct {
+		BaseTag
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
+	}{}
+	b = `<apidoc></apidoc>`
+	decode(a, b, v4, true)
+	b = `<apidoc />`
+	decode(a, b, v4, true)
+
+	// omitempty attr1 不能为空，自闭合标签
+	v5 := &struct {
+		BaseTag
+		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
+		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
+		Elem     *struct {
+			Attr1 intAttr `apidoc:"attr1,attr,usage"`
+		} `apidoc:"elem,elem,usage"`
+	}{}
+	b = `<apidoc attr1="1"><elem></elem></apidoc>`
+	decode(a, b, v5, true)
+	b = `<apidoc attr1="1"><elem/></apidoc>`
+	decode(a, b, v5, true)
 }
 
 func TestObject_decodeAttributes(t *testing.T) {

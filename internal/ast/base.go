@@ -200,7 +200,7 @@ func (a *MethodAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) 
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (a *MethodAttribute) EncodeXMLAttr() (string, error) {
-	return a.Value.Value, nil
+	return a.V(), nil
 }
 
 // V 返回当前属性实际表示的值
