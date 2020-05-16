@@ -10,6 +10,7 @@ import (
 
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/openapi"
 )
 
 func initVersion() {
@@ -18,7 +19,7 @@ func initVersion() {
 
 func version(w io.Writer) error {
 	goVersion := strings.TrimLeft(runtime.Version(), "go")
-	msg := locale.Sprintf(locale.Version, apidoc.Version(true), apidoc.DocVersion(), apidoc.LSPVersion(), goVersion)
+	msg := locale.Sprintf(locale.Version, apidoc.Version(true), apidoc.DocVersion(), apidoc.LSPVersion(), openapi.LatestVersion, goVersion)
 	_, err := fmt.Fprintln(w, msg)
 	return err
 }
