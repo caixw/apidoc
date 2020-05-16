@@ -12,7 +12,7 @@ require (
 	github.com/issue9/utils v1.3.0
 	github.com/issue9/version v1.0.3
 	golang.org/x/text v0.3.2
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v2 v2.3.0
 )
 
 go 1.13
