@@ -102,7 +102,7 @@ func (r *Request) Sanitize(p *token.Parser) error {
 		return p.NewError(r.Start, r.End, "param", locale.ErrRequired)
 	}
 	if r.Type.V() == TypeNone && len(r.Items) > 0 {
-		return p.NewError(r.Start, r.End, r.Type.AttributeName.Value, locale.ErrInvalidValue)
+		return p.NewError(r.Start, r.End, "type", locale.ErrInvalidValue)
 	}
 
 	// 判断 enums 的值是否相同
