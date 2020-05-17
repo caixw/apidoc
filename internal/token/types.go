@@ -11,7 +11,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-// Types 所有类型信息的集合
+// Types 用于描述类型信息
 type Types struct {
 	XMLName struct{} `xml:"types"`
 	Types   []*Type  `xml:"type"`
@@ -40,7 +40,7 @@ type Item struct {
 	Usage    string `xml:",innerxml"`
 }
 
-// NewTypes 分析 v，返回 Type 类型的数据
+// NewTypes 分析 v 并将其转换成 Types 数据
 func NewTypes(v interface{}, tag language.Tag) (*Types, error) {
 	locale.SetTag(tag)
 

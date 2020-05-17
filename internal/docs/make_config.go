@@ -7,7 +7,6 @@ package main
 import (
 	"golang.org/x/text/language/display"
 
-	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/docs"
 	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
@@ -15,7 +14,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-var target = docs.Dir().Append("config.xml")
+const target = "config.xml"
 
 type config struct {
 	XMLName struct{} `xml:"config"`
@@ -40,16 +39,15 @@ type loc struct {
 	Types string `xml:"types,attr"`
 }
 
-var defaultConfig = &config{
-	Name:      core.Name,
-	Version:   ast.Version,
-	Repo:      core.RepoURL,
-	URL:       core.OfficialURL,
-	Languages: make([]language, 0, len(lang.Langs())),
-	Locales:   make([]loc, 0, len(locale.Tags())),
-}
-
 func main() {
+	defaultConfig := &config{
+		Name:      vars.Name,
+		Version:   ast.Version,
+		Repo:      vars.RepoURL,
+		URL:       vars.OfficialURL,
+		Languages: make([]language, 0, len(lang.Langs())),
+		Locales:   make([]loc, 0, len(locale.Tags())),
+	}
 	for _, lang := range lang.Langs() {
 		defaultConfig.Languages = append(defaultConfig.Languages, language{
 			ID:   lang.ID,
@@ -72,5 +70,5 @@ func main() {
 		})
 	}
 
-	makeutil.PanicError(makeutil.WriteXML(target, defaultConfig, "\t"))
+	makeutil.PanicError(makeutil.WriteXML(docs.Dir().Append(target), defaultConfig, "\t"))
 }
