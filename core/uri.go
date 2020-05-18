@@ -38,6 +38,9 @@ const (
 //
 // 如果是本地相对路径，也可以直接使用 `./path/file` 的形式表示，
 // 不需要指定协议。
+//
+// NOTE: 并非完整的 URI 实现，仅作为了 file:// 和 http:// 支持，
+// 也提供对 windows 路径的支持。
 type URI string
 
 // FileURI 根据本地文件路径构建 URI 实例

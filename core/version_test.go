@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package vars
+package core
 
 import (
 	"testing"

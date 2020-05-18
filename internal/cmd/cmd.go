@@ -20,7 +20,6 @@ import (
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 // 命令行输出的表格中，每一列为了对齐填补的空格数量。
@@ -46,7 +45,7 @@ func init() {
 	tag, err := utils.GetSystemLanguageTag()
 	if err != nil { // 无法获取系统语言，则采用默认值
 		fmt.Fprintln(warnOut, err, tag)
-		tag = language.MustParse(vars.DefaultLocaleID)
+		tag = language.MustParse(locale.DefaultLocaleID)
 	}
 	apidoc.SetLocale(tag)
 
@@ -76,7 +75,7 @@ func Exec() {
 
 func usage(w io.Writer) error {
 	cmds := strings.Join(command.Commands(), ",")
-	msg := locale.Sprintf(locale.CmdUsage, vars.Name, cmds, vars.RepoURL, vars.OfficialURL)
+	msg := locale.Sprintf(locale.CmdUsage, core.Name, cmds, core.RepoURL, core.OfficialURL)
 	_, err := fmt.Fprintln(w, msg)
 	return err
 }

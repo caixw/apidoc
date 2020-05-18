@@ -10,8 +10,8 @@ import (
 
 	"github.com/issue9/assert"
 
+	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 func TestJSON(t *testing.T) {
@@ -23,7 +23,7 @@ func TestJSON(t *testing.T) {
 	a.NotError(json.Unmarshal(data, openapi)).
 		Equal(3, len(openapi.Tags)).
 		Equal(1, len(openapi.Paths)).
-		Equal(openapi.ExternalDocs.URL, vars.OfficialURL).
+		Equal(openapi.ExternalDocs.URL, core.OfficialURL).
 		NotEmpty(openapi.ExternalDocs.Description)
 
 	path := openapi.Paths["/users"]

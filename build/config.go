@@ -13,8 +13,18 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
+
+// 允许的配置文件名
+//
+// 会按此列表的顺序在目录中查找配置文件，
+// 直到找到第一个相符的文件，或是在没有时出错。
+//
+// 在生成配置文件时，会直接拿第一个元素的值作为文件名。
+var allowConfigFilenames = []string{
+	".apidoc.yaml",
+	".apidoc.yml",
+}
 
 // Config 配置文件映身的结构
 type Config struct {
@@ -43,7 +53,7 @@ type Config struct {
 //
 // 所有的错误信息会输出到 h，在出错时，会返回 nil
 func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
-	for _, filename := range vars.AllowConfigFilenames {
+	for _, filename := range allowConfigFilenames {
 		path := wd.Append(filename)
 
 		exists, err := path.Exists()
@@ -61,7 +71,7 @@ func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
 		}
 	}
 
-	msg := core.NewSyntaxError(core.Location{}, wd.Append(vars.AllowConfigFilenames[0]).String(), locale.ErrRequired)
+	msg := core.NewSyntaxError(core.Location{}, wd.Append(allowConfigFilenames[0]).String(), locale.ErrRequired)
 	h.Error(core.Erro, msg)
 	return nil
 }
@@ -125,13 +135,13 @@ func (cfg *Config) sanitize(file core.URI) error {
 	return cfg.Output.Sanitize()
 }
 
-// SaveToFile 将内容保存至文件
-func (cfg *Config) SaveToFile(path core.URI) error {
+// Save 将内容保存至文件
+func (cfg *Config) Save(wd core.URI) error {
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
 		return err
 	}
-	return path.WriteAll(data)
+	return wd.Append(allowConfigFilenames[0]).WriteAll(data)
 }
 
 // Build 解析文档并输出文档内容

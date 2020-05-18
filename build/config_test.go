@@ -13,6 +13,15 @@ import (
 	"github.com/caixw/apidoc/v7/internal/docs"
 )
 
+func TestAllowConfigFilenames(t *testing.T) {
+	a := assert.New(t)
+
+	a.True(len(allowConfigFilenames) > 0)
+	for _, name := range allowConfigFilenames {
+		a.True(len(name) > 1)
+	}
+}
+
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
@@ -78,14 +87,14 @@ func TestConfig_sanitize(t *testing.T) {
 		Equal(err2.Field, "output")
 }
 
-func TestConfig_SaveToFile(t *testing.T) {
+func TestConfig_Save(t *testing.T) {
 	a := assert.New(t)
 
 	wd := core.FileURI("./")
 	a.NotEmpty(wd)
 	cfg, err := DetectConfig(wd, true)
 	a.NotError(err).NotNil(cfg)
-	a.NotError(cfg.SaveToFile(wd.Append(".apidoc.yaml")))
+	a.NotError(cfg.Save(wd))
 }
 
 func TestConfig_Test(t *testing.T) {

@@ -23,7 +23,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp"
 	"github.com/caixw/apidoc/v7/internal/mock"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 // Config 配置文件映射的结构
@@ -51,9 +50,9 @@ func Locales() []language.Tag {
 // 为一个正常的 semver(https://semver.org/lang/zh-CN/) 格式字符串。
 func Version(full bool) string {
 	if full {
-		return vars.FullVersion()
+		return core.FullVersion()
 	}
-	return vars.Version
+	return core.Version
 }
 
 // LSPVersion 获取当前支持的 LSP 版本

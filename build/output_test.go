@@ -7,9 +7,9 @@ import (
 
 	"github.com/issue9/assert"
 
+	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
 	"github.com/caixw/apidoc/v7/internal/docs"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 func TestOptions_contains(t *testing.T) {
@@ -42,9 +42,9 @@ func TestOutput_Sanitize(t *testing.T) {
 	o = &Output{Type: ApidocXML}
 	o.Path = "./testdir/apidoc.json"
 	a.NotError(o.Sanitize())
-	a.Equal(o.Style, docs.StylesheetURL(vars.OfficialURL)).
+	a.Equal(o.Style, docs.StylesheetURL(core.OfficialURL)).
 		Equal(2, len(o.procInst)).
-		Contains(o.procInst[1], docs.StylesheetURL(vars.OfficialURL))
+		Contains(o.procInst[1], docs.StylesheetURL(core.OfficialURL))
 
 	o.Version = "1.0.0"
 	a.NotError(o.Sanitize())

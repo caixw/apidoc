@@ -7,12 +7,12 @@ package main
 import (
 	"golang.org/x/text/language/display"
 
+	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/docs"
 	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 var target = docs.Dir().Append("config.xml")
@@ -41,10 +41,10 @@ type loc struct {
 }
 
 var defaultConfig = &config{
-	Name:      vars.Name,
+	Name:      core.Name,
 	Version:   ast.Version,
-	Repo:      vars.RepoURL,
-	URL:       vars.OfficialURL,
+	Repo:      core.RepoURL,
+	URL:       core.OfficialURL,
 	Languages: make([]language, 0, len(lang.Langs())),
 	Locales:   make([]loc, 0, len(locale.Tags())),
 }
@@ -61,7 +61,7 @@ func main() {
 	for _, tag := range tags {
 		id := tag.String()
 		href := "index.xml"
-		if id != vars.DefaultLocaleID {
+		if id != locale.DefaultLocaleID {
 			href = "index." + id + ".xml"
 		}
 		defaultConfig.Locales = append(defaultConfig.Locales, loc{

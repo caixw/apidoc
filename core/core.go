@@ -1,11 +1,25 @@
 // SPDX-License-Identifier: MIT
 
-// Package core 一些公共处理功能
+// Package core 提供基础的核心功能
 package core
 
 import "fmt"
 
-// Block 表示原始的注释代码块
+// 一些公用的常量
+const (
+	// 程序的正式名称
+	Name = "apidoc"
+
+	// 源码仓库地址
+	RepoURL = "https://github.com/caixw/apidoc"
+
+	// 官网
+	OfficialURL = "https://apidoc.tools"
+)
+
+// Block 最基本的代码单位
+//
+// 一般从注释提取的一个完整注释作为 Block 实例。
 type Block struct {
 	Location Location
 	Data     []byte
@@ -19,7 +33,7 @@ type Position struct {
 	Character int `json:"character" apidoc:"-"`
 }
 
-// Range 用于描述文档在文件中的范围
+// Range 用于描述文档中的一段范围
 //
 // 兼容 LSP https://microsoft.github.io/language-server-protocol/specifications/specification-current/#range
 type Range struct {
@@ -27,7 +41,7 @@ type Range struct {
 	End   Position `json:"end" apidoc:"-"`
 }
 
-// Location 用于描述文档的定位
+// Location 用于描述一段内容的定位
 //
 // 兼容 LSP https://microsoft.github.io/language-server-protocol/specifications/specification-current/#location
 type Location struct {

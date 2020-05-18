@@ -16,7 +16,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/openapi"
 	"github.com/caixw/apidoc/v7/internal/token"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 // 几种输出的类型
@@ -103,7 +102,7 @@ func (o *Output) Sanitize() error {
 	o.xml = strings.HasSuffix(o.Type, "+xml")
 	if o.xml {
 		if o.Style == "" {
-			o.Style = docs.StylesheetURL(vars.OfficialURL)
+			o.Style = docs.StylesheetURL(core.OfficialURL)
 		}
 
 		o.procInst = []string{

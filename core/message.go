@@ -8,7 +8,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-// MessageType 表示氐的类型
+// MessageType 表示消息的类型
 type MessageType int8
 
 // 消息的分类

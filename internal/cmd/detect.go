@@ -10,7 +10,6 @@ import (
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 var detectFlagSet *flag.FlagSet
@@ -33,8 +32,7 @@ func detect(io.Writer) error {
 		return err
 	}
 
-	path := uri.Append(vars.AllowConfigFilenames[0])
-	if err = cfg.SaveToFile(path); err != nil {
+	if err = cfg.Save(uri); err != nil {
 		return err
 	}
 

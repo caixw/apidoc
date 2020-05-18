@@ -12,7 +12,6 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 // 将 doc.APIDoc 转换成 openapi
@@ -35,8 +34,8 @@ func convert(doc *ast.APIDoc) (*OpenAPI, error) {
 		Tags:    make([]*Tag, 0, len(doc.Tags)),
 		Paths:   make(map[string]*PathItem, len(doc.Apis)),
 		ExternalDocs: &ExternalDocumentation{
-			Description: locale.Translate(langID, locale.GeneratorBy, vars.Name),
-			URL:         vars.OfficialURL,
+			Description: locale.Translate(langID, locale.GeneratorBy, core.Name),
+			URL:         core.OfficialURL,
 		},
 	}
 

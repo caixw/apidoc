@@ -7,8 +7,6 @@ import (
 
 	"github.com/issue9/assert"
 	"golang.org/x/text/language"
-
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 var _ error = &Err{}
@@ -17,7 +15,7 @@ func TestVarsDefaultLocaleID(t *testing.T) {
 	a := assert.New(t)
 
 	// 必须保证第一个元素是默认值
-	a.Equal(tags[0].String(), vars.DefaultLocaleID)
+	a.Equal(tags[0].String(), DefaultLocaleID)
 }
 
 func TestTranslate(t *testing.T) {

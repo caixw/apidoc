@@ -6,13 +6,17 @@ package locale
 import (
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
-
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
+
+// DefaultLocaleID 默认的本地化语言 ID
+//
+// 当未调用相关函数设置 ID，或是设置为一个不支持的 ID 时，
+// 系统最终会采用此 ID。
+const DefaultLocaleID = "cmn-Hans"
 
 var (
 	// 保证有个初始化的值，部分包的测试功能依赖此变量
-	localeTag     = language.MustParse(vars.DefaultLocaleID)
+	localeTag     = language.MustParse(DefaultLocaleID)
 	localePrinter = message.NewPrinter(localeTag)
 
 	tags = []language.Tag{}
@@ -45,7 +49,7 @@ func setMessages(id string, messages map[string]string) {
 	}
 
 	// 保证 DefaultLocaleID 为第一个数组元素
-	if id == vars.DefaultLocaleID {
+	if id == DefaultLocaleID {
 		ts := make([]language.Tag, 0, len(tags)+1)
 		tags = append(append(ts, tag), tags...)
 	} else {

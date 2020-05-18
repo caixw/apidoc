@@ -14,7 +14,6 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/vars"
 )
 
 func (m *Mock) buildAPI(api *ast.API) http.Handler {
@@ -105,7 +104,7 @@ func (m *Mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 	}
 
 	w.Header().Set("Content-Type", accept)
-	w.Header().Set("Server", vars.Name)
+	w.Header().Set("Server", core.Name)
 	for _, item := range resp.Headers {
 		switch item.Type.V() {
 		case ast.TypeBool:
