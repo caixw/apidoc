@@ -46,6 +46,9 @@ func main() {
 				panic(err)
 			}
 
+			if usage[len(usage)-1] == '\n' { // 去掉换行符
+				usage = usage[:len(usage)-1]
+			}
 			cmds.Commands = append(cmds.Commands, &command{
 				Name:  name,
 				Usage: usage,
