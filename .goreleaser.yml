@@ -22,7 +22,7 @@ builds:
     binary: apidoc
 
     ldflags:
-      - -s -w -X github.com/caixw/apidoc/v7/internal/vars.commitHash={{.Commit}} -X github.com/caixw/apidoc/v7/internal/vars.buildDate={{time "20060102"}}
+      - -s -w -X github.com/caixw/apidoc/v7/core.commitHash={{.Commit}} -X github.com/caixw/apidoc/v7/core.buildDate={{time "20060102"}}
 
 archives:
   - builds:
