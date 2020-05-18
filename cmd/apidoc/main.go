@@ -16,6 +16,7 @@ import (
 	"github.com/issue9/utils"
 	"golang.org/x/text/language"
 
+	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/internal/cmd"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
@@ -26,8 +27,9 @@ func main() {
 		fmt.Fprintln(os.Stderr, err, tag)
 		tag = language.MustParse(locale.DefaultLocaleID)
 	}
+	apidoc.SetLocale(tag)
 
-	if err := cmd.Init(os.Stdout, tag).Exec(os.Args[1:]); err != nil {
+	if err := cmd.Init(os.Stdout).Exec(os.Args[1:]); err != nil {
 		panic(err)
 	}
 }

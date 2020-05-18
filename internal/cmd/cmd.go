@@ -13,10 +13,8 @@ import (
 
 	"github.com/issue9/cmdopt"
 	"github.com/issue9/term/colors"
-	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 
-	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
@@ -56,9 +54,7 @@ type printer struct {
 }
 
 // Init 初始化 cmdopt.CmdOpt 实例
-func Init(out io.Writer, tag language.Tag) *cmdopt.CmdOpt {
-	apidoc.SetLocale(tag)
-
+func Init(out io.Writer) *cmdopt.CmdOpt {
 	// NOTE: 要确保 command 的初始化在 SetLocale 之后
 	command = cmdopt.New(out, flag.ContinueOnError, usage, func(name string) string {
 		return locale.Sprintf(locale.CmdNotFound, name)

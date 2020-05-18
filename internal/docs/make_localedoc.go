@@ -21,19 +21,20 @@ import (
 
 func main() {
 	for _, tag := range locale.Tags() {
-		doc := &localedoc.LocaleDoc{}
+		locale.SetTag(tag)
 
-		makeutil.PanicError(makeCommands(doc, tag))
-		makeutil.PanicError(token.NewTypes(doc, &ast.APIDoc{}, tag))
+		doc := &localedoc.LocaleDoc{}
+		makeutil.PanicError(makeCommands(doc))
+		makeutil.PanicError(token.NewTypes(doc, &ast.APIDoc{}))
 
 		target := docs.Dir().Append(localedoc.Path(tag))
 		makeutil.PanicError(makeutil.WriteXML(target, doc, "\t"))
 	}
 }
 
-func makeCommands(doc *localedoc.LocaleDoc, tag language.Tag) error {
+func makeCommands(doc *localedoc.LocaleDoc) error {
 	out := new(bytes.Buffer)
-	opt := cmd.Init(out, tag)
+	opt := cmd.Init(out)
 	names := opt.Commands()
 
 	for _, name := range names {

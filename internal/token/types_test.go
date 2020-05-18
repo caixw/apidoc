@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v7/internal/docs/localedoc"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -14,26 +13,25 @@ import (
 
 func TestNewTypes(t *testing.T) {
 	a := assert.New(t)
-	id := locale.DefaultLocaleID
 
 	ts := &localedoc.LocaleDoc{}
-	err := NewTypes(ts, &objectTag{}, language.MustParse(id))
+	err := NewTypes(ts, &objectTag{})
 	a.NotError(err)
 	ts2 := &typeList{Types: []*localedoc.Type{
 		{
 			Name:  "apidoc",
-			Usage: localedoc.InnerXML{Text: locale.Translate(id, "usage-root")},
+			Usage: localedoc.InnerXML{Text: locale.Sprintf("usage-root")},
 			Items: []*localedoc.Item{
 				{
 					Name:     "@id",
-					Usage:    locale.Translate(id, "usage"),
+					Usage:    locale.Sprintf("usage"),
 					Type:     "number",
 					Array:    false,
 					Required: true,
 				},
 				{
 					Name:     "name",
-					Usage:    locale.Translate(id, "usage"),
+					Usage:    locale.Sprintf("usage"),
 					Type:     "string",
 					Array:    false,
 					Required: true,
@@ -42,12 +40,12 @@ func TestNewTypes(t *testing.T) {
 		},
 		{
 			Name:  "number",
-			Usage: localedoc.InnerXML{Text: locale.Translate(id, "usage-number")},
+			Usage: localedoc.InnerXML{Text: locale.Sprintf("usage-number")},
 			Items: []*localedoc.Item{},
 		},
 		{
 			Name:  "string",
-			Usage: localedoc.InnerXML{Text: locale.Translate(id, "usage-string")},
+			Usage: localedoc.InnerXML{Text: locale.Sprintf("usage-string")},
 			Items: []*localedoc.Item{},
 		},
 	}}

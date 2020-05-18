@@ -6,8 +6,6 @@ import (
 	"reflect"
 	"sort"
 
-	"golang.org/x/text/language"
-
 	"github.com/caixw/apidoc/v7/internal/docs/localedoc"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
@@ -18,9 +16,7 @@ type typeList struct {
 }
 
 // NewTypes 分析 v 并将其转换成 Types 数据
-func NewTypes(doc *localedoc.LocaleDoc, v interface{}, tag language.Tag) error {
-	locale.SetTag(tag)
-
+func NewTypes(doc *localedoc.LocaleDoc, v interface{}) error {
 	n := newNode("", reflect.ValueOf(v))
 	types := &typeList{}
 	if err := types.dumpToTypes(n); err != nil {
