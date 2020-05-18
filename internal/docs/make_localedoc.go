@@ -65,17 +65,7 @@ func makeCommands(doc *localedoc.LocaleDoc) error {
 }
 
 func makeConfig(doc *localedoc.LocaleDoc) error {
-	t := reflect.TypeOf(build.Config{})
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		if !unicode.IsUpper(rune(f.Name[0])) || f.Tag.Get("yaml") == "-" {
-			continue
-		}
-		if err := buildConfigItem(doc, "", f); err != nil {
-			return err
-		}
-	}
-	return nil
+	return buildConfigObject(doc, "", reflect.TypeOf(build.Config{}))
 }
 
 func buildConfigItem(doc *localedoc.LocaleDoc, parent string, f reflect.StructField) error {
@@ -117,16 +107,20 @@ func buildConfigItem(doc *localedoc.LocaleDoc, parent string, f reflect.StructFi
 		panic(fmt.Sprintf("字段 %s 的类型 %s 无法处理", f.Name, t.Kind()))
 	}
 
+	return buildConfigObject(doc, name, t)
+}
+
+// 调用方需要保证 t.Kind() 为 reflect.Struct
+func buildConfigObject(doc *localedoc.LocaleDoc, parent string, t reflect.Type) error {
 	for i := 0; i < t.NumField(); i++ {
-		ff := t.Field(i)
-		if !unicode.IsUpper(rune(ff.Name[0])) || ff.Tag.Get("yaml") == "-" {
+		f := t.Field(i)
+		if !unicode.IsUpper(rune(f.Name[0])) || f.Tag.Get("yaml") == "-" {
 			continue
 		}
-		if err := buildConfigItem(doc, name, ff); err != nil {
+		if err := buildConfigItem(doc, parent, f); err != nil {
 			return err
 		}
 	}
-
 	return nil
 }
 
