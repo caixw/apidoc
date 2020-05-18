@@ -34,10 +34,11 @@ type language struct {
 }
 
 type loc struct {
-	ID    string `xml:"id,attr"`
-	Href  string `xml:"href,attr"`
-	Title string `xml:"title,attr"`
-	Types string `xml:"types,attr"`
+	ID       string `xml:"id,attr"`
+	Href     string `xml:"href,attr"`
+	Title    string `xml:"title,attr"`
+	Types    string `xml:"types,attr"`
+	Commands string `xml:"commands,attr"`
 }
 
 func main() {
@@ -64,10 +65,11 @@ func main() {
 			href = "index." + id + ".xml"
 		}
 		defaultConfig.Locales = append(defaultConfig.Locales, loc{
-			ID:    id,
-			Href:  href,
-			Title: display.Self.Name(tag),
-			Types: "types." + id + ".xml",
+			ID:       id,
+			Href:     href,
+			Title:    display.Self.Name(tag),
+			Types:    "types." + id + ".xml",
+			Commands: "commands." + id + ".xml",
 		})
 	}
 
