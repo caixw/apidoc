@@ -7,12 +7,8 @@
     <xsl:value-of select="/docs/@lang" />
 </xsl:variable>
 
-<xsl:variable name="types-file">
-    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@types" />
-</xsl:variable>
-
-<xsl:variable name="commands-file">
-    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@commands" />
+<xsl:variable name="localedoc-file">
+    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@localedoc" />
 </xsl:variable>
 
 <!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
@@ -140,7 +136,7 @@
         </xsl:for-each>
 
         <xsl:if test="$id='spec'">
-            <xsl:for-each select="document($types-file)/types/type">
+            <xsl:for-each select="document($localedoc-file)/localedoc/types/type">
                 <xsl:call-template name="type">
                     <xsl:with-param name="type" select="." />
                 </xsl:call-template>
@@ -167,7 +163,7 @@
         </thead>
 
         <tbody>
-            <xsl:for-each select="document($commands-file)/commands/command">
+            <xsl:for-each select="document($localedoc-file)/localedoc/commands/command">
             <xsl:variable name="name" select="@name" />
             <tr>
                 <th><xsl:value-of select="@name" /></th>

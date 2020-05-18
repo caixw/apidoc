@@ -8,6 +8,7 @@ import (
 	"github.com/issue9/assert"
 	"golang.org/x/text/language"
 
+	"github.com/caixw/apidoc/v7/internal/docs/localedoc"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
@@ -15,13 +16,14 @@ func TestNewTypes(t *testing.T) {
 	a := assert.New(t)
 	id := locale.DefaultLocaleID
 
-	ts, err := NewTypes(&objectTag{}, language.MustParse(id))
-	a.NotError(err).NotNil(ts)
-	ts2 := &Types{Types: []*Type{
+	ts := &localedoc.LocaleDoc{}
+	err := NewTypes(ts, &objectTag{}, language.MustParse(id))
+	a.NotError(err)
+	ts2 := &typeList{Types: []*localedoc.Type{
 		{
 			Name:  "apidoc",
-			Usage: InnerXML{locale.Translate(id, "usage-root")},
-			Items: []*Item{
+			Usage: localedoc.InnerXML{Text: locale.Translate(id, "usage-root")},
+			Items: []*localedoc.Item{
 				{
 					Name:     "@id",
 					Usage:    locale.Translate(id, "usage"),
@@ -40,15 +42,14 @@ func TestNewTypes(t *testing.T) {
 		},
 		{
 			Name:  "number",
-			Usage: InnerXML{Text: locale.Translate(id, "usage-number")},
-			Items: []*Item{},
+			Usage: localedoc.InnerXML{Text: locale.Translate(id, "usage-number")},
+			Items: []*localedoc.Item{},
 		},
 		{
 			Name:  "string",
-			Usage: InnerXML{Text: locale.Translate(id, "usage-string")},
-			Items: []*Item{},
+			Usage: localedoc.InnerXML{Text: locale.Translate(id, "usage-string")},
+			Items: []*localedoc.Item{},
 		},
 	}}
-	a.Equal(len(ts.Types), len(ts2.Types))
-	a.Equal(ts, ts2, "not equal\nv1=%#v\nv2=%#v\n", ts, ts2)
+	a.Equal(ts.Types, ts2.Types, "not equal\nv1=%#v\nv2=%#v\n", ts.Types, ts2.Types)
 }
