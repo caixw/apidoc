@@ -213,6 +213,20 @@ options 可以是以下參數
 	UsageVersion: `版本號，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 規則`,
 	UsageDate:    `采用 <a href="https://semver.org/lang/zh-CN/">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp>`,
 
+	// 以下是有关 build.Config 的字段说明
+	UsageConfigVersion:         "產生此配置文件的 apidoc 版本",
+	UsageConfigInputs:          "指定輸入的數據，同壹項目只能解析壹種語言。",
+	UsageConfigInputsLang:      "源文件類型。具體支持的類型可通過 -l 參數進行查找",
+	UsageConfigInputsDir:       "需要解析的源文件所在目錄",
+	UsageConfigInputsExts:      "只從這些擴展名的文件中查找文檔",
+	UsageConfigInputsRecursive: "是否解析子目錄下的源文件",
+	UsageConfigInputsEncoding:  `編碼，默認為 utf-8，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。`,
+	UsageConfigOutput:          "控制輸出行為",
+	UsageConfigOutputType:      "輸出的類型，目前可以 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>。",
+	UsageConfigOutputPath:      "指定輸出的文件名，包含路徑信息。",
+	UsageConfigOutputTags:      "只輸出與這些標簽相關聯的文檔，默認為全部。",
+	UsageConfigOutputStyle:     "為 XML 文件指定的 XSL 文件",
+
 	// 錯誤信息，可能在地方用到
 	ErrInvalidUTF8Character:      "無效的 UTF8 字符",
 	ErrInvalidXML:                "无效的 XML 文檔",

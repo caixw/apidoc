@@ -165,4 +165,18 @@
 		<command name="test">测试语法的正确性</command>
 		<command name="version">显示版本信息</command>
 	</commands>
+	<configs>
+		<item name="version" type="string" array="false" required="true">产生此配置文件的 apidoc 版本</item>
+		<item name="inputs" type="object" array="true" required="true">指定输入的数据，同一项目只能解析一种语言。</item>
+		<item name="inputs.lang" type="string" array="false" required="true">源文件类型。具体支持的类型可通过 -l 参数进行查找</item>
+		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目录</item>
+		<item name="inputs.exts" type="string" array="true" required="false">只从这些扩展名的文件中查找文档</item>
+		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目录下的源文件</item>
+		<item name="inputs.encoding" type="string" array="false" required="false">编码，默认为 utf-8，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的内容。</item>
+		<item name="output" type="object" array="false" required="true">控制输出行为</item>
+		<item name="output.type" type="string" array="false" required="false">输出的类型，目前可以 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>。</item>
+		<item name="output.path" type="string" array="false" required="true">指定输出的文件名，包含路径信息。</item>
+		<item name="output.tags" type="string" array="true" required="false">只输出与这些标签相关联的文档，默认为全部。</item>
+		<item name="output.style" type="string" array="false" required="false">为 XML 文件指定的 XSL 文件</item>
+	</configs>
 </localedoc>

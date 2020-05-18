@@ -224,6 +224,20 @@ options 可以是以下参数
 	UsageVersion = "usage-version"
 	UsageDate    = "usage-date"
 
+	// 以下是有关 build.Config 的字段说明
+	UsageConfigVersion         = "usage-config-version"
+	UsageConfigInputs          = "usage-config-inputs"
+	UsageConfigInputsLang      = "usage-config-inputs.lang"
+	UsageConfigInputsDir       = "usage-config-inputs.dir"
+	UsageConfigInputsExts      = "usage-config-inputs.exts"
+	UsageConfigInputsRecursive = "usage-config-inputs.recursive"
+	UsageConfigInputsEncoding  = "usage-config-inputs.encoding"
+	UsageConfigOutput          = "usage-config-output"
+	UsageConfigOutputType      = "usage-config-output.type"
+	UsageConfigOutputPath      = "usage-config-output.path"
+	UsageConfigOutputTags      = "usage-config-output.tags"
+	UsageConfigOutputStyle     = "usage-config-output.style"
+
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character      = "无效的 UTF8 字符"
 	ErrInvalidXML                = "无效的 XML 文档"
