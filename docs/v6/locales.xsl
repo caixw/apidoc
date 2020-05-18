@@ -9,9 +9,10 @@ xmlns:l="urn:locale"
 exclude-result-prefixes="l">
 
 <!-- 当前支持的本地化列表，其中第一个会被当作默认值。 -->
+<!-- NOTE: id 一律用小写，之后需要用到比较字符串！ -->
 <l:locales>
-    <locale id="zh-hans">简体中文</locale>
-    <locale id="zh-hant">繁體中文</locale>
+    <locale id="cmn-hans">简体中文</locale>
+    <locale id="cmn-hant">繁體中文</locale>
 </l:locales>
 
 <xsl:template name="languages">
@@ -25,25 +26,25 @@ exclude-result-prefixes="l">
 <!-- language -->
 <xsl:variable name="locale-language">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
-        <xsl:with-param name="text" select="document('')/xsl:stylesheet/l:locales/locale[@id='zh-hans']" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
+        <xsl:with-param name="text" select="document('')/xsl:stylesheet/l:locales/locale[@id='cmn-hans']" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
-        <xsl:with-param name="text" select="document('')/xsl:stylesheet/l:locales/locale[@id='zh-hant']" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
+        <xsl:with-param name="text" select="document('')/xsl:stylesheet/l:locales/locale[@id='cmn-hant']" />
     </xsl:call-template>
 </xsl:variable>
 
 <!-- server -->
 <xsl:variable name="locale-server">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'服务'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'服務'" />
     </xsl:call-template>
 </xsl:variable>
@@ -51,12 +52,12 @@ exclude-result-prefixes="l">
 <!-- tag -->
 <xsl:variable name="locale-tag">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'标签'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'標簽'" />
     </xsl:call-template>
 </xsl:variable>
@@ -64,12 +65,12 @@ exclude-result-prefixes="l">
 <!-- expand -->
 <xsl:variable name="locale-expand">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'展开'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'展開'" />
     </xsl:call-template>
 </xsl:variable>
@@ -77,12 +78,12 @@ exclude-result-prefixes="l">
 <!-- method -->
 <xsl:variable name="locale-method">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'请求方法'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'請求方法'" />
     </xsl:call-template>
 </xsl:variable>
@@ -90,12 +91,12 @@ exclude-result-prefixes="l">
 <!-- request -->
 <xsl:variable name="locale-request">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'请求'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'請求'" />
     </xsl:call-template>
 </xsl:variable>
@@ -103,12 +104,12 @@ exclude-result-prefixes="l">
 <!-- response -->
 <xsl:variable name="locale-response">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'返回'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'返回'" />
     </xsl:call-template>
 </xsl:variable>
@@ -116,12 +117,12 @@ exclude-result-prefixes="l">
 <!-- callback -->
 <xsl:variable name="locale-callback">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'回调'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'回調'" />
     </xsl:call-template>
 </xsl:variable>
@@ -129,12 +130,12 @@ exclude-result-prefixes="l">
 <!-- path param -->
 <xsl:variable name="locale-path-param">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'路径参数'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'路徑參數'" />
     </xsl:call-template>
 </xsl:variable>
@@ -142,12 +143,12 @@ exclude-result-prefixes="l">
 <!-- query -->
 <xsl:variable name="locale-query">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'查询参数'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'查詢參數'" />
     </xsl:call-template>
 </xsl:variable>
@@ -155,12 +156,12 @@ exclude-result-prefixes="l">
 <!-- header -->
 <xsl:variable name="locale-header">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'报头'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'報頭'" />
     </xsl:call-template>
 </xsl:variable>
@@ -168,12 +169,12 @@ exclude-result-prefixes="l">
 <!-- body -->
 <xsl:variable name="locale-body">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'报文'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'報文'" />
     </xsl:call-template>
 </xsl:variable>
@@ -181,12 +182,12 @@ exclude-result-prefixes="l">
 <!-- example -->
 <xsl:variable name="locale-example">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'示例代码'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'示例代碼'" />
     </xsl:call-template>
 </xsl:variable>
@@ -194,12 +195,12 @@ exclude-result-prefixes="l">
 <!-- var -->
 <xsl:variable name="locale-var">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'变量'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'變量'" />
     </xsl:call-template>
 </xsl:variable>
@@ -207,12 +208,12 @@ exclude-result-prefixes="l">
 <!-- type -->
 <xsl:variable name="locale-type">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'类型'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'類型'" />
     </xsl:call-template>
 </xsl:variable>
@@ -220,12 +221,12 @@ exclude-result-prefixes="l">
 <!-- value -->
 <xsl:variable name="locale-value">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'值'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'值'" />
     </xsl:call-template>
 </xsl:variable>
@@ -233,12 +234,12 @@ exclude-result-prefixes="l">
 <!-- description -->
 <xsl:variable name="locale-description">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'描述'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'描述'" />
     </xsl:call-template>
 </xsl:variable>
@@ -246,12 +247,12 @@ exclude-result-prefixes="l">
 <!-- enum -->
 <xsl:variable name="locale-enum">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text" select="'枚举'" />
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'枚舉'" />
     </xsl:call-template>
 </xsl:variable>
@@ -259,7 +260,7 @@ exclude-result-prefixes="l">
 <!-- generator -->
 <xsl:variable name="locale-generator">
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hans'" />
+        <xsl:with-param name="lang" select="'cmn-hans'" />
         <xsl:with-param name="text">
             <xsl:if test="apidoc/license">
             文档版权为 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>。
@@ -269,7 +270,7 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 
     <xsl:call-template name="build-locale">
-        <xsl:with-param name="lang" select="'zh-hant'" />
+        <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text">
             <xsl:if test="apidoc/license">
             文檔版權為 <a href="{apidoc/license/@url}"><xsl:value-of select="apidoc/license/@text" /></a>。
