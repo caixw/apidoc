@@ -60,9 +60,6 @@
 
     <doc id="usage" title="使用" />
 
-
-    <!--######################### 以下为文档内容的子项 ###########################-->
-
     <doc id="spec" title="文档格式">
         <p>文档采用 XML 格式。存在两个顶级标签：<code>apidoc</code> 和 <code>api</code>，用于描述整体内容和具体接口信息。</p>
 
@@ -72,6 +69,8 @@
 
         <p>以下是对各个 XML 元素以及参数介绍，其中以 <code>@</code> 开头的表示 XML 属性；<code>.</code> 表示为当前元素的内容；其它表示子元素。</p>
     </doc>
+
+    <!--######################### 以下为文档内容的子项 ###########################-->
 
     <doc id="install" title="安装" parent="usage">
         <p>可以直接从 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找你需要的版本下载，放入 <code>PATH</code> 中即可使用。如果没有你需要的平台文件，则需要从源代码编译：</p>
@@ -89,22 +88,6 @@
 
     <doc id="cli" title="命令行" parent="usage">
         <p>可以通过 <samp>apidoc help</samp> 查看命令行支持的子命令。主要包含了以下几个：</p>
-        <table>
-            <thead><tr><th>子命令</th><th>描述</th></tr></thead>
-            <tbody>
-                <tr><td>help</td><td>显示子命令的描述信息</td></tr>
-                <tr><td>build</td><td>生成文档内容</td></tr>
-                <tr><td>mock</td><td>根据文档提供 mock 服务</td></tr>
-                <tr><td>static</td><td>提供查看文档的本地服务</td></tr>
-                <tr><td>version</td><td>显示版本信息</td></tr>
-                <tr><td>lang</td><td>列出当前支持的语言</td></tr>
-                <tr><td>locale</td><td>列出当前支持的本地化内容</td></tr>
-                <tr><td>detect</td><td>根据指定的目录生成配置文件</td></tr>
-                <tr><td>test</td><td>检测语法是否准确</td></tr>
-                <tr><td>lsp</td><td>启动 language server protocol 服务</td></tr>
-            </tbody>
-        </table>
-        <p>mock 子命令可以根据文档生成一些符合要求的随机数据。这些数据每次请求都不相同，包括数量、长度、数值大小等。</p>
     </doc>
 
     <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">

@@ -7,8 +7,8 @@
     <xsl:value-of select="/docs/@lang" />
 </xsl:variable>
 
-<xsl:variable name="types-file">
-    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@types" />
+<xsl:variable name="localedoc-file">
+    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@localedoc" />
 </xsl:variable>
 
 <!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
@@ -136,17 +136,44 @@
         </xsl:for-each>
 
         <xsl:if test="$id='spec'">
-            <xsl:for-each select="document($types-file)/types/type">
+            <xsl:for-each select="document($localedoc-file)/localedoc/types/type">
                 <xsl:call-template name="type">
                     <xsl:with-param name="type" select="." />
                 </xsl:call-template>
             </xsl:for-each>
         </xsl:if>
+
+        <xsl:if test="$id='cli'">
+            <xsl:call-template name="commands" />
+        </xsl:if>
     </article>
 </xsl:template>
 
-<!-- 以下两个变量仅用于 type 模板，在模板中无法直接使用 /docs 元素，所以使用变量引用 -->
+<!-- 以下两个变量仅用于 type 和 commands 模板，在模板中无法直接使用 /docs 元素，所以使用变量引用 -->
 <xsl:variable name="header-locale" select="/docs/type-locale/header" />
+
+<!-- 将子命令显示为一个 table -->
+<xsl:template name="commands">
+    <table>
+        <thead>
+            <tr>
+                <th><xsl:copy-of select="$header-locale/name" /></th>
+                <th><xsl:copy-of select="$header-locale/description" /></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <xsl:for-each select="document($localedoc-file)/localedoc/commands/command">
+            <xsl:variable name="name" select="@name" />
+            <tr>
+                <th><xsl:value-of select="@name" /></th>
+                <td><xsl:copy-of select="node()" /></td>
+            </tr>
+            </xsl:for-each>
+        </tbody>
+    </table>
+</xsl:template>
+
 
 <!-- 将类型显示为一个 table -->
 <xsl:template name="type">

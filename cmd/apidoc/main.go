@@ -9,8 +9,25 @@
 //  apidoc help [cmd]
 package main
 
-import "github.com/caixw/apidoc/v7/internal/cmd"
+import (
+	"fmt"
+	"os"
+
+	"github.com/issue9/utils"
+	"golang.org/x/text/language"
+
+	"github.com/caixw/apidoc/v7/internal/cmd"
+	"github.com/caixw/apidoc/v7/internal/locale"
+)
 
 func main() {
-	cmd.Exec()
+	tag, err := utils.GetSystemLanguageTag()
+	if err != nil { // 无法获取系统语言，则采用默认值
+		fmt.Fprintln(os.Stderr, err, tag)
+		tag = language.MustParse(locale.DefaultLocaleID)
+	}
+
+	if err := cmd.Init(os.Stdout, tag).Exec(os.Args[1:]); err != nil {
+		panic(err)
+	}
 }

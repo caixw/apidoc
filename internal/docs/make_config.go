@@ -10,12 +10,13 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/docs/localedoc"
 	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-var target = docs.Dir().Append("config.xml")
+const target = "config.xml"
 
 type config struct {
 	XMLName struct{} `xml:"config"`
@@ -34,22 +35,21 @@ type language struct {
 }
 
 type loc struct {
-	ID    string `xml:"id,attr"`
-	Href  string `xml:"href,attr"`
-	Title string `xml:"title,attr"`
-	Types string `xml:"types,attr"`
-}
-
-var defaultConfig = &config{
-	Name:      core.Name,
-	Version:   ast.Version,
-	Repo:      core.RepoURL,
-	URL:       core.OfficialURL,
-	Languages: make([]language, 0, len(lang.Langs())),
-	Locales:   make([]loc, 0, len(locale.Tags())),
+	ID        string `xml:"id,attr"`
+	Href      string `xml:"href,attr"`
+	Title     string `xml:"title,attr"`
+	LocaleDoc string `xml:"localedoc,attr"`
 }
 
 func main() {
+	defaultConfig := &config{
+		Name:      core.Name,
+		Version:   ast.Version,
+		Repo:      core.RepoURL,
+		URL:       core.OfficialURL,
+		Languages: make([]language, 0, len(lang.Langs())),
+		Locales:   make([]loc, 0, len(locale.Tags())),
+	}
 	for _, lang := range lang.Langs() {
 		defaultConfig.Languages = append(defaultConfig.Languages, language{
 			ID:   lang.ID,
@@ -65,12 +65,12 @@ func main() {
 			href = "index." + id + ".xml"
 		}
 		defaultConfig.Locales = append(defaultConfig.Locales, loc{
-			ID:    id,
-			Href:  href,
-			Title: display.Self.Name(tag),
-			Types: "types." + id + ".xml",
+			ID:        id,
+			Href:      href,
+			Title:     display.Self.Name(tag),
+			LocaleDoc: localedoc.Path(tag),
 		})
 	}
 
-	makeutil.PanicError(makeutil.WriteXML(target, defaultConfig, "\t"))
+	makeutil.PanicError(makeutil.WriteXML(docs.Dir().Append(target), defaultConfig, "\t"))
 }
