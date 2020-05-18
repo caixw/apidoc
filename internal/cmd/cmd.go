@@ -25,26 +25,41 @@ import (
 // 命令行输出的表格中，每一列为了对齐填补的空格数量。
 const tail = 3
 
-const (
-	succColor = colors.Green
-	infoColor = colors.Default
-	warnColor = colors.Cyan
-	erroColor = colors.Red
-)
-
-var (
-	succOut io.Writer = os.Stdout
-	infoOut io.Writer = os.Stdout
-	warnOut io.Writer = os.Stderr
-	erroOut io.Writer = os.Stderr
-)
-
 var command *cmdopt.CmdOpt
+
+var printers = map[core.MessageType]*printer{
+	core.Erro: &printer{
+		out:    os.Stderr,
+		color:  colors.Red,
+		prefix: locale.ErrorPrefix,
+	},
+	core.Warn: &printer{
+		out:    os.Stderr,
+		color:  colors.Cyan,
+		prefix: locale.WarnPrefix,
+	},
+	core.Info: &printer{
+		out:    os.Stdout,
+		color:  colors.Default,
+		prefix: locale.InfoPrefix,
+	},
+	core.Succ: &printer{
+		out:    os.Stdout,
+		color:  colors.Green,
+		prefix: locale.SuccessPrefix,
+	},
+}
+
+type printer struct {
+	out    io.Writer
+	color  colors.Color
+	prefix message.Reference
+}
 
 func init() {
 	tag, err := utils.GetSystemLanguageTag()
 	if err != nil { // 无法获取系统语言，则采用默认值
-		fmt.Fprintln(warnOut, err, tag)
+		fmt.Fprintln(os.Stdout, err, tag)
 		tag = language.MustParse(locale.DefaultLocaleID)
 	}
 	apidoc.SetLocale(tag)
@@ -80,31 +95,6 @@ func usage(w io.Writer) error {
 	return err
 }
 
-func newHandlerFunc() core.HandlerFunc {
-	return func(msg *core.Message) {
-		switch msg.Type {
-		case core.Erro:
-			printMessage(erroOut, erroColor, locale.ErrorPrefix, msg.Message)
-		case core.Warn:
-			printMessage(warnOut, warnColor, locale.WarnPrefix, msg.Message)
-		case core.Succ:
-			printMessage(succOut, succColor, locale.InfoPrefix, msg.Message)
-		default: // message.Info 采用相同的值
-			printMessage(infoOut, infoColor, locale.SuccessPrefix, msg.Message)
-		}
-	}
-}
-
-func printMessage(out io.Writer, color colors.Color, prefix message.Reference, msg interface{}) {
-	if _, err := colors.Fprint(out, color, colors.Default, locale.New(prefix)); err != nil {
-		panic(err)
-	}
-
-	if _, err := fmt.Fprintln(out, msg); err != nil {
-		panic(err)
-	}
-}
-
 func buildUsage(key message.Reference, v ...interface{}) cmdopt.DoFunc {
 	return func(w io.Writer) error {
 		_, err := fmt.Fprintln(w, locale.Sprintf(key, v...))
@@ -119,4 +109,26 @@ func getFlagSetUsage(fs *flag.FlagSet) string {
 	fs.PrintDefaults()
 	fs.SetOutput(origin)
 	return buf.String()
+}
+
+// 从命令行尾部获取路径参数，或是在未指定的情况下，采用当前目录。
+func getPath(fs *flag.FlagSet) core.URI {
+	if fs != nil && 0 != fs.NArg() {
+		return core.FileURI(fs.Arg(0))
+	}
+	return core.FileURI("./")
+}
+
+func messageHandle(msg *core.Message) {
+	printers[msg.Type].print(msg.Message)
+}
+
+func (p *printer) print(msg interface{}) {
+	if _, err := colors.Fprint(p.out, p.color, colors.Default, locale.New(p.prefix)); err != nil {
+		panic(err)
+	}
+
+	if _, err := fmt.Fprintln(p.out, msg); err != nil {
+		panic(err)
+	}
 }

@@ -27,8 +27,8 @@ func initLSP() {
 	lspFlagSet.BoolVar(&lspHeader, "h", false, locale.Sprintf(locale.FlagLSPHeaderUsage))
 }
 
-func doLSP(io.Writer) error {
-	return apidoc.ServeLSP(lspHeader, lspMode, lspPort, log.New(infoOut, "", 0), log.New(erroOut, "", 0))
+func doLSP(o io.Writer) error {
+	return apidoc.ServeLSP(lspHeader, lspMode, lspPort, log.New(o, "", 0), log.New(o, "", 0))
 }
 
 func lspUsage(w io.Writer) error {

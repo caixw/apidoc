@@ -53,7 +53,7 @@ func static(io.Writer) (err error) {
 		path = getPath(staticFlagSet)
 	}
 
-	h := core.NewMessageHandler(newHandlerFunc())
+	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
 	var handler http.Handler

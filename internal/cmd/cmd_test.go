@@ -13,36 +13,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-func TestNewHandlerFunc(t *testing.T) {
-	a := assert.New(t)
-
-	erro := new(bytes.Buffer)
-	warn := new(bytes.Buffer)
-	info := new(bytes.Buffer)
-	succ := new(bytes.Buffer)
-
-	erroOut = erro
-	warnOut = warn
-	infoOut = info
-	succOut = succ
-
-	f := newHandlerFunc()
-	a.NotNil(f)
-	h := core.NewMessageHandler(f)
-	a.NotNil(h)
-
-	h.Locale(core.Erro, "erro")
-	h.Locale(core.Warn, "warn")
-	h.Locale(core.Info, "info")
-	h.Locale(core.Succ, "succ")
-	h.Stop()
-
-	a.Contains(erro.String(), "erro")
-	a.Contains(warn.String(), "warn")
-	a.Contains(info.String(), "info")
-	a.Contains(succ.String(), "succ")
-}
-
 func TestBuildUsage(t *testing.T) {
 	a := assert.New(t)
 	w := new(bytes.Buffer)
@@ -61,4 +31,46 @@ func TestGetFlagSetUsage(t *testing.T) {
 	output := fs.Output()
 	a.NotEmpty(getFlagSetUsage(fs))
 	a.Equal(output, fs.Output())
+}
+
+func TestGetPath(t *testing.T) {
+	a := assert.New(t)
+	fs := flag.NewFlagSet("test", flag.ContinueOnError)
+
+	curr := core.FileURI("./")
+	a.NotEmpty(curr)
+
+	uri := getPath(fs)
+	a.Equal(curr, uri)
+
+	uri = getPath(nil)
+	a.Equal(curr, uri)
+}
+
+func TestMessageHandle(t *testing.T) {
+	a := assert.New(t)
+
+	erro := new(bytes.Buffer)
+	warn := new(bytes.Buffer)
+	info := new(bytes.Buffer)
+	succ := new(bytes.Buffer)
+
+	printers[core.Erro].out = erro
+	printers[core.Warn].out = warn
+	printers[core.Info].out = info
+	printers[core.Succ].out = succ
+
+	h := core.NewMessageHandler(messageHandle)
+	a.NotNil(h)
+
+	h.Locale(core.Erro, "erro")
+	h.Locale(core.Warn, "warn")
+	h.Locale(core.Info, "info")
+	h.Locale(core.Succ, "succ")
+	h.Stop()
+
+	a.Contains(erro.String(), "erro")
+	a.Contains(warn.String(), "warn")
+	a.Contains(info.String(), "info")
+	a.Contains(succ.String(), "succ")
 }

@@ -22,7 +22,7 @@ func initDetect() {
 }
 
 func detect(io.Writer) error {
-	h := core.NewMessageHandler(newHandlerFunc())
+	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
 	uri := getPath(detectFlagSet)

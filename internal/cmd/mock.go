@@ -69,7 +69,7 @@ func initMock() {
 }
 
 func doMock(io.Writer) error {
-	h := core.NewMessageHandler(newHandlerFunc())
+	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
 	handler, err := apidoc.MockFile(h, getPath(mockFlagSet), mockServers)
