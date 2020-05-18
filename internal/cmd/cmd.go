@@ -25,22 +25,22 @@ const tail = 3
 var command *cmdopt.CmdOpt
 
 var printers = map[core.MessageType]*printer{
-	core.Erro: &printer{
+	core.Erro: {
 		out:    os.Stderr,
 		color:  colors.Red,
 		prefix: locale.ErrorPrefix,
 	},
-	core.Warn: &printer{
+	core.Warn: {
 		out:    os.Stderr,
 		color:  colors.Cyan,
 		prefix: locale.WarnPrefix,
 	},
-	core.Info: &printer{
+	core.Info: {
 		out:    os.Stdout,
 		color:  colors.Default,
 		prefix: locale.InfoPrefix,
 	},
-	core.Succ: &printer{
+	core.Succ: {
 		out:    os.Stdout,
 		color:  colors.Green,
 		prefix: locale.SuccessPrefix,
