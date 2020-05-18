@@ -46,7 +46,7 @@ var data = []*FileInfo{{
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-19T00:30:48+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-19T03:10:03+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -761,71 +761,6 @@ function initGotoTop() {
 
     <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">
         <p>配置文件名固定为 <code>.apidoc.yaml</code>，格式为 YAML，可参考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通过命令 <code>apidoc detect</code> 生成。主要包含了以几个配置项：</p>
-        <table>
-            <thead><tr><th>名称</th><th>类型</th><th>选填</th><th>描述</th></tr></thead>
-            <tbody>
-                <tr>
-                    <th>version</th>
-                    <td>string</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>产生此配置文件的 apidoc 版本</td>
-                </tr>
-                <tr>
-                    <th>inputs</th>
-                    <td>object[]</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>指定输入的数据，同一项目只能解析一种语言。</td>
-                </tr>
-                <tr>
-                    <th>input.dir</th>
-                    <td>string</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>需要解析的源文件所在目录</td>
-                </tr>
-                <tr>
-                    <th>input.recursive</th>
-                    <td>bool</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>是否解析子目录下的源文件</td>
-                </tr>
-                <tr>
-                    <th>input.encoding</th>
-                    <td>string</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>编码，默认为 <code>utf-8</code>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的内容。</td>
-                </tr>
-                <tr>
-                    <th>input.lang</th>
-                    <td>string</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>源文件类型。具体支持的类型可通过 -l 参数进行查找</td>
-                </tr>
-                <tr>
-                    <th>output</th>
-                    <td>object</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>控制输出行为</td>
-                </tr>
-                <tr>
-                    <th>output.path</th>
-                    <td>string</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>指定输出的文件名，包含路径信息。</td>
-                </tr>
-                <tr>
-                    <th>output.tags</th>
-                    <td>string[]</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>只输出与这些标签相关联的文档，默认为全部。</td>
-                </tr>
-                <tr>
-                    <th>output.style</th>
-                    <td>string</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>为 XML 文件指定的 XSL 文件。</td>
-                </tr>
-            </tbody>
-        </table>
     </doc>
 
     <footer>
@@ -987,6 +922,10 @@ function initGotoTop() {
         <xsl:if test="$id='cli'">
             <xsl:call-template name="commands" />
         </xsl:if>
+
+        <xsl:if test="$id='apidoc.yaml'">
+            <xsl:call-template name="apidocYAML" />
+        </xsl:if>
     </article>
 </xsl:template>
 
@@ -1005,11 +944,42 @@ function initGotoTop() {
 
         <tbody>
             <xsl:for-each select="document($localedoc-file)/localedoc/commands/command">
-            <xsl:variable name="name" select="@name" />
             <tr>
                 <th><xsl:value-of select="@name" /></th>
                 <td><xsl:copy-of select="node()" /></td>
             </tr>
+            </xsl:for-each>
+        </tbody>
+    </table>
+</xsl:template>
+
+<!-- 将 apidoc.yaml 类型说明显示为 table -->
+<xsl:template name="apidocYAML">
+    <table>
+        <thead>
+            <tr>
+                <th><xsl:copy-of select="$header-locale/name" /></th>
+                <th><xsl:copy-of select="$header-locale/type" /></th>
+                <th><xsl:copy-of select="$header-locale/required" /></th>
+                <th><xsl:copy-of select="$header-locale/description" /></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <xsl:for-each select="document($localedoc-file)/localedoc/configs/item">
+                <tr>
+                    <th><xsl:value-of select="@name" /></th>
+                    <td>
+                        <xsl:value-of select="@type" />
+                        <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+                    </td>
+                    <td>
+                        <xsl:call-template name="checkbox">
+                            <xsl:with-param name="chk" select="@required" />
+                        </xsl:call-template>
+                    </td>
+                    <td><xsl:copy-of select="node()" /></td>
+                </tr>
             </xsl:for-each>
         </tbody>
     </table>
@@ -1039,7 +1009,6 @@ function initGotoTop() {
 
                 <tbody>
                     <xsl:for-each select="$type/item">
-                    <xsl:variable name="name" select="@name" />
                     <tr>
                         <th><xsl:value-of select="@name" /></th>
                         <td>
@@ -1245,6 +1214,20 @@ function initGotoTop() {
 		<command name="test">测试语法的正确性</command>
 		<command name="version">显示版本信息</command>
 	</commands>
+	<configs>
+		<item name="version" type="string" array="false" required="true">产生此配置文件的 apidoc 版本</item>
+		<item name="inputs" type="object" array="true" required="true">指定输入的数据，同一项目只能解析一种语言。</item>
+		<item name="inputs.lang" type="string" array="false" required="true">源文件类型。具体支持的类型可通过 -l 参数进行查找</item>
+		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目录</item>
+		<item name="inputs.exts" type="string" array="true" required="false">只从这些扩展名的文件中查找文档</item>
+		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目录下的源文件</item>
+		<item name="inputs.encoding" type="string" array="false" required="false">编码，默认为 utf-8，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的内容。</item>
+		<item name="output" type="object" array="false" required="true">控制输出行为</item>
+		<item name="output.type" type="string" array="false" required="false">输出的类型，目前可以 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>。</item>
+		<item name="output.path" type="string" array="false" required="true">指定输出的文件名，包含路径信息。</item>
+		<item name="output.tags" type="string" array="true" required="false">只输出与这些标签相关联的文档，默认为全部。</item>
+		<item name="output.style" type="string" array="false" required="false">为 XML 文件指定的 XSL 文件</item>
+	</configs>
 </localedoc>
 `),
 	},
@@ -1418,6 +1401,20 @@ function initGotoTop() {
 		<command name="test">測試語法的正確性</command>
 		<command name="version">顯示版本信息</command>
 	</commands>
+	<configs>
+		<item name="version" type="string" array="false" required="true">產生此配置文件的 apidoc 版本</item>
+		<item name="inputs" type="object" array="true" required="true">指定輸入的數據，同壹項目只能解析壹種語言。</item>
+		<item name="inputs.lang" type="string" array="false" required="true">源文件類型。具體支持的類型可通過 -l 參數進行查找</item>
+		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目錄</item>
+		<item name="inputs.exts" type="string" array="true" required="false">只從這些擴展名的文件中查找文檔</item>
+		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目錄下的源文件</item>
+		<item name="inputs.encoding" type="string" array="false" required="false">編碼，默認為 utf-8，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</item>
+		<item name="output" type="object" array="false" required="true">控制輸出行為</item>
+		<item name="output.type" type="string" array="false" required="false">輸出的類型，目前可以 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>。</item>
+		<item name="output.path" type="string" array="false" required="true">指定輸出的文件名，包含路徑信息。</item>
+		<item name="output.tags" type="string" array="true" required="false">只輸出與這些標簽相關聯的文檔，默認為全部。</item>
+		<item name="output.style" type="string" array="false" required="false">為 XML 文件指定的 XSL 文件</item>
+	</configs>
 </localedoc>
 `),
 	},
