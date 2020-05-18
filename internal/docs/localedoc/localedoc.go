@@ -10,12 +10,13 @@ type LocaleDoc struct {
 	XMLName  struct{}   `xml:"localedoc"`
 	Types    []*Type    `xml:"types>type"`
 	Commands []*Command `xml:"commands>command"`
+	Config   []*Item    `xml:"configs>item"`
 }
 
 // Type 用于生成文档中的类型信息
 type Type struct {
-	Name  string   `xml:"name,attr"`
-	Usage InnerXML `xml:"usage"`
+	Name  string   `xml:"name,attr,omitempty"`
+	Usage InnerXML `xml:"usage,omitempty"`
 	Items []*Item  `xml:"item,omitempty"`
 }
 

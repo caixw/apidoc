@@ -32,7 +32,7 @@ type Input struct {
 	Exts []string `yaml:"exts,omitempty"`
 
 	// 是否查找 Dir 的子目录
-	Recursive bool `yaml:"recursive"`
+	Recursive bool `yaml:"recursive,omitempty"`
 
 	// 源文件的编码，默认为 UTF-8
 	Encoding string `yaml:"encoding,omitempty"`
