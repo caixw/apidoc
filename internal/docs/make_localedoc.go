@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"reflect"
 	"strings"
@@ -97,15 +98,23 @@ func buildConfigItem(doc *localedoc.LocaleDoc, parent string, f reflect.StructFi
 		}
 	}
 
+	typeName := t.Kind().String()
+	if t.Kind() == reflect.Struct {
+		typeName = "object"
+	}
+
+	doc.Config = append(doc.Config, &localedoc.Item{
+		Name:     name,
+		Type:     typeName,
+		Array:    array,
+		Required: !omitempty,
+		Usage:    locale.Sprintf("usage-config-" + name),
+	})
+
 	if isPrimitive(t) {
-		doc.Config = append(doc.Config, &localedoc.Item{
-			Name:     name,
-			Type:     t.Kind().String(),
-			Array:    array,
-			Required: !omitempty,
-			Usage:    locale.Sprintf("usage-config-" + name),
-		})
 		return nil
+	} else if t.Kind() != reflect.Struct {
+		panic(fmt.Sprintf("字段 %s 的类型 %s 无法处理", f.Name, t.Kind()))
 	}
 
 	for i := 0; i < t.NumField(); i++ {

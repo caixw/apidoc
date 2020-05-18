@@ -168,7 +168,6 @@
 
         <tbody>
             <xsl:for-each select="document($localedoc-file)/localedoc/commands/command">
-            <xsl:variable name="name" select="@name" />
             <tr>
                 <th><xsl:value-of select="@name" /></th>
                 <td><xsl:copy-of select="node()" /></td>
@@ -178,7 +177,7 @@
     </table>
 </xsl:template>
 
-<!-- 将类型显示为一个 table -->
+<!-- 将 apidoc.yaml 类型说明显示为 table -->
 <xsl:template name="apidocYAML">
     <table>
         <thead>
