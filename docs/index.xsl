@@ -146,6 +146,10 @@
         <xsl:if test="$id='cli'">
             <xsl:call-template name="commands" />
         </xsl:if>
+
+        <xsl:if test="$id='apidoc.yaml'">
+            <xsl:call-template name="apidocYAML" />
+        </xsl:if>
     </article>
 </xsl:template>
 
@@ -169,6 +173,38 @@
                 <th><xsl:value-of select="@name" /></th>
                 <td><xsl:copy-of select="node()" /></td>
             </tr>
+            </xsl:for-each>
+        </tbody>
+    </table>
+</xsl:template>
+
+<!-- 将类型显示为一个 table -->
+<xsl:template name="apidocYAML">
+    <table>
+        <thead>
+            <tr>
+                <th><xsl:copy-of select="$header-locale/name" /></th>
+                <th><xsl:copy-of select="$header-locale/type" /></th>
+                <th><xsl:copy-of select="$header-locale/required" /></th>
+                <th><xsl:copy-of select="$header-locale/description" /></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <xsl:for-each select="document($localedoc-file)/localedoc/configs/item">
+                <tr>
+                    <th><xsl:value-of select="@name" /></th>
+                    <td>
+                        <xsl:value-of select="@type" />
+                        <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
+                    </td>
+                    <td>
+                        <xsl:call-template name="checkbox">
+                            <xsl:with-param name="chk" select="@required" />
+                        </xsl:call-template>
+                    </td>
+                    <td><xsl:copy-of select="node()" /></td>
+                </tr>
             </xsl:for-each>
         </tbody>
     </table>
@@ -198,7 +234,6 @@
 
                 <tbody>
                     <xsl:for-each select="$type/item">
-                    <xsl:variable name="name" select="@name" />
                     <tr>
                         <th><xsl:value-of select="@name" /></th>
                         <td>
