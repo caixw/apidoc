@@ -10,6 +10,7 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/docs/localedoc"
 	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -67,7 +68,7 @@ func main() {
 			ID:        id,
 			Href:      href,
 			Title:     display.Self.Name(tag),
-			LocaleDoc: "localedoc." + id + ".xml",
+			LocaleDoc: localedoc.Path(tag),
 		})
 	}
 

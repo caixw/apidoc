@@ -26,7 +26,7 @@ func main() {
 		makeutil.PanicError(makeCommands(doc, tag))
 		makeutil.PanicError(token.NewTypes(doc, &ast.APIDoc{}, tag))
 
-		target := docs.Dir().Append("localedoc." + tag.String() + ".xml")
+		target := docs.Dir().Append(localedoc.Path(tag))
 		makeutil.PanicError(makeutil.WriteXML(target, doc, "\t"))
 	}
 }

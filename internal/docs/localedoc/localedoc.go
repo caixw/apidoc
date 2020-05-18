@@ -3,6 +3,8 @@
 // Package localedoc 文档的本地化翻译内容
 package localedoc
 
+import "golang.org/x/text/language"
+
 // LocaleDoc 管理本地化文档的集合
 type LocaleDoc struct {
 	XMLName  struct{}   `xml:"localedoc"`
@@ -35,4 +37,9 @@ type Item struct {
 type Command struct {
 	Name  string `xml:"name,attr"`
 	Usage string `xml:",innerxml"`
+}
+
+// Path 根据 tag 生成本地化的文件地址
+func Path(tag language.Tag) string {
+	return "localedoc." + tag.String() + ".xml"
 }
