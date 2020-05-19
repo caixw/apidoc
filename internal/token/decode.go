@@ -11,6 +11,7 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/node"
 )
 
 // Decoder 实现从 p 中解码内容到当前对象的值
@@ -68,7 +69,7 @@ func Decode(p *Parser, v interface{}) error {
 			}
 			hasRoot = true
 
-			vv := parseValue(reflect.ValueOf(v))
+			vv := node.ParseValue(reflect.ValueOf(v))
 			if err := decodeElement(p, elem, vv); err != nil {
 				return err
 			}
@@ -79,38 +80,38 @@ func Decode(p *Parser, v interface{}) error {
 	}
 }
 
-func (n *node) decode(p *Parser, start *StartElement) (*EndElement, error) {
-	if err := n.decodeAttributes(p, start); err != nil {
+func decode(n *node.Node, p *Parser, start *StartElement) (*EndElement, error) {
+	if err := decodeAttributes(n, p, start); err != nil {
 		return nil, err
 	}
 
 	if start.Close {
-		return nil, n.decodeCheckOmitempty(p, start.Start, start.End)
+		return nil, decodeCheckOmitempty(n, p, start.Start, start.End)
 	}
 
-	end, err := n.decodeElements(p)
+	end, err := decodeElements(n, p)
 	if err != nil {
 		return nil, err
 	}
-	return end, n.decodeCheckOmitempty(p, start.Start, end.End)
+	return end, decodeCheckOmitempty(n, p, start.Start, end.End)
 }
 
 // 判断 omitempty 属性
-func (n *node) decodeCheckOmitempty(p *Parser, start, end core.Position) error {
-	for _, attr := range n.attrs {
-		if attr.canNotEmpty() {
-			return p.NewError(start, end, attr.name, locale.ErrRequired)
+func decodeCheckOmitempty(n *node.Node, p *Parser, start, end core.Position) error {
+	for _, attr := range n.Attributes {
+		if canNotEmpty(attr) {
+			return p.NewError(start, end, attr.Name, locale.ErrRequired)
 		}
 	}
-	for _, elem := range n.elems {
-		if elem.canNotEmpty() {
-			return p.NewError(start, end, elem.name, locale.ErrRequired)
+	for _, elem := range n.Elements {
+		if canNotEmpty(elem) {
+			return p.NewError(start, end, elem.Name, locale.ErrRequired)
 		}
 	}
-	if n.cdata != nil && n.cdata.canNotEmpty() {
+	if n.CData != nil && canNotEmpty(n.CData) {
 		return p.NewError(start, end, "cdata", locale.ErrRequired)
 	}
-	if n.content != nil && n.content.canNotEmpty() {
+	if n.Content != nil && canNotEmpty(n.Content) {
 		return p.NewError(start, end, "content", locale.ErrRequired)
 	}
 
@@ -118,24 +119,24 @@ func (n *node) decodeCheckOmitempty(p *Parser, start, end core.Position) error {
 }
 
 // 当前表示的值必须是一个非空值
-func (v *value) canNotEmpty() bool {
-	return v.name != "" && // cdata 和 content 在未初始化时 name 字段为空值
-		!v.omitempty &&
+func canNotEmpty(v *node.Value) bool {
+	return v.Name != "" && // cdata 和 content 在未初始化时 name 字段为空值
+		!v.Omitempty &&
 		(!v.CanInterface() || is.Empty(v.Interface(), true))
 }
 
-// 将 start 的属性内容解码到 obj.attrs 之中
-func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
+// 将 start 的属性内容解码到 obj.Attributes 之中
+func decodeAttributes(n *node.Node, p *Parser, start *StartElement) error {
 	if start == nil {
 		return nil
 	}
 
 	for _, attr := range start.Attributes {
-		item, found := n.attr(attr.Name.Value)
+		item, found := n.Attribute(attr.Name.Value)
 		if !found {
 			continue
 		}
-		v := getRealValue(item.Value)
+		v := node.GetRealValue(item.Value)
 		v.Set(reflect.New(v.Type()).Elem())
 
 		var impl bool
@@ -158,7 +159,7 @@ func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
 			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name.Value))
 		}
 
-		if err := setAttributeValue(item.Value, item.usage, p, attr); err != nil {
+		if err := setAttributeValue(item.Value, item.Usage, p, attr); err != nil {
 			return err
 		}
 	}
@@ -166,7 +167,7 @@ func (n *node) decodeAttributes(p *Parser, start *StartElement) error {
 	return nil
 }
 
-func (n *node) decodeElements(p *Parser) (*EndElement, error) {
+func decodeElements(n *node.Node, p *Parser) (*EndElement, error) {
 	for {
 		t, r, err := p.Token()
 		if err == io.EOF {
@@ -178,20 +179,20 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 
 		switch elem := t.(type) {
 		case *EndElement: // 找到当前对象的结束标签
-			if elem.Name.Value == n.value.name {
+			if elem.Name.Value == n.Value.Name {
 				return elem, nil
 			}
-			return nil, p.NewError(elem.Start, elem.End, n.value.name, locale.ErrNotFoundEndTag)
+			return nil, p.NewError(elem.Start, elem.End, n.Value.Name, locale.ErrNotFoundEndTag)
 		case *CData:
-			if n.cdata != nil {
-				setContentValue(n.cdata.Value, reflect.ValueOf(elem))
+			if n.CData != nil {
+				setContentValue(n.CData.Value, reflect.ValueOf(elem))
 			}
 		case *String:
-			if n.content != nil {
-				setContentValue(n.content.Value, reflect.ValueOf(elem))
+			if n.Content != nil {
+				setContentValue(n.Content.Value, reflect.ValueOf(elem))
 			}
 		case *StartElement:
-			item, found := n.elem(elem.Name.Value)
+			item, found := n.Element(elem.Name.Value)
 			if !found {
 				panic(fmt.Sprintf("不存在的子元素 %s", elem.Name.Value))
 			}
@@ -206,8 +207,8 @@ func (n *node) decodeElements(p *Parser) (*EndElement, error) {
 }
 
 func setContentValue(target, source reflect.Value) {
-	target = getRealValue(target)
-	source = getRealValue(source)
+	target = node.GetRealValue(target)
+	source = node.GetRealValue(source)
 
 	st := source.Type()
 	num := st.NumField()
@@ -218,11 +219,11 @@ func setContentValue(target, source reflect.Value) {
 	}
 }
 
-func decodeElement(p *Parser, start *StartElement, v *value) error {
-	v.Value = getRealValue(v.Value)
+func decodeElement(p *Parser, start *StartElement, v *node.Value) error {
+	v.Value = node.GetRealValue(v.Value)
 	k := v.Kind()
 	switch {
-	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, isPrimitive(v.Value):
+	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, node.IsPrimitive(v.Value):
 		panic(fmt.Sprintf("%s 是无效的类型", v.Value.Type()))
 	case k == reflect.Slice:
 		return decodeSlice(p, start, v)
@@ -230,18 +231,18 @@ func decodeElement(p *Parser, start *StartElement, v *value) error {
 
 	end, impl, err := callDecodeXML(v.Value, p, start)
 	if !impl {
-		end, err = newNode(start.Name.Value, v.Value).decode(p, start)
+		end, err = decode(node.New(start.Name.Value, v.Value), p, start)
 	}
 	if err != nil {
 		return err
 	}
-	return setTagValue(v.Value, v.usage, p, start, end)
+	return setTagValue(v.Value, v.Usage, p, start, end)
 }
 
-func decodeSlice(p *Parser, start *StartElement, slice *value) (err error) {
+func decodeSlice(p *Parser, start *StartElement, slice *node.Value) (err error) {
 	// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
 	// 所以要过滤与 start 想匹配的结束符号才算结束。
-	if !start.Close && (start.Name.Value != slice.name) {
+	if !start.Close && (start.Name.Value != slice.Name) {
 		return findEndElement(p, start)
 	}
 
@@ -252,16 +253,16 @@ func decodeSlice(p *Parser, start *StartElement, slice *value) (err error) {
 
 	end, impl, err := callDecodeXML(elem, p, start)
 	if !impl {
-		if isPrimitive(elem) {
-			panic(fmt.Sprintf("%s:%s 必须实现 Decoder 接口", slice.name, elem.Type()))
+		if node.IsPrimitive(elem) {
+			panic(fmt.Sprintf("%s:%s 必须实现 Decoder 接口", slice.Name, elem.Type()))
 		}
-		end, err = newNode(start.Name.Value, elem).decode(p, start)
+		end, err = decode(node.New(start.Name.Value, elem), p, start)
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = setTagValue(elem, slice.usage, p, start, end); err != nil {
+	if err = setTagValue(elem, slice.Usage, p, start, end); err != nil {
 		return err
 	}
 	slice.Value.Set(reflect.Append(slice.Value, elem))
@@ -313,7 +314,7 @@ func findEndElement(p *Parser, start *StartElement) error {
 }
 
 func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {
-	v = getRealValue(v)
+	v = node.GetRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}
@@ -332,7 +333,7 @@ func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, 
 }
 
 func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute) error {
-	v = getRealValue(v)
+	v = node.GetRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}

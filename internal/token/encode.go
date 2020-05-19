@@ -9,6 +9,8 @@ import (
 	"reflect"
 
 	"github.com/issue9/is"
+
+	"github.com/caixw/apidoc/v7/internal/node"
 )
 
 // Encoder 将元素内容编码成 XML 内容
@@ -34,8 +36,7 @@ func Encode(indent string, v interface{}) ([]byte, error) {
 	e := xml.NewEncoder(buf)
 	e.Indent("", indent)
 
-	n := newNode("", reflect.ValueOf(v))
-	if err := n.encode(e); err != nil {
+	if err := encode(node.New("", reflect.ValueOf(v)), e); err != nil {
 		return nil, err
 	}
 
@@ -45,14 +46,14 @@ func Encode(indent string, v interface{}) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (n *node) encode(e *xml.Encoder) error {
-	start, err := n.buildStartElement()
+func encode(n *node.Node, e *xml.Encoder) error {
+	start, err := buildStartElement(n)
 	if err != nil {
 		return err
 	}
 
-	if n.cdata != nil && !n.cdata.isOmitempty() {
-		chardata, err := getContentValue(n.cdata.Value)
+	if n.CData != nil && !isOmitempty(n.CData) {
+		chardata, err := getContentValue(n.CData.Value)
 		if err != nil {
 			return err
 		}
@@ -62,32 +63,32 @@ func (n *node) encode(e *xml.Encoder) error {
 		}{chardata}, start)
 	}
 
-	if n.content != nil && !n.content.isOmitempty() {
-		chardata, err := getContentValue(n.content.Value)
+	if n.Content != nil && !isOmitempty(n.Content) {
+		chardata, err := getContentValue(n.Content.Value)
 		if err != nil {
 			return err
 		}
 		return e.EncodeElement(xml.CharData(chardata), start)
 	}
 
-	return n.encodeElements(e, start)
+	return encodeElements(n, e, start)
 }
 
-func (n *node) encodeElements(e *xml.Encoder, start xml.StartElement) (err error) {
+func encodeElements(n *node.Node, e *xml.Encoder, start xml.StartElement) (err error) {
 	if err = e.EncodeToken(start); err != nil {
 		return err
 	}
-	for _, v := range n.elems {
+	for _, v := range n.Elements {
 		if err := encodeElement(e, v); err != nil {
 			return err
 		}
 	}
 
-	return e.EncodeToken(xml.EndElement{Name: xml.Name{Local: n.value.name}})
+	return e.EncodeToken(xml.EndElement{Name: xml.Name{Local: n.Value.Name}})
 }
 
-func encodeElement(e *xml.Encoder, v *value) (err error) {
-	if v.isOmitempty() {
+func encodeElement(e *xml.Encoder, v *node.Value) (err error) {
+	if isOmitempty(v) {
 		return nil
 	}
 
@@ -108,13 +109,13 @@ func encodeElement(e *xml.Encoder, v *value) (err error) {
 			found = true
 		}
 	}
-	if !found && isPrimitive(v.Value) {
+	if !found && node.IsPrimitive(v.Value) {
 		chardata = fmt.Sprint(v.Interface())
 		found = true
 	}
 
 	if found {
-		start := xml.StartElement{Name: xml.Name{Local: v.name}}
+		start := xml.StartElement{Name: xml.Name{Local: v.Name}}
 		if err := e.EncodeElement(xml.CharData(chardata), start); err != nil {
 			return err
 		}
@@ -123,24 +124,24 @@ func encodeElement(e *xml.Encoder, v *value) (err error) {
 
 	if v.Kind() == reflect.Array || v.Kind() == reflect.Slice {
 		for i := 0; i < v.Len(); i++ {
-			if err := encodeElement(e, newValue(v.name, v.Index(i), v.omitempty, v.usage)); err != nil {
+			if err := encodeElement(e, node.NewValue(v.Name, v.Index(i), v.Omitempty, v.Usage)); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
 
-	return newNode(v.name, v.Value).encode(e)
+	return encode(node.New(v.Name, v.Value), e)
 }
 
-func (n *node) buildStartElement() (xml.StartElement, error) {
+func buildStartElement(n *node.Node) (xml.StartElement, error) {
 	start := xml.StartElement{
-		Name: xml.Name{Local: n.value.name},
-		Attr: make([]xml.Attr, 0, len(n.attrs)),
+		Name: xml.Name{Local: n.Value.Name},
+		Attr: make([]xml.Attr, 0, len(n.Attributes)),
 	}
 
-	for _, v := range n.attrs {
-		if v.isOmitempty() {
+	for _, v := range n.Attributes {
+		if isOmitempty(v) {
 			continue
 		}
 
@@ -150,7 +151,7 @@ func (n *node) buildStartElement() (xml.StartElement, error) {
 		}
 
 		start.Attr = append(start.Attr, xml.Attr{
-			Name:  xml.Name{Local: v.name},
+			Name:  xml.Name{Local: v.Name},
 			Value: val,
 		})
 	}
@@ -173,7 +174,7 @@ func getAttributeValue(elem reflect.Value) (string, error) {
 
 // 获取 cdata 和 content 节点的的内容
 func getContentValue(elem reflect.Value) (string, error) {
-	elem = getRealValue(elem)
+	elem = node.GetRealValue(elem)
 	if elem.CanInterface() && elem.Type().Implements(encoderType) {
 		return elem.Interface().(Encoder).EncodeXML()
 	} else if elem.CanAddr() {
@@ -185,6 +186,6 @@ func getContentValue(elem reflect.Value) (string, error) {
 	return fmt.Sprint(elem.Interface()), nil
 }
 
-func (v *value) isOmitempty() bool {
-	return v.omitempty && is.Empty(v.Value.Interface(), true)
+func isOmitempty(v *node.Value) bool {
+	return v.Omitempty && is.Empty(v.Value.Interface(), true)
 }

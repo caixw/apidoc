@@ -316,7 +316,7 @@ func TestParser_Token(t *testing.T) {
 					Value: "  ",
 				},
 				nil, nil,
-			}, // end elems
+			}, // end Elements
 		},
 
 		{

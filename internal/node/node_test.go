@@ -1,12 +1,29 @@
 // SPDX-License-Identifier: MIT
 
-package token
+package node
 
 import (
 	"reflect"
 	"testing"
 
 	"github.com/issue9/assert"
+)
+
+type (
+	Anonymous struct {
+		Attr1 intAttr `apidoc:"attr1,attr,usage"`
+		Elem1 intTag  `apidoc:"elem1,elem,usage"`
+	}
+
+	intTag struct {
+		Value    int      `apidoc:"-"`
+		RootName struct{} `apidoc:"number,meta,usage-number"`
+	}
+
+	intAttr struct {
+		Value    int      `apidoc:"-"`
+		RootName struct{} `apidoc:"number,meta,usage-number"`
+	}
 )
 
 func TestNewNode(t *testing.T) {
@@ -60,7 +77,7 @@ func TestNewNode(t *testing.T) {
 			inputNode: &struct {
 				Attr1   intAttr `apidoc:"attr1,attr,usage"`
 				Attr2   intAttr `apidoc:"attr2,attr,usage"`
-				Content String  `apidoc:",content,"`
+				Content string  `apidoc:",content,"`
 			}{},
 			attrs:   2,
 			content: true,
@@ -98,7 +115,7 @@ func TestNewNode(t *testing.T) {
 			inputName: "attr1_cdata",
 			inputNode: &struct {
 				Attr1 intAttr `apidoc:"attr1,attr,usage"`
-				Cdata *CData  `apidoc:",cdata"`
+				Cdata *string `apidoc:",cdata"`
 			}{},
 			attrs: 1,
 			cdata: true,
@@ -145,37 +162,37 @@ func TestNewNode(t *testing.T) {
 	}
 
 	for i, item := range data {
-		o := newNode(item.inputName, reflect.ValueOf(item.inputNode))
-		a.Equal(len(o.elems), item.elems, "not equal %d\nv1=%d,v2=%d", i, len(o.elems), item.elems).
-			Equal(len(o.attrs), item.attrs, "not equal %d\nv1=%d,v2=%d", i, len(o.attrs), item.attrs).
-			Equal(item.cdata, o.cdata != nil, "not equal at %d\nv1=%v,v2=%v", i, item.cdata, o.cdata != nil).
-			Equal(item.content, o.content != nil, "not equal at %d\nv1=%v,v2=%v", i, item.content, o.content != nil).
-			Equal(o.value.name, item.inputName)
+		o := New(item.inputName, reflect.ValueOf(item.inputNode))
+		a.Equal(len(o.Elements), item.elems, "not equal %d\nv1=%d,v2=%d", i, len(o.Elements), item.elems).
+			Equal(len(o.Attributes), item.attrs, "not equal %d\nv1=%d,v2=%d", i, len(o.Attributes), item.attrs).
+			Equal(item.cdata, o.CData != nil, "not equal at %d\nv1=%v,v2=%v", i, item.cdata, o.CData != nil).
+			Equal(item.content, o.Content != nil, "not equal at %d\nv1=%v,v2=%v", i, item.content, o.Content != nil).
+			Equal(o.Value.Name, item.inputName)
 
-		for k, v := range o.attrs {
-			a.True(v.IsValid(), "value.IsValid() == false 位于 %d:%d.attrs", i, k)
+		for k, v := range o.Attributes {
+			a.True(v.IsValid(), "value.IsValid() == false 位于 %d:%d.Attributes", i, k)
 		}
 
-		for k, v := range o.elems {
-			a.True(v.IsValid(), "value.IsValid() == false 位于 %d:%d.elems", i, k)
+		for k, v := range o.Elements {
+			a.True(v.IsValid(), "value.IsValid() == false 位于 %d:%d.Elements", i, k)
 		}
 	}
 
 	// 数组
-	o := newNode("empty", reflect.ValueOf(&struct {
+	o := New("empty", reflect.ValueOf(&struct {
 		Elem1 []int `apidoc:"elem1,elem,usage"`
 	}{}))
-	a.Equal(1, len(o.elems))
+	a.Equal(1, len(o.Elements))
 
-	elem, found := o.elem("elem1")
+	elem, found := o.Element("elem1")
 	a.True(found).True(elem.IsValid())
 
-	elem, found = o.elem("elem1")
+	elem, found = o.Element("elem1")
 	a.True(found).Equal(elem.Kind(), reflect.Slice)
 
 	// 相同的属性
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
+		New("empty", reflect.ValueOf(&struct {
 			Attr1 int `apidoc:"attr1,attr"`
 			Attr2 int `apidoc:"attr1,attr"`
 			Elem1 int `apidoc:"elem1,elem"`
@@ -184,70 +201,70 @@ func TestNewNode(t *testing.T) {
 
 	// 多个的 cdata
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
-			Attr2  int    `apidoc:"attr1,attr"`
-			Cdata1 *CData `apidoc:",cdata"`
-			Cdata2 *CData `apidoc:",cdata"`
+		New("empty", reflect.ValueOf(&struct {
+			Attr2  int     `apidoc:"attr1,attr"`
+			Cdata1 *string `apidoc:",cdata"`
+			Cdata2 *string `apidoc:",cdata"`
 		}{}))
 	})
 
 	// 同时存在 cdata 和 content
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
+		New("empty", reflect.ValueOf(&struct {
 			Attr2   int     `apidoc:"attr1,attr"`
-			Cdata1  *CData  `apidoc:",cdata"`
-			Content *String `apidoc:",content"`
+			Cdata1  *string `apidoc:",cdata"`
+			Content *string `apidoc:",content"`
 		}{}))
 	})
 
 	// 多个的 content
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
+		New("empty", reflect.ValueOf(&struct {
 			Attr2 int    `apidoc:"attr1,attr"`
-			C1    String `apidoc:",content"`
-			C2    String `apidoc:",content"`
+			C1    string `apidoc:",content"`
+			C2    string `apidoc:",content"`
 		}{}))
 	})
 
 	// 同时存在 cdata 和 content
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
+		New("empty", reflect.ValueOf(&struct {
 			Attr2   int    `apidoc:"attr1,attr"`
-			Content String `apidoc:",content"`
-			Cdata1  CData  `apidoc:",cdata"`
+			Content string `apidoc:",content"`
+			Cdata1  string `apidoc:",cdata"`
 		}{}))
 	})
 
-	// 同时存在 cdata 和 elems
+	// 同时存在 cdata 和 Elements
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
-			Attr2  int   `apidoc:"attr1,attr"`
-			Elem1  int   `apidoc:"elem1,elem"`
-			Cdata1 CData `apidoc:",cdata"`
+		New("empty", reflect.ValueOf(&struct {
+			Attr2  int    `apidoc:"attr1,attr"`
+			Elem1  int    `apidoc:"elem1,elem"`
+			Cdata1 string `apidoc:",cdata"`
 		}{}))
 	})
 
-	// 同时存在 content 和 elems
+	// 同时存在 content 和 Elements
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
+		New("empty", reflect.ValueOf(&struct {
 			Attr2   int    `apidoc:"attr1,attr"`
 			Elem1   int    `apidoc:"elem1,elem"`
-			Content String `apidoc:",content"`
+			Content string `apidoc:",content"`
 		}{}))
 	})
 
-	// elems 同时与 content 和 cdata 存在
+	// Elements 同时与 content 和 cdata 存在
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
+		New("empty", reflect.ValueOf(&struct {
 			Attr2   int    `apidoc:"attr1,attr"`
-			Content String `apidoc:",content"`
+			Content string `apidoc:",content"`
 			Elem1   int    `apidoc:"elem1,elem"`
 		}{}))
 	})
 
 	// 相同的元素名
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
+		New("empty", reflect.ValueOf(&struct {
 			Attr1 int `apidoc:"attr1,attr"`
 			Elem1 int `apidoc:"elem1,elem"`
 			Elem2 int `apidoc:"elem1,elem"`
@@ -256,7 +273,7 @@ func TestNewNode(t *testing.T) {
 
 	// 与匿名对象存在相同的元素名
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
+		New("empty", reflect.ValueOf(&struct {
 			Anonymous
 			Attr1 int `apidoc:"attr1,attr"`
 			Elem2 int `apidoc:"elem1,elem"`
@@ -264,19 +281,19 @@ func TestNewNode(t *testing.T) {
 	})
 	// 与匿名对象存在相同的元素名
 	a.Panic(func() {
-		newNode("empty", reflect.ValueOf(&struct {
+		New("empty", reflect.ValueOf(&struct {
 			*Anonymous
 			Attr1 int `apidoc:"attr1,attr"`
 			Elem2 int `apidoc:"elem1,elem"`
 		}{}))
 	})
 
-	// 同时存在 cdata 和 elems
+	// 同时存在 cdata 和 Elements
 	type Anonymous1 struct {
-		CData CData `apidoc:",cdata"`
+		CData string `apidoc:",cdata"`
 	}
 	a.Panic(func() {
-		newNode("anonymous-content", reflect.ValueOf(&struct {
+		New("anonymous-content", reflect.ValueOf(&struct {
 			Anonymous1
 			Elem2 int `apidoc:"elem1,elem"`
 		}{}))
@@ -284,12 +301,12 @@ func TestNewNode(t *testing.T) {
 
 	// 同时存在两个 content
 	type Anonymous2 struct {
-		Content String `apidoc:",content"`
+		Content string `apidoc:",content"`
 	}
 	a.Panic(func() {
-		newNode("anonymous-content", reflect.ValueOf(&struct {
+		New("anonymous-content", reflect.ValueOf(&struct {
 			*Anonymous2
-			Content String `apidoc:",content"`
+			Content string `apidoc:",content"`
 		}{}))
 	})
 }
@@ -302,7 +319,7 @@ func TestParseTag(t *testing.T) {
 		inputTag  string
 
 		name      string
-		node      nodeType
+		node      Type
 		usage     string
 		omitempty bool
 	}{
@@ -311,40 +328,40 @@ func TestParseTag(t *testing.T) {
 			inputTag:  "field,attr,usage",
 
 			name:  "field",
-			node:  attrNode,
+			node:  Attribute,
 			usage: "usage",
 		},
 		{
 			inputName: "Field",
 			inputTag:  "field,elem,usage",
 			name:      "field",
-			node:      elemNode,
+			node:      Element,
 			usage:     "usage",
 		},
 		{
 			inputName: "Field",
 			inputTag:  "field,cdata",
 			name:      "field",
-			node:      cdataNode,
+			node:      CData,
 		},
 		{
 			inputName: "Field",
 			inputTag:  ",cdata",
 			name:      "Field",
-			node:      cdataNode,
+			node:      CData,
 		},
 		{
 			inputName: "Field",
 			inputTag:  "field,cdata,,omitempty",
 			name:      "field",
-			node:      cdataNode,
+			node:      CData,
 			omitempty: true,
 		},
 		{
 			inputName: "Field",
 			inputTag:  "field,cdata,,omitempty",
 			name:      "field",
-			node:      cdataNode,
+			node:      CData,
 			omitempty: true,
 		},
 		{
@@ -359,7 +376,7 @@ func TestParseTag(t *testing.T) {
 	for i, item := range data {
 		field := reflect.StructField{
 			Name: item.inputName,
-			Tag:  reflect.StructTag(tagName + ":\"" + item.inputTag + "\""),
+			Tag:  reflect.StructTag(TagName + ":\"" + item.inputTag + "\""),
 		}
 
 		name, node, usage, omitempty := parseTag(field)
@@ -372,7 +389,7 @@ func TestParseTag(t *testing.T) {
 	// 数量不够
 	a.Panic(func() {
 		field := reflect.StructField{
-			Tag: reflect.StructTag(tagName + `:"field,not-exists"`),
+			Tag: reflect.StructTag(TagName + `:"field,not-exists"`),
 		}
 		parseTag(field)
 	})
@@ -380,7 +397,7 @@ func TestParseTag(t *testing.T) {
 	// omitempty 错误
 	a.Panic(func() {
 		field := reflect.StructField{
-			Tag: reflect.StructTag(tagName + `:"field,elem,usage,other"`),
+			Tag: reflect.StructTag(TagName + `:"field,elem,usage,other"`),
 		}
 		parseTag(field)
 	})
@@ -388,7 +405,7 @@ func TestParseTag(t *testing.T) {
 	// cdata 指定了 usage
 	a.Panic(func() {
 		field := reflect.StructField{
-			Tag: reflect.StructTag(tagName + `:"field,cdata,usage,other"`),
+			Tag: reflect.StructTag(TagName + `:"field,cdata,usage,other"`),
 		}
 		parseTag(field)
 	})
@@ -396,7 +413,7 @@ func TestParseTag(t *testing.T) {
 	// 数量太多
 	a.Panic(func() {
 		field := reflect.StructField{
-			Tag: reflect.StructTag(tagName + `:"field,elem,usage,omitempty,xxx"`),
+			Tag: reflect.StructTag(TagName + `:"field,elem,usage,omitempty,xxx"`),
 		}
 		parseTag(field)
 	})

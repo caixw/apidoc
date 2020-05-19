@@ -9,9 +9,10 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/node"
 )
 
-func decode(a *assert.Assertion, xml string, v interface{}, hasErr bool) {
+func decodeObject(a *assert.Assertion, xml string, v interface{}, hasErr bool) {
 	p, err := NewParser(core.Block{Data: []byte(xml)})
 	a.NotError(err).
 		NotNil(p)
@@ -35,7 +36,7 @@ func TestDecode(t *testing.T) {
 		Elem1    intTag   `apidoc:"elem1,elem,usage"`
 	}{}
 	b := `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
-	decode(a, b, v, false)
+	decodeObject(a, b, v, false)
 	base := BaseTag{
 		Base: Base{
 			UsageKey: "usage-apidoc",
@@ -112,7 +113,7 @@ func TestDecode(t *testing.T) {
 		Elem1    intTag   `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1 /></apidoc>`
-	decode(a, b, v, false)
+	decodeObject(a, b, v, false)
 	attr1 = intAttr{Value: 5,
 		BaseAttribute: BaseAttribute{
 			Base: Base{
@@ -197,7 +198,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	decode(a, b, v2, false)
+	decodeObject(a, b, v2, false)
 	a.Equal(v2.Attr1, attr1).
 		Equal(v2.Elem1, []intTag{elem1})
 
@@ -271,7 +272,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	decode(a, b, v3, false)
+	decodeObject(a, b, v3, false)
 	a.Equal(v3.Attr1, attr1).
 		Equal(v3.Elem1, []intTag{elem1, elem2})
 
@@ -338,7 +339,7 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	decode(a, b, v3, false)
+	decodeObject(a, b, v3, false)
 	a.Equal(v3.Attr1, attr1).
 		Equal(v3.Elem1, []intTag{elem1, elem2})
 
@@ -350,7 +351,7 @@ func TestDecode(t *testing.T) {
 		Content  String   `apidoc:",content"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
-	decode(a, b, v4, false)
+	decodeObject(a, b, v4, false)
 	a.Equal(v4.Content, String{Value: "5555", Range: core.Range{
 		Start: core.Position{Character: 18},
 		End:   core.Position{Character: 22},
@@ -379,7 +380,7 @@ func TestDecode(t *testing.T) {
 		Cdata    *CData   `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5"><![CDATA[5555]]></apidoc>`
-	decode(a, b, v5, false)
+	decodeObject(a, b, v5, false)
 	a.Equal(v5.Cdata, &CData{
 		Value: String{Value: "5555", Range: core.Range{
 			Start: core.Position{Character: 27},
@@ -416,7 +417,7 @@ func TestDecode(t *testing.T) {
 		Cdata    CData    `apidoc:",cdata,,omitempty"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
-	decode(a, b, v6, false)
+	decodeObject(a, b, v6, false)
 	a.Empty(v6.Cdata.Value.Value).True(v6.Cdata.IsEmpty())
 
 	v7 := &struct {
@@ -427,7 +428,7 @@ func TestDecode(t *testing.T) {
 		Object   *objectTag `apidoc:"obj,elem,usage"`
 	}{}
 	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
-	decode(a, b, v7, false)
+	decodeObject(a, b, v7, false)
 	a.Equal(v7.ID, &intAttr{Value: 11, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
@@ -534,11 +535,11 @@ func TestDecode(t *testing.T) {
 
 	// 多个根元素
 	b = `<apidoc attr="1"></apidoc><apidoc attr="1"></apidoc>`
-	decode(a, b, v7, true)
+	decodeObject(a, b, v7, true)
 
 	// 多个结束元素
 	b = `<apidoc attr="1"></apidoc></apidoc>`
-	decode(a, b, v7, true)
+	decodeObject(a, b, v7, true)
 
 	// 无效的属性值
 	v8 := &struct {
@@ -547,7 +548,7 @@ func TestDecode(t *testing.T) {
 		ID       intAttr  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1xx"></apidoc></apidoc>`
-	decode(a, b, v8, true)
+	decodeObject(a, b, v8, true)
 
 	// StartElement.Close
 	v9 := &struct {
@@ -556,7 +557,7 @@ func TestDecode(t *testing.T) {
 		ID       intAttr  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1" />`
-	decode(a, b, v9, false)
+	decodeObject(a, b, v9, false)
 
 	// 不存在的元素名
 	v10 := &struct {
@@ -566,7 +567,7 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
-		decode(a, b, v10, false)
+		decodeObject(a, b, v10, false)
 	})
 
 	// 数组元素未实现 Decoder 接口
@@ -577,7 +578,7 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
-		decode(a, b, v11, false)
+		decodeObject(a, b, v11, false)
 	})
 
 	// 多个数组，未实现 Decoder 的元素
@@ -747,7 +748,7 @@ func TestDecode(t *testing.T) {
 			Value: "7",
 		},
 	}
-	decode(a, b, v12, false)
+	decodeObject(a, b, v12, false)
 	a.Equal(v12.Attr1, attr1).
 		Equal(2, len(v12.Elem1)).
 		Equal(v12.Elem1[0], e1).
@@ -819,7 +820,7 @@ func TestDecode(t *testing.T) {
 		},
 	}
 
-	decode(a, b, v13, false)
+	decodeObject(a, b, v13, false)
 	a.Equal(v13.Attr1, attr1)
 	a.Equal(1, len(v13.Elem1)).Equal(v13.Elem1[0], obj1, "v1=%#v\nv2=%#v\n", v13.Elem1[0], obj1)
 
@@ -831,7 +832,7 @@ func TestDecode(t *testing.T) {
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc attr1="5"><elem2 id="60" /></apidoc>`
-	decode(a, b, v14, false)
+	decodeObject(a, b, v14, false)
 	a.NotNil(v14.Elem1).
 		Equal(v14.Elem1.StartTag.Value, "elem2").
 		Equal(v14.Elem1.ID.Value, 60)
@@ -839,7 +840,7 @@ func TestDecode(t *testing.T) {
 	// 是否能正常调用根的 Sanitizer 接口
 	v15 := &objectTag{}
 	b = `<attr id="7"><name>n</name></attr>`
-	decode(a, b, v15, false)
+	decodeObject(a, b, v15, false)
 	a.Equal(v15.ID.Value, 8).
 		Equal(v15.Name.Value, "n")
 
@@ -861,7 +862,7 @@ func TestDecode_omitempty(t *testing.T) {
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b := `<apidoc><elem2 id="60" /></apidoc>`
-	decode(a, b, v1, true)
+	decodeObject(a, b, v1, true)
 
 	// omitempty, elem2 数组，不能为空
 	v2 := &struct {
@@ -870,7 +871,7 @@ func TestDecode_omitempty(t *testing.T) {
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decode(a, b, v2, true)
+	decodeObject(a, b, v2, true)
 
 	v2 = &struct {
 		BaseTag
@@ -878,7 +879,7 @@ func TestDecode_omitempty(t *testing.T) {
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc><elem2 id="60" /></apidoc>`
-	decode(a, b, v2, false)
+	decodeObject(a, b, v2, false)
 	a.Equal(1, len(v2.Elem1))
 
 	// omitempty, cdata 不能为空
@@ -888,7 +889,7 @@ func TestDecode_omitempty(t *testing.T) {
 		CData    *CData   `apidoc:",cdata,"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decode(a, b, v3, true)
+	decodeObject(a, b, v3, true)
 
 	// omitempty attr1 不能为空，自闭合标签
 	v4 := &struct {
@@ -897,9 +898,9 @@ func TestDecode_omitempty(t *testing.T) {
 		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decode(a, b, v4, true)
+	decodeObject(a, b, v4, true)
 	b = `<apidoc />`
-	decode(a, b, v4, true)
+	decodeObject(a, b, v4, true)
 
 	// omitempty attr1 不能为空，自闭合标签
 	v5 := &struct {
@@ -911,9 +912,9 @@ func TestDecode_omitempty(t *testing.T) {
 		} `apidoc:"elem,elem,usage"`
 	}{}
 	b = `<apidoc attr1="1"><elem></elem></apidoc>`
-	decode(a, b, v5, true)
+	decodeObject(a, b, v5, true)
 	b = `<apidoc attr1="1"><elem/></apidoc>`
-	decode(a, b, v5, true)
+	decodeObject(a, b, v5, true)
 }
 
 func TestObject_decodeAttributes(t *testing.T) {
@@ -921,16 +922,16 @@ func TestObject_decodeAttributes(t *testing.T) {
 	p, err := NewParser(core.Block{})
 	a.NotError(err).NotNil(p)
 
-	o := &node{}
-	a.NotError(o.decodeAttributes(p, nil))
+	o := &node.Node{}
+	a.NotError(decodeAttributes(o, p, nil))
 
 	val := &struct {
 		ID   intAttr    `apidoc:"id,attr,usage"`
 		Name stringAttr `apidoc:"name,attr,usage"`
 	}{}
-	o = newNode("root", reflect.ValueOf(val))
+	o = node.New("root", reflect.ValueOf(val))
 	a.NotNil(o)
-	err = o.decodeAttributes(p, &StartElement{
+	err = decodeAttributes(o, p, &StartElement{
 		Attributes: []*Attribute{
 			{Name: String{Value: "name"}, Value: String{Value: "name"}},
 			{Name: String{Value: "id"}, Value: String{Value: "10"}},
@@ -950,9 +951,9 @@ func TestObject_decodeAttributes(t *testing.T) {
 		ID   intAttr    `apidoc:"id,attr,usage"`
 		Name stringAttr `apidoc:"name,attr,usage"`
 	}{}
-	o = newNode("root", reflect.ValueOf(val))
+	o = node.New("root", reflect.ValueOf(val))
 	a.NotNil(o)
-	err = o.decodeAttributes(p, &StartElement{
+	err = decodeAttributes(o, p, &StartElement{
 		Attributes: []*Attribute{
 			{Name: String{Value: "name"}, Value: String{Value: "name"}},
 			{Name: String{Value: "id"}, Value: String{Value: "xx10"}},
@@ -966,9 +967,9 @@ func TestObject_decodeAttributes(t *testing.T) {
 		ID   intAttr    `apidoc:"id,attr,usage"`
 		Name stringAttr `apidoc:"name,attr,usage"`
 	}{}
-	o = newNode("root", reflect.ValueOf(val2))
+	o = node.New("root", reflect.ValueOf(val2))
 	a.NotNil(o)
-	err = o.decodeAttributes(p, &StartElement{
+	err = decodeAttributes(o, p, &StartElement{
 		Attributes: []*Attribute{
 			{Name: String{Value: "name"}, Value: String{Value: "name"}},
 			{Name: String{Value: "id"}, Value: String{Value: "10"}},
@@ -994,9 +995,9 @@ func TestObject_decodeAttributes(t *testing.T) {
 		ID   errAttr    `apidoc:"id,attr,usage"`
 		Name stringAttr `apidoc:"name,attr,usage"`
 	}{}
-	o = newNode("root", reflect.ValueOf(val4))
+	o = node.New("root", reflect.ValueOf(val4))
 	a.NotNil(o)
-	err = o.decodeAttributes(p, &StartElement{
+	err = decodeAttributes(o, p, &StartElement{
 		Attributes: []*Attribute{
 			{Name: String{Value: "name"}, Value: String{Value: "name"}},
 			{Name: String{Value: "id"}, Value: String{Value: "10"}},
@@ -1009,10 +1010,10 @@ func TestObject_decodeAttributes(t *testing.T) {
 		ID   int       `apidoc:"id,attr,usage"`
 		Name stringTag `apidoc:"name,attr,usage"`
 	}{}
-	o = newNode("root", reflect.ValueOf(val5))
+	o = node.New("root", reflect.ValueOf(val5))
 	a.NotNil(o)
 	a.Panic(func() {
-		o.decodeAttributes(p, &StartElement{
+		decodeAttributes(o, p, &StartElement{
 			Attributes: []*Attribute{
 				{Name: String{Value: "name"}, Value: String{Value: "name"}},
 				{Name: String{Value: "id"}, Value: String{Value: "10"}},
