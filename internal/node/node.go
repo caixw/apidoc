@@ -1,6 +1,20 @@
 // SPDX-License-Identifier: MIT
 
 // Package node 处理 ast 中各个节点的结构信息
+//
+// struct tag
+//
+// 标签属性分为 4 个字段，其中前三个是必填的：
+//  apidoc:"name,node-type,usage-key,omitempty"
+// name 表示当前标签的名称，或是节点表示的类型；
+// node-type 表示当前节点的类型，可以是以下值：
+//  - elem 表示这是一个子元素；
+//  - attr 表示为一个 XML 属性；
+//  - cdata 表示为 CDATA 数据；
+//  - content 表示为普通的字符串值；
+//  - meta 表示这个字段仅用于描述当前元素的元数据，比如元素的名称等；
+// usage-key 指定了当前元素的翻译项；
+// omitempty 表示当前值为空时，是否可以忽略。
 package node
 
 import (
@@ -63,17 +77,22 @@ func NewValue(name string, v reflect.Value, omitempty bool, usage string) *Value
 	}
 }
 
-// ParseValue 分析 v 中是否带有 meta 类型的字段
+// ParseValue 分析 v 并返回 *Value 实例
 //
-// 如果不存在会返回 nil。
+// 与 NewValue 的不同在于，ParseValue 会分析对象字段中是否带有 meta 的结构体标签，
+// 如果有才初始化 *Value 对象，否则返回 nil。
 func ParseValue(v reflect.Value) *Value {
 	v = GetRealValue(v)
 	t := v.Type()
 
+	if t.Kind() != reflect.Struct {
+		panic(fmt.Sprintf("%s 的 Kind() 必须为 reflect.Struct", v.Type()))
+	}
+
 	num := t.NumField()
 	for i := 0; i < num; i++ {
 		field := t.Field(i)
-		if field.Anonymous || unicode.IsLower(rune(field.Name[0])) {
+		if field.Anonymous || unicode.IsLower(rune(field.Name[0])) || field.Tag.Get(TagName) == "-" {
 			continue
 		}
 

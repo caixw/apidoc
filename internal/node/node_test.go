@@ -26,6 +26,27 @@ type (
 	}
 )
 
+func TestParseValue(t *testing.T) {
+	a := assert.New(t)
+
+	v := ParseValue(reflect.ValueOf(intTag{}))
+	a.Equal(v.Name, "number").
+		Equal(v.Usage, "usage-number").
+		False(v.Omitempty)
+
+	v = ParseValue(reflect.ValueOf(struct{}{}))
+	a.Nil(v)
+
+	v = ParseValue(reflect.ValueOf(&struct {
+		Value int `apidoc:"-"`
+	}{}))
+	a.Nil(v)
+
+	a.Panic(func() {
+		v = ParseValue(reflect.ValueOf(1))
+	})
+}
+
 func TestNewNode(t *testing.T) {
 	a := assert.New(t)
 
@@ -36,6 +57,7 @@ func TestNewNode(t *testing.T) {
 		attrs     int  // 属性的数量
 		cdata     bool // cdata 的标签名称
 		content   bool // content 的标签名称
+		typeName  string
 	}{
 		{
 			inputName: "empty",
@@ -47,6 +69,15 @@ func TestNewNode(t *testing.T) {
 				Attr1 intAttr `apidoc:"attr1,attr,usage"`
 			}{},
 			attrs: 1,
+		},
+		{
+			inputName: "attr1",
+			inputNode: &struct {
+				Root  struct{} `apidoc:"node,meta,usage"`
+				Attr1 intAttr  `apidoc:"attr1,attr,usage"`
+			}{},
+			attrs:    1,
+			typeName: "node",
 		},
 		{
 			inputName: "attr2",
@@ -75,12 +106,14 @@ func TestNewNode(t *testing.T) {
 		{
 			inputName: "attr2_content",
 			inputNode: &struct {
-				Attr1   intAttr `apidoc:"attr1,attr,usage"`
-				Attr2   intAttr `apidoc:"attr2,attr,usage"`
-				Content string  `apidoc:",content,"`
+				Root    struct{} `apidoc:"root,meta,usage"`
+				Attr1   intAttr  `apidoc:"attr1,attr,usage"`
+				Attr2   intAttr  `apidoc:"attr2,attr,usage"`
+				Content string   `apidoc:",content,"`
 			}{},
-			attrs:   2,
-			content: true,
+			attrs:    2,
+			content:  true,
+			typeName: "root",
 		},
 		{
 			inputName: "attr1_elem1",
