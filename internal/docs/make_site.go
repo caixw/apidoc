@@ -4,8 +4,12 @@
 
 package main
 
-import "github.com/caixw/apidoc/v7/internal/docs/site"
+import (
+	"github.com/caixw/apidoc/v7/internal/docs"
+	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
+	"github.com/caixw/apidoc/v7/internal/docs/site"
+)
 
 func main() {
-	site.Write()
+	makeutil.PanicError(site.Write(docs.Dir()))
 }

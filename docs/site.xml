@@ -27,7 +27,7 @@
 		<language id="swift">Swift</language>
 	</languages>
 	<locales>
-		<locale id="cmn-Hans" href="index.xml" title="简体中文" localedoc="locale.cmn-Hans.xml"></locale>
-		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" localedoc="locale.cmn-Hant.xml"></locale>
+		<locale id="cmn-Hans" href="index.xml" title="简体中文" doc="locale.cmn-Hans.xml"></locale>
+		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" doc="locale.cmn-Hant.xml"></locale>
 	</locales>
 </config>

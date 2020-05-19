@@ -84,8 +84,15 @@ func parseTag(f reflect.StructField) (string, bool) {
 
 	prop := strings.Split(tag, ",")
 	if len(prop) == 1 {
-		return strings.TrimSpace(prop[0]), false
+		return getName(prop[0], f), false
 	}
 
-	return strings.TrimSpace(prop[0]), strings.TrimSpace(prop[1]) == "omitempty"
+	return getName(prop[0], f), strings.TrimSpace(prop[1]) == "omitempty"
+}
+
+func getName(n string, f reflect.StructField) string {
+	if n = strings.TrimSpace(n); n != "" {
+		return n
+	}
+	return f.Name
 }

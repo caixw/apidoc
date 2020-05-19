@@ -8,7 +8,7 @@ var data = []*FileInfo{{
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-19T16:38:24+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-20T03:18:34+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -681,7 +681,7 @@ function initGotoTop() {
 </xsl:variable>
 
 <xsl:variable name="locale-file">
-    <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@localedoc" />
+    <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@doc" />
 </xsl:variable>
 
 <!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
@@ -1347,8 +1347,8 @@ function initGotoTop() {
 		<language id="swift">Swift</language>
 	</languages>
 	<locales>
-		<locale id="cmn-Hans" href="index.xml" title="简体中文" localedoc="locale.cmn-Hans.xml"></locale>
-		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" localedoc="locale.cmn-Hant.xml"></locale>
+		<locale id="cmn-Hans" href="index.xml" title="简体中文" doc="locale.cmn-Hans.xml"></locale>
+		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" doc="locale.cmn-Hant.xml"></locale>
 	</locales>
 </config>
 `),

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-// Package localedoc 文档的本地化翻译内容
+// Package site 用于生成网站内容
+//
+// 包括网站的基本信息，以及文档的翻译内容等。
 package site
 
 import (
@@ -8,15 +10,14 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
-	"github.com/caixw/apidoc/v7/internal/docs"
 	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 const (
-	target      = "site.xml" // 配置文件的文件名
-	docBasename = "locale."  // 翻译文档文件名的前缀部分，一般格式为 doc.{locale}.xml
+	siteFilename = "site.xml" // 配置文件的文件名
+	docBasename  = "locale."  // 翻译文档文件名的前缀部分，一般格式为 docBasename.{locale}.xml
 )
 
 type site struct {
@@ -36,14 +37,63 @@ type language struct {
 }
 
 type loc struct {
-	ID        string `xml:"id,attr"`
-	Href      string `xml:"href,attr"`
-	Title     string `xml:"title,attr"`
-	LocaleDoc string `xml:"localedoc,attr"`
+	ID    string `xml:"id,attr"`
+	Href  string `xml:"href,attr"`
+	Title string `xml:"title,attr"`
+	Doc   string `xml:"doc,attr"`
+}
+
+type doc struct {
+	XMLName  struct{}   `xml:"locale"`
+	Spec     []*spec    `xml:"spec>type"`
+	Commands []*command `xml:"commands>command"`
+	Config   []*item    `xml:"config>item"`
+}
+
+type spec struct {
+	Name  string   `xml:"name,attr,omitempty"`
+	Usage innerXML `xml:"usage,omitempty"`
+	Items []*item  `xml:"item,omitempty"`
+}
+
+type innerXML struct {
+	Text string `xml:",innerxml"`
+}
+
+type item struct {
+	Name     string `xml:"name,attr"` // 变量名
+	Type     string `xml:"type,attr"` // 变量的类型
+	Array    bool   `xml:"array,attr"`
+	Required bool   `xml:"required,attr"`
+	Usage    string `xml:",innerxml"`
+}
+
+type command struct {
+	Name  string `xml:"name,attr"`
+	Usage string `xml:",innerxml"`
 }
 
 // Write 输出站点中所有需要自动生成的内容
-func Write() {
+func Write(target core.URI) error {
+	site, d, err := gen()
+	if err != nil {
+		return err
+	}
+
+	if err := makeutil.WriteXML(target.Append(siteFilename), site, "\t"); err != nil {
+		return err
+	}
+
+	for filename, dd := range d {
+		if err := makeutil.WriteXML(target.Append(filename), dd, "\t"); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func gen() (*site, map[string]*doc, error) {
 	site := &site{
 		Name:      core.Name,
 		Version:   ast.Version,
@@ -60,25 +110,51 @@ func Write() {
 	}
 
 	tags := locale.Tags()
+	docs := make(map[string]*doc, len(tags))
+
 	for _, tag := range tags {
 		locale.SetTag(tag)
 
 		id := tag.String()
-		docFilename := docBasename + id + ".xml"
+		docFilename := buildDocFilename(id)
 
 		href := "index.xml"
 		if id != locale.DefaultLocaleID {
 			href = "index." + id + ".xml"
 		}
 		site.Locales = append(site.Locales, loc{
-			ID:        id,
-			Href:      href,
-			Title:     display.Self.Name(tag),
-			LocaleDoc: docFilename,
+			ID:    id,
+			Href:  href,
+			Title: display.Self.Name(tag),
+			Doc:   docFilename,
 		})
 
-		writeDoc(docFilename)
+		dd, err := genDoc()
+		if err != nil {
+			return nil, nil, err
+		}
+		docs[docFilename] = dd
 	}
 
-	makeutil.PanicError(makeutil.WriteXML(docs.Dir().Append(target), site, "\t"))
+	return site, docs, nil
+}
+
+func genDoc() (*doc, error) {
+	doc := &doc{}
+
+	if err := doc.newCommands(); err != nil {
+		return nil, err
+	}
+	if err := doc.newConfig(); err != nil {
+		return nil, err
+	}
+	if err := doc.newSpec(&ast.APIDoc{}); err != nil {
+		return nil, err
+	}
+
+	return doc, nil
+}
+
+func buildDocFilename(id string) string {
+	return docBasename + id + ".xml"
 }

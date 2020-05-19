@@ -8,7 +8,7 @@
 </xsl:variable>
 
 <xsl:variable name="locale-file">
-    <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@localedoc" />
+    <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@doc" />
 </xsl:variable>
 
 <!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
