@@ -2,8 +2,8 @@
 
 <!-- 该文件由工具自动生成，请勿手动修改！ -->
 
-<localedoc>
-	<types>
+<locale>
+	<spec>
 		<type name="apidoc">
 			<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
 			<item name="@apidoc" type="string" array="false" required="false">文檔的版本要號</item>
@@ -152,7 +152,7 @@
 		<type name="number">
 			<usage>普通的數值類型</usage>
 		</type>
-	</types>
+	</spec>
 	<commands>
 		<command name="build">生成文檔內容</command>
 		<command name="detect">根據目錄下的內容生成配置文件</command>
@@ -165,7 +165,7 @@
 		<command name="test">測試語法的正確性</command>
 		<command name="version">顯示版本信息</command>
 	</commands>
-	<configs>
+	<config>
 		<item name="version" type="string" array="false" required="true">產生此配置文件的 apidoc 版本</item>
 		<item name="inputs" type="object" array="true" required="true">指定輸入的數據，同壹項目只能解析壹種語言。</item>
 		<item name="inputs.lang" type="string" array="false" required="true">源文件類型。具體支持的類型可通過 -l 參數進行查找</item>
@@ -178,5 +178,5 @@
 		<item name="output.path" type="string" array="false" required="true">指定輸出的文件名，包含路徑信息。</item>
 		<item name="output.tags" type="string" array="true" required="false">只輸出與這些標簽相關聯的文檔，默認為全部。</item>
 		<item name="output.style" type="string" array="false" required="false">為 XML 文件指定的 XSL 文件</item>
-	</configs>
-</localedoc>
+	</config>
+</locale>

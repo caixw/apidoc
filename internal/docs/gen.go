@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-//go:generate go run ./make_config.go
-//go:generate go run ./make_localedoc.go
+//go:generate go run ./make_site.go
 //go:generate go run ../../cmd/apidoc/main.go build ../../docs/example
 
 // make_static 需要将以上的内容打包到 static.go，所以要放在最后调用。

@@ -1,63 +1,50 @@
 // SPDX-License-Identifier: MIT
 
-package token
+package site
 
 import (
 	"reflect"
 	"sort"
 
-	"github.com/caixw/apidoc/v7/internal/docs/localedoc"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
-// 用于描述类型信息
-type typeList struct {
-	Types []*localedoc.Type
-}
-
-// NewTypes 分析 v 并将其转换成 Types 数据
-func NewTypes(doc *localedoc.LocaleDoc, v interface{}) error {
+func (d *doc) newSpec(v interface{}) error {
 	n := node.New("", reflect.ValueOf(v))
-	types := &typeList{}
-	if err := types.dumpToTypes(n); err != nil {
+	if err := d.dumpToTypes(n); err != nil {
 		return err
 	}
 
-	types.sanitize()
-	doc.Types = append(doc.Types, types.Types...)
-	return nil
-}
-
-// 清除一些无用的数据
-func (types *typeList) sanitize() {
-	for _, t := range types.Types {
+	for _, t := range d.Spec {
 		if len(t.Items) == 1 && t.Items[0].Name == "." {
 			t.Items = nil
 		}
 	}
 
-	sort.SliceStable(types.Types, func(i, j int) bool {
-		if len(types.Types[i].Items) == 0 {
+	sort.SliceStable(d.Spec, func(i, j int) bool {
+		if len(d.Spec[i].Items) == 0 {
 			return false
 		}
-		return len(types.Types[j].Items) == 0
+		return len(d.Spec[j].Items) == 0
 	})
+
+	return nil
 }
 
-func (types *typeList) dumpToTypes(n *node.Node) error {
-	t := &localedoc.Type{
+func (d *doc) dumpToTypes(n *node.Node) error {
+	t := &spec{
 		Name:  n.TypeName,
-		Usage: localedoc.InnerXML{Text: locale.Sprintf(n.Value.Usage)},
-		Items: make([]*localedoc.Item, 0, len(n.Attributes)+len(n.Elements)),
+		Usage: innerXML{Text: locale.Sprintf(n.Value.Usage)},
+		Items: make([]*item, 0, len(n.Attributes)+len(n.Elements)),
 	}
-	types.Types = append(types.Types, t) // 保证子元素在后显示
+	d.Spec = append(d.Spec, t) // 保证子元素在后显示
 
 	for _, attr := range n.Attributes {
 		appendItem(t, "@"+attr.Name, attr.Value, attr.Usage, !attr.Omitempty)
 
-		if nn := node.New(attr.Name, attr.Value); nn.TypeName != "" && !types.typeExists(nn.TypeName) {
-			if err := types.dumpToTypes(nn); err != nil {
+		if nn := node.New(attr.Name, attr.Value); nn.TypeName != "" && !d.typeExists(nn.TypeName) {
+			if err := d.dumpToTypes(nn); err != nil {
 				return err
 			}
 		}
@@ -74,8 +61,8 @@ func (types *typeList) dumpToTypes(n *node.Node) error {
 			v = reflect.New(typ).Elem()
 		}
 
-		if nn := node.New(elem.Name, v); nn.TypeName != "" && !types.typeExists(nn.TypeName) {
-			if err := types.dumpToTypes(nn); err != nil {
+		if nn := node.New(elem.Name, v); nn.TypeName != "" && !d.typeExists(nn.TypeName) {
+			if err := d.dumpToTypes(nn); err != nil {
 				return err
 			}
 		}
@@ -92,7 +79,7 @@ func (types *typeList) dumpToTypes(n *node.Node) error {
 	return nil
 }
 
-func appendItem(t *localedoc.Type, name string, v reflect.Value, usageKey string, req bool) {
+func appendItem(t *spec, name string, v reflect.Value, usageKey string, req bool) {
 	var isSlice bool
 	typ := node.GetRealValue(v).Type()
 	for typ.Kind() == reflect.Slice || typ.Kind() == reflect.Array {
@@ -104,7 +91,7 @@ func appendItem(t *localedoc.Type, name string, v reflect.Value, usageKey string
 	if vv := node.ParseValue(reflect.New(typ).Elem()); vv != nil {
 		tt = vv.Name
 	}
-	t.Items = append(t.Items, &localedoc.Item{
+	t.Items = append(t.Items, &item{
 		Name:     name,
 		Type:     tt,
 		Required: req,
@@ -113,8 +100,8 @@ func appendItem(t *localedoc.Type, name string, v reflect.Value, usageKey string
 	})
 }
 
-func (types *typeList) typeExists(typeName string) bool {
-	for _, t := range types.Types {
+func (d *doc) typeExists(typeName string) bool {
+	for _, t := range d.Spec {
 		if t.Name == typeName {
 			return true
 		}

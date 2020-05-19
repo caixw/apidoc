@@ -3,50 +3,12 @@
 package docs
 
 var data = []*FileInfo{{
-	Name:        "config.xml",
+	Name:        "example/index.xml",
 	ContentType: "application/xml; charset=utf-8",
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
-<!-- 该文件由工具自动生成，请勿手动修改！ -->
-
-<config>
-	<name>apidoc</name>
-	<version>6.1.0</version>
-	<repo>https://github.com/caixw/apidoc</repo>
-	<url>https://apidoc.tools</url>
-	<languages>
-		<language id="c#">C#</language>
-		<language id="c++">C/C++</language>
-		<language id="d">D</language>
-		<language id="erlang">Erlang</language>
-		<language id="go">Go</language>
-		<language id="groovy">Groovy</language>
-		<language id="java">Java</language>
-		<language id="javascript">JavaScript</language>
-		<language id="kotlin">Kotlin</language>
-		<language id="pascal">Pascal/Delphi</language>
-		<language id="perl">Perl</language>
-		<language id="php">PHP</language>
-		<language id="python">Python</language>
-		<language id="ruby">Ruby</language>
-		<language id="rust">Rust</language>
-		<language id="scala">Scala</language>
-		<language id="swift">Swift</language>
-	</languages>
-	<locales>
-		<locale id="cmn-Hans" href="index.xml" title="简体中文" localedoc="localedoc.cmn-Hans.xml"></locale>
-		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" localedoc="localedoc.cmn-Hant.xml"></locale>
-	</locales>
-</config>
-`),
-},
-	{
-		Name:        "example/index.xml",
-		ContentType: "application/xml; charset=utf-8",
-		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
-
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-19T03:10:03+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-19T16:38:24+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -250,7 +212,7 @@ var data = []*FileInfo{{
 	<mimetype>application/xml</mimetype>
 	<mimetype>application/json</mimetype>
 </apidoc>`),
-	},
+},
 	{
 		Name:        "icon.svg",
 		ContentType: "image/svg+xml; charset=utf-8",
@@ -364,71 +326,6 @@ var data = []*FileInfo{{
 
     <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">
         <p>配置文件名固定為 <code>.apidoc.yaml</code>，格式為 YAML，可參考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通過命令 <code>apidoc detect</code> 生成。主要包含了以幾個配置項：</p>
-        <table>
-            <thead><tr><th>名稱</th><th>類型</th><th>選填</th><th>描述</th></tr></thead>
-            <tbody>
-                <tr>
-                    <th>version</th>
-                    <td>string</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>產生此配置文件的 apidoc 版本</td>
-                </tr>
-                <tr>
-                    <th>inputs</th>
-                    <td>object[]</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>指定輸入的數據，同壹項目只能解析壹種語言。</td>
-                </tr>
-                <tr>
-                    <th>input.dir</th>
-                    <td>string</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>需要解析的源文件所在目錄</td>
-                </tr>
-                <tr>
-                    <th>input.recursive</th>
-                    <td>bool</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>是否解析子目錄下的源文件</td>
-                </tr>
-                <tr>
-                    <th>input.encoding</th>
-                    <td>string</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>編碼，默認為 <code>utf-8</code>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</td>
-                </tr>
-                <tr>
-                    <th>input.lang</th>
-                    <td>string</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>源文件類型。具體支持的類型可通過 -l 參數進行查找</td>
-                </tr>
-                <tr>
-                    <th>output</th>
-                    <td>object</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>控制輸出行為</td>
-                </tr>
-                <tr>
-                    <th>output.path</th>
-                    <td>string</td>
-                    <td><input type="checkbox" checked="true" disabled="true" /></td>
-                    <td>指定輸出的文件名，包含路徑信息。</td>
-                </tr>
-                <tr>
-                    <th>output.tags</th>
-                    <td>string[]</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>只輸出與這些標簽相關聯的文檔，默認為全部。</td>
-                </tr>
-                <tr>
-                    <th>output.style</th>
-                    <td>string</td>
-                    <td><input type="checkbox" disabled="true" /></td>
-                    <td>為 XML 文件指定的 XSL 文件。</td>
-                </tr>
-            </tbody>
-        </table>
     </doc>
 
     <footer>
@@ -783,14 +680,14 @@ function initGotoTop() {
     <xsl:value-of select="/docs/@lang" />
 </xsl:variable>
 
-<xsl:variable name="localedoc-file">
-    <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@localedoc" />
+<xsl:variable name="locale-file">
+    <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@localedoc" />
 </xsl:variable>
 
 <!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
 <xsl:variable name="curr-lang-title">
     <xsl:variable name="title">
-        <xsl:value-of select="document('config.xml')/config/locales/locale[@id=$curr-lang]/@title" />
+        <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@title" />
     </xsl:variable>
 
     <xsl:choose>
@@ -800,7 +697,7 @@ function initGotoTop() {
 </xsl:variable>
 
 <xsl:variable name="keywords">
-    <xsl:for-each select="document('config.xml')/config/languages/language">
+    <xsl:for-each select="document('site.xml')/config/languages/language">
         <xsl:value-of select="." /><xsl:value-of select="','" />
     </xsl:for-each>
 </xsl:variable>
@@ -814,7 +711,7 @@ function initGotoTop() {
             <meta name="keywords" content="{$keywords}RESTful API,document,apidoc" />
             <link rel="icon" type="image/svg+xml" href="./icon.svg" />
             <link rel="mask-icon" type="image/svg+xml" href="./icon.svg" color="black" />
-            <link rel="canonical" href="{document('config.xml')/config/url}" />
+            <link rel="canonical" href="{document('site.xml')/config/url}" />
             <link rel="stylesheet" type="text/css" href="./index.css" />
             <link rel="license" href="{/docs/liense/@url}" />
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism-tomorrow.min.css" />
@@ -836,7 +733,7 @@ function initGotoTop() {
                 <div class="wrap">
                 <p>
                     <xsl:value-of select="docs/footer/license/p[1]" />
-                    <a href="{document('config.xml')/config/repo}">Github</a>
+                    <a href="{document('site.xml')/config/repo}">Github</a>
                     <xsl:value-of select="docs/footer/license/p[2]" />
                     <a href="{docs/license/@url}"><xsl:value-of select="docs/license" /></a>
                     <xsl:value-of select="docs/footer/license/p[3]" />
@@ -856,8 +753,8 @@ function initGotoTop() {
         <div class="wrap">
             <h1>
                 <img src="./icon.svg" />
-                <xsl:value-of select="document('config.xml')/config/name" />
-                <span class="version">&#160;(<xsl:value-of select="document('config.xml')/config/version" />)</span>
+                <xsl:value-of select="document('site.xml')/config/name" />
+                <span class="version">&#160;(<xsl:value-of select="document('site.xml')/config/version" />)</span>
             </h1>
 
             <div class="menus" role="navigation">
@@ -871,7 +768,7 @@ function initGotoTop() {
                         <span aria-hiddren="true">&#160;&#x25bc;</span>
                     </a>
                     <ul>
-                        <xsl:for-each select="document('config.xml')/config/locales/locale">
+                        <xsl:for-each select="document('site.xml')/config/locales/locale">
                             <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
                         </xsl:for-each>
                     </ul>
@@ -912,7 +809,7 @@ function initGotoTop() {
         </xsl:for-each>
 
         <xsl:if test="$id='spec'">
-            <xsl:for-each select="document($localedoc-file)/localedoc/types/type">
+            <xsl:for-each select="document($locale-file)/locale/spec/type">
                 <xsl:call-template name="type">
                     <xsl:with-param name="type" select="." />
                 </xsl:call-template>
@@ -943,7 +840,7 @@ function initGotoTop() {
         </thead>
 
         <tbody>
-            <xsl:for-each select="document($localedoc-file)/localedoc/commands/command">
+            <xsl:for-each select="document($locale-file)/locale/commands/command">
             <tr>
                 <th><xsl:value-of select="@name" /></th>
                 <td><xsl:copy-of select="node()" /></td>
@@ -966,7 +863,7 @@ function initGotoTop() {
         </thead>
 
         <tbody>
-            <xsl:for-each select="document($localedoc-file)/localedoc/configs/item">
+            <xsl:for-each select="document($locale-file)/locale/config/item">
                 <tr>
                     <th><xsl:value-of select="@name" /></th>
                     <td>
@@ -1045,14 +942,14 @@ function initGotoTop() {
 `),
 	},
 	{
-		Name:        "localedoc.cmn-Hans.xml",
+		Name:        "locale.cmn-Hans.xml",
 		ContentType: "application/xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- 该文件由工具自动生成，请勿手动修改！ -->
 
-<localedoc>
-	<types>
+<locale>
+	<spec>
 		<type name="apidoc">
 			<usage>用于描述整个文档的相关内容，只能出现一次。</usage>
 			<item name="@apidoc" type="string" array="false" required="false">文档的版本要号</item>
@@ -1201,7 +1098,7 @@ function initGotoTop() {
 		<type name="number">
 			<usage>普通的数值类型</usage>
 		</type>
-	</types>
+	</spec>
 	<commands>
 		<command name="build">生成文档内容</command>
 		<command name="detect">根据目录下的内容生成配置文件</command>
@@ -1214,7 +1111,7 @@ function initGotoTop() {
 		<command name="test">测试语法的正确性</command>
 		<command name="version">显示版本信息</command>
 	</commands>
-	<configs>
+	<config>
 		<item name="version" type="string" array="false" required="true">产生此配置文件的 apidoc 版本</item>
 		<item name="inputs" type="object" array="true" required="true">指定输入的数据，同一项目只能解析一种语言。</item>
 		<item name="inputs.lang" type="string" array="false" required="true">源文件类型。具体支持的类型可通过 -l 参数进行查找</item>
@@ -1227,19 +1124,19 @@ function initGotoTop() {
 		<item name="output.path" type="string" array="false" required="true">指定输出的文件名，包含路径信息。</item>
 		<item name="output.tags" type="string" array="true" required="false">只输出与这些标签相关联的文档，默认为全部。</item>
 		<item name="output.style" type="string" array="false" required="false">为 XML 文件指定的 XSL 文件</item>
-	</configs>
-</localedoc>
+	</config>
+</locale>
 `),
 	},
 	{
-		Name:        "localedoc.cmn-Hant.xml",
+		Name:        "locale.cmn-Hant.xml",
 		ContentType: "application/xml; charset=utf-8",
 		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- 该文件由工具自动生成，请勿手动修改！ -->
 
-<localedoc>
-	<types>
+<locale>
+	<spec>
 		<type name="apidoc">
 			<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
 			<item name="@apidoc" type="string" array="false" required="false">文檔的版本要號</item>
@@ -1388,7 +1285,7 @@ function initGotoTop() {
 		<type name="number">
 			<usage>普通的數值類型</usage>
 		</type>
-	</types>
+	</spec>
 	<commands>
 		<command name="build">生成文檔內容</command>
 		<command name="detect">根據目錄下的內容生成配置文件</command>
@@ -1401,7 +1298,7 @@ function initGotoTop() {
 		<command name="test">測試語法的正確性</command>
 		<command name="version">顯示版本信息</command>
 	</commands>
-	<configs>
+	<config>
 		<item name="version" type="string" array="false" required="true">產生此配置文件的 apidoc 版本</item>
 		<item name="inputs" type="object" array="true" required="true">指定輸入的數據，同壹項目只能解析壹種語言。</item>
 		<item name="inputs.lang" type="string" array="false" required="true">源文件類型。具體支持的類型可通過 -l 參數進行查找</item>
@@ -1414,8 +1311,46 @@ function initGotoTop() {
 		<item name="output.path" type="string" array="false" required="true">指定輸出的文件名，包含路徑信息。</item>
 		<item name="output.tags" type="string" array="true" required="false">只輸出與這些標簽相關聯的文檔，默認為全部。</item>
 		<item name="output.style" type="string" array="false" required="false">為 XML 文件指定的 XSL 文件</item>
-	</configs>
-</localedoc>
+	</config>
+</locale>
+`),
+	},
+	{
+		Name:        "site.xml",
+		ContentType: "application/xml; charset=utf-8",
+		Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 该文件由工具自动生成，请勿手动修改！ -->
+
+<config>
+	<name>apidoc</name>
+	<version>6.1.0</version>
+	<repo>https://github.com/caixw/apidoc</repo>
+	<url>https://apidoc.tools</url>
+	<languages>
+		<language id="c#">C#</language>
+		<language id="c++">C/C++</language>
+		<language id="d">D</language>
+		<language id="erlang">Erlang</language>
+		<language id="go">Go</language>
+		<language id="groovy">Groovy</language>
+		<language id="java">Java</language>
+		<language id="javascript">JavaScript</language>
+		<language id="kotlin">Kotlin</language>
+		<language id="pascal">Pascal/Delphi</language>
+		<language id="perl">Perl</language>
+		<language id="php">PHP</language>
+		<language id="python">Python</language>
+		<language id="ruby">Ruby</language>
+		<language id="rust">Rust</language>
+		<language id="scala">Scala</language>
+		<language id="swift">Swift</language>
+	</languages>
+	<locales>
+		<locale id="cmn-Hans" href="index.xml" title="简体中文" localedoc="locale.cmn-Hans.xml"></locale>
+		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" localedoc="locale.cmn-Hant.xml"></locale>
+	</locales>
+</config>
 `),
 	},
 	{

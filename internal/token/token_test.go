@@ -9,8 +9,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-
-	"github.com/caixw/apidoc/v7/core"
 )
 
 type (
@@ -29,11 +27,6 @@ type (
 		BaseTag
 		Value    string   `apidoc:"-"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
-	}
-
-	errTag struct {
-		BaseTag
-		Value int `apidoc:"-"`
 	}
 
 	// NOTE: objectTag 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
@@ -59,14 +52,6 @@ type (
 	errAttr struct {
 		BaseAttribute
 		Value int `apidoc:"-"`
-	}
-
-	// NOTE: objectAttr 作为普通对象嵌套了 Decoder 等实例，本身不能实现这些接口。
-	objectAttr struct {
-		BaseAttribute
-		RootName struct{}  `apidoc:"apidoc,meta,usage-root"`
-		ID       intTag    `apidoc:"id,attr,usage"`
-		Name     stringTag `apidoc:"name,elem,usage"`
 	}
 )
 
@@ -162,26 +147,13 @@ func (i *stringAttr) EncodeXMLAttr() (string, error) {
 	return i.Value, nil
 }
 
-func (o *objectTag) Sanitize(p *Parser) error {
+func (o *objectTag) Sanitize(*Parser) error {
 	o.ID.Value++
 	return nil
 }
 
-func (o *objectAttr) Sanitize(p *Parser) error {
-	o.ID.Value++
-	return nil
-}
-
-func (t *errTag) DecodeXML(p *Parser, start *StartElement) (core.Position, error) {
-	return core.Position{}, errors.New("Decoder.DecodeXML")
-}
-
-func (t *errAttr) DecodeXMLAttr(p *Parser, attr *Attribute) error {
+func (t *errAttr) DecodeXMLAttr(*Parser, *Attribute) error {
 	return errors.New("AttrDecoder.DecodeXMLAttr")
-}
-
-func (t *errTag) EncodeXML() (string, error) {
-	return "", errors.New("Encoder.EncodeXML")
 }
 
 func (t *errAttr) EncodeXMLAttr() (string, error) {
