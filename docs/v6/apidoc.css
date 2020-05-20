@@ -172,6 +172,11 @@ header .menu ul li label {
     align-items: baseline;
     word-break: keep-all;
     white-space: nowrap;
+    cursor: pointer;
+}
+
+header .menu ul li:hover label {
+    opacity: .7;
 }
 
 header .menu ul li:last-of-type {
