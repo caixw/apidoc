@@ -28,7 +28,6 @@ archives:
   - builds:
     - apidoc
     replacements:
-      amd64: x86_64
       darwin: macOS
     format_overrides:
     - goos: windows
