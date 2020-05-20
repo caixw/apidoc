@@ -3,7 +3,6 @@
 package lsp
 
 import (
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -64,12 +63,19 @@ func (f *folder) openFile(uri core.URI) error {
 			break
 		}
 	}
-	if input == nil {
-		return fmt.Errorf("xxx")
+	if input == nil { // 无需解析
+		return nil
 	}
 
-	parseFile(f.doc, f.h, uri, input)
+	f.parseFile(uri, input)
 	return nil
+}
+
+// 分析 path 的内容，并将其中的文档解析至 doc
+func (f *folder) parseFile(uri core.URI, i *build.Input) {
+	f.doc.ParseBlocks(f.h, func(blocks chan core.Block) {
+		i.ParseFile(blocks, f.h, uri)
+	})
 }
 
 func (f *folder) closeFile(uri core.URI) error {
@@ -77,39 +83,37 @@ func (f *folder) closeFile(uri core.URI) error {
 	return nil
 }
 
-func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) {
-	for _, f := range folders {
-		h := core.NewMessageHandler(s.messageHandler)
-		cfg := build.LoadConfig(h, f.URI)
-		if cfg == nil {
-			cfg, err = build.DetectConfig(f.URI, true)
-			if err != nil {
-				return err
-			}
-		}
-
-		s.folders = append(s.folders, &folder{
-			WorkspaceFolder: f,
-			doc:             &ast.APIDoc{},
-			h:               h,
-			cfg:             cfg,
-		})
-	}
-
-	return nil
-}
-
-func (s *server) messageHandler(msg *core.Message) {
+func (f *folder) messageHandler(msg *core.Message) {
 	switch msg.Type {
 	case core.Erro:
 		// TODO
 	case core.Warn:
 		// TODO
-	case core.Succ: // 仅处理错误和警告
-	case core.Info: // 仅处理错误和警告
+	case core.Succ, core.Info: // 仅处理错误和警告
 	default:
 		panic("unreached")
 	}
+}
+
+func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) {
+	for _, f := range folders {
+		ff := &folder{
+			WorkspaceFolder: f,
+			doc:             &ast.APIDoc{},
+		}
+
+		ff.h = core.NewMessageHandler(ff.messageHandler)
+		ff.cfg = build.LoadConfig(ff.h, f.URI)
+		if ff.cfg == nil {
+			if ff.cfg, err = build.DetectConfig(f.URI, true); err != nil {
+				return err
+			}
+		}
+
+		s.folders = append(s.folders, ff)
+	}
+
+	return nil
 }
 
 func (s *server) getMatchFolder(uri core.URI) *folder {
