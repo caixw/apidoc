@@ -61,11 +61,11 @@ ul, ol {
 
 a {
     text-decoration: none;
-    color: var(--color);
+    color: var(--accent-color);
 }
 
 a:hover {
-    color: var(--accent-color);
+    opacity: .7
 }
 
 p {
@@ -77,6 +77,10 @@ pre {
     padding: var(--article-padding);
     border-radius: 5px;
     white-space: pre-wrap;
+}
+
+.type {
+    color: var(--color)
 }
 
 /*************************** header ***********************/
