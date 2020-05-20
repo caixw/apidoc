@@ -8,7 +8,7 @@ var data = []*FileInfo{{
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-20T03:18:34+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-20T22:28:21+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -197,6 +197,7 @@ var data = []*FileInfo{{
 			</request>
 		</callback>
 		<server>client</server>
+		<server>admin</server>
 	</api>
 	<header name="Authorization" type="string" summary="token 值"></header>
 	<header name="Accept" type="string" summary="能接受的字符集"></header>
@@ -402,11 +403,11 @@ ul, ol {
 
 a {
     text-decoration: none;
-    color: var(--color);
+    color: var(--accent-color);
 }
 
 a:hover {
-    color: var(--accent-color);
+    opacity: .7
 }
 
 p {
@@ -418,6 +419,10 @@ pre {
     padding: var(--article-padding);
     border-radius: 5px;
     white-space: pre-wrap;
+}
+
+.type {
+    color: var(--color)
 }
 
 /*************************** header ***********************/
@@ -909,7 +914,7 @@ function initGotoTop() {
                     <tr>
                         <th><xsl:value-of select="@name" /></th>
                         <td>
-                            <a href="#type_{@type}"><xsl:value-of select="@type" /></a>
+                            <a class="type" href="#type_{@type}"><xsl:value-of select="@type" /></a>
                             <xsl:if test="@array='true'"><xsl:value-of select="'[]'" /></xsl:if>
                         </td>
                         <td>
@@ -3519,7 +3524,7 @@ function prettyDescription() {
 
 <!-- api 界面元素 -->
 <xsl:template match="/apidoc/api">
-<xsl:variable name="id" select="concat(@method, translate(path/@path, $id-from, $id-to))" />
+<xsl:variable name="id" select="concat(server, @method, translate(path/@path, $id-from, $id-to))" />
 
 <details id="{$id}" class="api" data-method="{@method},">
 <xsl:attribute name="data-tag">

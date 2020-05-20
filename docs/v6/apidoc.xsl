@@ -148,7 +148,7 @@
 
 <!-- api 界面元素 -->
 <xsl:template match="/apidoc/api">
-<xsl:variable name="id" select="concat(@method, translate(path/@path, $id-from, $id-to))" />
+<xsl:variable name="id" select="concat(server, @method, translate(path/@path, $id-from, $id-to))" />
 
 <details id="{$id}" class="api" data-method="{@method},">
 <xsl:attribute name="data-tag">

@@ -2,6 +2,7 @@
 
 // <api method="GET" summary="获取用户日志">
 //     <server>client</server>
+//     <server>admin</server>
 //     <description type="html">
 // <![CDATA[
 // <p>这是关于接口的详细说明文档</p>
