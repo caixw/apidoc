@@ -89,6 +89,8 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 		Conn:       jsonrpcServer.NewConn(t, errlog),
 		state:      serverCreated,
 		cancelFunc: cancel,
+		info:       infolog,
+		erro:       errlog,
 	}
 
 	jsonrpcServer.Registers(map[string]interface{}{

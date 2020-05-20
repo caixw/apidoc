@@ -3,6 +3,8 @@
 package lsp
 
 import (
+	"golang.org/x/text/language"
+
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
@@ -31,6 +33,14 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 
 	if in.Capabilities.TextDocument.Hover.ContentFormat != nil {
 		out.Capabilities.HoverProvider = true
+	}
+
+	if in.InitializationOptions != nil && in.InitializationOptions.Locale != "" {
+		tag, err := language.Parse(in.InitializationOptions.Locale)
+		if err != nil {
+			s.erro.Println(err) // 输出错误信息，但是不中断执行
+		}
+		locale.SetTag(tag)
 	}
 
 	return s.appendFolders(in.Folders()...)
