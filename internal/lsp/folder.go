@@ -3,6 +3,7 @@
 package lsp
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -18,6 +19,10 @@ type folder struct {
 	doc *ast.APIDoc
 	h   *core.MessageHandler
 	cfg *build.Config
+	srv *server
+
+	// 保存着错误和警告的信息
+	errors, warns []*core.SyntaxError
 }
 
 func (f *folder) close() error {
@@ -86,9 +91,17 @@ func (f *folder) closeFile(uri core.URI) error {
 func (f *folder) messageHandler(msg *core.Message) {
 	switch msg.Type {
 	case core.Erro:
-		// TODO
+		err, ok := msg.Message.(*core.SyntaxError)
+		if !ok {
+			f.srv.erro.Println(fmt.Sprintf("获得了非 core.SyntaxError 错误 %#v", msg.Message))
+		}
+		f.errors = append(f.errors, err)
 	case core.Warn:
-		// TODO
+		err, ok := msg.Message.(*core.SyntaxError)
+		if !ok {
+			f.srv.erro.Println(fmt.Sprintf("获得了非 core.SyntaxError 错误 %#v", msg.Message))
+		}
+		f.warns = append(f.warns, err)
 	case core.Succ, core.Info: // 仅处理错误和警告
 	default:
 		panic("unreached")
@@ -100,6 +113,7 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) 
 		ff := &folder{
 			WorkspaceFolder: f,
 			doc:             &ast.APIDoc{},
+			srv:             s,
 		}
 
 		ff.h = core.NewMessageHandler(ff.messageHandler)
