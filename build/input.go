@@ -167,13 +167,13 @@ func parseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) 
 func (o *Input) ParseFile(blocks chan core.Block, h *core.MessageHandler, uri core.URI) {
 	data, err := uri.ReadAll(o.encoding)
 	if err != nil {
-		h.Error(core.Erro, core.NewSyntaxErrorWithError(core.Location{URI: uri}, "", err))
+		h.Error(core.NewSyntaxErrorWithError(core.Location{URI: uri}, "", err))
 		return
 	}
 
 	l, err := lang.NewLexer(data, o.blocks)
 	if err != nil {
-		h.Error(core.Erro, core.NewSyntaxErrorWithError(core.Location{URI: uri}, "", err))
+		h.Error(core.NewSyntaxErrorWithError(core.Location{URI: uri}, "", err))
 		return
 	}
 

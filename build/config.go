@@ -58,12 +58,12 @@ func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
 
 		exists, err := path.Exists()
 		if err != nil {
-			h.Error(core.Erro, err)
+			h.Error(err)
 			continue
 		} else if exists {
 			cfg, err := loadFile(wd, path)
 			if err != nil {
-				h.Error(core.Erro, err)
+				h.Error(err)
 				return nil
 			}
 			cfg.h = h
@@ -72,7 +72,7 @@ func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
 	}
 
 	msg := core.NewSyntaxError(core.Location{}, wd.Append(allowConfigFilenames[0]).String(), locale.ErrRequired)
-	h.Error(core.Erro, msg)
+	h.Error(msg)
 	return nil
 }
 
@@ -149,7 +149,7 @@ func (cfg *Config) Save(wd core.URI) error {
 // 具体信息可参考 Build 函数的相关文档。
 func (cfg *Config) Build(start time.Time) {
 	if err := Build(cfg.h, cfg.Output, cfg.Inputs...); err != nil {
-		cfg.h.Error(core.Erro, err)
+		cfg.h.Error(err)
 		return
 	}
 
@@ -162,7 +162,7 @@ func (cfg *Config) Build(start time.Time) {
 func (cfg *Config) Buffer() *bytes.Buffer {
 	buf, err := Buffer(cfg.h, cfg.Output, cfg.Inputs...)
 	if err != nil {
-		cfg.h.Error(core.Erro, err)
+		cfg.h.Error(err)
 		return nil
 	}
 
