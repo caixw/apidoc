@@ -64,9 +64,9 @@ options 可以是以下参数
 	FlagStaticStylesheetUsage:  "指定 static 是否只启用样式文件内容",
 	FlagStaticContentTypeUsage: "指定 static 的 content-type 值，不指定，则根据扩展名自动获取",
 	FlagStaticURLUsage:         "指定 static 服务中文档的输出地址",
-	FlagLSPPortUsage:           "指定 language server protocol 服务的端口号",
-	FlagLSPModeUsage:           "指定 language server protocol 的运行方式，可以是 websocket、tcp 和 udp",
-	FlagLSPHeaderUsage:         "指定 language server protocol 传递内容是否带报头信息",
+	FlagLSPPortUsage:           "指定 LSP 服务的端口号",
+	FlagLSPModeUsage:           "指定 LSP 的运行方式，可以是 websocket、tcp 和 udp",
+	FlagLSPHeaderUsage:         "指定 LSP 传递内容是否带报头信息",
 
 	VersionInCompatible: "当前程序与配置文件中指定的版本号不兼容",
 	Complete:            "完成！文档保存在：%s，总用时：%v",
@@ -86,10 +86,10 @@ options 可以是以下参数
 	// 文档树中各个字段的介绍
 	UsageAPIDoc:            "用于描述整个文档的相关内容，只能出现一次。",
 	UsageAPIDocAPIDoc:      "文档的版本要号",
-	UsageAPIDocLang:        "文档内容的本地化 ID，比如 <samp>zh-Hans</samp>、<samp>en-US</samp> 等。",
+	UsageAPIDocLang:        "文档内容的本地化 ID，比如 <var>zh-Hans</var>、<var>en-US</var> 等。",
 	UsageAPIDocLogo:        "文档的图标，仅可使用 SVG 格式图标。",
 	UsageAPIDocCreated:     "文档的创建时间",
-	UsageAPIDocVersion:     "文档的版本号，需要遵守 semver 的约定。",
+	UsageAPIDocVersion:     "文档的版本号",
 	UsageAPIDocTitle:       "文档的标题",
 	UsageAPIDocDescription: "文档的整体描述内容",
 	UsageAPIDocContact:     "文档作者的联系方式",
@@ -116,7 +116,7 @@ options 可以是以下参数
 	UsageAPITags:        "关联的标签",
 	UsageAPIServers:     "关联的服务",
 
-	UsageLink:     "用于描述链接信息，一般转换为 HTML 的 a 标签。",
+	UsageLink:     "用于描述链接信息，一般转换为 HTML 的 <code>a</code> 标签。",
 	UsageLinkText: "链接的字面文字",
 	UsageLinkURL:  "链接指向的文本",
 
@@ -151,7 +151,7 @@ options 可以是以下参数
 	UsageParamXMLExtract:  "将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。",
 	UsageParamXMLNS:       "XML 标签的命名空间",
 	UsageParamXMLNSPrefix: "XML 标签的命名空间名称前缀",
-	UsageParamXMLWrapped:  "如果当前元素的 @array 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。",
+	UsageParamXMLWrapped:  "如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。",
 	UsageParamName:        "值的名称",
 	UsageParamType:        "值的类型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var>",
 	UsageParamDeprecated:  "表示在大于等于该版本号时不再启作用",
@@ -184,7 +184,7 @@ options 可以是以下参数
 	UsageRequestHeaders:     "传递的报头内容",
 
 	UsageRichtext:     "富文本内容",
-	UsageRichtextType: "指定内容的格式",
+	UsageRichtextType: "指定富文本内容的格式，目前支持 <var>html</var> 和 <var>markdown</var>。",
 	UsageRichtextText: "富文本的实际内容",
 
 	UsageTag:           "用于对各个 API 进行分类",
@@ -211,7 +211,7 @@ options 可以是以下参数
 	UsageNumber:  "普通的数值类型",
 	UsageBool:    "布尔值类型，取值为 <var>true</var> 或是 <var>false</var>",
 	UsageVersion: `版本号，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 规则`,
-	UsageDate:    `采用 <a href="https://semver.org/lang/zh-CN/">RFC3339</a> 格式表示的时间，比如：<samp>2019-12-16T00:35:48+08:00</samp>`,
+	UsageDate:    `采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的时间，比如：<samp>2019-12-16T00:35:48+08:00</samp>`,
 
 	// 以下是有关 build.Config 的字段说明
 	UsageConfigVersion:         "产生此配置文件的 apidoc 版本",
@@ -220,7 +220,7 @@ options 可以是以下参数
 	UsageConfigInputsDir:       "需要解析的源文件所在目录",
 	UsageConfigInputsExts:      "只从这些扩展名的文件中查找文档",
 	UsageConfigInputsRecursive: "是否解析子目录下的源文件",
-	UsageConfigInputsEncoding:  `编码，默认为 utf-8，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的内容。`,
+	UsageConfigInputsEncoding:  `编码，默认为 <var>utf-8</var>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的内容。`,
 	UsageConfigOutput:          "控制输出行为",
 	UsageConfigOutputType:      "输出的类型，目前可以 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>。",
 	UsageConfigOutputPath:      "指定输出的文件名，包含路径信息。",

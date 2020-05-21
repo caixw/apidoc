@@ -55,7 +55,6 @@
  *     </response>
  * </api>
  */]]></code></pre>
-        <p>多行注释中，每一行中以<code>空白字符+symbol+空白字符</code>开头的，这些字符将会被过滤，symbol 表示该注释块的起始字符中的任意字符。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
     </doc>
 
     <doc id="usage" title="使用" />
@@ -75,10 +74,10 @@
     <doc id="install" title="安装" parent="usage">
         <p>可以直接从 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找你需要的版本下载，放入 <code>PATH</code> 中即可使用。如果没有你需要的平台文件，则需要从源代码编译：</p>
         <ul>
-            <li>下载 Go 编译工具</li>
-            <li>下载源代码</li>
-            <li>执行代码中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 进行编译</li>
-            <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 PATH 目录</li>
+            <li>下载 Go 编译工具；</li>
+            <li>下载源代码；</li>
+            <li>执行代码中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 进行编译；</li>
+            <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 PATH 目录；</li>
         </ul>
     </doc>
 
@@ -87,7 +86,7 @@
     </doc>
 
     <doc id="cli" title="命令行" parent="usage">
-        <p>可以通过 <samp>apidoc help</samp> 查看命令行支持的子命令。主要包含了以下几个：</p>
+        <p>可以通过 <samp>apidoc help</samp> 查看命令行支持的子命令。包含了以下几个：</p>
     </doc>
 
     <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">
