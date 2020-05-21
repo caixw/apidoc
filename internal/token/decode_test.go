@@ -9,6 +9,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
@@ -17,13 +18,17 @@ func decodeObject(a *assert.Assertion, xml string, v interface{}, hasErr bool) {
 	a.NotError(err).
 		NotNil(p)
 
+	rslt := messagetest.NewMessageHandler()
+	Decode(rslt.Handler, p, v)
+	rslt.Handler.Stop()
+
 	if hasErr {
-		err = Decode(p, v)
-		a.Error(err)
-		a.ErrorType(err, &core.SyntaxError{})
+		a.NotEmpty(rslt.Errors)
+		a.ErrorType(rslt.Errors[0], &core.SyntaxError{})
 		return
 	}
-	a.NotError(Decode(p, v))
+	Decode(rslt.Handler, p, v)
+	a.Empty(rslt.Errors)
 }
 
 func TestDecode(t *testing.T) {

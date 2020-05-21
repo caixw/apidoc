@@ -30,7 +30,10 @@ func TestValid(t *testing.T) {
 
 	data, err := asttest.URI(a).ReadAll(nil)
 	a.NotError(err).NotNil(data)
-	a.NotError(Valid(core.Block{Data: data}))
+	rslt := messagetest.NewMessageHandler()
+	Valid(rslt.Handler, core.Block{Data: data})
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 }
 
 func TestStatic(t *testing.T) {

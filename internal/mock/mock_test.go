@@ -461,10 +461,13 @@ const testAPIDoc = `<apidoc version="1.0.1">
 
 func TestNew(t *testing.T) {
 	a := assert.New(t)
-	d := &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}}
-	a.NotError(d.Parse(core.Block{Data: []byte(testAPIDoc)}))
-
 	rslt := messagetest.NewMessageHandler()
+	d := &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}}
+	d.Parse(rslt.Handler, core.Block{Data: []byte(testAPIDoc)})
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
+
+	rslt = messagetest.NewMessageHandler()
 	mock, err := New(rslt.Handler, d, map[string]string{"test": "/test"})
 	a.NotError(err).NotNil(mock)
 	srv := rest.NewServer(t, mock, nil)

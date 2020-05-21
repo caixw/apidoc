@@ -52,30 +52,34 @@ var (
 // Decode 将 p 中的 XML 内容解码至 v 对象中
 //
 // Decode 中所有返回的错误对象，都可以转换成 *core.SyntaxError
-func Decode(p *Parser, v interface{}) error {
+func Decode(h *core.MessageHandler, p *Parser, v interface{}) {
 	var hasRoot bool
 	for {
 		t, r, err := p.Token()
 		if err == io.EOF {
-			return nil
+			return
 		} else if err != nil {
-			return err
+			h.Error(err)
+			return
 		}
 
 		switch elem := t.(type) {
 		case *StartElement:
 			if hasRoot { // 多个根元素
-				return p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML)
+				h.Error(p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML))
+				return
 			}
 			hasRoot = true
 
 			vv := node.ParseValue(reflect.ValueOf(v))
 			if err := decodeElement(p, elem, vv); err != nil {
-				return err
+				h.Error(err)
+				return
 			}
 		case *Comment, *String: // 忽略注释和普通的文本内容
 		default:
-			return p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
+			h.Error(p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
+			return
 		}
 	}
 }

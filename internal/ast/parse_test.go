@@ -3,6 +3,7 @@
 package ast
 
 import (
+	"io"
 	"net/http"
 	"testing"
 
@@ -41,24 +42,33 @@ func TestAPIDoc_ParseBlocks(t *testing.T) {
 func TestAPIDoc_Parse(t *testing.T) {
 	a := assert.New(t)
 
+	rslt := messagetest.NewMessageHandler()
 	d := &APIDoc{}
-	err := d.Parse(core.Block{Data: []byte("<api>")})
-	a.Equal(err, ErrNoDocFormat)
+	d.Parse(rslt.Handler, core.Block{Data: []byte("<api>")})
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	// 直接结束标签
-	err = d.Parse(core.Block{Data: []byte("</api>")})
-	a.Equal(err, ErrNoDocFormat)
+	rslt = messagetest.NewMessageHandler()
+	d.Parse(rslt.Handler, core.Block{Data: []byte("</api>")})
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors)
 
 	// 多个 apidoc 标签
+	rslt = messagetest.NewMessageHandler()
 	d.Title = &Element{Content: Content{Value: "title"}}
-	err = d.Parse(core.Block{Data: []byte("<apidoc />")})
-	a.Error(err)
+	d.Parse(rslt.Handler, core.Block{Data: []byte("<apidoc />")})
+	rslt.Handler.Stop()
+	a.Error(rslt.Errors[0])
 
 	// 未知标签
-	err = d.Parse(core.Block{Data: []byte("<tag />")})
-	a.Equal(err, ErrNoDocFormat)
+	rslt = messagetest.NewMessageHandler()
+	d.Parse(rslt.Handler, core.Block{Data: []byte("<tag />")})
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	// 先解析 api，再解析 apidoc，不会覆盖 apidoc.APIs
+	rslt = messagetest.NewMessageHandler()
 	d = &APIDoc{
 		Apis: []*API{
 			{
@@ -66,9 +76,10 @@ func TestAPIDoc_Parse(t *testing.T) {
 			},
 		},
 	}
-	err = d.Parse(core.Block{Data: []byte(`<apidoc><title>title</title><mimetype>application/json</mimetype></apidoc>`)})
-	a.NotError(err)
-	a.Equal(1, len(d.Apis))
+	d.Parse(rslt.Handler, core.Block{Data: []byte(`<apidoc><title>title</title><mimetype>application/json</mimetype></apidoc>`)})
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).
+		Equal(1, len(d.Apis))
 }
 
 func TestGetTagName(t *testing.T) {
@@ -99,11 +110,11 @@ func TestGetTagName(t *testing.T) {
 	p, err = token.NewParser(core.Block{Data: []byte("</root>")})
 	a.NotError(err).NotNil(p)
 	root, err = getTagName(p)
-	a.Equal(err, ErrNoDocFormat).Equal(root, "")
+	a.Error(err).Equal(root, "")
 
 	// io.EOF
 	p, err = token.NewParser(core.Block{Data: []byte("<!-- xx -->")})
 	a.NotError(err).NotNil(p)
 	root, err = getTagName(p)
-	a.Equal(err, ErrNoDocFormat).Equal(root, "")
+	a.Equal(err, io.EOF).Equal(root, "")
 }

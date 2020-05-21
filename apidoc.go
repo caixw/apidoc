@@ -168,8 +168,8 @@ func ViewFile(status int, url string, path core.URI, contentType string, dir cor
 }
 
 // Valid 验证文档内容的正确性
-func Valid(b core.Block) error {
-	return (&ast.APIDoc{}).Parse(b)
+func Valid(h *core.MessageHandler, b core.Block) {
+	(&ast.APIDoc{}).Parse(h, b)
 }
 
 // Mock 生成 Mock 中间件
@@ -178,10 +178,7 @@ func Valid(b core.Block) error {
 // servers 为文档中所有 server 以及对应的路由前缀。
 func Mock(h *core.MessageHandler, data []byte, servers map[string]string) (http.Handler, error) {
 	d := &ast.APIDoc{}
-	if err := d.Parse(core.Block{Data: data}); err != nil {
-		return nil, err
-	}
-
+	d.Parse(h, core.Block{Data: data})
 	return mock.New(h, d, servers)
 }
 
