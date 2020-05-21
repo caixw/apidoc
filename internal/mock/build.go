@@ -121,7 +121,7 @@ func (m *Mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 
 	w.WriteHeader(resp.Status.V())
 	if _, err := w.Write(data); err != nil {
-		m.h.Error(core.Erro, err) // 此时状态码已经输出
+		m.h.Error(err) // 此时状态码已经输出
 	}
 }
 
@@ -202,7 +202,7 @@ func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 		err = core.NewSyntaxErrorWithError(core.Location{URI: file}, field, err)
 	}
 
-	m.h.Error(core.Erro, err)
+	m.h.Error(err)
 	w.WriteHeader(http.StatusBadRequest)
 }
 

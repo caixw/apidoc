@@ -23,7 +23,7 @@ func (doc *APIDoc) ParseBlocks(h *core.MessageHandler, g func(chan core.Block)) 
 			if err == ErrNoDocFormat {
 				continue
 			} else if err != nil {
-				h.Error(core.Erro, err)
+				h.Error(err)
 			}
 		}
 		done <- struct{}{}
