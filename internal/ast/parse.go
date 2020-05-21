@@ -19,12 +19,7 @@ func (doc *APIDoc) ParseBlocks(h *core.MessageHandler, g func(chan core.Block)) 
 
 	go func() {
 		for block := range blocks {
-			err := doc.Parse(block)
-			if err == ErrNoDocFormat {
-				continue
-			} else if err != nil {
-				h.Error(core.Erro, err)
-			}
+			doc.Parse(h, block)
 		}
 		done <- struct{}{}
 	}()
@@ -36,23 +31,26 @@ func (doc *APIDoc) ParseBlocks(h *core.MessageHandler, g func(chan core.Block)) 
 
 // Parse 将注释块的内容添加到当前文档
 //
-// 分析注释块内容，如果正确，则添加到当前文档中，
-// 或是在出错时，返回错误信息。
+// 分析注释块内容，如果正确，则添加到当前文档中。
 //
-// 如果内容不是文档内容，刚将返回 ErrNoDocFormat
-func (doc *APIDoc) Parse(b core.Block) error {
+// 如果内容不是文档内容，刚将返回 false
+func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 	if len(b.Data) < minSize {
-		return ErrNoDocFormat
+		return
 	}
 
 	p, err := token.NewParser(b)
 	if err != nil {
-		return err
+		h.Error(err)
+		return
 	}
 
 	name, err := getTagName(p)
-	if err != nil {
-		return err
+	if err == io.EOF {
+		return
+	} else if err != nil {
+		h.Error(err)
+		return
 	}
 	switch name {
 	case "api":
@@ -61,34 +59,27 @@ func (doc *APIDoc) Parse(b core.Block) error {
 		}
 
 		api := &API{doc: doc}
-		if err = token.Decode(p, api); err != nil {
-			return err
-		}
-		// 只有解析成功的才添加至 doc.Apis
+		token.Decode(h, p, api)
 		doc.Apis = append(doc.Apis, api)
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
-			return p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue)
+			h.Error(p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue))
+			return
 		}
-		if err = token.Decode(p, doc); err != nil {
-			return err
-		}
+		token.Decode(h, p, doc)
 	default:
-		return ErrNoDocFormat
+		return
 	}
 
 	doc.sortAPIs()
-	return nil
 }
 
 // 获取根标签的名称
 func getTagName(p *token.Parser) (string, error) {
 	start := p.Position()
 	for {
-		t, _, err := p.Token()
-		if err == io.EOF {
-			return "", ErrNoDocFormat
-		} else if err != nil {
+		t, r, err := p.Token()
+		if err != nil {
 			return "", err
 		}
 
@@ -97,7 +88,7 @@ func getTagName(p *token.Parser) (string, error) {
 			p.Move(start)
 			return elem.Name.Value, nil
 		case *token.EndElement, *token.CData:
-			return "", ErrNoDocFormat
+			return "", p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
 		default: // 其它标签忽略
 		}
 	}

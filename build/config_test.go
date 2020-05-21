@@ -25,20 +25,20 @@ func TestAllowConfigFilenames(t *testing.T) {
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, docs.Dir().Append("example"))
-	h.Stop()
+	rslt := messagetest.NewMessageHandler()
+	cfg := LoadConfig(rslt.Handler, docs.Dir().Append("example"))
+	rslt.Handler.Stop()
 	a.NotNil(cfg).
-		Empty(erro.String()).
-		Empty(succ.String())
+		Empty(rslt.Errors).
+		Empty(rslt.Successes)
 
-	erro, succ, h = messagetest.MessageHandler()
-	cfg = LoadConfig(h, docs.Dir()) // 不存在 apidoc 的配置文件
+	rslt = messagetest.NewMessageHandler()
+	cfg = LoadConfig(rslt.Handler, docs.Dir()) // 不存在 apidoc 的配置文件
 
-	h.Stop()
+	rslt.Handler.Stop()
 	a.Nil(cfg).
-		NotEmpty(erro.String()).
-		Empty(succ.String())
+		NotEmpty(rslt.Errors).
+		Empty(rslt.Successes)
 }
 
 func TestLoadFile(t *testing.T) {
@@ -100,39 +100,39 @@ func TestConfig_Save(t *testing.T) {
 func TestConfig_Test(t *testing.T) {
 	a := assert.New(t)
 
-	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, docs.Dir().Append("example"))
+	rslt := messagetest.NewMessageHandler()
+	cfg := LoadConfig(rslt.Handler, docs.Dir().Append("example"))
 	a.NotNil(cfg)
 	cfg.Test()
 
-	h.Stop()
-	a.Empty(erro.String()).
-		NotEmpty(succ.String()) // 有成功提示
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).
+		NotEmpty(rslt.Successes) // 有成功提示
 }
 
 func TestConfig_Build(t *testing.T) {
 	a := assert.New(t)
 
-	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, docs.Dir().Append("example"))
+	rslt := messagetest.NewMessageHandler()
+	cfg := LoadConfig(rslt.Handler, docs.Dir().Append("example"))
 	a.NotNil(cfg)
 	cfg.Build(time.Now())
 
-	h.Stop()
-	a.NotEmpty(succ.String()). // 有成功提示
-					Empty(erro.String())
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Successes). // 有成功提示
+					Empty(rslt.Errors)
 }
 
 func TestConfig_Buffer(t *testing.T) {
 	a := assert.New(t)
 
-	erro, succ, h := messagetest.MessageHandler()
-	cfg := LoadConfig(h, docs.Dir().Append("example"))
+	rslt := messagetest.NewMessageHandler()
+	cfg := LoadConfig(rslt.Handler, docs.Dir().Append("example"))
 	a.NotNil(cfg)
 
 	buf := cfg.Buffer()
-	h.Stop()
-	a.Empty(erro.String()).
-		Empty(succ.String()).
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).
+		Empty(rslt.Successes).
 		True(buf.Len() > 0)
 }

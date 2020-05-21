@@ -4,14 +4,8 @@ package ast
 
 import (
 	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/token"
 )
-
-// ErrNoDocFormat 表示内容并不是一个文档格式
-//
-// 比如普通的注释内容等。
-var ErrNoDocFormat = locale.NewError(locale.ErrIsNotAPIDoc)
 
 // 表示支持的各种数据类型
 const (

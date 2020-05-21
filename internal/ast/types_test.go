@@ -9,6 +9,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
 	"github.com/caixw/apidoc/v7/internal/token"
 )
 
@@ -19,13 +20,16 @@ func loadAPIDoc(a *assert.Assertion) *APIDoc {
 	doc := &APIDoc{}
 	a.NotNil(doc)
 
-	a.NotError(doc.Parse(core.Block{
+	rslt := messagetest.NewMessageHandler()
+	doc.Parse(rslt.Handler, core.Block{
 		Location: core.Location{
 			URI:   "doc.xml",
 			Range: core.Range{},
 		},
 		Data: data,
-	}))
+	})
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	return doc
 }
@@ -201,8 +205,11 @@ func TestAPIDoc_all(t *testing.T) {
 
 	data, err := ioutil.ReadFile("./testdata/all.xml")
 	a.NotError(err).NotNil(data)
+	rslt := messagetest.NewMessageHandler()
 	doc := &APIDoc{}
-	a.NotError(doc.Parse(core.Block{Data: data}))
+	doc.Parse(rslt.Handler, core.Block{Data: data})
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	a.Equal(doc.Version.V(), "1.1.1").False(doc.Version.AttributeName.IsEmpty())
 
@@ -239,7 +246,10 @@ func loadAPI(a *assert.Assertion) *API {
 	data, err := ioutil.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
-	a.NotError(doc.Parse(core.Block{Data: data}))
+	rslt := messagetest.NewMessageHandler()
+	doc.Parse(rslt.Handler, core.Block{Data: data})
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 	return doc.Apis[0]
 }
 

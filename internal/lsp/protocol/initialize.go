@@ -8,6 +8,16 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 )
 
+// InitializationOptions 用户需要提交的自定义初始化参数
+type InitializationOptions struct {
+	// 客户端的本地化 ID
+	//
+	// 服务端会根据此值决定提示内容如何翻译。
+	// 如果提交的 Locale 无法识别或是服务端不支持，
+	// 则会采用服务端的默认值，即 locale.DefaultLocaleID。
+	Locale string `json:"locale"`
+}
+
 // InitializeParams 初始化请求的参数
 type InitializeParams struct {
 	WorkDoneProgressParams
@@ -27,7 +37,7 @@ type InitializeParams struct {
 	RootURI core.URI `json:"rootUri,omitempty"`
 
 	// User provided initialization options.
-	InitializationOptions interface{} `json:"initializationOptions,omitempty"`
+	InitializationOptions *InitializationOptions `json:"initializationOptions,omitempty"`
 
 	// The capabilities provided by the client (editor or tool)
 	Capabilities ClientCapabilities `json:"capabilities"`
@@ -97,6 +107,7 @@ type InitializeResult struct {
 // InitializedParams initialized 服务传递的参数
 type InitializedParams struct{}
 
+// ClientCapabilities 客户端的兼容列表
 type ClientCapabilities struct {
 	// Workspace specific client capabilities.
 	Workspace struct {

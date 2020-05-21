@@ -2,6 +2,7 @@
 
 package protocol
 
+// ServerCapabilities 服务端的兼容列表
 type ServerCapabilities struct {
 	// Defines how text documents are synced. Is either a detailed structure defining each notification or
 	// for backwards compatibility the TextDocumentSyncKind number.
@@ -253,7 +254,7 @@ type ColorProviderOptions struct{}
 // Folding range provider options.
 type FoldingRangeProviderOptions struct{}
 
-// Static registration options to be returned in the initialize request.
+// StaticRegistrationOptions static registration options to be returned in the initialize request.
 type StaticRegistrationOptions struct {
 	// The id used to register the request. The id can be used to deregister
 	// the request again. See also Registration#id.

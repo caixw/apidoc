@@ -92,7 +92,22 @@ func (h *MessageHandler) Locale(t MessageType, key message.Reference, val ...int
 	h.Message(t, locale.New(key, val...))
 }
 
-// Error 将一条错误信息作为消息发送出去
-func (h *MessageHandler) Error(t MessageType, err error) {
-	h.Message(t, err)
+// Error 发送错误类型的值
+func (h *MessageHandler) Error(err interface{}) {
+	h.Message(Erro, err)
+}
+
+// Warning 发送错误类型的值
+func (h *MessageHandler) Warning(err interface{}) {
+	h.Message(Warn, err)
+}
+
+// Success 发送错误类型的值
+func (h *MessageHandler) Success(err interface{}) {
+	h.Message(Succ, err)
+}
+
+// Info 发送错误类型的值
+func (h *MessageHandler) Info(err interface{}) {
+	h.Message(Info, err)
 }

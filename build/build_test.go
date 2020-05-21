@@ -28,11 +28,11 @@ func TestParse(t *testing.T) {
 	}
 	a.NotError(c.Sanitize())
 
-	erro, _, h := messagetest.MessageHandler()
-	doc, err := parse(h, php, c)
+	rslt := messagetest.NewMessageHandler()
+	doc, err := parse(rslt.Handler, php, c)
 	a.NotError(err).NotNil(doc)
-	h.Stop()
-	a.Empty(erro.String())
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	a.Equal(2, len(doc.Apis)).
 		Equal(doc.Version.V(), "1.1.1")

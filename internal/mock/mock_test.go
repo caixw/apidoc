@@ -461,11 +461,14 @@ const testAPIDoc = `<apidoc version="1.0.1">
 
 func TestNew(t *testing.T) {
 	a := assert.New(t)
+	rslt := messagetest.NewMessageHandler()
 	d := &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}}
-	a.NotError(d.Parse(core.Block{Data: []byte(testAPIDoc)}))
+	d.Parse(rslt.Handler, core.Block{Data: []byte(testAPIDoc)})
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
-	erro, _, h := messagetest.MessageHandler()
-	mock, err := New(h, d, map[string]string{"test": "/test"})
+	rslt = messagetest.NewMessageHandler()
+	mock, err := New(rslt.Handler, d, map[string]string{"test": "/test"})
 	a.NotError(err).NotNil(mock)
 	srv := rest.NewServer(t, mock, nil)
 
@@ -477,12 +480,12 @@ func TestNew(t *testing.T) {
 	srv.Post("/test/users", nil).Do().Status(http.StatusBadRequest)
 	srv.Get("/test/users").Do().Status(http.StatusMethodNotAllowed)
 
-	h.Stop()
-	a.NotEmpty(erro.String())
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors)
 	srv.Close()
 
-	erro, _, h = messagetest.MessageHandler()
-	mock, err = New(h, d, map[string]string{"test": "/test"})
+	rslt = messagetest.NewMessageHandler()
+	mock, err = New(rslt.Handler, d, map[string]string{"test": "/test"})
 	a.NotError(err).NotNil(mock)
 	srv = rest.NewServer(t, mock, nil)
 
@@ -501,27 +504,27 @@ func TestNew(t *testing.T) {
 		Header("content-type", "application/json").
 		BodyEmpty()
 
-	h.Stop()
-	a.Empty(erro.String())
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	// 版本号兼容性
-	_, _, h = messagetest.MessageHandler()
-	mock, err = New(h, &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: "1.0.1"}}}, nil)
+	rslt = messagetest.NewMessageHandler()
+	mock, err = New(rslt.Handler, &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: "1.0.1"}}}, nil)
 	a.Error(err).Nil(mock)
-	h.Stop()
+	rslt.Handler.Stop()
 }
 
 func TestLoad(t *testing.T) {
 	a := assert.New(t)
-	_, _, h := messagetest.MessageHandler()
-	mock, err := Load(h, "./not-exists", nil)
-	h.Stop()
+	rslt := messagetest.NewMessageHandler()
+	mock, err := Load(rslt.Handler, "./not-exists", nil)
+	rslt.Handler.Stop()
 	a.Error(err).Nil(mock)
 
 	// LoadFromPath
-	_, _, h = messagetest.MessageHandler()
-	mock, err = Load(h, asttest.URI(a), map[string]string{"admin": "/admin"})
-	h.Stop()
+	rslt = messagetest.NewMessageHandler()
+	mock, err = Load(rslt.Handler, asttest.URI(a), map[string]string{"admin": "/admin"})
+	rslt.Handler.Stop()
 	a.NotError(err).NotNil(mock)
 
 	// loadFromURL
@@ -529,8 +532,8 @@ func TestLoad(t *testing.T) {
 	srv := httptest.NewServer(static)
 	defer srv.Close()
 
-	_, _, h = messagetest.MessageHandler()
-	mock, err = Load(h, core.URI(srv.URL+"/index.xml"), map[string]string{"admin": "/admin"})
-	h.Stop()
+	rslt = messagetest.NewMessageHandler()
+	mock, err = Load(rslt.Handler, core.URI(srv.URL+"/index.xml"), map[string]string{"admin": "/admin"})
+	rslt.Handler.Stop()
 	a.NotError(err).NotNil(mock)
 }

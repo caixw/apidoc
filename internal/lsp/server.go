@@ -4,6 +4,7 @@ package lsp
 
 import (
 	"context"
+	"log"
 	"sync"
 
 	"github.com/issue9/jsonrpc"
@@ -33,6 +34,8 @@ type server struct {
 
 	clientInfo         *protocol.ServerInfo
 	clientCapabilities *protocol.ClientCapabilities
+
+	info, erro *log.Logger
 }
 
 func (s *server) setState(state serverState) {

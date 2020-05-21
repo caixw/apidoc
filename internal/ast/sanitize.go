@@ -307,10 +307,30 @@ func (doc *APIDoc) sortAPIs() {
 		ii := doc.Apis[i]
 		jj := doc.Apis[j]
 
-		if ii.Path.Path.V() == jj.Path.Path.V() {
-			return ii.Method.V() < jj.Method.V()
+		var iip string
+		if ii.Path != nil && ii.Path.Path != nil {
+			iip = ii.Path.Path.V()
 		}
-		return ii.Path.Path.V() < jj.Path.Path.V()
+
+		var jjp string
+		if jj.Path != nil && jj.Path.Path != nil {
+			jjp = jj.Path.Path.V()
+		}
+
+		var iim string
+		if ii.Method != nil {
+			iim = ii.Method.V()
+		}
+
+		var jjm string
+		if jj.Method != nil {
+			jjm = jj.Method.V()
+		}
+
+		if iip == jjp {
+			return iim < jjm
+		}
+		return iip < jjp
 	})
 }
 
