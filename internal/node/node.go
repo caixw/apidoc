@@ -103,7 +103,7 @@ func ParseValue(v reflect.Value) *Value {
 	return nil
 }
 
-// IsPrimitive 是否为 go 的原始类型
+// IsPrimitive 是否为有交的 Go 原始类型
 func IsPrimitive(v reflect.Value) bool {
 	return v.IsValid() &&
 		(v.Kind() == reflect.String || (v.Kind() >= reflect.Bool && v.Kind() <= reflect.Complex128))
@@ -112,7 +112,7 @@ func IsPrimitive(v reflect.Value) bool {
 // New 声明 Node 实例
 func New(name string, rv reflect.Value) *Node {
 	rv = GetRealValue(rv)
-	rt := GetRealType(rv.Type())
+	rt := rv.Type()
 
 	num := rt.NumField()
 	if num == 0 {
