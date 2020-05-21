@@ -107,11 +107,11 @@ func TestLexer_Parse(t *testing.T) {
 `
 
 	blocks := make(chan core.Block, 100)
-	erro, _, h := messagetest.MessageHandler()
+	rslt := messagetest.NewMessageHandler()
 	l, err := NewLexer([]byte(raw), cStyle)
 	a.NotError(err).NotNil(l)
-	l.Parse(blocks, h, core.URI("./testdata/gbk.php"))
-	h.Stop()
+	l.Parse(blocks, rslt.Handler, core.URI("./testdata/gbk.php"))
+	rslt.Handler.Stop()
 	close(blocks)
 	a.Equal(1, len(blocks))
 	blk := <-blocks
@@ -125,7 +125,7 @@ func TestLexer_Parse(t *testing.T) {
 			Start: core.Position{Line: 0, Character: 0},
 			End:   core.Position{Line: 5, Character: 0},
 		})
-	a.Empty(erro.String())
+	a.Empty(rslt.Errors)
 
 	// 没有正确的结束符号
 	raw = `/* <api method="GET">
@@ -135,11 +135,11 @@ func TestLexer_Parse(t *testing.T) {
 // </api>
 `
 	blocks = make(chan core.Block, 100)
-	erro, _, h = messagetest.MessageHandler()
+	rslt = messagetest.NewMessageHandler()
 	l, err = NewLexer([]byte(raw), cStyle)
 	a.NotError(err).NotNil(l)
-	l.Parse(blocks, h, core.URI("./testdata/gbk.php"))
-	h.Stop()
+	l.Parse(blocks, rslt.Handler, core.URI("./testdata/gbk.php"))
+	rslt.Handler.Stop()
 	close(blocks)
-	a.NotEmpty(erro.String())
+	a.NotEmpty(rslt.Errors)
 }

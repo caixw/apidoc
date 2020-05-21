@@ -16,26 +16,26 @@ import (
 func TestAPIDoc_ParseBlocks(t *testing.T) {
 	a := assert.New(t)
 
-	erro, _, h := messagetest.MessageHandler()
+	rslt := messagetest.NewMessageHandler()
 	doc := &APIDoc{}
-	doc.ParseBlocks(h, func(blocks chan core.Block) {
+	doc.ParseBlocks(rslt.Handler, func(blocks chan core.Block) {
 		blocks <- core.Block{Data: []byte(`<api method="GET"><path path="/p1" /></api>`)}
 		blocks <- core.Block{Data: []byte(`<api method="POST"><path path="/p1" /></api>`)}
 		blocks <- core.Block{Data: []byte(`ErrNoDocFormat`)}
 	})
-	h.Stop()
-	a.Empty(erro.String())
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	// 带错误返回
-	erro, _, h = messagetest.MessageHandler()
+	rslt = messagetest.NewMessageHandler()
 	doc = &APIDoc{}
-	doc.ParseBlocks(h, func(blocks chan core.Block) {
+	doc.ParseBlocks(rslt.Handler, func(blocks chan core.Block) {
 		blocks <- core.Block{Data: []byte(`<api method="GET"><path path="/p1" /></api>`)}
 		blocks <- core.Block{Data: []byte(`<api method="POST"><path path="/p1" /></api>`)}
 		blocks <- core.Block{Data: []byte(`<api method="GET" />`)} // 少 path
 	})
-	h.Stop()
-	a.NotEmpty(erro.String())
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors)
 }
 
 func TestAPIDoc_Parse(t *testing.T) {

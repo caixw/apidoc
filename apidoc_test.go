@@ -101,9 +101,9 @@ func TestViewFile(t *testing.T) {
 func TestMock(t *testing.T) {
 	a := assert.New(t)
 
-	_, _, h := messagetest.MessageHandler()
-	mock, err := Mock(h, asttest.XML(a), map[string]string{"admin": "/admin"})
-	a.NotError(err).NotNil(h)
+	rslt := messagetest.NewMessageHandler()
+	mock, err := Mock(rslt.Handler, asttest.XML(a), map[string]string{"admin": "/admin"})
+	a.NotError(err).NotNil(mock)
 	srv := rest.NewServer(t, mock, nil)
 
 	srv.Get("/admin/users").
@@ -118,16 +118,16 @@ func TestMock(t *testing.T) {
 	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
 	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
 
-	h.Stop()
+	rslt.Handler.Stop()
 	srv.Close()
 }
 
 func TestMockFile(t *testing.T) {
 	a := assert.New(t)
 
-	_, _, h := messagetest.MessageHandler()
-	mock, err := MockFile(h, asttest.URI(a), map[string]string{"admin": "/admin"})
-	a.NotError(err).NotNil(h)
+	rslt := messagetest.NewMessageHandler()
+	mock, err := MockFile(rslt.Handler, asttest.URI(a), map[string]string{"admin": "/admin"})
+	a.NotError(err).NotNil(mock)
 	srv := rest.NewServer(t, mock, nil)
 
 	srv.Get("/admin/users").
@@ -142,13 +142,13 @@ func TestMockFile(t *testing.T) {
 	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
 	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
 
-	h.Stop()
+	rslt.Handler.Stop()
 	srv.Close()
 
 	// 测试多个 servers 值
-	_, _, h = messagetest.MessageHandler()
-	mock, err = MockFile(h, asttest.URI(a), map[string]string{"admin": "/admin", "client": "/c"})
-	a.NotError(err).NotNil(h)
+	rslt = messagetest.NewMessageHandler()
+	mock, err = MockFile(rslt.Handler, asttest.URI(a), map[string]string{"admin": "/admin", "client": "/c"})
+	a.NotError(err).NotNil(mock)
 	srv = rest.NewServer(t, mock, nil)
 
 	srv.Get("/admin/users").
@@ -169,7 +169,7 @@ func TestMockFile(t *testing.T) {
 	srv.Post("/c/users", nil).Do().Status(http.StatusMethodNotAllowed) // POST /users 未指定 client
 	srv.Delete("/c/users").Do().Status(http.StatusMethodNotAllowed)    // 不存在
 
-	h.Stop()
+	rslt.Handler.Stop()
 	srv.Close()
 }
 

@@ -17,7 +17,7 @@ func TestParseInputs(t *testing.T) {
 	a := assert.New(t)
 
 	blocks := make(chan core.Block, 100)
-	erro, _, h := messagetest.MessageHandler()
+	rslt := messagetest.NewMessageHandler()
 	php := &Input{
 		Lang:      "php",
 		Dir:       "./testdata",
@@ -33,34 +33,34 @@ func TestParseInputs(t *testing.T) {
 	}
 	a.NotError(c.Sanitize())
 
-	parseInputs(blocks, h, php, c)
+	parseInputs(blocks, rslt.Handler, php, c)
 	close(blocks)
 
 	a.Equal(6, len(blocks))
-	a.Empty(erro.String())
+	a.Empty(rslt.Errors)
 }
 
 func TestInput_ParseFile(t *testing.T) {
 	a := assert.New(t)
 
 	blocks := make(chan core.Block, 100)
-	erro, _, h := messagetest.MessageHandler()
+	rslt := messagetest.NewMessageHandler()
 	o := &Input{
 		Lang:      "c++",
 		Dir:       "./testdata",
 		Recursive: true,
 	}
 	a.NotError(o.Sanitize())
-	o.ParseFile(blocks, h, "./testdata/testfile.c")
-	h.Stop()
+	o.ParseFile(blocks, rslt.Handler, "./testdata/testfile.c")
+	rslt.Handler.Stop()
 	close(blocks)
 
 	a.Equal(3, len(blocks))
-	a.Empty(erro.String())
+	a.Empty(rslt.Errors)
 
 	// 非 utf8 编码
 	blocks = make(chan core.Block, 100)
-	erro, _, h = messagetest.MessageHandler()
+	rslt = messagetest.NewMessageHandler()
 	o = &Input{
 		Lang:      "php",
 		Dir:       "./testdata",
@@ -68,8 +68,8 @@ func TestInput_ParseFile(t *testing.T) {
 		Encoding:  "gbk",
 	}
 	a.NotError(o.Sanitize())
-	o.ParseFile(blocks, h, "./testdata/gbk.php")
-	h.Stop()
+	o.ParseFile(blocks, rslt.Handler, "./testdata/gbk.php")
+	rslt.Handler.Stop()
 	close(blocks)
 	a.Equal(1, len(blocks))
 	blk := <-blocks
@@ -83,33 +83,33 @@ func TestInput_ParseFile(t *testing.T) {
 			Start: core.Position{Line: 5, Character: 0},
 			End:   core.Position{Line: 10, Character: 0},
 		})
-	a.Empty(erro.String())
+	a.Empty(rslt.Errors)
 
 	// 文件不存在
 	blocks = make(chan core.Block, 100)
-	erro, _, h = messagetest.MessageHandler()
+	rslt = messagetest.NewMessageHandler()
 	o = &Input{
 		Lang: "c++",
 		Dir:  "./testdata",
 	}
 	a.NotError(o.Sanitize())
-	o.ParseFile(blocks, h, "./testdata/not-exists.php")
+	o.ParseFile(blocks, rslt.Handler, "./testdata/not-exists.php")
 	close(blocks)
-	h.Stop()
-	a.NotEmpty(erro.String())
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors)
 
 	// 没有正确的结束符号
 	blocks = make(chan core.Block, 100)
-	erro, _, h = messagetest.MessageHandler()
+	rslt = messagetest.NewMessageHandler()
 	o = &Input{
 		Lang: "c++",
 		Dir:  "./testdata",
 	}
 	a.NotError(o.Sanitize())
-	o.ParseFile(blocks, h, "./testdata/testfile.1")
-	h.Stop()
+	o.ParseFile(blocks, rslt.Handler, "./testdata/testfile.1")
+	rslt.Handler.Stop()
 	close(blocks)
-	a.NotEmpty(erro.String())
+	a.NotEmpty(rslt.Errors)
 }
 
 func TestOptions_Sanitize(t *testing.T) {
