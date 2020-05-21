@@ -73,7 +73,7 @@ type (
 	// API 表示 <api> 顶层元素
 	API struct {
 		token.BaseTag
-		RootName struct{} `apidoc:"api,meta,usage-apidoc"`
+		RootName struct{} `apidoc:"api,meta,usage-api"`
 
 		Version     *VersionAttribute `apidoc:"version,attr,usage-api-version,omitempty"`
 		Method      *MethodAttribute  `apidoc:"method,attr,usage-api-method"`
