@@ -15,7 +15,7 @@ type InitializationOptions struct {
 	// 服务端会根据此值决定提示内容如何翻译。
 	// 如果提交的 Locale 无法识别或是服务端不支持，
 	// 则会采用服务端的默认值，即 locale.DefaultLocaleID。
-	Locale string `json:"locale"`
+	Locale string `json:"locale,omitempty"`
 }
 
 // InitializeParams 初始化请求的参数
