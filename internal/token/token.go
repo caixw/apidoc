@@ -7,11 +7,11 @@ import (
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // 这些常量对应 Base* 中相关字段的名称
 const (
+	baseName          = "Base"
 	rangeName         = "Range"
 	usageKeyName      = "UsageKey"
 	elementTagName    = "StartTag"
@@ -85,8 +85,3 @@ type (
 		EndTag   String `apidoc:"-"` // 表示标签的结束名称，如果是自闭合的标签，此值为空。
 	}
 )
-
-// Usage 返回该节点的说明内容
-func (b *Base) Usage() string {
-	return locale.Sprintf(b.UsageKey)
-}

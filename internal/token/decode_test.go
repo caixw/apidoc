@@ -499,7 +499,7 @@ func TestDecode(t *testing.T) {
 		},
 		ID: intAttr{Value: 12, BaseAttribute: BaseAttribute{ // objectTag.Sanitize
 			Base: Base{
-				UsageKey: "usage",
+				UsageKey: "usage-id",
 				Range: core.Range{
 					Start: core.Position{Character: 38},
 					End:   core.Position{Character: 45},
@@ -515,7 +515,7 @@ func TestDecode(t *testing.T) {
 		}},
 		Name: stringTag{Value: "n", BaseTag: BaseTag{
 			Base: Base{
-				UsageKey: "usage",
+				UsageKey: "usage-name",
 				Range: core.Range{
 					Start: core.Position{Character: 46},
 					End:   core.Position{Character: 60},
@@ -640,7 +640,7 @@ func TestDecode(t *testing.T) {
 		ID: intAttr{
 			BaseAttribute: BaseAttribute{
 				Base: Base{
-					UsageKey: "usage",
+					UsageKey: "usage-id",
 					Range: core.Range{
 						Start: core.Position{Character: 4, Line: 1},
 						End:   core.Position{Character: 10, Line: 1},
@@ -659,7 +659,7 @@ func TestDecode(t *testing.T) {
 		Name: stringTag{
 			BaseTag: BaseTag{
 				Base: Base{
-					UsageKey: "usage",
+					UsageKey: "usage-name",
 					Range: core.Range{
 						Start: core.Position{Character: 11, Line: 1},
 						End:   core.Position{Character: 25, Line: 1},
@@ -710,7 +710,7 @@ func TestDecode(t *testing.T) {
 		ID: intAttr{
 			BaseAttribute: BaseAttribute{
 				Base: Base{
-					UsageKey: "usage",
+					UsageKey: "usage-id",
 					Range: core.Range{
 						Start: core.Position{Character: 4, Line: 2},
 						End:   core.Position{Character: 10, Line: 2},
@@ -729,7 +729,7 @@ func TestDecode(t *testing.T) {
 		Name: stringTag{
 			BaseTag: BaseTag{
 				Base: Base{
-					UsageKey: "usage",
+					UsageKey: "usage-name",
 					Range: core.Range{
 						Start: core.Position{Character: 11, Line: 2},
 						End:   core.Position{Character: 25, Line: 2},
