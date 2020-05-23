@@ -52,7 +52,7 @@ type (
 		License     *Link             `apidoc:"license,elem,usage-apidoc-license,omitempty"` // 版本信息
 		Tags        []*Tag            `apidoc:"tag,elem,usage-apidoc-tags,omitempty"`        // 所有的标签
 		Servers     []*Server         `apidoc:"server,elem,usage-apidoc-servers,omitempty"`
-		Apis        []*API            `apidoc:"api,elem,usage-apidoc-apis,omitempty"`
+		APIs        []*API            `apidoc:"api,elem,usage-apidoc-apis,omitempty"`
 
 		// 公共的报头，所有 API 默认都采用此报头
 		Headers []*Param `apidoc:"header,elem,usage-apidoc-headers,omitempty"`
@@ -275,15 +275,15 @@ func (r *Request) Param() *Param {
 
 // DeleteURI 删除与 uri 相关的文档内容
 func (doc *APIDoc) DeleteURI(uri core.URI) {
-	for index, api := range doc.Apis {
+	for index, api := range doc.APIs {
 		if api.URI == uri {
-			doc.Apis = append(doc.Apis[:index], doc.Apis[index+1:]...)
+			doc.APIs = append(doc.APIs[:index], doc.APIs[index+1:]...)
 		}
 	}
 
 	if doc.URI == uri {
 		*doc = APIDoc{
-			Apis: doc.Apis,
+			APIs: doc.APIs,
 		}
 	}
 }

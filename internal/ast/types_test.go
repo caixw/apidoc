@@ -237,7 +237,7 @@ func TestAPIDoc_all(t *testing.T) {
 		Equal("application/xml", doc.Mimetypes[0].Content.Value)
 
 	// api
-	a.Equal(1, len(doc.Apis))
+	a.Equal(1, len(doc.APIs))
 }
 
 func loadAPI(a *assert.Assertion) *API {
@@ -250,7 +250,7 @@ func loadAPI(a *assert.Assertion) *API {
 	doc.Parse(rslt.Handler, core.Block{Data: data})
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
-	return doc.Apis[0]
+	return doc.APIs[0]
 }
 
 func TestAPI(t *testing.T) {
@@ -293,7 +293,7 @@ func TestAPIDoc_DeleteURI(t *testing.T) {
 	d := &APIDoc{}
 	d.APIDoc = &APIDocVersionAttribute{Value: token.String{Value: "1.0.0"}}
 	d.URI = core.URI("uri1")
-	d.Apis = []*API{
+	d.APIs = []*API{
 		{
 			URI: core.URI("uri1"),
 		},
@@ -306,13 +306,13 @@ func TestAPIDoc_DeleteURI(t *testing.T) {
 	}
 
 	d.DeleteURI(core.URI("uri3"))
-	a.Equal(2, len(d.Apis)).NotNil(d.APIDoc)
+	a.Equal(2, len(d.APIs)).NotNil(d.APIDoc)
 
 	d.DeleteURI(core.URI("uri1"))
-	a.Equal(1, len(d.Apis)).Nil(d.APIDoc)
+	a.Equal(1, len(d.APIs)).Nil(d.APIDoc)
 
 	d.DeleteURI(core.URI("uri2"))
-	a.Equal(0, len(d.Apis)).Nil(d.APIDoc)
+	a.Equal(0, len(d.APIs)).Nil(d.APIDoc)
 }
 
 func TestRequest_Param(t *testing.T) {

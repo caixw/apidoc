@@ -168,7 +168,7 @@ func TestAPIDoc_sortAPIs(t *testing.T) {
 	a := assert.New(t)
 
 	doc := &APIDoc{
-		Apis: []*API{
+		APIs: []*API{
 			{
 				Path:   &Path{Path: &Attribute{Value: token.String{Value: "/p1/p3"}}},
 				Method: &MethodAttribute{Value: token.String{Value: http.MethodPost}},
@@ -189,15 +189,15 @@ func TestAPIDoc_sortAPIs(t *testing.T) {
 	}
 	doc.sortAPIs()
 
-	api := doc.Apis[0]
+	api := doc.APIs[0]
 	a.Equal(api.Path.Path.V(), "/p1/p2")
 
-	api = doc.Apis[1]
+	api = doc.APIs[1]
 	a.Equal(api.Path.Path.V(), "/p1/p3").Equal(api.Method.V(), http.MethodGet)
 
-	api = doc.Apis[2]
+	api = doc.APIs[2]
 	a.Equal(api.Path.Path.V(), "/p1/p3").Equal(api.Method.V(), http.MethodPost)
 
-	api = doc.Apis[3]
+	api = doc.APIs[3]
 	a.Equal(api.Path.Path.V(), "/p1/p3").Equal(api.Method.V(), http.MethodPut)
 }

@@ -103,7 +103,7 @@ func Load(h *core.MessageHandler, path core.URI, servers map[string]string) (htt
 }
 
 func (m *Mock) parse() error {
-	for _, api := range m.doc.Apis {
+	for _, api := range m.doc.APIs {
 		handler := m.buildAPI(api)
 
 		if len(api.Servers) == 0 {

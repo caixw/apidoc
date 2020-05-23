@@ -172,9 +172,9 @@ func filterDoc(d *ast.APIDoc, o *Output) {
 	}
 	d.Tags = tags
 
-	apis := make([]*ast.API, 0, len(d.Apis))
+	apis := make([]*ast.API, 0, len(d.APIs))
 LOOP:
-	for _, api := range d.Apis {
+	for _, api := range d.APIs {
 		for _, tag := range api.Tags {
 			if o.contains(tag.V()) {
 				apis = append(apis, api)
@@ -182,5 +182,5 @@ LOOP:
 			}
 		}
 	}
-	d.Apis = apis
+	d.APIs = apis
 }

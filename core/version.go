@@ -25,6 +25,9 @@ func init() {
 }
 
 // FullVersion 完整的版本号
+//
+// 会包含版本号、构建日期和最后的提交 ID，大致格式如下：
+//  version+buildDate.commitHash
 func FullVersion() string {
 	return fullVersion
 }

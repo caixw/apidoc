@@ -86,7 +86,7 @@ func TestFilterDoc(t *testing.T) {
 	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(1, len(d.Tags)).
-		Equal(2, len(d.Apis))
+		Equal(2, len(d.APIs))
 
 	d = asttest.Get()
 	o = &Output{
@@ -95,7 +95,7 @@ func TestFilterDoc(t *testing.T) {
 	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(2, len(d.Tags)).
-		Equal(2, len(d.Apis))
+		Equal(2, len(d.APIs))
 
 	d = asttest.Get()
 	o = &Output{
@@ -104,7 +104,7 @@ func TestFilterDoc(t *testing.T) {
 	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(1, len(d.Tags)).
-		Equal(1, len(d.Apis))
+		Equal(1, len(d.APIs))
 
 	d = asttest.Get()
 	o = &Output{
@@ -113,5 +113,5 @@ func TestFilterDoc(t *testing.T) {
 	a.NotError(o.Sanitize())
 	filterDoc(d, o)
 	a.Equal(0, len(d.Tags)).
-		Equal(0, len(d.Apis))
+		Equal(0, len(d.APIs))
 }

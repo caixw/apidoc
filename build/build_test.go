@@ -34,8 +34,8 @@ func TestParse(t *testing.T) {
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
-	a.Equal(2, len(doc.Apis)).
+	a.Equal(2, len(doc.APIs)).
 		Equal(doc.Version.V(), "1.1.1")
-	api := doc.Apis[0]
+	api := doc.APIs[0]
 	a.Equal(api.Method.V(), "GET")
 }

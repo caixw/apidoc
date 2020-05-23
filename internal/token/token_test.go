@@ -33,8 +33,8 @@ type (
 	objectTag struct {
 		BaseTag
 		RootName struct{}  `apidoc:"apidoc,meta,usage-root"`
-		ID       intAttr   `apidoc:"id,attr,usage"`
-		Name     stringTag `apidoc:"name,elem,usage"`
+		ID       intAttr   `apidoc:"id,attr,usage-id"`
+		Name     stringTag `apidoc:"name,elem,usage-name"`
 	}
 
 	intAttr struct {
