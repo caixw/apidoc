@@ -410,3 +410,25 @@ footer .wrap {
     margin: 0 auto;
     max-width: var(--max-width);
 }
+
+.goto-top {
+    border: solid var(--color);
+    border-width: 0 5px 5px 0;
+    display: block;
+    padding: 5px;
+    transform: rotate(-135deg);
+    position: fixed;
+    bottom: 3rem;
+    right: calc(((100% - var(--max-width)) / 2) - 3rem);
+}
+
+/*
+ * 用于计算 goto-top 按钮的位置始终保持在内容主体的右侧边上。
+ * 2048px 为 --max-width 的值，但是 CSS 并不支持直接在 @media
+ * 使用 var() 函数。
+ */
+@media (max-width: calc(2048px + 6rem)) {
+    .goto-top {
+        right: 3rem;
+    }
+}

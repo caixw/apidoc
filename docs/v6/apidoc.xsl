@@ -38,6 +38,7 @@
         <div class="wrap">
             <p><xsl:copy-of select="$locale-generator" /></p>
         </div>
+        <a href="#" class="goto-top" />
         </footer>
     </body>
 </html>
