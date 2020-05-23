@@ -214,9 +214,9 @@ options 可以是以下參數
 	UsageDate:    `采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp>`,
 
 	// 以下是有关 build.Config 的字段说明
-	UsageConfigVersion:         "產生此配置文件的 apidoc 版本",
+	UsageConfigVersion:         "此配置文件的所使用的文档版本",
 	UsageConfigInputs:          "指定輸入的數據，同壹項目只能解析壹種語言。",
-	UsageConfigInputsLang:      "源文件類型。具體支持的類型可通過 -l 參數進行查找",
+	UsageConfigInputsLang:      "源文件類型。具體支持的類型可通過 -l 參數進行查找。",
 	UsageConfigInputsDir:       "需要解析的源文件所在目錄",
 	UsageConfigInputsExts:      "只從這些擴展名的文件中查找文檔",
 	UsageConfigInputsRecursive: "是否解析子目錄下的源文件",
@@ -231,7 +231,7 @@ options 可以是以下參數
 	ErrInvalidUTF8Character:      "無效的 UTF8 字符",
 	ErrInvalidXML:                "无效的 XML 文檔",
 	ErrIsNotAPIDoc:               "並非有效的 apidoc 的文檔格式",
-	ErrInvalidContentTypeCharset: "報頭 ContentType 中指定的字符集無效 ",
+	ErrInvalidContentTypeCharset: "報頭 ContentType 中指定的字符集無效",
 	ErrInvalidContentLength:      "報頭 ContentLength 無效",
 	ErrBodyIsEmpty:               "請求的報文為空",
 	ErrInvalidHeaderFormat:       "無效的報頭格式",
