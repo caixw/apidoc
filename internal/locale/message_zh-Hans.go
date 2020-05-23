@@ -171,7 +171,7 @@ options 可以是以下参数
 
 	UsageRequest:            "定义了请求和返回的相关内容",
 	UsageRequestName:        "当 mimetype 为 <var>application/xml</var> 时，此值表示 XML 的顶层元素名称，否则无用。",
-	UsageRequestType:        "值的类型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不输出任何内容。",
+	UsageRequestType:        "值的类型，可以是 <var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不输出任何内容。",
 	UsageRequestDeprecated:  "表示在大于等于该版本号时不再启作用",
 	UsageRequestArray:       "是否为数组",
 	UsageRequestItems:       "子类型，比如对象的子元素。",
