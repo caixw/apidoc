@@ -70,7 +70,7 @@ func TestAPIDoc_Parse(t *testing.T) {
 	// 先解析 api，再解析 apidoc，不会覆盖 apidoc.APIs
 	rslt = messagetest.NewMessageHandler()
 	d = &APIDoc{
-		Apis: []*API{
+		APIs: []*API{
 			{
 				Method: &MethodAttribute{Value: token.String{Value: http.MethodGet}},
 			},
@@ -79,7 +79,7 @@ func TestAPIDoc_Parse(t *testing.T) {
 	d.Parse(rslt.Handler, core.Block{Data: []byte(`<apidoc><title>title</title><mimetype>application/json</mimetype></apidoc>`)})
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).
-		Equal(1, len(d.Apis))
+		Equal(1, len(d.APIs))
 }
 
 func TestGetTagName(t *testing.T) {

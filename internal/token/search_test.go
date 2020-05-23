@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
-var _ baser = &Base{}
+var _ tiper = &Base{}
 
 func TestSearchUsage(t *testing.T) {
 	a := assert.New(t)
@@ -38,74 +38,37 @@ func TestSearchUsage(t *testing.T) {
 		True(obj.End.Character > 0)
 	v := reflect.ValueOf(obj)
 
-	r := core.Range{
-		Start: core.Position{Line: 0, Character: 1},
-		End:   core.Position{Line: 0, Character: 2},
-	}
-	usage, found := SearchUsage(v, r)
-	a.True(found).Equal(usage, "usage-root")
+	pos := core.Position{Line: 0, Character: 1}
+	tip := SearchUsage(v, pos)
+	a.NotNil(tip).Equal(tip.Usage, "usage-root")
 
 	// id
-	r = core.Range{
-		Start: core.Position{Line: 0, Character: 8},
-		End:   core.Position{Line: 0, Character: 8},
-	}
-	usage, found = SearchUsage(v, r)
-	a.True(found).Equal(usage, "usage-id")
+	pos = core.Position{Line: 0, Character: 8}
+	tip = SearchUsage(v, pos)
+	a.NotNil(tip).Equal(tip.Usage, "usage-id")
 
 	// 55
-	r = core.Range{
-		Start: core.Position{Line: 0, Character: 11},
-		End:   core.Position{Line: 0, Character: 15},
-	}
-	usage, found = SearchUsage(v, r)
-	a.True(found).Equal(usage, "usage-id")
+	pos = core.Position{Line: 0, Character: 11}
+	tip = SearchUsage(v, pos)
+	a.NotNil(tip).Equal(tip.Usage, "usage-id")
 
 	// apidoc
-	r = core.Range{
-		Start: core.Position{Line: 1, Character: 0},
-		End:   core.Position{Line: 1, Character: 0},
-	}
-	usage, found = SearchUsage(v, r)
-	a.True(found).Equal(usage, "usage-root")
+	pos = core.Position{Line: 1, Character: 0}
+	tip = SearchUsage(v, pos)
+	a.NotNil(tip).Equal(tip.Usage, "usage-root")
 
 	// name[0]
-	r = core.Range{
-		Start: core.Position{Line: 1, Character: 1},
-		End:   core.Position{Line: 1, Character: 8},
-	}
-	usage, found = SearchUsage(v, r)
-	a.True(found).Equal(usage, "usage-name")
+	pos = core.Position{Line: 1, Character: 1}
+	tip = SearchUsage(v, pos)
+	a.NotNil(tip).Equal(tip.Usage, "usage-name")
 
 	// name[1]
-	r = core.Range{
-		Start: core.Position{Line: 2, Character: 2},
-		End:   core.Position{Line: 2, Character: 8},
-	}
-	usage, found = SearchUsage(v, r)
-	a.True(found).Equal(usage, "usage-name")
-
-	// name[0]-name[1]
-	r = core.Range{
-		Start: core.Position{Line: 1, Character: 2},
-		End:   core.Position{Line: 2, Character: 8},
-	}
-	usage, found = SearchUsage(v, r)
-	a.True(found).Equal(usage, "usage-root")
+	pos = core.Position{Line: 2, Character: 2}
+	tip = SearchUsage(v, pos)
+	a.NotNil(tip).Equal(tip.Usage, "usage-name")
 
 	// apidoc
-	r = core.Range{
-		Start: core.Position{Line: 3, Character: 1},
-		End:   core.Position{Line: 3, Character: 3},
-	}
-	usage, found = SearchUsage(v, r)
-	a.True(found).Equal(usage, "usage-root")
-
-	// apidoc 跨元素
-	r = core.Range{
-		Start: core.Position{Line: 0, Character: 9},
-		End:   core.Position{Line: 1, Character: 3},
-	}
-	usage, found = SearchUsage(v, r)
-	a.True(found).Equal(usage, "usage-root")
+	pos = core.Position{Line: 3, Character: 1}
+	tip = SearchUsage(v, pos)
+	a.NotNil(tip).Equal(tip.Usage, "usage-root")
 }

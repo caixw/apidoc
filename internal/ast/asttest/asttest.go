@@ -60,7 +60,7 @@ func Get() *ast.APIDoc {
 			{Content: ast.Content{Value: "application/json"}},
 			{Content: ast.Content{Value: "application/xml"}},
 		},
-		Apis: []*ast.API{
+		APIs: []*ast.API{
 			{
 				Method: &ast.MethodAttribute{Value: token.String{Value: http.MethodGet}},
 				Tags: []*ast.Element{

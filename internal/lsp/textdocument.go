@@ -46,6 +46,6 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover
 func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *protocol.Hover) error {
-	// TODO
+	*out = *(s.search(in))
 	return nil
 }

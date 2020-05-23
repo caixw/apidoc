@@ -10,25 +10,34 @@ import (
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
-var baseType = reflect.TypeOf((*baser)(nil)).Elem()
+var baseType = reflect.TypeOf((*tiper)(nil)).Elem()
 
-type baser interface {
-	contains(core.Range) bool
-	usage() string
+// Tip 定义了 LSP 查找功能返回的提示内容
+type Tip struct {
+	core.Range
+	Usage string
 }
 
-func (b *Base) contains(r core.Range) bool {
-	return b.Contains(r.Start) && b.Contains(r.End)
+type tiper interface {
+	contains(core.Position) bool
+	tip() *Tip
 }
 
-func (b *Base) usage() string {
-	return locale.Sprintf(b.UsageKey)
+func (b *Base) contains(pos core.Position) bool {
+	return b.Contains(pos)
+}
+
+func (b *Base) tip() *Tip {
+	return &Tip{
+		Range: b.Range,
+		Usage: locale.Sprintf(b.UsageKey),
+	}
 }
 
 // SearchUsage 根据 r 从 v 中查找相应的 usage 字段内容
-func SearchUsage(v reflect.Value, r core.Range, exclude ...string) (usage string, contains bool) {
+func SearchUsage(v reflect.Value, pos core.Position, exclude ...string) (tip *Tip) {
 	v = node.GetRealValue(v)
-	if usage, contains = getUsage(v, r); !contains {
+	if tip = getUsage(v, pos); tip == nil {
 		return
 	}
 
@@ -43,31 +52,35 @@ func SearchUsage(v reflect.Value, r core.Range, exclude ...string) (usage string
 		vf := node.GetRealValue(v.Field(i))
 		if vf.Kind() == reflect.Array || vf.Kind() == reflect.Slice {
 			for j := 0; j < vf.Len(); j++ {
-				if u, c := SearchUsage(vf.Index(j), r); c {
-					return u, c
+				if tip2 := SearchUsage(vf.Index(j), pos); tip2 != nil {
+					return tip2
 				}
 			}
 		} else {
-			if u, c := SearchUsage(vf, r); c {
-				return u, c
+			if tip2 := SearchUsage(vf, pos); tip2 != nil {
+				return tip2
 			}
 		}
 	}
 
-	return usage, true
+	return tip
 }
 
-func getUsage(v reflect.Value, r core.Range) (string, bool) {
+func getUsage(v reflect.Value, pos core.Position) *Tip {
 	if v.Type().Implements(baseType) && v.CanInterface() {
-		base := v.Interface().(baser)
-		return base.usage(), base.contains(r)
+		if tip := v.Interface().(tiper); tip.contains(pos) {
+			return tip.tip()
+		}
+		return nil
 	} else if v.CanAddr() {
 		if pv := v.Addr(); pv.Type().Implements(baseType) && pv.CanInterface() {
-			base := pv.Interface().(baser)
-			return base.usage(), base.contains(r)
+			if tip := pv.Interface().(tiper); tip.contains(pos) {
+				return tip.tip()
+			}
+			return nil
 		}
 	}
-	return "", false
+	return nil
 }
 
 func inStringSlice(slice []string, key string) bool {

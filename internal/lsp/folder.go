@@ -40,7 +40,7 @@ func (f *folder) matchPosition(uri core.URI, pos core.Position) (bool, error) {
 	if f.URI == uri {
 		r = f.doc.Range
 	} else {
-		for _, api := range f.doc.Apis {
+		for _, api := range f.doc.APIs {
 			if api.URI == uri {
 				r = api.Range
 				break

@@ -54,13 +54,13 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 	}
 	switch name {
 	case "api":
-		if doc.Apis == nil {
-			doc.Apis = make([]*API, 0, 100)
+		if doc.APIs == nil {
+			doc.APIs = make([]*API, 0, 100)
 		}
 
 		api := &API{doc: doc}
 		token.Decode(h, p, api)
-		doc.Apis = append(doc.Apis, api)
+		doc.APIs = append(doc.APIs, api)
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
 			h.Error(p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue))

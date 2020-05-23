@@ -509,9 +509,9 @@ type HoverParams struct {
 type Hover struct {
 	// The hover's content
 	// contents MarkedString | MarkedString[] | MarkupContent;
-	Contents MarkupContent `json:"contents"`
+	Contents interface{} `json:"contents"`
 
 	// An optional range is a range inside a text document
 	// that is used to visualize a hover, e.g. by changing the background color.
-	Range *core.Range `json:"range,omitempty"`
+	Range core.Range `json:"range,omitempty"`
 }

@@ -289,7 +289,7 @@ func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 
 // Sanitize 检测内容是否合法
 func (doc *APIDoc) Sanitize(p *token.Parser) error {
-	for _, api := range doc.Apis {
+	for _, api := range doc.APIs {
 		if api.doc == nil {
 			api.doc = doc // 保证单文件的文档能正常解析
 			api.URI = doc.URI
@@ -303,9 +303,9 @@ func (doc *APIDoc) Sanitize(p *token.Parser) error {
 }
 
 func (doc *APIDoc) sortAPIs() {
-	sort.SliceStable(doc.Apis, func(i, j int) bool {
-		ii := doc.Apis[i]
-		jj := doc.Apis[j]
+	sort.SliceStable(doc.APIs, func(i, j int) bool {
+		ii := doc.APIs[i]
+		jj := doc.APIs[j]
 
 		var iip string
 		if ii.Path != nil && ii.Path.Path != nil {

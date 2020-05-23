@@ -11,7 +11,6 @@ import (
 
 // 这些常量对应 Base* 中相关字段的名称
 const (
-	baseName          = "Base"
 	rangeName         = "Range"
 	usageKeyName      = "UsageKey"
 	elementTagName    = "StartTag"

@@ -32,7 +32,7 @@ func convert(doc *ast.APIDoc) (*OpenAPI, error) {
 		},
 		Servers: make([]*Server, 0, len(doc.Servers)),
 		Tags:    make([]*Tag, 0, len(doc.Tags)),
-		Paths:   make(map[string]*PathItem, len(doc.Apis)),
+		Paths:   make(map[string]*PathItem, len(doc.APIs)),
 		ExternalDocs: &ExternalDocumentation{
 			Description: locale.Translate(langID, locale.GeneratorBy, core.Name),
 			URL:         core.OfficialURL,
@@ -58,7 +58,7 @@ func convert(doc *ast.APIDoc) (*OpenAPI, error) {
 }
 
 func parsePaths(openapi *OpenAPI, d *ast.APIDoc) *core.SyntaxError {
-	for _, api := range d.Apis {
+	for _, api := range d.APIs {
 		p := openapi.Paths[api.Path.Path.V()]
 		if p == nil {
 			p = &PathItem{}
