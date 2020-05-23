@@ -21,7 +21,7 @@ const (
 )
 
 type site struct {
-	XMLName struct{} `xml:"config"`
+	XMLName struct{} `xml:"site"`
 
 	Name      string     `xml:"name"`
 	Version   string     `xml:"version"`

@@ -8,13 +8,13 @@
 </xsl:variable>
 
 <xsl:variable name="locale-file">
-    <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@doc" />
+    <xsl:value-of select="document('site.xml')/site/locales/locale[@id=$curr-lang]/@doc" />
 </xsl:variable>
 
 <!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
 <xsl:variable name="curr-lang-title">
     <xsl:variable name="title">
-        <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@title" />
+        <xsl:value-of select="document('site.xml')/site/locales/locale[@id=$curr-lang]/@title" />
     </xsl:variable>
 
     <xsl:choose>
@@ -24,7 +24,7 @@
 </xsl:variable>
 
 <xsl:variable name="keywords">
-    <xsl:for-each select="document('site.xml')/config/languages/language">
+    <xsl:for-each select="document('site.xml')/site/languages/language">
         <xsl:value-of select="." /><xsl:value-of select="','" />
     </xsl:for-each>
 </xsl:variable>
@@ -38,7 +38,7 @@
             <meta name="keywords" content="{$keywords}RESTful API,document,apidoc" />
             <link rel="icon" type="image/svg+xml" href="./icon.svg" />
             <link rel="mask-icon" type="image/svg+xml" href="./icon.svg" color="black" />
-            <link rel="canonical" href="{document('site.xml')/config/url}" />
+            <link rel="canonical" href="{document('site.xml')/site/url}" />
             <link rel="stylesheet" type="text/css" href="./index.css" />
             <link rel="license" href="{/docs/liense/@url}" />
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism-tomorrow.min.css" />
@@ -60,7 +60,7 @@
                 <div class="wrap">
                 <p>
                     <xsl:value-of select="docs/footer/license/p[1]" />
-                    <a href="{document('site.xml')/config/repo}">Github</a>
+                    <a href="{document('site.xml')/site/repo}">Github</a>
                     <xsl:value-of select="docs/footer/license/p[2]" />
                     <a href="{docs/license/@url}"><xsl:value-of select="docs/license" /></a>
                     <xsl:value-of select="docs/footer/license/p[3]" />
@@ -80,8 +80,8 @@
         <div class="wrap">
             <h1>
                 <img src="./icon.svg" />
-                <xsl:value-of select="document('site.xml')/config/name" />
-                <span class="version">&#160;(<xsl:value-of select="document('site.xml')/config/version" />)</span>
+                <xsl:value-of select="document('site.xml')/site/name" />
+                <span class="version">&#160;(<xsl:value-of select="document('site.xml')/site/version" />)</span>
             </h1>
 
             <div class="menus" role="navigation">
@@ -95,7 +95,7 @@
                         <span aria-hiddren="true">&#160;&#x25bc;</span>
                     </a>
                     <ul>
-                        <xsl:for-each select="document('site.xml')/config/locales/locale">
+                        <xsl:for-each select="document('site.xml')/site/locales/locale">
                             <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
                         </xsl:for-each>
                     </ul>

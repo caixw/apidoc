@@ -2,7 +2,7 @@
 
 <!-- 该文件由工具自动生成，请勿手动修改！ -->
 
-<config>
+<site>
 	<name>apidoc</name>
 	<version>6.1.0</version>
 	<repo>https://github.com/caixw/apidoc</repo>
@@ -30,4 +30,4 @@
 		<locale id="cmn-Hans" href="index.xml" title="简体中文" doc="locale.cmn-Hans.xml"></locale>
 		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" doc="locale.cmn-Hant.xml"></locale>
 	</locales>
-</config>
+</site>

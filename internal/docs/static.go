@@ -8,7 +8,7 @@ var data = []*FileInfo{{
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-22T00:38:21+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-23T21:39:05+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -290,7 +290,6 @@ var data = []*FileInfo{{
  *     </response>
  * </api>
  */]]></code></pre>
-        <p>多行註釋中，每壹行中以<code>空白字符+symbol+空白字符</code>開頭的，這些字符將會被過濾，symbol 表示該註釋塊的起始字符中的任意字符。比如以上代碼中，所有的 <var>*</var> 將被過濾。</p>
     </doc>
 
     <doc id="usage" title="使用" />
@@ -310,10 +309,10 @@ var data = []*FileInfo{{
     <doc id="install" title="安裝" parent="usage">
           <p>可以直接從 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找妳需要的版本下載，放入 <code>PATH</code> 中即可使用。如果沒有妳需要的平臺文件，則需要從源代碼編譯：</p>
         <ul>
-            <li>下載 Go 編譯工具</li>
-            <li>下載源代碼</li>
-            <li>執行代碼中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 進行編譯</li>
-            <li>編譯好的文件存放在 cmd/apidoc 下，可以將該文件放置在 PATH 目錄</li>
+            <li>下載 Go 編譯工具；</li>
+            <li>下載源代碼；</li>
+            <li>執行代碼中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 進行編譯；</li>
+            <li>編譯好的文件存放在 cmd/apidoc 下，可以將該文件放置在 PATH 目錄；</li>
         </ul>
     </doc>
 
@@ -322,7 +321,7 @@ var data = []*FileInfo{{
     </doc>
 
     <doc id="cli" title="命令行" parent="usage">
-        <p>可以通過 <samp>apidoc help</samp> 查看命令行支持的子命令。主要包含了以下幾個：</p>
+        <p>可以通過 <samp>apidoc help</samp> 查看命令行支持的子命令。包含了以下幾個：</p>
     </doc>
 
     <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">
@@ -538,7 +537,18 @@ footer .wrap {
     transform: rotate(-135deg);
     position: fixed;
     bottom: 3rem;
-    right: 3rem;
+    right: calc(((100% - var(--max-width)) / 2) - 3rem);
+}
+
+/*
+ * 用于计算 goto-top 按钮的位置始终保持在内容主体的右侧边上。
+ * 1024px 为 --max-width 的值，但是 CSS 并不支持直接在 @media
+ * 使用 var() 函数。
+ */
+@media (max-width: calc(1024px + 6rem)) {
+    .goto-top {
+        right: 3rem;
+    }
 }
 `),
 	},
@@ -626,7 +636,6 @@ function initGotoTop() {
  *     </response>
  * </api>
  */]]></code></pre>
-        <p>多行注释中，每一行中以<code>空白字符+symbol+空白字符</code>开头的，这些字符将会被过滤，symbol 表示该注释块的起始字符中的任意字符。比如以上代码中，所有的 <var>*</var> 将被过滤。</p>
     </doc>
 
     <doc id="usage" title="使用" />
@@ -646,10 +655,10 @@ function initGotoTop() {
     <doc id="install" title="安装" parent="usage">
         <p>可以直接从 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找你需要的版本下载，放入 <code>PATH</code> 中即可使用。如果没有你需要的平台文件，则需要从源代码编译：</p>
         <ul>
-            <li>下载 Go 编译工具</li>
-            <li>下载源代码</li>
-            <li>执行代码中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 进行编译</li>
-            <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 PATH 目录</li>
+            <li>下载 Go 编译工具；</li>
+            <li>下载源代码；</li>
+            <li>执行代码中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 进行编译；</li>
+            <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 PATH 目录；</li>
         </ul>
     </doc>
 
@@ -658,7 +667,7 @@ function initGotoTop() {
     </doc>
 
     <doc id="cli" title="命令行" parent="usage">
-        <p>可以通过 <samp>apidoc help</samp> 查看命令行支持的子命令。主要包含了以下几个：</p>
+        <p>可以通过 <samp>apidoc help</samp> 查看命令行支持的子命令。包含了以下几个：</p>
     </doc>
 
     <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">
@@ -958,10 +967,10 @@ function initGotoTop() {
 		<type name="apidoc">
 			<usage>用于描述整个文档的相关内容，只能出现一次。</usage>
 			<item name="@apidoc" type="string" array="false" required="false">文档的版本要号</item>
-			<item name="@lang" type="string" array="false" required="false">文档内容的本地化 ID，比如 <samp>zh-Hans</samp>、<samp>en-US</samp> 等。</item>
+			<item name="@lang" type="string" array="false" required="false">文档内容的本地化 ID，比如 <var>zh-Hans</var>、<var>en-US</var> 等。</item>
 			<item name="@logo" type="string" array="false" required="false">文档的图标，仅可使用 SVG 格式图标。</item>
 			<item name="@created" type="date" array="false" required="false">文档的创建时间</item>
-			<item name="@version" type="version" array="false" required="false">文档的版本号，需要遵守 semver 的约定。</item>
+			<item name="@version" type="version" array="false" required="false">文档的版本号</item>
 			<item name="title" type="string" array="false" required="true">文档的标题</item>
 			<item name="description" type="richtext" array="false" required="false">文档的整体描述内容</item>
 			<item name="contact" type="contact" array="false" required="false">文档作者的联系方式</item>
@@ -975,7 +984,7 @@ function initGotoTop() {
 		</type>
 		<type name="richtext">
 			<usage>富文本内容</usage>
-			<item name="@type" type="string" array="false" required="true">指定内容的格式</item>
+			<item name="@type" type="string" array="false" required="true">指定富文本内容的格式，目前支持 <var>html</var> 和 <var>markdown</var>。</item>
 			<item name="." type="string" array="false" required="true">富文本的实际内容</item>
 		</type>
 		<type name="contact">
@@ -985,7 +994,7 @@ function initGotoTop() {
 			<item name="email" type="string" array="false" required="false">联系人的电子邮件</item>
 		</type>
 		<type name="link">
-			<usage>用于描述链接信息，一般转换为 HTML 的 a 标签。</usage>
+			<usage>用于描述链接信息，一般转换为 HTML 的 <code>a</code> 标签。</usage>
 			<item name="@text" type="string" array="false" required="true">链接的字面文字</item>
 			<item name="@url" type="string" array="false" required="true">链接指向的文本</item>
 		</type>
@@ -1004,7 +1013,7 @@ function initGotoTop() {
 			<item name="description" type="richtext" array="false" required="false">服务的详细描述</item>
 		</type>
 		<type name="api">
-			<usage>用于描述整个文档的相关内容，只能出现一次。</usage>
+			<usage>用于定义单个 API 接口的具体内容</usage>
 			<item name="@version" type="version" array="false" required="false">表示此接口在该版本中添加</item>
 			<item name="@method" type="string" array="false" required="true">当前接口所支持的请求方法</item>
 			<item name="@id" type="string" array="false" required="false">接口的唯一 ID</item>
@@ -1059,7 +1068,7 @@ function initGotoTop() {
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 标签的命名空间名称前缀</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
 			<item name="@name" type="string" array="false" required="false">当 mimetype 为 <var>application/xml</var> 时，此值表示 XML 的顶层元素名称，否则无用。</item>
-			<item name="@type" type="string" array="false" required="false">值的类型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不输出任何内容。</item>
+			<item name="@type" type="string" array="false" required="false">值的类型，可以是 <var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不输出任何内容。</item>
 			<item name="@deprecated" type="version" array="false" required="false">表示在大于等于该版本号时不再启作用</item>
 			<item name="@array" type="bool" array="false" required="false">是否为数组</item>
 			<item name="@summary" type="string" array="false" required="false">简要介绍</item>
@@ -1092,7 +1101,7 @@ function initGotoTop() {
 			<usage>普通的字符串类型</usage>
 		</type>
 		<type name="date">
-			<usage>采用 <a href="https://semver.org/lang/zh-CN/">RFC3339</a> 格式表示的时间，比如：<samp>2019-12-16T00:35:48+08:00</samp></usage>
+			<usage>采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的时间，比如：<samp>2019-12-16T00:35:48+08:00</samp></usage>
 		</type>
 		<type name="version">
 			<usage>版本号，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 规则</usage>
@@ -1123,7 +1132,7 @@ function initGotoTop() {
 		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目录</item>
 		<item name="inputs.exts" type="string" array="true" required="false">只从这些扩展名的文件中查找文档</item>
 		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目录下的源文件</item>
-		<item name="inputs.encoding" type="string" array="false" required="false">编码，默认为 utf-8，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的内容。</item>
+		<item name="inputs.encoding" type="string" array="false" required="false">编码，默认为 <var>utf-8</var>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的内容。</item>
 		<item name="output" type="object" array="false" required="true">控制输出行为</item>
 		<item name="output.type" type="string" array="false" required="false">输出的类型，目前可以 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>。</item>
 		<item name="output.path" type="string" array="false" required="true">指定输出的文件名，包含路径信息。</item>
@@ -1145,10 +1154,10 @@ function initGotoTop() {
 		<type name="apidoc">
 			<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
 			<item name="@apidoc" type="string" array="false" required="false">文檔的版本要號</item>
-			<item name="@lang" type="string" array="false" required="false">文檔內容的本地化 ID，比如 <samp>zh-Hans</samp>、<samp>en-US</samp> 等。</item>
+			<item name="@lang" type="string" array="false" required="false">文檔內容的本地化 ID，比如 <var>zh-Hans</var>、<var>en-US</var> 等。</item>
 			<item name="@logo" type="string" array="false" required="false">文檔的圖標，僅可使用 SVG 格式圖標。</item>
 			<item name="@created" type="date" array="false" required="false">文檔的創建時間</item>
-			<item name="@version" type="version" array="false" required="false">文檔的版本號，需要遵守 semver 的約定。</item>
+			<item name="@version" type="version" array="false" required="false">文檔的版本號</item>
 			<item name="title" type="string" array="false" required="true">文檔的標題</item>
 			<item name="description" type="richtext" array="false" required="false">文檔的整體描述內容</item>
 			<item name="contact" type="contact" array="false" required="false">文檔作者的聯系方式</item>
@@ -1162,7 +1171,7 @@ function initGotoTop() {
 		</type>
 		<type name="richtext">
 			<usage>富文本內容</usage>
-			<item name="@type" type="string" array="false" required="true">指定內容的格式</item>
+			<item name="@type" type="string" array="false" required="true">指定富文本內容的格式，目前支持 <var>html</var> 和 <var>markdown</var>。</item>
 			<item name="." type="string" array="false" required="true">富文本的實際內容</item>
 		</type>
 		<type name="contact">
@@ -1172,7 +1181,7 @@ function initGotoTop() {
 			<item name="email" type="string" array="false" required="false">聯系人的電子郵件</item>
 		</type>
 		<type name="link">
-			<usage>用於描述鏈接信息，壹般轉換為 HTML 的 a 標簽。</usage>
+			<usage>用於描述鏈接信息，壹般轉換為 HTML 的 <code>a</code> 標簽。</usage>
 			<item name="@text" type="string" array="false" required="true">鏈接的字面文字</item>
 			<item name="@url" type="string" array="false" required="true">鏈接指向的文本</item>
 		</type>
@@ -1191,7 +1200,7 @@ function initGotoTop() {
 			<item name="description" type="richtext" array="false" required="false">服務的詳細描述</item>
 		</type>
 		<type name="api">
-			<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
+			<usage>用於定義單個 API 接口的具體內容</usage>
 			<item name="@version" type="version" array="false" required="false">表示此接口在該版本中添加</item>
 			<item name="@method" type="string" array="false" required="true">當前接口所支持的請求方法</item>
 			<item name="@id" type="string" array="false" required="false">接口的唯壹 ID</item>
@@ -1246,7 +1255,7 @@ function initGotoTop() {
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>
 			<item name="@name" type="string" array="false" required="false">當 mimetype 為 <var>application/xml</var> 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
-			<item name="@type" type="string" array="false" required="false">值的類型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不輸出任何內容。</item>
+			<item name="@type" type="string" array="false" required="false">值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不輸出任何內容。</item>
 			<item name="@deprecated" type="version" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
 			<item name="@array" type="bool" array="false" required="false">是否為數組</item>
 			<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
@@ -1279,10 +1288,10 @@ function initGotoTop() {
 			<usage>普通的字符串類型</usage>
 		</type>
 		<type name="date">
-			<usage>采用 <a href="https://semver.org/lang/zh-CN/">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp></usage>
+			<usage>采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp></usage>
 		</type>
 		<type name="version">
-			<usage>版本號，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 規則</usage>
+			<usage>版本號，格式遵守 <a href="https://semver.org/lang/zh-TW/">semver</a> 規則</usage>
 		</type>
 		<type name="bool">
 			<usage>布爾值類型，取值為 <var>true</var> 或是 <var>false</var></usage>
@@ -1310,7 +1319,7 @@ function initGotoTop() {
 		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目錄</item>
 		<item name="inputs.exts" type="string" array="true" required="false">只從這些擴展名的文件中查找文檔</item>
 		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目錄下的源文件</item>
-		<item name="inputs.encoding" type="string" array="false" required="false">編碼，默認為 utf-8，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</item>
+		<item name="inputs.encoding" type="string" array="false" required="false">編碼，默認為 <var>utf-8</var>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</item>
 		<item name="output" type="object" array="false" required="true">控制輸出行為</item>
 		<item name="output.type" type="string" array="false" required="false">輸出的類型，目前可以 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>。</item>
 		<item name="output.path" type="string" array="false" required="true">指定輸出的文件名，包含路徑信息。</item>
@@ -1327,7 +1336,7 @@ function initGotoTop() {
 
 <!-- 该文件由工具自动生成，请勿手动修改！ -->
 
-<config>
+<site>
 	<name>apidoc</name>
 	<version>6.1.0</version>
 	<repo>https://github.com/caixw/apidoc</repo>
@@ -1355,7 +1364,7 @@ function initGotoTop() {
 		<locale id="cmn-Hans" href="index.xml" title="简体中文" doc="locale.cmn-Hans.xml"></locale>
 		<locale id="cmn-Hant" href="index.cmn-Hant.xml" title="繁體中文" doc="locale.cmn-Hant.xml"></locale>
 	</locales>
-</config>
+</site>
 `),
 	},
 	{
@@ -3040,6 +3049,11 @@ header .menu ul li label {
     align-items: baseline;
     word-break: keep-all;
     white-space: nowrap;
+    cursor: pointer;
+}
+
+header .menu ul li:hover label {
+    opacity: .7;
 }
 
 header .menu ul li:last-of-type {
@@ -3273,6 +3287,28 @@ footer .wrap {
     margin: 0 auto;
     max-width: var(--max-width);
 }
+
+.goto-top {
+    border: solid var(--color);
+    border-width: 0 5px 5px 0;
+    display: block;
+    padding: 5px;
+    transform: rotate(-135deg);
+    position: fixed;
+    bottom: 3rem;
+    right: calc(((100% - var(--max-width)) / 2) - 3rem);
+}
+
+/*
+ * 用于计算 goto-top 按钮的位置始终保持在内容主体的右侧边上。
+ * 2048px 为 --max-width 的值，但是 CSS 并不支持直接在 @media
+ * 使用 var() 函数。
+ */
+@media (max-width: calc(2048px + 6rem)) {
+    .goto-top {
+        right: 3rem;
+    }
+}
 `),
 	},
 	{
@@ -3287,6 +3323,7 @@ window.onload = function () {
     registerExpand();
     registerLanguageFilter();
     prettyDescription();
+    initGotoTop();
 };
 
 function registerFilter(type) {
@@ -3369,6 +3406,20 @@ function prettyDescription() {
         elem.innerHTML = elem.getElementsByTagName('pre')[0].innerText;
     });
 }
+
+function initGotoTop() {
+    const top = document.querySelector('.goto-top');
+
+    // 在最顶部时，隐藏按钮
+    window.addEventListener('scroll', (e) => {
+        const body = document.querySelector('html');
+        if (body.scrollTop > 50) {
+            top.style.display = 'block';
+        } else {
+            top.style.display = 'none';
+        }
+    });
+}
 `),
 	},
 	{
@@ -3414,6 +3465,7 @@ function prettyDescription() {
         <div class="wrap">
             <p><xsl:copy-of select="$locale-generator" /></p>
         </div>
+        <a href="#" class="goto-top" />
         </footer>
     </body>
 </html>

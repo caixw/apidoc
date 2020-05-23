@@ -7,10 +7,10 @@
 		<type name="apidoc">
 			<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
 			<item name="@apidoc" type="string" array="false" required="false">文檔的版本要號</item>
-			<item name="@lang" type="string" array="false" required="false">文檔內容的本地化 ID，比如 <samp>zh-Hans</samp>、<samp>en-US</samp> 等。</item>
+			<item name="@lang" type="string" array="false" required="false">文檔內容的本地化 ID，比如 <var>zh-Hans</var>、<var>en-US</var> 等。</item>
 			<item name="@logo" type="string" array="false" required="false">文檔的圖標，僅可使用 SVG 格式圖標。</item>
 			<item name="@created" type="date" array="false" required="false">文檔的創建時間</item>
-			<item name="@version" type="version" array="false" required="false">文檔的版本號，需要遵守 semver 的約定。</item>
+			<item name="@version" type="version" array="false" required="false">文檔的版本號</item>
 			<item name="title" type="string" array="false" required="true">文檔的標題</item>
 			<item name="description" type="richtext" array="false" required="false">文檔的整體描述內容</item>
 			<item name="contact" type="contact" array="false" required="false">文檔作者的聯系方式</item>
@@ -24,7 +24,7 @@
 		</type>
 		<type name="richtext">
 			<usage>富文本內容</usage>
-			<item name="@type" type="string" array="false" required="true">指定內容的格式</item>
+			<item name="@type" type="string" array="false" required="true">指定富文本內容的格式，目前支持 <var>html</var> 和 <var>markdown</var>。</item>
 			<item name="." type="string" array="false" required="true">富文本的實際內容</item>
 		</type>
 		<type name="contact">
@@ -34,7 +34,7 @@
 			<item name="email" type="string" array="false" required="false">聯系人的電子郵件</item>
 		</type>
 		<type name="link">
-			<usage>用於描述鏈接信息，壹般轉換為 HTML 的 a 標簽。</usage>
+			<usage>用於描述鏈接信息，壹般轉換為 HTML 的 <code>a</code> 標簽。</usage>
 			<item name="@text" type="string" array="false" required="true">鏈接的字面文字</item>
 			<item name="@url" type="string" array="false" required="true">鏈接指向的文本</item>
 		</type>
@@ -53,7 +53,7 @@
 			<item name="description" type="richtext" array="false" required="false">服務的詳細描述</item>
 		</type>
 		<type name="api">
-			<usage>用於描述整個文檔的相關內容，只能出現壹次。</usage>
+			<usage>用於定義單個 API 接口的具體內容</usage>
 			<item name="@version" type="version" array="false" required="false">表示此接口在該版本中添加</item>
 			<item name="@method" type="string" array="false" required="true">當前接口所支持的請求方法</item>
 			<item name="@id" type="string" array="false" required="false">接口的唯壹 ID</item>
@@ -108,7 +108,7 @@
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>
 			<item name="@name" type="string" array="false" required="false">當 mimetype 為 <var>application/xml</var> 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
-			<item name="@type" type="string" array="false" required="false">值的類型，可以是 <var>none</var>、<var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不輸出任何內容。</item>
+			<item name="@type" type="string" array="false" required="false">值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不輸出任何內容。</item>
 			<item name="@deprecated" type="version" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
 			<item name="@array" type="bool" array="false" required="false">是否為數組</item>
 			<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
@@ -141,10 +141,10 @@
 			<usage>普通的字符串類型</usage>
 		</type>
 		<type name="date">
-			<usage>采用 <a href="https://semver.org/lang/zh-CN/">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp></usage>
+			<usage>采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp></usage>
 		</type>
 		<type name="version">
-			<usage>版本號，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 規則</usage>
+			<usage>版本號，格式遵守 <a href="https://semver.org/lang/zh-TW/">semver</a> 規則</usage>
 		</type>
 		<type name="bool">
 			<usage>布爾值類型，取值為 <var>true</var> 或是 <var>false</var></usage>
@@ -172,7 +172,7 @@
 		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目錄</item>
 		<item name="inputs.exts" type="string" array="true" required="false">只從這些擴展名的文件中查找文檔</item>
 		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目錄下的源文件</item>
-		<item name="inputs.encoding" type="string" array="false" required="false">編碼，默認為 utf-8，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</item>
+		<item name="inputs.encoding" type="string" array="false" required="false">編碼，默認為 <var>utf-8</var>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</item>
 		<item name="output" type="object" array="false" required="true">控制輸出行為</item>
 		<item name="output.type" type="string" array="false" required="false">輸出的類型，目前可以 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>。</item>
 		<item name="output.path" type="string" array="false" required="true">指定輸出的文件名，包含路徑信息。</item>
