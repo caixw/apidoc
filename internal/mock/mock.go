@@ -21,8 +21,7 @@ const (
 	disableOptions = false
 )
 
-// Mock 管理 mock 数据
-type Mock struct {
+type mock struct {
 	h       *core.MessageHandler
 	doc     *ast.APIDoc
 	mux     *mux.Mux
@@ -43,7 +42,7 @@ func New(h *core.MessageHandler, d *ast.APIDoc, servers map[string]string) (http
 		return nil, locale.NewError(locale.VersionInCompatible)
 	}
 
-	m := &Mock{
+	m := &mock{
 		h:       h,
 		doc:     d,
 		mux:     mux.New(disableOptions, disableHead, true, nil, nil),
@@ -102,7 +101,7 @@ func Load(h *core.MessageHandler, path core.URI, servers map[string]string) (htt
 	return New(h, d, servers)
 }
 
-func (m *Mock) parse() error {
+func (m *mock) parse() error {
 	for _, api := range m.doc.APIs {
 		handler := m.buildAPI(api)
 
@@ -135,7 +134,7 @@ func (m *Mock) parse() error {
 	return nil
 }
 
-func (m *Mock) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m *mock) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	m.mux.ServeHTTP(w, r)
 }
 

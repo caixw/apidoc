@@ -17,7 +17,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/token"
 )
 
-var _ http.Handler = &Mock{}
+var _ http.Handler = &mock{}
 
 type tester struct {
 	Title string

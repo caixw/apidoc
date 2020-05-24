@@ -16,7 +16,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-func (m *Mock) buildAPI(api *ast.API) http.Handler {
+func (m *mock) buildAPI(api *ast.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m.h.Locale(core.Succ, locale.RequestAPI, r.Method, r.URL.Path)
 		if api.Deprecated != nil {
@@ -80,7 +80,7 @@ func validRequest(requests []*ast.Request, r *http.Request) error {
 	}
 }
 
-func (m *Mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Request) {
+func (m *mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Request) {
 	accepts, err := qheader.Accept(r)
 	if err != nil {
 		m.handleError(w, r, "request.headers[Accept]", err)
@@ -186,7 +186,7 @@ func matchContentType(ct string, accepts []*qheader.Header) bool {
 }
 
 // 处理 serveHTTP 中的错误
-func (m *Mock) handleError(w http.ResponseWriter, r *http.Request, field string, err error) {
+func (m *mock) handleError(w http.ResponseWriter, r *http.Request, field string, err error) {
 	// 这并不是一个真实存在的 URI
 	file := core.URI(r.Method + ": " + r.URL.Path)
 
