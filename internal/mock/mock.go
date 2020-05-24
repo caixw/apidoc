@@ -16,11 +16,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-const (
-	disableHead    = false
-	disableOptions = false
-)
-
 type mock struct {
 	h       *core.MessageHandler
 	doc     *ast.APIDoc
@@ -45,7 +40,7 @@ func New(h *core.MessageHandler, d *ast.APIDoc, servers map[string]string) (http
 	m := &mock{
 		h:       h,
 		doc:     d,
-		mux:     mux.New(disableOptions, disableHead, true, nil, nil),
+		mux:     mux.New(false, false, true, nil, nil),
 		servers: servers,
 	}
 
@@ -127,7 +122,7 @@ func (m *mock) parse() error {
 		}
 	}
 
-	for path, methods := range m.mux.All(disableHead, disableOptions) {
+	for path, methods := range m.mux.All(true, true) {
 		m.h.Locale(core.Info, locale.LoadAPI, path, strings.Join(methods, ","))
 	}
 
