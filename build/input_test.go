@@ -24,14 +24,14 @@ func TestParseInputs(t *testing.T) {
 		Recursive: true,
 		Encoding:  "gbk",
 	}
-	a.NotError(php.Sanitize())
+	a.NotError(php.sanitize())
 
 	c := &Input{
 		Lang:      "c++",
 		Dir:       "./testdata",
 		Recursive: true,
 	}
-	a.NotError(c.Sanitize())
+	a.NotError(c.sanitize())
 
 	parseInputs(blocks, rslt.Handler, php, c)
 	close(blocks)
@@ -50,7 +50,7 @@ func TestInput_ParseFile(t *testing.T) {
 		Dir:       "./testdata",
 		Recursive: true,
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	o.ParseFile(blocks, rslt.Handler, "./testdata/testfile.c")
 	rslt.Handler.Stop()
 	close(blocks)
@@ -67,7 +67,7 @@ func TestInput_ParseFile(t *testing.T) {
 		Recursive: true,
 		Encoding:  "gbk",
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	o.ParseFile(blocks, rslt.Handler, "./testdata/gbk.php")
 	rslt.Handler.Stop()
 	close(blocks)
@@ -92,7 +92,7 @@ func TestInput_ParseFile(t *testing.T) {
 		Lang: "c++",
 		Dir:  "./testdata",
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	o.ParseFile(blocks, rslt.Handler, "./testdata/not-exists.php")
 	close(blocks)
 	rslt.Handler.Stop()
@@ -105,7 +105,7 @@ func TestInput_ParseFile(t *testing.T) {
 		Lang: "c++",
 		Dir:  "./testdata",
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	o.ParseFile(blocks, rslt.Handler, "./testdata/testfile.1")
 	rslt.Handler.Stop()
 	close(blocks)
@@ -116,40 +116,40 @@ func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	var o *Input
-	a.Error(o.Sanitize())
+	a.Error(o.sanitize())
 
 	o = &Input{}
-	a.Error(o.Sanitize())
+	a.Error(o.sanitize())
 
 	o.Dir = "not exists"
-	a.Error(o.Sanitize())
+	a.Error(o.sanitize())
 
 	o.Dir = "./"
-	a.Error(o.Sanitize())
+	a.Error(o.sanitize())
 
 	o.Lang = "not exists"
-	a.Error(o.Sanitize())
+	a.Error(o.sanitize())
 
 	// 未指定扩展名，则使用系统默认的
 	language := lang.Get("go")
 	o.Lang = "go"
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	a.Equal(o.Exts, language.Exts)
 
 	// 指定了 Exts，自动调整扩展名样式。
 	o.Lang = "go"
 	o.Exts = []string{"go", ".g2"}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	a.Equal(o.Exts, []string{".go", ".g2"})
 
 	// 特定的编码
 	o.Encoding = "GbK"
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	a.Equal(o.encoding, simplifiedchinese.GBK)
 
 	// 不存在的编码
 	o.Encoding = "not-exists---"
-	a.Error(o.Sanitize())
+	a.Error(o.sanitize())
 }
 
 func TestRecursivePath(t *testing.T) {

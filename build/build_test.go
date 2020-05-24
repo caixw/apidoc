@@ -19,14 +19,14 @@ func TestParse(t *testing.T) {
 		Recursive: true,
 		Encoding:  "gbk",
 	}
-	a.NotError(php.Sanitize())
+	a.NotError(php.sanitize())
 
 	c := &Input{
 		Lang:      "c++",
 		Dir:       "./testdata",
 		Recursive: true,
 	}
-	a.NotError(c.Sanitize())
+	a.NotError(c.sanitize())
 
 	rslt := messagetest.NewMessageHandler()
 	doc, err := parse(rslt.Handler, php, c)

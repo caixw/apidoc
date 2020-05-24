@@ -120,7 +120,7 @@ func (cfg *Config) sanitize(file core.URI) error {
 			return core.NewSyntaxErrorWithError(core.Location{URI: file}, field+".path", err)
 		}
 
-		if err := i.Sanitize(); err != nil {
+		if err := i.sanitize(); err != nil {
 			if serr, ok := err.(*core.SyntaxError); ok {
 				serr.Location.URI = file
 				serr.Field = field + serr.Field
@@ -132,7 +132,7 @@ func (cfg *Config) sanitize(file core.URI) error {
 	if cfg.Output.Path, err = abs(cfg.Output.Path, cfg.wd); err != nil {
 		return core.NewSyntaxErrorWithError(core.Location{URI: file}, "output.path", err)
 	}
-	return cfg.Output.Sanitize()
+	return cfg.Output.sanitize()
 }
 
 // Save 将内容保存至文件

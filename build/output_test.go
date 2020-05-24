@@ -29,27 +29,27 @@ func TestOutput_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	var o *Output
-	a.Error(o.Sanitize())
+	a.Error(o.sanitize())
 
 	// 默认的 Type
 	o = &Output{}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	a.Equal(o.marshal, marshaler(apidocMarshaler))
 
 	o = &Output{Type: "invalid-type"}
-	a.Error(o.Sanitize())
+	a.Error(o.sanitize())
 
 	o = &Output{Type: ApidocXML}
 	o.Path = "./testdir/apidoc.json"
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	a.Equal(o.Style, docs.StylesheetURL(core.OfficialURL)).
 		Equal(2, len(o.procInst)).
 		Contains(o.procInst[1], docs.StylesheetURL(core.OfficialURL))
 
 	o.Version = "1.0.0"
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	o.Version = "1"
-	a.Error(o.Sanitize())
+	a.Error(o.sanitize())
 }
 
 func TestOptions_buffer(t *testing.T) {
@@ -60,12 +60,12 @@ func TestOptions_buffer(t *testing.T) {
 		Type: OpenapiJSON,
 		Path: "./openapi.json",
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	a.NotError(o.buffer(doc))
 
 	doc = asttest.Get()
 	o = &Output{}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	buf, err := o.buffer(doc)
 	a.NotError(err).NotNil(buf)
 }
@@ -75,7 +75,7 @@ func TestFilterDoc(t *testing.T) {
 
 	d := asttest.Get()
 	o := &Output{}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	filterDoc(d, o)
 	a.Equal(3, len(d.Tags))
 
@@ -83,7 +83,7 @@ func TestFilterDoc(t *testing.T) {
 	o = &Output{
 		Tags: []string{"t1"},
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	filterDoc(d, o)
 	a.Equal(1, len(d.Tags)).
 		Equal(2, len(d.APIs))
@@ -92,7 +92,7 @@ func TestFilterDoc(t *testing.T) {
 	o = &Output{
 		Tags: []string{"t1", "t2"},
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	filterDoc(d, o)
 	a.Equal(2, len(d.Tags)).
 		Equal(2, len(d.APIs))
@@ -101,7 +101,7 @@ func TestFilterDoc(t *testing.T) {
 	o = &Output{
 		Tags: []string{"tag1"},
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	filterDoc(d, o)
 	a.Equal(1, len(d.Tags)).
 		Equal(1, len(d.APIs))
@@ -110,7 +110,7 @@ func TestFilterDoc(t *testing.T) {
 	o = &Output{
 		Tags: []string{"not-exists"},
 	}
-	a.NotError(o.Sanitize())
+	a.NotError(o.sanitize())
 	filterDoc(d, o)
 	a.Equal(0, len(d.Tags)).
 		Equal(0, len(d.APIs))

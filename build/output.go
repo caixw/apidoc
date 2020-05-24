@@ -72,8 +72,7 @@ func (o *Output) contains(tags ...string) bool {
 	return false
 }
 
-// Sanitize 验证 options 的数据是否都合规
-func (o *Output) Sanitize() error {
+func (o *Output) sanitize() error {
 	if o == nil {
 		return core.NewSyntaxError(core.Location{}, "", locale.ErrRequired)
 	}

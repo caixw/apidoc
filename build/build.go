@@ -22,7 +22,7 @@ func Build(h *core.MessageHandler, o *Output, i ...*Input) error {
 	if err != nil {
 		return err
 	}
-	if err = o.Sanitize(); err != nil {
+	if err = o.sanitize(); err != nil {
 		return err
 	}
 
@@ -40,7 +40,7 @@ func Buffer(h *core.MessageHandler, o *Output, i ...*Input) (*bytes.Buffer, erro
 	if err != nil {
 		return nil, err
 	}
-	if err = o.Sanitize(); err != nil {
+	if err = o.sanitize(); err != nil {
 		return nil, err
 	}
 
@@ -58,7 +58,7 @@ func Test(h *core.MessageHandler, i ...*Input) {
 
 func parse(h *core.MessageHandler, i ...*Input) (*ast.APIDoc, error) {
 	for _, item := range i {
-		if err := item.Sanitize(); err != nil {
+		if err := item.sanitize(); err != nil {
 			return nil, err
 		}
 	}

@@ -42,8 +42,7 @@ type Input struct {
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
 
-// Sanitize 验证参数正确性
-func (o *Input) Sanitize() error {
+func (o *Input) sanitize() error {
 	if o == nil {
 		return core.NewSyntaxError(core.Location{}, "", locale.ErrRequired)
 	}
