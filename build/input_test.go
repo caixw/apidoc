@@ -33,7 +33,7 @@ func TestParseInputs(t *testing.T) {
 	}
 	a.NotError(c.Sanitize())
 
-	parseInputs(blocks, rslt.Handler, php, c)
+	ParseInputs(blocks, rslt.Handler, php, c)
 	close(blocks)
 
 	a.Equal(6, len(blocks))
