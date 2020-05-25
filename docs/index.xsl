@@ -66,7 +66,7 @@
                     <xsl:value-of select="docs/footer/license/p[3]" />
                 </p>
                 </div>
-                <a href="#" class="goto-top" />
+                <a href="#" class="goto-top" aria-label="{docs/locales/goto-top}" />
             </footer>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/components/prism-core.min.js"></script>
@@ -79,7 +79,7 @@
     <header>
         <div class="wrap">
             <h1>
-                <img src="./icon.svg" />
+                <img alt="logo" src="./icon.svg" />
                 <xsl:value-of select="document('site.xml')/site/name" />
                 <span class="version">&#160;(<xsl:value-of select="document('site.xml')/site/version" />)</span>
             </h1>
@@ -154,7 +154,7 @@
 </xsl:template>
 
 <!-- 以下两个变量仅用于 type 和 commands 模板，在模板中无法直接使用 /docs 元素，所以使用变量引用 -->
-<xsl:variable name="header-locale" select="/docs/type-locale/header" />
+<xsl:variable name="header-locale" select="/docs/locales/header" />
 
 <!-- 将子命令显示为一个 table -->
 <xsl:template name="commands">
@@ -257,10 +257,14 @@
     <xsl:param name="chk" />
     <xsl:choose>
         <xsl:when test="$chk='true'">
-            <input type="checkbox" checked="true" disabled="true" />
+            <label aria-label="true">
+                <input type="checkbox" checked="true" disabled="true" aria-hiddren="true" />
+            </label>
         </xsl:when>
         <xsl:otherwise>
-            <input type="checkbox" disabled="true" />
+            <label aria-label="false">
+                <input type="checkbox" disabled="true" aria-hiddren="true" />
+            </label>
         </xsl:otherwise>
     </xsl:choose>
 </xsl:template>

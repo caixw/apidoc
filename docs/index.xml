@@ -11,15 +11,16 @@
     <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
-    <!-- 类型描述中表格的相关本化地信息 -->
-    <type-locale>
-        <header>
+    <!-- 一些翻译比较零散的翻译内容 -->
+    <locales>
+        <header> <!-- 表格报头 -->
             <name>名称</name>
             <type>类型</type>
             <required>必填</required>
             <description>描述</description>
         </header>
-    </type-locale>
+        <goto-top>返回顶部</goto-top>
+    </locales>
 
     <doc id="about" title="关于">
         <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容生成文档。支持诸如 Go、Java、C++、Rust 等大部分开发语言，具体可使用 <code>apidoc lang</code> 命令行查看所有的支持列表。</p>

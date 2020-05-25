@@ -231,6 +231,19 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 </xsl:variable>
 
+<!-- goto-top -->
+<xsl:variable name="locale-goto-top">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'cmn-hans'" />
+        <xsl:with-param name="text" select="'返回顶部'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'cmn-hant'" />
+        <xsl:with-param name="text" select="'返回頂部'" />
+    </xsl:call-template>
+</xsl:variable>
+
 <!-- description -->
 <xsl:variable name="locale-description">
     <xsl:call-template name="build-locale">

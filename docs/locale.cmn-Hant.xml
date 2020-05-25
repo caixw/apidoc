@@ -127,12 +127,12 @@
 			<item name="." type="string" array="false" required="true">示例代碼的內容，需要使用 CDATA 包含代碼。</item>
 		</type>
 		<type name="callback">
-			<usage>定義回調信息</usage>
+			<usage>定義接口的回調內容</usage>
 			<item name="@method" type="string" array="false" required="true">回調的請求方法</item>
 			<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
 			<item name="@deprecated" type="version" array="false" required="false">在此版本之後將會被棄用</item>
-			<item name="path" type="path" array="false" required="false">定義回調的地址</item>
-			<item name="description" type="richtext" array="false" required="false">該接口的詳細介紹</item>
+			<item name="path" type="path" array="false" required="false">回調的請求地址</item>
+			<item name="description" type="richtext" array="false" required="false">對於回調的詳細介紹</item>
 			<item name="response" type="request" array="true" required="false">定義可能的返回信息</item>
 			<item name="request" type="request" array="true" required="true">定義可用的請求信息</item>
 			<item name="header" type="param" array="true" required="false">傳遞的報頭內容</item>
@@ -166,9 +166,9 @@
 		<command name="version">顯示版本信息</command>
 	</commands>
 	<config>
-		<item name="version" type="string" array="false" required="true">產生此配置文件的 apidoc 版本</item>
+		<item name="version" type="string" array="false" required="true">此配置文件的所使用的文档版本</item>
 		<item name="inputs" type="object" array="true" required="true">指定輸入的數據，同壹項目只能解析壹種語言。</item>
-		<item name="inputs.lang" type="string" array="false" required="true">源文件類型。具體支持的類型可通過 -l 參數進行查找</item>
+		<item name="inputs.lang" type="string" array="false" required="true">源文件類型。具體支持的類型可通過 -l 參數進行查找。</item>
 		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目錄</item>
 		<item name="inputs.exts" type="string" array="true" required="false">只從這些擴展名的文件中查找文檔</item>
 		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目錄下的源文件</item>

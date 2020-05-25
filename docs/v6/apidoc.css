@@ -261,7 +261,7 @@ main .api .callback .summary,
 main .api>summary .summary {
     float: right;
     font-weight: 400;
-    opacity: .5;
+    opacity: .8;
 }
 
 main .api .description {

@@ -8,7 +8,7 @@ var data = []*FileInfo{{
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-23T21:39:05+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-25T20:31:33+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -246,15 +246,16 @@ var data = []*FileInfo{{
     <title>apidoc | RESTful API 文檔處理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 國際 (CC BY 4.0)</license>
 
-    <!-- 類型描述中表格的相關本化地信息 -->
-    <type-locale>
-        <header>
+    <!-- 壹些翻譯比較零散的翻譯內容 -->
+    <locales>
+        <header> <!-- 表格報頭 -->
             <name>名稱</name>
             <type>類型</type>
             <required>必填</required>
             <description>描述</description>
         </header>
-    </type-locale>
+        <goto-top>返回頂部</goto-top>
+    </locales>
 
     <doc id="about" title="關於">
         <p>apidoc 是壹個簡單的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文檔生成工具，它從代碼註釋中提取特定格式的內容生成文檔。支持諸如 Go、Java、C++、Rust 等大部分開發語言，具體可使用 <code>apidoc lang</code> 命令行查看所有的支持列表。</p>
@@ -309,8 +310,8 @@ var data = []*FileInfo{{
     <doc id="install" title="安裝" parent="usage">
           <p>可以直接從 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找妳需要的版本下載，放入 <code>PATH</code> 中即可使用。如果沒有妳需要的平臺文件，則需要從源代碼編譯：</p>
         <ul>
-            <li>下載 Go 編譯工具；</li>
-            <li>下載源代碼；</li>
+            <li>下載 <a href="https://golang.org/dl/">Go</a>；</li>
+            <li>下載源代碼，<samp>git clone github.com/caixw/apidoc</samp>；</li>
             <li>執行代碼中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 進行編譯；</li>
             <li>編譯好的文件存放在 cmd/apidoc 下，可以將該文件放置在 PATH 目錄；</li>
         </ul>
@@ -592,15 +593,16 @@ function initGotoTop() {
     <title>apidoc | RESTful API 文档处理工具</title>
     <license url="https://creativecommons.org/licenses/by/4.0/deed.zh">署名 4.0 国际 (CC BY 4.0)</license>
 
-    <!-- 类型描述中表格的相关本化地信息 -->
-    <type-locale>
-        <header>
+    <!-- 一些翻译比较零散的翻译内容 -->
+    <locales>
+        <header> <!-- 表格报头 -->
             <name>名称</name>
             <type>类型</type>
             <required>必填</required>
             <description>描述</description>
         </header>
-    </type-locale>
+        <goto-top>返回顶部</goto-top>
+    </locales>
 
     <doc id="about" title="关于">
         <p>apidoc 是一个简单的 <abbr title="Representational State Transfer">RESTful</abbr> <abbr title="Application Programming Interface">API</abbr> 文档生成工具，它从代码注释中提取特定格式的内容生成文档。支持诸如 Go、Java、C++、Rust 等大部分开发语言，具体可使用 <code>apidoc lang</code> 命令行查看所有的支持列表。</p>
@@ -655,8 +657,8 @@ function initGotoTop() {
     <doc id="install" title="安装" parent="usage">
         <p>可以直接从 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找你需要的版本下载，放入 <code>PATH</code> 中即可使用。如果没有你需要的平台文件，则需要从源代码编译：</p>
         <ul>
-            <li>下载 Go 编译工具；</li>
-            <li>下载源代码；</li>
+            <li>下载 <a href="https://golang.org/dl/">Go</a>；</li>
+            <li>下载源代码，<samp>git clone github.com/caixw/apidoc</samp>；</li>
             <li>执行代码中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 进行编译；</li>
             <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 PATH 目录；</li>
         </ul>
@@ -695,13 +697,13 @@ function initGotoTop() {
 </xsl:variable>
 
 <xsl:variable name="locale-file">
-    <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@doc" />
+    <xsl:value-of select="document('site.xml')/site/locales/locale[@id=$curr-lang]/@doc" />
 </xsl:variable>
 
 <!-- 获取当前文档的语言名称，如果不存在，则直接采用 @lang 属性 -->
 <xsl:variable name="curr-lang-title">
     <xsl:variable name="title">
-        <xsl:value-of select="document('site.xml')/config/locales/locale[@id=$curr-lang]/@title" />
+        <xsl:value-of select="document('site.xml')/site/locales/locale[@id=$curr-lang]/@title" />
     </xsl:variable>
 
     <xsl:choose>
@@ -711,7 +713,7 @@ function initGotoTop() {
 </xsl:variable>
 
 <xsl:variable name="keywords">
-    <xsl:for-each select="document('site.xml')/config/languages/language">
+    <xsl:for-each select="document('site.xml')/site/languages/language">
         <xsl:value-of select="." /><xsl:value-of select="','" />
     </xsl:for-each>
 </xsl:variable>
@@ -725,7 +727,7 @@ function initGotoTop() {
             <meta name="keywords" content="{$keywords}RESTful API,document,apidoc" />
             <link rel="icon" type="image/svg+xml" href="./icon.svg" />
             <link rel="mask-icon" type="image/svg+xml" href="./icon.svg" color="black" />
-            <link rel="canonical" href="{document('site.xml')/config/url}" />
+            <link rel="canonical" href="{document('site.xml')/site/url}" />
             <link rel="stylesheet" type="text/css" href="./index.css" />
             <link rel="license" href="{/docs/liense/@url}" />
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism-tomorrow.min.css" />
@@ -747,13 +749,13 @@ function initGotoTop() {
                 <div class="wrap">
                 <p>
                     <xsl:value-of select="docs/footer/license/p[1]" />
-                    <a href="{document('site.xml')/config/repo}">Github</a>
+                    <a href="{document('site.xml')/site/repo}">Github</a>
                     <xsl:value-of select="docs/footer/license/p[2]" />
                     <a href="{docs/license/@url}"><xsl:value-of select="docs/license" /></a>
                     <xsl:value-of select="docs/footer/license/p[3]" />
                 </p>
                 </div>
-                <a href="#" class="goto-top" />
+                <a href="#" class="goto-top" aria-label="{docs/locales/goto-top}" />
             </footer>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/components/prism-core.min.js"></script>
@@ -766,9 +768,9 @@ function initGotoTop() {
     <header>
         <div class="wrap">
             <h1>
-                <img src="./icon.svg" />
-                <xsl:value-of select="document('site.xml')/config/name" />
-                <span class="version">&#160;(<xsl:value-of select="document('site.xml')/config/version" />)</span>
+                <img alt="logo" src="./icon.svg" />
+                <xsl:value-of select="document('site.xml')/site/name" />
+                <span class="version">&#160;(<xsl:value-of select="document('site.xml')/site/version" />)</span>
             </h1>
 
             <div class="menus" role="navigation">
@@ -782,7 +784,7 @@ function initGotoTop() {
                         <span aria-hiddren="true">&#160;&#x25bc;</span>
                     </a>
                     <ul>
-                        <xsl:for-each select="document('site.xml')/config/locales/locale">
+                        <xsl:for-each select="document('site.xml')/site/locales/locale">
                             <li><a href="{@href}"><xsl:value-of select="@title" /></a></li>
                         </xsl:for-each>
                     </ul>
@@ -841,7 +843,7 @@ function initGotoTop() {
 </xsl:template>
 
 <!-- 以下两个变量仅用于 type 和 commands 模板，在模板中无法直接使用 /docs 元素，所以使用变量引用 -->
-<xsl:variable name="header-locale" select="/docs/type-locale/header" />
+<xsl:variable name="header-locale" select="/docs/locales/header" />
 
 <!-- 将子命令显示为一个 table -->
 <xsl:template name="commands">
@@ -944,10 +946,14 @@ function initGotoTop() {
     <xsl:param name="chk" />
     <xsl:choose>
         <xsl:when test="$chk='true'">
-            <input type="checkbox" checked="true" disabled="true" />
+            <label aria-label="true">
+                <input type="checkbox" checked="true" disabled="true" aria-hiddren="true" />
+            </label>
         </xsl:when>
         <xsl:otherwise>
-            <input type="checkbox" disabled="true" />
+            <label aria-label="false">
+                <input type="checkbox" disabled="true" aria-hiddren="true" />
+            </label>
         </xsl:otherwise>
     </xsl:choose>
 </xsl:template>
@@ -1087,12 +1093,12 @@ function initGotoTop() {
 			<item name="." type="string" array="false" required="true">示例代码的内容，需要使用 CDATA 包含代码。</item>
 		</type>
 		<type name="callback">
-			<usage>定义回调信息</usage>
+			<usage>定义接口的回调内容</usage>
 			<item name="@method" type="string" array="false" required="true">回调的请求方法</item>
 			<item name="@summary" type="string" array="false" required="false">简要介绍</item>
 			<item name="@deprecated" type="version" array="false" required="false">在此版本之后将会被弃用</item>
-			<item name="path" type="path" array="false" required="false">定义回调的地址</item>
-			<item name="description" type="richtext" array="false" required="false">该接口的详细介绍</item>
+			<item name="path" type="path" array="false" required="false">回调的请求地址</item>
+			<item name="description" type="richtext" array="false" required="false">对于回调的详细介绍</item>
 			<item name="response" type="request" array="true" required="false">定义可能的返回信息</item>
 			<item name="request" type="request" array="true" required="true">定义可用的请求信息</item>
 			<item name="header" type="param" array="true" required="false">传递的报头内容</item>
@@ -1126,9 +1132,9 @@ function initGotoTop() {
 		<command name="version">显示版本信息</command>
 	</commands>
 	<config>
-		<item name="version" type="string" array="false" required="true">产生此配置文件的 apidoc 版本</item>
+		<item name="version" type="string" array="false" required="true">此配置文件的所使用的文档版本</item>
 		<item name="inputs" type="object" array="true" required="true">指定输入的数据，同一项目只能解析一种语言。</item>
-		<item name="inputs.lang" type="string" array="false" required="true">源文件类型。具体支持的类型可通过 -l 参数进行查找</item>
+		<item name="inputs.lang" type="string" array="false" required="true">源文件类型。具体支持的类型可通过 -l 参数进行查找。</item>
 		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目录</item>
 		<item name="inputs.exts" type="string" array="true" required="false">只从这些扩展名的文件中查找文档</item>
 		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目录下的源文件</item>
@@ -1274,12 +1280,12 @@ function initGotoTop() {
 			<item name="." type="string" array="false" required="true">示例代碼的內容，需要使用 CDATA 包含代碼。</item>
 		</type>
 		<type name="callback">
-			<usage>定義回調信息</usage>
+			<usage>定義接口的回調內容</usage>
 			<item name="@method" type="string" array="false" required="true">回調的請求方法</item>
 			<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
 			<item name="@deprecated" type="version" array="false" required="false">在此版本之後將會被棄用</item>
-			<item name="path" type="path" array="false" required="false">定義回調的地址</item>
-			<item name="description" type="richtext" array="false" required="false">該接口的詳細介紹</item>
+			<item name="path" type="path" array="false" required="false">回調的請求地址</item>
+			<item name="description" type="richtext" array="false" required="false">對於回調的詳細介紹</item>
 			<item name="response" type="request" array="true" required="false">定義可能的返回信息</item>
 			<item name="request" type="request" array="true" required="true">定義可用的請求信息</item>
 			<item name="header" type="param" array="true" required="false">傳遞的報頭內容</item>
@@ -1313,9 +1319,9 @@ function initGotoTop() {
 		<command name="version">顯示版本信息</command>
 	</commands>
 	<config>
-		<item name="version" type="string" array="false" required="true">產生此配置文件的 apidoc 版本</item>
+		<item name="version" type="string" array="false" required="true">此配置文件的所使用的文档版本</item>
 		<item name="inputs" type="object" array="true" required="true">指定輸入的數據，同壹項目只能解析壹種語言。</item>
-		<item name="inputs.lang" type="string" array="false" required="true">源文件類型。具體支持的類型可通過 -l 參數進行查找</item>
+		<item name="inputs.lang" type="string" array="false" required="true">源文件類型。具體支持的類型可通過 -l 參數進行查找。</item>
 		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目錄</item>
 		<item name="inputs.exts" type="string" array="true" required="false">只從這些擴展名的文件中查找文檔</item>
 		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目錄下的源文件</item>
@@ -3138,7 +3144,7 @@ main .api .callback .summary,
 main .api>summary .summary {
     float: right;
     font-weight: 400;
-    opacity: .5;
+    opacity: .8;
 }
 
 main .api .description {
@@ -3465,7 +3471,7 @@ function initGotoTop() {
         <div class="wrap">
             <p><xsl:copy-of select="$locale-generator" /></p>
         </div>
-        <a href="#" class="goto-top" />
+        <a href="#" class="goto-top" aria-label="{$locale-goto-top}" />
         </footer>
     </body>
 </html>
@@ -3502,7 +3508,7 @@ function initGotoTop() {
 <header>
 <div class="wrap">
     <h1>
-        <img src="{$icon}" />
+        <img alt="logo" src="{$icon}" />
         <xsl:value-of select="/apidoc/title" />
         <span class="version">&#160;(<xsl:value-of select="/apidoc/@version" />)</span>
     </h1>
@@ -4246,6 +4252,19 @@ exclude-result-prefixes="l">
     <xsl:call-template name="build-locale">
         <xsl:with-param name="lang" select="'cmn-hant'" />
         <xsl:with-param name="text" select="'值'" />
+    </xsl:call-template>
+</xsl:variable>
+
+<!-- goto-top -->
+<xsl:variable name="locale-goto-top">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'cmn-hans'" />
+        <xsl:with-param name="text" select="'返回顶部'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'cmn-hant'" />
+        <xsl:with-param name="text" select="'返回頂部'" />
     </xsl:call-template>
 </xsl:variable>
 

@@ -38,7 +38,7 @@
         <div class="wrap">
             <p><xsl:copy-of select="$locale-generator" /></p>
         </div>
-        <a href="#" class="goto-top" />
+        <a href="#" class="goto-top" aria-label="{$locale-goto-top}" />
         </footer>
     </body>
 </html>
@@ -75,7 +75,7 @@
 <header>
 <div class="wrap">
     <h1>
-        <img src="{$icon}" />
+        <img alt="logo" src="{$icon}" />
         <xsl:value-of select="/apidoc/title" />
         <span class="version">&#160;(<xsl:value-of select="/apidoc/@version" />)</span>
     </h1>
