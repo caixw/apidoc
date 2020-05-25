@@ -65,7 +65,7 @@ func parse(h *core.MessageHandler, i ...*Input) (*ast.APIDoc, error) {
 
 	d := &ast.APIDoc{}
 	d.ParseBlocks(h, func(blocks chan core.Block) {
-		parseInputs(blocks, h, i...)
+		ParseInputs(blocks, h, i...)
 	})
 
 	return d, nil

@@ -145,10 +145,10 @@ func recursivePath(o *Input) ([]core.URI, error) {
 	return uris, nil
 }
 
-// 分析 opt 中所指定的内容
+// ParseInputs 分析 opt 中所指定的内容
 //
 // 分析后的内容推送至 blocks 中。
-func parseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) {
+func ParseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) {
 	wg := &sync.WaitGroup{}
 	for _, o := range opt {
 		for _, path := range o.paths {

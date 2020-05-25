@@ -5,7 +5,6 @@ package lsp
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
@@ -28,30 +27,6 @@ type folder struct {
 func (f *folder) close() error {
 	f.h.Stop()
 	return nil
-}
-
-// uri 是否与属于项目匹配
-func (f *folder) matchURI(uri core.URI) bool {
-	return strings.HasPrefix(string(uri), string(f.URI))
-}
-
-func (f *folder) matchPosition(uri core.URI, pos core.Position) (bool, error) {
-	var r core.Range
-	if f.URI == uri {
-		r = f.doc.Range
-	} else {
-		for _, api := range f.doc.APIs {
-			if api.URI == uri {
-				r = api.Range
-				break
-			}
-		}
-	}
-	if r.IsEmpty() {
-		return false, nil
-	}
-
-	return r.Contains(pos), nil
 }
 
 func (f *folder) openFile(uri core.URI) error {
@@ -124,18 +99,13 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) 
 			}
 		}
 
+		ff.doc.ParseBlocks(ff.h, func(blocks chan core.Block) {
+			build.ParseInputs(blocks, ff.h, ff.cfg.Inputs...)
+		})
+
 		s.folders = append(s.folders, ff)
 	}
 
-	return nil
-}
-
-func (s *server) getMatchFolder(uri core.URI) *folder {
-	for _, f := range s.folders {
-		if f.matchURI(uri) {
-			return f
-		}
-	}
 	return nil
 }
 
