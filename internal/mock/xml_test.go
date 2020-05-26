@@ -116,11 +116,17 @@ func TestValidXMLParamValue(t *testing.T) {
 	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "1"))
 	a.Error(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "false/true"))
 
-	// Other
-	a.Error(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}}, "", ""))
-	a.Error(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}}, "", "{}"))
-	a.Error(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "xxx"}}}, "", "{}"))
-	a.Error(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "xxx"}}}, "", ""))
+	// Object
+	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}}, "", ""))
+	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}}, "", "{}"))
+
+	// panic
+	a.Panic(func() {
+		validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "xxx"}}}, "", "{}")
+	})
+	a.Panic(func() {
+		validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "xxx"}}}, "", "")
+	})
 
 	// bool enum
 	p := &ast.Param{

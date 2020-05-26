@@ -104,10 +104,10 @@ func validXMLParamValue(p *ast.Param, field, v string) error {
 		if _, err := strconv.ParseBool(v); err != nil {
 			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
-	case ast.TypeString:
+	case ast.TypeString, ast.TypeObject:
 		return nil
-	default: // case doc.Object:
-		return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+	default:
+		panic(fmt.Sprintf("文档中类型定义错误 %s", p.Type.V()))
 	}
 
 	if isEnum(p) {
@@ -362,7 +362,7 @@ func getXMLValue(p *ast.Param) (interface{}, error) {
 		return generateNumber(p), nil
 	case ast.TypeString:
 		return generateString(p), nil
-	default: // doc.Object:
+	default: // ast.TypeObject:
 		return nil, core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 }
