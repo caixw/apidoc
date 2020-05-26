@@ -18,9 +18,8 @@ import (
 )
 
 type xmlValidator struct {
-	param   *ast.Param
-	decoder *xml.Decoder
-	names   []string // 按顺序保存变量名称
+	param *ast.Param
+	names []string // 按顺序保存变量名称
 }
 
 func validXML(p *ast.Request, content []byte) error {
@@ -32,17 +31,16 @@ func validXML(p *ast.Request, content []byte) error {
 	}
 
 	validator := &xmlValidator{
-		param:   p.Param(),
-		decoder: xml.NewDecoder(bytes.NewReader(content)),
-		names:   []string{},
+		param: p.Param(),
+		names: []string{},
 	}
 
-	return validator.valid()
+	return validator.valid(xml.NewDecoder(bytes.NewReader(content)))
 }
 
-func (validator *xmlValidator) valid() error {
+func (validator *xmlValidator) valid(decoder *xml.Decoder) error {
 	for {
-		token, err := validator.decoder.Token()
+		token, err := decoder.Token()
 		if err == io.EOF && token == nil { // 正常结束
 			return nil
 		}
