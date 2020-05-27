@@ -8,7 +8,7 @@ var data = []*FileInfo{{
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-25T20:31:33+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-05-27T14:19:36+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -1044,6 +1044,7 @@ function initGotoTop() {
 			<usage>参数类型，基本上可以作为 request 的子集使用。</usage>
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。</item>
+			<item name="@xml-cdata" type="bool" array="false" required="false">当前内容为 CDATA，與 xml-attr 互斥。</item>
 			<item name="@xml-ns" type="string" array="false" required="false">XML 标签的命名空间</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 标签的命名空间名称前缀</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
@@ -1070,6 +1071,7 @@ function initGotoTop() {
 			<usage>定义了请求和返回的相关内容</usage>
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。</item>
+			<item name="@xml-cdata" type="bool" array="false" required="false">当前内容为 CDATA，與 xml-attr 互斥。</item>
 			<item name="@xml-ns" type="string" array="false" required="false">XML 标签的命名空间</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 标签的命名空间名称前缀</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
@@ -1231,6 +1233,7 @@ function initGotoTop() {
 			<usage>參數類型，基本上可以作為 request 的子集使用。</usage>
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。</item>
+			<item name="@xml-cdata" type="bool" array="false" required="false">當前內容為 CDATA，与 xml-attr 互斥。</item>
 			<item name="@xml-ns" type="string" array="false" required="false">XML 標簽的命名空間</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>
@@ -1257,6 +1260,7 @@ function initGotoTop() {
 			<usage>定義了請求和返回的相關內容</usage>
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。</item>
+			<item name="@xml-cdata" type="bool" array="false" required="false">當前內容為 CDATA，与 xml-attr 互斥。</item>
 			<item name="@xml-ns" type="string" array="false" required="false">XML 標簽的命名空間</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>

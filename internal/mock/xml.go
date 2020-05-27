@@ -152,9 +152,11 @@ func validXMLParamValue(p *ast.Param, field, v string) error {
 }
 
 type xmlBuilder struct {
-	start    xml.StartElement
-	charData string
-	items    []*xmlBuilder
+	start xml.StartElement
+	items []*xmlBuilder
+
+	chardata interface{}
+	cdata    bool // 表示 chardata 是一个 cdata 数据
 }
 
 func buildXML(p *ast.Request) ([]byte, error) {
@@ -191,6 +193,7 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 			Attr: make([]xml.Attr, 0, len(p.Items)),
 		},
 		items: []*xmlBuilder{},
+		cdata: p.XMLCData.V(),
 	}
 	if p.XMLNSPrefix != nil {
 		builder.start.Name.Space = p.XMLNSPrefix.V()
@@ -209,11 +212,11 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 	if p.Type.V() != ast.TypeObject {
 		switch p.Type.V() {
 		case ast.TypeBool:
-			builder.charData = fmt.Sprint(generateBool())
+			builder.chardata = generateBool()
 		case ast.TypeNumber:
-			builder.charData = fmt.Sprint(generateNumber(p))
+			builder.chardata = generateNumber(p)
 		case ast.TypeString:
-			builder.charData = fmt.Sprint(generateString(p))
+			builder.chardata = generateString(p)
 		}
 		return builder, nil
 	}
@@ -242,7 +245,8 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 				return nil, err
 			}
 
-			builder.charData = fmt.Sprint(v)
+			builder.chardata = v
+			builder.cdata = item.XMLCData.V()
 		case item.Array.V():
 			if err := parseArray(item, builder); err != nil {
 				return nil, err
@@ -289,8 +293,12 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 		return nil
 	}
 
-	if builder.charData != "" {
-		return e.EncodeElement(builder.charData, builder.start)
+	if builder.cdata && builder.chardata != nil {
+		return e.EncodeElement(struct {
+			string `xml:",cdata"`
+		}{fmt.Sprint(builder.chardata)}, builder.start)
+	} else if builder.chardata != nil {
+		return e.EncodeElement(builder.chardata, builder.start)
 	}
 
 	if err := e.EncodeToken(builder.start); err != nil {

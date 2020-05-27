@@ -56,6 +56,16 @@ var data = []*tester{
 		XML:  "<root>1024</root>",
 	},
 	{
+		Title: "number-cdata",
+		Type: &ast.Request{
+			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			XML:  ast.XML{XMLCData: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
+		},
+		JSON: "1024",
+		XML:  "<root><![CDATA[1024]]></root>",
+	},
+	{
 		Title: "enum number",
 		Type: &ast.Request{
 			Name: &ast.Attribute{Value: token.String{Value: "root"}},
@@ -91,6 +101,34 @@ var data = []*tester{
     "desc": "1024"
 }`,
 		XML: `<root id="1024">1024</root>`,
+	},
+
+	{
+		Title: "xml-extract-cdata",
+		Type: &ast.Request{
+			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Items: []*ast.Param{
+				{
+					Name: &ast.Attribute{Value: token.String{Value: "id"}},
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
+				},
+				{
+					Name: &ast.Attribute{Value: token.String{Value: "desc"}},
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					XML: ast.XML{
+						XMLExtract: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+						XMLCData:   &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+					},
+				},
+			},
+		},
+		JSON: `{
+    "id": 1024,
+    "desc": "1024"
+}`,
+		XML: `<root id="1024"><![CDATA[1024]]></root>`,
 	},
 
 	{
@@ -276,8 +314,7 @@ var data = []*tester{
 </root>`,
 	},
 
-	// NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第二的位置。
-	{
+	{ // NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第二的位置。
 		Title: "object with item",
 		Type: &ast.Request{
 			Name: &ast.Attribute{Value: token.String{Value: "root"}},
@@ -330,8 +367,7 @@ var data = []*tester{
 </root>`,
 	},
 
-	// NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第一的位置。
-	{ // 各类型混合
+	{ // 各类型混合，NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第一的位置。
 		Title: "Object with array",
 		Type: &ast.Request{
 			Name: &ast.Attribute{Value: token.String{Value: "root"}},

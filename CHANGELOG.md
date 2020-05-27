@@ -10,6 +10,7 @@
 - 采用新的编码与解码方式(internal/ast)；
 - 添加 lsp 子命令；
 - 代码可通过 build.Output.Version 修改文档中的版本号；
+- 新的文档标签 xml-cdata 用于标记该内容在 xml 格式下是否需要以 CDATA 的形式展示；
 
 ### Changed
 

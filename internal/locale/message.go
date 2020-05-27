@@ -208,6 +208,7 @@ options 可以是以下参数
 
 	UsageXMLAttr    = "usage-xml-attr"
 	UsageXMLExtract = "usage-xml-extract"
+	UsageXMLCData   = "usage-xml-cdata"
 	UsageXMLNS      = "usage-xml-ns"
 	UsageXMLPrefix  = "usage-xml-prefix"
 	UsageXMLWrapped = "usage-xml-wrapped"

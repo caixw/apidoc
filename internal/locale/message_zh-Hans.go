@@ -197,6 +197,7 @@ options 可以是以下参数
 
 	UsageXMLAttr:    "是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。",
 	UsageXMLExtract: "将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。",
+	UsageXMLCData:   "当前内容为 CDATA，與 xml-attr 互斥。",
 	UsageXMLNS:      "XML 标签的命名空间",
 	UsageXMLPrefix:  "XML 标签的命名空间名称前缀",
 	UsageXMLWrapped: "如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。",

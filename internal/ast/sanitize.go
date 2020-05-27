@@ -263,6 +263,10 @@ func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 		if xml.XMLNSPrefix.V() != "" {
 			return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.AttributeName.Value, locale.ErrInvalidValue)
 		}
+
+		if xml.XMLCData.V() {
+			return p.NewError(xml.XMLCData.Start, xml.XMLCData.End, xml.XMLCData.AttributeName.Value, locale.ErrInvalidValue)
+		}
 	}
 
 	if xml.XMLWrapped.V() != "" && !isArray {
