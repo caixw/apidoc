@@ -11,6 +11,9 @@ import (
 	"github.com/caixw/apidoc/v7/internal/ast"
 )
 
+// 缩进的字符串
+const indent = "    "
+
 var randOptions = &struct {
 	maxSliceSize  int
 	maxNumber     int

@@ -14,12 +14,8 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-// 缩进的字符串
-const indent = "    "
-
 type jsonValidator struct {
-	param   *ast.Param
-	decoder *json.Decoder
+	param *ast.Param
 
 	// 按顺序表示的状态
 	// 可以是 [ 表示在数组中，{ 表示在对象，: 表示下一个值必须是属性，空格表示其它状态
@@ -29,22 +25,13 @@ type jsonValidator struct {
 	names []string
 }
 
-type jsonBuilder struct {
-	buf          *bytes.Buffer
-	err          error
-	deep         int
-	indentString string
-}
-
 func validJSON(p *ast.Request, content []byte) error {
 	if p == nil {
 		if bytes.Equal(content, []byte("null")) {
 			return nil
 		}
 		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
-	}
-
-	if p.Type.V() == ast.TypeNone && len(content) == 0 {
+	} else if p.Type.V() == ast.TypeNone && len(content) == 0 {
 		return nil
 	}
 
@@ -53,22 +40,20 @@ func validJSON(p *ast.Request, content []byte) error {
 	}
 
 	validator := &jsonValidator{
-		param:   p.Param(),
-		decoder: json.NewDecoder(bytes.NewReader(content)),
-		states:  []byte{}, // 状态有默认值
-		names:   []string{},
+		param:  p.Param(),
+		states: []byte{}, // 状态有默认值
+		names:  []string{},
 	}
 
-	return validator.valid()
+	return validator.valid(json.NewDecoder(bytes.NewReader(content)))
 }
 
-func (validator *jsonValidator) valid() error {
+func (validator *jsonValidator) valid(d *json.Decoder) error {
 	for {
-		token, err := validator.decoder.Token()
+		token, err := d.Token()
 		if err == io.EOF && token == nil { // 正常结束
 			return nil
 		}
-
 		if err != nil {
 			return err
 		}
@@ -219,6 +204,13 @@ func (validator *jsonValidator) find() *ast.Param {
 	}
 
 	return p
+}
+
+type jsonBuilder struct {
+	buf          *bytes.Buffer
+	err          error
+	deep         int
+	indentString string
 }
 
 func (builder *jsonBuilder) writeIndent() *jsonBuilder {

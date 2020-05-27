@@ -3,8 +3,6 @@
 package mock
 
 import (
-	"encoding/json"
-	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -17,8 +15,7 @@ func TestJSONValidator_find(t *testing.T) {
 
 	a := assert.New(t)
 	v := &jsonValidator{
-		param:   item.Type.Param(),
-		decoder: json.NewDecoder(strings.NewReader(item.JSON)),
+		param: item.Type.Param(),
 	}
 
 	v.names = []string{}

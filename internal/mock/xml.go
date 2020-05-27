@@ -36,20 +36,20 @@ func validXML(p *ast.Request, content []byte) error {
 
 		switch v := token.(type) {
 		case xml.StartElement:
-			return validElement(v, p.Param(), true, d)
+			return validElement(v, p.Param(), true, d, v.Name.Local)
 		case xml.EndElement:
 			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 		}
 	}
 }
 
-func validElement(start xml.StartElement, p *ast.Param, allowArray bool, decoder *xml.Decoder) error {
-	if err := validStartElement(start, p, allowArray, decoder); err != nil {
+func validElement(start xml.StartElement, p *ast.Param, allowArray bool, d *xml.Decoder, field string) error {
+	if err := validStartElement(start, p, allowArray, d, field); err != nil {
 		return err
 	}
 
 	for {
-		token, err := decoder.Token()
+		token, err := d.Token()
 		if err == io.EOF && token == nil { // 正常结束
 			return nil
 		}
@@ -61,15 +61,15 @@ func validElement(start xml.StartElement, p *ast.Param, allowArray bool, decoder
 		switch v := token.(type) {
 		case xml.StartElement:
 			if allowArray && p.Array.V() && v.Name.Local == p.Name.V() {
-				return validElement(v, p, false, decoder)
+				return validElement(v, p, false, d, buildXMLField(field, p))
 			}
 
 			for _, pp := range p.Items {
 				if pp.Name.V() == v.Name.Local {
 					if pp.XMLExtract.V() {
-						return validElement(v, p, true, decoder)
+						return validElement(v, p, true, d, buildXMLField(field, pp))
 					}
-					return validElement(v, pp, true, decoder)
+					return validElement(v, pp, true, d, buildXMLField(field, p))
 				}
 			}
 		case xml.EndElement:
@@ -93,13 +93,13 @@ func validElement(start xml.StartElement, p *ast.Param, allowArray bool, decoder
 	}
 }
 
-func validStartElement(start xml.StartElement, p *ast.Param, allowArray bool, decoder *xml.Decoder) error {
+func validStartElement(start xml.StartElement, p *ast.Param, allowArray bool, d *xml.Decoder, field string) error {
 	for _, attr := range start.Attr {
 		for _, pp := range p.Items {
 			if attr.Name.Local != pp.Name.V() {
 				continue
 			}
-			if err := validXMLParamValue(pp, pp.Name.V(), attr.Value); err != nil {
+			if err := validXMLParamValue(pp, buildXMLField(field, pp), attr.Value); err != nil {
 				return err
 			}
 			break
@@ -112,13 +112,21 @@ func validStartElement(start xml.StartElement, p *ast.Param, allowArray bool, de
 		}
 
 		start.Attr = start.Attr[:0] // 在 allowArray == true 已经处理过 start.Attr
-		return validElement(start, p, false, decoder)
+		return validElement(start, p, false, d, buildXMLField(field, p))
 	}
 
 	if (p.Name.V() != start.Name.Local) && (!allowArray && p.XMLWrapped.V() != start.Name.Local) {
 		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
 	}
 	return nil
+}
+
+func buildXMLField(field string, p *ast.Param) string {
+	if p.XMLAttr.V() {
+		return field + "@" + p.Name.V()
+	} else {
+		return field + p.Name.V()
+	}
 }
 
 // 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
