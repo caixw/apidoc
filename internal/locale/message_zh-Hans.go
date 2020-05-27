@@ -147,11 +147,6 @@ options 可以是以下参数
 	UsageExampleContent:  "示例代码的内容，需要使用 CDATA 包含代码。",
 
 	UsageParam:            "参数类型，基本上可以作为 request 的子集使用。",
-	UsageParamXMLAttr:     "是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。",
-	UsageParamXMLExtract:  "将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。",
-	UsageParamXMLNS:       "XML 标签的命名空间",
-	UsageParamXMLNSPrefix: "XML 标签的命名空间名称前缀",
-	UsageParamXMLWrapped:  "如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。",
 	UsageParamName:        "值的名称",
 	UsageParamType:        "值的类型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var>",
 	UsageParamDeprecated:  "表示在大于等于该版本号时不再启作用",

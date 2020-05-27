@@ -158,11 +158,6 @@ options 可以是以下参数
 	UsageExampleContent  = "usage-example-content"
 
 	UsageParam            = "usage-param"
-	UsageParamXMLAttr     = "usage-param-xml-attr"
-	UsageParamXMLExtract  = "usage-param-xml-extract"
-	UsageParamXMLNS       = "usage-param-xml-ns"
-	UsageParamXMLNSPrefix = "usage-param-xml-ns-prefix"
-	UsageParamXMLWrapped  = "usage-param-xml-wrapped"
 	UsageParamName        = "usage-param-name"
 	UsageParamType        = "usage-param-type"
 	UsageParamDeprecated  = "usage-param-deprecated"
