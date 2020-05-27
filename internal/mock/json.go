@@ -207,10 +207,12 @@ func (validator *jsonValidator) find() *ast.Param {
 }
 
 type jsonBuilder struct {
-	buf          *bytes.Buffer
-	err          error
-	deep         int
-	indentString string
+	buf  *bytes.Buffer
+	err  error
+	deep int
+
+	indentString string // 整体的缩进
+	indent       string // 单次的缩进
 }
 
 func (builder *jsonBuilder) writeIndent() *jsonBuilder {
@@ -223,13 +225,13 @@ func (builder *jsonBuilder) writeIndent() *jsonBuilder {
 
 func (builder *jsonBuilder) incrIndent() *jsonBuilder {
 	builder.deep++
-	builder.indentString = strings.Repeat(randOptions.indent, builder.deep)
+	builder.indentString = strings.Repeat(builder.indent, builder.deep)
 	return builder
 }
 
 func (builder *jsonBuilder) decrIndent() *jsonBuilder {
 	builder.deep--
-	builder.indentString = strings.Repeat(randOptions.indent, builder.deep)
+	builder.indentString = strings.Repeat(builder.indent, builder.deep)
 	return builder
 }
 
@@ -264,23 +266,24 @@ func (builder *jsonBuilder) writeValue(v interface{}) *jsonBuilder {
 	return builder
 }
 
-func buildJSON(p *ast.Request) ([]byte, error) {
+func buildJSON(p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
 	if p != nil && p.Type.V() == ast.TypeNone {
 		return nil, nil
 	}
 
 	builder := &jsonBuilder{
-		buf: new(bytes.Buffer),
+		buf:    new(bytes.Buffer),
+		indent: indent,
 	}
 
-	if err := writeJSON(builder, p.Param(), true); err != nil {
+	if err := writeJSON(builder, p.Param(), true, g); err != nil {
 		return nil, err
 	}
 
 	return builder.buf.Bytes(), nil
 }
 
-func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool) error {
+func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool, g *GenOptions) error {
 	if p == nil {
 		builder.writeValue(nil)
 		return builder.err
@@ -289,12 +292,12 @@ func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool) error {
 	if p.Array.V() && chkArray {
 		builder.writeStrings("[\n").incrIndent()
 
-		size := generateSliceSize()
+		size := g.generateSliceSize()
 		last := size - 1
 		for i := 0; i < size; i++ {
 			builder.writeIndent()
 
-			if err := writeJSON(builder, p, false); err != nil {
+			if err := writeJSON(builder, p, false, g); err != nil {
 				return err
 			}
 
@@ -313,11 +316,11 @@ func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool) error {
 	case ast.TypeNone:
 		builder.writeValue(nil)
 	case ast.TypeBool:
-		builder.writeValue(generateBool())
+		builder.writeValue(g.generateBool())
 	case ast.TypeNumber:
-		builder.writeValue(generateNumber(p))
+		builder.writeValue(g.generateNumber(p))
 	case ast.TypeString:
-		builder.writeValue(generateString(p))
+		builder.writeValue(g.generateString(p))
 	case ast.TypeObject:
 		builder.writeStrings("{\n").incrIndent()
 
@@ -325,7 +328,7 @@ func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool) error {
 		for index, item := range p.Items {
 			builder.writeIndent().writeStrings(`"`, item.Name.V(), `"`, ": ")
 
-			if err := writeJSON(builder, item, true); err != nil {
+			if err := writeJSON(builder, item, true, g); err != nil {
 				return err
 			}
 

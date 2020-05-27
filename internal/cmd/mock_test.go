@@ -9,9 +9,12 @@ import (
 	"github.com/issue9/assert"
 )
 
-var _ flag.Getter = make(servers, 0)
+var (
+	_ flag.Getter = servers{}
+	_ flag.Value  = servers{}
+)
 
-func TestServers(t *testing.T) {
+func TestMockOptions(t *testing.T) {
 	a := assert.New(t)
 
 	srv := make(servers, 0)

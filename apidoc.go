@@ -22,7 +22,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/docs"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp"
-	"github.com/caixw/apidoc/v7/internal/mock"
 )
 
 // Config 配置文件映射的结构
@@ -170,24 +169,6 @@ func ViewFile(status int, url string, path core.URI, contentType string, dir cor
 // Valid 验证文档内容的正确性
 func Valid(h *core.MessageHandler, b core.Block) {
 	(&ast.APIDoc{}).Parse(h, b)
-}
-
-// Mock 生成 Mock 中间件
-//
-// data 为文档内容；
-// servers 为文档中所有 server 以及对应的路由前缀。
-func Mock(h *core.MessageHandler, data []byte, servers map[string]string) (http.Handler, error) {
-	d := &ast.APIDoc{}
-	d.Parse(h, core.Block{Data: data})
-	return mock.New(h, d, servers)
-}
-
-// MockFile 生成 Mock 中间件
-//
-// path 为文档路径，可以是本地路径也可以是 URL，根据是否为 http 或是 https 开头做判断；
-// servers 为文档中所有 server 以及对应的路由前缀。
-func MockFile(h *core.MessageHandler, path core.URI, servers map[string]string) (http.Handler, error) {
-	return mock.Load(h, path, servers)
 }
 
 // 用于查找 <?xml 指令

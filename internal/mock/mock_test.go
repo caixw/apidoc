@@ -504,7 +504,7 @@ func TestNew(t *testing.T) {
 	a.Empty(rslt.Errors)
 
 	rslt = messagetest.NewMessageHandler()
-	mock, err := New(rslt.Handler, d, map[string]string{"test": "/test"})
+	mock, err := New(rslt.Handler, d, indent, map[string]string{"test": "/test"}, testOptions)
 	a.NotError(err).NotNil(mock)
 	srv := rest.NewServer(t, mock, nil)
 
@@ -521,7 +521,7 @@ func TestNew(t *testing.T) {
 	srv.Close()
 
 	rslt = messagetest.NewMessageHandler()
-	mock, err = New(rslt.Handler, d, map[string]string{"test": "/test"})
+	mock, err = New(rslt.Handler, d, indent, map[string]string{"test": "/test"}, testOptions)
 	a.NotError(err).NotNil(mock)
 	srv = rest.NewServer(t, mock, nil)
 
@@ -545,7 +545,7 @@ func TestNew(t *testing.T) {
 
 	// 版本号兼容性
 	rslt = messagetest.NewMessageHandler()
-	mock, err = New(rslt.Handler, &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: "1.0.1"}}}, nil)
+	mock, err = New(rslt.Handler, &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: "1.0.1"}}}, indent, nil, testOptions)
 	a.Error(err).Nil(mock)
 	rslt.Handler.Stop()
 }
@@ -553,13 +553,13 @@ func TestNew(t *testing.T) {
 func TestLoad(t *testing.T) {
 	a := assert.New(t)
 	rslt := messagetest.NewMessageHandler()
-	mock, err := Load(rslt.Handler, "./not-exists", nil)
+	mock, err := Load(rslt.Handler, "./not-exists", indent, nil, testOptions)
 	rslt.Handler.Stop()
 	a.Error(err).Nil(mock)
 
 	// LoadFromPath
 	rslt = messagetest.NewMessageHandler()
-	mock, err = Load(rslt.Handler, asttest.URI(a), map[string]string{"admin": "/admin"})
+	mock, err = Load(rslt.Handler, asttest.URI(a), indent, map[string]string{"admin": "/admin"}, testOptions)
 	rslt.Handler.Stop()
 	a.NotError(err).NotNil(mock)
 
@@ -569,7 +569,7 @@ func TestLoad(t *testing.T) {
 	defer srv.Close()
 
 	rslt = messagetest.NewMessageHandler()
-	mock, err = Load(rslt.Handler, core.URI(srv.URL+"/index.xml"), map[string]string{"admin": "/admin"})
+	mock, err = Load(rslt.Handler, core.URI(srv.URL+"/index.xml"), indent, map[string]string{"admin": "/admin"}, testOptions)
 	rslt.Handler.Stop()
 	a.NotError(err).NotNil(mock)
 }

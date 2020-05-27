@@ -170,19 +170,19 @@ type xmlBuilder struct {
 	cdata    bool // 表示 chardata 是一个 cdata 数据
 }
 
-func buildXML(p *ast.Request) ([]byte, error) {
+func buildXML(p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
 	if p == nil || p.Type.V() == ast.TypeNone {
 		return nil, nil
 	}
 
-	builder, err := parseXML(p.Param(), true, true)
+	builder, err := parseXML(p.Param(), true, true, g)
 	if err != nil {
 		return nil, err
 	}
 
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
-	e.Indent("", randOptions.indent)
+	e.Indent("", indent)
 
 	if err = builder.encode(e); err != nil {
 		return nil, err
@@ -195,7 +195,7 @@ func buildXML(p *ast.Request) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
+func parseXML(p *ast.Param, chkArray, root bool, g *GenOptions) (*xmlBuilder, error) {
 	builder := &xmlBuilder{
 		start: xml.StartElement{
 			Name: xml.Name{
@@ -211,7 +211,7 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 	}
 
 	if p.Array.V() && chkArray {
-		if err := parseArray(p, builder); err != nil {
+		if err := parseArray(p, builder, g); err != nil {
 			return nil, err
 		}
 		if root {
@@ -221,7 +221,7 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 	}
 
 	if p.Type.V() != ast.TypeObject {
-		builder.chardata = genXMLValue(p)
+		builder.chardata = genXMLValue(g, p)
 		return builder, nil
 	}
 
@@ -232,21 +232,21 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 				Name: xml.Name{
 					Local: item.Name.V(),
 				},
-				Value: fmt.Sprint(genXMLValue(item)),
+				Value: fmt.Sprint(genXMLValue(g, item)),
 			}
 			if item.XMLNSPrefix != nil {
 				attr.Name.Space = item.XMLNSPrefix.V()
 			}
 			builder.start.Attr = append(builder.start.Attr, attr)
 		case item.XMLExtract.V():
-			builder.chardata = genXMLValue(item)
+			builder.chardata = genXMLValue(g, item)
 			builder.cdata = item.XMLCData.V()
 		case item.Array.V():
-			if err := parseArray(item, builder); err != nil {
+			if err := parseArray(item, builder, g); err != nil {
 				return nil, err
 			}
 		default:
-			b, err := parseXML(item, true, false)
+			b, err := parseXML(item, true, false, g)
 			if err != nil {
 				return nil, err
 			}
@@ -257,7 +257,7 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 	return builder, nil
 }
 
-func parseArray(p *ast.Param, parent *xmlBuilder) error {
+func parseArray(p *ast.Param, parent *xmlBuilder, g *GenOptions) error {
 	b := parent
 	if p.XMLWrapped.V() != "" {
 		b = &xmlBuilder{items: []*xmlBuilder{}}
@@ -270,9 +270,8 @@ func parseArray(p *ast.Param, parent *xmlBuilder) error {
 		parent.items = append(parent.items, b)
 	}
 
-	size := generateSliceSize()
-	for i := 0; i < size; i++ {
-		bb, err := parseXML(p, false, false)
+	for i := 0; i < g.generateSliceSize(); i++ {
+		bb, err := parseXML(p, false, false, g)
 		if err != nil {
 			return err
 		}
@@ -306,16 +305,16 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 	return e.EncodeToken(builder.start.End())
 }
 
-func genXMLValue(p *ast.Param) interface{} {
+func genXMLValue(g *GenOptions, p *ast.Param) interface{} {
 	switch p.Type.V() {
 	case ast.TypeNone:
 		return ""
 	case ast.TypeBool:
-		return generateBool()
+		return g.generateBool()
 	case ast.TypeNumber:
-		return generateNumber(p)
+		return g.generateNumber(p)
 	case ast.TypeString:
-		return generateString(p)
+		return g.generateString(p)
 	default: // ast.TypeObject:
 		panic(fmt.Sprintf("无效的类型 %s", p.Type.V())) // 加载的时候已经作语法验证，此处还出错则直接 panic
 	}

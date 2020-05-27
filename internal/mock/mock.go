@@ -21,14 +21,18 @@ type mock struct {
 	doc     *ast.APIDoc
 	mux     *mux.Mux
 	servers map[string]string
+	indent  string
+	gen     *GenOptions
 }
 
 // New 声明 Mock 对象
 //
 // h 用于处理各类输出消息，仅在 ServeHTTP 中的消息才输出到 h；
 // d doc.APIDoc 实例，调用方需要保证该数据类型的正确性；
-// servers 用于指定 d.Servers 中每一个服务对应的路由前缀
-func New(h *core.MessageHandler, d *ast.APIDoc, servers map[string]string) (http.Handler, error) {
+// indent 缩进字符串；
+// servers 用于指定 d.Servers 中每一个服务对应的路由前缀；
+// gen 生成随机数据的函数；
+func New(h *core.MessageHandler, d *ast.APIDoc, indent string, servers map[string]string, gen *GenOptions) (http.Handler, error) {
 	c, err := version.SemVerCompatible(d.APIDoc.V(), ast.Version)
 	if err != nil {
 		return nil, err
@@ -41,7 +45,9 @@ func New(h *core.MessageHandler, d *ast.APIDoc, servers map[string]string) (http
 		h:       h,
 		doc:     d,
 		mux:     mux.New(false, false, true, nil, nil),
+		indent:  indent,
 		servers: servers,
+		gen:     gen,
 	}
 
 	if err := m.parse(); err != nil {
@@ -52,7 +58,7 @@ func New(h *core.MessageHandler, d *ast.APIDoc, servers map[string]string) (http
 }
 
 // Load 从本地或是远程加载文档内容
-func Load(h *core.MessageHandler, path core.URI, servers map[string]string) (http.Handler, error) {
+func Load(h *core.MessageHandler, path core.URI, indent string, servers map[string]string, gen *GenOptions) (http.Handler, error) {
 	data, err := path.ReadAll(nil)
 	if err != nil {
 		return nil, err
@@ -93,7 +99,7 @@ func Load(h *core.MessageHandler, path core.URI, servers map[string]string) (htt
 	// 加载并验证
 	d := &ast.APIDoc{}
 	d.Parse(h, core.Block{Location: loc, Data: data})
-	return New(h, d, servers)
+	return New(h, d, indent, servers, gen)
 }
 
 func (m *mock) parse() error {

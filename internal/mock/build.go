@@ -3,6 +3,7 @@
 package mock
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -97,7 +98,7 @@ func (m *mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 		}
 	}
 
-	data, err := buildResponse(resp, r)
+	data, err := buildResponse(resp, r, m.indent, m.gen)
 	if err != nil {
 		m.handleError(w, r, "response.body.", err)
 		return
@@ -108,11 +109,11 @@ func (m *mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 	for _, item := range resp.Headers {
 		switch item.Type.V() {
 		case ast.TypeBool:
-			w.Header().Set(item.Name.V(), strconv.FormatBool(generateBool()))
+			w.Header().Set(item.Name.V(), strconv.FormatBool(m.gen.generateBool()))
 		case ast.TypeNumber:
-			w.Header().Set(item.Name.V(), strconv.FormatInt(generateNumber(item), 10))
+			w.Header().Set(item.Name.V(), fmt.Sprint(m.gen.generateNumber(item)))
 		case ast.TypeString:
-			w.Header().Set(item.Name.V(), generateString(item))
+			w.Header().Set(item.Name.V(), m.gen.generateString(item))
 		default:
 			m.handleError(w, r, "response.headers", locale.NewError(locale.ErrInvalidFormat))
 			return
@@ -292,7 +293,7 @@ func validSimpleParam(p *ast.Param, val string) error {
 	return nil
 }
 
-func buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
+func buildResponse(p *ast.Request, r *http.Request, indent string, g *GenOptions) ([]byte, error) {
 	if p == nil {
 		return nil, nil
 	}
@@ -306,9 +307,9 @@ func buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 	contentType := r.Header.Get("Accept")
 	switch contentType {
 	case "application/json":
-		return buildJSON(p)
+		return buildJSON(p, indent, g)
 	case "application/xml", "text/xml":
-		return buildXML(p)
+		return buildXML(p, indent, g)
 	default:
 		return nil, core.NewSyntaxError(core.Location{}, "headers[accept]", locale.ErrInvalidValue)
 	}

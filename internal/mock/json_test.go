@@ -60,7 +60,7 @@ func TestBuildJSON(t *testing.T) {
 	a := assert.New(t)
 
 	for _, item := range data {
-		data, err := buildJSON(item.Type)
+		data, err := buildJSON(item.Type, indent, testOptions)
 
 		a.NotError(err, "测试 %s 返回了错误值 %s", item.Title, err).
 			Equal(string(data), item.JSON, "测试 %s 失败 v1:%s,v2:%s", item.Title, string(data), item.JSON)

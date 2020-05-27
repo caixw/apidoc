@@ -43,7 +43,7 @@ func TestBuildXML(t *testing.T) {
 	a := assert.New(t)
 
 	for _, item := range data {
-		data, err := buildXML(item.Type)
+		data, err := buildXML(item.Type, indent, testOptions)
 		a.NotError(err, "测试 %s 返回了错误信息 %s", item.Title, err).
 			Equal(string(data), item.XML, "测试 %s 返回的数据不相等 v1:%s,v2:%s", item.Title, string(data), item.XML)
 	}
@@ -132,26 +132,26 @@ func TestValidXMLParamValue(t *testing.T) {
 func TestGenXMLValue(t *testing.T) {
 	a := assert.New(t)
 
-	v := genXMLValue(&ast.Param{})
+	v := genXMLValue(testOptions, &ast.Param{})
 	a.Equal(v, "")
 
-	v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}})
+	v = genXMLValue(testOptions, &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}})
 	a.Equal(v, "")
 
-	v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}})
+	v = genXMLValue(testOptions, &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}})
 	a.Equal(v, true)
 
-	v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}})
+	v = genXMLValue(testOptions, &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}})
 	a.Equal(v, 1024)
 
-	v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}})
+	v = genXMLValue(testOptions, &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}})
 	a.Equal(v, "1024")
 
 	a.Panic(func() {
-		v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}})
+		v = genXMLValue(testOptions, &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}})
 	})
 
 	a.Panic(func() {
-		v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "not-exists"}}})
+		v = genXMLValue(testOptions, &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "not-exists"}}})
 	})
 }
