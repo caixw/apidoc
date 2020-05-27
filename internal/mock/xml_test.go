@@ -49,43 +49,6 @@ func TestBuildXML(t *testing.T) {
 	}
 }
 
-func TestXMLValidator_find(t *testing.T) {
-	item := data[len(data)-1]
-
-	a := assert.New(t)
-	v := &xmlValidator{
-		param: item.Type.Param(),
-	}
-
-	v.names = []string{}
-	p := v.find()
-	a.Nil(p)
-
-	v.names = nil
-	p = v.find()
-	a.Nil(p)
-
-	v.names = []string{}
-	p = v.find()
-	a.Nil(p)
-
-	v.names = []string{"root"}
-	p = v.find()
-	a.NotNil(p).Equal(p.Type.V(), ast.TypeObject)
-
-	v.names = []string{"not-exists"}
-	p = v.find()
-	a.Nil(p)
-
-	v.names = []string{"root", "group", "id"}
-	p = v.find()
-	a.NotNil(p).Equal(p.Type.V(), ast.TypeNumber)
-
-	v.names = []string{"root", "group", "tags", "id"}
-	p = v.find()
-	a.NotNil(p).Equal(p.Type.V(), ast.TypeNumber)
-}
-
 func TestValidXMLParamValue(t *testing.T) {
 	a := assert.New(t)
 

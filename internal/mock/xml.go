@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"strconv"
-	"strings"
 
 	"github.com/issue9/is"
 
@@ -16,11 +15,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
-
-type xmlValidator struct {
-	param *ast.Param
-	names []string // 按顺序保存变量名称
-}
 
 func validXML(p *ast.Request, content []byte) error {
 	if len(content) == 0 {
@@ -30,60 +24,97 @@ func validXML(p *ast.Request, content []byte) error {
 		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 
-	validator := &xmlValidator{
-		param: p.Param(),
-		names: []string{},
-	}
-
-	return validator.valid(xml.NewDecoder(bytes.NewReader(content)))
-}
-
-func (validator *xmlValidator) valid(decoder *xml.Decoder) error {
+	d := xml.NewDecoder(bytes.NewReader(content))
 	for {
-		token, err := decoder.Token()
+		token, err := d.Token()
 		if err == io.EOF && token == nil { // 正常结束
 			return nil
 		}
-
 		if err != nil {
 			return err
 		}
 
 		switch v := token.(type) {
 		case xml.StartElement:
-			validator.pushName(v.Name.Local)
-			for _, attr := range v.Attr {
-				validator.pushName(attr.Name.Local)
-				if err := validator.validValue(attr.Value); err != nil {
-					return err
-				}
-				validator.popName()
-			}
+			return validElement(v, p.Param(), true, d)
 		case xml.EndElement:
-			validator.popName()
-		case xml.CharData:
-			if len(v) > 0 && v[0] == '\n' && (len(v[1:])%len(indent) == 0) {
-				continue
-			}
-
-			if err := validator.validValue(string(v)); err != nil {
-				return err
-			}
-		case xml.Comment, xml.ProcInst, xml.Directive:
+			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 		}
 	}
 }
 
-// 如果 t == "" 表示不需要验证类型，比如 null 可以赋值给任何类型
-func (validator *xmlValidator) validValue(v string) error {
-	field := strings.Join(validator.names, "/")
-
-	p := validator.find()
-	if p == nil {
-		return core.NewSyntaxError(core.Location{}, field, locale.ErrNotFound)
+func validElement(start xml.StartElement, p *ast.Param, allowArray bool, decoder *xml.Decoder) error {
+	for _, attr := range start.Attr {
+		for _, pp := range p.Items {
+			if attr.Name.Local != pp.Name.V() {
+				continue
+			}
+			if err := validXMLParamValue(pp, pp.Name.V(), attr.Value); err != nil {
+				return err
+			}
+			break
+		}
 	}
 
-	return validXMLParamValue(p, field, v)
+	if allowArray && p.Array.V() {
+		if p.XMLWrapped.V() != "" && p.XMLWrapped.V() != start.Name.Local {
+			return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
+		}
+
+		start.Attr = start.Attr[:0] // 在 allowArray == true 已经处理过 start.Attr
+		return validElement(start, p, false, decoder)
+	}
+
+	if (p.Name.V() != start.Name.Local) && (!allowArray && p.XMLWrapped.V() != start.Name.Local) {
+		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
+	}
+
+	for {
+		token, err := decoder.Token()
+		if err == io.EOF && token == nil { // 正常结束
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		var chardata []byte
+		switch v := token.(type) {
+		case xml.StartElement:
+			chardata = nil // 有子元素，说明 chardata 无用
+
+			if allowArray && p.Array.V() && v.Name.Local == p.Name.V() {
+				return validElement(v, p, false, decoder)
+			}
+
+			for _, pp := range p.Items {
+				if pp.Name.V() == v.Name.Local {
+					if pp.XMLExtract.V() {
+						return validElement(v, p, true, decoder)
+					}
+					return validElement(v, pp, true, decoder)
+				}
+			}
+		case xml.EndElement:
+			if allowArray && p.Array.V() {
+				if p.XMLWrapped.V() != "" && p.XMLWrapped.V() != v.Name.Local {
+					return core.NewSyntaxError(core.Location{}, v.Name.Local, locale.ErrNotFound)
+				}
+				return nil
+			}
+			if p.Name.V() != v.Name.Local {
+				return core.NewSyntaxError(core.Location{}, v.Name.Local, locale.ErrNotFound)
+			}
+
+			if chardata != nil {
+				return validXMLParamValue(p, p.Name.V(), string(chardata))
+			}
+			return nil
+		case xml.CharData:
+			chardata = v
+		case xml.Comment, xml.ProcInst, xml.Directive:
+		}
+	}
 }
 
 // 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
@@ -118,82 +149,6 @@ func validXMLParamValue(p *ast.Param, field, v string) error {
 	}
 
 	return nil
-}
-
-func (validator *xmlValidator) pushName(name string) *xmlValidator {
-	validator.names = append(validator.names, name)
-	return validator
-}
-
-func (validator *xmlValidator) popName() *xmlValidator {
-	if len(validator.names) > 0 {
-		validator.names = validator.names[:len(validator.names)-1]
-	}
-	return validator
-}
-
-// 如果 names 为空，返回 nil
-func (validator *xmlValidator) find() *ast.Param {
-	p := validator.param
-
-	if len(validator.names) == 0 || p == nil {
-		return nil
-	}
-
-	var start int
-	if p.Array.V() && p.XMLWrapped.V() == validator.names[0] {
-		if len(validator.names) > 1 && validator.names[1] == p.Name.V() {
-			start = 2
-		} else {
-			return nil
-		}
-	} else if p.Name != nil && (p.Name.V() == validator.names[0]) {
-		start = 1
-	} else {
-		return nil
-	}
-
-	names := validator.names[start:]
-
-LOOP:
-	for i := 0; i < len(names); i++ {
-		name := names[i]
-
-		for _, pp := range p.Items {
-			if pp.Array.V() && pp.XMLWrapped.V() == name {
-				i++
-				if i < len(names) && pp.Name.V() == names[i] {
-					p = pp
-					continue LOOP
-				}
-				return nil
-			}
-
-			if pp.Name.V() == name {
-				p = pp
-				continue LOOP
-			}
-		}
-
-		return nil
-	}
-
-	// 如果根据 names 查找出来的实例带 XMLExtract，则肯定有问题。
-	if p.XMLExtract.V() {
-		return nil
-	}
-
-	// 从子项中查找带 XMLExtract 的项
-	if p.Type.V() == ast.TypeObject {
-		for _, pp := range p.Items {
-			if pp.XMLExtract.V() {
-				p = pp
-				break
-			}
-		}
-	}
-
-	return p
 }
 
 type xmlBuilder struct {
