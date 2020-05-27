@@ -129,27 +129,29 @@ func TestValidXMLParamValue(t *testing.T) {
 	a.Error(validXMLParamValue(p, "", "false"))
 }
 
-func TestGetXMLValue(t *testing.T) {
+func TestGenXMLValue(t *testing.T) {
 	a := assert.New(t)
 
-	v, err := getXMLValue(&ast.Param{})
-	a.NotError(err).Equal(v, "")
+	v := genXMLValue(&ast.Param{})
+	a.Equal(v, "")
 
-	v, err = getXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}})
-	a.NotError(err).Equal(v, "")
+	v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}})
+	a.Equal(v, "")
 
-	v, err = getXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}})
-	a.NotError(err).Equal(v, true)
+	v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}})
+	a.Equal(v, true)
 
-	v, err = getXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}})
-	a.NotError(err).Equal(v, 1024)
+	v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}})
+	a.Equal(v, 1024)
 
-	v, err = getXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}})
-	a.NotError(err).Equal(v, "1024")
+	v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}})
+	a.Equal(v, "1024")
 
-	v, err = getXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}})
-	a.Error(err).Nil(v)
+	a.Panic(func() {
+		v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}})
+	})
 
-	v, err = getXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "not-exists"}}})
-	a.Error(err).Nil(v)
+	a.Panic(func() {
+		v = genXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "not-exists"}}})
+	})
 }

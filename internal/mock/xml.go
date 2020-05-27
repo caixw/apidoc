@@ -44,29 +44,8 @@ func validXML(p *ast.Request, content []byte) error {
 }
 
 func validElement(start xml.StartElement, p *ast.Param, allowArray bool, decoder *xml.Decoder) error {
-	for _, attr := range start.Attr {
-		for _, pp := range p.Items {
-			if attr.Name.Local != pp.Name.V() {
-				continue
-			}
-			if err := validXMLParamValue(pp, pp.Name.V(), attr.Value); err != nil {
-				return err
-			}
-			break
-		}
-	}
-
-	if allowArray && p.Array.V() {
-		if p.XMLWrapped.V() != "" && p.XMLWrapped.V() != start.Name.Local {
-			return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
-		}
-
-		start.Attr = start.Attr[:0] // 在 allowArray == true 已经处理过 start.Attr
-		return validElement(start, p, false, decoder)
-	}
-
-	if (p.Name.V() != start.Name.Local) && (!allowArray && p.XMLWrapped.V() != start.Name.Local) {
-		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
+	if err := validStartElement(start, p, allowArray, decoder); err != nil {
+		return err
 	}
 
 	for {
@@ -81,8 +60,6 @@ func validElement(start xml.StartElement, p *ast.Param, allowArray bool, decoder
 		var chardata []byte
 		switch v := token.(type) {
 		case xml.StartElement:
-			chardata = nil // 有子元素，说明 chardata 无用
-
 			if allowArray && p.Array.V() && v.Name.Local == p.Name.V() {
 				return validElement(v, p, false, decoder)
 			}
@@ -112,9 +89,36 @@ func validElement(start xml.StartElement, p *ast.Param, allowArray bool, decoder
 			return nil
 		case xml.CharData:
 			chardata = v
-		case xml.Comment, xml.ProcInst, xml.Directive:
 		}
 	}
+}
+
+func validStartElement(start xml.StartElement, p *ast.Param, allowArray bool, decoder *xml.Decoder) error {
+	for _, attr := range start.Attr {
+		for _, pp := range p.Items {
+			if attr.Name.Local != pp.Name.V() {
+				continue
+			}
+			if err := validXMLParamValue(pp, pp.Name.V(), attr.Value); err != nil {
+				return err
+			}
+			break
+		}
+	}
+
+	if allowArray && p.Array.V() {
+		if p.XMLWrapped.V() != "" && p.XMLWrapped.V() != start.Name.Local {
+			return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
+		}
+
+		start.Attr = start.Attr[:0] // 在 allowArray == true 已经处理过 start.Attr
+		return validElement(start, p, false, decoder)
+	}
+
+	if (p.Name.V() != start.Name.Local) && (!allowArray && p.XMLWrapped.V() != start.Name.Local) {
+		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
+	}
+	return nil
 }
 
 // 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
@@ -210,42 +214,25 @@ func parseXML(p *ast.Param, chkArray, root bool) (*xmlBuilder, error) {
 	}
 
 	if p.Type.V() != ast.TypeObject {
-		switch p.Type.V() {
-		case ast.TypeBool:
-			builder.chardata = generateBool()
-		case ast.TypeNumber:
-			builder.chardata = generateNumber(p)
-		case ast.TypeString:
-			builder.chardata = generateString(p)
-		}
+		builder.chardata = genXMLValue(p)
 		return builder, nil
 	}
 
 	for _, item := range p.Items {
 		switch {
 		case item.XMLAttr.V():
-			v, err := getXMLValue(item)
-			if err != nil {
-				return nil, err
-			}
-
 			attr := xml.Attr{
 				Name: xml.Name{
 					Local: item.Name.V(),
 				},
-				Value: fmt.Sprint(v),
+				Value: fmt.Sprint(genXMLValue(item)),
 			}
 			if item.XMLNSPrefix != nil {
 				attr.Name.Space = item.XMLNSPrefix.V()
 			}
 			builder.start.Attr = append(builder.start.Attr, attr)
 		case item.XMLExtract.V():
-			v, err := getXMLValue(item)
-			if err != nil {
-				return nil, err
-			}
-
-			builder.chardata = v
+			builder.chardata = genXMLValue(item)
 			builder.cdata = item.XMLCData.V()
 		case item.Array.V():
 			if err := parseArray(item, builder); err != nil {
@@ -309,21 +296,20 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 			return err
 		}
 	}
-
 	return e.EncodeToken(builder.start.End())
 }
 
-func getXMLValue(p *ast.Param) (interface{}, error) {
+func genXMLValue(p *ast.Param) interface{} {
 	switch p.Type.V() {
 	case ast.TypeNone:
-		return "", nil
+		return ""
 	case ast.TypeBool:
-		return generateBool(), nil
+		return generateBool()
 	case ast.TypeNumber:
-		return generateNumber(p), nil
+		return generateNumber(p)
 	case ast.TypeString:
-		return generateString(p), nil
+		return generateString(p)
 	default: // ast.TypeObject:
-		return nil, core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
+		panic(fmt.Sprintf("无效的类型 %s", p.Type.V())) // 加载的时候已经作语法验证，此处还出错则直接 panic
 	}
 }
