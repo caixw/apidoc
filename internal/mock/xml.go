@@ -124,9 +124,8 @@ func validStartElement(start xml.StartElement, p *ast.Param, allowArray bool, d 
 func buildXMLField(field string, p *ast.Param) string {
 	if p.XMLAttr.V() {
 		return field + "@" + p.Name.V()
-	} else {
-		return field + p.Name.V()
 	}
+	return field + p.Name.V()
 }
 
 // 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
