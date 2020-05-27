@@ -223,13 +223,13 @@ func (builder *jsonBuilder) writeIndent() *jsonBuilder {
 
 func (builder *jsonBuilder) incrIndent() *jsonBuilder {
 	builder.deep++
-	builder.indentString = strings.Repeat(indent, builder.deep)
+	builder.indentString = strings.Repeat(randOptions.indent, builder.deep)
 	return builder
 }
 
 func (builder *jsonBuilder) decrIndent() *jsonBuilder {
 	builder.deep--
-	builder.indentString = strings.Repeat(indent, builder.deep)
+	builder.indentString = strings.Repeat(randOptions.indent, builder.deep)
 	return builder
 }
 

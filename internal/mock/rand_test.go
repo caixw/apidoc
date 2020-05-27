@@ -3,5 +3,5 @@
 package mock
 
 func init() {
-	test = true
+	randOptions.test = true
 }

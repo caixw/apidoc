@@ -182,7 +182,7 @@ func buildXML(p *ast.Request) ([]byte, error) {
 
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
-	e.Indent("", indent)
+	e.Indent("", randOptions.indent)
 
 	if err = builder.encode(e); err != nil {
 		return nil, err
