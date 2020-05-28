@@ -62,11 +62,10 @@ func (o *MockOptions) gen() *mock.GenOptions {
 				return rand.Intn(o.MaxNumber-o.MinNumber) + o.MinNumber
 			}
 
-			randInt := rand.Intn(o.MaxNumber-o.MinNumber) + o.MinNumber
 			if rand.Int()%2 == 0 {
-				return randInt
+				return rand.Intn(o.MaxNumber-o.MinNumber) + o.MinNumber
 			}
-			return rand.Float32() * float32(randInt)
+			return float32(o.MinNumber) + rand.Float32()*float32(o.MaxNumber-o.MinNumber)
 		},
 
 		String: func() string {

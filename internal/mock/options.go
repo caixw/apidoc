@@ -8,7 +8,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/ast"
 )
 
-// GenOptions 生成随机数据的选项
+// GenOptions 生成随机数据的函数
 type GenOptions struct {
 	Number    func() interface{}
 	String    func() string
@@ -44,7 +44,6 @@ func (g *GenOptions) generateString(p *ast.Param) string {
 	return g.String()
 }
 
-// 生成随机的数组长度
 func (g *GenOptions) generateSliceSize() int {
 	return g.SliceSize()
 }
