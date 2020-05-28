@@ -64,8 +64,7 @@ var (
 	mockPort        string
 	mockServers     = make(servers, 0)
 	mockStringAlpha string
-
-	mockOptions = &apidoc.MockOptions{}
+	mockOptions     = &apidoc.MockOptions{}
 )
 
 func initMock() {

@@ -207,31 +207,93 @@ func (validator *jsonValidator) find() *ast.Param {
 }
 
 type jsonBuilder struct {
-	buf  *bytes.Buffer
-	err  error
-	deep int
+	buf    *bytes.Buffer
+	err    error
+	deep   int
+	indent string // 单次的缩进
+}
 
-	indentString string // 整体的缩进
-	indent       string // 单次的缩进
+func buildJSON(p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
+	if p != nil && p.Type.V() == ast.TypeNone {
+		return nil, nil
+	}
+
+	builder := &jsonBuilder{
+		buf:    new(bytes.Buffer),
+		indent: indent,
+	}
+
+	if err := builder.encode(p.Param(), true, g); err != nil {
+		return nil, err
+	}
+
+	return builder.buf.Bytes(), nil
+}
+
+func (builder *jsonBuilder) encode(p *ast.Param, chkArray bool, g *GenOptions) error {
+	if p == nil {
+		return builder.writeValue(nil).err
+	}
+
+	if p.Array.V() && chkArray {
+		builder.writeStrings("[\n").deep++
+
+		size := g.generateSliceSize()
+		last := size - 1
+		for i := 0; i < size; i++ {
+			if err := builder.writeIndent().encode(p, false, g); err != nil {
+				return err
+			}
+
+			if i < last {
+				builder.writeStrings(",\n")
+			} else {
+				builder.writeStrings("\n")
+			}
+		}
+
+		builder.deep--
+		return builder.writeIndent().writeStrings("]").err
+	}
+
+	switch p.Type.V() {
+	case ast.TypeNone:
+		builder.writeValue(nil)
+	case ast.TypeBool:
+		builder.writeValue(g.generateBool())
+	case ast.TypeNumber:
+		builder.writeValue(g.generateNumber(p))
+	case ast.TypeString:
+		builder.writeValue(g.generateString(p))
+	case ast.TypeObject:
+		builder.writeStrings("{\n").deep++
+
+		last := len(p.Items) - 1
+		for index, item := range p.Items {
+			builder.writeIndent().writeStrings(`"`, item.Name.V(), `"`, ": ")
+
+			if err := builder.encode(item, true, g); err != nil {
+				return err
+			}
+
+			if index < last {
+				builder.writeStrings(",\n")
+			} else {
+				builder.writeStrings("\n")
+			}
+		}
+
+		builder.deep--
+		builder.writeIndent().writeStrings("}")
+	}
+
+	return builder.err
 }
 
 func (builder *jsonBuilder) writeIndent() *jsonBuilder {
-	if builder.err != nil {
-		return builder
+	if builder.err == nil {
+		_, builder.err = builder.buf.WriteString(strings.Repeat(builder.indent, builder.deep))
 	}
-	_, builder.err = builder.buf.WriteString(builder.indentString)
-	return builder
-}
-
-func (builder *jsonBuilder) incrIndent() *jsonBuilder {
-	builder.deep++
-	builder.indentString = strings.Repeat(builder.indent, builder.deep)
-	return builder
-}
-
-func (builder *jsonBuilder) decrIndent() *jsonBuilder {
-	builder.deep--
-	builder.indentString = strings.Repeat(builder.indent, builder.deep)
 	return builder
 }
 
@@ -264,83 +326,4 @@ func (builder *jsonBuilder) writeValue(v interface{}) *jsonBuilder {
 
 	_, builder.err = builder.buf.Write(vv)
 	return builder
-}
-
-func buildJSON(p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
-	if p != nil && p.Type.V() == ast.TypeNone {
-		return nil, nil
-	}
-
-	builder := &jsonBuilder{
-		buf:    new(bytes.Buffer),
-		indent: indent,
-	}
-
-	if err := writeJSON(builder, p.Param(), true, g); err != nil {
-		return nil, err
-	}
-
-	return builder.buf.Bytes(), nil
-}
-
-func writeJSON(builder *jsonBuilder, p *ast.Param, chkArray bool, g *GenOptions) error {
-	if p == nil {
-		builder.writeValue(nil)
-		return builder.err
-	}
-
-	if p.Array.V() && chkArray {
-		builder.writeStrings("[\n").incrIndent()
-
-		size := g.generateSliceSize()
-		last := size - 1
-		for i := 0; i < size; i++ {
-			builder.writeIndent()
-
-			if err := writeJSON(builder, p, false, g); err != nil {
-				return err
-			}
-
-			if i < last {
-				builder.writeStrings(",\n")
-			} else {
-				builder.writeStrings("\n")
-			}
-		}
-
-		builder.decrIndent().writeIndent().writeStrings("]")
-		return builder.err
-	}
-
-	switch p.Type.V() {
-	case ast.TypeNone:
-		builder.writeValue(nil)
-	case ast.TypeBool:
-		builder.writeValue(g.generateBool())
-	case ast.TypeNumber:
-		builder.writeValue(g.generateNumber(p))
-	case ast.TypeString:
-		builder.writeValue(g.generateString(p))
-	case ast.TypeObject:
-		builder.writeStrings("{\n").incrIndent()
-
-		last := len(p.Items) - 1
-		for index, item := range p.Items {
-			builder.writeIndent().writeStrings(`"`, item.Name.V(), `"`, ": ")
-
-			if err := writeJSON(builder, item, true, g); err != nil {
-				return err
-			}
-
-			if index < last {
-				builder.writeStrings(",\n")
-			} else {
-				builder.writeStrings("\n")
-			}
-		}
-
-		builder.decrIndent().writeIndent().writeStrings("}")
-	}
-
-	return builder.err
 }
