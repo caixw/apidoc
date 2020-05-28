@@ -115,12 +115,11 @@ func (m *mock) parse() error {
 		}
 
 		for name, prefix := range m.servers {
-			prefix := m.mux.Prefix(prefix)
-
 			if !hasServer(api.Servers, name) {
-				continue
+				prefix = "/" + name
 			}
 
+			prefix := m.mux.Prefix(prefix)
 			err := prefix.Handle(api.Path.Path.V(), handler, api.Method.V())
 			if err != nil {
 				return err

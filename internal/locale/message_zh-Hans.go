@@ -57,7 +57,7 @@ options 可以是以下参数
 	Version:                    "版本：%s\n文档：%s\nLSP：%s\nopenapi：%s\nGo：%s",
 	CmdNotFound:                "子命令 %s 未找到\n",
 	FlagMockPortUsage:          "指定 mock 服务的端口号",
-	FlagMockServersUsage:       "指定 mock 服务时，文档中 server 变量对应的路由前缀",
+	FlagMockServersUsage:       "指定 mock 服务时，文档中 server 名对应的路由前缀。",
 	FlagMockIndentUsage:        "指定缩进内容",
 	FlagMockSliceMaxUsage:      "生成的最大数组大小",
 	FlagMockSliceMinUsage:      "生成的最小数组大小",
