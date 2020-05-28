@@ -849,6 +849,12 @@ func TestDecode(t *testing.T) {
 	a.Equal(v15.ID.Value, 8).
 		Equal(v15.Name.Value, "n")
 
+	// instruction
+	v15 = &objectTag{}
+	b = `<?xml version="1.0"?><attr id="7"><name>n</name></attr>`
+	decodeObject(a, b, v15, false)
+	a.Equal(v15.ID.Value, 8).
+		Equal(v15.Name.Value, "n")
 }
 
 func TestDecode_omitempty(t *testing.T) {

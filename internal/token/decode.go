@@ -76,7 +76,7 @@ func Decode(h *core.MessageHandler, p *Parser, v interface{}) {
 				h.Error(err)
 				return
 			}
-		case *Comment, *String: // 忽略注释和普通的文本内容
+		case *Comment, *String, *Instruction: // 忽略注释和普通的文本内容
 		default:
 			h.Error(p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
 			return

@@ -129,6 +129,6 @@ func TestAddStylesheet(t *testing.T) {
 
 	for index, item := range data {
 		output := string(addStylesheet([]byte(item.input)))
-		a.Equal(output, item.output, "not equal at %d,want: %s,get:%s", index, item.output, output)
+		a.Equal(output, item.output, "not equal at %d\nv1: %s\nv2:%s", index, item.output, output)
 	}
 }
