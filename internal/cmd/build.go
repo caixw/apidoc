@@ -22,6 +22,8 @@ func doBuild(io.Writer) error {
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	build.LoadConfig(h, getPath(buildFlagSet)).Build(time.Now())
+	if cfg := build.LoadConfig(h, getPath(buildFlagSet)); cfg != nil {
+		cfg.Build(time.Now())
+	}
 	return nil
 }

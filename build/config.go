@@ -55,9 +55,7 @@ type Config struct {
 func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
 	for _, filename := range allowConfigFilenames {
 		path := wd.Append(filename)
-
-		exists, err := path.Exists()
-		if err != nil {
+		if exists, err := path.Exists(); err != nil {
 			h.Error(err)
 			continue
 		} else if exists {

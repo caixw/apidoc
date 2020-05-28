@@ -34,7 +34,6 @@ func TestLoadConfig(t *testing.T) {
 
 	rslt = messagetest.NewMessageHandler()
 	cfg = LoadConfig(rslt.Handler, docs.Dir()) // 不存在 apidoc 的配置文件
-
 	rslt.Handler.Stop()
 	a.Nil(cfg).
 		NotEmpty(rslt.Errors).

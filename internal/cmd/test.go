@@ -21,6 +21,8 @@ func test(w io.Writer) error {
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	build.LoadConfig(h, getPath(testFlagSet)).Test()
+	if cfg := build.LoadConfig(h, getPath(testFlagSet)); cfg != nil {
+		cfg.Test()
+	}
 	return nil
 }
