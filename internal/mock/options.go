@@ -10,11 +10,26 @@ import (
 
 // GenOptions 生成随机数据的函数
 type GenOptions struct {
-	Number    func() interface{}
-	String    func() string
-	Bool      func() bool
+	// 返回一个随机的数值
+	//
+	// 可以是浮点和整数类型。
+	Number func() interface{}
+
+	// 返回一个随机长度的字符串
+	String func() string
+
+	// 返回一个随机的布尔值
+	Bool func() bool
+
+	// 返回一个随机的数值
+	//
+	// 该数值被用于声明 slice 长度，所以必须为正整数。
 	SliceSize func() int
-	Index     func(max int) int
+
+	// 返回一个介于 [0, max] 之间的数值
+	//
+	// 该数值被用于从数组中获取其中的某个元素。
+	Index func(max int) int
 }
 
 func isEnum(p *ast.Param) bool {
