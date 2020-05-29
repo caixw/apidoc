@@ -20,7 +20,7 @@ import (
 
 // 几种输出的类型
 const (
-	ApidocXML   = "apidoc+xml"
+	APIDocXML   = "apidoc+xml"
 	OpenapiYAML = "openapi+yaml"
 	OpenapiJSON = "openapi+json"
 )
@@ -78,7 +78,7 @@ func (o *Output) sanitize() error {
 	}
 
 	if o.Type == "" {
-		o.Type = ApidocXML
+		o.Type = APIDocXML
 	}
 
 	if o.Version != "" {
@@ -88,7 +88,7 @@ func (o *Output) sanitize() error {
 	}
 
 	switch o.Type {
-	case ApidocXML:
+	case APIDocXML:
 		o.marshal = apidocMarshaler
 	case OpenapiJSON:
 		o.marshal = openapi.JSON

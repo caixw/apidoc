@@ -39,7 +39,7 @@ func TestOutput_Sanitize(t *testing.T) {
 	o = &Output{Type: "invalid-type"}
 	a.Error(o.sanitize())
 
-	o = &Output{Type: ApidocXML}
+	o = &Output{Type: APIDocXML}
 	o.Path = "./testdir/apidoc.json"
 	a.NotError(o.sanitize())
 	a.Equal(o.Style, docs.StylesheetURL(core.OfficialURL)).

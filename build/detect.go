@@ -15,8 +15,16 @@ import (
 )
 
 // DetectConfig 检测 wd 内容并生成 Config 实例
+//
+// wd 只能为本地文件系统；
+// recursive 是否检测子目录；
 func DetectConfig(wd core.URI, recursive bool) (*Config, error) {
-	inputs, err := detectInput(wd, recursive)
+	scheme, path := wd.Parse()
+	if scheme != "" && scheme != core.SchemeFile {
+		panic("参数 wd 只能为本地文件")
+	}
+
+	inputs, err := detectInput(path, recursive)
 	if err != nil {
 		return nil, err
 	}
@@ -37,12 +45,8 @@ func DetectConfig(wd core.URI, recursive bool) (*Config, error) {
 // 检测指定目录下的内容，并为其生成一个合适的 Input 实例。
 //
 // 检测依据为根据扩展名来做统计，数量最大且被支持的获胜。
-func detectInput(dir core.URI, recursive bool) ([]*Input, error) {
-	dirLocal, err := dir.File()
-	if err != nil {
-		return nil, err
-	}
-	exts, err := detectExts(dirLocal, recursive)
+func detectInput(dir string, recursive bool) ([]*Input, error) {
+	exts, err := detectExts(dir, recursive)
 	if err != nil {
 		return nil, err
 	}
