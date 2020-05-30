@@ -12,6 +12,6 @@ const (
 
 	// 文档允许的最小长度
 	//
-	// 文档都是以 <api 或是 <apidoc 开头的，所以最起码要大于 len("<api/>") 的值。
-	minSize = 6
+	// 文档都是以 <api 或是 <apidoc 开头的，所以最起码要等于此值。
+	minSize = len("<api/>")
 )
