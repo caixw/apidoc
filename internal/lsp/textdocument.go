@@ -3,7 +3,6 @@
 package lsp
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -73,7 +72,6 @@ func (f *folder) matchPosition(uri core.URI, pos core.Position) (bool, error) {
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover
 func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *protocol.Hover) error {
-	fmt.Println("INFO")
 	for _, f := range s.folders {
 		f.searchHover(in.TextDocument.URI, in.TextDocumentPositionParams.Position, out)
 
@@ -102,4 +100,32 @@ func (f *folder) searchHover(uri core.URI, pos core.Position, hover *protocol.Ho
 			Value: tip.Usage,
 		}
 	}
+}
+
+// textDocument/publishDiagnostics
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_publishDiagnostics
+func (s *server) textDocumentPublishDiagnostics(uri core.URI, errs []*core.SyntaxError, warns []*core.SyntaxError) error {
+	p := &protocol.PublishDiagnosticsParams{
+		URI:         uri,
+		Diagnostics: make([]protocol.Diagnostic, 0, len(errs)+len(warns)),
+	}
+
+	for _, err := range errs {
+		p.Diagnostics = append(p.Diagnostics, protocol.Diagnostic{
+			Range:    err.Location.Range,
+			Message:  err.Error(),
+			Severity: protocol.DiagnosticSeverityError,
+		})
+	}
+
+	for _, warn := range warns {
+		p.Diagnostics = append(p.Diagnostics, protocol.Diagnostic{
+			Range:    warn.Location.Range,
+			Message:  warn.Error(),
+			Severity: protocol.DiagnosticSeverityWarning,
+		})
+	}
+
+	return s.Notify("textDocument/publishDiagnostics", p)
 }
