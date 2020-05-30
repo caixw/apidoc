@@ -15,10 +15,12 @@ jobs:
     steps:
 
       - name: Check out code into the Go module directory
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
         uses: actions/checkout@v2
+          with:
+            config:
+              core:
+                autocrlf: false
+                eol: lf
 
       - name: Set up Go ${{ matrix.go }}
         uses: actions/setup-go@v2
