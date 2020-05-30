@@ -14,13 +14,13 @@ jobs:
         
     steps:
 
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
-        with:
-          config:
-            core:
-              autocrlf: false
-              eol: lf
 
       - name: Set up Go ${{ matrix.go }}
         uses: actions/setup-go@v2
