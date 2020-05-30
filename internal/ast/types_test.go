@@ -178,15 +178,6 @@ func TestAPIDoc(t *testing.T) {
 		Equal(srv.Deprecated.V(), "1.0.1").
 		Equal(srv.Description.V(), "\n        <p>client api</p>\n        ")
 
-	desc := []rune(srv.Description.V())
-	desc2 := []rune("\n        <p>client api</p>\n        ")
-	for i, b := range desc {
-		b2 := desc2[i]
-		if b != b2 {
-			println("not equal", i, b, b2)
-		}
-	}
-
 	a.NotNil(doc.License).
 		Equal(doc.License.Text.V(), "MIT").
 		Equal(doc.License.URL.V(), "https://opensource.org/licenses/MIT")
