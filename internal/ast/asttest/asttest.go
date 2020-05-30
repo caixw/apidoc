@@ -135,6 +135,7 @@ func Get() *ast.APIDoc {
 				},
 				Responses: []*ast.Request{
 					{
+						Status: &ast.StatusAttribute{Value: ast.Number{Value: http.StatusCreated}},
 						Description: &ast.Richtext{
 							Type: &ast.Attribute{Value: token.String{Value: "html"}},
 							Text: &ast.CData{Value: token.String{Value: "<p>desc</p>"}},
