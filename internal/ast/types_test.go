@@ -172,12 +172,20 @@ func TestAPIDoc(t *testing.T) {
 		Nil(srv.Description).
 		Equal(srv.Summary.V(), "admin api")
 
-	desc := "\n        <p>client api</p>\n        "
 	srv = doc.Servers[1]
 	a.Equal(srv.Name.V(), "client").
 		Equal(srv.URL.V(), "https://api.example.com/client").
 		Equal(srv.Deprecated.V(), "1.0.1").
-		Equal(srv.Description.V(), desc, "%d,%d\nv1=%v\nv2=%v", len(srv.Description.V()), len(desc), srv.Description.V(), desc)
+		Equal(srv.Description.V(), "\n        <p>client api</p>\n        ")
+
+	desc2 := []rune(srv.Description.V())
+	desc := "\n        <p>client api</p>\n        "
+	for i, b := range desc {
+		b2 := desc2[i]
+		if b != b2 {
+			println("not equal", i, b, b2)
+		}
+	}
 
 	a.NotNil(doc.License).
 		Equal(doc.License.Text.V(), "MIT").
