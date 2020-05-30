@@ -66,7 +66,7 @@
                     <xsl:value-of select="docs/footer/license/p[3]" />
                 </p>
                 </div>
-                <a href="#" class="goto-top" aria-label="{docs/locales/goto-top}" />
+                <a href="#" class="goto-top" title="{docs/locales/goto-top}" aria-label="{docs/locales/goto-top}" />
             </footer>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/components/prism-core.min.js"></script>
