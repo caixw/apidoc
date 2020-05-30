@@ -1,6 +1,6 @@
 # apidoc
 
-[![Test Status](https://github.com/caixw/apidoc/workflows/Test/badge.svg)](https://github.com/caixw/apidoc/actions?query=workflow%3ATest)
+[![Test Status](https://github.com/caixw/apidoc/workflows/Test/badge.svg?branch=master)](https://github.com/caixw/apidoc/actions?query=workflow%3ATest)
 [![Latest Release](https://img.shields.io/github/release/caixw/apidoc.svg?style=flat-square)](https://github.com/caixw/apidoc/releases/latest)
 [![Go version](https://img.shields.io/badge/Go-1.13-brightgreen.svg?style=flat)](https://golang.org)
 [![Go Report Card](https://goreportcard.com/badge/github.com/caixw/apidoc)](https://goreportcard.com/report/github.com/caixw/apidoc)
