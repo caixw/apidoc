@@ -118,8 +118,8 @@ func TestConfig_Build(t *testing.T) {
 	cfg.Build(time.Now())
 
 	rslt.Handler.Stop()
-	a.NotEmpty(rslt.Successes). // 有成功提示
-					Empty(rslt.Errors)
+	a.NotEmpty(rslt.Infos). // 有成功提示
+				Empty(rslt.Errors)
 }
 
 func TestConfig_Buffer(t *testing.T) {
