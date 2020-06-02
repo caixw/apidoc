@@ -33,8 +33,8 @@ func detect(w io.Writer) error {
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	path := core.URI(detectDir)
-	cfg, err := build.DetectConfig(path, detectRecursive)
+	dir := core.URI(detectDir)
+	cfg, err := build.DetectConfig(dir, detectRecursive)
 	if err != nil {
 		return err
 	}
@@ -48,9 +48,9 @@ func detect(w io.Writer) error {
 		return err
 	}
 
-	if err = cfg.Save(path); err != nil {
+	if err = cfg.Save(dir); err != nil {
 		return err
 	}
-	h.Locale(core.Succ, locale.ConfigWriteSuccess, path)
+	h.Locale(core.Succ, locale.ConfigWriteSuccess, dir)
 	return nil
 }

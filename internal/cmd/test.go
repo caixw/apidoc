@@ -18,7 +18,7 @@ var testDir uri = "./"
 
 func initTest(command *cmdopt.CmdOpt) {
 	testFlagSet = command.New("test", locale.Sprintf(locale.CmdTestUsage), test)
-	testFlagSet.Var(&buildDir, "d", locale.Sprintf(locale.FlagTestDirUsage))
+	testFlagSet.Var(&testDir, "d", locale.Sprintf(locale.FlagTestDirUsage))
 }
 
 func test(w io.Writer) error {
