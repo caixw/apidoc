@@ -39,6 +39,7 @@ var cmnHans = map[string]string{
 	FlagMockStringAlphaUsage:   "生成的字符串中允许出现的字符",
 	FlagDetectRecursive:        "detect 子命令是否检测子目录的值",
 	FlagDetectDirUsage:         "以 `URI` 形式表示检测项目地址",
+	FlagDetectWrite:            "是否将配置内容写入文件，如果为 true，会将配置内容写入检测目录下的 .apidoc.yaml 文件。",
 	FlagStaticPortUsage:        "指定 static 服务的端口号",
 	FlagStaticDocsUsage:        "指定 static 服务静态文件所在的 `URI`",
 	FlagStaticStylesheetUsage:  "指定 static 是否只启用样式文件内容",

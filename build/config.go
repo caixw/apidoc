@@ -133,7 +133,7 @@ func (cfg *Config) sanitize(file core.URI) error {
 	return cfg.Output.sanitize()
 }
 
-// Save 将内容保存至文件
+// Save 将内容保存至 wd 目录下的 .apidoc.yaml 文件
 func (cfg *Config) Save(wd core.URI) error {
 	data, err := yaml.Marshal(cfg)
 	if err != nil {

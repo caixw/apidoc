@@ -39,6 +39,7 @@ var cmnHant = map[string]string{
 	FlagMockStringMinUsage:     "生成的字符串最小長度",
 	FlagMockStringAlphaUsage:   "生成的字符串中允許出現的字符",
 	FlagDetectRecursive:        "detect 子命令是否檢測子目錄的值",
+	FlagDetectWrite:            "是否將配置內容寫入文件，如果為 true，會將配置內容寫入檢測目錄下的 .apidoc.yaml 文件。",
 	FlagStaticPortUsage:        "指定 static 服務的端口號",
 	FlagStaticDocsUsage:        "指定 static 服務靜態文件所在的 `URI`",
 	FlagStaticStylesheetUsage:  "指定 static 是否只啟用樣式文件內容",
