@@ -12,16 +12,18 @@ import (
 )
 
 var testFlagSet *flag.FlagSet
+var testDir uri = "./"
 
 func initTest() {
-	testFlagSet = command.New("test", test, buildUsage(locale.CmdTestUsage))
+	testFlagSet = command.New("test", locale.Sprintf(locale.CmdTestUsage), test)
+	testFlagSet.Var(&buildDir, "d", locale.Sprintf(locale.FlagTestDirUsage))
 }
 
 func test(w io.Writer) error {
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	if cfg := build.LoadConfig(h, getPath(testFlagSet)); cfg != nil {
+	if cfg := build.LoadConfig(h, core.URI(testDir)); cfg != nil {
 		cfg.Test()
 	}
 	return nil

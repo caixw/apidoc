@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
 	"io"
 	"log"
 
@@ -21,7 +20,7 @@ var (
 )
 
 func initLSP() {
-	lspFlagSet = command.New("lsp", doLSP, lspUsage)
+	lspFlagSet = command.New("lsp", locale.Sprintf(locale.CmdLSPUsage), doLSP)
 	lspFlagSet.StringVar(&lspPort, "p", ":8080", locale.Sprintf(locale.FlagLSPPortUsage))
 	lspFlagSet.StringVar(&lspMode, "m", "http", locale.Sprintf(locale.FlagLSPModeUsage))
 	lspFlagSet.BoolVar(&lspHeader, "h", false, locale.Sprintf(locale.FlagLSPHeaderUsage))
@@ -29,9 +28,4 @@ func initLSP() {
 
 func doLSP(o io.Writer) error {
 	return apidoc.ServeLSP(lspHeader, lspMode, lspPort, log.New(o, "", 0), log.New(o, "", 0))
-}
-
-func lspUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdLSPUsage, getFlagSetUsage(lspFlagSet)))
-	return err
 }

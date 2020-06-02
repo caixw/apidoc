@@ -5,7 +5,6 @@ package cmd
 import (
 	"bytes"
 	"flag"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -66,12 +65,14 @@ var (
 	mockServers     = make(servers, 0)
 	mockStringAlpha string
 	mockOptions     = &apidoc.MockOptions{}
+	mockPath        = uri("./")
 )
 
 func initMock() {
-	mockFlagSet = command.New("mock", doMock, mockUsage)
+	mockFlagSet = command.New("mock", locale.Sprintf(locale.CmdMockUsage), doMock)
 	mockFlagSet.StringVar(&mockPort, "p", ":8080", locale.Sprintf(locale.FlagMockPortUsage))
 	mockFlagSet.Var(mockServers, "s", locale.Sprintf(locale.FlagMockServersUsage))
+	mockFlagSet.Var(&mockPath, "path", locale.Sprintf(locale.FlagMockPathUsage))
 
 	mockFlagSet.StringVar(&mockOptions.Indent, "indent", "\t", locale.Sprintf(locale.FlagMockIndentUsage))
 
@@ -93,7 +94,7 @@ func doMock(io.Writer) error {
 
 	mockOptions.Servers = mockServers
 	mockOptions.StringAlpha = []byte(mockStringAlpha)
-	handler, err := apidoc.MockFile(h, getPath(mockFlagSet), mockOptions)
+	handler, err := apidoc.MockFile(h, core.URI(mockPath), mockOptions)
 	if err != nil {
 		return err
 	}
@@ -102,9 +103,4 @@ func doMock(io.Writer) error {
 	h.Locale(core.Succ, locale.ServerStart, url)
 
 	return http.ListenAndServe(mockPort, handler)
-}
-
-func mockUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdMockUsage, getFlagSetUsage(mockFlagSet)))
-	return err
 }

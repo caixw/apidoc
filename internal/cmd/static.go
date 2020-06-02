@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -21,38 +20,21 @@ var (
 	staticStylesheet  bool
 	staticContentType string
 	staticURL         string
+	staticPath        uri
 )
 
-type uri core.URI
-
-func (u uri) Get() interface{} {
-	return string(u)
-}
-
-func (u *uri) Set(v string) error {
-	*u = uri(core.FileURI(v))
-	return nil
-}
-
-func (u *uri) String() string {
-	return core.URI(*u).String()
-}
-
 func initStatic() {
-	staticFlagSet = command.New("static", static, staticUsage)
+	staticFlagSet = command.New("static", locale.Sprintf(locale.CmdStaticUsage), static)
 	staticFlagSet.StringVar(&staticPort, "p", ":8080", locale.Sprintf(locale.FlagStaticPortUsage))
 	staticFlagSet.Var(&staticDocs, "docs", locale.Sprintf(locale.FlagStaticDocsUsage))
 	staticFlagSet.StringVar(&staticContentType, "ct", "", locale.Sprintf(locale.FlagStaticContentTypeUsage))
 	staticFlagSet.StringVar(&staticURL, "url", "", locale.Sprintf(locale.FlagStaticURLUsage))
 	staticFlagSet.BoolVar(&staticStylesheet, "stylesheet", false, locale.Sprintf(locale.FlagStaticStylesheetUsage))
+	staticFlagSet.Var(&staticPath, "path", locale.Sprintf(locale.FlagStaticPathUsage))
 }
 
 func static(io.Writer) (err error) {
-	var path core.URI
-	if staticFlagSet.NArg() != 0 {
-		path = getPath(staticFlagSet)
-	}
-
+	path := core.URI(staticPath)
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
@@ -71,9 +53,4 @@ func static(io.Writer) (err error) {
 	h.Locale(core.Succ, locale.ServerStart, url)
 
 	return http.ListenAndServe(staticPort, handler)
-}
-
-func staticUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdStaticUsage, getFlagSetUsage(staticFlagSet)))
-	return err
 }

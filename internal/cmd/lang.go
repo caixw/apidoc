@@ -12,7 +12,7 @@ import (
 )
 
 func initLang() {
-	command.New("lang", doLang, buildUsage(locale.CmdLangUsage))
+	command.New("lang", locale.Sprintf(locale.CmdLangUsage), doLang)
 }
 
 func doLang(w io.Writer) error {

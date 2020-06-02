@@ -4,58 +4,27 @@ package locale
 
 var cmnHans = map[string]string{
 	// 与 flag 包相关的处理
-	CmdUsage: `%s 是一个 RESTful API 文档生成工具
+	CmdUsage: "%s 是一个 RESTful API 文档生成工具\n",
+	CmdUsageFooter: `详细文档可访问官网 %s
+源码以 MIT 许可发布于 %s
+`,
+	CmdUsageOptions:  "选项：",
+	CmdUsageCommands: "子命令：",
+	CmdHelpUsage:     "显示帮助信息\n",
+	CmdVersionUsage:  "显示版本信息\n",
+	CmdLangUsage:     "显示所有支持的语言\n",
+	CmdLocaleUsage:   "显示所有支持的本地化内容\n",
+	CmdDetectUsage:   "根据目录下的内容生成配置文件\n",
+	CmdTestUsage:     "测试语法的正确性\n",
+	CmdMockUsage:     "启用 mock 服务\n",
+	CmdBuildUsage:    "生成文档内容\n",
+	CmdStaticUsage:   "启用静态文件服务\n",
+	CmdLSPUsage:      "启动 language server protocol 服务\n",
+	Version:          "版本：%s\n文档：%s\nLSP：%s\nopenapi：%s\nGo：%s",
+	CmdNotFound:      "子命令 %s 未找到\n",
 
-用法：
-apidoc cmd [args]
-
-cmd 为子命令，args 为传递给子命令的参数，目前支持以下子命令：
-%s
-
-源代码采用 MIT 开源许可证，发布于 %s
-详细信息可访问官网 %s`,
-	CmdHelpUsage:    "显示帮助信息",
-	CmdVersionUsage: "显示版本信息",
-	CmdLangUsage:    "显示所有支持的语言",
-	CmdLocaleUsage:  "显示所有支持的本地化内容",
-	CmdDetectUsage: `根据目录下的内容生成配置文件
-
-用法：
-apidoc detect [options] [path]
-
-options 可以是以下参数：
-%s
-
-path 表示目录的路径，或不指定，表示使用当前工作目录 ./ 代替。`,
-	CmdTestUsage: "测试语法的正确性",
-	CmdMockUsage: `启用 mock 服务
-
-用法：
-apidoc mock [options] [path]
-
-options 可以是以下参数：
-%s
-
-path 表示文档路径，或不指定，则使用当前工作目录 ./ 代替。`,
-	CmdBuildUsage: "生成文档内容",
-	CmdStaticUsage: `启用静态文件服务
-
-用法：
-apidoc static [options] [path]
-
-options 可以是以下参数：
-%s
-
-path 表示需要展示的文档路径，为空表示没有需要展示的文档。`,
-	CmdLSPUsage: `启动 language server protocol 服务
-
-用法：
-apidoc lsp [options]
-
-options 可以是以下参数
-%s`,
-	Version:                    "版本：%s\n文档：%s\nLSP：%s\nopenapi：%s\nGo：%s",
-	CmdNotFound:                "子命令 %s 未找到\n",
+	FlagTestDirUsage:           "以 `URI` 形式表示测试项目地址",
+	FlagBuildDirUsage:          "以 `URI` 形式表示的项目地址",
 	FlagMockPortUsage:          "指定 mock 服务的端口号",
 	FlagMockServersUsage:       "指定 mock 服务时，文档中 server 名对应的路由前缀。",
 	FlagMockIndentUsage:        "指定缩进内容",
@@ -64,15 +33,18 @@ options 可以是以下参数
 	FlagMockNumMaxUsage:        "生成的数值最大值",
 	FlagMockNumMinUsage:        "生成的数值最小值",
 	FlagMockNumFloatUsage:      "生成的数值是否允许有浮点数存在",
+	FlagMockPathUsage:          "指定文档的 `URI` 格式路径，根据此文档的内容生成 mock 数据。",
 	FlagMockStringMaxUsage:     "生成的字符串最大长度",
 	FlagMockStringMinUsage:     "生成的字符串最小长度",
 	FlagMockStringAlphaUsage:   "生成的字符串中允许出现的字符",
 	FlagDetectRecursive:        "detect 子命令是否检测子目录的值",
+	FlagDetectDirUsage:         "以 `URI` 形式表示检测项目地址",
 	FlagStaticPortUsage:        "指定 static 服务的端口号",
-	FlagStaticDocsUsage:        "指定 static 服务的文件夹",
+	FlagStaticDocsUsage:        "指定 static 服务静态文件所在的 `URI`",
 	FlagStaticStylesheetUsage:  "指定 static 是否只启用样式文件内容",
 	FlagStaticContentTypeUsage: "指定 static 的 content-type 值，不指定，则根据扩展名自动获取",
 	FlagStaticURLUsage:         "指定 static 服务中文档的输出地址",
+	FlagStaticPathUsage:        "指定 static 服务 `URI` 格式的文档路径，如果未指定，则不生成相关的文档内容。",
 	FlagLSPPortUsage:           "指定 LSP 服务的端口号",
 	FlagLSPModeUsage:           "指定 LSP 的运行方式，可以是 websocket、tcp 和 udp",
 	FlagLSPHeaderUsage:         "指定 LSP 传递内容是否带报头信息",

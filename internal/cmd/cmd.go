@@ -4,12 +4,10 @@
 package cmd
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/issue9/cmdopt"
 	"github.com/issue9/term/v2/colors"
@@ -53,13 +51,35 @@ type printer struct {
 	prefix message.Reference
 }
 
+type uri core.URI
+
+func (u uri) Get() interface{} {
+	return string(u)
+}
+
+func (u *uri) Set(v string) error {
+	*u = uri(core.FileURI(v))
+	return nil
+}
+
+func (u *uri) String() string {
+	return core.URI(*u).String()
+}
+
 // Init 初始化 cmdopt.CmdOpt 实例
 func Init(out io.Writer) *cmdopt.CmdOpt {
-	command = cmdopt.New(out, flag.ContinueOnError, usage, func(name string) string {
-		return locale.Sprintf(locale.CmdNotFound, name)
-	})
+	command = cmdopt.New(
+		out,
+		flag.ExitOnError,
+		locale.Sprintf(locale.CmdUsage, core.Name),
+		locale.Sprintf(locale.CmdUsageFooter, core.OfficialURL, core.RepoURL),
+		locale.Sprintf(locale.CmdUsageOptions),
+		locale.Sprintf(locale.CmdUsageCommands),
+		func(name string) string {
+			return locale.Sprintf(locale.CmdNotFound, name)
+		})
 
-	command.Help("help", buildUsage(locale.CmdHelpUsage))
+	command.Help("help", locale.Sprintf(locale.CmdHelpUsage))
 	initBuild()
 	initDetect()
 	initLang()
@@ -71,37 +91,6 @@ func Init(out io.Writer) *cmdopt.CmdOpt {
 	initLSP()
 
 	return command
-}
-
-func usage(w io.Writer) error {
-	cmds := strings.Join(command.Commands(), ",")
-	msg := locale.Sprintf(locale.CmdUsage, core.Name, cmds, core.RepoURL, core.OfficialURL)
-	_, err := fmt.Fprintln(w, msg)
-	return err
-}
-
-func buildUsage(key message.Reference, v ...interface{}) cmdopt.DoFunc {
-	return func(w io.Writer) error {
-		_, err := fmt.Fprintln(w, locale.Sprintf(key, v...))
-		return err
-	}
-}
-
-func getFlagSetUsage(fs *flag.FlagSet) string {
-	buf := new(bytes.Buffer)
-	origin := fs.Output()
-	fs.SetOutput(buf)
-	fs.PrintDefaults()
-	fs.SetOutput(origin)
-	return buf.String()
-}
-
-// 从命令行尾部获取路径参数，或是在未指定的情况下，采用当前目录。
-func getPath(fs *flag.FlagSet) core.URI {
-	if fs != nil && 0 != fs.NArg() {
-		return core.FileURI(fs.Arg(0))
-	}
-	return core.FileURI("./")
 }
 
 func messageHandle(msg *core.Message) {

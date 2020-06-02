@@ -9,10 +9,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-var (
-	_ flag.Getter = servers{}
-	_ flag.Value  = servers{}
-)
+var _ flag.Getter = servers{}
 
 func TestMockOptions(t *testing.T) {
 	a := assert.New(t)

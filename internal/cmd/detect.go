@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
 	"io"
 
 	"github.com/caixw/apidoc/v7/build"
@@ -12,35 +11,32 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-var detectFlagSet *flag.FlagSet
-
-var detectRecursive bool
+var (
+	detectFlagSet   *flag.FlagSet
+	detectRecursive bool
+	detectDir       = uri("./")
+)
 
 func initDetect() {
-	detectFlagSet = command.New("detect", detect, detectUsage)
+	detectFlagSet = command.New("detect", locale.Sprintf(locale.CmdDetectUsage), detect)
 	detectFlagSet.BoolVar(&detectRecursive, "r", true, locale.Sprintf(locale.FlagDetectRecursive))
+	detectFlagSet.Var(&buildDir, "d", locale.Sprintf(locale.FlagDetectDirUsage))
 }
 
 func detect(io.Writer) error {
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	uri := getPath(detectFlagSet)
-
-	cfg, err := build.DetectConfig(uri, detectRecursive)
+	path := core.URI(detectDir)
+	cfg, err := build.DetectConfig(path, detectRecursive)
 	if err != nil {
 		return err
 	}
 
-	if err = cfg.Save(uri); err != nil {
+	if err = cfg.Save(path); err != nil {
 		return err
 	}
 
-	h.Locale(core.Succ, locale.ConfigWriteSuccess, uri)
+	h.Locale(core.Succ, locale.ConfigWriteSuccess, path)
 	return nil
-}
-
-func detectUsage(w io.Writer) error {
-	_, err := fmt.Fprintln(w, locale.Sprintf(locale.CmdDetectUsage, getFlagSetUsage(detectFlagSet)))
-	return err
 }

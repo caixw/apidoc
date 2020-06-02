@@ -14,7 +14,7 @@ import (
 )
 
 func initLocale() {
-	command.New("locale", doLocale, buildUsage(locale.CmdLocaleUsage))
+	command.New("locale", locale.Sprintf(locale.CmdLocaleUsage), doLocale)
 }
 
 func doLocale(w io.Writer) error {

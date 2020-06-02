@@ -13,16 +13,18 @@ import (
 )
 
 var buildFlagSet *flag.FlagSet
+var buildDir = uri("./")
 
 func initBuild() {
-	buildFlagSet = command.New("build", doBuild, buildUsage(locale.CmdBuildUsage))
+	buildFlagSet = command.New("build", locale.Sprintf(locale.CmdBuildUsage), doBuild)
+	buildFlagSet.Var(&buildDir, "d", locale.Sprintf(locale.FlagBuildDirUsage))
 }
 
 func doBuild(io.Writer) error {
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	if cfg := build.LoadConfig(h, getPath(buildFlagSet)); cfg != nil {
+	if cfg := build.LoadConfig(h, core.URI(buildDir)); cfg != nil {
 		cfg.Build(time.Now())
 	}
 	return nil

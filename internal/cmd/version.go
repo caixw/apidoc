@@ -14,7 +14,7 @@ import (
 )
 
 func initVersion() {
-	command.New("version", version, buildUsage(locale.CmdVersionUsage))
+	command.New("version", locale.Sprintf(locale.CmdVersionUsage), version)
 }
 
 func version(w io.Writer) error {
