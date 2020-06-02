@@ -24,6 +24,14 @@ import (
 	"github.com/caixw/apidoc/v7/internal/lsp"
 )
 
+const (
+	// LSPVersion 获取当前支持的 LSP 版本
+	LSPVersion = lsp.Version
+
+	// DocVersion 获取文档的版本信息
+	DocVersion = ast.Version
+)
+
 // Config 配置文件映射的结构
 type Config = build.Config
 
@@ -52,16 +60,6 @@ func Version(full bool) string {
 		return core.FullVersion()
 	}
 	return core.Version
-}
-
-// LSPVersion 获取当前支持的 LSP 版本
-func LSPVersion() string {
-	return lsp.Version
-}
-
-// DocVersion 获取文档的版本信息
-func DocVersion() string {
-	return ast.Version
 }
 
 // Build 解析文档并输出文档内容

@@ -17,7 +17,7 @@ func TestCmdVersion(t *testing.T) {
 	cmd := Init(buf)
 	resetPrinters()
 	a.NotError(cmd.Exec([]string{"version"}))
-	a.Contains(buf.String(), apidoc.LSPVersion()).
-		Contains(buf.String(), apidoc.DocVersion()).
+	a.Contains(buf.String(), apidoc.LSPVersion).
+		Contains(buf.String(), apidoc.DocVersion).
 		Contains(buf.String(), apidoc.Version(true))
 }

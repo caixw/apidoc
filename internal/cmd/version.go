@@ -21,7 +21,7 @@ func initVersion(command *cmdopt.CmdOpt) {
 
 func version(w io.Writer) error {
 	goVersion := strings.TrimLeft(runtime.Version(), "go")
-	msg := locale.Sprintf(locale.Version, apidoc.Version(true), apidoc.DocVersion(), apidoc.LSPVersion(), openapi.LatestVersion, goVersion)
+	msg := locale.Sprintf(locale.Version, apidoc.Version(true), apidoc.DocVersion, apidoc.LSPVersion, openapi.LatestVersion, goVersion)
 	_, err := fmt.Fprintln(w, msg)
 	return err
 }
