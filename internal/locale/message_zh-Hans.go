@@ -16,12 +16,17 @@ var cmnHans = map[string]string{
 	CmdLocaleUsage:   "显示所有支持的本地化内容\n",
 	CmdDetectUsage:   "根据目录下的内容生成配置文件\n",
 	CmdTestUsage:     "测试语法的正确性\n",
-	CmdMockUsage:     "启用 mock 服务\n",
-	CmdBuildUsage:    "生成文档内容\n",
-	CmdStaticUsage:   "启用静态文件服务\n",
-	CmdLSPUsage:      "启动 language server protocol 服务\n",
-	Version:          "版本：%s\n文档：%s\nLSP：%s\nopenapi：%s\nGo：%s",
-	CmdNotFound:      "子命令 %s 未找到\n",
+	CmdMockUsage: `启用 mock 服务
+
+mock 服务会根据接口定义检测用户提交的数据是否合法，并生成随机的数据返回给用户。
+对于数据只作检测是否合规，但是无法理解其内容，比如提交地址中添加了 size=20，
+只会检测 20 的类型是否符合 size 的要求，但是不会只返回给用户 20 条数据。
+`,
+	CmdBuildUsage:  "生成文档内容\n",
+	CmdStaticUsage: "启用静态文件服务\n",
+	CmdLSPUsage:    "启动 language server protocol 服务\n",
+	Version:        "版本：%s\n文档：%s\nLSP：%s\nopenapi：%s\nGo：%s",
+	CmdNotFound:    "子命令 %s 未找到\n",
 
 	FlagTestDirUsage:           "以 `URI` 形式表示测试项目地址",
 	FlagBuildDirUsage:          "以 `URI` 形式表示的项目地址",

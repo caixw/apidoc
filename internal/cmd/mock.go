@@ -74,15 +74,15 @@ func initMock(command *cmdopt.CmdOpt) {
 
 	mockFlagSet.StringVar(&mockOptions.Indent, "indent", "\t", locale.Sprintf(locale.FlagMockIndentUsage))
 
-	mockFlagSet.IntVar(&mockOptions.MaxSliceSize, "slice.max", 50, locale.Sprintf(locale.FlagMockSliceMaxUsage))
-	mockFlagSet.IntVar(&mockOptions.MinSliceSize, "slice.min", 5, locale.Sprintf(locale.FlagMockSliceMinUsage))
+	mockFlagSet.IntVar(&mockOptions.MaxSliceSize, "slice.max", 10, locale.Sprintf(locale.FlagMockSliceMaxUsage))
+	mockFlagSet.IntVar(&mockOptions.MinSliceSize, "slice.min", 1, locale.Sprintf(locale.FlagMockSliceMinUsage))
 
 	mockFlagSet.IntVar(&mockOptions.MaxNumber, "num.max", 10000, locale.Sprintf(locale.FlagMockNumMaxUsage))
 	mockFlagSet.IntVar(&mockOptions.MinNumber, "num.min", 1, locale.Sprintf(locale.FlagMockNumMinUsage))
-	mockFlagSet.BoolVar(&mockOptions.EnableFloat, "num.float", true, locale.Sprintf(locale.FlagMockNumFloatUsage))
+	mockFlagSet.BoolVar(&mockOptions.EnableFloat, "num.float", false, locale.Sprintf(locale.FlagMockNumFloatUsage))
 
 	mockFlagSet.IntVar(&mockOptions.MaxString, "string.max", 64, locale.Sprintf(locale.FlagMockStringMaxUsage))
-	mockFlagSet.IntVar(&mockOptions.MinString, "string.min", 24, locale.Sprintf(locale.FlagMockStringMinUsage))
+	mockFlagSet.IntVar(&mockOptions.MinString, "string.min", 5, locale.Sprintf(locale.FlagMockStringMinUsage))
 	mockFlagSet.StringVar(&mockStringAlpha, "string.alpha", string(rands.AlphaNumber), locale.Sprintf(locale.FlagMockStringAlphaUsage))
 }
 
