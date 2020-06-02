@@ -150,6 +150,10 @@ func (p *Param) Sanitize(pp *token.Parser) error {
 		return pp.NewError(p.Start, p.End, "param", locale.ErrRequired)
 	}
 
+	if p.Type.V() != TypeObject && len(p.Items) > 0 {
+		return pp.NewError(p.Type.Value.Start, p.Type.Value.End, "type", locale.ErrInvalidValue)
+	}
+
 	// 判断 enums 的值是否相同
 	if r, found := getDuplicateEnum(p.Enums); found {
 		return pp.NewError(r.Start, r.End, "enum", locale.ErrDuplicateValue)

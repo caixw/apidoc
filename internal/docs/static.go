@@ -8,7 +8,7 @@ var data = []*FileInfo{{
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-28T15:42:56+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-06-03T02:25:03+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -45,10 +45,10 @@ var data = []*FileInfo{{
    ]]></description>
 		<response name="user" type="object" array="true" status="200">
 			<param xml-attr="true" name="count" type="number" optional="false" summary="summary"></param>
-			<param name="list" type="object" array="true" summary="list">
+			<param xml-wrapped="users" name="user" type="object" array="true" summary="list">
 				<param xml-attr="true" name="id" type="number" summary="用户 ID"></param>
 				<param xml-attr="true" name="name" type="string" summary="用户名"></param>
-				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
+				<param name="groups" type="object" optional="true" array="true" summary="用户所在的权限组">
 					<param name="id" type="string" summary="权限组 ID"></param>
 					<param name="name" type="string" summary="权限组名称"></param>
 				</param>
@@ -74,7 +74,7 @@ var data = []*FileInfo{{
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" summary="用户 ID"></param>
 				<param name="name" type="string" summary="用户名"></param>
-				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
+				<param name="groups" type="object" optional="true" array="true" summary="用户所在的权限组">
 					<param name="id" type="string" summary="权限组 ID"></param>
 					<param name="name" type="string" summary="权限组名称"></param>
 				</param>
@@ -86,7 +86,7 @@ var data = []*FileInfo{{
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" summary="用户 ID"></param>
 				<param name="name" type="string" summary="用户名"></param>
-				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
+				<param name="groups" type="object" optional="true" array="true" summary="用户所在的权限组">
 					<param name="id" type="string" summary="权限组 ID"></param>
 					<param name="name" type="string" summary="权限组名称"></param>
 				</param>
@@ -134,7 +134,7 @@ var data = []*FileInfo{{
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="id" type="number" summary="用户 ID"></param>
 			<param name="name" type="string" summary="用户名"></param>
-			<param name="groups" type="string" optional="true" summary="用户所在的权限组">
+			<param name="groups" type="object" optional="true" summary="用户所在的权限组">
 				<param name="id" type="string" summary="权限组 ID"></param>
 				<param name="name" type="string" summary="权限组名称"></param>
 			</param>
@@ -755,7 +755,7 @@ function initGotoTop() {
                     <xsl:value-of select="docs/footer/license/p[3]" />
                 </p>
                 </div>
-                <a href="#" class="goto-top" aria-label="{docs/locales/goto-top}" />
+                <a href="#" class="goto-top" title="{docs/locales/goto-top}" aria-label="{docs/locales/goto-top}" />
             </footer>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/components/prism-core.min.js"></script>
@@ -3475,7 +3475,7 @@ function initGotoTop() {
         <div class="wrap">
             <p><xsl:copy-of select="$locale-generator" /></p>
         </div>
-        <a href="#" class="goto-top" aria-label="{$locale-goto-top}" />
+        <a href="#" class="goto-top" title="{$locale-goto-top}" aria-label="{$locale-goto-top}" />
         </footer>
     </body>
 </html>

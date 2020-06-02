@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-05-28T15:43:07+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-06-03T02:25:03+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -38,10 +38,10 @@
    ]]></description>
 		<response name="user" type="object" array="true" status="200">
 			<param xml-attr="true" name="count" type="number" optional="false" summary="summary"></param>
-			<param name="list" type="object" array="true" summary="list">
+			<param xml-wrapped="users" name="user" type="object" array="true" summary="list">
 				<param xml-attr="true" name="id" type="number" summary="用户 ID"></param>
 				<param xml-attr="true" name="name" type="string" summary="用户名"></param>
-				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
+				<param name="groups" type="object" optional="true" array="true" summary="用户所在的权限组">
 					<param name="id" type="string" summary="权限组 ID"></param>
 					<param name="name" type="string" summary="权限组名称"></param>
 				</param>
@@ -67,7 +67,7 @@
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" summary="用户 ID"></param>
 				<param name="name" type="string" summary="用户名"></param>
-				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
+				<param name="groups" type="object" optional="true" array="true" summary="用户所在的权限组">
 					<param name="id" type="string" summary="权限组 ID"></param>
 					<param name="name" type="string" summary="权限组名称"></param>
 				</param>
@@ -79,7 +79,7 @@
 			<param name="list" type="object" array="true" summary="list">
 				<param name="id" type="number" summary="用户 ID"></param>
 				<param name="name" type="string" summary="用户名"></param>
-				<param name="groups" type="string" optional="true" array="true" summary="用户所在的权限组">
+				<param name="groups" type="object" optional="true" array="true" summary="用户所在的权限组">
 					<param name="id" type="string" summary="权限组 ID"></param>
 					<param name="name" type="string" summary="权限组名称"></param>
 				</param>
@@ -127,7 +127,7 @@
 		<response type="object" array="true" status="200" mimetype="application/json">
 			<param name="id" type="number" summary="用户 ID"></param>
 			<param name="name" type="string" summary="用户名"></param>
-			<param name="groups" type="string" optional="true" summary="用户所在的权限组">
+			<param name="groups" type="object" optional="true" summary="用户所在的权限组">
 				<param name="id" type="string" summary="权限组 ID"></param>
 				<param name="name" type="string" summary="权限组名称"></param>
 			</param>
