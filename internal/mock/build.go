@@ -21,7 +21,7 @@ func (m *mock) buildAPI(api *ast.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m.h.Locale(core.Succ, locale.RequestAPI, r.Method, r.URL.Path)
 		if api.Deprecated != nil {
-			m.h.Locale(core.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated)
+			m.h.Locale(core.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated.V())
 		}
 
 		if err := validQueryArrayParam(api.Path.Queries, r); err != nil {
