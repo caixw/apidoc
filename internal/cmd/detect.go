@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"flag"
 	"fmt"
 	"io"
 
@@ -16,14 +15,13 @@ import (
 )
 
 var (
-	detectFlagSet   *flag.FlagSet
 	detectRecursive bool
 	detectWrite     bool
 	detectDir       = uri("./")
 )
 
 func initDetect(command *cmdopt.CmdOpt) {
-	detectFlagSet = command.New("detect", locale.Sprintf(locale.CmdDetectUsage), detect)
+	detectFlagSet := command.New("detect", locale.Sprintf(locale.CmdDetectUsage), detect)
 	detectFlagSet.BoolVar(&detectRecursive, "r", true, locale.Sprintf(locale.FlagDetectRecursive))
 	detectFlagSet.BoolVar(&detectWrite, "w", false, locale.Sprintf(locale.FlagDetectWrite))
 	detectFlagSet.Var(&buildDir, "d", locale.Sprintf(locale.FlagDetectDirUsage))

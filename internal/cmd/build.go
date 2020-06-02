@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"flag"
 	"io"
 	"time"
 
@@ -14,11 +13,10 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-var buildFlagSet *flag.FlagSet
 var buildDir = uri("./")
 
 func initBuild(command *cmdopt.CmdOpt) {
-	buildFlagSet = command.New("build", locale.Sprintf(locale.CmdBuildUsage), doBuild)
+	buildFlagSet := command.New("build", locale.Sprintf(locale.CmdBuildUsage), doBuild)
 	buildFlagSet.Var(&buildDir, "d", locale.Sprintf(locale.FlagBuildDirUsage))
 }
 

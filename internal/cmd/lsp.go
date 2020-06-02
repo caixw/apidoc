@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"flag"
 	"io"
 	"log"
 
@@ -13,8 +12,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-var lspFlagSet *flag.FlagSet
-
 var (
 	lspPort   string
 	lspMode   string
@@ -22,7 +19,7 @@ var (
 )
 
 func initLSP(command *cmdopt.CmdOpt) {
-	lspFlagSet = command.New("lsp", locale.Sprintf(locale.CmdLSPUsage), doLSP)
+	lspFlagSet := command.New("lsp", locale.Sprintf(locale.CmdLSPUsage), doLSP)
 	lspFlagSet.StringVar(&lspPort, "p", ":8080", locale.Sprintf(locale.FlagLSPPortUsage))
 	lspFlagSet.StringVar(&lspMode, "m", "http", locale.Sprintf(locale.FlagLSPModeUsage))
 	lspFlagSet.BoolVar(&lspHeader, "h", false, locale.Sprintf(locale.FlagLSPHeaderUsage))

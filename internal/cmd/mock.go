@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"bytes"
-	"flag"
 	"io"
 	"net/http"
 	"strings"
@@ -16,8 +15,6 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
-
-var mockFlagSet *flag.FlagSet
 
 // servers 参数
 type servers map[string]string
@@ -70,7 +67,7 @@ var (
 )
 
 func initMock(command *cmdopt.CmdOpt) {
-	mockFlagSet = command.New("mock", locale.Sprintf(locale.CmdMockUsage), doMock)
+	mockFlagSet := command.New("mock", locale.Sprintf(locale.CmdMockUsage), doMock)
 	mockFlagSet.StringVar(&mockPort, "p", ":8080", locale.Sprintf(locale.FlagMockPortUsage))
 	mockFlagSet.Var(mockServers, "s", locale.Sprintf(locale.FlagMockServersUsage))
 	mockFlagSet.Var(&mockPath, "path", locale.Sprintf(locale.FlagMockPathUsage))

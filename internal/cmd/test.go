@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"flag"
 	"io"
 
 	"github.com/issue9/cmdopt"
@@ -13,11 +12,10 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-var testFlagSet *flag.FlagSet
 var testDir uri = "./"
 
 func initTest(command *cmdopt.CmdOpt) {
-	testFlagSet = command.New("test", locale.Sprintf(locale.CmdTestUsage), test)
+	testFlagSet := command.New("test", locale.Sprintf(locale.CmdTestUsage), test)
 	testFlagSet.Var(&testDir, "d", locale.Sprintf(locale.FlagTestDirUsage))
 }
 

@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"flag"
 	"io"
 	"net/http"
 
@@ -13,8 +12,6 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
-
-var staticFlagSet *flag.FlagSet
 
 var (
 	staticPort        string
@@ -26,7 +23,7 @@ var (
 )
 
 func initStatic(command *cmdopt.CmdOpt) {
-	staticFlagSet = command.New("static", locale.Sprintf(locale.CmdStaticUsage), static)
+	staticFlagSet := command.New("static", locale.Sprintf(locale.CmdStaticUsage), static)
 	staticFlagSet.StringVar(&staticPort, "p", ":8080", locale.Sprintf(locale.FlagStaticPortUsage))
 	staticFlagSet.Var(&staticDocs, "docs", locale.Sprintf(locale.FlagStaticDocsUsage))
 	staticFlagSet.StringVar(&staticContentType, "ct", "", locale.Sprintf(locale.FlagStaticContentTypeUsage))
