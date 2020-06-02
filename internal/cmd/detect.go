@@ -6,6 +6,8 @@ import (
 	"flag"
 	"io"
 
+	"github.com/issue9/cmdopt"
+
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -17,7 +19,7 @@ var (
 	detectDir       = uri("./")
 )
 
-func initDetect() {
+func initDetect(command *cmdopt.CmdOpt) {
 	detectFlagSet = command.New("detect", locale.Sprintf(locale.CmdDetectUsage), detect)
 	detectFlagSet.BoolVar(&detectRecursive, "r", true, locale.Sprintf(locale.FlagDetectRecursive))
 	detectFlagSet.Var(&buildDir, "d", locale.Sprintf(locale.FlagDetectDirUsage))

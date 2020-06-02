@@ -7,13 +7,14 @@ import (
 	"io"
 	"strings"
 
+	"github.com/issue9/cmdopt"
 	"golang.org/x/text/language/display"
 
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-func initLocale() {
+func initLocale(command *cmdopt.CmdOpt) {
 	command.New("locale", locale.Sprintf(locale.CmdLocaleUsage), doLocale)
 }
 

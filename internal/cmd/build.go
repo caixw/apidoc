@@ -7,6 +7,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/issue9/cmdopt"
+
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -15,7 +17,7 @@ import (
 var buildFlagSet *flag.FlagSet
 var buildDir = uri("./")
 
-func initBuild() {
+func initBuild(command *cmdopt.CmdOpt) {
 	buildFlagSet = command.New("build", locale.Sprintf(locale.CmdBuildUsage), doBuild)
 	buildFlagSet.Var(&buildDir, "d", locale.Sprintf(locale.FlagBuildDirUsage))
 }

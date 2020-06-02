@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/issue9/cmdopt"
+
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -23,7 +25,7 @@ var (
 	staticPath        uri
 )
 
-func initStatic() {
+func initStatic(command *cmdopt.CmdOpt) {
 	staticFlagSet = command.New("static", locale.Sprintf(locale.CmdStaticUsage), static)
 	staticFlagSet.StringVar(&staticPort, "p", ":8080", locale.Sprintf(locale.FlagStaticPortUsage))
 	staticFlagSet.Var(&staticDocs, "docs", locale.Sprintf(locale.FlagStaticDocsUsage))

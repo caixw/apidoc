@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/issue9/cmdopt"
 	"github.com/issue9/rands"
 
 	"github.com/caixw/apidoc/v7"
@@ -68,7 +69,7 @@ var (
 	mockPath        = uri("./")
 )
 
-func initMock() {
+func initMock(command *cmdopt.CmdOpt) {
 	mockFlagSet = command.New("mock", locale.Sprintf(locale.CmdMockUsage), doMock)
 	mockFlagSet.StringVar(&mockPort, "p", ":8080", locale.Sprintf(locale.FlagMockPortUsage))
 	mockFlagSet.Var(mockServers, "s", locale.Sprintf(locale.FlagMockServersUsage))

@@ -20,8 +20,6 @@ import (
 // 命令行输出的表格中，每一列为了对齐填补的空格数量。
 const tail = 3
 
-var command *cmdopt.CmdOpt
-
 var printers = map[core.MessageType]*printer{
 	core.Erro: {
 		out:    os.Stderr,
@@ -68,7 +66,7 @@ func (u *uri) String() string {
 
 // Init 初始化 cmdopt.CmdOpt 实例
 func Init(out io.Writer) *cmdopt.CmdOpt {
-	command = cmdopt.New(
+	command := cmdopt.New(
 		out,
 		flag.ExitOnError,
 		locale.Sprintf(locale.CmdUsage, core.Name),
@@ -80,15 +78,15 @@ func Init(out io.Writer) *cmdopt.CmdOpt {
 		})
 
 	command.Help("help", locale.Sprintf(locale.CmdHelpUsage))
-	initBuild()
-	initDetect()
-	initLang()
-	initLocale()
-	initTest()
-	initVersion()
-	initMock()
-	initStatic()
-	initLSP()
+	initBuild(command)
+	initDetect(command)
+	initLang(command)
+	initLocale(command)
+	initTest(command)
+	initVersion(command)
+	initMock(command)
+	initStatic(command)
+	initLSP(command)
 
 	return command
 }

@@ -7,11 +7,13 @@ import (
 	"io"
 	"strings"
 
+	"github.com/issue9/cmdopt"
+
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-func initLang() {
+func initLang(command *cmdopt.CmdOpt) {
 	command.New("lang", locale.Sprintf(locale.CmdLangUsage), doLang)
 }
 

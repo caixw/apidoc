@@ -8,12 +8,14 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/issue9/cmdopt"
+
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/openapi"
 )
 
-func initVersion() {
+func initVersion(command *cmdopt.CmdOpt) {
 	command.New("version", locale.Sprintf(locale.CmdVersionUsage), version)
 }
 

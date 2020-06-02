@@ -7,6 +7,8 @@ import (
 	"io"
 	"log"
 
+	"github.com/issue9/cmdopt"
+
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
@@ -19,7 +21,7 @@ var (
 	lspHeader bool
 )
 
-func initLSP() {
+func initLSP(command *cmdopt.CmdOpt) {
 	lspFlagSet = command.New("lsp", locale.Sprintf(locale.CmdLSPUsage), doLSP)
 	lspFlagSet.StringVar(&lspPort, "p", ":8080", locale.Sprintf(locale.FlagLSPPortUsage))
 	lspFlagSet.StringVar(&lspMode, "m", "http", locale.Sprintf(locale.FlagLSPModeUsage))
