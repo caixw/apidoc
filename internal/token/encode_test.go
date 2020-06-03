@@ -8,6 +8,7 @@ import (
 
 	"github.com/issue9/assert"
 
+	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
@@ -33,15 +34,45 @@ func TestEncode(t *testing.T) {
 	}
 
 	data := []*struct {
-		object interface{}
-		xml    string
-		err    bool
+		object            interface{}
+		namespace, prefix string
+		xml               string
+		err               bool
 	}{
 		{
 			object: &struct {
 				RootName string `apidoc:"apidoc,meta,usage-apidoc"`
 			}{},
 			xml: "<apidoc></apidoc>",
+		},
+
+		{
+			object: &struct {
+				RootName string `apidoc:"apidoc,meta,usage-apidoc"`
+			}{},
+			namespace: core.XMLNamespace,
+			xml:       `<apidoc xmlns="` + core.XMLNamespace + `"></apidoc>`,
+		},
+
+		{
+			object: &struct {
+				RootName string `apidoc:"apidoc,meta,usage-apidoc"`
+			}{},
+			prefix:    "aa",
+			namespace: core.XMLNamespace,
+			xml:       `<aa:apidoc xmlns:aa="` + core.XMLNamespace + `"></aa:apidoc>`,
+		},
+
+		{
+			object: &struct {
+				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
+				ID       intAttr `apidoc:"id,attr,usage"`
+			}{
+				ID: intAttr{Value: 11},
+			},
+			namespace: core.XMLNamespace,
+			prefix:    "bb",
+			xml:       `<bb:apidoc bb:id="11" xmlns:bb="` + core.XMLNamespace + `"></bb:apidoc>`,
 		},
 
 		{
@@ -140,6 +171,20 @@ func TestEncode(t *testing.T) {
 
 		{
 			object: &struct {
+				RootName string  `apidoc:"apidoc,meta,usage-apidoc"`
+				ID       int     `apidoc:"id,attr,usage"`
+				Content  *String `apidoc:",content"`
+			}{
+				ID:      11,
+				Content: &String{Value: "<111"},
+			},
+			namespace: "urn",
+			prefix:    "p",
+			xml:       `<p:apidoc p:id="11" xmlns:p="urn">&lt;111</p:apidoc>`,
+		},
+
+		{
+			object: &struct {
 				RootName string `apidoc:"apidoc,meta,usage-apidoc"`
 				ID       int    `apidoc:"id,attr,usage"`
 				Content  string `apidoc:",content"`
@@ -203,6 +248,20 @@ func TestEncode(t *testing.T) {
 			xml: `<apidoc><object><id>12</id></object></apidoc>`,
 		},
 
+		{ // 嵌套，omitempty 属性，namespace
+			object: &struct {
+				RootName string      `apidoc:"apidoc,meta,usage-apidoc"`
+				Object   *nestObject `apidoc:"object,elem,usage,omitempty"`
+			}{
+				Object: &nestObject{
+					ID: &intTag{Value: 12},
+				},
+			},
+			namespace: "urn",
+			prefix:    "p",
+			xml:       `<p:apidoc xmlns:p="urn"><p:object><p:id>12</p:id></p:object></p:apidoc>`,
+		},
+
 		{ // 嵌套，数组，omitempty 属性
 			object: &struct {
 				RootName string        `apidoc:"aa,meta,usage-apidoc"`
@@ -228,7 +287,7 @@ func TestEncode(t *testing.T) {
 	}
 
 	for i, item := range data {
-		xml, err := Encode("", item.object)
+		xml, err := Encode("", item.object, item.namespace, item.prefix)
 
 		if item.err {
 			a.Error(err, "not error at %d", i).
