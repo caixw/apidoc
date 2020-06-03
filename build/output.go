@@ -52,6 +52,16 @@ type Output struct {
 	//  https://apidoc.tools/docs/v7/apidoc.xsl
 	Style string `yaml:"style,omitempty"`
 
+	// 命名空间的相关设置
+	//
+	// 当 namespace 为 true 时会在文档中输出以 core.XMLNamespace 作为命名空间的值，
+	// 如果还指定了 NamespacePrefix 则会以此值作为前缀值。
+	// NamespacePrefix 仅在 Namespace 为 true 时才启作用。
+	//
+	// NOTE: 仅针对 Type = APIDocXML
+	Namespace       bool   `yaml:"namespace,omitempty"`
+	NamespacePrefix string `yaml:"namespace-prefix,omitempty"`
+
 	procInst []string  // 保存所有 xml 的指令内容，包括编码信息
 	marshal  marshaler // Type 对应的转换函数
 	xml      bool      // 是否为 xml 内容
@@ -89,7 +99,7 @@ func (o *Output) sanitize() error {
 
 	switch o.Type {
 	case APIDocXML:
-		o.marshal = apidocMarshaler
+		o.marshal = o.apidocMarshaler
 	case OpenapiJSON:
 		o.marshal = openapi.JSON
 	case OpenapiYAML:
@@ -120,8 +130,11 @@ func (o *Output) sanitize() error {
 	return nil
 }
 
-func apidocMarshaler(d *ast.APIDoc) ([]byte, error) {
-	return token.Encode("\t", d)
+func (o *Output) apidocMarshaler(d *ast.APIDoc) ([]byte, error) {
+	if !o.Namespace {
+		return token.Encode("\t", d, "", "")
+	}
+	return token.Encode("\t", d, core.XMLNamespace, o.NamespacePrefix)
 }
 
 func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {

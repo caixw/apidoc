@@ -180,5 +180,7 @@
 		<item name="output.path" type="string" array="false" required="true">指定輸出的文件名，包含路徑信息。</item>
 		<item name="output.tags" type="string" array="true" required="false">只輸出與這些標簽相關聯的文檔，默認為全部。</item>
 		<item name="output.style" type="string" array="false" required="false">為 XML 文件指定的 XSL 文件</item>
+		<item name="output.namespace" type="bool" array="false" required="false">是否輸出命名空間</item>
+		<item name="output.namespace-prefix" type="string" array="false" required="false">如果輸出了命名空間，還可以指定命名空間前綴。</item>
 	</config>
 </locale>
