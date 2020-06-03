@@ -3,8 +3,10 @@
 package token
 
 import (
+	"bytes"
 	"io"
 	"unicode"
+	"unicode/utf8"
 
 	"golang.org/x/text/message"
 
@@ -122,10 +124,7 @@ func (p *Parser) parseStartElement(pos lexer.Position) (*StartElement, core.Rang
 	}
 
 	elem := &StartElement{
-		Name: String{
-			Range: core.Range{Start: start.Position, End: p.Position().Position},
-			Value: string(name),
-		},
+		Name: parseName(name, start.Position, p.Position().Position),
 	}
 
 	attrs, err := p.parseAttributes()
@@ -147,6 +146,33 @@ func (p *Parser) parseStartElement(pos lexer.Position) (*StartElement, core.Rang
 	return nil, core.Range{}, p.NewError(p.Position().Position, p.Position().Position, string(name), locale.ErrNotFoundEndTag)
 }
 
+func parseName(name []byte, start, end core.Position) Name {
+	index := bytes.IndexByte(name, ':')
+	if index < 0 {
+		return Name{
+			Range: core.Range{Start: start, End: end},
+			Local: String{
+				Range: core.Range{Start: start, End: end},
+				Value: string(name),
+			},
+		}
+	}
+
+	prefix := name[:index]
+	character := start.Character + utf8.RuneCount(prefix)
+	return Name{
+		Range: core.Range{Start: start, End: end},
+		Prefix: String{
+			Range: core.Range{Start: start, End: core.Position{Line: start.Line, Character: character}},
+			Value: string(prefix),
+		},
+		Local: String{
+			Range: core.Range{Start: core.Position{Line: start.Line, Character: character + 1}, End: end},
+			Value: string(name[index+1:]),
+		},
+	}
+}
+
 // pos 表示当前元素的起始位置，包含了 < 元素
 func (p *Parser) parseEndElement(pos lexer.Position) (*EndElement, core.Range, error) {
 	// 名称开始的定位，传递过来的 pos 表示的 < 起始位置
@@ -162,10 +188,7 @@ func (p *Parser) parseEndElement(pos lexer.Position) (*EndElement, core.Range, e
 	r := core.Range{Start: pos.Position, End: p.Position().Position}
 	return &EndElement{
 		Range: r,
-		Name: String{
-			Range: core.Range{Start: start.Position, End: end.Position},
-			Value: string(name),
-		},
+		Name:  parseName(name, start.Position, end.Position),
 	}, r, nil
 }
 
@@ -199,15 +222,27 @@ func (p *Parser) parseCData(pos lexer.Position) (*CData, core.Range, error) {
 	return &CData{
 		BaseTag: BaseTag{
 			Base: Base{Range: r},
-			StartTag: String{
-				Value: cdataStart,
+			StartTag: Name{
+				Local: String{
+					Range: core.Range{
+						Start: pos.Position,
+						End:   core.Position{Line: pos.Line, Character: pos.Character + len(cdataStart)},
+					},
+					Value: cdataStart,
+				},
 				Range: core.Range{
 					Start: pos.Position,
 					End:   core.Position{Line: pos.Line, Character: pos.Character + len(cdataStart)},
 				},
 			},
-			EndTag: String{
-				Value: cdataEnd,
+			EndTag: Name{
+				Local: String{
+					Range: core.Range{
+						Start: end.Position,
+						End:   core.Position{Line: end.Line, Character: end.Character + len(cdataEnd)},
+					},
+					Value: cdataEnd,
+				},
 				Range: core.Range{
 					Start: end.Position,
 					End:   core.Position{Line: end.Line, Character: end.Character + len(cdataEnd)},
@@ -273,12 +308,7 @@ func (p *Parser) parseAttribute() (*Attribute, error) {
 	if len(name) == 0 {
 		return nil, nil
 	}
-	attr := &Attribute{
-		Name: String{
-			Range: nameRange,
-			Value: string(name),
-		},
-	}
+	attr := &Attribute{Name: parseName(name, nameRange.Start, nameRange.End)}
 
 	p.Spaces(0)
 	if !p.Match("=") {

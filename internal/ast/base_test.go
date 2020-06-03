@@ -59,7 +59,7 @@ func TestDateAttribute(t *testing.T) {
 	now := time.Now().Format(dateFormat)
 	date := &DateAttribute{}
 	attr := &token.Attribute{
-		Name: token.String{Value: "n"},
+		Name: token.Name{Local: token.String{Value: "n"}},
 		Value: token.String{
 			Value: now,
 			Range: core.Range{End: core.Position{Character: 1}},
@@ -87,7 +87,7 @@ func TestAPIDocVersionAttribute(t *testing.T) {
 
 	v := &APIDocVersionAttribute{}
 	attr := &token.Attribute{
-		Name: token.String{Value: "n"},
+		Name: token.Name{Local: token.String{Value: "n"}},
 		Value: token.String{
 			Value: Version,
 			Range: core.Range{End: core.Position{Character: 1}},
