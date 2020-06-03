@@ -8,7 +8,7 @@ var data = []*FileInfo{{
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-06-03T02:25:03+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-06-04T01:32:10+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -1146,6 +1146,8 @@ function initGotoTop() {
 		<item name="output.path" type="string" array="false" required="true">指定输出的文件名，包含路径信息。</item>
 		<item name="output.tags" type="string" array="true" required="false">只输出与这些标签相关联的文档，默认为全部。</item>
 		<item name="output.style" type="string" array="false" required="false">为 XML 文件指定的 XSL 文件</item>
+		<item name="output.namespace" type="bool" array="false" required="false">是否输出命名空间</item>
+		<item name="output.namespace-prefix" type="string" array="false" required="false">如果输出了命名空间，还可以指定命名空间前缀。</item>
 	</config>
 </locale>
 `),
@@ -1335,6 +1337,8 @@ function initGotoTop() {
 		<item name="output.path" type="string" array="false" required="true">指定輸出的文件名，包含路徑信息。</item>
 		<item name="output.tags" type="string" array="true" required="false">只輸出與這些標簽相關聯的文檔，默認為全部。</item>
 		<item name="output.style" type="string" array="false" required="false">為 XML 文件指定的 XSL 文件</item>
+		<item name="output.namespace" type="bool" array="false" required="false">是否輸出命名空間</item>
+		<item name="output.namespace-prefix" type="string" array="false" required="false">如果輸出了命名空間，還可以指定命名空間前綴。</item>
 	</config>
 </locale>
 `),

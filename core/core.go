@@ -15,6 +15,9 @@ const (
 
 	// 官网
 	OfficialURL = "https://apidoc.tools"
+
+	// XMLNamespace 定义 xml 命名空间的 URI
+	XMLNamespace = "https://apidoc.tools/v6/XMLSchema"
 )
 
 // Block 最基本的代码单位

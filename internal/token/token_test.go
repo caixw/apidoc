@@ -80,7 +80,7 @@ func (i *intTag) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) 
 
 		switch elem := t.(type) {
 		case *EndElement:
-			if elem.Name.Value == start.Name.Value {
+			if start.Match(elem) {
 				return elem, nil
 			}
 		case *String:
@@ -98,7 +98,7 @@ func (i *intTag) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) 
 func (i *intAttr) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	v, err := strconv.Atoi(strings.TrimSpace(attr.Value.Value))
 	if err != nil {
-		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.String(), err)
 	}
 	i.Value = v
 	return nil
@@ -123,7 +123,7 @@ func (i *stringTag) DecodeXML(p *Parser, start *StartElement) (*EndElement, erro
 
 		switch elem := t.(type) {
 		case *EndElement:
-			if elem.Name.Value == start.Name.Value {
+			if start.Match(elem) {
 				return elem, nil
 			}
 		case *String:

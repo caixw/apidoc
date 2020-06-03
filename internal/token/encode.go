@@ -31,12 +31,19 @@ var (
 )
 
 // Encode 将 v 转换成 XML 内容
-func Encode(indent string, v interface{}) ([]byte, error) {
+//
+// namespace 指定 XML 的命名空间；
+// prefix 命名空间的前缀，如果为空表示使用默认命名空间；
+func Encode(indent string, v interface{}, namespace, prefix string) ([]byte, error) {
+	if prefix != "" && namespace == "" {
+		panic("参数 prefix 不为空的情况下，必须指定 namespace")
+	}
+
 	buf := new(bytes.Buffer)
 	e := xml.NewEncoder(buf)
 	e.Indent("", indent)
 
-	if err := encode(node.New("", reflect.ValueOf(v)), e); err != nil {
+	if err := encode(node.New("", reflect.ValueOf(v)), e, namespace, prefix, true); err != nil {
 		return nil, err
 	}
 
@@ -46,8 +53,8 @@ func Encode(indent string, v interface{}) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func encode(n *node.Node, e *xml.Encoder) error {
-	start, err := buildStartElement(n)
+func encode(n *node.Node, e *xml.Encoder, namespace, prefix string, root bool) error {
+	start, err := buildStartElement(n, namespace, prefix, root)
 	if err != nil {
 		return err
 	}
@@ -71,23 +78,23 @@ func encode(n *node.Node, e *xml.Encoder) error {
 		return e.EncodeElement(xml.CharData(chardata), start)
 	}
 
-	return encodeElements(n, e, start)
+	return encodeElements(n, e, start, namespace, prefix)
 }
 
-func encodeElements(n *node.Node, e *xml.Encoder, start xml.StartElement) (err error) {
+func encodeElements(n *node.Node, e *xml.Encoder, start xml.StartElement, namespace, prefix string) (err error) {
 	if err = e.EncodeToken(start); err != nil {
 		return err
 	}
 	for _, v := range n.Elements {
-		if err := encodeElement(e, v); err != nil {
+		if err := encodeElement(e, v, namespace, prefix); err != nil {
 			return err
 		}
 	}
 
-	return e.EncodeToken(xml.EndElement{Name: xml.Name{Local: n.Value.Name}})
+	return e.EncodeToken(xml.EndElement{Name: buildXMLName(n.Value.Name, prefix)})
 }
 
-func encodeElement(e *xml.Encoder, v *node.Value) (err error) {
+func encodeElement(e *xml.Encoder, v *node.Value, namespace, prefix string) (err error) {
 	if isOmitempty(v) {
 		return nil
 	}
@@ -115,7 +122,7 @@ func encodeElement(e *xml.Encoder, v *node.Value) (err error) {
 	}
 
 	if found {
-		start := xml.StartElement{Name: xml.Name{Local: v.Name}}
+		start := xml.StartElement{Name: buildXMLName(v.Name, prefix)}
 		if err := e.EncodeElement(xml.CharData(chardata), start); err != nil {
 			return err
 		}
@@ -124,20 +131,21 @@ func encodeElement(e *xml.Encoder, v *node.Value) (err error) {
 
 	if v.Kind() == reflect.Array || v.Kind() == reflect.Slice {
 		for i := 0; i < v.Len(); i++ {
-			if err := encodeElement(e, node.NewValue(v.Name, v.Index(i), v.Omitempty, v.Usage)); err != nil {
+			val := node.NewValue(v.Name, v.Index(i), v.Omitempty, v.Usage)
+			if err := encodeElement(e, val, namespace, prefix); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
 
-	return encode(node.New(v.Name, v.Value), e)
+	return encode(node.New(v.Name, v.Value), e, namespace, prefix, false)
 }
 
-func buildStartElement(n *node.Node) (xml.StartElement, error) {
+func buildStartElement(n *node.Node, namespace, prefix string, root bool) (xml.StartElement, error) {
 	start := xml.StartElement{
-		Name: xml.Name{Local: n.Value.Name},
-		Attr: make([]xml.Attr, 0, len(n.Attributes)),
+		Name: buildXMLName(n.Value.Name, prefix),
+		Attr: make([]xml.Attr, 0, len(n.Attributes)+1), // +1 表示 xmlns 的字段
 	}
 
 	for _, v := range n.Attributes {
@@ -151,12 +159,30 @@ func buildStartElement(n *node.Node) (xml.StartElement, error) {
 		}
 
 		start.Attr = append(start.Attr, xml.Attr{
-			Name:  xml.Name{Local: v.Name},
+			Name:  buildXMLName(v.Name, prefix),
 			Value: val,
 		})
 	}
 
+	if root && namespace != "" {
+		name := "xmlns"
+		if prefix != "" {
+			name += ":" + prefix
+		}
+		start.Attr = append(start.Attr, xml.Attr{
+			Name:  xml.Name{Local: name},
+			Value: namespace,
+		})
+	}
+
 	return start, nil
+}
+
+func buildXMLName(name, prefix string) xml.Name {
+	if prefix == "" {
+		return xml.Name{Local: name}
+	}
+	return xml.Name{Local: prefix + ":" + name}
 }
 
 func getAttributeValue(elem reflect.Value) (string, error) {

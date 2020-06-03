@@ -150,7 +150,7 @@ func Get() *ast.APIDoc {
 
 // XML 获取 Get 返回对象的 XML 编码
 func XML(a *assert.Assertion) []byte {
-	data, err := token.Encode("", Get())
+	data, err := token.Encode("", Get(), core.XMLNamespace, "apidoc")
 	a.NotError(err).NotNil(data)
 
 	return data

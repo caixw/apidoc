@@ -51,12 +51,18 @@ func TestParser_Token(t *testing.T) {
 								Start: core.Position{Line: 11, Character: 28},
 								End:   core.Position{Line: 11, Character: 41},
 							},
-							Name: String{
+							Name: Name{
 								Range: core.Range{
 									Start: core.Position{Line: 11, Character: 28},
 									End:   core.Position{Line: 11, Character: 35},
 								},
-								Value: "version",
+								Local: String{
+									Range: core.Range{
+										Start: core.Position{Line: 11, Character: 28},
+										End:   core.Position{Line: 11, Character: 35},
+									},
+									Value: "version",
+								},
 							},
 							Value: String{
 								Range: core.Range{
@@ -71,12 +77,18 @@ func TestParser_Token(t *testing.T) {
 								Start: core.Position{Line: 11, Character: 42},
 								End:   core.Position{Line: 11, Character: 58},
 							},
-							Name: String{
+							Name: Name{
 								Range: core.Range{
 									Start: core.Position{Line: 11, Character: 42},
 									End:   core.Position{Line: 11, Character: 50},
 								},
-								Value: "encoding",
+								Local: String{
+									Range: core.Range{
+										Start: core.Position{Line: 11, Character: 42},
+										End:   core.Position{Line: 11, Character: 50},
+									},
+									Value: "encoding",
+								},
 							},
 							Value: String{
 								Range: core.Range{
@@ -100,12 +112,18 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 12, Character: 2},
 						End:   core.Position{Line: 12, Character: 24},
 					},
-					Name: String{
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 12, Character: 3},
 							End:   core.Position{Line: 12, Character: 9},
 						},
-						Value: "apidoc",
+						Local: String{
+							Range: core.Range{
+								Start: core.Position{Line: 12, Character: 3},
+								End:   core.Position{Line: 12, Character: 9},
+							},
+							Value: "apidoc",
+						},
 					},
 					Attributes: []*Attribute{
 						{
@@ -113,12 +131,18 @@ func TestParser_Token(t *testing.T) {
 								Start: core.Position{Line: 12, Character: 10},
 								End:   core.Position{Line: 12, Character: 23},
 							},
-							Name: String{
+							Name: Name{
 								Range: core.Range{
 									Start: core.Position{Line: 12, Character: 10},
 									End:   core.Position{Line: 12, Character: 17},
 								},
-								Value: "version",
+								Local: String{
+									Range: core.Range{
+										Start: core.Position{Line: 12, Character: 10},
+										End:   core.Position{Line: 12, Character: 17},
+									},
+									Value: "version",
+								},
 							},
 							Value: String{
 								Range: core.Range{
@@ -144,11 +168,17 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 13, Character: 2},
 						End:   core.Position{Line: 13, Character: 9},
 					},
-					Name: String{
-						Value: "title",
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 13, Character: 3},
 							End:   core.Position{Line: 13, Character: 8},
+						},
+						Local: String{
+							Value: "title",
+							Range: core.Range{
+								Start: core.Position{Line: 13, Character: 3},
+								End:   core.Position{Line: 13, Character: 8},
+							},
 						},
 					},
 				},
@@ -166,11 +196,17 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 13, Character: 11},
 						End:   core.Position{Line: 13, Character: 19},
 					},
-					Name: String{
-						Value: "title",
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 13, Character: 13},
 							End:   core.Position{Line: 13, Character: 18},
+						},
+						Local: String{
+							Value: "title",
+							Range: core.Range{
+								Start: core.Position{Line: 13, Character: 13},
+								End:   core.Position{Line: 13, Character: 18},
+							},
 						},
 					},
 				},
@@ -188,11 +224,17 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 14, Character: 2},
 						End:   core.Position{Line: 14, Character: 20},
 					},
-					Name: String{
-						Value: "desc",
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 14, Character: 3},
 							End:   core.Position{Line: 14, Character: 7},
+						},
+						Local: String{
+							Value: "desc",
+							Range: core.Range{
+								Start: core.Position{Line: 14, Character: 3},
+								End:   core.Position{Line: 14, Character: 7},
+							},
 						},
 					},
 					Attributes: []*Attribute{
@@ -201,12 +243,18 @@ func TestParser_Token(t *testing.T) {
 								Start: core.Position{Line: 14, Character: 8},
 								End:   core.Position{Line: 14, Character: 19},
 							},
-							Name: String{
+							Name: Name{
 								Range: core.Range{
 									Start: core.Position{Line: 14, Character: 8},
 									End:   core.Position{Line: 14, Character: 12},
 								},
-								Value: "type",
+								Local: String{
+									Range: core.Range{
+										Start: core.Position{Line: 14, Character: 8},
+										End:   core.Position{Line: 14, Character: 12},
+									},
+									Value: "type",
+								},
 							},
 							Value: String{
 								Range: core.Range{
@@ -227,18 +275,30 @@ func TestParser_Token(t *testing.T) {
 								End:   core.Position{Line: 14, Character: 43},
 							},
 						},
-						StartTag: String{
-							Value: cdataStart,
+						StartTag: Name{
 							Range: core.Range{
 								Start: core.Position{Line: 14, Character: 20},
 								End:   core.Position{Line: 14, Character: 29},
 							},
+							Local: String{
+								Value: cdataStart,
+								Range: core.Range{
+									Start: core.Position{Line: 14, Character: 20},
+									End:   core.Position{Line: 14, Character: 29},
+								},
+							},
 						},
-						EndTag: String{
-							Value: cdataEnd,
+						EndTag: Name{
 							Range: core.Range{
 								Start: core.Position{Line: 14, Character: 40},
 								End:   core.Position{Line: 14, Character: 43},
+							},
+							Local: String{
+								Value: cdataEnd,
+								Range: core.Range{
+									Start: core.Position{Line: 14, Character: 40},
+									End:   core.Position{Line: 14, Character: 43},
+								},
 							},
 						},
 					},
@@ -256,12 +316,18 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 14, Character: 43},
 						End:   core.Position{Line: 14, Character: 50},
 					},
-					Name: String{
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 14, Character: 45},
 							End:   core.Position{Line: 14, Character: 49},
 						},
-						Value: "desc",
+						Local: String{
+							Range: core.Range{
+								Start: core.Position{Line: 14, Character: 45},
+								End:   core.Position{Line: 14, Character: 49},
+							},
+							Value: "desc",
+						},
 					},
 				},
 
@@ -278,12 +344,18 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 15, Character: 2},
 						End:   core.Position{Line: 15, Character: 11},
 					},
-					Name: String{
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 15, Character: 4},
 							End:   core.Position{Line: 15, Character: 10},
 						},
-						Value: "apidoc",
+						Local: String{
+							Range: core.Range{
+								Start: core.Position{Line: 15, Character: 4},
+								End:   core.Position{Line: 15, Character: 10},
+							},
+							Value: "apidoc",
+						},
 					},
 				},
 
@@ -329,12 +401,18 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 46},
 					},
-					Name: String{
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 23},
 							End:   core.Position{Line: 11, Character: 29},
 						},
-						Value: "apidoc",
+						Local: String{
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 23},
+								End:   core.Position{Line: 11, Character: 29},
+							},
+							Value: "apidoc",
+						},
 					},
 					Attributes: []*Attribute{
 						{
@@ -342,12 +420,18 @@ func TestParser_Token(t *testing.T) {
 								Start: core.Position{Line: 11, Character: 30},
 								End:   core.Position{Line: 11, Character: 43},
 							},
-							Name: String{
+							Name: Name{
 								Range: core.Range{
 									Start: core.Position{Line: 11, Character: 30},
 									End:   core.Position{Line: 11, Character: 37},
 								},
-								Value: "version",
+								Local: String{
+									Range: core.Range{
+										Start: core.Position{Line: 11, Character: 30},
+										End:   core.Position{Line: 11, Character: 37},
+									},
+									Value: "version",
+								},
 							},
 							Value: String{
 								Range: core.Range{
@@ -380,12 +464,18 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 44},
 					},
-					Name: String{
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 23},
 							End:   core.Position{Line: 11, Character: 29},
 						},
-						Value: "apidoc",
+						Local: String{
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 23},
+								End:   core.Position{Line: 11, Character: 29},
+							},
+							Value: "apidoc",
+						},
 					},
 					Attributes: []*Attribute{
 						{
@@ -393,12 +483,18 @@ func TestParser_Token(t *testing.T) {
 								Start: core.Position{Line: 11, Character: 30},
 								End:   core.Position{Line: 11, Character: 43},
 							},
-							Name: String{
+							Name: Name{
 								Range: core.Range{
 									Start: core.Position{Line: 11, Character: 30},
 									End:   core.Position{Line: 11, Character: 37},
 								},
-								Value: "version",
+								Local: String{
+									Range: core.Range{
+										Start: core.Position{Line: 11, Character: 30},
+										End:   core.Position{Line: 11, Character: 37},
+									},
+									Value: "version",
+								},
 							},
 							Value: String{
 								Range: core.Range{
@@ -422,12 +518,18 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 12, Character: 1},
 						End:   core.Position{Line: 12, Character: 10},
 					},
-					Name: String{
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 12, Character: 3},
 							End:   core.Position{Line: 12, Character: 9},
 						},
-						Value: "apidoc",
+						Local: String{
+							Range: core.Range{
+								Start: core.Position{Line: 12, Character: 3},
+								End:   core.Position{Line: 12, Character: 9},
+							},
+							Value: "apidoc",
+						},
 					},
 				},
 				&String{
@@ -449,12 +551,18 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 30},
 					},
-					Name: String{
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 23},
 							End:   core.Position{Line: 11, Character: 29},
 						},
-						Value: "apidoc",
+						Local: String{
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 23},
+								End:   core.Position{Line: 11, Character: 29},
+							},
+							Value: "apidoc",
+						},
 					},
 				}, // end StartElement
 				&StartElement{
@@ -463,12 +571,18 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 11, Character: 30},
 						End:   core.Position{Line: 11, Character: 40},
 					},
-					Name: String{
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 31},
 							End:   core.Position{Line: 11, Character: 37},
 						},
-						Value: "apidoc",
+						Local: String{
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 31},
+								End:   core.Position{Line: 11, Character: 37},
+							},
+							Value: "apidoc",
+						},
 					},
 				},
 				&EndElement{
@@ -476,12 +590,18 @@ func TestParser_Token(t *testing.T) {
 						Start: core.Position{Line: 11, Character: 40},
 						End:   core.Position{Line: 11, Character: 49},
 					},
-					Name: String{
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 42},
 							End:   core.Position{Line: 11, Character: 48},
 						},
-						Value: "apidoc",
+						Local: String{
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 42},
+								End:   core.Position{Line: 11, Character: 48},
+							},
+							Value: "apidoc",
+						},
 					},
 				},
 			},
@@ -569,12 +689,18 @@ func TestParser_parseStartElement(t *testing.T) {
 					Start: core.Position{Line: 11, Character: 22},
 					End:   core.Position{Line: 11, Character: 26},
 				},
-				Name: String{
+				Name: Name{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 25},
 					},
-					Value: "tag",
+					Local: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 11, Character: 25},
+						},
+						Value: "tag",
+					},
 				},
 			},
 		},
@@ -585,12 +711,49 @@ func TestParser_parseStartElement(t *testing.T) {
 					Start: core.Position{Line: 11, Character: 22},
 					End:   core.Position{Line: 11, Character: 27},
 				},
-				Name: String{
+				Name: Name{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 25},
 					},
-					Value: "tag",
+					Local: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 11, Character: 25},
+						},
+						Value: "tag",
+					},
+				},
+				Close: true,
+			},
+		},
+
+		{
+			input: `aa:tag/>`,
+			elem: &StartElement{
+				Range: core.Range{
+					Start: core.Position{Line: 11, Character: 22},
+					End:   core.Position{Line: 11, Character: 30},
+				},
+				Name: Name{
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 11, Character: 28},
+					},
+					Local: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 25},
+							End:   core.Position{Line: 11, Character: 28},
+						},
+						Value: "tag",
+					},
+					Prefix: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 11, Character: 24},
+						},
+						Value: "aa",
+					},
 				},
 				Close: true,
 			},
@@ -603,12 +766,18 @@ func TestParser_parseStartElement(t *testing.T) {
 					Start: core.Position{Line: 11, Character: 22},
 					End:   core.Position{Line: 11, Character: 48},
 				},
-				Name: String{
+				Name: Name{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 25},
 					},
-					Value: "tag",
+					Local: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 11, Character: 25},
+						},
+						Value: "tag",
+					},
 				},
 				Attributes: []*Attribute{
 					{
@@ -616,12 +785,18 @@ func TestParser_parseStartElement(t *testing.T) {
 							Start: core.Position{Line: 11, Character: 26},
 							End:   core.Position{Line: 11, Character: 35},
 						},
-						Name: String{
+						Name: Name{
 							Range: core.Range{
 								Start: core.Position{Line: 11, Character: 26},
 								End:   core.Position{Line: 11, Character: 29},
 							},
-							Value: "ver",
+							Local: String{
+								Range: core.Range{
+									Start: core.Position{Line: 11, Character: 26},
+									End:   core.Position{Line: 11, Character: 29},
+								},
+								Value: "ver",
+							},
 						},
 						Value: String{
 							Range: core.Range{
@@ -636,12 +811,18 @@ func TestParser_parseStartElement(t *testing.T) {
 							Start: core.Position{Line: 11, Character: 36},
 							End:   core.Position{Line: 11, Character: 46},
 						},
-						Name: String{
+						Name: Name{
 							Range: core.Range{
 								Start: core.Position{Line: 11, Character: 36},
 								End:   core.Position{Line: 11, Character: 39},
 							},
-							Value: "enc",
+							Local: String{
+								Range: core.Range{
+									Start: core.Position{Line: 11, Character: 36},
+									End:   core.Position{Line: 11, Character: 39},
+								},
+								Value: "enc",
+							},
 						},
 						Value: String{
 							Range: core.Range{
@@ -725,12 +906,47 @@ func TestParser_parseEndElement(t *testing.T) {
 					Start: core.Position{Line: 11, Character: 22},
 					End:   core.Position{Line: 11, Character: 26},
 				},
-				Name: String{
+				Name: Name{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 25},
 					},
-					Value: "tag",
+					Local: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 11, Character: 25},
+						},
+						Value: "tag",
+					},
+				},
+			},
+		},
+		{
+			input: `aa:tag>`,
+			elem: &EndElement{
+				Range: core.Range{
+					Start: core.Position{Line: 11, Character: 22},
+					End:   core.Position{Line: 11, Character: 29},
+				},
+				Name: Name{
+					Range: core.Range{
+						Start: core.Position{Line: 11, Character: 22},
+						End:   core.Position{Line: 11, Character: 28},
+					},
+					Local: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 25},
+							End:   core.Position{Line: 11, Character: 28},
+						},
+						Value: "tag",
+					},
+					Prefix: String{
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 11, Character: 24},
+						},
+						Value: "aa",
+					},
 				},
 			},
 		},
@@ -807,18 +1023,30 @@ func TestParser_parseCData(t *testing.T) {
 							End:   core.Position{Line: 12, Character: 6},
 						},
 					},
-					StartTag: String{
-						Value: cdataStart,
+					StartTag: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 22},
 							End:   core.Position{Line: 11, Character: 31},
 						},
+						Local: String{
+							Value: cdataStart,
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 22},
+								End:   core.Position{Line: 11, Character: 31},
+							},
+						},
 					},
-					EndTag: String{
-						Value: cdataEnd,
+					EndTag: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 12, Character: 3},
 							End:   core.Position{Line: 12, Character: 6},
+						},
+						Local: String{
+							Value: cdataEnd,
+							Range: core.Range{
+								Start: core.Position{Line: 12, Character: 3},
+								End:   core.Position{Line: 12, Character: 6},
+							},
 						},
 					},
 				},
@@ -841,18 +1069,30 @@ func TestParser_parseCData(t *testing.T) {
 							End:   core.Position{Line: 12, Character: 6},
 						},
 					},
-					StartTag: String{
-						Value: cdataStart,
+					StartTag: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 22},
 							End:   core.Position{Line: 11, Character: 31},
 						},
+						Local: String{
+							Value: cdataStart,
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 22},
+								End:   core.Position{Line: 11, Character: 31},
+							},
+						},
 					},
-					EndTag: String{
-						Value: cdataEnd,
+					EndTag: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 12, Character: 3},
 							End:   core.Position{Line: 12, Character: 6},
+						},
+						Local: String{
+							Value: cdataEnd,
+							Range: core.Range{
+								Start: core.Position{Line: 12, Character: 3},
+								End:   core.Position{Line: 12, Character: 6},
+							},
 						},
 					},
 				},
@@ -876,18 +1116,30 @@ func TestParser_parseCData(t *testing.T) {
 							End:   core.Position{Line: 13, Character: 6},
 						},
 					},
-					StartTag: String{
-						Value: cdataStart,
+					StartTag: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 22},
 							End:   core.Position{Line: 11, Character: 31},
 						},
+						Local: String{
+							Value: cdataStart,
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 22},
+								End:   core.Position{Line: 11, Character: 31},
+							},
+						},
 					},
-					EndTag: String{
-						Value: cdataEnd,
+					EndTag: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 13, Character: 3},
 							End:   core.Position{Line: 13, Character: 6},
+						},
+						Local: String{
+							Value: cdataEnd,
+							Range: core.Range{
+								Start: core.Position{Line: 13, Character: 3},
+								End:   core.Position{Line: 13, Character: 6},
+							},
 						},
 					},
 				},
@@ -1011,12 +1263,18 @@ func TestParser_parseInstruction(t *testing.T) {
 							Start: core.Position{Line: 11, Character: 26},
 							End:   core.Position{Line: 11, Character: 39},
 						},
-						Name: String{
+						Name: Name{
 							Range: core.Range{
 								Start: core.Position{Line: 11, Character: 26},
 								End:   core.Position{Line: 11, Character: 33},
 							},
-							Value: "version",
+							Local: String{
+								Range: core.Range{
+									Start: core.Position{Line: 11, Character: 26},
+									End:   core.Position{Line: 11, Character: 33},
+								},
+								Value: "version",
+							},
 						},
 						Value: String{
 							Range: core.Range{
@@ -1049,12 +1307,18 @@ func TestParser_parseInstruction(t *testing.T) {
 							Start: core.Position{Line: 11, Character: 26},
 							End:   core.Position{Line: 11, Character: 39},
 						},
-						Name: String{
+						Name: Name{
 							Range: core.Range{
 								Start: core.Position{Line: 11, Character: 26},
 								End:   core.Position{Line: 11, Character: 33},
 							},
-							Value: "version",
+							Local: String{
+								Range: core.Range{
+									Start: core.Position{Line: 11, Character: 26},
+									End:   core.Position{Line: 11, Character: 33},
+								},
+								Value: "version",
+							},
 						},
 						Value: String{
 							Range: core.Range{
@@ -1069,12 +1333,18 @@ func TestParser_parseInstruction(t *testing.T) {
 							Start: core.Position{Line: 11, Character: 40},
 							End:   core.Position{Line: 11, Character: 56},
 						},
-						Name: String{
+						Name: Name{
 							Range: core.Range{
 								Start: core.Position{Line: 11, Character: 40},
 								End:   core.Position{Line: 11, Character: 48},
 							},
-							Value: "encoding",
+							Local: String{
+								Range: core.Range{
+									Start: core.Position{Line: 11, Character: 40},
+									End:   core.Position{Line: 11, Character: 48},
+								},
+								Value: "encoding",
+							},
 						},
 						Value: String{
 							Range: core.Range{
@@ -1136,11 +1406,17 @@ func TestParser_parseAttributes(t *testing.T) {
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 34},
 					},
-					Name: String{
-						Value: "name",
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 22},
 							End:   core.Position{Line: 11, Character: 26},
+						},
+						Local: String{
+							Value: "name",
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 22},
+								End:   core.Position{Line: 11, Character: 26},
+							},
 						},
 					},
 					Value: String{
@@ -1163,11 +1439,17 @@ func TestParser_parseAttributes(t *testing.T) {
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 34},
 					},
-					Name: String{
-						Value: "name",
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 11, Character: 22},
 							End:   core.Position{Line: 11, Character: 26},
+						},
+						Local: String{
+							Value: "name",
+							Range: core.Range{
+								Start: core.Position{Line: 11, Character: 22},
+								End:   core.Position{Line: 11, Character: 26},
+							},
 						},
 					},
 					Value: String{
@@ -1183,11 +1465,17 @@ func TestParser_parseAttributes(t *testing.T) {
 						Start: core.Position{Line: 12, Character: 1},
 						End:   core.Position{Line: 12, Character: 13},
 					},
-					Name: String{
-						Value: "name",
+					Name: Name{
 						Range: core.Range{
 							Start: core.Position{Line: 12, Character: 1},
 							End:   core.Position{Line: 12, Character: 5},
+						},
+						Local: String{
+							Value: "name",
+							Range: core.Range{
+								Start: core.Position{Line: 12, Character: 1},
+								End:   core.Position{Line: 12, Character: 5},
+							},
 						},
 					},
 					Value: String{
@@ -1263,11 +1551,17 @@ func TestParser_parseAttribute(t *testing.T) {
 					Start: core.Position{Line: 11, Character: 22},
 					End:   core.Position{Line: 11, Character: 34},
 				},
-				Name: String{
-					Value: "name",
+				Name: Name{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 26},
+					},
+					Local: String{
+						Value: "name",
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 11, Character: 26},
+						},
 					},
 				},
 				Value: String{
@@ -1286,11 +1580,17 @@ func TestParser_parseAttribute(t *testing.T) {
 					Start: core.Position{Line: 11, Character: 22},
 					End:   core.Position{Line: 11, Character: 34},
 				},
-				Name: String{
-					Value: "name",
+				Name: Name{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 26},
+					},
+					Local: String{
+						Value: "name",
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 11, Character: 26},
+						},
 					},
 				},
 				Value: String{
@@ -1309,11 +1609,17 @@ func TestParser_parseAttribute(t *testing.T) {
 					Start: core.Position{Line: 11, Character: 22},
 					End:   core.Position{Line: 11, Character: 34},
 				},
-				Name: String{
-					Value: "name",
+				Name: Name{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 26},
+					},
+					Local: String{
+						Value: "name",
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 22},
+							End:   core.Position{Line: 11, Character: 26},
+						},
 					},
 				},
 				Value: String{
@@ -1332,11 +1638,17 @@ func TestParser_parseAttribute(t *testing.T) {
 					Start: core.Position{Line: 11, Character: 23},
 					End:   core.Position{Line: 12, Character: 7},
 				},
-				Name: String{
-					Value: "name",
+				Name: Name{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 23},
 						End:   core.Position{Line: 11, Character: 27},
+					},
+					Local: String{
+						Value: "name",
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 23},
+							End:   core.Position{Line: 11, Character: 27},
+						},
 					},
 				},
 				Value: String{
@@ -1355,11 +1667,17 @@ func TestParser_parseAttribute(t *testing.T) {
 					Start: core.Position{Line: 11, Character: 23},
 					End:   core.Position{Line: 12, Character: 2},
 				},
-				Name: String{
-					Value: "name",
+				Name: Name{
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 23},
 						End:   core.Position{Line: 11, Character: 27},
+					},
+					Local: String{
+						Value: "name",
+						Range: core.Range{
+							Start: core.Position{Line: 11, Character: 23},
+							End:   core.Position{Line: 11, Character: 27},
+						},
 					},
 				},
 				Value: String{

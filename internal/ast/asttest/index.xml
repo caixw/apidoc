@@ -1,37 +1,37 @@
-<apidoc apidoc="6.1.0" version="1.0.1">
-	<title>test</title>
-	<description type="html"><![CDATA[<p>desc</p>]]></description>
-	<tag name="t1" title="t1"></tag>
-	<tag name="t2" title="t2"></tag>
-	<tag name="tag1" title="tag1"></tag>
-	<server name="admin" url="https://example.com/admin" summary="admin"></server>
-	<server name="client" url="https://example.com" summary="client"></server>
-	<api method="GET">
-		<path path="/users"></path>
-		<request summary="request">
-			<example mimetype="application/json"><![CDATA[xxx]]></example>
-			<header name="authorization" type="string" summary="authorization"></header>
-		</request>
-		<response type="object" status="200">
-			<param name="name" type="string" summary="summary"></param>
-			<example mimetype="application/json"><![CDATA[xxx]]></example>
-			<header name="authorization" type="string" summary="authorization"></header>
-			<description type="html"><![CDATA[<p>desc</p>]]></description>
-		</response>
-		<tag>t1</tag>
-		<tag>t2</tag>
-		<server>admin</server>
-		<server>client</server>
-	</api>
-	<api method="POST" summary="summary" deprecated="1.0.1">
-		<path path="/users"></path>
-		<response status="201">
-			<description type="html"><![CDATA[<p>desc</p>]]></description>
-		</response>
-		<tag>t1</tag>
-		<tag>tag1</tag>
-		<server>admin</server>
-	</api>
-	<mimetype>application/json</mimetype>
-	<mimetype>application/xml</mimetype>
-</apidoc>
+<aa:apidoc aa:apidoc="6.1.0" aa:version="1.0.1" xmlns:aa="https://apidoc.tools/v6/XMLSchema">
+	<aa:title>test</aa:title>
+	<aa:description aa:type="html"><![CDATA[<p>desc</p>]]></aa:description>
+	<aa:tag aa:name="t1" aa:title="t1"></aa:tag>
+	<aa:tag aa:name="t2" aa:title="t2"></aa:tag>
+	<aa:tag aa:name="tag1" aa:title="tag1"></aa:tag>
+	<aa:server aa:name="admin" aa:url="https://example.com/admin" aa:summary="admin"></aa:server>
+	<aa:server aa:name="client" aa:url="https://example.com" aa:summary="client"></aa:server>
+	<aa:api aa:method="GET">
+		<aa:path aa:path="/users"></aa:path>
+		<aa:request aa:summary="request">
+			<aa:example aa:mimetype="application/json"><![CDATA[xxx]]></aa:example>
+			<aa:header aa:name="authorization" aa:type="string" aa:summary="authorization"></aa:header>
+		</aa:request>
+		<aa:response aa:type="object" aa:status="200">
+			<aa:param aa:name="name" aa:type="string" aa:summary="summary"></aa:param>
+			<aa:example aa:mimetype="application/json"><![CDATA[xxx]]></aa:example>
+			<aa:header aa:name="authorization" aa:type="string" aa:summary="authorization"></aa:header>
+			<aa:description aa:type="html"><![CDATA[<p>desc</p>]]></aa:description>
+		</aa:response>
+		<aa:tag>t1</aa:tag>
+		<aa:tag>t2</aa:tag>
+		<aa:server>admin</aa:server>
+		<aa:server>client</aa:server>
+	</aa:api>
+	<aa:api aa:method="POST" aa:summary="summary" aa:deprecated="1.0.1">
+		<aa:path aa:path="/users"></aa:path>
+		<aa:response aa:status="201">
+			<aa:description aa:type="html"><![CDATA[<p>desc</p>]]></aa:description>
+		</aa:response>
+		<aa:tag>t1</aa:tag>
+		<aa:tag>tag1</aa:tag>
+		<aa:server>admin</aa:server>
+	</aa:api>
+	<aa:mimetype>application/json</aa:mimetype>
+	<aa:mimetype>application/xml</aa:mimetype>
+</aa:apidoc>

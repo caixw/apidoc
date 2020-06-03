@@ -52,7 +52,7 @@ var (
 // Decode 将 p 中的 XML 内容解码至 v 对象中
 //
 // Decode 中所有返回的错误对象，都可以转换成 *core.SyntaxError
-func Decode(h *core.MessageHandler, p *Parser, v interface{}) {
+func Decode(h *core.MessageHandler, p *Parser, v interface{}, namespace string) {
 	var hasRoot bool
 	for {
 		t, r, err := p.Token()
@@ -71,8 +71,9 @@ func Decode(h *core.MessageHandler, p *Parser, v interface{}) {
 			}
 			hasRoot = true
 
+			prefix := findPrefix(elem, namespace)
 			vv := node.ParseValue(reflect.ValueOf(v))
-			if err := decodeElement(p, elem, vv); err != nil {
+			if err := decodeElement(p, elem, vv, prefix); err != nil {
 				h.Error(err)
 				return
 			}
@@ -84,8 +85,17 @@ func Decode(h *core.MessageHandler, p *Parser, v interface{}) {
 	}
 }
 
-func decode(n *node.Node, p *Parser, start *StartElement) (*EndElement, error) {
-	if err := decodeAttributes(n, p, start); err != nil {
+func findPrefix(start *StartElement, namespace string) string {
+	for _, attr := range start.Attributes {
+		if attr.Name.Prefix.Value == "xmlns" && attr.Value.Value == namespace {
+			return attr.Name.Local.Value
+		}
+	}
+	return ""
+}
+
+func decode(n *node.Node, p *Parser, start *StartElement, prefix string) (*EndElement, error) {
+	if err := decodeAttributes(n, p, start, prefix); err != nil {
 		return nil, err
 	}
 
@@ -93,7 +103,7 @@ func decode(n *node.Node, p *Parser, start *StartElement) (*EndElement, error) {
 		return nil, decodeCheckOmitempty(n, p, start.Start, start.End)
 	}
 
-	end, err := decodeElements(n, p)
+	end, err := decodeElements(n, p, prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -130,14 +140,14 @@ func canNotEmpty(v *node.Value) bool {
 }
 
 // 将 start 的属性内容解码到 obj.Attributes 之中
-func decodeAttributes(n *node.Node, p *Parser, start *StartElement) error {
+func decodeAttributes(n *node.Node, p *Parser, start *StartElement, prefix string) error {
 	if start == nil {
 		return nil
 	}
 
 	for _, attr := range start.Attributes {
-		item, found := n.Attribute(attr.Name.Value)
-		if !found {
+		item, found := n.Attribute(attr.Name.Local.Value)
+		if !found || prefix != attr.Name.Prefix.Value { // 未找到或是命名空间不匹配
 			continue
 		}
 		v := node.GetRealValue(item.Value)
@@ -160,7 +170,7 @@ func decodeAttributes(n *node.Node, p *Parser, start *StartElement) error {
 		}
 
 		if !impl {
-			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name.Value))
+			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name))
 		}
 
 		if err := setAttributeValue(item.Value, item.Usage, p, attr); err != nil {
@@ -171,7 +181,7 @@ func decodeAttributes(n *node.Node, p *Parser, start *StartElement) error {
 	return nil
 }
 
-func decodeElements(n *node.Node, p *Parser) (*EndElement, error) {
+func decodeElements(n *node.Node, p *Parser, prefix string) (*EndElement, error) {
 	for {
 		t, r, err := p.Token()
 		if err == io.EOF {
@@ -183,7 +193,7 @@ func decodeElements(n *node.Node, p *Parser) (*EndElement, error) {
 
 		switch elem := t.(type) {
 		case *EndElement: // 找到当前对象的结束标签
-			if elem.Name.Value == n.Value.Name {
+			if (elem.Name.Local.Value == n.Value.Name) && (elem.Name.Prefix.Value == prefix) {
 				return elem, nil
 			}
 			return nil, p.NewError(elem.Start, elem.End, n.Value.Name, locale.ErrNotFoundEndTag)
@@ -196,11 +206,11 @@ func decodeElements(n *node.Node, p *Parser) (*EndElement, error) {
 				setContentValue(n.Content.Value, reflect.ValueOf(elem))
 			}
 		case *StartElement:
-			item, found := n.Element(elem.Name.Value)
-			if !found {
-				panic(fmt.Sprintf("不存在的子元素 %s", elem.Name.Value))
+			item, found := n.Element(elem.Name.Local.Value)
+			if !found || prefix != elem.Name.Prefix.Value {
+				panic(fmt.Sprintf("不存在的子元素 %s", elem.Name))
 			}
-			if err = decodeElement(p, elem, item); err != nil {
+			if err = decodeElement(p, elem, item, prefix); err != nil {
 				return nil, err
 			}
 		case *Comment: // 忽略注释内容
@@ -223,19 +233,19 @@ func setContentValue(target, source reflect.Value) {
 	}
 }
 
-func decodeElement(p *Parser, start *StartElement, v *node.Value) error {
+func decodeElement(p *Parser, start *StartElement, v *node.Value, prefix string) error {
 	v.Value = node.GetRealValue(v.Value)
 	k := v.Kind()
 	switch {
 	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, node.IsPrimitive(v.Value):
 		panic(fmt.Sprintf("%s 是无效的类型", v.Value.Type()))
 	case k == reflect.Slice:
-		return decodeSlice(p, start, v)
+		return decodeSlice(p, start, v, prefix)
 	}
 
 	end, impl, err := callDecodeXML(v.Value, p, start)
 	if !impl {
-		end, err = decode(node.New(start.Name.Value, v.Value), p, start)
+		end, err = decode(node.New(start.Name.Local.Value, v.Value), p, start, prefix)
 	}
 	if err != nil {
 		return err
@@ -243,10 +253,10 @@ func decodeElement(p *Parser, start *StartElement, v *node.Value) error {
 	return setTagValue(v.Value, v.Usage, p, start, end)
 }
 
-func decodeSlice(p *Parser, start *StartElement, slice *node.Value) (err error) {
+func decodeSlice(p *Parser, start *StartElement, slice *node.Value, prefix string) (err error) {
 	// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
 	// 所以要过滤与 start 想匹配的结束符号才算结束。
-	if !start.Close && (start.Name.Value != slice.Name) {
+	if !start.Close && (start.Name.Local.Value != slice.Name) {
 		return findEndElement(p, start)
 	}
 
@@ -260,7 +270,7 @@ func decodeSlice(p *Parser, start *StartElement, slice *node.Value) (err error) 
 		if node.IsPrimitive(elem) {
 			panic(fmt.Sprintf("%s:%s 必须实现 Decoder 接口", slice.Name, elem.Type()))
 		}
-		end, err = decode(node.New(start.Name.Value, elem), p, start)
+		end, err = decode(node.New(start.Name.Local.Value, elem), p, start, prefix)
 	}
 	if err != nil {
 		return err
@@ -298,18 +308,18 @@ func findEndElement(p *Parser, start *StartElement) error {
 	for {
 		t, _, err := p.Token()
 		if err == io.EOF {
-			return p.NewError(start.Start, start.End, start.Name.Value, locale.ErrNotFoundEndTag) // 找不到相配的结束符号
+			return p.NewError(start.Start, start.End, start.Name.String(), locale.ErrNotFoundEndTag) // 找不到相配的结束符号
 		} else if err != nil {
 			return err
 		}
 
 		switch elem := t.(type) {
 		case *StartElement:
-			if elem.Name.Value == start.Name.Value {
+			if elem.Name.Equal(start.Name) {
 				level++
 			}
 		case *EndElement:
-			if level == 0 && (elem.Name.Value == start.Name.Value) {
+			if level == 0 && start.Match(elem) {
 				return nil
 			}
 			level--

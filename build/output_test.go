@@ -34,7 +34,7 @@ func TestOutput_Sanitize(t *testing.T) {
 	// 默认的 Type
 	o = &Output{}
 	a.NotError(o.sanitize())
-	a.Equal(o.marshal, marshaler(apidocMarshaler))
+	a.Equal(o.Type, APIDocXML).NotNil(o.marshal)
 
 	o = &Output{Type: "invalid-type"}
 	a.Error(o.sanitize())

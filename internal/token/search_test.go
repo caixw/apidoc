@@ -30,7 +30,7 @@ func TestSearchUsage(t *testing.T) {
 		ID       intAttr     `apidoc:"id,attr,usage-id"`
 		Name     []stringTag `apidoc:"name,elem,usage-name"`
 	}{}
-	Decode(rslt.Handler, p, obj)
+	Decode(rslt.Handler, p, obj, "")
 	a.Empty(rslt.Errors)
 	a.Equal(obj.Start.Line, 0).
 		Equal(obj.Start.Character, 0)

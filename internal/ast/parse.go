@@ -59,14 +59,14 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		}
 
 		api := &API{doc: doc}
-		token.Decode(h, p, api)
+		token.Decode(h, p, api, core.XMLNamespace)
 		doc.APIs = append(doc.APIs, api)
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
 			h.Error(p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue))
 			return
 		}
-		token.Decode(h, p, doc)
+		token.Decode(h, p, doc, core.XMLNamespace)
 	default:
 		return
 	}
@@ -86,7 +86,7 @@ func getTagName(p *token.Parser) (string, error) {
 		switch elem := t.(type) {
 		case *token.StartElement:
 			p.Move(start)
-			return elem.Name.Value, nil
+			return elem.Name.Local.Value, nil
 		case *token.EndElement, *token.CData:
 			return "", p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
 		default: // 其它标签忽略

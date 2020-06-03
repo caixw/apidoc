@@ -13,13 +13,13 @@ import (
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
-func decodeObject(a *assert.Assertion, xml string, v interface{}, hasErr bool) {
+func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace string, hasErr bool) {
 	p, err := NewParser(core.Block{Data: []byte(xml)})
 	a.NotError(err).
 		NotNil(p)
 
 	rslt := messagetest.NewMessageHandler()
-	Decode(rslt.Handler, p, v)
+	Decode(rslt.Handler, p, v, namespace)
 	rslt.Handler.Stop()
 
 	if hasErr {
@@ -27,7 +27,6 @@ func decodeObject(a *assert.Assertion, xml string, v interface{}, hasErr bool) {
 		a.ErrorType(rslt.Errors[0], &core.SyntaxError{})
 		return
 	}
-	Decode(rslt.Handler, p, v)
 	a.Empty(rslt.Errors)
 }
 
@@ -40,28 +39,54 @@ func TestDecode(t *testing.T) {
 		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
 		Elem1    intTag   `apidoc:"elem1,elem,usage"`
 	}{}
-	b := `<apidoc attr1="5"><elem1>6</elem1></apidoc>`
-	decodeObject(a, b, v, false)
+	b := `<aa:apidoc aa:attr1="5" xmlns:aa="urn"><aa:elem1>6</aa:elem1></aa:apidoc>`
+	decodeObject(a, b, v, "urn", false)
 	base := BaseTag{
 		Base: Base{
 			UsageKey: "usage-apidoc",
 			Range: core.Range{
 				Start: core.Position{Character: 0},
-				End:   core.Position{Character: 43},
+				End:   core.Position{Character: 73},
 			},
 		},
-		StartTag: String{
-			Value: "apidoc",
+		StartTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 1},
-				End:   core.Position{Character: 7},
+				End:   core.Position{Character: 10},
+			},
+			Local: String{
+				Value: "apidoc",
+				Range: core.Range{
+					Start: core.Position{Character: 4},
+					End:   core.Position{Character: 10},
+				},
+			},
+			Prefix: String{
+				Value: "aa",
+				Range: core.Range{
+					Start: core.Position{Character: 1},
+					End:   core.Position{Character: 3},
+				},
 			},
 		},
-		EndTag: String{
-			Value: "apidoc",
+		EndTag: Name{
 			Range: core.Range{
-				Start: core.Position{Character: 36},
-				End:   core.Position{Character: 42},
+				Start: core.Position{Character: 63},
+				End:   core.Position{Character: 72},
+			},
+			Local: String{
+				Value: "apidoc",
+				Range: core.Range{
+					Start: core.Position{Character: 66},
+					End:   core.Position{Character: 72},
+				},
+			},
+			Prefix: String{
+				Value: "aa",
+				Range: core.Range{
+					Start: core.Position{Character: 63},
+					End:   core.Position{Character: 65},
+				},
 			},
 		},
 	}
@@ -70,15 +95,28 @@ func TestDecode(t *testing.T) {
 			Base: Base{
 				UsageKey: "usage",
 				Range: core.Range{
-					Start: core.Position{Character: 8},
-					End:   core.Position{Character: 17},
+					Start: core.Position{Character: 11},
+					End:   core.Position{Character: 23},
 				},
 			},
-			AttributeName: String{
-				Value: "attr1",
+			AttributeName: Name{
 				Range: core.Range{
-					Start: core.Position{Character: 8},
-					End:   core.Position{Character: 13},
+					Start: core.Position{Character: 11},
+					End:   core.Position{Character: 19},
+				},
+				Local: String{
+					Value: "attr1",
+					Range: core.Range{
+						Start: core.Position{Character: 14},
+						End:   core.Position{Character: 19},
+					},
+				},
+				Prefix: String{
+					Value: "aa",
+					Range: core.Range{
+						Start: core.Position{Character: 11},
+						End:   core.Position{Character: 13},
+					},
 				},
 			},
 		}}
@@ -87,22 +125,48 @@ func TestDecode(t *testing.T) {
 			Base: Base{
 				UsageKey: "usage",
 				Range: core.Range{
-					Start: core.Position{Character: 18},
-					End:   core.Position{Character: 34},
+					Start: core.Position{Character: 39},
+					End:   core.Position{Character: 61},
 				},
 			},
-			StartTag: String{
-				Value: "elem1",
+			StartTag: Name{
 				Range: core.Range{
-					Start: core.Position{Character: 19},
-					End:   core.Position{Character: 24},
+					Start: core.Position{Character: 40},
+					End:   core.Position{Character: 48},
+				},
+				Local: String{
+					Value: "elem1",
+					Range: core.Range{
+						Start: core.Position{Character: 43},
+						End:   core.Position{Character: 48},
+					},
+				},
+				Prefix: String{
+					Value: "aa",
+					Range: core.Range{
+						Start: core.Position{Character: 40},
+						End:   core.Position{Character: 42},
+					},
 				},
 			},
-			EndTag: String{
-				Value: "elem1",
+			EndTag: Name{
 				Range: core.Range{
-					Start: core.Position{Character: 28},
-					End:   core.Position{Character: 33},
+					Start: core.Position{Character: 52},
+					End:   core.Position{Character: 60},
+				},
+				Local: String{
+					Value: "elem1",
+					Range: core.Range{
+						Start: core.Position{Character: 55},
+						End:   core.Position{Character: 60},
+					},
+				},
+				Prefix: String{
+					Value: "aa",
+					Range: core.Range{
+						Start: core.Position{Character: 52},
+						End:   core.Position{Character: 54},
+					},
 				},
 			},
 		}}
@@ -118,7 +182,7 @@ func TestDecode(t *testing.T) {
 		Elem1    intTag   `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1 /></apidoc>`
-	decodeObject(a, b, v, false)
+	decodeObject(a, b, v, "", false)
 	attr1 = intAttr{Value: 5,
 		BaseAttribute: BaseAttribute{
 			Base: Base{
@@ -128,11 +192,17 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 17},
 				},
 			},
-			AttributeName: String{
-				Value: "attr1",
+			AttributeName: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 8},
 					End:   core.Position{Character: 13},
+				},
+				Local: String{
+					Value: "attr1",
+					Range: core.Range{
+						Start: core.Position{Character: 8},
+						End:   core.Position{Character: 13},
+					},
 				},
 			},
 		}}
@@ -145,11 +215,17 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 27},
 				},
 			},
-			StartTag: String{
-				Value: "elem1",
+			StartTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 19},
 					End:   core.Position{Character: 24},
+				},
+				Local: String{
+					Value: "elem1",
+					Range: core.Range{
+						Start: core.Position{Character: 19},
+						End:   core.Position{Character: 24},
+					},
 				},
 			},
 		}}
@@ -172,11 +248,17 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		AttributeName: String{
-			Value: "attr1",
+		AttributeName: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 8},
 				End:   core.Position{Character: 13},
+			},
+			Local: String{
+				Value: "attr1",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 13},
+				},
 			},
 		},
 	}}
@@ -188,22 +270,34 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 34},
 			},
 		},
-		StartTag: String{
-			Value: "elem1",
+		StartTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 19},
 				End:   core.Position{Character: 24},
 			},
+			Local: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 19},
+					End:   core.Position{Character: 24},
+				},
+			},
 		},
-		EndTag: String{
-			Value: "elem1",
+		EndTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 28},
 				End:   core.Position{Character: 33},
 			},
+			Local: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 28},
+					End:   core.Position{Character: 33},
+				},
+			},
 		},
 	}}
-	decodeObject(a, b, v2, false)
+	decodeObject(a, b, v2, "", false)
 	a.Equal(v2.Attr1, attr1).
 		Equal(v2.Elem1, []intTag{elem1})
 
@@ -223,11 +317,17 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		AttributeName: String{
-			Value: "attr1",
+		AttributeName: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 8},
 				End:   core.Position{Character: 13},
+			},
+			Local: String{
+				Value: "attr1",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 13},
+				},
 			},
 		},
 	}}
@@ -239,18 +339,30 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 34},
 			},
 		},
-		StartTag: String{
-			Value: "elem1",
+		StartTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 19},
 				End:   core.Position{Character: 24},
 			},
+			Local: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 19},
+					End:   core.Position{Character: 24},
+				},
+			},
 		},
-		EndTag: String{
-			Value: "elem1",
+		EndTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 28},
 				End:   core.Position{Character: 33},
+			},
+			Local: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 28},
+					End:   core.Position{Character: 33},
+				},
 			},
 		},
 	}}
@@ -262,22 +374,34 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 50},
 			},
 		},
-		StartTag: String{
-			Value: "elem1",
+		StartTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 35},
 				End:   core.Position{Character: 40},
 			},
+			Local: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 35},
+					End:   core.Position{Character: 40},
+				},
+			},
 		},
-		EndTag: String{
-			Value: "elem1",
+		EndTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 44},
 				End:   core.Position{Character: 49},
 			},
+			Local: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 44},
+					End:   core.Position{Character: 49},
+				},
+			},
 		},
 	}}
-	decodeObject(a, b, v3, false)
+	decodeObject(a, b, v3, "", false)
 	a.Equal(v3.Attr1, attr1).
 		Equal(v3.Elem1, []intTag{elem1, elem2})
 
@@ -297,11 +421,17 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		AttributeName: String{
-			Value: "attr1",
+		AttributeName: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 8},
 				End:   core.Position{Character: 13},
+			},
+			Local: String{
+				Value: "attr1",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 13},
+				},
 			},
 		},
 	}}
@@ -313,11 +443,17 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 27},
 			},
 		},
-		StartTag: String{
-			Value: "elem1",
+		StartTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 19},
 				End:   core.Position{Character: 24},
+			},
+			Local: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 19},
+					End:   core.Position{Character: 24},
+				},
 			},
 		},
 	}}
@@ -329,22 +465,34 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 43},
 			},
 		},
-		StartTag: String{
-			Value: "elem1",
+		StartTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 28},
 				End:   core.Position{Character: 33},
 			},
+			Local: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 28},
+					End:   core.Position{Character: 33},
+				},
+			},
 		},
-		EndTag: String{
-			Value: "elem1",
+		EndTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 37},
 				End:   core.Position{Character: 42},
 			},
+			Local: String{
+				Value: "elem1",
+				Range: core.Range{
+					Start: core.Position{Character: 37},
+					End:   core.Position{Character: 42},
+				},
+			},
 		},
 	}}
-	decodeObject(a, b, v3, false)
+	decodeObject(a, b, v3, "", false)
 	a.Equal(v3.Attr1, attr1).
 		Equal(v3.Elem1, []intTag{elem1, elem2})
 
@@ -356,7 +504,7 @@ func TestDecode(t *testing.T) {
 		Content  String   `apidoc:",content"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
-	decodeObject(a, b, v4, false)
+	decodeObject(a, b, v4, "", false)
 	a.Equal(v4.Content, String{Value: "5555", Range: core.Range{
 		Start: core.Position{Character: 18},
 		End:   core.Position{Character: 22},
@@ -369,11 +517,17 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		AttributeName: String{
-			Value: "attr1",
+		AttributeName: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 8},
 				End:   core.Position{Character: 13},
+			},
+			Local: String{
+				Value: "attr1",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 13},
+				},
 			},
 		},
 	}})
@@ -385,7 +539,7 @@ func TestDecode(t *testing.T) {
 		Cdata    *CData   `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5"><![CDATA[5555]]></apidoc>`
-	decodeObject(a, b, v5, false)
+	decodeObject(a, b, v5, "", false)
 	a.Equal(v5.Cdata, &CData{
 		Value: String{Value: "5555", Range: core.Range{
 			Start: core.Position{Character: 27},
@@ -398,18 +552,30 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 34},
 				},
 			},
-			StartTag: String{
-				Value: cdataStart,
+			StartTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 18},
 					End:   core.Position{Character: 27},
 				},
+				Local: String{
+					Value: cdataStart,
+					Range: core.Range{
+						Start: core.Position{Character: 18},
+						End:   core.Position{Character: 27},
+					},
+				},
 			},
-			EndTag: String{
-				Value: cdataEnd,
+			EndTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 31},
 					End:   core.Position{Character: 34},
+				},
+				Local: String{
+					Value: cdataEnd,
+					Range: core.Range{
+						Start: core.Position{Character: 31},
+						End:   core.Position{Character: 34},
+					},
 				},
 			},
 		},
@@ -422,7 +588,7 @@ func TestDecode(t *testing.T) {
 		Cdata    CData    `apidoc:",cdata,,omitempty"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
-	decodeObject(a, b, v6, false)
+	decodeObject(a, b, v6, "", false)
 	a.Empty(v6.Cdata.Value.Value).True(v6.Cdata.IsEmpty())
 
 	v7 := &struct {
@@ -433,7 +599,7 @@ func TestDecode(t *testing.T) {
 		Object   *objectTag `apidoc:"obj,elem,usage"`
 	}{}
 	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
-	decodeObject(a, b, v7, false)
+	decodeObject(a, b, v7, "", false)
 	a.Equal(v7.ID, &intAttr{Value: 11, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
@@ -442,11 +608,17 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 15},
 			},
 		},
-		AttributeName: String{
-			Value: "id",
+		AttributeName: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 8},
 				End:   core.Position{Character: 10},
+			},
+			Local: String{
+				Value: "id",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 10},
+				},
 			},
 		},
 	}})
@@ -458,18 +630,30 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 33},
 			},
 		},
-		StartTag: String{
-			Value: "name",
+		StartTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 17},
 				End:   core.Position{Character: 21},
 			},
+			Local: String{
+				Value: "name",
+				Range: core.Range{
+					Start: core.Position{Character: 17},
+					End:   core.Position{Character: 21},
+				},
+			},
 		},
-		EndTag: String{
-			Value: "name",
+		EndTag: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 28},
 				End:   core.Position{Character: 32},
+			},
+			Local: String{
+				Value: "name",
+				Range: core.Range{
+					Start: core.Position{Character: 28},
+					End:   core.Position{Character: 32},
+				},
 			},
 		},
 	}})
@@ -482,18 +666,30 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 66},
 				},
 			},
-			StartTag: String{
-				Value: "obj",
+			StartTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 34},
 					End:   core.Position{Character: 37},
 				},
+				Local: String{
+					Value: "obj",
+					Range: core.Range{
+						Start: core.Position{Character: 34},
+						End:   core.Position{Character: 37},
+					},
+				},
 			},
-			EndTag: String{
-				Value: "obj",
+			EndTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 62},
 					End:   core.Position{Character: 65},
+				},
+				Local: String{
+					Value: "obj",
+					Range: core.Range{
+						Start: core.Position{Character: 62},
+						End:   core.Position{Character: 65},
+					},
 				},
 			},
 		},
@@ -505,11 +701,17 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 45},
 				},
 			},
-			AttributeName: String{
-				Value: "id",
+			AttributeName: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 38},
 					End:   core.Position{Character: 40},
+				},
+				Local: String{
+					Value: "id",
+					Range: core.Range{
+						Start: core.Position{Character: 38},
+						End:   core.Position{Character: 40},
+					},
 				},
 			},
 		}},
@@ -521,18 +723,30 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 60},
 				},
 			},
-			StartTag: String{
-				Value: "name",
+			StartTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 47},
 					End:   core.Position{Character: 51},
 				},
+				Local: String{
+					Value: "name",
+					Range: core.Range{
+						Start: core.Position{Character: 47},
+						End:   core.Position{Character: 51},
+					},
+				},
 			},
-			EndTag: String{
-				Value: "name",
+			EndTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 55},
 					End:   core.Position{Character: 59},
+				},
+				Local: String{
+					Value: "name",
+					Range: core.Range{
+						Start: core.Position{Character: 55},
+						End:   core.Position{Character: 59},
+					},
 				},
 			},
 		}},
@@ -540,11 +754,11 @@ func TestDecode(t *testing.T) {
 
 	// 多个根元素
 	b = `<apidoc attr="1"></apidoc><apidoc attr="1"></apidoc>`
-	decodeObject(a, b, v7, true)
+	decodeObject(a, b, v7, "", true)
 
 	// 多个结束元素
 	b = `<apidoc attr="1"></apidoc></apidoc>`
-	decodeObject(a, b, v7, true)
+	decodeObject(a, b, v7, "", true)
 
 	// 无效的属性值
 	v8 := &struct {
@@ -553,7 +767,7 @@ func TestDecode(t *testing.T) {
 		ID       intAttr  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1xx"></apidoc></apidoc>`
-	decodeObject(a, b, v8, true)
+	decodeObject(a, b, v8, "", true)
 
 	// StartElement.Close
 	v9 := &struct {
@@ -562,7 +776,7 @@ func TestDecode(t *testing.T) {
 		ID       intAttr  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1" />`
-	decodeObject(a, b, v9, false)
+	decodeObject(a, b, v9, "", false)
 
 	// 不存在的元素名
 	v10 := &struct {
@@ -572,7 +786,7 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
-		decodeObject(a, b, v10, false)
+		decodeObject(a, b, v10, "", false)
 	})
 
 	// 数组元素未实现 Decoder 接口
@@ -583,7 +797,7 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
-		decodeObject(a, b, v11, false)
+		decodeObject(a, b, v11, "", false)
 	})
 
 	// 多个数组，未实现 Decoder 的元素
@@ -605,11 +819,17 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		AttributeName: String{
-			Value: "attr1",
+		AttributeName: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 8},
 				End:   core.Position{Character: 13},
+			},
+			Local: String{
+				Value: "attr1",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 13},
+				},
 			},
 		},
 	}}
@@ -622,18 +842,30 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 29, Line: 1},
 				},
 			},
-			StartTag: String{
-				Value: "e",
+			StartTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 2, Line: 1},
 					End:   core.Position{Character: 3, Line: 1},
 				},
+				Local: String{
+					Value: "e",
+					Range: core.Range{
+						Start: core.Position{Character: 2, Line: 1},
+						End:   core.Position{Character: 3, Line: 1},
+					},
+				},
 			},
-			EndTag: String{
-				Value: "e",
+			EndTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 27, Line: 1},
 					End:   core.Position{Character: 28, Line: 1},
+				},
+				Local: String{
+					Value: "e",
+					Range: core.Range{
+						Start: core.Position{Character: 27, Line: 1},
+						End:   core.Position{Character: 28, Line: 1},
+					},
 				},
 			},
 		},
@@ -646,11 +878,17 @@ func TestDecode(t *testing.T) {
 						End:   core.Position{Character: 10, Line: 1},
 					},
 				},
-				AttributeName: String{
-					Value: "id",
+				AttributeName: Name{
 					Range: core.Range{
 						Start: core.Position{Character: 4, Line: 1},
 						End:   core.Position{Character: 6, Line: 1},
+					},
+					Local: String{
+						Value: "id",
+						Range: core.Range{
+							Start: core.Position{Character: 4, Line: 1},
+							End:   core.Position{Character: 6, Line: 1},
+						},
 					},
 				},
 			},
@@ -665,18 +903,30 @@ func TestDecode(t *testing.T) {
 						End:   core.Position{Character: 25, Line: 1},
 					},
 				},
-				StartTag: String{
-					Value: "name",
+				StartTag: Name{
 					Range: core.Range{
 						Start: core.Position{Character: 12, Line: 1},
 						End:   core.Position{Character: 16, Line: 1},
 					},
+					Local: String{
+						Value: "name",
+						Range: core.Range{
+							Start: core.Position{Character: 12, Line: 1},
+							End:   core.Position{Character: 16, Line: 1},
+						},
+					},
 				},
-				EndTag: String{
-					Value: "name",
+				EndTag: Name{
 					Range: core.Range{
 						Start: core.Position{Character: 20, Line: 1},
 						End:   core.Position{Character: 24, Line: 1},
+					},
+					Local: String{
+						Value: "name",
+						Range: core.Range{
+							Start: core.Position{Character: 20, Line: 1},
+							End:   core.Position{Character: 24, Line: 1},
+						},
 					},
 				},
 			},
@@ -692,18 +942,30 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 29, Line: 2},
 				},
 			},
-			StartTag: String{
-				Value: "e",
+			StartTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 2, Line: 2},
 					End:   core.Position{Character: 3, Line: 2},
 				},
+				Local: String{
+					Value: "e",
+					Range: core.Range{
+						Start: core.Position{Character: 2, Line: 2},
+						End:   core.Position{Character: 3, Line: 2},
+					},
+				},
 			},
-			EndTag: String{
-				Value: "e",
+			EndTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 27, Line: 2},
 					End:   core.Position{Character: 28, Line: 2},
+				},
+				Local: String{
+					Value: "e",
+					Range: core.Range{
+						Start: core.Position{Character: 27, Line: 2},
+						End:   core.Position{Character: 28, Line: 2},
+					},
 				},
 			},
 		},
@@ -716,11 +978,17 @@ func TestDecode(t *testing.T) {
 						End:   core.Position{Character: 10, Line: 2},
 					},
 				},
-				AttributeName: String{
-					Value: "id",
+				AttributeName: Name{
 					Range: core.Range{
 						Start: core.Position{Character: 4, Line: 2},
 						End:   core.Position{Character: 6, Line: 2},
+					},
+					Local: String{
+						Value: "id",
+						Range: core.Range{
+							Start: core.Position{Character: 4, Line: 2},
+							End:   core.Position{Character: 6, Line: 2},
+						},
 					},
 				},
 			},
@@ -735,25 +1003,37 @@ func TestDecode(t *testing.T) {
 						End:   core.Position{Character: 25, Line: 2},
 					},
 				},
-				StartTag: String{
-					Value: "name",
+				StartTag: Name{
 					Range: core.Range{
 						Start: core.Position{Character: 12, Line: 2},
 						End:   core.Position{Character: 16, Line: 2},
 					},
+					Local: String{
+						Value: "name",
+						Range: core.Range{
+							Start: core.Position{Character: 12, Line: 2},
+							End:   core.Position{Character: 16, Line: 2},
+						},
+					},
 				},
-				EndTag: String{
-					Value: "name",
+				EndTag: Name{
 					Range: core.Range{
 						Start: core.Position{Character: 20, Line: 2},
 						End:   core.Position{Character: 24, Line: 2},
+					},
+					Local: String{
+						Value: "name",
+						Range: core.Range{
+							Start: core.Position{Character: 20, Line: 2},
+							End:   core.Position{Character: 24, Line: 2},
+						},
 					},
 				},
 			},
 			Value: "7",
 		},
 	}
-	decodeObject(a, b, v12, false)
+	decodeObject(a, b, v12, "", false)
 	a.Equal(v12.Attr1, attr1).
 		Equal(2, len(v12.Elem1)).
 		Equal(v12.Elem1[0], e1).
@@ -779,11 +1059,17 @@ func TestDecode(t *testing.T) {
 				End:   core.Position{Character: 17},
 			},
 		},
-		AttributeName: String{
-			Value: "attr1",
+		AttributeName: Name{
 			Range: core.Range{
 				Start: core.Position{Character: 8},
 				End:   core.Position{Character: 13},
+			},
+			Local: String{
+				Value: "attr1",
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 13},
+				},
 			},
 		},
 	}}
@@ -796,11 +1082,17 @@ func TestDecode(t *testing.T) {
 					End:   core.Position{Character: 34},
 				},
 			},
-			StartTag: String{
-				Value: "elem2",
+			StartTag: Name{
 				Range: core.Range{
 					Start: core.Position{Character: 19},
 					End:   core.Position{Character: 24},
+				},
+				Local: String{
+					Value: "elem2",
+					Range: core.Range{
+						Start: core.Position{Character: 19},
+						End:   core.Position{Character: 24},
+					},
 				},
 			},
 		},
@@ -814,18 +1106,24 @@ func TestDecode(t *testing.T) {
 						End:   core.Position{Character: 31},
 					},
 				},
-				AttributeName: String{
-					Value: "id",
+				AttributeName: Name{
 					Range: core.Range{
 						Start: core.Position{Character: 25},
 						End:   core.Position{Character: 27},
+					},
+					Local: String{
+						Value: "id",
+						Range: core.Range{
+							Start: core.Position{Character: 25},
+							End:   core.Position{Character: 27},
+						},
 					},
 				},
 			},
 		},
 	}
 
-	decodeObject(a, b, v13, false)
+	decodeObject(a, b, v13, "", false)
 	a.Equal(v13.Attr1, attr1)
 	a.Equal(1, len(v13.Elem1)).Equal(v13.Elem1[0], obj1, "v1=%#v\nv2=%#v\n", v13.Elem1[0], obj1)
 
@@ -837,22 +1135,22 @@ func TestDecode(t *testing.T) {
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc attr1="5"><elem2 id="60" /></apidoc>`
-	decodeObject(a, b, v14, false)
+	decodeObject(a, b, v14, "", false)
 	a.NotNil(v14.Elem1).
-		Equal(v14.Elem1.StartTag.Value, "elem2").
+		Equal(v14.Elem1.StartTag.Local.Value, "elem2").
 		Equal(v14.Elem1.ID.Value, 60)
 
 	// 是否能正常调用根的 Sanitizer 接口
 	v15 := &objectTag{}
 	b = `<attr id="7"><name>n</name></attr>`
-	decodeObject(a, b, v15, false)
+	decodeObject(a, b, v15, "", false)
 	a.Equal(v15.ID.Value, 8).
 		Equal(v15.Name.Value, "n")
 
 	// instruction
 	v15 = &objectTag{}
 	b = `<?xml version="1.0"?><attr id="7"><name>n</name></attr>`
-	decodeObject(a, b, v15, false)
+	decodeObject(a, b, v15, "", false)
 	a.Equal(v15.ID.Value, 8).
 		Equal(v15.Name.Value, "n")
 }
@@ -873,7 +1171,7 @@ func TestDecode_omitempty(t *testing.T) {
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b := `<apidoc><elem2 id="60" /></apidoc>`
-	decodeObject(a, b, v1, true)
+	decodeObject(a, b, v1, "", true)
 
 	// omitempty, elem2 数组，不能为空
 	v2 := &struct {
@@ -882,7 +1180,7 @@ func TestDecode_omitempty(t *testing.T) {
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decodeObject(a, b, v2, true)
+	decodeObject(a, b, v2, "", true)
 
 	v2 = &struct {
 		BaseTag
@@ -890,7 +1188,7 @@ func TestDecode_omitempty(t *testing.T) {
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc><elem2 id="60" /></apidoc>`
-	decodeObject(a, b, v2, false)
+	decodeObject(a, b, v2, "", false)
 	a.Equal(1, len(v2.Elem1))
 
 	// omitempty, cdata 不能为空
@@ -900,7 +1198,7 @@ func TestDecode_omitempty(t *testing.T) {
 		CData    *CData   `apidoc:",cdata,"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decodeObject(a, b, v3, true)
+	decodeObject(a, b, v3, "", true)
 
 	// omitempty attr1 不能为空，自闭合标签
 	v4 := &struct {
@@ -909,9 +1207,9 @@ func TestDecode_omitempty(t *testing.T) {
 		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decodeObject(a, b, v4, true)
+	decodeObject(a, b, v4, "", true)
 	b = `<apidoc />`
-	decodeObject(a, b, v4, true)
+	decodeObject(a, b, v4, "", true)
 
 	// omitempty attr1 不能为空，自闭合标签
 	v5 := &struct {
@@ -923,9 +1221,9 @@ func TestDecode_omitempty(t *testing.T) {
 		} `apidoc:"elem,elem,usage"`
 	}{}
 	b = `<apidoc attr1="1"><elem></elem></apidoc>`
-	decodeObject(a, b, v5, true)
+	decodeObject(a, b, v5, "", true)
 	b = `<apidoc attr1="1"><elem/></apidoc>`
-	decodeObject(a, b, v5, true)
+	decodeObject(a, b, v5, "", true)
 }
 
 func TestObject_decodeAttributes(t *testing.T) {
@@ -934,7 +1232,7 @@ func TestObject_decodeAttributes(t *testing.T) {
 	a.NotError(err).NotNil(p)
 
 	o := &node.Node{}
-	a.NotError(decodeAttributes(o, p, nil))
+	a.NotError(decodeAttributes(o, p, nil, ""))
 
 	val := &struct {
 		ID   intAttr    `apidoc:"id,attr,usage"`
@@ -944,18 +1242,18 @@ func TestObject_decodeAttributes(t *testing.T) {
 	a.NotNil(o)
 	err = decodeAttributes(o, p, &StartElement{
 		Attributes: []*Attribute{
-			{Name: String{Value: "name"}, Value: String{Value: "name"}},
-			{Name: String{Value: "id"}, Value: String{Value: "10"}},
+			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
+			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
 		},
-	})
+	}, "")
 	a.NotError(err)
 	a.Equal(val.ID, intAttr{Value: 10, BaseAttribute: BaseAttribute{
 		Base:          Base{UsageKey: "usage"},
-		AttributeName: String{Value: "id"},
+		AttributeName: Name{Local: String{Value: "id"}},
 	}})
 	a.Equal(val.Name, stringAttr{Value: "name", BaseAttribute: BaseAttribute{
 		Base:          Base{UsageKey: "usage"},
-		AttributeName: String{Value: "name"},
+		AttributeName: Name{Local: String{Value: "name"}},
 	}})
 
 	val = &struct {
@@ -966,10 +1264,10 @@ func TestObject_decodeAttributes(t *testing.T) {
 	a.NotNil(o)
 	err = decodeAttributes(o, p, &StartElement{
 		Attributes: []*Attribute{
-			{Name: String{Value: "name"}, Value: String{Value: "name"}},
-			{Name: String{Value: "id"}, Value: String{Value: "xx10"}},
+			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
+			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "xx10"}},
 		},
-	})
+	}, "")
 	a.Error(err)
 
 	// 带匿名成员
@@ -982,23 +1280,23 @@ func TestObject_decodeAttributes(t *testing.T) {
 	a.NotNil(o)
 	err = decodeAttributes(o, p, &StartElement{
 		Attributes: []*Attribute{
-			{Name: String{Value: "name"}, Value: String{Value: "name"}},
-			{Name: String{Value: "id"}, Value: String{Value: "10"}},
-			{Name: String{Value: "attr1"}, Value: String{Value: "11"}},
+			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
+			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
+			{Name: Name{Local: String{Value: "attr1"}}, Value: String{Value: "11"}},
 		},
-	})
+	}, "")
 	a.NotError(err).
 		Equal(val2.ID, intAttr{Value: 10, BaseAttribute: BaseAttribute{
 			Base:          Base{UsageKey: "usage"},
-			AttributeName: String{Value: "id"},
+			AttributeName: Name{Local: String{Value: "id"}},
 		}})
 	a.Equal(val2.Name, stringAttr{Value: "name", BaseAttribute: BaseAttribute{
 		Base:          Base{UsageKey: "usage"},
-		AttributeName: String{Value: "name"},
+		AttributeName: Name{Local: String{Value: "name"}},
 	}})
 	a.Equal(val2.Attr1, intAttr{Value: 11, BaseAttribute: BaseAttribute{
 		Base:          Base{UsageKey: "usage"},
-		AttributeName: String{Value: "attr1"},
+		AttributeName: Name{Local: String{Value: "attr1"}},
 	}})
 
 	// 测试 AttrDecoder，返回错误
@@ -1010,10 +1308,10 @@ func TestObject_decodeAttributes(t *testing.T) {
 	a.NotNil(o)
 	err = decodeAttributes(o, p, &StartElement{
 		Attributes: []*Attribute{
-			{Name: String{Value: "name"}, Value: String{Value: "name"}},
-			{Name: String{Value: "id"}, Value: String{Value: "10"}},
+			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
+			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
 		},
-	})
+	}, "")
 	a.Error(err)
 
 	// 未实现 AttrDecoder
@@ -1026,10 +1324,10 @@ func TestObject_decodeAttributes(t *testing.T) {
 	a.Panic(func() {
 		decodeAttributes(o, p, &StartElement{
 			Attributes: []*Attribute{
-				{Name: String{Value: "name"}, Value: String{Value: "name"}},
-				{Name: String{Value: "id"}, Value: String{Value: "10"}},
+				{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
+				{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
 			},
-		})
+		}, "")
 	})
 }
 
@@ -1038,17 +1336,17 @@ func TestFindEndElement(t *testing.T) {
 
 	p, err := NewParser(core.Block{Data: []byte("<c>1</c>")})
 	a.NotError(err).NotNil(p)
-	a.Error(findEndElement(p, &StartElement{Name: String{Value: "c"}}))
+	a.Error(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
 
 	p, err = NewParser(core.Block{Data: []byte("1</c>")})
 	a.NotError(err).NotNil(p)
-	a.NotError(findEndElement(p, &StartElement{Name: String{Value: "c"}}))
+	a.NotError(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
 
 	p, err = NewParser(core.Block{Data: []byte("<c>1</c></c>")})
 	a.NotError(err).NotNil(p)
-	a.NotError(findEndElement(p, &StartElement{Name: String{Value: "c"}}))
+	a.NotError(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
 
 	p, err = NewParser(core.Block{Data: []byte("<c attr=\">1</c></c>")})
 	a.NotError(err).NotNil(p)
-	a.Error(findEndElement(p, &StartElement{Name: String{Value: "c"}}))
+	a.Error(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
 }

@@ -138,7 +138,7 @@ func (a *Attribute) V() string {
 func (num *NumberAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	v, err := strconv.Atoi(attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.String(), err)
 	}
 
 	num.Value = Number{
@@ -165,7 +165,7 @@ func (num *NumberAttribute) V() int {
 func (b *BoolAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	v, err := strconv.ParseBool(attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.String(), err)
 	}
 
 	b.Value = Bool{
@@ -193,7 +193,7 @@ func (a *MethodAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) 
 	a.Value = attr.Value
 	a.Value.Value = strings.ToUpper(a.Value.Value)
 	if !isValidMethod(a.Value.Value) {
-		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
 	}
 	return nil
 }
@@ -216,7 +216,7 @@ func (a *StatusAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) 
 	}
 
 	if !isValidStatus(v.Value.Value) {
-		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
 	}
 
 	*a = StatusAttribute(v)
@@ -237,7 +237,7 @@ func (a *StatusAttribute) V() int {
 func (a *TypeAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
 	if !isValidType(a.Value.Value) {
-		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
 	}
 	return nil
 }
@@ -256,7 +256,7 @@ func (a *TypeAttribute) V() string {
 func (a *VersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
 	if !isValidVersion(a.Value.Value) {
-		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
 	}
 	return nil
 }
@@ -275,7 +275,7 @@ func (a *VersionAttribute) V() string {
 func (d *DateAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	t, err := time.Parse(dateFormat, attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.String(), err)
 	}
 
 	d.Value = Date{
@@ -301,11 +301,11 @@ func (a *APIDocVersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attr
 
 	ok, err := version.SemVerCompatible(Version, attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.Value, err)
+		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.String(), err)
 	}
 
 	if !ok {
-		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.Value, locale.ErrInvalidValue)
+		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
 	}
 
 	return nil

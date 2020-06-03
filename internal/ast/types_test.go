@@ -46,19 +46,31 @@ func TestAPIDoc(t *testing.T) {
 				End:   core.Position{Character: 9, Line: 35},
 			},
 		},
-		StartTag: token.String{
+		StartTag: token.Name{
 			Range: core.Range{
 				Start: core.Position{Character: 1, Line: 2},
 				End:   core.Position{Character: 7, Line: 2},
 			},
-			Value: "apidoc",
+			Local: token.String{
+				Range: core.Range{
+					Start: core.Position{Character: 1, Line: 2},
+					End:   core.Position{Character: 7, Line: 2},
+				},
+				Value: "apidoc",
+			},
 		},
-		EndTag: token.String{
+		EndTag: token.Name{
 			Range: core.Range{
 				Start: core.Position{Character: 2, Line: 35},
 				End:   core.Position{Character: 8, Line: 35},
 			},
-			Value: "apidoc",
+			Local: token.String{
+				Range: core.Range{
+					Start: core.Position{Character: 2, Line: 35},
+					End:   core.Position{Character: 8, Line: 35},
+				},
+				Value: "apidoc",
+			},
 		},
 	})
 
@@ -71,12 +83,18 @@ func TestAPIDoc(t *testing.T) {
 					End:   core.Position{Character: 23, Line: 2},
 				},
 			},
-			AttributeName: token.String{
+			AttributeName: token.Name{
 				Range: core.Range{
 					Start: core.Position{Character: 8, Line: 2},
 					End:   core.Position{Character: 15, Line: 2},
 				},
-				Value: "version",
+				Local: token.String{
+					Range: core.Range{
+						Start: core.Position{Character: 8, Line: 2},
+						End:   core.Position{Character: 15, Line: 2},
+					},
+					Value: "version",
+				},
 			},
 		},
 
@@ -99,12 +117,18 @@ func TestAPIDoc(t *testing.T) {
 					End:   core.Position{Character: 47, Line: 10},
 				},
 			},
-			StartTag: token.String{
+			StartTag: token.Name{
 				Range: core.Range{
 					Start: core.Position{Character: 5, Line: 10},
 					End:   core.Position{Character: 8, Line: 10},
 				},
-				Value: "tag",
+				Local: token.String{
+					Range: core.Range{
+						Start: core.Position{Character: 5, Line: 10},
+						End:   core.Position{Character: 8, Line: 10},
+					},
+					Value: "tag",
+				},
 			},
 		},
 		Name: &Attribute{
@@ -116,12 +140,18 @@ func TestAPIDoc(t *testing.T) {
 						End:   core.Position{Character: 20, Line: 10},
 					},
 				},
-				AttributeName: token.String{
+				AttributeName: token.Name{
 					Range: core.Range{
 						Start: core.Position{Character: 9, Line: 10},
 						End:   core.Position{Character: 13, Line: 10},
 					},
-					Value: "name",
+					Local: token.String{
+						Range: core.Range{
+							Start: core.Position{Character: 9, Line: 10},
+							End:   core.Position{Character: 13, Line: 10},
+						},
+						Value: "name",
+					},
 				},
 			},
 			Value: token.String{
@@ -141,12 +171,18 @@ func TestAPIDoc(t *testing.T) {
 						End:   core.Position{Character: 44, Line: 10},
 					},
 				},
-				AttributeName: token.String{
+				AttributeName: token.Name{
 					Range: core.Range{
 						Start: core.Position{Character: 21, Line: 10},
 						End:   core.Position{Character: 26, Line: 10},
 					},
-					Value: "title",
+					Local: token.String{
+						Range: core.Range{
+							Start: core.Position{Character: 21, Line: 10},
+							End:   core.Position{Character: 26, Line: 10},
+						},
+						Value: "title",
+					},
 				},
 			},
 			Value: token.String{
@@ -162,7 +198,7 @@ func TestAPIDoc(t *testing.T) {
 
 	tag = doc.Tags[1]
 	a.Equal(tag.Deprecated.V(), "1.0.1").
-		Empty(tag.EndTag.Value).
+		Empty(tag.EndTag.Local.Value).
 		Equal(tag.UsageKey, "usage-apidoc-tags")
 
 	a.Equal(2, len(doc.Servers))
