@@ -130,23 +130,28 @@ func (s *Schema) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func newXML(p *ast.Param) *XML {
+func newXML(doc *ast.APIDoc, p *ast.Param) *XML {
+	var ns string
+	prefix := p.XMLNSPrefix.V()
+	if xmlns := doc.XMLNamespace(prefix); xmlns != nil {
+		ns = xmlns.URN.V()
+	}
 	return &XML{
 		Name:      p.Name.V(),
-		Namespace: p.XMLNS.V(),
-		Prefix:    p.XMLNSPrefix.V(),
+		Namespace: ns,
+		Prefix:    prefix,
 		Attribute: p.XMLAttr.V(),
 		Wrapped:   p.XMLWrapped != nil && p.XMLWrapped.V() != "",
 	}
 }
 
 // chkArray 是否需要检测当前类型是否为数组
-func newSchema(p *ast.Param, chkArray bool) *Schema {
+func newSchema(doc *ast.APIDoc, p *ast.Param, chkArray bool) *Schema {
 	if chkArray && p.Array.V() {
 		return &Schema{
 			Type:  TypeArray,
-			Items: newSchema(p, false),
-			XML:   newXML(p),
+			Items: newSchema(doc, p, false),
+			XML:   newXML(doc, p),
 		}
 	}
 
@@ -157,7 +162,7 @@ func newSchema(p *ast.Param, chkArray bool) *Schema {
 		Default:     p.Default.V(),
 		Deprecated:  p.Deprecated != nil,
 		Required:    make([]string, 0, len(p.Items)),
-		XML:         newXML(p),
+		XML:         newXML(doc, p),
 	}
 
 	// enum
@@ -179,7 +184,7 @@ func newSchema(p *ast.Param, chkArray bool) *Schema {
 				name = item.XMLWrapped.V()
 			}
 
-			s.Properties[name] = newSchema(item, true)
+			s.Properties[name] = newSchema(doc, item, true)
 			if !item.Optional.V() {
 				s.Required = append(s.Required, item.Name.V())
 			}
@@ -190,6 +195,6 @@ func newSchema(p *ast.Param, chkArray bool) *Schema {
 }
 
 // chkArray 是否需要检测当前类型是否为数组
-func newSchemaFromRequest(p *ast.Request, chkArray bool) *Schema {
-	return newSchema(p.Param(), chkArray)
+func newSchemaFromRequest(doc *ast.APIDoc, p *ast.Request, chkArray bool) *Schema {
+	return newSchema(doc, p.Param(), chkArray)
 }

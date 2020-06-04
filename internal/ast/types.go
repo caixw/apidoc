@@ -62,6 +62,18 @@ type (
 
 		// 表示所有接口都支持的文档类型
 		Mimetypes []*Element `apidoc:"mimetype,elem,usage-apidoc-mimetypes"`
+
+		// 指定命名空间的相关属性
+		XMLNamespaces []*XMLNamespace `apidoc:"xml-namespace,elem,usage-apidoc-namespaces,omitempty"`
+	}
+
+	// XMLNamespace 定义命名空间的相关属性
+	XMLNamespace struct {
+		token.BaseTag
+		RootName struct{}       `apidoc:"xml-namespace,meta,usage-xml-namespace"`
+		Prefix   *Attribute     `apidoc:"prefix,attr,usage-xml-namespace-prefix,omitempty"`
+		URN      *Attribute     `apidoc:"urn,attr,usage-xml-namespace-urn"`
+		Auto     *BoolAttribute `apidoc:"auto,attr,usage-xml-namespace-auto,omitempty"`
 	}
 
 	// API 表示 <api> 顶层元素
@@ -238,7 +250,6 @@ type (
 		XMLAttr     *BoolAttribute `apidoc:"xml-attr,attr,usage-xml-attr,omitempty"`        // 作为父元素的 XML 属性存在
 		XMLExtract  *BoolAttribute `apidoc:"xml-extract,attr,usage-xml-extract,omitempty"`  // 提取当前内容作为父元素的内容
 		XMLCData    *BoolAttribute `apidoc:"xml-cdata,attr,usage-xml-cdata,omitempty"`      // 内容为 CDATA
-		XMLNS       *Attribute     `apidoc:"xml-ns,attr,usage-xml-ns,omitempty"`            // 命名空间
 		XMLNSPrefix *Attribute     `apidoc:"xml-ns-prefix,attr,usage-xml-prefix,omitempty"` // 命名空间前缀
 		XMLWrapped  *Attribute     `apidoc:"xml-wrapped,attr,usage-xml-wrapped,omitempty"`  // 如果当前元素是数组，是否将其包含在 wrapped 中
 	}
@@ -287,4 +298,14 @@ func (doc *APIDoc) DeleteURI(uri core.URI) {
 			APIs: doc.APIs,
 		}
 	}
+}
+
+// XMLNamespace 获取指定前缀名称的命名空间
+func (doc *APIDoc) XMLNamespace(prefix string) *XMLNamespace {
+	for _, ns := range doc.XMLNamespaces {
+		if ns.Prefix.V() == prefix {
+			return ns
+		}
+	}
+	return nil
 }
