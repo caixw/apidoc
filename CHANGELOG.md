@@ -30,6 +30,10 @@
 - 重命名 doc 为 spec，仅用于处理与文档规范相关的内容；
 - 新增 build 包，统一处理文档的提取与输出，去除了 input、output 和 config.go 的相关内容；
 
+### Removed
+
+- 删除 xml-ns 元素；
+
 ## [v6.0.1]
 
 ### Fixed
