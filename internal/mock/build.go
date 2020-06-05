@@ -37,7 +37,7 @@ func (m *mock) buildAPI(api *ast.API) http.Handler {
 		}
 
 		if len(api.Requests) > 0 { // GET、OPTIONS 之类的可能没有 body
-			if err := validRequest(api.Requests, r); err != nil {
+			if err := validRequest(m.doc.XMLNamespaces, api.Requests, r); err != nil {
 				m.handleError(w, r, "request.body.", err)
 				return
 			}
@@ -47,7 +47,7 @@ func (m *mock) buildAPI(api *ast.API) http.Handler {
 	})
 }
 
-func validRequest(requests []*ast.Request, r *http.Request) error {
+func validRequest(ns []*ast.XMLNamespace, requests []*ast.Request, r *http.Request) error {
 	ct := r.Header.Get("Content-Type")
 	if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") { // 用户提交的 content-type 必须是明确的值
 		return core.NewSyntaxError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
@@ -75,7 +75,7 @@ func validRequest(requests []*ast.Request, r *http.Request) error {
 	case "application/json":
 		return validJSON(req, content)
 	case "application/xml", "text/xml":
-		return validXML(req, content)
+		return validXML(ns, req, content)
 	default:
 		return core.NewSyntaxError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
 	}
@@ -98,7 +98,7 @@ func (m *mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 		}
 	}
 
-	data, err := buildResponse(resp, r, m.indent, m.gen)
+	data, err := buildResponse(m.doc.XMLNamespaces, resp, r, m.indent, m.gen)
 	if err != nil {
 		m.handleError(w, r, "response.body.", err)
 		return
@@ -293,7 +293,13 @@ func validSimpleParam(p *ast.Param, val string) error {
 	return nil
 }
 
-func buildResponse(p *ast.Request, r *http.Request, indent string, g *GenOptions) ([]byte, error) {
+func buildResponse(
+	ns []*ast.XMLNamespace,
+	p *ast.Request,
+	r *http.Request,
+	indent string,
+	g *GenOptions,
+) ([]byte, error) {
 	if p == nil {
 		return nil, nil
 	}
@@ -309,7 +315,7 @@ func buildResponse(p *ast.Request, r *http.Request, indent string, g *GenOptions
 	case "application/json":
 		return buildJSON(p, indent, g)
 	case "application/xml", "text/xml":
-		return buildXML(p, indent, g)
+		return buildXML(ns, p, indent, g)
 	default:
 		return nil, core.NewSyntaxError(core.Location{}, "headers[accept]", locale.ErrInvalidValue)
 	}

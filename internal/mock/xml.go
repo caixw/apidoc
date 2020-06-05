@@ -16,7 +16,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-func validXML(p *ast.Request, content []byte) error {
+func validXML(ns []*ast.XMLNamespace, p *ast.Request, content []byte) error {
 	if len(content) == 0 {
 		if p == nil || p.Type.V() == ast.TypeNone {
 			return nil
@@ -36,15 +36,64 @@ func validXML(p *ast.Request, content []byte) error {
 
 		switch v := token.(type) {
 		case xml.StartElement:
-			return validElement(v, p.Param(), true, d, v.Name.Local)
+			if err := validXMLNamespaces(ns, v); err != nil {
+				return err
+			}
+			return validElement(ns, v, p.Param(), true, d, v.Name.Local)
 		case xml.EndElement:
 			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 		}
 	}
 }
 
-func validElement(start xml.StartElement, p *ast.Param, allowArray bool, d *xml.Decoder, field string) error {
-	if err := validStartElement(start, p, allowArray, d, field); err != nil {
+func validXMLNamespaces(ns []*ast.XMLNamespace, start xml.StartElement) error {
+ATTR:
+	for _, attr := range start.Attr {
+		if attr.Name.Local == "xmlns" && attr.Name.Space == "" { // 默认
+			for _, item := range ns {
+				if item.Auto.V() && item.URN.V() == attr.Value {
+					continue ATTR
+				}
+			}
+			return core.NewSyntaxError(core.Location{}, "xmlns", locale.ErrNotFound)
+		} else if attr.Name.Space == "xmlns" && attr.Name.Local != "" {
+			for _, item := range ns {
+				if item.Prefix.V() == attr.Name.Local && item.URN.V() == attr.Value {
+					continue ATTR
+				}
+			}
+			return core.NewSyntaxError(core.Location{}, "xmlns:"+attr.Name.Local, locale.ErrNotFound)
+		}
+	}
+	return nil
+}
+
+func validName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param) bool {
+	if name.Local != p.Name.V() {
+		return false
+	}
+
+	if name.Space == "" {
+		return true
+	}
+
+	for _, item := range ns {
+		if item.URN.V() == name.Space {
+			return item.Prefix.V() == p.XMLNSPrefix.V() || item.Auto.V()
+		}
+	}
+	return false
+}
+
+func validElement(
+	ns []*ast.XMLNamespace,
+	start xml.StartElement,
+	p *ast.Param,
+	allowArray bool,
+	d *xml.Decoder,
+	field string,
+) error {
+	if err := validStartElement(ns, start, p, allowArray, d, field); err != nil {
 		return err
 	}
 
@@ -60,16 +109,16 @@ func validElement(start xml.StartElement, p *ast.Param, allowArray bool, d *xml.
 		var chardata []byte
 		switch v := token.(type) {
 		case xml.StartElement:
-			if allowArray && p.Array.V() && v.Name.Local == p.Name.V() {
-				return validElement(v, p, false, d, buildXMLField(field, p))
+			if allowArray && p.Array.V() && validName(v.Name, ns, p) {
+				return validElement(ns, v, p, false, d, buildXMLField(field, p))
 			}
 
 			for _, pp := range p.Items {
 				if pp.Name.V() == v.Name.Local {
 					if pp.XMLExtract.V() {
-						return validElement(v, p, true, d, buildXMLField(field, pp))
+						return validElement(ns, v, p, true, d, buildXMLField(field, pp))
 					}
-					return validElement(v, pp, true, d, buildXMLField(field, p))
+					return validElement(ns, v, pp, true, d, buildXMLField(field, p))
 				}
 			}
 		case xml.EndElement:
@@ -79,7 +128,7 @@ func validElement(start xml.StartElement, p *ast.Param, allowArray bool, d *xml.
 				}
 				return nil
 			}
-			if p.Name.V() != v.Name.Local {
+			if !validName(v.Name, ns, p) {
 				return core.NewSyntaxError(core.Location{}, v.Name.Local, locale.ErrNotFound)
 			}
 
@@ -93,10 +142,17 @@ func validElement(start xml.StartElement, p *ast.Param, allowArray bool, d *xml.
 	}
 }
 
-func validStartElement(start xml.StartElement, p *ast.Param, allowArray bool, d *xml.Decoder, field string) error {
+func validStartElement(
+	ns []*ast.XMLNamespace,
+	start xml.StartElement,
+	p *ast.Param,
+	allowArray bool,
+	d *xml.Decoder,
+	field string,
+) error {
 	for _, attr := range start.Attr {
 		for _, pp := range p.Items {
-			if attr.Name.Local != pp.Name.V() {
+			if !validName(attr.Name, ns, pp) {
 				continue
 			}
 			if err := validXMLParamValue(pp, buildXMLField(field, pp), attr.Value); err != nil {
@@ -112,10 +168,11 @@ func validStartElement(start xml.StartElement, p *ast.Param, allowArray bool, d 
 		}
 
 		start.Attr = start.Attr[:0] // 在 allowArray == true 已经处理过 start.Attr
-		return validElement(start, p, false, d, buildXMLField(field, p))
+		return validElement(ns, start, p, false, d, buildXMLField(field, p))
 	}
 
-	if (p.Name.V() != start.Name.Local) && (!allowArray && p.XMLWrapped.V() != start.Name.Local) {
+	if (!validName(start.Name, ns, p)) &&
+		(!allowArray && p.XMLWrapped.V() != start.Name.Local) {
 		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
 	}
 	return nil
@@ -170,12 +227,12 @@ type xmlBuilder struct {
 	cdata    bool // 表示 chardata 是一个 cdata 数据
 }
 
-func buildXML(p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
+func buildXML(ns []*ast.XMLNamespace, p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
 	if p == nil || p.Type.V() == ast.TypeNone {
 		return nil, nil
 	}
 
-	builder, err := parseXML(p.Param(), true, true, g)
+	builder, err := parseXML(ns, p.Param(), true, true, g)
 	if err != nil {
 		return nil, err
 	}
@@ -195,23 +252,18 @@ func buildXML(p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func parseXML(p *ast.Param, chkArray, root bool, g *GenOptions) (*xmlBuilder, error) {
+func parseXML(ns []*ast.XMLNamespace, p *ast.Param, chkArray, root bool, g *GenOptions) (*xmlBuilder, error) {
 	builder := &xmlBuilder{
 		start: xml.StartElement{
-			Name: xml.Name{
-				Local: p.Name.V(),
-			},
-			Attr: make([]xml.Attr, 0, len(p.Items)),
+			Name: buildXMLName(ns, p),
+			Attr: make([]xml.Attr, 0, len(p.Items)+len(ns)),
 		},
 		items: []*xmlBuilder{},
 		cdata: p.XMLCData.V(),
 	}
-	if p.XMLNSPrefix != nil {
-		builder.start.Name.Space = p.XMLNSPrefix.V()
-	}
 
 	if p.Array.V() && chkArray {
-		if err := parseArray(p, builder, g); err != nil {
+		if err := parseArray(ns, p, builder, g); err != nil {
 			return nil, err
 		}
 		if root {
@@ -222,31 +274,26 @@ func parseXML(p *ast.Param, chkArray, root bool, g *GenOptions) (*xmlBuilder, er
 
 	if p.Type.V() != ast.TypeObject {
 		builder.chardata = genXMLValue(g, p)
-		return builder, nil
+		goto RET
 	}
 
 	for _, item := range p.Items {
 		switch {
 		case item.XMLAttr.V():
 			attr := xml.Attr{
-				Name: xml.Name{
-					Local: item.Name.V(),
-				},
+				Name:  buildXMLName(ns, item),
 				Value: fmt.Sprint(genXMLValue(g, item)),
-			}
-			if item.XMLNSPrefix != nil {
-				attr.Name.Space = item.XMLNSPrefix.V()
 			}
 			builder.start.Attr = append(builder.start.Attr, attr)
 		case item.XMLExtract.V():
 			builder.chardata = genXMLValue(g, item)
 			builder.cdata = item.XMLCData.V()
 		case item.Array.V():
-			if err := parseArray(item, builder, g); err != nil {
+			if err := parseArray(ns, item, builder, g); err != nil {
 				return nil, err
 			}
 		default:
-			b, err := parseXML(item, true, false, g)
+			b, err := parseXML(ns, item, true, false, g)
 			if err != nil {
 				return nil, err
 			}
@@ -254,24 +301,54 @@ func parseXML(p *ast.Param, chkArray, root bool, g *GenOptions) (*xmlBuilder, er
 		}
 	} // end for
 
+RET:
+	if root { // namespace
+		for _, item := range ns {
+			name := "xmlns"
+			if !item.Auto.V() && item.Prefix.V() != "" {
+				name += ":" + item.Prefix.V()
+			}
+
+			builder.start.Attr = append(builder.start.Attr, xml.Attr{
+				Name:  xml.Name{Local: name},
+				Value: item.URN.V(),
+			})
+		}
+	}
+
 	return builder, nil
 }
 
-func parseArray(p *ast.Param, parent *xmlBuilder, g *GenOptions) error {
+func buildXMLName(ns []*ast.XMLNamespace, p *ast.Param) xml.Name {
+	if p.XMLNSPrefix.V() != "" {
+		return xml.Name{Local: p.XMLNSPrefix.V() + ":" + p.Name.V()}
+	}
+
+	for _, item := range ns {
+		if item.Auto.V() {
+			return xml.Name{Local: p.Name.V()}
+		}
+
+	}
+	return xml.Name{Local: p.Name.V()}
+}
+
+func parseArray(ns []*ast.XMLNamespace, p *ast.Param, parent *xmlBuilder, g *GenOptions) error {
 	b := parent
 	if p.XMLWrapped.V() != "" {
 		b = &xmlBuilder{items: []*xmlBuilder{}}
+		var prefix string
 		if p.XMLNSPrefix != nil {
-			b.start.Name.Space = p.XMLNSPrefix.V()
+			prefix = p.XMLNSPrefix.V() + ":"
 		}
 		if p.XMLWrapped != nil {
-			b.start.Name.Local = p.XMLWrapped.V()
+			b.start.Name.Local = prefix + p.XMLWrapped.V()
 		}
 		parent.items = append(parent.items, b)
 	}
 
 	for i := 0; i < g.generateSliceSize(); i++ {
-		bb, err := parseXML(p, false, false, g)
+		bb, err := parseXML(ns, p, false, false, g)
 		if err != nil {
 			return err
 		}
