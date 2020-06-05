@@ -8,7 +8,7 @@ var data = []*FileInfo{{
 	Content: []byte(`<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet type="text/xsl" href="../v6/apidoc.xsl"?>
-<apidoc apidoc="6.1.0" created="2020-06-04T01:32:10+08:00" version="1.1.1">
+<apidoc apidoc="6.1.0" created="2020-06-06T00:00:54+08:00" version="1.1.1">
 	<title>示例文档</title>
 	<description type="html"><![CDATA[
        <p>这是一个用于测试的文档用例</p>
@@ -987,6 +987,7 @@ function initGotoTop() {
 			<item name="header" type="param" array="true" required="false">文档中所有 API 都包含的公共报头</item>
 			<item name="response" type="request" array="true" required="false">文档中所有 API 文档都需要支持的返回内容</item>
 			<item name="mimetype" type="string" array="true" required="true">文档所支持的 mimetype</item>
+			<item name="xml-namespace" type="xml-namespace" array="true" required="false">usage-apidoc-namespaces</item>
 		</type>
 		<type name="richtext">
 			<usage>富文本内容</usage>
@@ -1045,7 +1046,6 @@ function initGotoTop() {
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。</item>
 			<item name="@xml-cdata" type="bool" array="false" required="false">当前内容为 CDATA，與 xml-attr 互斥。</item>
-			<item name="@xml-ns" type="string" array="false" required="false">XML 标签的命名空间</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 标签的命名空间名称前缀</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
 			<item name="@name" type="string" array="false" required="true">值的名称</item>
@@ -1072,7 +1072,6 @@ function initGotoTop() {
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。</item>
 			<item name="@xml-cdata" type="bool" array="false" required="false">当前内容为 CDATA，與 xml-attr 互斥。</item>
-			<item name="@xml-ns" type="string" array="false" required="false">XML 标签的命名空间</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 标签的命名空间名称前缀</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。</item>
 			<item name="@name" type="string" array="false" required="false">当 mimetype 为 <var>application/xml</var> 时，此值表示 XML 的顶层元素名称，否则无用。</item>
@@ -1104,6 +1103,12 @@ function initGotoTop() {
 			<item name="response" type="request" array="true" required="false">定义可能的返回信息</item>
 			<item name="request" type="request" array="true" required="true">定义可用的请求信息</item>
 			<item name="header" type="param" array="true" required="false">传递的报头内容</item>
+		</type>
+		<type name="xml-namespace">
+			<usage>为 <var>application/xml</var> 定义命名空间的相关属性</usage>
+			<item name="@prefix" type="string" array="false" required="false">命名空间的前缀，如果为空，则表示作为默认命名空间，命局只能有一个默认命名空间。</item>
+			<item name="@urn" type="string" array="false" required="true">命名空间的唯一标识，需要全局唯一。</item>
+			<item name="@auto" type="bool" array="false" required="false">是否将当前命名空自动赋于所有的元素，只能有一个为 <var>true</var></item>
 		</type>
 		<type name="string">
 			<usage>普通的字符串类型</usage>
@@ -1178,6 +1183,7 @@ function initGotoTop() {
 			<item name="header" type="param" array="true" required="false">文檔中所有 API 都包含的公共報頭</item>
 			<item name="response" type="request" array="true" required="false">文檔中所有 API 文檔都需要支持的返回內容</item>
 			<item name="mimetype" type="string" array="true" required="true">文檔所支持的 mimetype</item>
+			<item name="xml-namespace" type="xml-namespace" array="true" required="false">usage-apidoc-namespaces</item>
 		</type>
 		<type name="richtext">
 			<usage>富文本內容</usage>
@@ -1236,7 +1242,6 @@ function initGotoTop() {
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。</item>
 			<item name="@xml-cdata" type="bool" array="false" required="false">當前內容為 CDATA，与 xml-attr 互斥。</item>
-			<item name="@xml-ns" type="string" array="false" required="false">XML 標簽的命名空間</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>
 			<item name="@name" type="string" array="false" required="true">值的名稱</item>
@@ -1263,7 +1268,6 @@ function initGotoTop() {
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。</item>
 			<item name="@xml-cdata" type="bool" array="false" required="false">當前內容為 CDATA，与 xml-attr 互斥。</item>
-			<item name="@xml-ns" type="string" array="false" required="false">XML 標簽的命名空間</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
 			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>
 			<item name="@name" type="string" array="false" required="false">當 mimetype 為 <var>application/xml</var> 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
@@ -1295,6 +1299,12 @@ function initGotoTop() {
 			<item name="response" type="request" array="true" required="false">定義可能的返回信息</item>
 			<item name="request" type="request" array="true" required="true">定義可用的請求信息</item>
 			<item name="header" type="param" array="true" required="false">傳遞的報頭內容</item>
+		</type>
+		<type name="xml-namespace">
+			<usage>為 <var>application/xml</var> 定義命名空間的相關屬性</usage>
+			<item name="@prefix" type="string" array="false" required="false">命名空間的前綴，如果為空，則表示作為默認命名空間，命局只能有壹個默認命名空間。</item>
+			<item name="@urn" type="string" array="false" required="true">命名空間的唯壹標識，需要全局唯壹。</item>
+			<item name="@auto" type="bool" array="false" required="false">是否將當前命名空自動賦於所有的元素，只能有壹個為 <var>true</var></item>
 		</type>
 		<type name="string">
 			<usage>普通的字符串類型</usage>

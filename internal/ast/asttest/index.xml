@@ -13,6 +13,7 @@
 			<aa:header aa:name="authorization" aa:type="string" aa:summary="authorization"></aa:header>
 		</aa:request>
 		<aa:response aa:type="object" aa:status="200">
+			<aa:param aa:name="id" aa:type="number" aa:summary="ID"></aa:param>
 			<aa:param aa:name="name" aa:type="string" aa:summary="summary"></aa:param>
 			<aa:example aa:mimetype="application/json"><![CDATA[xxx]]></aa:example>
 			<aa:header aa:name="authorization" aa:type="string" aa:summary="authorization"></aa:header>
@@ -25,6 +26,12 @@
 	</aa:api>
 	<aa:api aa:method="POST" aa:summary="summary" aa:deprecated="1.0.1">
 		<aa:path aa:path="/users"></aa:path>
+		<aa:request aa:type="object" aa:summary="request">
+			<aa:param aa:name="id" aa:type="number" aa:summary="ID"></aa:param>
+			<aa:param aa:name="name" aa:type="string" aa:summary="name summary"></aa:param>
+			<aa:example aa:mimetype="application/json"><![CDATA[xxx]]></aa:example>
+			<aa:header aa:name="authorization" aa:type="string" aa:summary="authorization"></aa:header>
+		</aa:request>
 		<aa:response aa:status="201">
 			<aa:description aa:type="html"><![CDATA[<p>desc</p>]]></aa:description>
 		</aa:response>

@@ -113,6 +113,11 @@ func Get() *ast.APIDoc {
 						},
 						Items: []*ast.Param{
 							{
+								Type:    &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+								Name:    &ast.Attribute{Value: token.String{Value: "id"}},
+								Summary: &ast.Attribute{Value: token.String{Value: "ID"}},
+							},
+							{
 								Summary: &ast.Attribute{Value: token.String{Value: "summary"}},
 								Type:    &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
 								Name:    &ast.Attribute{Value: token.String{Value: "name"}},
@@ -132,6 +137,37 @@ func Get() *ast.APIDoc {
 				Summary:    &ast.Attribute{Value: token.String{Value: "summary"}},
 				Servers: []*ast.Element{
 					{Content: ast.Content{Value: "admin"}},
+				},
+				Requests: []*ast.Request{
+					{
+						Summary: &ast.Attribute{Value: token.String{Value: "request"}},
+						Headers: []*ast.Param{
+							{
+								Type:    &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+								Name:    &ast.Attribute{Value: token.String{Value: "authorization"}},
+								Summary: &ast.Attribute{Value: token.String{Value: "authorization"}},
+							},
+						},
+						Examples: []*ast.Example{
+							{
+								Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}},
+								Content:  &ast.CData{Value: token.String{Value: "xxx"}},
+							},
+						},
+						Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+						Items: []*ast.Param{
+							{
+								Type:    &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+								Name:    &ast.Attribute{Value: token.String{Value: "id"}},
+								Summary: &ast.Attribute{Value: token.String{Value: "ID"}},
+							},
+							{
+								Type:    &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+								Name:    &ast.Attribute{Value: token.String{Value: "name"}},
+								Summary: &ast.Attribute{Value: token.String{Value: "name summary"}},
+							},
+						},
+					},
 				},
 				Responses: []*ast.Request{
 					{
