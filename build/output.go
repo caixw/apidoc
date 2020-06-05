@@ -51,6 +51,8 @@ type Output struct {
 	//
 	// 默认值为 https://apidoc.tools/docs/ 下当前版本的 apidoc.xsl，比如：
 	//  https://apidoc.tools/docs/v7/apidoc.xsl
+	//
+	// NOTE: 仅针对 xml 类型的输出文件
 	Style string `yaml:"style,omitempty"`
 
 	// 命名空间的相关设置

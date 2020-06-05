@@ -13,6 +13,7 @@
 - 新的文档标签 xml-cdata 用于标记该内容在 xml 格式下是否需要以 CDATA 的形式展示；
 - 添加地命名空间的支持；
 - 添加全局的 XMLNamespaces 字段，用于指定可用的命名空间；
+- build.Output 添加了两个配置项：Namespace 和 NamespacePrefix；
 
 ### Changed
 
