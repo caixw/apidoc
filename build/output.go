@@ -16,6 +16,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/openapi"
 	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 // 几种输出的类型
@@ -146,29 +147,24 @@ func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 
 	d.Created = &ast.DateAttribute{Value: ast.Date{Value: time.Now()}}
 	d.APIDoc = &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}
-	buf := new(bytes.Buffer)
-
-	if o.xml {
-		for _, v := range o.procInst {
-			if _, err := buf.WriteString(v); err != nil {
-				return nil, err
-			}
-
-			if err := buf.WriteByte('\n'); err != nil {
-				return nil, err
-			}
-		} // end range opt.procInst
-	}
 
 	data, err := o.marshal(d)
 	if err != nil {
 		return nil, err
 	}
-	if _, err = buf.Write(data); err != nil {
-		return nil, err
+
+	buf := writer.New()
+	if o.xml {
+		for _, v := range o.procInst {
+			buf.WString(v).WriteByte('\n')
+		}
+	}
+	buf.WBytes(data)
+	if buf.Err != nil {
+		return nil, buf.Err
 	}
 
-	return buf, nil
+	return &buf.Buffer, nil
 }
 
 func filterDoc(d *ast.APIDoc, o *Output) {

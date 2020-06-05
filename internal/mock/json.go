@@ -12,6 +12,7 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 type jsonValidator struct {
@@ -207,8 +208,7 @@ func (validator *jsonValidator) find() *ast.Param {
 }
 
 type jsonBuilder struct {
-	buf    *bytes.Buffer
-	err    error
+	w      *writer.Writer
 	deep   int
 	indent string // 单次的缩进
 }
@@ -219,7 +219,7 @@ func buildJSON(p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
 	}
 
 	builder := &jsonBuilder{
-		buf:    new(bytes.Buffer),
+		w:      writer.New(),
 		indent: indent,
 	}
 
@@ -227,16 +227,17 @@ func buildJSON(p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
 		return nil, err
 	}
 
-	return builder.buf.Bytes(), nil
+	return builder.w.Bytes(), nil
 }
 
 func (builder *jsonBuilder) encode(p *ast.Param, chkArray bool, g *GenOptions) error {
 	if p == nil {
-		return builder.writeValue(nil).err
+		return builder.writeValue(nil).w.Err
 	}
 
 	if p.Array.V() && chkArray {
-		builder.writeStrings("[\n").deep++
+		builder.w.WString("[\n")
+		builder.deep++
 
 		size := g.generateSliceSize()
 		last := size - 1
@@ -246,14 +247,14 @@ func (builder *jsonBuilder) encode(p *ast.Param, chkArray bool, g *GenOptions) e
 			}
 
 			if i < last {
-				builder.writeStrings(",\n")
+				builder.w.WString(",\n")
 			} else {
-				builder.writeStrings("\n")
+				builder.w.WString("\n")
 			}
 		}
 
 		builder.deep--
-		return builder.writeIndent().writeStrings("]").err
+		return builder.writeIndent().w.WString("]").Err
 	}
 
 	switch p.Type.V() {
@@ -266,64 +267,48 @@ func (builder *jsonBuilder) encode(p *ast.Param, chkArray bool, g *GenOptions) e
 	case ast.TypeString:
 		builder.writeValue(g.generateString(p))
 	case ast.TypeObject:
-		builder.writeStrings("{\n").deep++
+		builder.w.WString("{\n")
+		builder.deep++
 
 		last := len(p.Items) - 1
 		for index, item := range p.Items {
-			builder.writeIndent().writeStrings(`"`, item.Name.V(), `"`, ": ")
+			builder.writeIndent().w.WString(`"`).WString(item.Name.V()).WString(`"`).WString(": ")
 
 			if err := builder.encode(item, true, g); err != nil {
 				return err
 			}
 
 			if index < last {
-				builder.writeStrings(",\n")
+				builder.w.WString(",\n")
 			} else {
-				builder.writeStrings("\n")
+				builder.w.WString("\n")
 			}
 		}
 
 		builder.deep--
-		builder.writeIndent().writeStrings("}")
+		builder.writeIndent().w.WString("}")
 	}
 
-	return builder.err
+	return builder.w.Err
 }
 
 func (builder *jsonBuilder) writeIndent() *jsonBuilder {
-	if builder.err == nil {
-		_, builder.err = builder.buf.WriteString(strings.Repeat(builder.indent, builder.deep))
-	}
-	return builder
-}
-
-func (builder *jsonBuilder) writeStrings(str ...string) *jsonBuilder {
-	if builder.err != nil {
-		return builder
-	}
-
-	for _, s := range str {
-		_, builder.err = builder.buf.WriteString(s)
-		if builder.err != nil {
-			break
-		}
-	}
-
+	builder.w.WString(strings.Repeat(builder.indent, builder.deep))
 	return builder
 }
 
 // v 只能是基本类型
 func (builder *jsonBuilder) writeValue(v interface{}) *jsonBuilder {
-	if builder.err != nil {
+	if builder.w.Err != nil {
 		return builder
 	}
 
 	vv, err := json.Marshal(v)
 	if err != nil {
-		builder.err = err
+		builder.w.Err = err
 		return builder
 	}
 
-	_, builder.err = builder.buf.Write(vv)
+	builder.w.WBytes(vv)
 	return builder
 }

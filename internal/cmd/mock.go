@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"bytes"
 	"io"
 	"net/http"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 // servers 参数
@@ -46,15 +46,14 @@ func (s servers) String() string {
 		return ""
 	}
 
-	buf := new(bytes.Buffer)
-
+	buf := writer.New()
 	for k, v := range s {
-		buf.WriteString(k)
-		buf.WriteByte('=')
-		buf.WriteString(v)
-		buf.WriteByte(',')
+		buf.WString(k).WByte('=').WString(v).WByte(',')
 	}
 	buf.Truncate(buf.Len() - 1)
+	if buf.Err != nil {
+		panic(buf.Err)
+	}
 	return buf.String()
 }
 

@@ -12,7 +12,7 @@ import (
 	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v7/internal/docs"
-	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
+	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 const (
@@ -33,15 +33,21 @@ var allowFiles = map[string]string{
 	".htm":  "text/html; charset=utf-8",
 }
 
+func panicError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	dir, err := docs.Dir().File()
-	makeutil.PanicError(err)
+	panicError(err)
 
 	fis, err := getFileInfos(dir)
-	makeutil.PanicError(err)
+	panicError(err)
 
-	buf := makeutil.NewWriter()
-	buf.WString("// ").WString(makeutil.Header).WString("\n\n").
+	buf := writer.New()
+	buf.WString("// ").WString(docs.FileHeader).WString("\n\n").
 		WString("package ").WString(pkgName).WString("\n\n").
 		WString("var ").WString(varName).WString("= []*FileInfo{")
 	for _, info := range fis {
@@ -51,9 +57,9 @@ func main() {
 			WString("Content:[]byte(`").WBytes(info.Content).WString("`),\n").
 			WString("},\n")
 	}
-	makeutil.PanicError(buf.WString("}\n").Err())
+	panicError(buf.WString("}\n").Err)
 
-	makeutil.PanicError(utils.DumpGoSource(distPath, buf.Bytes()))
+	panicError(utils.DumpGoSource(distPath, buf.Bytes()))
 }
 
 func getFileInfos(root string) ([]*docs.FileInfo, error) {

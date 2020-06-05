@@ -6,13 +6,18 @@
 package site
 
 import (
+	"encoding/xml"
+	"io/ioutil"
+	"os"
+
 	"golang.org/x/text/language/display"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
-	"github.com/caixw/apidoc/v7/internal/docs/makeutil"
+	"github.com/caixw/apidoc/v7/internal/docs"
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 const (
@@ -80,17 +85,40 @@ func Write(target core.URI) error {
 		return err
 	}
 
-	if err := makeutil.WriteXML(target.Append(siteFilename), site, "\t"); err != nil {
+	if err := writeXML(target.Append(siteFilename), site, "\t"); err != nil {
 		return err
 	}
 
 	for filename, dd := range d {
-		if err := makeutil.WriteXML(target.Append(filename), dd, "\t"); err != nil {
+		if err := writeXML(target.Append(filename), dd, "\t"); err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func writeXML(uri core.URI, v interface{}, indent string) error {
+	data, err := xml.MarshalIndent(v, "", indent)
+	if err != nil {
+		return err
+	}
+
+	path, err := uri.File()
+	if err != nil {
+		return err
+	}
+
+	w := writer.New()
+	w.WString(xml.Header).WString("\n").
+		WString("<!-- ").WString(docs.FileHeader).WString(" -->\n\n").
+		WBytes(data).
+		WString("\n") // 统一代码风格，文件末尾加一空行。
+
+	if w.Err != nil {
+		return w.Err
+	}
+	return ioutil.WriteFile(path, w.Bytes(), os.ModePerm)
 }
 
 func gen() (*site, map[string]*doc, error) {

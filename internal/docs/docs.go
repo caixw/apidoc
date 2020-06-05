@@ -17,6 +17,9 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
+// FileHeader 表示输出文件的文件头内容
+const FileHeader = "该文件由工具自动生成，请勿手动修改！"
+
 // 默认页面
 const indexPage = "index.xml"
 
