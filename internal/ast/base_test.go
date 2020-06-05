@@ -3,6 +3,7 @@
 package ast
 
 import (
+	"net/http"
 	"testing"
 	"time"
 
@@ -34,6 +35,108 @@ var (
 	_ token.AttrEncoder = &VersionAttribute{}
 	_ token.AttrEncoder = &APIDocVersionAttribute{}
 )
+
+func TestNumberAttribute(t *testing.T) {
+	a := assert.New(t)
+	p, err := token.NewParser(core.Block{Location: core.Location{URI: core.URI("uri1")}})
+	a.NotError(err).NotNil(p)
+
+	num := &NumberAttribute{}
+	attr := &token.Attribute{Value: token.String{Value: "6"}}
+	a.NotError(num.DecodeXMLAttr(p, attr))
+	a.Equal(num.V(), 6)
+	v, err := num.EncodeXMLAttr()
+	a.NotError(err).Equal(v, "6")
+
+	num = &NumberAttribute{}
+	attr = &token.Attribute{Value: token.String{Value: "6xxy"}}
+	a.Error(num.DecodeXMLAttr(p, attr))
+}
+
+func TestBoolAttribute(t *testing.T) {
+	a := assert.New(t)
+	p, err := token.NewParser(core.Block{Location: core.Location{URI: core.URI("uri1")}})
+	a.NotError(err).NotNil(p)
+
+	b := &BoolAttribute{}
+	attr := &token.Attribute{Value: token.String{Value: "T"}}
+	a.NotError(b.DecodeXMLAttr(p, attr))
+	a.True(b.V())
+	v, err := b.EncodeXMLAttr()
+	a.NotError(err).Equal(v, "true")
+
+	b = &BoolAttribute{}
+	attr = &token.Attribute{Value: token.String{Value: "xyz"}}
+	a.Error(b.DecodeXMLAttr(p, attr))
+}
+
+func TestMethodAttribute(t *testing.T) {
+	a := assert.New(t)
+	p, err := token.NewParser(core.Block{Location: core.Location{URI: core.URI("uri1")}})
+	a.NotError(err).NotNil(p)
+
+	method := &MethodAttribute{}
+	attr := &token.Attribute{Value: token.String{Value: http.MethodGet}}
+	a.NotError(method.DecodeXMLAttr(p, attr))
+	a.Equal(method.V(), http.MethodGet)
+	v, err := method.EncodeXMLAttr()
+	a.NotError(err).Equal(v, http.MethodGet)
+
+	method = &MethodAttribute{}
+	attr = &token.Attribute{Value: token.String{Value: "not-exists"}}
+	a.Error(method.DecodeXMLAttr(p, attr))
+}
+
+func TestStatusAttribute(t *testing.T) {
+	a := assert.New(t)
+	p, err := token.NewParser(core.Block{Location: core.Location{URI: core.URI("uri1")}})
+	a.NotError(err).NotNil(p)
+
+	status := &StatusAttribute{}
+	attr := &token.Attribute{Value: token.String{Value: "201"}}
+	a.NotError(status.DecodeXMLAttr(p, attr))
+	a.Equal(status.V(), 201)
+	v, err := status.EncodeXMLAttr()
+	a.NotError(err).Equal(v, "201")
+
+	status = &StatusAttribute{}
+	attr = &token.Attribute{Value: token.String{Value: "10000"}}
+	a.Error(status.DecodeXMLAttr(p, attr))
+}
+
+func TestTypeAttribute(t *testing.T) {
+	a := assert.New(t)
+	p, err := token.NewParser(core.Block{Location: core.Location{URI: core.URI("uri1")}})
+	a.NotError(err).NotNil(p)
+
+	tt := &TypeAttribute{}
+	attr := &token.Attribute{Value: token.String{Value: TypeNumber}}
+	a.NotError(tt.DecodeXMLAttr(p, attr))
+	a.Equal(tt.V(), TypeNumber)
+	v, err := tt.EncodeXMLAttr()
+	a.NotError(err).Equal(v, TypeNumber)
+
+	tt = &TypeAttribute{}
+	attr = &token.Attribute{Value: token.String{Value: "10000"}}
+	a.Error(tt.DecodeXMLAttr(p, attr))
+}
+
+func TestVersionAttribute(t *testing.T) {
+	a := assert.New(t)
+	p, err := token.NewParser(core.Block{Location: core.Location{URI: core.URI("uri1")}})
+	a.NotError(err).NotNil(p)
+
+	ver := &VersionAttribute{}
+	attr := &token.Attribute{Value: token.String{Value: "3.6.1"}}
+	a.NotError(ver.DecodeXMLAttr(p, attr))
+	a.Equal(ver.V(), "3.6.1")
+	v, err := ver.EncodeXMLAttr()
+	a.NotError(err).Equal(v, "3.6.1")
+
+	ver = &VersionAttribute{}
+	attr = &token.Attribute{Value: token.String{Value: "3x"}}
+	a.Error(ver.DecodeXMLAttr(p, attr))
+}
 
 func TestIsValidMethod(t *testing.T) {
 	a := assert.New(t)

@@ -361,3 +361,37 @@ func TestRequest_Param(t *testing.T) {
 	param := req.Param()
 	a.Equal(req.Type, param.Type)
 }
+
+func TestAPIDoc_XMLNamespaces(t *testing.T) {
+	a := assert.New(t)
+
+	d := &APIDoc{
+		XMLNamespaces: []*XMLNamespace{
+			{
+				Auto: &BoolAttribute{Value: Bool{Value: true}},
+				URN:  &Attribute{Value: token.String{Value: core.XMLNamespace}},
+			},
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn1"}},
+				Prefix: &Attribute{Value: token.String{Value: "ns1"}},
+			},
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn2"}},
+				Prefix: &Attribute{Value: token.String{Value: "ns2"}},
+			},
+		},
+	}
+
+	ns := d.XMLNamespace("")
+	a.True(ns.Auto.V())
+
+	ns = d.XMLNamespace("ns1")
+	a.False(ns.Auto.V()).Equal(ns.URN.V(), "urn1")
+
+	ns = d.XMLNamespace("ns2")
+	a.False(ns.Auto.V()).Equal(ns.URN.V(), "urn2")
+
+	// not exists
+	ns = d.XMLNamespace("ns")
+	a.Nil(ns)
+}
