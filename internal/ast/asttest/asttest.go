@@ -97,7 +97,7 @@ func Get() *ast.APIDoc {
 							Text: &ast.CData{Value: token.String{Value: "<p>desc</p>"}},
 						},
 						Type:   &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
-						Status: &ast.StatusAttribute{Value: ast.Number{Value: http.StatusOK}},
+						Status: &ast.StatusAttribute{Value: ast.Number{Int: http.StatusOK}},
 						Headers: []*ast.Param{
 							{
 								Type:    &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
@@ -135,7 +135,7 @@ func Get() *ast.APIDoc {
 				},
 				Responses: []*ast.Request{
 					{
-						Status: &ast.StatusAttribute{Value: ast.Number{Value: http.StatusCreated}},
+						Status: &ast.StatusAttribute{Value: ast.Number{Int: http.StatusCreated}},
 						Description: &ast.Richtext{
 							Type: &ast.Attribute{Value: token.String{Value: "html"}},
 							Text: &ast.CData{Value: token.String{Value: "<p>desc</p>"}},

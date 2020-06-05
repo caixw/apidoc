@@ -35,7 +35,9 @@ type (
 	// Number 表示 XML 的数值类型
 	Number struct {
 		core.Range
-		Value int
+		Int     int
+		Float   float64
+		IsFloat bool
 	}
 
 	// Bool 表示 XML 的布尔值类型
@@ -136,29 +138,53 @@ func (a *Attribute) V() string {
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (num *NumberAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
-	v, err := strconv.Atoi(attr.Value.Value)
+	if v, err := strconv.Atoi(attr.Value.Value); err == nil {
+		num.Value = Number{
+			Range: attr.Value.Range,
+			Int:   v,
+		}
+		return nil
+	}
+
+	v, err := strconv.ParseFloat(attr.Value.Value, 64)
 	if err != nil {
 		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.String(), err)
 	}
-
 	num.Value = Number{
-		Range: attr.Value.Range,
-		Value: v,
+		Range:   attr.Value.Range,
+		Float:   v,
+		IsFloat: true,
 	}
 	return nil
 }
 
 // EncodeXMLAttr AttrEncoder.EncodeXMLAttr
 func (num *NumberAttribute) EncodeXMLAttr() (string, error) {
-	return strconv.Itoa(num.V()), nil
+	if num.IsFloat() {
+		return strconv.FormatFloat(num.FloatValue(), 'f', -1, 64), nil
+	}
+	return strconv.Itoa(num.IntValue()), nil
 }
 
-// V 返回当前属性实际表示的值
-func (num *NumberAttribute) V() int {
+// IntValue 返回当前属性实际表示的值
+func (num *NumberAttribute) IntValue() int {
 	if num == nil {
 		return 0
 	}
-	return num.Value.Value
+	return num.Value.Int
+}
+
+// FloatValue 返回当前属性实际表示的值
+func (num *NumberAttribute) FloatValue() float64 {
+	if num == nil {
+		return 0
+	}
+	return num.Value.Float
+}
+
+// IsFloat 当前的数值类型是否为浮点型
+func (num *NumberAttribute) IsFloat() bool {
+	return num.Value.IsFloat
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
@@ -215,7 +241,7 @@ func (a *StatusAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) 
 		return err
 	}
 
-	if !isValidStatus(v.Value.Value) {
+	if !isValidStatus(v.Value.Int) {
 		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
 	}
 
@@ -230,7 +256,7 @@ func (a *StatusAttribute) EncodeXMLAttr() (string, error) {
 
 // V 返回当前属性实际表示的值
 func (a *StatusAttribute) V() int {
-	return (*NumberAttribute)(a).V()
+	return (*NumberAttribute)(a).IntValue()
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr

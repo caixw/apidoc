@@ -44,9 +44,16 @@ func TestNumberAttribute(t *testing.T) {
 	num := &NumberAttribute{}
 	attr := &token.Attribute{Value: token.String{Value: "6"}}
 	a.NotError(num.DecodeXMLAttr(p, attr))
-	a.Equal(num.V(), 6)
+	a.Equal(num.IntValue(), 6).Equal(0.0, num.FloatValue())
 	v, err := num.EncodeXMLAttr()
 	a.NotError(err).Equal(v, "6")
+
+	num = &NumberAttribute{}
+	attr = &token.Attribute{Value: token.String{Value: "6.1"}}
+	a.NotError(num.DecodeXMLAttr(p, attr))
+	a.Equal(num.IntValue(), 0).Equal(6.1, num.FloatValue())
+	v, err = num.EncodeXMLAttr()
+	a.NotError(err).Equal(v, "6.1")
 
 	num = &NumberAttribute{}
 	attr = &token.Attribute{Value: token.String{Value: "6xxy"}}
