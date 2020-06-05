@@ -70,7 +70,6 @@ func Get() *ast.APIDoc {
 				Path: &ast.Path{Path: &ast.Attribute{Value: token.String{Value: "/users"}}},
 				Servers: []*ast.Element{
 					{Content: ast.Content{Value: "admin"}},
-					{Content: ast.Content{Value: "client"}},
 				},
 				Requests: []*ast.Request{
 					{
@@ -137,6 +136,7 @@ func Get() *ast.APIDoc {
 				Summary:    &ast.Attribute{Value: token.String{Value: "summary"}},
 				Servers: []*ast.Element{
 					{Content: ast.Content{Value: "admin"}},
+					{Content: ast.Content{Value: "client"}},
 				},
 				Requests: []*ast.Request{
 					{

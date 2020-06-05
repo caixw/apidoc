@@ -22,7 +22,6 @@
 		<aa:tag>t1</aa:tag>
 		<aa:tag>t2</aa:tag>
 		<aa:server>admin</aa:server>
-		<aa:server>client</aa:server>
 	</aa:api>
 	<aa:api aa:method="POST" aa:summary="summary" aa:deprecated="1.0.1">
 		<aa:path aa:path="/users"></aa:path>
@@ -38,6 +37,7 @@
 		<aa:tag>t1</aa:tag>
 		<aa:tag>tag1</aa:tag>
 		<aa:server>admin</aa:server>
+		<aa:server>client</aa:server>
 	</aa:api>
 	<aa:mimetype>application/json</aa:mimetype>
 	<aa:mimetype>application/xml</aa:mimetype>

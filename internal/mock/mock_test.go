@@ -557,52 +557,24 @@ var data = []*tester{
 	},
 }
 
-const testAPIDoc = `<apidoc version="1.0.1">
-	<title>title</title>
-	<server url="https://example.com" name="test" summary="test summary" />
-	<mimetype>application/json</mimetype>
-	<mimetype>application/xml</mimetype>
-
-	<api method="GET" summary="get users">
-		<path path="/users" />
-		<response type="object" array="true" xml-wrapped="root" name="user" status="200">
-			<param name="id" type="number" summary="id summary" />
-			<param name="name" type="string" summary="name summary" />
-		</response>
-	</api>
-	<api method="post" summary="post user">
-		<server>test</server>
-		<path path="/users" />
-		<request type="object" array="true" xml-wrapped="root" name="user">
-			<param name="id" type="number" summary="id summary" />
-			<param name="name" type="string" summary="name summary" />
-		</request>
-		<response status="201">
-			<header type="string" name="location" summary="新资源的地址" />
-		</response>
-	</api>
-</apidoc>`
-
 func TestNew(t *testing.T) {
 	a := assert.New(t)
 	rslt := messagetest.NewMessageHandler()
 	d := &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}}
-	d.Parse(rslt.Handler, core.Block{Data: []byte(testAPIDoc)})
+	d.Parse(rslt.Handler, core.Block{Data: asttest.XML(a)})
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	rslt = messagetest.NewMessageHandler()
-	mock, err := New(rslt.Handler, d, indent, map[string]string{"test": "/test"}, testOptions)
+	mock, err := New(rslt.Handler, d, indent, map[string]string{"client": "/test"}, testOptions)
 	a.NotError(err).NotNil(mock)
 	srv := rest.NewServer(t, mock, nil)
 
 	// 测试路由是否正常
-	srv.Get("/users").Do().Status(http.StatusBadRequest)
-	srv.Post("/users", nil).Do().Status(http.StatusMethodNotAllowed)
-	srv.Get("/not-found").Do().Status(http.StatusNotFound)
-
 	srv.Post("/test/users", nil).Do().Status(http.StatusBadRequest)
 	srv.Get("/test/users").Do().Status(http.StatusMethodNotAllowed)
+	srv.Get("/not-found").Do().Status(http.StatusNotFound)
+	srv.Get("/test/not-found").Do().Status(http.StatusNotFound)
 
 	rslt.Handler.Stop()
 	a.NotEmpty(rslt.Errors)
