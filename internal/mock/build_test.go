@@ -217,7 +217,7 @@ func TestValidRequest(t *testing.T) {
 	a := assert.New(t)
 
 	r := httptest.NewRequest(http.MethodGet, "/path", nil)
-	a.Error(validRequest(nil, r))
+	a.Error(validRequest(nil, nil, r))
 
 	item := data[len(data)-2]
 
@@ -226,27 +226,27 @@ func TestValidRequest(t *testing.T) {
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "application/json")
 	r.Header.Set("encoding", "xxx")
-	a.NotError(validRequest([]*ast.Request{item.Type}, r))
+	a.NotError(validRequest(nil, []*ast.Request{item.Type}, r))
 
 	// 匹配 xml
 	body = bytes.NewBufferString(item.XML)
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "application/xml")
 	r.Header.Set("encoding", "yyy")
-	a.NotError(validRequest([]*ast.Request{item.Type}, r))
+	a.NotError(validRequest(nil, []*ast.Request{item.Type}, r))
 
 	// 无法匹配 content-type
 	body = bytes.NewBufferString(`{"name":{"last":"l","first":"f"},"age":1}`)
 	r = httptest.NewRequest(http.MethodGet, "/path", body)
 	r.Header.Set("content-type", "not-exists")
 	r.Header.Set("encoding", "xxx")
-	a.Error(validRequest([]*ast.Request{item.Type}, r))
+	a.Error(validRequest(nil, []*ast.Request{item.Type}, r))
 }
 
 func TestBuildResponse(t *testing.T) {
 	a := assert.New(t)
 
-	resp, err := buildResponse(nil, nil, indent, testOptions)
+	resp, err := buildResponse(nil, nil, nil, indent, testOptions)
 	a.NotError(err).Nil(resp)
 
 	item := data[len(data)-2]
@@ -255,21 +255,21 @@ func TestBuildResponse(t *testing.T) {
 	r := httptest.NewRequest(http.MethodGet, "/path", nil)
 	r.Header.Set("accept", "application/json")
 	r.Header.Set("encoding", "xxx")
-	resp, err = buildResponse(item.Type, r, indent, testOptions)
+	resp, err = buildResponse(nil, item.Type, r, indent, testOptions)
 	a.NotError(err).Equal(string(resp), item.JSON)
 
 	// 匹配 xml
 	r = httptest.NewRequest(http.MethodGet, "/path", nil)
 	r.Header.Set("accept", "application/xml")
 	r.Header.Set("encoding", "yyy")
-	resp, err = buildResponse(item.Type, r, indent, testOptions)
+	resp, err = buildResponse(nil, item.Type, r, indent, testOptions)
 	a.NotError(err).Equal(string(resp), item.XML)
 
 	// 无法匹配 content-type
 	r = httptest.NewRequest(http.MethodGet, "/path", nil)
 	r.Header.Set("content-type", "not-exists")
 	r.Header.Set("encoding", "xxx")
-	resp, err = buildResponse(item.Type, r, indent, testOptions)
+	resp, err = buildResponse(nil, item.Type, r, indent, testOptions)
 	a.Error(err).Nil(resp)
 }
 

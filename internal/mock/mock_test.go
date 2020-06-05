@@ -24,6 +24,7 @@ type tester struct {
 	Type  *ast.Request
 	JSON  string
 	XML   string
+	NS    []*ast.XMLNamespace
 }
 
 // 提供了测试 validJSON/buildXML 和 buildJSON/buildXML 的数据
@@ -64,6 +65,25 @@ var data = []*tester{
 		},
 		JSON: "1024",
 		XML:  "<root><![CDATA[1024]]></root>",
+	},
+	{ // namespace
+		Title: "number-cdata-namespace",
+		Type: &ast.Request{
+			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			XML: ast.XML{
+				XMLCData:    &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+				XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "ns"}},
+			},
+		},
+		JSON: "1024",
+		XML:  `<ns:root xmlns:ns="urn"><![CDATA[1024]]></ns:root>`,
+		NS: []*ast.XMLNamespace{
+			{
+				Prefix: &ast.Attribute{Value: token.String{Value: "ns"}},
+				URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
+			},
+		},
 	},
 	{
 		Title: "enum number",
@@ -311,6 +331,74 @@ var data = []*tester{
         <id>1024</id>
         <name>1024</name>
     </user>
+</root>`,
+	},
+
+	{
+		Title: "object with item namespace",
+		Type: &ast.Request{
+			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Headers: []*ast.Param{
+				{
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: token.String{Value: "content-type"}},
+				},
+				{
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: token.String{Value: "encoding"}},
+				},
+			},
+			Items: []*ast.Param{
+				{
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+					Name: &ast.Attribute{Value: token.String{Value: "name"}},
+					XML:  ast.XML{XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "aa"}}},
+					Items: []*ast.Param{
+						{
+							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+							Name: &ast.Attribute{Value: token.String{Value: "last"}},
+							XML:  ast.XML{XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "aa"}}},
+						},
+						{
+							Type:     &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+							Name:     &ast.Attribute{Value: token.String{Value: "first"}},
+							Optional: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+						},
+					},
+				},
+				{
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: token.String{Value: "age"}},
+					XML: ast.XML{
+						XMLAttr:     &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+						XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "aa"}},
+					},
+				},
+			},
+		},
+		NS: []*ast.XMLNamespace{
+			{
+				URN:  &ast.Attribute{Value: token.String{Value: "urn"}},
+				Auto: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+			},
+			{
+				Prefix: &ast.Attribute{Value: token.String{Value: "aa"}},
+				URN:    &ast.Attribute{Value: token.String{Value: "aa-urn"}},
+			},
+		},
+		JSON: `{
+    "name": {
+        "last": "1024",
+        "first": "1024"
+    },
+    "age": 1024
+}`,
+		XML: `<root aa:age="1024" xmlns="urn" xmlns:aa="aa-urn">
+    <aa:name>
+        <aa:last>1024</aa:last>
+        <first>1024</first>
+    </aa:name>
 </root>`,
 	},
 

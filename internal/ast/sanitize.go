@@ -260,10 +260,6 @@ func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 			return p.NewError(xml.XMLExtract.Start, xml.XMLExtract.End, xml.XMLExtract.AttributeName.String(), locale.ErrInvalidValue)
 		}
 
-		if xml.XMLNS.V() != "" {
-			return p.NewError(xml.XMLNS.Start, xml.XMLNS.End, xml.XMLNS.AttributeName.String(), locale.ErrInvalidValue)
-		}
-
 		if xml.XMLNSPrefix.V() != "" {
 			return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.AttributeName.String(), locale.ErrInvalidValue)
 		}
@@ -278,18 +274,9 @@ func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 	}
 
 	if xml.XMLExtract.V() {
-		if xml.XMLNS.V() != "" {
-			return p.NewError(xml.XMLNS.Start, xml.XMLNS.End, xml.XMLNS.AttributeName.String(), locale.ErrInvalidValue)
-		}
-
 		if xml.XMLNSPrefix.V() != "" {
 			return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.AttributeName.String(), locale.ErrInvalidValue)
 		}
-	}
-
-	// 有命名空间，必须要有前缀
-	if xml.XMLNS.V() != "" && xml.XMLNSPrefix.V() == "" {
-		return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.AttributeName.String(), locale.ErrInvalidValue)
 	}
 
 	return nil
@@ -297,6 +284,35 @@ func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 
 // Sanitize 检测内容是否合法
 func (doc *APIDoc) Sanitize(p *token.Parser) error {
+	// 按 URN 查重
+	sort.SliceStable(doc.XMLNamespaces, func(i, j int) bool {
+		return doc.XMLNamespaces[i].URN.V() > doc.XMLNamespaces[j].URN.V()
+	})
+	for i := 1; i < len(doc.XMLNamespaces); i++ {
+		curr := doc.XMLNamespaces[i].URN
+		if doc.XMLNamespaces[i-1].URN.V() == curr.V() {
+			return p.NewError(curr.Start, curr.End, "@urn", locale.ErrDuplicateValue)
+		}
+	}
+
+	// 按 prefix 查重
+	sort.SliceStable(doc.XMLNamespaces, func(i, j int) bool {
+		return doc.XMLNamespaces[i].Prefix.V() > doc.XMLNamespaces[j].Prefix.V()
+	})
+	var auto bool
+	for i := 1; i < len(doc.XMLNamespaces); i++ {
+		curr := doc.XMLNamespaces[i]
+		if doc.XMLNamespaces[i-1].Prefix.V() == curr.Prefix.V() {
+			return p.NewError(curr.Start, curr.End, "@prefix", locale.ErrDuplicateValue)
+		}
+		if curr.Auto.V() {
+			if auto {
+				return p.NewError(curr.Start, curr.End, "@auto", locale.ErrInvalidValue)
+			}
+			auto = true
+		}
+	}
+
 	for _, api := range doc.APIs {
 		if api.doc == nil {
 			api.doc = doc // 保证单文件的文档能正常解析

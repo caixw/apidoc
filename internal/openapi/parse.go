@@ -87,7 +87,7 @@ func parsePaths(openapi *OpenAPI, d *ast.APIDoc) *core.SyntaxError {
 		if api.Description != nil {
 			operation.Description = api.Description.V()
 		}
-		setOperationParams(operation, api)
+		setOperationParams(d, operation, api)
 
 		// servers
 		// 不为 PathItem 设置 servers，直接写在 operation
@@ -125,7 +125,7 @@ func parsePaths(openapi *OpenAPI, d *ast.APIDoc) *core.SyntaxError {
 				}
 
 				content[r.Mimetype.V()] = &MediaType{
-					Schema:   newSchemaFromRequest(r, true),
+					Schema:   newSchemaFromRequest(d, r, true),
 					Examples: examples,
 				}
 			}
@@ -164,7 +164,7 @@ func parsePaths(openapi *OpenAPI, d *ast.APIDoc) *core.SyntaxError {
 				}
 			}
 			r.Content[resp.Mimetype.V()] = &MediaType{
-				Schema:   newSchemaFromRequest(resp, true),
+				Schema:   newSchemaFromRequest(d, resp, true),
 				Examples: examples,
 			}
 		}
@@ -173,7 +173,7 @@ func parsePaths(openapi *OpenAPI, d *ast.APIDoc) *core.SyntaxError {
 	return nil
 }
 
-func setOperationParams(operation *Operation, api *ast.API) {
+func setOperationParams(doc *ast.APIDoc, operation *Operation, api *ast.API) {
 	l := len(api.Path.Params) + len(api.Path.Queries)
 	operation.Parameters = make([]*Parameter, 0, l)
 
@@ -183,7 +183,7 @@ func setOperationParams(operation *Operation, api *ast.API) {
 			IN:          ParameterINPath,
 			Description: getDescription(param.Description, param.Summary),
 			Required:    !param.Optional.V(),
-			Schema:      newSchema(param, true),
+			Schema:      newSchema(doc, param, true),
 		})
 	}
 
@@ -193,7 +193,7 @@ func setOperationParams(operation *Operation, api *ast.API) {
 			IN:          ParameterINQuery,
 			Description: getDescription(param.Description, param.Summary),
 			Required:    !param.Optional.V(),
-			Schema:      newSchema(param, true),
+			Schema:      newSchema(doc, param, true),
 		})
 	}
 
