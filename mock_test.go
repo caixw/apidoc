@@ -126,23 +126,23 @@ func TestMockFile(t *testing.T) {
 	a.NotError(err).NotNil(mock)
 	srv = rest.NewServer(t, mock, nil)
 
-	srv.Get("/admin/users").
+	srv.Post("/admin/users", []byte(`{"id":1,"name":"name"}`)).
 		Header("authorization", "xxx").
 		Header("content-type", "application/json").
 		Header("Accept", "application/json").
-		Do().Status(http.StatusOK)
+		Do().Status(http.StatusCreated)
 
-	srv.Get("/c/users").
+	srv.Post("/c/users", []byte(`{"id":1,"name":"name"}`)).
 		Header("authorization", "xxx").
 		Header("content-type", "application/json").
 		Header("Accept", "application/json").
-		Do().Status(http.StatusOK)
+		Do().Status(http.StatusCreated)
 
 	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
 	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
 
-	srv.Post("/c/users", nil).Do().Status(http.StatusMethodNotAllowed) // POST /users 未指定 client
-	srv.Delete("/c/users").Do().Status(http.StatusMethodNotAllowed)    // 不存在
+	srv.Get("/c/users").Do().Status(http.StatusMethodNotAllowed)    // POST /users 未指定 client
+	srv.Delete("/c/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
 
 	rslt.Handler.Stop()
 	srv.Close()
