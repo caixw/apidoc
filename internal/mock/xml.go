@@ -5,6 +5,7 @@ package mock
 import (
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -27,7 +28,7 @@ func validXML(ns []*ast.XMLNamespace, p *ast.Request, content []byte) error {
 	d := xml.NewDecoder(bytes.NewReader(content))
 	for {
 		token, err := d.Token()
-		if err == io.EOF && token == nil { // 正常结束
+		if errors.Is(err, io.EOF) && token == nil { // 正常结束
 			return nil
 		}
 		if err != nil {
@@ -99,7 +100,7 @@ func validElement(
 
 	for {
 		token, err := d.Token()
-		if err == io.EOF && token == nil { // 正常结束
+		if errors.Is(err, io.EOF) && token == nil { // 正常结束
 			return nil
 		}
 		if err != nil {

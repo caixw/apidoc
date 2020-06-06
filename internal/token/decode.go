@@ -3,6 +3,7 @@
 package token
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -56,7 +57,7 @@ func Decode(h *core.MessageHandler, p *Parser, v interface{}, namespace string) 
 	var hasRoot bool
 	for {
 		t, r, err := p.Token()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return
 		} else if err != nil {
 			h.Error(err)
@@ -184,7 +185,7 @@ func decodeAttributes(n *node.Node, p *Parser, start *StartElement, prefix strin
 func decodeElements(n *node.Node, p *Parser, prefix string) (*EndElement, error) {
 	for {
 		t, r, err := p.Token()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
 			return nil, p.NewError(p.Position().Position, p.Position().Position, "", locale.ErrInvalidXML)
 		} else if err != nil {
@@ -307,7 +308,7 @@ func findEndElement(p *Parser, start *StartElement) error {
 	level := 0
 	for {
 		t, _, err := p.Token()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return p.NewError(start.Start, start.End, start.Name.String(), locale.ErrNotFoundEndTag) // 找不到相配的结束符号
 		} else if err != nil {
 			return err

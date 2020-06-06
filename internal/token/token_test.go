@@ -72,7 +72,7 @@ var (
 func (i *intTag) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
 	for {
 		t, _, err := p.Token()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return nil, nil
 		} else if err != nil {
 			return nil, err
@@ -115,7 +115,7 @@ func (i *intAttr) EncodeXMLAttr() (string, error) {
 func (i *stringTag) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) {
 	for {
 		t, _, err := p.Token()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return nil, nil
 		} else if err != nil {
 			return nil, err

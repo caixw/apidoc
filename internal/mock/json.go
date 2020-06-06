@@ -5,6 +5,7 @@ package mock
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -53,7 +54,7 @@ func validJSON(p *ast.Request, content []byte) error {
 func (validator *jsonValidator) valid(d *json.Decoder) error {
 	for {
 		token, err := d.Token()
-		if err == io.EOF && token == nil { // 正常结束
+		if errors.Is(err, io.EOF) && token == nil { // 正常结束
 			return nil
 		}
 		if err != nil {

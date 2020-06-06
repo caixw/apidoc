@@ -3,6 +3,7 @@
 package ast
 
 import (
+	"errors"
 	"io"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -46,7 +47,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 	}
 
 	name, err := getTagName(p)
-	if err == io.EOF {
+	if errors.Is(err, io.EOF) {
 		return
 	} else if err != nil {
 		h.Error(err)
