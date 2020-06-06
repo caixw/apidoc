@@ -8,12 +8,12 @@ import (
 	"strings"
 
 	"github.com/issue9/cmdopt"
+	"github.com/issue9/errwrap"
 	"github.com/issue9/rands"
 
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 // servers 参数
@@ -46,7 +46,7 @@ func (s servers) String() string {
 		return ""
 	}
 
-	buf := writer.New()
+	var buf errwrap.Buffer
 	for k, v := range s {
 		buf.WString(k).WByte('=').WString(v).WByte(',')
 	}

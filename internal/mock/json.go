@@ -9,10 +9,11 @@ import (
 	"io"
 	"strings"
 
+	"github.com/issue9/errwrap"
+
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 type jsonValidator struct {
@@ -208,7 +209,7 @@ func (validator *jsonValidator) find() *ast.Param {
 }
 
 type jsonBuilder struct {
-	w      *writer.Writer
+	w      *errwrap.Buffer
 	deep   int
 	indent string // 单次的缩进
 }
@@ -219,7 +220,7 @@ func buildJSON(p *ast.Request, indent string, g *GenOptions) ([]byte, error) {
 	}
 
 	builder := &jsonBuilder{
-		w:      writer.New(),
+		w:      &errwrap.Buffer{},
 		indent: indent,
 	}
 

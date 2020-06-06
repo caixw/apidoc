@@ -9,10 +9,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/issue9/errwrap"
 	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v7/internal/docs"
-	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 const (
@@ -46,7 +46,7 @@ func main() {
 	fis, err := getFileInfos(dir)
 	panicError(err)
 
-	buf := writer.New()
+	var buf errwrap.Buffer
 	buf.WString("// ").WString(docs.FileHeader).WString("\n\n").
 		WString("package ").WString(pkgName).WString("\n\n").
 		WString("var ").WString(varName).WString("= []*FileInfo{")

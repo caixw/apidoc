@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/issue9/errwrap"
 	"golang.org/x/text/language/display"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -17,7 +18,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/docs"
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 const (
@@ -109,7 +109,7 @@ func writeXML(uri core.URI, v interface{}, indent string) error {
 		return err
 	}
 
-	w := writer.New()
+	var w errwrap.Buffer
 	w.WString(xml.Header).WString("\n").
 		WString("<!-- ").WString(docs.FileHeader).WString(" -->\n\n").
 		WBytes(data).

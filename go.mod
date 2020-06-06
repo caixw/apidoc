@@ -3,6 +3,7 @@ module github.com/caixw/apidoc/v7
 require (
 	github.com/issue9/assert v1.3.4
 	github.com/issue9/cmdopt v0.6.1
+	github.com/issue9/errwrap v0.1.1
 	github.com/issue9/is v1.4.2
 	github.com/issue9/jsonrpc v0.9.0
 	github.com/issue9/mux/v2 v2.3.2

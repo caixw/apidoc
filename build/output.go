@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/issue9/errwrap"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -16,7 +17,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/openapi"
 	"github.com/caixw/apidoc/v7/internal/token"
-	"github.com/caixw/apidoc/v7/internal/writer"
 )
 
 // 几种输出的类型
@@ -155,7 +155,7 @@ func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 		return nil, err
 	}
 
-	buf := writer.New()
+	var buf errwrap.Buffer
 	if o.xml {
 		for _, v := range o.procInst {
 			buf.WString(v).WriteByte('\n')
