@@ -20,6 +20,44 @@ var (
 	_ token.Sanitizer = &Enum{}
 )
 
+func TestCheckXML(t *testing.T) {
+	a := assert.New(t)
+	p, err := token.NewParser(core.Block{})
+	a.NotError(err).NotNil(p)
+
+	xml := &XML{XMLAttr: &BoolAttribute{Value: Bool{Value: true}}}
+	a.Error(checkXML(true, true, xml, p))
+
+	xml = &XML{
+		XMLAttr:    &BoolAttribute{Value: Bool{Value: true}},
+		XMLWrapped: &Attribute{Value: token.String{Value: "wrapped"}},
+	}
+	a.Error(checkXML(false, false, xml, p))
+
+	xml = &XML{
+		XMLAttr:    &BoolAttribute{Value: Bool{Value: true}},
+		XMLExtract: &BoolAttribute{Value: Bool{Value: true}},
+	}
+	a.Error(checkXML(false, false, xml, p))
+
+	xml = &XML{
+		XMLAttr:  &BoolAttribute{Value: Bool{Value: true}},
+		XMLCData: &BoolAttribute{Value: Bool{Value: true}},
+	}
+	a.Error(checkXML(false, false, xml, p))
+
+	xml = &XML{
+		XMLWrapped: &Attribute{Value: token.String{Value: "wrapped"}},
+	}
+	a.Error(checkXML(false, false, xml, p))
+
+	xml = &XML{
+		XMLExtract:  &BoolAttribute{Value: Bool{Value: true}},
+		XMLNSPrefix: &Attribute{Value: token.String{Value: "p1"}},
+	}
+	a.Error(checkXML(false, false, xml, p))
+}
+
 func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 	a := assert.New(t)
 	p, err := token.NewParser(core.Block{})

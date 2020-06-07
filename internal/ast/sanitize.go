@@ -260,10 +260,6 @@ func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 			return p.NewError(xml.XMLExtract.Start, xml.XMLExtract.End, xml.XMLExtract.AttributeName.String(), locale.ErrInvalidValue)
 		}
 
-		if xml.XMLNSPrefix.V() != "" {
-			return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.AttributeName.String(), locale.ErrInvalidValue)
-		}
-
 		if xml.XMLCData.V() {
 			return p.NewError(xml.XMLCData.Start, xml.XMLCData.End, xml.XMLCData.AttributeName.String(), locale.ErrInvalidValue)
 		}
