@@ -284,33 +284,8 @@ func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 
 // Sanitize 检测内容是否合法
 func (doc *APIDoc) Sanitize(p *token.Parser) error {
-	// 按 URN 查重
-	sort.SliceStable(doc.XMLNamespaces, func(i, j int) bool {
-		return doc.XMLNamespaces[i].URN.V() > doc.XMLNamespaces[j].URN.V()
-	})
-	for i := 1; i < len(doc.XMLNamespaces); i++ {
-		curr := doc.XMLNamespaces[i].URN
-		if doc.XMLNamespaces[i-1].URN.V() == curr.V() {
-			return p.NewError(curr.Start, curr.End, "@urn", locale.ErrDuplicateValue)
-		}
-	}
-
-	// 按 prefix 查重
-	sort.SliceStable(doc.XMLNamespaces, func(i, j int) bool {
-		return doc.XMLNamespaces[i].Prefix.V() > doc.XMLNamespaces[j].Prefix.V()
-	})
-	var auto bool
-	for i := 1; i < len(doc.XMLNamespaces); i++ {
-		curr := doc.XMLNamespaces[i]
-		if doc.XMLNamespaces[i-1].Prefix.V() == curr.Prefix.V() {
-			return p.NewError(curr.Start, curr.End, "@prefix", locale.ErrDuplicateValue)
-		}
-		if curr.Auto.V() {
-			if auto {
-				return p.NewError(curr.Start, curr.End, "@auto", locale.ErrInvalidValue)
-			}
-			auto = true
-		}
+	if err := doc.checkXMLNamespaces(p); err != nil {
+		return err
 	}
 
 	for _, api := range doc.APIs {
@@ -326,36 +301,43 @@ func (doc *APIDoc) Sanitize(p *token.Parser) error {
 	return nil
 }
 
-func (doc *APIDoc) sortAPIs() {
-	sort.SliceStable(doc.APIs, func(i, j int) bool {
-		ii := doc.APIs[i]
-		jj := doc.APIs[j]
+func (doc *APIDoc) checkXMLNamespaces(p *token.Parser) error {
+	if len(doc.XMLNamespaces) == 0 {
+		return nil
+	}
 
-		var iip string
-		if ii.Path != nil && ii.Path.Path != nil {
-			iip = ii.Path.Path.V()
-		}
-
-		var jjp string
-		if jj.Path != nil && jj.Path.Path != nil {
-			jjp = jj.Path.Path.V()
-		}
-
-		var iim string
-		if ii.Method != nil {
-			iim = ii.Method.V()
-		}
-
-		var jjm string
-		if jj.Method != nil {
-			jjm = jj.Method.V()
-		}
-
-		if iip == jjp {
-			return iim < jjm
-		}
-		return iip < jjp
+	// 按 URN 查重
+	sort.SliceStable(doc.XMLNamespaces, func(i, j int) bool {
+		return doc.XMLNamespaces[i].URN.V() > doc.XMLNamespaces[j].URN.V()
 	})
+	for i := 1; i < len(doc.XMLNamespaces); i++ {
+		curr := doc.XMLNamespaces[i].URN
+		if doc.XMLNamespaces[i-1].URN.V() == curr.V() {
+			return p.NewError(curr.Start, curr.End, "@urn", locale.ErrDuplicateValue)
+		}
+	}
+
+	// 按 prefix 查重
+	sort.SliceStable(doc.XMLNamespaces, func(i, j int) bool {
+		return doc.XMLNamespaces[i].Prefix.V() > doc.XMLNamespaces[j].Prefix.V()
+	})
+
+	auto := doc.XMLNamespaces[0].Auto.V()
+	for i := 1; i < len(doc.XMLNamespaces); i++ {
+		curr := doc.XMLNamespaces[i]
+		if doc.XMLNamespaces[i-1].Prefix.V() == curr.Prefix.V() {
+			return p.NewError(curr.Start, curr.End, "@prefix", locale.ErrDuplicateValue)
+		}
+
+		if curr.Auto.V() {
+			if auto {
+				return p.NewError(curr.Start, curr.End, "@auto", locale.ErrInvalidValue)
+			}
+			auto = true
+		}
+	}
+
+	return nil
 }
 
 func (doc *APIDoc) tagExists(tag string) bool {

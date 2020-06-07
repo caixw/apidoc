@@ -3,12 +3,12 @@
 package ast
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/token"
 )
 
@@ -19,6 +19,109 @@ var (
 	_ token.Sanitizer = &Path{}
 	_ token.Sanitizer = &Enum{}
 )
+
+func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
+	a := assert.New(t)
+	p, err := token.NewParser(core.Block{})
+	a.NotError(err).NotNil(p)
+
+	doc := &APIDoc{
+		XMLNamespaces: []*XMLNamespace{
+			{
+				URN: &Attribute{Value: token.String{Value: "urn1"}},
+			},
+			{
+				URN: &Attribute{Value: token.String{Value: "urn1"}},
+			},
+		},
+	}
+	a.ErrorString(doc.checkXMLNamespaces(p), locale.Sprintf(locale.ErrDuplicateValue))
+
+	doc = &APIDoc{
+		XMLNamespaces: []*XMLNamespace{
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn1"}},
+				Prefix: &Attribute{Value: token.String{Value: "p1"}},
+			},
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn2"}},
+				Prefix: &Attribute{Value: token.String{Value: "p1"}},
+			},
+		},
+	}
+	a.ErrorString(doc.checkXMLNamespaces(p), locale.Sprintf(locale.ErrDuplicateValue))
+
+	// 两个 prefix 都为空，也是返回重复的值错误
+	doc = &APIDoc{
+		XMLNamespaces: []*XMLNamespace{
+			{
+				URN: &Attribute{Value: token.String{Value: "urn1"}},
+			},
+			{
+				URN: &Attribute{Value: token.String{Value: "urn2"}},
+			},
+		},
+	}
+	a.ErrorString(doc.checkXMLNamespaces(p), locale.Sprintf(locale.ErrDuplicateValue))
+
+	// 多个 auto=true
+	doc = &APIDoc{
+		XMLNamespaces: []*XMLNamespace{
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn1"}},
+				Prefix: &Attribute{Value: token.String{Value: "p1"}},
+				Auto:   &BoolAttribute{Value: Bool{Value: true}},
+			},
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn2"}},
+				Prefix: &Attribute{Value: token.String{Value: "p2"}},
+				Auto:   &BoolAttribute{Value: Bool{Value: true}},
+			},
+		},
+	}
+	a.ErrorString(doc.checkXMLNamespaces(p), locale.Sprintf(locale.ErrInvalidValue))
+
+	// 多个 auto=true
+	doc = &APIDoc{
+		XMLNamespaces: []*XMLNamespace{
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn1"}},
+				Prefix: &Attribute{Value: token.String{Value: "p1"}},
+			},
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn2"}},
+				Prefix: &Attribute{Value: token.String{Value: "p2"}},
+				Auto:   &BoolAttribute{Value: Bool{Value: true}},
+			},
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn3"}},
+				Prefix: &Attribute{Value: token.String{Value: "p3"}},
+				Auto:   &BoolAttribute{Value: Bool{Value: true}},
+			},
+		},
+	}
+	a.ErrorString(doc.checkXMLNamespaces(p), locale.Sprintf(locale.ErrInvalidValue))
+
+	// 正常
+	doc = &APIDoc{
+		XMLNamespaces: []*XMLNamespace{
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn1"}},
+				Prefix: &Attribute{Value: token.String{Value: "p1"}},
+			},
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn2"}},
+				Prefix: &Attribute{Value: token.String{Value: "p2"}},
+			},
+			{
+				URN:    &Attribute{Value: token.String{Value: "urn3"}},
+				Prefix: &Attribute{Value: token.String{Value: "p3"}},
+				Auto:   &BoolAttribute{Value: Bool{Value: true}},
+			},
+		},
+	}
+	a.NotError(doc.checkXMLNamespaces(p))
+}
 
 func TestAPI_Sanitize(t *testing.T) {
 	a := assert.New(t)
@@ -163,42 +266,4 @@ func TestChkEnumsType(t *testing.T) {
 			a.NotError(err, "err %s at %d", err, i)
 		}
 	}
-}
-
-func TestAPIDoc_sortAPIs(t *testing.T) {
-	a := assert.New(t)
-
-	doc := &APIDoc{
-		APIs: []*API{
-			{
-				Path:   &Path{Path: &Attribute{Value: token.String{Value: "/p1/p3"}}},
-				Method: &MethodAttribute{Value: token.String{Value: http.MethodPost}},
-			},
-			{
-				Path:   &Path{Path: &Attribute{Value: token.String{Value: "/p1/p3"}}},
-				Method: &MethodAttribute{Value: token.String{Value: http.MethodGet}},
-			},
-			{
-				Path:   &Path{Path: &Attribute{Value: token.String{Value: "/p1/p2"}}},
-				Method: &MethodAttribute{Value: token.String{Value: http.MethodGet}},
-			},
-			{
-				Path:   &Path{Path: &Attribute{Value: token.String{Value: "/p1/p3"}}},
-				Method: &MethodAttribute{Value: token.String{Value: http.MethodPut}},
-			},
-		},
-	}
-	doc.sortAPIs()
-
-	api := doc.APIs[0]
-	a.Equal(api.Path.Path.V(), "/p1/p2")
-
-	api = doc.APIs[1]
-	a.Equal(api.Path.Path.V(), "/p1/p3").Equal(api.Method.V(), http.MethodGet)
-
-	api = doc.APIs[2]
-	a.Equal(api.Path.Path.V(), "/p1/p3").Equal(api.Method.V(), http.MethodPost)
-
-	api = doc.APIs[3]
-	a.Equal(api.Path.Path.V(), "/p1/p3").Equal(api.Method.V(), http.MethodPut)
 }

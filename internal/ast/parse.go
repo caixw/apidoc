@@ -5,6 +5,7 @@ package ast
 import (
 	"errors"
 	"io"
+	"sort"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -34,7 +35,7 @@ func (doc *APIDoc) ParseBlocks(h *core.MessageHandler, g func(chan core.Block)) 
 //
 // 分析注释块内容，如果正确，则添加到当前文档中。
 //
-// 如果内容不是文档内容，刚将返回 false
+// 如果内容不是文档内容，刚将返回 false。
 func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 	if len(b.Data) < minSize {
 		return
@@ -72,6 +73,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		return
 	}
 
+	// api 进入 doc 的顺序是未知的，进行排序可以保证文档的顺序一致。
 	doc.sortAPIs()
 }
 
@@ -93,4 +95,36 @@ func getTagName(p *token.Parser) (string, error) {
 		default: // 其它标签忽略
 		}
 	}
+}
+
+func (doc *APIDoc) sortAPIs() {
+	sort.SliceStable(doc.APIs, func(i, j int) bool {
+		ii := doc.APIs[i]
+		jj := doc.APIs[j]
+
+		var iip string
+		if ii.Path != nil && ii.Path.Path != nil {
+			iip = ii.Path.Path.V()
+		}
+
+		var jjp string
+		if jj.Path != nil && jj.Path.Path != nil {
+			jjp = jj.Path.Path.V()
+		}
+
+		var iim string
+		if ii.Method != nil {
+			iim = ii.Method.V()
+		}
+
+		var jjm string
+		if jj.Method != nil {
+			jjm = jj.Method.V()
+		}
+
+		if iip == jjp {
+			return iim < jjm
+		}
+		return iip < jjp
+	})
 }
