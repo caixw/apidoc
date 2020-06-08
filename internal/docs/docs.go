@@ -33,15 +33,6 @@ var styles = []string{
 
 var docsDir = core.FileURI(utils.CurrentPath("../../docs"))
 
-// FileInfo 被打包文件的信息
-type FileInfo struct {
-	// 相对于打包根目录的地址，同时也会被作为路由地址
-	Name string
-
-	ContentType string
-	Content     []byte
-}
-
 // Dir 指向 /docs 的路径
 func Dir() core.URI {
 	return docsDir
@@ -95,7 +86,7 @@ func embeddedHandler(stylesheet bool) http.Handler {
 
 				w.Header().Set("Content-Type", info.ContentType)
 				w.WriteHeader(http.StatusOK)
-				w.Write(info.Content)
+				w.Write(info.content)
 				return
 			}
 		}

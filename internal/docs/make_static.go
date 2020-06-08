@@ -54,7 +54,7 @@ func main() {
 		buf.WString("{\n").
 			WString("Name:\"").WString(info.Name).WString("\",\n").
 			WString("ContentType:\"").WString(info.ContentType).WString("\",\n").
-			WString("Content:[]byte(`").WBytes(info.Content).WString("`),\n").
+			WString("Base64:`").WString(info.Base64).WString("`,\n").
 			WString("},\n")
 	}
 	panicError(buf.WString("}\n").Err)
@@ -95,11 +95,7 @@ func getFileInfos(root string) ([]*docs.FileInfo, error) {
 		if err != nil {
 			return nil, err
 		}
-		fis = append(fis, &docs.FileInfo{
-			Name:        filepath.ToSlash(path),
-			Content:     content,
-			ContentType: allowFiles[filepath.Ext(path)],
-		})
+		fis = append(fis, docs.NewFileInfo(filepath.ToSlash(path), allowFiles[filepath.Ext(path)], content))
 	}
 
 	return fis, nil

@@ -58,7 +58,8 @@ func TestEmbeddedHandler(t *testing.T) {
 
 	srv.Get("/v6/apidoc.xsl").
 		Do().
-		Status(http.StatusOK)
+		Status(http.StatusOK).
+		Header("Content-Type", "text/xsl; charset=utf-8")
 
 	srv.Get("/example").
 		Do().
