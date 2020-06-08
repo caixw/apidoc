@@ -47,8 +47,8 @@ func Buffer(h *core.MessageHandler, o *Output, i ...*Input) (*bytes.Buffer, erro
 	return o.buffer(d)
 }
 
-// Test 测试文档语法，并将结果输出到 h
-func Test(h *core.MessageHandler, i ...*Input) {
+// CheckSyntax 测试文档语法，并将结果输出到 h
+func CheckSyntax(h *core.MessageHandler, i ...*Input) {
 	if _, err := parse(h, i...); err != nil {
 		h.Error(err)
 		return

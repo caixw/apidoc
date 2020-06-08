@@ -82,7 +82,7 @@ func Init(out io.Writer) *cmdopt.CmdOpt {
 	initDetect(command)
 	initLang(command)
 	initLocale(command)
-	initTest(command)
+	initSyntax(command)
 	initVersion(command)
 	initMock(command)
 	initStatic(command)

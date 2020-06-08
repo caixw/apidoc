@@ -141,7 +141,7 @@
 		<type name="xml-namespace">
 			<usage>为 <var>application/xml</var> 定义命名空间的相关属性</usage>
 			<item name="@prefix" type="string" array="false" required="false">命名空间的前缀，如果为空，则表示作为默认命名空间，命局只能有一个默认命名空间。</item>
-			<item name="@urn" type="string" array="false" required="true">命名空间的唯一标识，需要全局唯一。</item>
+			<item name="@urn" type="string" array="false" required="true">命名空间的唯一标识，需要全局唯一，且区分大小写。</item>
 			<item name="@auto" type="bool" array="false" required="false">是否将当前命名空自动赋于所有的元素，只能有一个为 <var>true</var></item>
 		</type>
 		<type name="string">
@@ -169,7 +169,7 @@
 		<command name="lsp">启动 language server protocol 服务</command>
 		<command name="mock">启用 mock 服务</command>
 		<command name="static">启用静态文件服务</command>
-		<command name="test">测试语法的正确性</command>
+		<command name="syntax">测试语法的正确性</command>
 		<command name="version">显示版本信息</command>
 	</commands>
 	<config>

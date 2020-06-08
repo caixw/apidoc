@@ -23,13 +23,13 @@ var (
 )
 
 func initStatic(command *cmdopt.CmdOpt) {
-	staticFlagSet := command.New("static", locale.Sprintf(locale.CmdStaticUsage), static)
-	staticFlagSet.StringVar(&staticPort, "p", ":8080", locale.Sprintf(locale.FlagStaticPortUsage))
-	staticFlagSet.Var(&staticDocs, "docs", locale.Sprintf(locale.FlagStaticDocsUsage))
-	staticFlagSet.StringVar(&staticContentType, "ct", "", locale.Sprintf(locale.FlagStaticContentTypeUsage))
-	staticFlagSet.StringVar(&staticURL, "url", "", locale.Sprintf(locale.FlagStaticURLUsage))
-	staticFlagSet.BoolVar(&staticStylesheet, "stylesheet", false, locale.Sprintf(locale.FlagStaticStylesheetUsage))
-	staticFlagSet.Var(&staticPath, "path", locale.Sprintf(locale.FlagStaticPathUsage))
+	fs := command.New("static", locale.Sprintf(locale.CmdStaticUsage), static)
+	fs.StringVar(&staticPort, "p", ":8080", locale.Sprintf(locale.FlagStaticPortUsage))
+	fs.Var(&staticDocs, "docs", locale.Sprintf(locale.FlagStaticDocsUsage))
+	fs.StringVar(&staticContentType, "ct", "", locale.Sprintf(locale.FlagStaticContentTypeUsage))
+	fs.StringVar(&staticURL, "url", "", locale.Sprintf(locale.FlagStaticURLUsage))
+	fs.BoolVar(&staticStylesheet, "stylesheet", false, locale.Sprintf(locale.FlagStaticStylesheetUsage))
+	fs.Var(&staticPath, "path", locale.Sprintf(locale.FlagStaticPathUsage))
 }
 
 func static(io.Writer) (err error) {

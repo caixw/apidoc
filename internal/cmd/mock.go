@@ -66,23 +66,23 @@ var (
 )
 
 func initMock(command *cmdopt.CmdOpt) {
-	mockFlagSet := command.New("mock", locale.Sprintf(locale.CmdMockUsage), doMock)
-	mockFlagSet.StringVar(&mockPort, "p", ":8080", locale.Sprintf(locale.FlagMockPortUsage))
-	mockFlagSet.Var(mockServers, "s", locale.Sprintf(locale.FlagMockServersUsage))
-	mockFlagSet.Var(&mockPath, "path", locale.Sprintf(locale.FlagMockPathUsage))
+	fs := command.New("mock", locale.Sprintf(locale.CmdMockUsage), doMock)
+	fs.StringVar(&mockPort, "p", ":8080", locale.Sprintf(locale.FlagMockPortUsage))
+	fs.Var(mockServers, "s", locale.Sprintf(locale.FlagMockServersUsage))
+	fs.Var(&mockPath, "path", locale.Sprintf(locale.FlagMockPathUsage))
 
-	mockFlagSet.StringVar(&mockOptions.Indent, "indent", "\t", locale.Sprintf(locale.FlagMockIndentUsage))
+	fs.StringVar(&mockOptions.Indent, "indent", "\t", locale.Sprintf(locale.FlagMockIndentUsage))
 
-	mockFlagSet.IntVar(&mockOptions.MaxSliceSize, "slice.max", 10, locale.Sprintf(locale.FlagMockSliceMaxUsage))
-	mockFlagSet.IntVar(&mockOptions.MinSliceSize, "slice.min", 1, locale.Sprintf(locale.FlagMockSliceMinUsage))
+	fs.IntVar(&mockOptions.MaxSliceSize, "slice.max", 10, locale.Sprintf(locale.FlagMockSliceMaxUsage))
+	fs.IntVar(&mockOptions.MinSliceSize, "slice.min", 1, locale.Sprintf(locale.FlagMockSliceMinUsage))
 
-	mockFlagSet.IntVar(&mockOptions.MaxNumber, "num.max", 10000, locale.Sprintf(locale.FlagMockNumMaxUsage))
-	mockFlagSet.IntVar(&mockOptions.MinNumber, "num.min", 1, locale.Sprintf(locale.FlagMockNumMinUsage))
-	mockFlagSet.BoolVar(&mockOptions.EnableFloat, "num.float", false, locale.Sprintf(locale.FlagMockNumFloatUsage))
+	fs.IntVar(&mockOptions.MaxNumber, "num.max", 10000, locale.Sprintf(locale.FlagMockNumMaxUsage))
+	fs.IntVar(&mockOptions.MinNumber, "num.min", 1, locale.Sprintf(locale.FlagMockNumMinUsage))
+	fs.BoolVar(&mockOptions.EnableFloat, "num.float", false, locale.Sprintf(locale.FlagMockNumFloatUsage))
 
-	mockFlagSet.IntVar(&mockOptions.MaxString, "string.max", 64, locale.Sprintf(locale.FlagMockStringMaxUsage))
-	mockFlagSet.IntVar(&mockOptions.MinString, "string.min", 5, locale.Sprintf(locale.FlagMockStringMinUsage))
-	mockFlagSet.StringVar(&mockStringAlpha, "string.alpha", string(rands.AlphaNumber), locale.Sprintf(locale.FlagMockStringAlphaUsage))
+	fs.IntVar(&mockOptions.MaxString, "string.max", 64, locale.Sprintf(locale.FlagMockStringMaxUsage))
+	fs.IntVar(&mockOptions.MinString, "string.min", 5, locale.Sprintf(locale.FlagMockStringMinUsage))
+	fs.StringVar(&mockStringAlpha, "string.alpha", string(rands.AlphaNumber), locale.Sprintf(locale.FlagMockStringAlphaUsage))
 }
 
 func doMock(io.Writer) error {

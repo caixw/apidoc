@@ -168,7 +168,7 @@ func (cfg *Config) Buffer() *bytes.Buffer {
 	return buf
 }
 
-// Test 执行对语法内容的测试
-func (cfg *Config) Test() {
-	Test(cfg.h, cfg.Inputs...)
+// CheckSyntax 执行对语法内容的测试
+func (cfg *Config) CheckSyntax() {
+	CheckSyntax(cfg.h, cfg.Inputs...)
 }

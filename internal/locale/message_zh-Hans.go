@@ -15,7 +15,7 @@ var cmnHans = map[string]string{
 	CmdLangUsage:     "显示所有支持的语言\n",
 	CmdLocaleUsage:   "显示所有支持的本地化内容\n",
 	CmdDetectUsage:   "根据目录下的内容生成配置文件\n",
-	CmdTestUsage:     "测试语法的正确性\n",
+	CmdSyntaxUsage:   "测试语法的正确性\n",
 	CmdMockUsage: `启用 mock 服务
 
 mock 服务会根据接口定义检测用户提交的数据是否合法，并生成随机的数据返回给用户。
@@ -28,7 +28,7 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	Version:        "版本：%s\n文档：%s\nLSP：%s\nopenapi：%s\nGo：%s",
 	CmdNotFound:    "子命令 %s 未找到\n",
 
-	FlagTestDirUsage:           "以 `URI` 形式表示测试项目地址",
+	FlagSyntaxDirUsage:         "以 `URI` 形式表示测试项目地址",
 	FlagBuildDirUsage:          "以 `URI` 形式表示的项目地址",
 	FlagMockPortUsage:          "指定 mock 服务的端口号",
 	FlagMockServersUsage:       "指定 mock 服务时，文档中 server 名对应的路由前缀。",

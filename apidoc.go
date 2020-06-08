@@ -82,9 +82,9 @@ func Buffer(h *core.MessageHandler, o *build.Output, i ...*build.Input) (*bytes.
 	return build.Buffer(h, o, i...)
 }
 
-// Test 测试文档语法，并将结果输出到 h
-func Test(h *core.MessageHandler, i ...*build.Input) {
-	build.Test(h, i...)
+// CheckSyntax 测试文档语法
+func CheckSyntax(h *core.MessageHandler, i ...*build.Input) {
+	build.CheckSyntax(h, i...)
 }
 
 // Static 为 /docs 搭建一个静态文件服务

@@ -102,7 +102,7 @@ func TestConfig_Test(t *testing.T) {
 	rslt := messagetest.NewMessageHandler()
 	cfg := LoadConfig(rslt.Handler, docs.Dir().Append("example"))
 	a.NotNil(cfg)
-	cfg.Test()
+	cfg.CheckSyntax()
 
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).

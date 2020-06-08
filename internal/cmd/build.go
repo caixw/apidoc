@@ -16,8 +16,8 @@ import (
 var buildDir = uri("./")
 
 func initBuild(command *cmdopt.CmdOpt) {
-	buildFlagSet := command.New("build", locale.Sprintf(locale.CmdBuildUsage), doBuild)
-	buildFlagSet.Var(&buildDir, "d", locale.Sprintf(locale.FlagBuildDirUsage))
+	fs := command.New("build", locale.Sprintf(locale.CmdBuildUsage), doBuild)
+	fs.Var(&buildDir, "d", locale.Sprintf(locale.FlagBuildDirUsage))
 }
 
 func doBuild(io.Writer) error {
