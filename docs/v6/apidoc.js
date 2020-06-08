@@ -10,6 +10,8 @@ window.onload = function () {
     initGotoTop();
 };
 
+const uncategorizedID = '_____';
+
 function registerFilter(type) {
     const menu = document.querySelector('.' + type + '-selector');
     if (menu === null) { // 可能为空，表示不存在该过滤项
@@ -17,6 +19,22 @@ function registerFilter(type) {
     }
 
     menu.style.display = 'block'; // 有 JS 的情况下，展示过滤菜单
+
+    menu.querySelectorAll('ul>li').forEach((e) => {
+        if (e.getAttribute(`data-${type}`) === '') {
+            e.setAttribute(`data-${type}`, uncategorizedID);
+        }
+    });
+
+    const apis = document.querySelectorAll('.api');
+    apis.forEach((api) => { // 复制 data-${type} 至 data-hidden-${type}
+        let attr = api.getAttribute(`data-${type}`);
+        if (attr === '') {
+            attr = uncategorizedID;
+            api.setAttribute(`data-${type}`, attr);
+        }
+        api.setAttribute(`data-hidden-${type}`, attr);
+    });
 
     menu.querySelectorAll('li input').forEach((val) => {
         val.addEventListener('change', (event) => {
@@ -26,16 +44,29 @@ function registerFilter(type) {
 
             const chk = event.target.checked;
             const tag = event.target.parentNode.parentNode.getAttribute('data-' + type);
-            document.querySelectorAll('.api').forEach((api) => {
-                if (!api.getAttribute('data-' + type).includes(tag + ',')) {
+            apis.forEach((api) => {
+                const attr = api.getAttribute(`data-${type}`);
+                if (!attr.split(',').includes(tag)) {
                     return;
                 }
 
-                api.setAttribute("data-hidden-" + type, chk ? "" : "true");
+                const hAttr = api.getAttribute(`data-hidden-${type}`).split(',');
+                const index = hAttr.indexOf(tag);
+                if (chk) {
+                    if (-1 === index) {
+                        hAttr.push(tag);
+                        api.setAttribute(`data-hidden-${type}`, hAttr.join(','));
+                    }
+                } else {
+                    if (-1 < index) {
+                        hAttr.splice(index, 1);
+                        api.setAttribute(`data-hidden-${type}`, hAttr.join(','));
+                    }
+                }
 
-                const hidden = api.getAttribute('data-hidden-tag') === 'true' ||
-                    api.getAttribute('data-hidden-server') === 'true' ||
-                    api.getAttribute('data-hidden-method') === 'true';
+                const hidden = api.getAttribute('data-hidden-tag') === '' ||
+                    api.getAttribute('data-hidden-server') === '' ||
+                    api.getAttribute('data-hidden-method') === '';
                 api.style.display = hidden ? 'none' : 'block';
             });
         }); // end addEventListener('change')

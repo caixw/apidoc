@@ -62,6 +62,19 @@ exclude-result-prefixes="l">
     </xsl:call-template>
 </xsl:variable>
 
+<!-- other -->
+<xsl:variable name="locale-uncategorized">
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'cmn-hans'" />
+        <xsl:with-param name="text" select="'未分类'" />
+    </xsl:call-template>
+
+    <xsl:call-template name="build-locale">
+        <xsl:with-param name="lang" select="'cmn-hant'" />
+        <xsl:with-param name="text" select="'未分類'" />
+    </xsl:call-template>
+</xsl:variable>
+
 <!-- expand -->
 <xsl:variable name="locale-expand">
     <xsl:call-template name="build-locale">

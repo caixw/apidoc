@@ -109,6 +109,11 @@
             <xsl:copy-of select="$locale-tag" />
             <span aria-hiddren="true">&#160;&#x25bc;</span>
             <ul role="menu" aria-hiddren="true">
+                <li data-tag="" role="menuitemcheckbox">
+                    <label>
+                        <input type="checkbox" checked="checked" />&#160;<xsl:copy-of select="$locale-uncategorized" />
+                    </label>
+                </li>
                 <xsl:for-each select="apidoc/tag">
                 <li data-tag="{@name}" role="menuitemcheckbox">
                     <label>
@@ -151,12 +156,16 @@
 <xsl:template match="/apidoc/api">
 <xsl:variable name="id" select="concat(server, @method, translate(path/@path, $id-from, $id-to))" />
 
-<details id="{$id}" class="api" data-method="{@method},">
+<details id="{$id}" class="api" data-method="{@method}">
 <xsl:attribute name="data-tag">
-    <xsl:for-each select="tag"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
+    <xsl:for-each select="tag"><!-- NOTE: 如果是 xsl 2.0 可以直接使用 string-join 函数 -->
+        <xsl:value-of select="." /><xsl:if test="position() != last()">,</xsl:if>
+    </xsl:for-each>
 </xsl:attribute>
 <xsl:attribute name="data-server">
-    <xsl:for-each select="server"><xsl:value-of select="concat(., ',')" /></xsl:for-each>
+    <xsl:for-each select="server">
+        <xsl:value-of select="." /><xsl:if test="position() != last()">,</xsl:if>
+    </xsl:for-each>
 </xsl:attribute>
 
     <summary>
