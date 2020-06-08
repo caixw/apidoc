@@ -190,9 +190,14 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 
 	UsageXMLAttr:    "是否作为父元素的属性，仅作用于 XML 元素。是否作为父元素的属性，仅用于 XML 的请求。",
 	UsageXMLExtract: "将当前元素的内容作为父元素的内容，要求父元素必须为 <var>object</var>。",
-	UsageXMLCData:   "当前内容为 CDATA，與 <code>@xml-attr</code> 互斥。",
+	UsageXMLCData:   "当前内容为 CDATA，与 <code>@xml-attr</code> 互斥。",
 	UsageXMLPrefix:  "XML 标签的命名空间名称前缀",
-	UsageXMLWrapped: "如果当前元素的 <code>@array</code> 为 <var>true</var>，是否将其包含在 wrapped 指定的标签中。",
+	UsageXMLWrapped: `如果当前元素的 <code>@array</code> 为 <var>true</var>，则可以通过此值指定在 XML 格式中的名称。
+	可以有三种格式：<ul>
+	<li><samp>name</samp>：表示为数组添加一个父元素名称为 <var>name</var>；</li>
+	<li><samp>name1&gt;name2</samp>：表示数组项的名称改为 <var>name2</var>，且添加一个父元素名为 <var>name1</var>；</li>
+	<li><samp>&gt;name</samp>：表示将当前数组元素的名称改为 <var>name</var>；</li>
+	</ul>`,
 
 	// 基本类型
 	UsageString:  "普通的字符串类型",

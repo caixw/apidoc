@@ -14,6 +14,7 @@
 - 添加地命名空间的支持；
 - 添加全局的 XMLNamespaces 字段，用于指定可用的命名空间；
 - build.Output 添加了两个配置项：Namespace 和 NamespacePrefix；
+- @xml-wrapped 添加两种语法表示；
 
 ### Changed
 
