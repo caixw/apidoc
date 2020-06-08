@@ -190,16 +190,16 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 
 	UsageXMLAttr:    "是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。",
 	UsageXMLExtract: "將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。",
-	UsageXMLCData:   "當前內容為 CDATA，与 xml-attr 互斥。",
+	UsageXMLCData:   "當前內容為 CDATA，与 <code>@xml-attr</code> 互斥。",
 	UsageXMLPrefix:  "XML 標簽的命名空間名稱前綴",
 	UsageXMLWrapped: "如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。",
 
 	// 基本类型
 	UsageString:  "普通的字符串類型",
 	UsageNumber:  "普通的數值類型",
-	UsageBool:    "布爾值類型，取值為 <var>true</var> 或是 <var>false</var>",
-	UsageVersion: `版本號，格式遵守 <a href="https://semver.org/lang/zh-TW/">semver</a> 規則`,
-	UsageDate:    `采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp>`,
+	UsageBool:    "布爾值類型，取值為 <var>true</var> 或是 <var>false</var>。",
+	UsageVersion: `版本號，格式遵守 <a href="https://semver.org/lang/zh-TW/">semver</a> 規則。`,
+	UsageDate:    `采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp>。`,
 
 	// 以下是有关 build.Config 的字段说明
 	UsageConfigVersion:               "此配置文件的所使用的文档版本",

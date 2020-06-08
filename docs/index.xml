@@ -73,17 +73,17 @@
     <!--######################### 以下为文档内容的子项 ###########################-->
 
     <doc id="install" title="安装" parent="usage">
-        <p>可以直接从 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找你需要的版本下载，放入 <code>PATH</code> 中即可使用。如果没有你需要的平台文件，则需要从源代码编译：</p>
+        <p>可以直接从 <a href="https://github.com/caixw/apidoc/releases">https://github.com/caixw/apidoc/releases</a> 查找你需要的版本下载，放入 <var>PATH</var> 中即可使用。如果没有你需要的平台文件，则需要从源代码编译：</p>
         <ul>
             <li>下载 <a href="https://golang.org/dl/">Go</a>；</li>
             <li>下载源代码，<samp>git clone github.com/caixw/apidoc</samp>；</li>
             <li>执行代码中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 进行编译；</li>
-            <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 PATH 目录；</li>
+            <li>编译好的文件存放在 cmd/apidoc 下，可以将该文件放置在 <var>PATH</var> 目录；</li>
         </ul>
     </doc>
 
     <doc id="env" title="环境变量" parent="usage">
-        <p>apidoc 会读取 <var>LANG</var> 的环境变量作为其本地化的依据，若想指定其它语种，可以手动指定 <var>LANG</var> 环境变量：<samp>LANG=zh-Hant apidoc</samp>。在 windows 系统中，若不存在 <var>LANG</var> 环境变量，则会调用 <samp>GetUserDefaultLocaleName</samp> 函数来获取相应的语言信息。</p>
+        <p>apidoc 会读取 <var>LANG</var> 的环境变量作为其本地化的依据，若想指定其它语种，可以手动指定 <var>LANG</var> 环境变量：<samp>LANG=zh-Hant apidoc</samp>。在 windows 系统中，若不存在 <var>LANG</var> 环境变量，则会调用 <code>GetUserDefaultLocaleName</code> 函数来获取相应的语言信息。</p>
     </doc>
 
     <doc id="cli" title="命令行" parent="usage">
@@ -91,7 +91,7 @@
     </doc>
 
     <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">
-        <p>配置文件名固定为 <code>.apidoc.yaml</code>，格式为 YAML，可参考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通过命令 <code>apidoc detect</code> 生成。主要包含了以几个配置项：</p>
+        <p>配置文件名固定为 <code>.apidoc.yaml</code>，格式为 YAML，可参考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通过命令 <samp>apidoc detect</samp> 生成。主要包含了以几个配置项：</p>
     </doc>
 
     <footer>
