@@ -40,7 +40,7 @@ func validXML(ns []*ast.XMLNamespace, p *ast.Request, content []byte) error {
 			if err := validXMLNamespaces(ns, v); err != nil {
 				return err
 			}
-			return validElement(ns, v, p.Param(), true, d, v.Name.Local)
+			return validXMLElement(ns, v, p.Param(), true, d, v.Name.Local)
 		case xml.EndElement:
 			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 		}
@@ -69,7 +69,7 @@ ATTR:
 	return nil
 }
 
-func validName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param) bool {
+func validXMLName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param) bool {
 	if name.Local != p.Name.V() {
 		return false
 	}
@@ -86,7 +86,7 @@ func validName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param) bool {
 	return false
 }
 
-func validElement(
+func validXMLElement(
 	ns []*ast.XMLNamespace,
 	start xml.StartElement,
 	p *ast.Param,
@@ -110,16 +110,16 @@ func validElement(
 		var chardata []byte
 		switch v := token.(type) {
 		case xml.StartElement:
-			if allowArray && p.Array.V() && validName(v.Name, ns, p) {
-				return validElement(ns, v, p, false, d, buildXMLField(field, p))
+			if allowArray && p.Array.V() && validXMLName(v.Name, ns, p) {
+				return validXMLElement(ns, v, p, false, d, buildXMLField(field, p))
 			}
 
 			for _, pp := range p.Items {
 				if pp.Name.V() == v.Name.Local {
 					if pp.XMLExtract.V() {
-						return validElement(ns, v, p, true, d, buildXMLField(field, pp))
+						return validXMLElement(ns, v, p, true, d, buildXMLField(field, pp))
 					}
-					return validElement(ns, v, pp, true, d, buildXMLField(field, p))
+					return validXMLElement(ns, v, pp, true, d, buildXMLField(field, p))
 				}
 			}
 		case xml.EndElement:
@@ -129,7 +129,7 @@ func validElement(
 				}
 				return nil
 			}
-			if !validName(v.Name, ns, p) {
+			if !validXMLName(v.Name, ns, p) {
 				return core.NewSyntaxError(core.Location{}, v.Name.Local, locale.ErrNotFound)
 			}
 
@@ -153,7 +153,7 @@ func validStartElement(
 ) error {
 	for _, attr := range start.Attr {
 		for _, pp := range p.Items {
-			if !validName(attr.Name, ns, pp) {
+			if !validXMLName(attr.Name, ns, pp) {
 				continue
 			}
 			if err := validXMLParamValue(pp, buildXMLField(field, pp), attr.Value); err != nil {
@@ -169,10 +169,10 @@ func validStartElement(
 		}
 
 		start.Attr = start.Attr[:0] // 在 allowArray == true 已经处理过 start.Attr
-		return validElement(ns, start, p, false, d, buildXMLField(field, p))
+		return validXMLElement(ns, start, p, false, d, buildXMLField(field, p))
 	}
 
-	if (!validName(start.Name, ns, p)) &&
+	if (!validXMLName(start.Name, ns, p)) &&
 		(!allowArray && p.XMLWrapped.V() != start.Name.Local) {
 		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
 	}
