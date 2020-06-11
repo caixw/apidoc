@@ -293,7 +293,7 @@ func buildXML(ns []*ast.XMLNamespace, p *ast.Request, indent string, g *GenOptio
 func parseXML(ns []*ast.XMLNamespace, p *ast.Param, chkArray, root bool, g *GenOptions) (*xmlBuilder, error) {
 	builder := &xmlBuilder{
 		start: xml.StartElement{
-			Name: buildXMLName(ns, p),
+			Name: buildXMLName(ns, p, chkArray),
 			Attr: make([]xml.Attr, 0, len(p.Items)+len(ns)),
 		},
 		items: []*xmlBuilder{},
@@ -319,7 +319,7 @@ func parseXML(ns []*ast.XMLNamespace, p *ast.Param, chkArray, root bool, g *GenO
 		switch {
 		case item.XMLAttr.V():
 			attr := xml.Attr{
-				Name:  buildXMLName(ns, item),
+				Name:  buildXMLName(ns, item, false),
 				Value: fmt.Sprint(genXMLValue(g, item)),
 			}
 			builder.start.Attr = append(builder.start.Attr, attr)
@@ -357,18 +357,20 @@ RET:
 	return builder, nil
 }
 
-func buildXMLName(ns []*ast.XMLNamespace, p *ast.Param) xml.Name {
+func buildXMLName(ns []*ast.XMLNamespace, p *ast.Param, chkArray bool) xml.Name {
+	name := parseXMLName(p, chkArray)
+
 	if p.XMLNSPrefix.V() != "" {
-		return xml.Name{Local: p.XMLNSPrefix.V() + ":" + p.Name.V()}
+		return xml.Name{Local: p.XMLNSPrefix.V() + ":" + name}
 	}
 
 	for _, item := range ns {
 		if item.Auto.V() {
-			return xml.Name{Local: p.Name.V()}
+			return xml.Name{Local: name}
 		}
 
 	}
-	return xml.Name{Local: p.Name.V()}
+	return xml.Name{Local: name}
 }
 
 func parseXMLArray(ns []*ast.XMLNamespace, p *ast.Param, parent *xmlBuilder, g *GenOptions) error {
