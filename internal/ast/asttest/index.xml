@@ -25,7 +25,7 @@
 	</aa:api>
 	<aa:api aa:method="POST" aa:summary="summary" aa:deprecated="1.0.1">
 		<aa:path aa:path="/users"></aa:path>
-		<aa:request aa:type="object" aa:summary="request">
+		<aa:request aa:name="root" aa:type="object" aa:summary="request">
 			<aa:param aa:name="id" aa:type="number" aa:summary="ID"></aa:param>
 			<aa:param aa:name="name" aa:type="string" aa:summary="name summary"></aa:param>
 			<aa:example aa:mimetype="application/json"><![CDATA[xxx]]></aa:example>

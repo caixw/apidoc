@@ -3,6 +3,7 @@
 package mock
 
 import (
+	"encoding/xml"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -47,6 +48,242 @@ func TestBuildXML(t *testing.T) {
 		a.NotError(err, "测试 %s 返回了错误信息 %s", item.Title, err).
 			Equal(string(data), item.XML, "测试 %s 返回的数据不相等\nv1:%s\nv2:%s\n", item.Title, string(data), item.XML)
 	}
+}
+
+func TestValidXMLName(t *testing.T) {
+	a := assert.New(t)
+
+	data := []*struct {
+		name       xml.Name
+		ns         []*ast.XMLNamespace
+		param      *ast.Param
+		allowArray bool
+	}{
+		{
+			name: xml.Name{Local: "n1"},
+			param: &ast.Param{
+				Name: &ast.Attribute{Value: token.String{Value: "n1"}},
+			},
+		},
+		{
+			name: xml.Name{Local: "n1"},
+			param: &ast.Param{
+				Name: &ast.Attribute{Value: token.String{Value: "n1"}},
+			},
+			allowArray: true,
+		},
+
+		{
+			name: xml.Name{Local: "n1"},
+			param: &ast.Param{
+				Name: &ast.Attribute{Value: token.String{Value: "n1"}},
+				XML: ast.XML{
+					XMLWrapped: &ast.Attribute{Value: token.String{Value: "parent"}},
+				},
+			},
+		},
+		{
+			name: xml.Name{Local: "n1"},
+			param: &ast.Param{
+				Name: &ast.Attribute{Value: token.String{Value: "n1"}},
+				XML: ast.XML{
+					XMLWrapped: &ast.Attribute{Value: token.String{Value: "parent"}},
+				},
+			},
+			allowArray: true,
+		},
+
+		// wrapped=parent
+		{
+			name: xml.Name{Local: "parent", Space: "urn"},
+			ns: []*ast.XMLNamespace{
+				{
+					URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
+					Prefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+			param: &ast.Param{
+				Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+				Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+				XML: ast.XML{
+					XMLWrapped:  &ast.Attribute{Value: token.String{Value: "parent"}},
+					XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+			allowArray: true,
+		},
+		{
+			name: xml.Name{Local: "n1", Space: "urn"},
+			ns: []*ast.XMLNamespace{
+				{
+					URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
+					Prefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+			param: &ast.Param{
+				Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+				Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+				XML: ast.XML{
+					XMLWrapped:  &ast.Attribute{Value: token.String{Value: "parent"}},
+					XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+		},
+
+		// wrapped=parent>n2
+		{
+			name: xml.Name{Local: "parent", Space: "urn"},
+			ns: []*ast.XMLNamespace{
+				{
+					URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
+					Prefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+			param: &ast.Param{
+				Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+				Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+				XML: ast.XML{
+					XMLWrapped:  &ast.Attribute{Value: token.String{Value: "parent>n2"}},
+					XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+			allowArray: true,
+		},
+		{
+			name: xml.Name{Local: "n2", Space: "urn"},
+			ns: []*ast.XMLNamespace{
+				{
+					URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
+					Prefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+			param: &ast.Param{
+				Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+				Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+				XML: ast.XML{
+					XMLWrapped:  &ast.Attribute{Value: token.String{Value: "parent>n2"}},
+					XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+		},
+
+		// wrapped=>n2
+		{
+			name: xml.Name{Local: "", Space: ""},
+			ns: []*ast.XMLNamespace{
+				{
+					URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
+					Prefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+			param: &ast.Param{
+				Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+				Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+				XML: ast.XML{
+					XMLWrapped:  &ast.Attribute{Value: token.String{Value: ">n2"}},
+					XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+			allowArray: true,
+		},
+		{
+			name: xml.Name{Local: "n2", Space: "urn"},
+			ns: []*ast.XMLNamespace{
+				{
+					URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
+					Prefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+			param: &ast.Param{
+				Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+				Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+				XML: ast.XML{
+					XMLWrapped:  &ast.Attribute{Value: token.String{Value: ">n2"}},
+					XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "p"}},
+				},
+			},
+		},
+	}
+
+	for i, item := range data {
+		a.True(validXMLName(item.name, item.ns, item.param, item.allowArray), "false at %d", i)
+	}
+}
+
+func TestParseXMLName(t *testing.T) {
+	a := assert.New(t)
+
+	n := parseXMLName(&ast.Param{
+		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+	}, false)
+	a.Equal(n, "n1")
+	n = parseXMLName(&ast.Param{
+		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+	}, true)
+	a.Empty(n)
+
+	// Array=false
+	a.Panic(func() {
+		parseXMLName(&ast.Param{
+			Name: &ast.Attribute{Value: token.String{Value: "n1"}},
+		}, true)
+	})
+
+	// wrapped = parent
+	n = parseXMLName(&ast.Param{
+		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+		XML: ast.XML{
+			XMLWrapped: &ast.Attribute{Value: token.String{Value: "parent"}},
+		},
+	}, false)
+	a.Equal(n, "n1")
+	n = parseXMLName(&ast.Param{
+		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+		XML: ast.XML{
+			XMLWrapped: &ast.Attribute{Value: token.String{Value: "parent"}},
+		},
+	}, true)
+	a.Equal(n, "parent")
+
+	// wrapped = parent>name
+	n = parseXMLName(&ast.Param{
+		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+		XML: ast.XML{
+			XMLWrapped: &ast.Attribute{Value: token.String{Value: "parent>n"}},
+		},
+	}, false)
+	a.Equal(n, "n")
+	n = parseXMLName(&ast.Param{
+		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+		XML: ast.XML{
+			XMLWrapped: &ast.Attribute{Value: token.String{Value: "parent>n"}},
+		},
+	}, true)
+	a.Equal(n, "parent")
+
+	// wrapped = >name
+	n = parseXMLName(&ast.Param{
+		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+		XML: ast.XML{
+			XMLWrapped: &ast.Attribute{Value: token.String{Value: ">n"}},
+		},
+	}, false)
+	a.Equal(n, "n")
+	n = parseXMLName(&ast.Param{
+		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
+		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+		XML: ast.XML{
+			XMLWrapped: &ast.Attribute{Value: token.String{Value: ">n"}},
+		},
+	}, true)
+	a.Empty(n)
 }
 
 func TestValidXMLParamValue(t *testing.T) {

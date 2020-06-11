@@ -140,6 +140,7 @@ func Get() *ast.APIDoc {
 				},
 				Requests: []*ast.Request{
 					{
+						Name:    &ast.Attribute{Value: token.String{Value: "root"}},
 						Summary: &ast.Attribute{Value: token.String{Value: "request"}},
 						Headers: []*ast.Param{
 							{

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 
 	"github.com/issue9/is"
 
@@ -69,11 +70,26 @@ ATTR:
 	return nil
 }
 
-func validXMLName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param) bool {
-	if name.Local != p.Name.V() {
-		return false
+func validXMLName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param, chkArray bool) bool {
+	if !p.Array.V() {
+		if name.Local != p.Name.V() {
+			return false
+		} // else goto CHK_SPACE
+	} else {
+		n := parseXMLName(p, chkArray)
+		if chkArray {
+			if n == name.Local {
+				goto CHK_SPACE
+			}
+			return n == ""
+		}
+
+		if name.Local != n {
+			return false
+		}
 	}
 
+CHK_SPACE:
 	if name.Space == "" {
 		return true
 	}
@@ -86,15 +102,48 @@ func validXMLName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param) bool {
 	return false
 }
 
+func parseXMLName(p *ast.Param, parent bool) (name string) {
+	if parent && !p.Array.V() {
+		panic("parent 和 p.Array.V() 必须同时为 true")
+	}
+
+	v := p.XMLWrapped.V()
+	if v == "" {
+		if parent {
+			return ""
+		}
+		return p.Name.V()
+	}
+
+	index := strings.IndexByte(v, '>')
+	switch {
+	case index == 0:
+		if parent {
+			return ""
+		}
+		return v[1:]
+	case index < 0:
+		if parent {
+			return v
+		}
+		return p.Name.V()
+	default: // index > 0
+		if parent {
+			return v[:index]
+		}
+		return v[index+1:]
+	}
+}
+
 func validXMLElement(
 	ns []*ast.XMLNamespace,
 	start xml.StartElement,
 	p *ast.Param,
-	allowArray bool,
+	chkArray bool, // 如果 p 为数组类型，则作为数组进行验证，否则只能当作普通元素进行验证
 	d *xml.Decoder,
 	field string,
 ) error {
-	if err := validStartElement(ns, start, p, allowArray, d, field); err != nil {
+	if err := validStartElement(ns, start, p, chkArray, d, field); err != nil {
 		return err
 	}
 
@@ -110,12 +159,12 @@ func validXMLElement(
 		var chardata []byte
 		switch v := token.(type) {
 		case xml.StartElement:
-			if allowArray && p.Array.V() && validXMLName(v.Name, ns, p) {
+			if chkArray && p.Array.V() && validXMLName(v.Name, ns, p, false) {
 				return validXMLElement(ns, v, p, false, d, buildXMLField(field, p))
 			}
 
 			for _, pp := range p.Items {
-				if pp.Name.V() == v.Name.Local {
+				if validXMLName(v.Name, ns, pp, false) {
 					if pp.XMLExtract.V() {
 						return validXMLElement(ns, v, p, true, d, buildXMLField(field, pp))
 					}
@@ -123,14 +172,8 @@ func validXMLElement(
 				}
 			}
 		case xml.EndElement:
-			if allowArray && p.Array.V() {
-				if p.XMLWrapped.V() != "" && p.XMLWrapped.V() != v.Name.Local {
-					return core.NewSyntaxError(core.Location{}, v.Name.Local, locale.ErrNotFound)
-				}
-				return nil
-			}
-			if !validXMLName(v.Name, ns, p) {
-				return core.NewSyntaxError(core.Location{}, v.Name.Local, locale.ErrNotFound)
+			if !validXMLName(v.Name, ns, p, chkArray) {
+				return core.NewSyntaxError(core.Location{}, v.Name.Local, locale.ErrNotFoundEndTag)
 			}
 
 			if chardata != nil {
@@ -147,13 +190,13 @@ func validStartElement(
 	ns []*ast.XMLNamespace,
 	start xml.StartElement,
 	p *ast.Param,
-	allowArray bool,
+	chkArray bool, // 如果 p 为数组类型，则作为数组进行验证，否则只能当作普通元素进行验证
 	d *xml.Decoder,
 	field string,
 ) error {
 	for _, attr := range start.Attr {
 		for _, pp := range p.Items {
-			if !validXMLName(attr.Name, ns, pp) {
+			if !validXMLName(attr.Name, ns, pp, false) {
 				continue
 			}
 			if err := validXMLParamValue(pp, buildXMLField(field, pp), attr.Value); err != nil {
@@ -163,17 +206,11 @@ func validStartElement(
 		}
 	}
 
-	if allowArray && p.Array.V() {
-		if p.XMLWrapped.V() != "" && p.XMLWrapped.V() != start.Name.Local {
+	if p.Array.V() {
+		if !validXMLName(start.Name, ns, p, chkArray) {
 			return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
 		}
-
-		start.Attr = start.Attr[:0] // 在 allowArray == true 已经处理过 start.Attr
-		return validXMLElement(ns, start, p, false, d, buildXMLField(field, p))
-	}
-
-	if (!validXMLName(start.Name, ns, p)) &&
-		(!allowArray && p.XMLWrapped.V() != start.Name.Local) {
+	} else if !validXMLName(start.Name, ns, p, false) {
 		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
 	}
 	return nil
@@ -264,7 +301,7 @@ func parseXML(ns []*ast.XMLNamespace, p *ast.Param, chkArray, root bool, g *GenO
 	}
 
 	if p.Array.V() && chkArray {
-		if err := parseArray(ns, p, builder, g); err != nil {
+		if err := parseXMLArray(ns, p, builder, g); err != nil {
 			return nil, err
 		}
 		if root {
@@ -290,7 +327,7 @@ func parseXML(ns []*ast.XMLNamespace, p *ast.Param, chkArray, root bool, g *GenO
 			builder.chardata = genXMLValue(g, item)
 			builder.cdata = item.XMLCData.V()
 		case item.Array.V():
-			if err := parseArray(ns, item, builder, g); err != nil {
+			if err := parseXMLArray(ns, item, builder, g); err != nil {
 				return nil, err
 			}
 		default:
@@ -334,7 +371,7 @@ func buildXMLName(ns []*ast.XMLNamespace, p *ast.Param) xml.Name {
 	return xml.Name{Local: p.Name.V()}
 }
 
-func parseArray(ns []*ast.XMLNamespace, p *ast.Param, parent *xmlBuilder, g *GenOptions) error {
+func parseXMLArray(ns []*ast.XMLNamespace, p *ast.Param, parent *xmlBuilder, g *GenOptions) error {
 	b := parent
 	if p.XMLWrapped.V() != "" {
 		b = &xmlBuilder{items: []*xmlBuilder{}}
