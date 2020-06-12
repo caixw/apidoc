@@ -79,9 +79,14 @@
 			<usage>參數類型，基本上可以作為 request 的子集使用。</usage>
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。</item>
-			<item name="@xml-cdata" type="bool" array="false" required="false">當前內容為 CDATA，与 <code>@xml-attr</code> 互斥。</item>
+			<item name="@xml-cdata" type="bool" array="false" required="false">當前內容為 CDATA，與 <code>@xml-attr</code> 互斥。</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
-			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>
+			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，則可以通過此值指定在 XML 格式中的名稱。
+	可以有三種格式：<ul>
+	<li><samp>name</samp>：表示為數組添加壹個父元素名稱為 <var>name</var>；</li>
+	<li><samp>name1&gt;name2</samp>：表示數組項的名稱改為 <var>name2</var>，且添加壹個父元素名為 <var>name1</var>；</li>
+	<li><samp>&gt;name</samp>：表示將當前數組元素的名稱改為 <var>name</var>；</li>
+	</ul></item>
 			<item name="@name" type="string" array="false" required="true">值的名稱</item>
 			<item name="@type" type="string" array="false" required="true">值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
 			<item name="@deprecated" type="version" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
@@ -105,9 +110,14 @@
 			<usage>定義了請求和返回的相關內容</usage>
 			<item name="@xml-attr" type="bool" array="false" required="false">是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。</item>
 			<item name="@xml-extract" type="bool" array="false" required="false">將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。</item>
-			<item name="@xml-cdata" type="bool" array="false" required="false">當前內容為 CDATA，与 <code>@xml-attr</code> 互斥。</item>
+			<item name="@xml-cdata" type="bool" array="false" required="false">當前內容為 CDATA，與 <code>@xml-attr</code> 互斥。</item>
 			<item name="@xml-ns-prefix" type="string" array="false" required="false">XML 標簽的命名空間名稱前綴</item>
-			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。</item>
+			<item name="@xml-wrapped" type="string" array="false" required="false">如果當前元素的 <code>@array</code> 為 <var>true</var>，則可以通過此值指定在 XML 格式中的名稱。
+	可以有三種格式：<ul>
+	<li><samp>name</samp>：表示為數組添加壹個父元素名稱為 <var>name</var>；</li>
+	<li><samp>name1&gt;name2</samp>：表示數組項的名稱改為 <var>name2</var>，且添加壹個父元素名為 <var>name1</var>；</li>
+	<li><samp>&gt;name</samp>：表示將當前數組元素的名稱改為 <var>name</var>；</li>
+	</ul></item>
 			<item name="@name" type="string" array="false" required="false">當 mimetype 為 <var>application/xml</var> 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
 			<item name="@type" type="string" array="false" required="false">值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不輸出任何內容。</item>
 			<item name="@deprecated" type="version" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
@@ -142,7 +152,6 @@
 			<usage>為 <var>application/xml</var> 定義命名空間的相關屬性</usage>
 			<item name="@prefix" type="string" array="false" required="false">命名空間的前綴，如果為空，則表示作為默認命名空間，命局只能有壹個默認命名空間。</item>
 			<item name="@urn" type="string" array="false" required="true">命名空間的唯壹標識，需要全局唯壹，且區分大小寫。</item>
-			<item name="@auto" type="bool" array="false" required="false">是否將當前命名空自動賦於所有的元素，只能有壹個為 <var>true</var></item>
 		</type>
 		<type name="string">
 			<usage>普通的字符串類型</usage>

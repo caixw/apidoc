@@ -368,8 +368,7 @@ func TestAPIDoc_XMLNamespaces(t *testing.T) {
 	d := &APIDoc{
 		XMLNamespaces: []*XMLNamespace{
 			{
-				Auto: &BoolAttribute{Value: Bool{Value: true}},
-				URN:  &Attribute{Value: token.String{Value: core.XMLNamespace}},
+				URN: &Attribute{Value: token.String{Value: core.XMLNamespace}},
 			},
 			{
 				URN:    &Attribute{Value: token.String{Value: "urn1"}},
@@ -383,13 +382,13 @@ func TestAPIDoc_XMLNamespaces(t *testing.T) {
 	}
 
 	ns := d.XMLNamespace("")
-	a.True(ns.Auto.V())
+	a.Empty(ns.Prefix.V()).Equal(ns.URN.V(), core.XMLNamespace)
 
 	ns = d.XMLNamespace("ns1")
-	a.False(ns.Auto.V()).Equal(ns.URN.V(), "urn1")
+	a.Equal(ns.URN.V(), "urn1")
 
 	ns = d.XMLNamespace("ns2")
-	a.False(ns.Auto.V()).Equal(ns.URN.V(), "urn2")
+	a.Equal(ns.URN.V(), "urn2")
 
 	// not exists
 	ns = d.XMLNamespace("ns")

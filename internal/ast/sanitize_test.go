@@ -18,6 +18,7 @@ var (
 	_ token.Sanitizer = &APIDoc{}
 	_ token.Sanitizer = &Path{}
 	_ token.Sanitizer = &Enum{}
+	_ token.Sanitizer = &XMLNamespace{}
 )
 
 func TestCheckXML(t *testing.T) {
@@ -102,44 +103,6 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 	}
 	a.ErrorString(doc.checkXMLNamespaces(p), locale.Sprintf(locale.ErrDuplicateValue))
 
-	// 多个 auto=true
-	doc = &APIDoc{
-		XMLNamespaces: []*XMLNamespace{
-			{
-				URN:    &Attribute{Value: token.String{Value: "urn1"}},
-				Prefix: &Attribute{Value: token.String{Value: "p1"}},
-				Auto:   &BoolAttribute{Value: Bool{Value: true}},
-			},
-			{
-				URN:    &Attribute{Value: token.String{Value: "urn2"}},
-				Prefix: &Attribute{Value: token.String{Value: "p2"}},
-				Auto:   &BoolAttribute{Value: Bool{Value: true}},
-			},
-		},
-	}
-	a.ErrorString(doc.checkXMLNamespaces(p), locale.Sprintf(locale.ErrInvalidValue))
-
-	// 多个 auto=true
-	doc = &APIDoc{
-		XMLNamespaces: []*XMLNamespace{
-			{
-				URN:    &Attribute{Value: token.String{Value: "urn1"}},
-				Prefix: &Attribute{Value: token.String{Value: "p1"}},
-			},
-			{
-				URN:    &Attribute{Value: token.String{Value: "urn2"}},
-				Prefix: &Attribute{Value: token.String{Value: "p2"}},
-				Auto:   &BoolAttribute{Value: Bool{Value: true}},
-			},
-			{
-				URN:    &Attribute{Value: token.String{Value: "urn3"}},
-				Prefix: &Attribute{Value: token.String{Value: "p3"}},
-				Auto:   &BoolAttribute{Value: Bool{Value: true}},
-			},
-		},
-	}
-	a.ErrorString(doc.checkXMLNamespaces(p), locale.Sprintf(locale.ErrInvalidValue))
-
 	// 正常
 	doc = &APIDoc{
 		XMLNamespaces: []*XMLNamespace{
@@ -154,7 +117,6 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 			{
 				URN:    &Attribute{Value: token.String{Value: "urn3"}},
 				Prefix: &Attribute{Value: token.String{Value: "p3"}},
-				Auto:   &BoolAttribute{Value: Bool{Value: true}},
 			},
 		},
 	}

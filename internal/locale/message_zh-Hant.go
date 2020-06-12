@@ -92,7 +92,6 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	UsageXMLNamespace:       "為 <var>application/xml</var> 定義命名空間的相關屬性",
 	UsageXMLNamespacePrefix: "命名空間的前綴，如果為空，則表示作為默認命名空間，命局只能有壹個默認命名空間。",
 	UsageXMLNamespaceURN:    "命名空間的唯壹標識，需要全局唯壹，且區分大小寫。",
-	UsageXMLNamespaceAuto:   "是否將當前命名空自動賦於所有的元素，只能有壹個為 <var>true</var>",
 
 	UsageAPI:            "用於定義單個 API 接口的具體內容",
 	UsageAPIVersion:     "表示此接口在該版本中添加",
@@ -190,9 +189,14 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 
 	UsageXMLAttr:    "是否作為父元素的屬性，僅作用於 XML 元素。是否作為父元素的屬性，僅用於 XML 的請求。",
 	UsageXMLExtract: "將當前元素的內容作為父元素的內容，要求父元素必須為 <var>object</var>。",
-	UsageXMLCData:   "當前內容為 CDATA，与 <code>@xml-attr</code> 互斥。",
+	UsageXMLCData:   "當前內容為 CDATA，與 <code>@xml-attr</code> 互斥。",
 	UsageXMLPrefix:  "XML 標簽的命名空間名稱前綴",
-	UsageXMLWrapped: "如果當前元素的 <code>@array</code> 為 <var>true</var>，是否將其包含在 wrapped 指定的標簽中。",
+	UsageXMLWrapped: `如果當前元素的 <code>@array</code> 為 <var>true</var>，則可以通過此值指定在 XML 格式中的名稱。
+	可以有三種格式：<ul>
+	<li><samp>name</samp>：表示為數組添加壹個父元素名稱為 <var>name</var>；</li>
+	<li><samp>name1&gt;name2</samp>：表示數組項的名稱改為 <var>name2</var>，且添加壹個父元素名為 <var>name1</var>；</li>
+	<li><samp>&gt;name</samp>：表示將當前數組元素的名稱改為 <var>name</var>；</li>
+	</ul>`,
 
 	// 基本类型
 	UsageString:  "普通的字符串類型",
