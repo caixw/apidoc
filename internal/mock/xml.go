@@ -74,12 +74,12 @@ func validXMLName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param, chkArray 
 	if !p.Array.V() {
 		if name.Local != p.Name.V() {
 			return false
-		} // else goto CHK_SPACE
+		} // else goto SPACE
 	} else {
 		n := parseXMLName(p, chkArray)
 		if chkArray {
 			if n == name.Local {
-				goto CHK_SPACE
+				goto SPACE
 			}
 			return n == ""
 		}
@@ -89,7 +89,7 @@ func validXMLName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param, chkArray 
 		}
 	}
 
-CHK_SPACE:
+SPACE:
 	if name.Space == "" {
 		return true
 	}
@@ -143,7 +143,7 @@ func validXMLElement(
 	d *xml.Decoder,
 	field string,
 ) error {
-	if err := validStartElement(ns, start, p, chkArray, d, field); err != nil {
+	if err := validStartElement(ns, start, p, chkArray, field); err != nil {
 		return err
 	}
 
@@ -191,7 +191,6 @@ func validStartElement(
 	start xml.StartElement,
 	p *ast.Param,
 	chkArray bool, // 如果 p 为数组类型，则作为数组进行验证，否则只能当作普通元素进行验证
-	d *xml.Decoder,
 	field string,
 ) error {
 	for _, attr := range start.Attr {
@@ -293,7 +292,7 @@ func buildXML(ns []*ast.XMLNamespace, p *ast.Request, indent string, g *GenOptio
 func parseXML(ns []*ast.XMLNamespace, p *ast.Param, chkArray, root bool, g *GenOptions) (*xmlBuilder, error) {
 	builder := &xmlBuilder{
 		start: xml.StartElement{
-			Name: buildXMLName(ns, p, chkArray),
+			Name: buildXMLName(p, chkArray),
 			Attr: make([]xml.Attr, 0, len(p.Items)+len(ns)),
 		},
 		items: []*xmlBuilder{},
@@ -319,7 +318,7 @@ func parseXML(ns []*ast.XMLNamespace, p *ast.Param, chkArray, root bool, g *GenO
 		switch {
 		case item.XMLAttr.V():
 			attr := xml.Attr{
-				Name:  buildXMLName(ns, item, false),
+				Name:  buildXMLName(item, false),
 				Value: fmt.Sprint(genXMLValue(g, item)),
 			}
 			builder.start.Attr = append(builder.start.Attr, attr)
@@ -357,7 +356,7 @@ RET:
 	return builder, nil
 }
 
-func buildXMLName(ns []*ast.XMLNamespace, p *ast.Param, chkArray bool) xml.Name {
+func buildXMLName(p *ast.Param, chkArray bool) xml.Name {
 	name := parseXMLName(p, chkArray)
 
 	if p.XMLNSPrefix.V() != "" {
@@ -371,7 +370,7 @@ func parseXMLArray(ns []*ast.XMLNamespace, p *ast.Param, parent *xmlBuilder, g *
 	b := parent
 	if p.XMLWrapped.V() != "" && p.XMLWrapped.V()[0] != '>' {
 		b = &xmlBuilder{items: []*xmlBuilder{}}
-		b.start.Name = buildXMLName(ns, p, true)
+		b.start.Name = buildXMLName(p, true)
 		parent.items = append(parent.items, b)
 	}
 
@@ -394,7 +393,7 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 	if builder.cdata && builder.chardata != nil {
 		return e.EncodeElement(struct {
 			string `xml:",cdata"`
-		}{fmt.Sprint(builder.chardata)}, builder.start)
+		}{string: fmt.Sprint(builder.chardata)}, builder.start)
 	} else if builder.chardata != nil {
 		return e.EncodeElement(builder.chardata, builder.start)
 	}
