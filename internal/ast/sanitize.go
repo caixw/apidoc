@@ -3,10 +3,10 @@
 package ast
 
 import (
-	"sort"
 	"strconv"
 
 	"github.com/issue9/is"
+	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -20,6 +20,17 @@ func (api *API) Sanitize(p *token.Parser) error {
 			return p.NewError(header.Type.Start, header.Type.End, "header", locale.ErrInvalidValue)
 		}
 	}
+
+	// 对 Servers 和 Tags 查重
+	i := utils.HasDuplication(api.Servers, func(i, j int) bool { return api.Servers[i].V() == api.Servers[j].V() })
+	if i > -1 {
+		return p.NewError(api.Servers[i].Start, api.Servers[i].End, "server", locale.ErrDuplicateValue)
+	}
+	i = utils.HasDuplication(api.Tags, func(i, j int) bool { return api.Tags[i].V() == api.Tags[j].V() })
+	if i > -1 {
+		return p.NewError(api.Tags[i].Start, api.Tags[i].End, "server", locale.ErrDuplicateValue)
+	}
+
 	return nil
 }
 
@@ -207,42 +218,18 @@ func chkEnumsType(t *TypeAttribute, enums []*Enum, p *token.Parser) error {
 
 // 返回重复枚举的值
 func getDuplicateEnum(enums []*Enum) (core.Range, bool) {
-	if len(enums) == 0 {
-		return core.Range{}, false
+	i := utils.HasDuplication(enums, func(i, j int) bool { return enums[i].Value.V() == enums[j].Value.V() })
+	if i > -1 {
+		return enums[i].Range, true
 	}
-
-	es := make([]*Enum, 0, len(enums))
-	for _, e := range enums {
-		es = append(es, e)
-	}
-	sort.SliceStable(es, func(i, j int) bool { return es[i].Value.V() > es[j].Value.V() })
-
-	for i := 1; i < len(es); i++ {
-		if es[i].Value.V() == es[i-1].Value.V() {
-			return es[i].Range, true
-		}
-	}
-
 	return core.Range{}, false
 }
 
 func getDuplicateItems(items []*Param) (core.Range, bool) {
-	if len(items) == 0 {
-		return core.Range{}, false
+	i := utils.HasDuplication(items, func(i, j int) bool { return items[i].Name.V() == items[j].Name.V() })
+	if i > -1 {
+		return items[i].Range, true
 	}
-
-	es := make([]*Param, 0, len(items))
-	for _, e := range items {
-		es = append(es, e)
-	}
-	sort.SliceStable(es, func(i, j int) bool { return es[i].Name.V() > es[j].Name.V() })
-
-	for i := 1; i < len(es); i++ {
-		if es[i].Name.V() == es[i-1].Name.V() {
-			return es[i].Range, true
-		}
-	}
-
 	return core.Range{}, false
 }
 
@@ -302,7 +289,6 @@ func (ns *XMLNamespace) Sanitize(p *token.Parser) error {
 	if ns.URN.V() == "" {
 		return p.NewError(ns.Start, ns.End, "@urn", locale.ErrRequired)
 	}
-
 	return nil
 }
 
@@ -312,26 +298,21 @@ func (doc *APIDoc) checkXMLNamespaces(p *token.Parser) error {
 	}
 
 	// 按 URN 查重
-	sort.SliceStable(doc.XMLNamespaces, func(i, j int) bool {
-		return doc.XMLNamespaces[i].URN.V() > doc.XMLNamespaces[j].URN.V()
+	i := utils.HasDuplication(doc.XMLNamespaces, func(i, j int) bool {
+		return doc.XMLNamespaces[i].URN.V() == doc.XMLNamespaces[j].URN.V()
 	})
-	for i := 1; i < len(doc.XMLNamespaces); i++ {
+	if i > -1 {
 		curr := doc.XMLNamespaces[i].URN
-		if doc.XMLNamespaces[i-1].URN.V() == curr.V() {
-			return p.NewError(curr.Start, curr.End, "@urn", locale.ErrDuplicateValue)
-		}
+		return p.NewError(curr.Start, curr.End, "@urn", locale.ErrDuplicateValue)
 	}
 
 	// 按 prefix 查重
-	sort.SliceStable(doc.XMLNamespaces, func(i, j int) bool {
-		return doc.XMLNamespaces[i].Prefix.V() > doc.XMLNamespaces[j].Prefix.V()
+	i = utils.HasDuplication(doc.XMLNamespaces, func(i, j int) bool {
+		return doc.XMLNamespaces[i].Prefix.V() == doc.XMLNamespaces[j].Prefix.V()
 	})
-
-	for i := 1; i < len(doc.XMLNamespaces); i++ {
-		curr := doc.XMLNamespaces[i]
-		if doc.XMLNamespaces[i-1].Prefix.V() == curr.Prefix.V() {
-			return p.NewError(curr.Start, curr.End, "@prefix", locale.ErrDuplicateValue)
-		}
+	if i > -1 {
+		curr := doc.XMLNamespaces[i].URN
+		return p.NewError(curr.Start, curr.End, "@prefix", locale.ErrDuplicateValue)
 	}
 
 	return nil

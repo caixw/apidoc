@@ -10,7 +10,7 @@ require (
 	github.com/issue9/qheader v0.3.0
 	github.com/issue9/rands v1.1.4
 	github.com/issue9/term/v2 v2.1.1
-	github.com/issue9/utils v1.3.0
+	github.com/issue9/utils v1.4.0
 	github.com/issue9/version v1.0.4
 	golang.org/x/text v0.3.2
 	gopkg.in/yaml.v2 v2.3.0
