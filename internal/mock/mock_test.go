@@ -165,7 +165,7 @@ var data = []*tester{
 		XML:  `<root>1024</root>`,
 	},
 	{ // array
-		Title: "[bool]",
+		Title: "[bool] with wrapped",
 		Type: &ast.Request{
 			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: token.String{Value: "root"}}},
 			Name:  &ast.Attribute{Value: token.String{Value: "arr"}},
@@ -186,6 +186,69 @@ var data = []*tester{
     <arr>true</arr>
     <arr>true</arr>
 </root>`,
+	},
+	{
+		Title: "[bool] with wrapped>",
+		Type: &ast.Request{
+			XML: ast.XML{
+				XMLWrapped:  &ast.Attribute{Value: token.String{Value: "root>array"}},
+				XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "ns"}},
+			},
+			Name:  &ast.Attribute{Value: token.String{Value: "arr"}},
+			Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}},
+			Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+		},
+		NS: []*ast.XMLNamespace{
+			{
+				URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
+				Prefix: &ast.Attribute{Value: token.String{Value: "ns"}},
+			},
+		},
+		JSON: `[
+    true,
+    true,
+    true,
+    true,
+    true
+]`,
+		XML: `<ns:root xmlns:ns="urn">
+    <ns:array>true</ns:array>
+    <ns:array>true</ns:array>
+    <ns:array>true</ns:array>
+    <ns:array>true</ns:array>
+    <ns:array>true</ns:array>
+</ns:root>`,
+	},
+	{
+		Title: "[bool] with >wrapped",
+		Type: &ast.Request{
+			Name: &ast.Attribute{Value: token.String{Value: "bool"}},
+			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Items: []*ast.Param{
+				{
+					XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: token.String{Value: ">array"}}},
+					Name:  &ast.Attribute{Value: token.String{Value: "arr"}},
+					Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}},
+					Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+				},
+			},
+		},
+		JSON: `{
+    "arr": [
+        true,
+        true,
+        true,
+        true,
+        true
+    ]
+}`,
+		XML: `<bool>
+    <array>true</array>
+    <array>true</array>
+    <array>true</array>
+    <array>true</array>
+    <array>true</array>
+</bool>`,
 	},
 	{
 		Title: "array with enum",
@@ -379,8 +442,7 @@ var data = []*tester{
 		},
 		NS: []*ast.XMLNamespace{
 			{
-				URN:  &ast.Attribute{Value: token.String{Value: "urn"}},
-				Auto: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+				URN: &ast.Attribute{Value: token.String{Value: "urn"}},
 			},
 			{
 				Prefix: &ast.Attribute{Value: token.String{Value: "aa"}},

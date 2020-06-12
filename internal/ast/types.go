@@ -70,10 +70,9 @@ type (
 	// XMLNamespace 定义命名空间的相关属性
 	XMLNamespace struct {
 		token.BaseTag
-		RootName struct{}       `apidoc:"xml-namespace,meta,usage-xml-namespace"`
-		Prefix   *Attribute     `apidoc:"prefix,attr,usage-xml-namespace-prefix,omitempty"`
-		URN      *Attribute     `apidoc:"urn,attr,usage-xml-namespace-urn"`
-		Auto     *BoolAttribute `apidoc:"auto,attr,usage-xml-namespace-auto,omitempty"`
+		RootName struct{}   `apidoc:"xml-namespace,meta,usage-xml-namespace"`
+		Prefix   *Attribute `apidoc:"prefix,attr,usage-xml-namespace-prefix,omitempty"`
+		URN      *Attribute `apidoc:"urn,attr,usage-xml-namespace-urn"`
 	}
 
 	// API 表示 <api> 顶层元素

@@ -92,7 +92,6 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	UsageXMLNamespace:       "为 <var>application/xml</var> 定义命名空间的相关属性",
 	UsageXMLNamespacePrefix: "命名空间的前缀，如果为空，则表示作为默认命名空间，命局只能有一个默认命名空间。",
 	UsageXMLNamespaceURN:    "命名空间的唯一标识，需要全局唯一，且区分大小写。",
-	UsageXMLNamespaceAuto:   "是否将当前命名空自动赋于所有的元素，只能有一个为 <var>true</var>",
 
 	UsageAPI:            "用于定义单个 API 接口的具体内容",
 	UsageAPIVersion:     "表示此接口在该版本中添加",

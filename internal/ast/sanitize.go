@@ -297,6 +297,15 @@ func (doc *APIDoc) Sanitize(p *token.Parser) error {
 	return nil
 }
 
+// Sanitize 检测内容是否合法
+func (ns *XMLNamespace) Sanitize(p *token.Parser) error {
+	if ns.URN.V() == "" {
+		return p.NewError(ns.Start, ns.End, "@urn", locale.ErrRequired)
+	}
+
+	return nil
+}
+
 func (doc *APIDoc) checkXMLNamespaces(p *token.Parser) error {
 	if len(doc.XMLNamespaces) == 0 {
 		return nil
@@ -318,18 +327,10 @@ func (doc *APIDoc) checkXMLNamespaces(p *token.Parser) error {
 		return doc.XMLNamespaces[i].Prefix.V() > doc.XMLNamespaces[j].Prefix.V()
 	})
 
-	auto := doc.XMLNamespaces[0].Auto.V()
 	for i := 1; i < len(doc.XMLNamespaces); i++ {
 		curr := doc.XMLNamespaces[i]
 		if doc.XMLNamespaces[i-1].Prefix.V() == curr.Prefix.V() {
 			return p.NewError(curr.Start, curr.End, "@prefix", locale.ErrDuplicateValue)
-		}
-
-		if curr.Auto.V() {
-			if auto {
-				return p.NewError(curr.Start, curr.End, "@auto", locale.ErrInvalidValue)
-			}
-			auto = true
 		}
 	}
 

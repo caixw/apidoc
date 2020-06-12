@@ -224,12 +224,13 @@ func TestParseXMLName(t *testing.T) {
 	}, true)
 	a.Empty(n)
 
-	// Array=false
-	a.Panic(func() {
-		parseXMLName(&ast.Param{
-			Name: &ast.Attribute{Value: token.String{Value: "n1"}},
-		}, true)
-	})
+	n = parseXMLName(&ast.Param{
+		Name: &ast.Attribute{Value: token.String{Value: "n1"}},
+		XML: ast.XML{
+			XMLWrapped: &ast.Attribute{Value: token.String{Value: "parent"}},
+		},
+	}, true)
+	a.Equal(n, "n1")
 
 	// wrapped = parent
 	n = parseXMLName(&ast.Param{

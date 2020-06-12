@@ -103,7 +103,6 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	UsageXMLNamespace       = "usage-xml-namespace"
 	UsageXMLNamespacePrefix = "usage-xml-namespace-prefix"
 	UsageXMLNamespaceURN    = "usage-xml-namespace-urn"
-	UsageXMLNamespaceAuto   = "usage-xml-namespace-auto"
 
 	UsageAPI            = "usage-api"
 	UsageAPIVersion     = "usage-api-version"

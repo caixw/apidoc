@@ -53,7 +53,7 @@ ATTR:
 	for _, attr := range start.Attr {
 		if attr.Name.Local == "xmlns" && attr.Name.Space == "" { // 默认
 			for _, item := range ns {
-				if item.Auto.V() && item.URN.V() == attr.Value {
+				if item.URN.V() == attr.Value {
 					continue ATTR
 				}
 			}
@@ -96,15 +96,15 @@ CHK_SPACE:
 
 	for _, item := range ns {
 		if item.URN.V() == name.Space {
-			return item.Prefix.V() == p.XMLNSPrefix.V() || item.Auto.V()
+			return item.Prefix.V() == p.XMLNSPrefix.V()
 		}
 	}
 	return false
 }
 
 func parseXMLName(p *ast.Param, parent bool) (name string) {
-	if parent && !p.Array.V() {
-		panic("parent 和 p.Array.V() 必须同时为 true")
+	if !p.Array.V() {
+		return p.Name.V()
 	}
 
 	v := p.XMLWrapped.V()
@@ -305,9 +305,9 @@ func parseXML(ns []*ast.XMLNamespace, p *ast.Param, chkArray, root bool, g *GenO
 			return nil, err
 		}
 		if root {
-			return builder.items[0], nil
+			builder = builder.items[0]
 		}
-		return builder, nil
+		goto RET
 	}
 
 	if p.Type.V() != ast.TypeObject {
@@ -343,7 +343,7 @@ RET:
 	if root { // namespace
 		for _, item := range ns {
 			name := "xmlns"
-			if !item.Auto.V() && item.Prefix.V() != "" {
+			if item.Prefix.V() != "" {
 				name += ":" + item.Prefix.V()
 			}
 
@@ -364,26 +364,14 @@ func buildXMLName(ns []*ast.XMLNamespace, p *ast.Param, chkArray bool) xml.Name 
 		return xml.Name{Local: p.XMLNSPrefix.V() + ":" + name}
 	}
 
-	for _, item := range ns {
-		if item.Auto.V() {
-			return xml.Name{Local: name}
-		}
-
-	}
 	return xml.Name{Local: name}
 }
 
 func parseXMLArray(ns []*ast.XMLNamespace, p *ast.Param, parent *xmlBuilder, g *GenOptions) error {
 	b := parent
-	if p.XMLWrapped.V() != "" {
+	if p.XMLWrapped.V() != "" && p.XMLWrapped.V()[0] != '>' {
 		b = &xmlBuilder{items: []*xmlBuilder{}}
-		var prefix string
-		if p.XMLNSPrefix != nil {
-			prefix = p.XMLNSPrefix.V() + ":"
-		}
-		if p.XMLWrapped != nil {
-			b.start.Name.Local = prefix + p.XMLWrapped.V()
-		}
+		b.start.Name = buildXMLName(ns, p, true)
 		parent.items = append(parent.items, b)
 	}
 
