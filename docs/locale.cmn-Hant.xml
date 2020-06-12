@@ -152,7 +152,6 @@
 			<usage>為 <var>application/xml</var> 定義命名空間的相關屬性</usage>
 			<item name="@prefix" type="string" array="false" required="false">命名空間的前綴，如果為空，則表示作為默認命名空間，命局只能有壹個默認命名空間。</item>
 			<item name="@urn" type="string" array="false" required="true">命名空間的唯壹標識，需要全局唯壹，且區分大小寫。</item>
-			<item name="@auto" type="bool" array="false" required="false">是否將當前命名空自動賦於所有的元素，只能有壹個為 <var>true</var></item>
 		</type>
 		<type name="string">
 			<usage>普通的字符串類型</usage>
