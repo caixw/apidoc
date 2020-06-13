@@ -155,28 +155,24 @@ func (validator *jsonValidator) state() byte {
 	return 0
 }
 
-func (validator *jsonValidator) pushState(state byte) *jsonValidator {
+func (validator *jsonValidator) pushState(state byte) {
 	validator.states = append(validator.states, state)
-	return validator
 }
 
-func (validator *jsonValidator) popState() *jsonValidator {
+func (validator *jsonValidator) popState() {
 	if len(validator.states) > 0 {
 		validator.states = validator.states[:len(validator.states)-1]
 	}
-	return validator
 }
 
-func (validator *jsonValidator) pushName(name string) *jsonValidator {
+func (validator *jsonValidator) pushName(name string) {
 	validator.names = append(validator.names, name)
-	return validator
 }
 
-func (validator *jsonValidator) popName() *jsonValidator {
+func (validator *jsonValidator) popName() {
 	if len(validator.names) > 0 {
 		validator.names = validator.names[:len(validator.names)-1]
 	}
-	return validator
 }
 
 // 如果 names 为空，返回 validator.param
