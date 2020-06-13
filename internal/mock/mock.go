@@ -6,13 +6,13 @@ package mock
 import (
 	"net/http"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/issue9/mux/v2"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/lexer"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
@@ -64,41 +64,16 @@ func Load(h *core.MessageHandler, path core.URI, indent string, servers map[stri
 		return nil, err
 	}
 
-	p := core.Position{}
-	var offset int
-	for {
-		r, size := utf8.DecodeRune(data[offset:])
-		if size == 0 {
-			break
-		}
-		if r == utf8.RuneError && size == 1 {
-			loc := core.Location{
-				URI: path,
-				Range: core.Range{
-					End: p,
-				},
-			}
-			return nil, core.NewSyntaxError(loc, "", locale.ErrInvalidUTF8Character)
-		}
-
-		offset += size
-		p.Character++
-		if r == '\n' {
-			p.Line++
-			p.Character = 0
-		}
+	b := core.Block{Data: data, Location: core.Location{URI: path}}
+	p, err := lexer.BlockEndPosition(b)
+	if err != nil {
+		return nil, err
 	}
-
-	loc := core.Location{
-		URI: path,
-		Range: core.Range{
-			End: p,
-		},
-	}
+	b.Location.Range.End = p.Position
 
 	// 加载并验证
 	d := &ast.APIDoc{}
-	d.Parse(h, core.Block{Location: loc, Data: data})
+	d.Parse(h, b)
 	return New(h, d, indent, servers, gen)
 }
 

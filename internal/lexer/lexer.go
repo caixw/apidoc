@@ -24,6 +24,21 @@ type Lexer struct {
 func New(b core.Block) (*Lexer, error) {
 	// 以下代码主要保证内容都是合法的 utf8 编码，
 	// 这样后续的操作不用再判断每个 utf8.DecodeRune 的调用返回是否都正常。
+	p, err := BlockEndPosition(b)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Lexer{
+		Block:     b,
+		lastIndex: p.Offset - 1,
+		current:   Position{Position: b.Location.Range.Start},
+		prev:      Position{Position: b.Location.Range.Start},
+	}, nil
+}
+
+// BlockEndPosition 计算 b 的尾部位置
+func BlockEndPosition(b core.Block) (Position, error) {
 	p := Position{Position: b.Location.Range.Start}
 	for {
 		r, size := utf8.DecodeRune(b.Data[p.Offset:])
@@ -32,12 +47,13 @@ func New(b core.Block) (*Lexer, error) {
 		}
 		if r == utf8.RuneError && size == 1 {
 			loc := core.Location{
+				URI: b.Location.URI,
 				Range: core.Range{
 					Start: p.Position,
 					End:   core.Position{Line: p.Line, Character: p.Character + size},
 				},
 			}
-			return nil, core.NewSyntaxError(loc, "", locale.ErrInvalidUTF8Character)
+			return Position{}, core.NewSyntaxError(loc, "", locale.ErrInvalidUTF8Character)
 		}
 
 		p.Offset += size
@@ -48,12 +64,7 @@ func New(b core.Block) (*Lexer, error) {
 		}
 	}
 
-	return &Lexer{
-		Block:     b,
-		lastIndex: p.Offset - 1,
-		current:   Position{Position: b.Location.Range.Start},
-		prev:      Position{Position: b.Location.Range.Start},
-	}, nil
+	return p, nil
 }
 
 // AtEOF 是否已经结束
