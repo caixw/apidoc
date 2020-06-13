@@ -16,7 +16,7 @@ func TestValidXML(t *testing.T) {
 	a := assert.New(t)
 
 	for _, item := range data {
-		err := validXML(item.NS, item.Type, []byte(item.XML))
+		err := validXML(item.XMLNS, item.Type, []byte(item.XML))
 		a.NotError(err, "测试 %s 时返回错误 %s", item.Title, err)
 	}
 
@@ -44,7 +44,7 @@ func TestBuildXML(t *testing.T) {
 	a := assert.New(t)
 
 	for _, item := range data {
-		data, err := buildXML(item.NS, item.Type, indent, testOptions)
+		data, err := buildXML(item.XMLNS, item.Type, indent, testOptions)
 		a.NotError(err, "测试 %s 返回了错误信息 %s", item.Title, err).
 			Equal(string(data), item.XML, "测试 %s 返回的数据不相等\nv1:%s\nv2:%s\n", item.Title, string(data), item.XML)
 	}

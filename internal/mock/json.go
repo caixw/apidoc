@@ -24,8 +24,7 @@ type jsonValidator struct {
 	// 可以是 [ 表示在数组中，{ 表示在对象，: 表示下一个值必须是属性，空格表示其它状态
 	states []byte
 
-	// 按顺序保存变量名称
-	names []string
+	names []string // 按顺序保存变量名称
 }
 
 func validJSON(p *ast.Request, content []byte) error {
@@ -44,7 +43,7 @@ func validJSON(p *ast.Request, content []byte) error {
 
 	validator := &jsonValidator{
 		param:  p.Param(),
-		states: []byte{}, // 状态有默认值
+		states: []byte{0}, // 状态有默认值
 		names:  []string{},
 	}
 
@@ -178,19 +177,16 @@ func (validator *jsonValidator) popName() {
 // 如果 names 为空，返回 validator.param
 func (validator *jsonValidator) find() *ast.Param {
 	p := validator.param
+
+LOOP:
 	for _, name := range validator.names {
-		found := false
 		for _, pp := range p.Items {
 			if pp.Name.V() == name {
 				p = pp
-				found = true
-				break
+				continue LOOP
 			}
 		}
-
-		if !found {
-			return nil
-		}
+		return nil
 	}
 
 	return p

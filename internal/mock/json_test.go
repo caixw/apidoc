@@ -8,14 +8,55 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/token"
 )
 
 func TestJSONValidator_find(t *testing.T) {
-	item := data[len(data)-1]
-
 	a := assert.New(t)
+
 	v := &jsonValidator{
-		param: item.Type.Param(),
+		param: (&ast.Request{
+			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Items: []*ast.Param{
+				{
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: token.String{Value: "name"}},
+				},
+				{
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: token.String{Value: "id"}},
+				},
+				{
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+					Name: &ast.Attribute{Value: token.String{Value: "group"}},
+					Items: []*ast.Param{
+						{
+							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+							Name: &ast.Attribute{Value: token.String{Value: "name"}},
+						},
+						{
+							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+							Name: &ast.Attribute{Value: token.String{Value: "id"}},
+						},
+						{
+							Name: &ast.Attribute{Value: token.String{Value: "tags"}},
+							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+							Items: []*ast.Param{
+								{
+									Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+									Name: &ast.Attribute{Value: token.String{Value: "name"}},
+								},
+								{
+									Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+									Name: &ast.Attribute{Value: token.String{Value: "id"}},
+								},
+							},
+						}, // end tags
+					},
+				}, // end group
+			},
+		}).Param(),
 	}
 
 	v.names = []string{}

@@ -24,7 +24,60 @@ type tester struct {
 	Type  *ast.Request
 	JSON  string
 	XML   string
-	NS    []*ast.XMLNamespace
+	XMLNS []*ast.XMLNamespace
+}
+
+var dataWithHeader = &tester{
+	Title: "object with item",
+	Type: &ast.Request{
+		Name: &ast.Attribute{Value: token.String{Value: "root"}},
+		Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+		Headers: []*ast.Param{
+			{
+				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+				Name: &ast.Attribute{Value: token.String{Value: "content-type"}},
+			},
+			{
+				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+				Name: &ast.Attribute{Value: token.String{Value: "encoding"}},
+			},
+		},
+		Items: []*ast.Param{
+			{
+				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+				Name: &ast.Attribute{Value: token.String{Value: "name"}},
+				Items: []*ast.Param{
+					{
+						Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+						Name: &ast.Attribute{Value: token.String{Value: "last"}},
+					},
+					{
+						Type:     &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+						Name:     &ast.Attribute{Value: token.String{Value: "first"}},
+						Optional: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
+					},
+				},
+			},
+			{
+				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+				Name: &ast.Attribute{Value: token.String{Value: "age"}},
+				XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
+			},
+		},
+	},
+	JSON: `{
+    "name": {
+        "last": "1024",
+        "first": "1024"
+    },
+    "age": 1024
+}`,
+	XML: `<root age="1024">
+    <name>
+        <last>1024</last>
+        <first>1024</first>
+    </name>
+</root>`,
 }
 
 // 提供了测试 validJSON/buildXML 和 buildJSON/buildXML 的数据
@@ -78,7 +131,7 @@ var data = []*tester{
 		},
 		JSON: "1024",
 		XML:  `<ns:root xmlns:ns="urn"><![CDATA[1024]]></ns:root>`,
-		NS: []*ast.XMLNamespace{
+		XMLNS: []*ast.XMLNamespace{
 			{
 				Prefix: &ast.Attribute{Value: token.String{Value: "ns"}},
 				URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
@@ -198,7 +251,7 @@ var data = []*tester{
 			Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}},
 			Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		},
-		NS: []*ast.XMLNamespace{
+		XMLNS: []*ast.XMLNamespace{
 			{
 				URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
 				Prefix: &ast.Attribute{Value: token.String{Value: "ns"}},
@@ -440,7 +493,7 @@ var data = []*tester{
 				},
 			},
 		},
-		NS: []*ast.XMLNamespace{
+		XMLNS: []*ast.XMLNamespace{
 			{
 				URN: &ast.Attribute{Value: token.String{Value: "urn"}},
 			},
@@ -464,60 +517,7 @@ var data = []*tester{
 </root>`,
 	},
 
-	{ // NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第二的位置。
-		Title: "object with item",
-		Type: &ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
-			Headers: []*ast.Param{
-				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-					Name: &ast.Attribute{Value: token.String{Value: "content-type"}},
-				},
-				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-					Name: &ast.Attribute{Value: token.String{Value: "encoding"}},
-				},
-			},
-			Items: []*ast.Param{
-				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
-					Name: &ast.Attribute{Value: token.String{Value: "name"}},
-					Items: []*ast.Param{
-						{
-							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-							Name: &ast.Attribute{Value: token.String{Value: "last"}},
-						},
-						{
-							Type:     &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-							Name:     &ast.Attribute{Value: token.String{Value: "first"}},
-							Optional: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
-						},
-					},
-				},
-				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-					Name: &ast.Attribute{Value: token.String{Value: "age"}},
-					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
-				},
-			},
-		},
-		JSON: `{
-    "name": {
-        "last": "1024",
-        "first": "1024"
-    },
-    "age": 1024
-}`,
-		XML: `<root age="1024">
-    <name>
-        <last>1024</last>
-        <first>1024</first>
-    </name>
-</root>`,
-	},
-
-	{ // 各类型混合，NOTE: 部分测试用例单独引用了该项内容。 必须保持在倒数第一的位置。
+	{ // 各类型混合
 		Title: "Object with array",
 		Type: &ast.Request{
 			Name: &ast.Attribute{Value: token.String{Value: "root"}},
