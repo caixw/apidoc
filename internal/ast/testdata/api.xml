@@ -7,10 +7,10 @@
         <query name="page" type="number" deprecated="0.1.1" summary="page" />
     </path>
 
-    <tag>g1</tag>
-    <tag>g2</tag>
-    <server>s1</server>
-    <server>s2</server>
+    <tag>tag1</tag>
+    <tag>tag2</tag>
+    <server>admin</server>
+    <server>client</server>
 
     <description type="html">
     <![CDATA[

@@ -63,6 +63,12 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		api := &API{doc: doc}
 		token.Decode(h, p, api, core.XMLNamespace)
 		doc.APIs = append(doc.APIs, api)
+
+		if doc.Title.V() != "" {
+			if err := api.sanitizeTags(); err != nil {
+				h.Error(err)
+			}
+		}
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
 			h.Error(p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue))
