@@ -297,3 +297,34 @@ func TestChkEnumsType(t *testing.T) {
 		}
 	}
 }
+
+func TestAPI_sanitizeTags(t *testing.T) {
+	a := assert.New(t)
+
+	api := &API{}
+	a.Panic(func() {
+		api.sanitizeTags()
+	})
+
+	doc := &APIDoc{}
+	api.doc = doc
+	a.NotError(api.sanitizeTags())
+
+	api.Servers = []*Element{
+		{Content: Content{Value: "s1"}},
+	}
+	a.Error(api.sanitizeTags())
+	doc.Servers = []*Server{
+		{Name: &Attribute{Value: token.String{Value: "s1"}}},
+	}
+	a.NotError(api.sanitizeTags())
+
+	api.Tags = []*Element{
+		{Content: Content{Value: "t1"}},
+	}
+	a.Error(api.sanitizeTags())
+	doc.Tags = []*Tag{
+		{Name: &Attribute{Value: token.String{Value: "t1"}}},
+	}
+	a.NotError(api.sanitizeTags())
+}
