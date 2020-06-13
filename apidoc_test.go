@@ -10,8 +10,6 @@ import (
 	"github.com/issue9/assert/rest"
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/core/messagetest"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
 	"github.com/caixw/apidoc/v7/internal/docs"
 )
@@ -23,17 +21,6 @@ func TestVersion(t *testing.T) {
 	a.True(version.SemVerValid(Version(false)))
 	a.True(version.SemVerValid(DocVersion))
 	a.True(version.SemVerValid(LSPVersion))
-}
-
-func TestValid(t *testing.T) {
-	a := assert.New(t)
-
-	data, err := asttest.URI(a).ReadAll(nil)
-	a.NotError(err).NotNil(data)
-	rslt := messagetest.NewMessageHandler()
-	Valid(rslt.Handler, core.Block{Data: data})
-	rslt.Handler.Stop()
-	a.Empty(rslt.Errors)
 }
 
 func TestStatic(t *testing.T) {

@@ -32,8 +32,13 @@ const (
 	DocVersion = ast.Version
 )
 
-// Config 配置文件映射的结构
-type Config = build.Config
+type (
+	// Config 配置文件映射的结构
+	Config = build.Config
+
+	// PackOptions 指定了打包文档内容的参数
+	PackOptions = build.PackOptions
+)
 
 // SetLocale 设置当前的本地化 ID
 func SetLocale(tag language.Tag) {
@@ -87,6 +92,28 @@ func CheckSyntax(h *core.MessageHandler, i ...*build.Input) {
 	build.CheckSyntax(h, i...)
 }
 
+// Pack 将文档内容打包成一个 Go 文件
+//
+// opt 用于指定打包的设置项，如果为空，则会使用一个默认的设置项，
+// 该默认设置项会在当前目录下创建一个包为 apidoc 的包，且公开文档数据为 APIDOC，
+// 用户可以使用 Unpack 解包该常量的内容，即为一个合法的 apidoc 文档。
+func Pack(h *core.MessageHandler, opt *PackOptions, o *build.Output, i ...*build.Input) error {
+	return build.Pack(h, opt, o, i...)
+}
+
+// Unpack 用于解压由 Pack 输出的内容
+func Unpack(buffer string) ([]byte, error) {
+	return build.Unpack(buffer)
+}
+
+// ServeLSP 提供 language server protocol 服务
+//
+// header 表示传递内容是否带报头；
+// t 表示允许连接的类型，目前可以是 tcp、udp、stdio 和 ipc
+func ServeLSP(header bool, t, addr string, infolog, errlog *log.Logger) error {
+	return lsp.Serve(header, t, addr, infolog, errlog)
+}
+
 // Static 为 /docs 搭建一个静态文件服务
 //
 // 相当于本地版本的 https://apidoc.tools，默认页为 index.xml。
@@ -129,12 +156,17 @@ func View(status int, url string, data []byte, contentType string, dir core.URI,
 	})
 }
 
-// ServeLSP 提供 language server protocol 服务
+// ViewPack 返回查看文档的中间件
 //
-// header 表示传递内容是否带报头；
-// t 表示允许连接的类型，目前可以是 tcp、udp、stdio 和 ipc
-func ServeLSP(header bool, t, addr string, infolog, errlog *log.Logger) error {
-	return lsp.Serve(header, t, addr, infolog, errlog)
+// 功能基本与 View 相同，但是第三个参数 unpackData 为 Pack() 函数打包之内的内容，
+// 不需要调用 Unpack() 解包，直接由 ViewPack 自行解包。
+func ViewPack(status int, url string, unpackData string, contentType string, dir core.URI, stylesheet bool) http.Handler {
+	data, err := Unpack(unpackData)
+	if err != nil {
+		panic(err)
+	}
+
+	return View(status, url, data, contentType, dir, stylesheet)
 }
 
 // ViewFile 返回查看文件的中间件
@@ -162,11 +194,6 @@ func ViewFile(status int, url string, path core.URI, contentType string, dir cor
 	}
 
 	return View(status, url, data, contentType, dir, stylesheet), nil
-}
-
-// Valid 验证文档内容的正确性
-func Valid(h *core.MessageHandler, b core.Block) {
-	(&ast.APIDoc{}).Parse(h, b)
 }
 
 // 用于查找 <?xml 指令

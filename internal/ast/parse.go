@@ -32,10 +32,6 @@ func (doc *APIDoc) ParseBlocks(h *core.MessageHandler, g func(chan core.Block)) 
 }
 
 // Parse 将注释块的内容添加到当前文档
-//
-// 分析注释块内容，如果正确，则添加到当前文档中。
-//
-// 如果内容不是文档内容，刚将返回 false。
 func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 	if len(b.Data) < minSize {
 		return
