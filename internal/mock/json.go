@@ -60,13 +60,8 @@ func (validator *jsonValidator) valid(d *json.Decoder) error {
 		if err != nil {
 			return err
 		}
-
 		if token == nil { // 对应 JSON null
-			if err = validator.validValue("", nil); err != nil {
-				return err
-			}
-			validator.popState()
-			validator.popName()
+			return nil
 		}
 
 		switch v := token.(type) {
@@ -134,10 +129,6 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 	p := validator.find()
 	if p == nil {
 		return core.NewSyntaxError(core.Location{}, field, locale.ErrNotFound)
-	}
-
-	if t == "" {
-		return nil
 	}
 
 	if p.Type.V() != t {
