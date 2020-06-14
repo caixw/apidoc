@@ -9,8 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/issue9/errwrap"
-	"github.com/issue9/utils"
+	"github.com/issue9/pack"
 
 	"github.com/caixw/apidoc/v7/internal/docs"
 )
@@ -46,20 +45,7 @@ func main() {
 	fis, err := getFileInfos(dir)
 	panicError(err)
 
-	var buf errwrap.Buffer
-	buf.WString("// ").WString(docs.FileHeader).WString("\n\n").
-		WString("package ").WString(pkgName).WString("\n\n").
-		WString("var ").WString(varName).WString("= []*FileInfo{")
-	for _, info := range fis {
-		buf.WString("{\n").
-			WString("Name:\"").WString(info.Name).WString("\",\n").
-			WString("ContentType:\"").WString(info.ContentType).WString("\",\n").
-			WString("Base64:`").WString(info.Base64).WString("`,\n").
-			WString("},\n")
-	}
-	panicError(buf.WString("}\n").Err)
-
-	panicError(utils.DumpGoSource(distPath, buf.Bytes()))
+	panicError(pack.File(fis, pkgName, varName, docs.FileHeader, "", distPath))
 }
 
 func getFileInfos(root string) ([]*docs.FileInfo, error) {
@@ -95,7 +81,11 @@ func getFileInfos(root string) ([]*docs.FileInfo, error) {
 		if err != nil {
 			return nil, err
 		}
-		fis = append(fis, docs.NewFileInfo(filepath.ToSlash(path), allowFiles[filepath.Ext(path)], content))
+		fis = append(fis, &docs.FileInfo{
+			Name:        filepath.ToSlash(path),
+			ContentType: allowFiles[filepath.Ext(path)],
+			Content:     content,
+		})
 	}
 
 	return fis, nil

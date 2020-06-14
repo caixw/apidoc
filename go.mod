@@ -7,6 +7,7 @@ require (
 	github.com/issue9/is v1.4.2
 	github.com/issue9/jsonrpc v0.9.0
 	github.com/issue9/mux/v2 v2.3.3
+	github.com/issue9/pack v0.1.0
 	github.com/issue9/qheader v0.3.0
 	github.com/issue9/rands v1.1.4
 	github.com/issue9/term/v2 v2.1.1

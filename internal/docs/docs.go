@@ -77,7 +77,7 @@ func embeddedHandler(stylesheet bool) http.Handler {
 		}
 		indexPath := path.Join(pp, indexPage)
 
-		for _, info := range data {
+		for _, info := range files() {
 			if info.Name == pp || info.Name == indexPath {
 				if stylesheet && !isStylesheetFile(info.Name) {
 					errStatus(w, http.StatusNotFound)
@@ -86,7 +86,7 @@ func embeddedHandler(stylesheet bool) http.Handler {
 
 				w.Header().Set("Content-Type", info.ContentType)
 				w.WriteHeader(http.StatusOK)
-				w.Write(info.content)
+				w.Write(info.Content)
 				return
 			}
 		}

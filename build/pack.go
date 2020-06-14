@@ -5,8 +5,7 @@ package build
 import (
 	"encoding/base64"
 
-	"github.com/issue9/errwrap"
-	"github.com/issue9/utils"
+	"github.com/issue9/pack"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -44,26 +43,7 @@ func Pack(h *core.MessageHandler, opt *PackOptions, o *Output, i ...*Input) erro
 		return err
 	}
 
-	var w errwrap.Buffer
-
-	if opt.FileHeader != "" {
-		w.Printf("// %s \n\n", opt.FileHeader)
-	}
-
-	if opt.Tag != "" {
-		w.Printf("// +build %s \n\n", opt.Tag)
-	}
-
-	w.Printf("package %s \n\n", opt.PkgName)
-
-	content := base64Encoding.EncodeToString(buf.Bytes())
-	w.Printf("const %s = `%s`\n", opt.VarName, content)
-
-	if w.Err != nil {
-		return w.Err
-	}
-
-	return utils.DumpGoSource(opt.Path, w.Bytes())
+	return pack.File(buf.String(), opt.PkgName, opt.VarName, opt.FileHeader, opt.Tag, opt.Path)
 }
 
 // Unpack 用于解压由 Pack 输出的内容
