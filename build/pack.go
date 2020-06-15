@@ -3,17 +3,11 @@
 package build
 
 import (
-	"encoding/base64"
-
 	"github.com/issue9/pack"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
-
-// 文档内容中可能包含 ` 等特殊字符，如果直接将文档内容以字符串形式保存为 Go 内容，
-// 可能造成生成的 Go 文件不是一个合法的 Go 文件。所以采用 base64 对文档进行编码。
-var base64Encoding = base64.StdEncoding
 
 // PackOptions 指定了打包文档内容的参数
 type PackOptions struct {
@@ -47,8 +41,9 @@ func Pack(h *core.MessageHandler, opt *PackOptions, o *Output, i ...*Input) erro
 }
 
 // Unpack 用于解压由 Pack 输出的内容
-func Unpack(buffer string) ([]byte, error) {
-	return base64Encoding.DecodeString(buffer)
+func Unpack(buffer string) (doc string, err error) {
+	err = pack.Unpack(buffer, &doc)
+	return
 }
 
 // Pack 将配置文件中指定的文档内容打包成 Go 文件

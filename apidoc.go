@@ -102,7 +102,7 @@ func Pack(h *core.MessageHandler, opt *PackOptions, o *build.Output, i ...*build
 }
 
 // Unpack 用于解压由 Pack 输出的内容
-func Unpack(buffer string) ([]byte, error) {
+func Unpack(buffer string) (string, error) {
 	return build.Unpack(buffer)
 }
 
@@ -166,7 +166,7 @@ func ViewPack(status int, url string, unpackData string, contentType string, dir
 		panic(err)
 	}
 
-	return View(status, url, data, contentType, dir, stylesheet)
+	return View(status, url, []byte(data), contentType, dir, stylesheet)
 }
 
 // ViewFile 返回查看文件的中间件
