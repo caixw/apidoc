@@ -4,12 +4,14 @@
 package docs
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/issue9/pack"
 	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -32,6 +34,13 @@ var styles = []string{
 }
 
 var docsDir = core.FileURI(utils.CurrentPath("../../docs"))
+
+// FileInfo 被打包文件的信息
+type FileInfo struct {
+	Name        string // 相对于打包根目录的地址，同时也会被作为路由地址
+	ContentType string
+	Content     []byte
+}
 
 // Dir 指向 /docs 的路径
 func Dir() core.URI {
@@ -68,6 +77,11 @@ func Handler(folder core.URI, stylesheet bool) http.Handler {
 }
 
 func embeddedHandler(stylesheet bool) http.Handler {
+	var fis []*FileInfo
+	if err := pack.Unpack(data, &fis); err != nil {
+		panic(fmt.Sprintf("解包资源文件时出错：%s", err))
+	}
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
 
@@ -77,7 +91,7 @@ func embeddedHandler(stylesheet bool) http.Handler {
 		}
 		indexPath := path.Join(pp, indexPage)
 
-		for _, info := range files() {
+		for _, info := range fis {
 			if info.Name == pp || info.Name == indexPath {
 				if stylesheet && !isStylesheetFile(info.Name) {
 					errStatus(w, http.StatusNotFound)
