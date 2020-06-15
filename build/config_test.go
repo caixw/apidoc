@@ -38,6 +38,12 @@ func TestLoadConfig(t *testing.T) {
 	a.Nil(cfg).
 		NotEmpty(rslt.Errors).
 		Empty(rslt.Successes)
+
+	// 不能加载远程配置项
+	rslt = messagetest.NewMessageHandler()
+	cfg = LoadConfig(rslt.Handler, "https://apidoc.tools/example/.apidoc.yaml")
+	rslt.Handler.Stop()
+	a.Nil(cfg).NotEmpty(rslt.Errors)
 }
 
 func TestLoadFile(t *testing.T) {

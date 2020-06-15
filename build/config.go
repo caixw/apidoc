@@ -53,6 +53,15 @@ type Config struct {
 //
 // 所有的错误信息会输出到 h，在出错时，会返回 nil
 func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
+	// 禁用加载远程配置文件
+	//
+	// 如果远程配置文件中的目录指向本地，则用户执行相关操作时，
+	// 会映射他本地的系统上，这未必是用户想要的结果，且对用户数据不安全。
+	if scheme, _ := wd.Parse(); scheme != "" && scheme != core.SchemeFile {
+		h.Error(locale.Sprintf(locale.ErrInvalidURIScheme))
+		return nil
+	}
+
 	for _, filename := range allowConfigFilenames {
 		path := wd.Append(filename)
 		if exists, err := path.Exists(); err != nil {
