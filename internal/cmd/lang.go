@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/issue9/cmdopt"
+	"golang.org/x/text/width"
 
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -28,18 +29,18 @@ func doLang(w io.Writer) error {
 	langs = append(langs, ls...)
 
 	// 计算各列的最大长度值
-	var maxDisplay, maxName int
+	var maxName, maxID int
 	for _, l := range langs {
-		calcMaxWidth(l.DisplayName, &maxDisplay)
-		calcMaxWidth(l.ID, &maxName)
+		calcMaxWidth(l.DisplayName, &maxName)
+		calcMaxWidth(l.ID, &maxID)
 	}
-	maxDisplay += tail
 	maxName += tail
+	maxID += tail
 
 	for _, l := range langs {
-		n := l.ID + strings.Repeat(" ", maxName-len(l.ID))
-		d := l.DisplayName + strings.Repeat(" ", maxDisplay-len(l.DisplayName))
-		if _, err := fmt.Fprintln(w, n, d, strings.Join(l.Exts, " ")); err != nil {
+		id := l.ID + strings.Repeat(" ", maxID-textWidth(l.ID))
+		name := l.DisplayName + strings.Repeat(" ", maxName-textWidth(l.DisplayName))
+		if _, err := fmt.Fprintln(w, id, name, strings.Join(l.Exts, " ")); err != nil {
 			return err
 		}
 	}
@@ -48,8 +49,20 @@ func doLang(w io.Writer) error {
 }
 
 func calcMaxWidth(content string, max *int) {
-	width := len(content)
-	if width > *max {
-		*max = width
+	if w := textWidth(content); w > *max {
+		*max = w
 	}
+}
+
+func textWidth(text string) int {
+	var w int
+	for _, r := range text {
+		switch width.LookupRune(rune(r)).Kind() {
+		case width.EastAsianFullwidth, width.EastAsianWide:
+			w += 2
+		default:
+			w++
+		}
+	}
+	return w
 }
