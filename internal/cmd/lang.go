@@ -54,8 +54,7 @@ func calcMaxWidth(content string, max *int) {
 	}
 }
 
-func textWidth(text string) int {
-	var w int
+func textWidth(text string) (w int) {
 	for _, r := range text {
 		switch width.LookupRune(rune(r)).Kind() {
 		case width.EastAsianFullwidth, width.EastAsianWide:
@@ -64,5 +63,5 @@ func textWidth(text string) int {
 			w++
 		}
 	}
-	return w
+	return
 }

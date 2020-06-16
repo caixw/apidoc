@@ -84,7 +84,7 @@ func Get() *ast.APIDoc {
 						Examples: []*ast.Example{
 							{
 								Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}},
-								Content:  &ast.CData{Value: token.String{Value: "xxx"}},
+								Content:  &ast.ExampleValue{Value: token.String{Value: "xxx"}},
 							},
 						},
 					},
@@ -107,7 +107,7 @@ func Get() *ast.APIDoc {
 						Examples: []*ast.Example{
 							{
 								Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}},
-								Content:  &ast.CData{Value: token.String{Value: "xxx"}},
+								Content:  &ast.ExampleValue{Value: token.String{Value: "xxx"}},
 							},
 						},
 						Items: []*ast.Param{
@@ -152,7 +152,7 @@ func Get() *ast.APIDoc {
 						Examples: []*ast.Example{
 							{
 								Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}},
-								Content:  &ast.CData{Value: token.String{Value: "xxx"}},
+								Content:  &ast.ExampleValue{Value: token.String{Value: "xxx"}},
 							},
 						},
 						Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},

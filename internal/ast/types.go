@@ -149,9 +149,9 @@ type (
 		token.BaseTag
 		RootName struct{} `apidoc:"example,meta,usage-example"`
 
-		Mimetype *Attribute `apidoc:"mimetype,attr,usage-example-mimetype"`
-		Content  *CData     `apidoc:",cdata,usage-example-content"`
-		Summary  *Attribute `apidoc:"summary,attr,usage-example-summary,omitempty"`
+		Mimetype *Attribute    `apidoc:"mimetype,attr,usage-example-mimetype"`
+		Content  *ExampleValue `apidoc:",cdata,usage-example-content"`
+		Summary  *Attribute    `apidoc:"summary,attr,usage-example-summary,omitempty"`
 	}
 
 	// Param 表示参数类型

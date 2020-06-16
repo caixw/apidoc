@@ -3,10 +3,15 @@
 package ast
 
 import (
+	"bufio"
+	"bytes"
+	"errors"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/issue9/version"
 
@@ -25,12 +30,15 @@ type (
 		RootName struct{}     `apidoc:"string,meta,usage-string"`
 	}
 
-	// Content 表示一段普通的 XML 字符串
+	// Content 表示一段普通的 XML 元素内容
 	Content struct {
 		token.Base
 		Value    string   `apidoc:"-"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}
+
+	// ExampleValue 示例代码的内容
+	ExampleValue CData
 
 	// Number 表示 XML 的数值类型
 	Number struct {
@@ -115,6 +123,79 @@ func (cdata *CData) EncodeXML() (string, error) {
 // EncodeXML Encoder.EncodeXML
 func (s *Content) EncodeXML() (string, error) {
 	return s.Value, nil
+}
+
+// EncodeXML Encoder.EncodeXML
+//
+// 示例代码的内容，会在此处去掉其前导的空格
+func (v *ExampleValue) EncodeXML() (string, error) {
+	return trimLeftSpace(v.Value.Value), nil
+}
+
+func trimLeftSpace(v string) string {
+	var min []byte // 找出的最小行首相同空格内容
+
+	s := bufio.NewScanner(strings.NewReader(v))
+	s.Split(bufio.ScanLines)
+	for s.Scan() {
+		line := s.Bytes()
+		if len(bytes.TrimSpace(line)) == 0 { // 忽略空行
+			continue
+		}
+
+		var index int
+		for i, b := range line {
+			if !unicode.IsSpace(rune(b)) {
+				index = i
+				break
+			}
+		}
+
+		switch {
+		case index == 0: // 当前行顶格
+			return v
+		case len(min) == 0: // 未初始化 min，且 index > 0
+			min = make([]byte, index)
+			copy(min, line[:index])
+		default:
+			min = getSamePrefix(min, line[:index])
+		}
+	}
+
+	if len(min) == 0 {
+		return v
+	}
+
+	buf := bufio.NewReader(strings.NewReader(v))
+	ret := make([]byte, 0, buf.Size())
+	for {
+		line, err := buf.ReadBytes('\n')
+		if bytes.HasPrefix(line, min) {
+			line = line[len(min):]
+		}
+		ret = append(ret, line...)
+
+		if errors.Is(err, io.EOF) {
+			break
+		}
+	}
+
+	return string(ret)
+}
+
+func getSamePrefix(v1, v2 []byte) []byte {
+	l1, l2 := len(v1), len(v2)
+	l := l1
+	if l1 > l2 {
+		l = l2
+	}
+
+	for i := 0; i < l; i++ {
+		if v1[i] != v2[i] {
+			return v1[:i]
+		}
+	}
+	return v1[:l]
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
