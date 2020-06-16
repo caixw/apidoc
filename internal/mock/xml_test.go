@@ -206,25 +206,26 @@ func TestValidXMLName(t *testing.T) {
 	}
 
 	for i, item := range data {
-		a.True(validXMLName(item.name, item.ns, item.param, item.allowArray), "false at %d", i)
+		validator := &xmlValidator{namespaces: item.ns}
+		a.True(validator.validXMLName(item.name, item.param, item.allowArray), "false at %d", i)
 	}
 }
 
 func TestParseXMLName(t *testing.T) {
 	a := assert.New(t)
 
-	n := parseXMLName(&ast.Param{
+	n := parseXMLWrappedName(&ast.Param{
 		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
 		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 	}, false)
 	a.Equal(n, "n1")
-	n = parseXMLName(&ast.Param{
+	n = parseXMLWrappedName(&ast.Param{
 		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
 		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 	}, true)
 	a.Empty(n)
 
-	n = parseXMLName(&ast.Param{
+	n = parseXMLWrappedName(&ast.Param{
 		Name: &ast.Attribute{Value: token.String{Value: "n1"}},
 		XML: ast.XML{
 			XMLWrapped: &ast.Attribute{Value: token.String{Value: "parent"}},
@@ -233,7 +234,7 @@ func TestParseXMLName(t *testing.T) {
 	a.Equal(n, "n1")
 
 	// wrapped = parent
-	n = parseXMLName(&ast.Param{
+	n = parseXMLWrappedName(&ast.Param{
 		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
 		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		XML: ast.XML{
@@ -241,7 +242,7 @@ func TestParseXMLName(t *testing.T) {
 		},
 	}, false)
 	a.Equal(n, "n1")
-	n = parseXMLName(&ast.Param{
+	n = parseXMLWrappedName(&ast.Param{
 		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
 		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		XML: ast.XML{
@@ -251,7 +252,7 @@ func TestParseXMLName(t *testing.T) {
 	a.Equal(n, "parent")
 
 	// wrapped = parent>name
-	n = parseXMLName(&ast.Param{
+	n = parseXMLWrappedName(&ast.Param{
 		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
 		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		XML: ast.XML{
@@ -259,7 +260,7 @@ func TestParseXMLName(t *testing.T) {
 		},
 	}, false)
 	a.Equal(n, "n")
-	n = parseXMLName(&ast.Param{
+	n = parseXMLWrappedName(&ast.Param{
 		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
 		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		XML: ast.XML{
@@ -269,7 +270,7 @@ func TestParseXMLName(t *testing.T) {
 	a.Equal(n, "parent")
 
 	// wrapped = >name
-	n = parseXMLName(&ast.Param{
+	n = parseXMLWrappedName(&ast.Param{
 		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
 		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		XML: ast.XML{
@@ -277,7 +278,7 @@ func TestParseXMLName(t *testing.T) {
 		},
 	}, false)
 	a.Equal(n, "n")
-	n = parseXMLName(&ast.Param{
+	n = parseXMLWrappedName(&ast.Param{
 		Name:  &ast.Attribute{Value: token.String{Value: "n1"}},
 		Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		XML: ast.XML{

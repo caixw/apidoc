@@ -18,6 +18,11 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
+type xmlValidator struct {
+	namespaces []*ast.XMLNamespace
+	decoder    *xml.Decoder
+}
+
 func validXML(ns []*ast.XMLNamespace, p *ast.Request, content []byte) error {
 	if len(content) == 0 {
 		if p == nil || p.Type.V() == ast.TypeNone {
@@ -26,9 +31,12 @@ func validXML(ns []*ast.XMLNamespace, p *ast.Request, content []byte) error {
 		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 
-	d := xml.NewDecoder(bytes.NewReader(content))
+	validator := &xmlValidator{
+		namespaces: ns,
+		decoder:    xml.NewDecoder(bytes.NewReader(content)),
+	}
 	for {
-		token, err := d.Token()
+		token, err := validator.decoder.Token()
 		if errors.Is(err, io.EOF) && token == nil { // 正常结束
 			return nil
 		}
@@ -36,30 +44,30 @@ func validXML(ns []*ast.XMLNamespace, p *ast.Request, content []byte) error {
 			return err
 		}
 
-		switch v := token.(type) {
+		switch elem := token.(type) {
 		case xml.StartElement:
-			if err := validXMLNamespaces(ns, v); err != nil {
+			if err := validator.validXMLNamespaces(elem); err != nil {
 				return err
 			}
-			return validXMLElement(ns, v, p.Param(), true, d, v.Name.Local)
+			return validator.validXMLElement(elem, p.Param(), true, elem.Name.Local)
 		case xml.EndElement:
 			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 		}
 	}
 }
 
-func validXMLNamespaces(ns []*ast.XMLNamespace, start xml.StartElement) error {
+func (v *xmlValidator) validXMLNamespaces(start xml.StartElement) error {
 ATTR:
 	for _, attr := range start.Attr {
 		if attr.Name.Local == "xmlns" && attr.Name.Space == "" { // 默认
-			for _, item := range ns {
+			for _, item := range v.namespaces {
 				if item.URN.V() == attr.Value {
 					continue ATTR
 				}
 			}
 			return core.NewSyntaxError(core.Location{}, "xmlns", locale.ErrNotFound)
 		} else if attr.Name.Space == "xmlns" && attr.Name.Local != "" {
-			for _, item := range ns {
+			for _, item := range v.namespaces {
 				if item.Prefix.V() == attr.Name.Local && item.URN.V() == attr.Value {
 					continue ATTR
 				}
@@ -70,13 +78,13 @@ ATTR:
 	return nil
 }
 
-func validXMLName(name xml.Name, ns []*ast.XMLNamespace, p *ast.Param, chkArray bool) bool {
+func (v *xmlValidator) validXMLName(name xml.Name, p *ast.Param, chkArray bool) bool {
 	if !p.Array.V() {
 		if name.Local != p.Name.V() {
 			return false
 		} // else goto SPACE
 	} else {
-		n := parseXMLName(p, chkArray)
+		n := parseXMLWrappedName(p, chkArray)
 		if chkArray {
 			if n == name.Local {
 				goto SPACE
@@ -94,7 +102,7 @@ SPACE:
 		return true
 	}
 
-	for _, item := range ns {
+	for _, item := range v.namespaces {
 		if item.URN.V() == name.Space {
 			return item.Prefix.V() == p.XMLNSPrefix.V()
 		}
@@ -102,53 +110,42 @@ SPACE:
 	return false
 }
 
-func parseXMLName(p *ast.Param, parent bool) (name string) {
+// parent 如果是数组，则是否拿 wrapped 中指示的父元素名称。
+func parseXMLWrappedName(p *ast.Param, parent bool) (name string) {
 	if !p.Array.V() {
 		return p.Name.V()
 	}
 
+	choose := func(v1, v2 string) string {
+		if parent {
+			return v1
+		}
+		return v2
+	}
+
 	v := p.XMLWrapped.V()
 	if v == "" {
-		if parent {
-			return ""
-		}
-		return p.Name.V()
+		return choose("", p.Name.V())
 	}
 
 	index := strings.IndexByte(v, '>')
 	switch {
 	case index == 0:
-		if parent {
-			return ""
-		}
-		return v[1:]
+		return choose("", v[1:])
 	case index < 0:
-		if parent {
-			return v
-		}
-		return p.Name.V()
+		return choose(v, p.Name.V())
 	default: // index > 0
-		if parent {
-			return v[:index]
-		}
-		return v[index+1:]
+		return choose(v[:index], v[index+1:])
 	}
 }
 
-func validXMLElement(
-	ns []*ast.XMLNamespace,
-	start xml.StartElement,
-	p *ast.Param,
-	chkArray bool, // 如果 p 为数组类型，则作为数组进行验证，否则只能当作普通元素进行验证
-	d *xml.Decoder,
-	field string,
-) error {
-	if err := validStartElement(ns, start, p, chkArray, field); err != nil {
+func (v *xmlValidator) validXMLElement(start xml.StartElement, p *ast.Param, chkArray bool, field string) error {
+	if err := v.validStartElement(start, p, chkArray, field); err != nil {
 		return err
 	}
 
 	for {
-		token, err := d.Token()
+		token, err := v.decoder.Token()
 		if errors.Is(err, io.EOF) && token == nil { // 正常结束
 			return nil
 		}
@@ -157,23 +154,23 @@ func validXMLElement(
 		}
 
 		var chardata []byte
-		switch v := token.(type) {
+		switch elem := token.(type) {
 		case xml.StartElement:
-			if chkArray && p.Array.V() && validXMLName(v.Name, ns, p, false) {
-				return validXMLElement(ns, v, p, false, d, buildXMLField(field, p))
+			if chkArray && p.Array.V() && v.validXMLName(elem.Name, p, false) {
+				return v.validXMLElement(elem, p, false, buildXMLField(field, p))
 			}
 
 			for _, pp := range p.Items {
-				if validXMLName(v.Name, ns, pp, false) {
+				if v.validXMLName(elem.Name, pp, false) {
 					if pp.XMLExtract.V() {
-						return validXMLElement(ns, v, p, true, d, buildXMLField(field, pp))
+						return v.validXMLElement(elem, p, true, buildXMLField(field, pp))
 					}
-					return validXMLElement(ns, v, pp, true, d, buildXMLField(field, p))
+					return v.validXMLElement(elem, pp, true, buildXMLField(field, p))
 				}
 			}
 		case xml.EndElement:
-			if !validXMLName(v.Name, ns, p, chkArray) {
-				return core.NewSyntaxError(core.Location{}, v.Name.Local, locale.ErrNotFoundEndTag)
+			if !v.validXMLName(elem.Name, p, chkArray) {
+				return core.NewSyntaxError(core.Location{}, elem.Name.Local, locale.ErrNotFoundEndTag)
 			}
 
 			if chardata != nil {
@@ -181,21 +178,15 @@ func validXMLElement(
 			}
 			return nil
 		case xml.CharData:
-			chardata = v
+			chardata = elem
 		}
 	}
 }
 
-func validStartElement(
-	ns []*ast.XMLNamespace,
-	start xml.StartElement,
-	p *ast.Param,
-	chkArray bool, // 如果 p 为数组类型，则作为数组进行验证，否则只能当作普通元素进行验证
-	field string,
-) error {
+func (v *xmlValidator) validStartElement(start xml.StartElement, p *ast.Param, chkArray bool, field string) error {
 	for _, attr := range start.Attr {
 		for _, pp := range p.Items {
-			if !validXMLName(attr.Name, ns, pp, false) {
+			if !v.validXMLName(attr.Name, pp, false) {
 				continue
 			}
 			if err := validXMLParamValue(pp, buildXMLField(field, pp), attr.Value); err != nil {
@@ -206,10 +197,10 @@ func validStartElement(
 	}
 
 	if p.Array.V() {
-		if !validXMLName(start.Name, ns, p, chkArray) {
+		if !v.validXMLName(start.Name, p, chkArray) {
 			return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
 		}
-	} else if !validXMLName(start.Name, ns, p, false) {
+	} else if !v.validXMLName(start.Name, p, false) {
 		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
 	}
 	return nil
@@ -219,7 +210,7 @@ func buildXMLField(field string, p *ast.Param) string {
 	if p.XMLAttr.V() {
 		return field + "@" + p.Name.V()
 	}
-	return field + p.Name.V()
+	return field + ">" + p.Name.V()
 }
 
 // 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
@@ -357,7 +348,7 @@ RET:
 }
 
 func buildXMLName(p *ast.Param, chkArray bool) xml.Name {
-	name := parseXMLName(p, chkArray)
+	name := parseXMLWrappedName(p, chkArray)
 
 	if p.XMLNSPrefix.V() != "" {
 		return xml.Name{Local: p.XMLNSPrefix.V() + ":" + name}
