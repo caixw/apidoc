@@ -252,6 +252,30 @@ type (
 		XMLNSPrefix *Attribute     `apidoc:"xml-ns-prefix,attr,usage-xml-prefix,omitempty"` // 命名空间前缀
 		XMLWrapped  *Attribute     `apidoc:"xml-wrapped,attr,usage-xml-wrapped,omitempty"`  // 如果当前元素是数组，是否将其包含在 wrapped 中
 	}
+
+	// Element 定义不包含子元素和属性的基本的 XML 元素
+	Element struct {
+		token.BaseTag
+		Content  Content  `apidoc:",content"`
+		RootName struct{} `apidoc:"string,meta,usage-string"`
+	}
+
+	// CData 表示 XML 的 CDATA 数据
+	CData struct {
+		token.BaseTag
+		Value    token.String `apidoc:"-"`
+		RootName struct{}     `apidoc:"string,meta,usage-string"`
+	}
+
+	// ExampleValue 示例代码的内容
+	ExampleValue CData
+
+	// Content 表示一段普通的 XML 元素内容
+	Content struct {
+		token.Base
+		Value    string   `apidoc:"-"`
+		RootName struct{} `apidoc:"string,meta,usage-string"`
+	}
 )
 
 // V 返回当前富文本中的内容
@@ -260,6 +284,31 @@ func (r *Richtext) V() string {
 		return ""
 	}
 	return r.Text.Value.Value
+}
+
+// V 返回当前属性实际表示的值
+func (s *Element) V() string {
+	if s == nil {
+		return ""
+	}
+	return s.Content.Value
+}
+
+// EncodeXML Encoder.EncodeXML
+func (cdata *CData) EncodeXML() (string, error) {
+	return cdata.Value.Value, nil
+}
+
+// EncodeXML Encoder.EncodeXML
+func (s *Content) EncodeXML() (string, error) {
+	return s.Value, nil
+}
+
+// EncodeXML Encoder.EncodeXML
+//
+// 示例代码的内容，会在此处去掉其前导的空格
+func (v *ExampleValue) EncodeXML() (string, error) {
+	return trimLeftSpace(v.Value.Value), nil
 }
 
 // Param 转换成 Param 对象

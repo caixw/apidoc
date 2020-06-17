@@ -3,19 +3,13 @@
 package ast
 
 import (
-	"bufio"
-	"bytes"
-	"errors"
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-	"unicode"
 
 	"github.com/issue9/version"
 
-	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/token"
 )
@@ -23,43 +17,6 @@ import (
 const dateFormat = time.RFC3339
 
 type (
-	// CData 表示 XML 的 CDATA 数据
-	CData struct {
-		token.BaseTag
-		Value    token.String `apidoc:"-"`
-		RootName struct{}     `apidoc:"string,meta,usage-string"`
-	}
-
-	// Content 表示一段普通的 XML 元素内容
-	Content struct {
-		token.Base
-		Value    string   `apidoc:"-"`
-		RootName struct{} `apidoc:"string,meta,usage-string"`
-	}
-
-	// ExampleValue 示例代码的内容
-	ExampleValue CData
-
-	// Number 表示 XML 的数值类型
-	Number struct {
-		core.Range
-		Int     int
-		Float   float64
-		IsFloat bool
-	}
-
-	// Bool 表示 XML 的布尔值类型
-	Bool struct {
-		core.Range
-		Value bool
-	}
-
-	// Date 日期类型
-	Date struct {
-		core.Range
-		Value time.Time
-	}
-
 	// Attribute 表示 XML 属性
 	Attribute struct {
 		token.BaseAttribute
@@ -106,97 +63,7 @@ type (
 
 	// APIDocVersionAttribute 版本号属性，同时对版本号进行比较
 	APIDocVersionAttribute Attribute
-
-	// Element 定义不包含子元素和属性的基本的 XML 元素
-	Element struct {
-		token.BaseTag
-		Content  Content  `apidoc:",content"`
-		RootName struct{} `apidoc:"string,meta,usage-string"`
-	}
 )
-
-// EncodeXML Encoder.EncodeXML
-func (cdata *CData) EncodeXML() (string, error) {
-	return cdata.Value.Value, nil
-}
-
-// EncodeXML Encoder.EncodeXML
-func (s *Content) EncodeXML() (string, error) {
-	return s.Value, nil
-}
-
-// EncodeXML Encoder.EncodeXML
-//
-// 示例代码的内容，会在此处去掉其前导的空格
-func (v *ExampleValue) EncodeXML() (string, error) {
-	return trimLeftSpace(v.Value.Value), nil
-}
-
-func trimLeftSpace(v string) string {
-	var min []byte // 找出的最小行首相同空格内容
-
-	s := bufio.NewScanner(strings.NewReader(v))
-	s.Split(bufio.ScanLines)
-	for s.Scan() {
-		line := s.Bytes()
-		if len(bytes.TrimSpace(line)) == 0 { // 忽略空行
-			continue
-		}
-
-		var index int
-		for i, b := range line {
-			if !unicode.IsSpace(rune(b)) {
-				index = i
-				break
-			}
-		}
-
-		switch {
-		case index == 0: // 当前行顶格
-			return v
-		case len(min) == 0: // 未初始化 min，且 index > 0
-			min = make([]byte, index)
-			copy(min, line[:index])
-		default:
-			min = getSamePrefix(min, line[:index])
-		}
-	}
-
-	if len(min) == 0 {
-		return v
-	}
-
-	buf := bufio.NewReader(strings.NewReader(v))
-	ret := make([]byte, 0, buf.Size())
-	for {
-		line, err := buf.ReadBytes('\n')
-		if bytes.HasPrefix(line, min) {
-			line = line[len(min):]
-		}
-		ret = append(ret, line...)
-
-		if errors.Is(err, io.EOF) {
-			break
-		}
-	}
-
-	return string(ret)
-}
-
-func getSamePrefix(v1, v2 []byte) []byte {
-	l1, l2 := len(v1), len(v2)
-	l := l1
-	if l1 > l2 {
-		l = l2
-	}
-
-	for i := 0; i < l; i++ {
-		if v1[i] != v2[i] {
-			return v1[:i]
-		}
-	}
-	return v1[:l]
-}
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *Attribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
@@ -426,14 +293,6 @@ func (a *APIDocVersionAttribute) EncodeXMLAttr() (string, error) {
 // V 返回当前属性实际表示的值
 func (a *APIDocVersionAttribute) V() string {
 	return (*Attribute)(a).V()
-}
-
-// V 返回当前属性实际表示的值
-func (s *Element) V() string {
-	if s == nil {
-		return ""
-	}
-	return s.Content.Value
 }
 
 var validMethods = []string{
