@@ -19,17 +19,18 @@ const (
 	TypeArray    = "array"
 )
 
+var typeMaps = map[string]string{
+	ast.TypeBool:   TypeBool,
+	ast.TypeString: TypeString,
+	ast.TypeNumber: TypeDouble,
+	ast.TypeInt:    TypeLong,
+	ast.TypeFloat:  TypeFloat,
+	ast.TypeURL:    TypeString,
+	ast.TypeEmail:  TypeString,
+}
+
 func fromDocType(t string) string {
-	switch t {
-	case ast.TypeNumber:
-		return TypeInt
-	case ast.TypeString:
-		return TypeString
-	case ast.TypeBool:
-		return TypeBool
-	default:
-		return ""
-	}
+	return typeMaps[t]
 }
 
 // Schema 定义了输出和输出的数据类型

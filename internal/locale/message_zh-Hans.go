@@ -33,16 +33,16 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	FlagMockPortUsage:          "指定 mock 服务的端口号",
 	FlagMockServersUsage:       "指定 mock 服务时，文档中 server 名对应的路由前缀。",
 	FlagMockIndentUsage:        "指定缩进内容",
-	FlagMockSliceMaxUsage:      "生成的最大数组大小",
-	FlagMockSliceMinUsage:      "生成的最小数组大小",
-	FlagMockNumMaxUsage:        "生成的数值最大值",
-	FlagMockNumMinUsage:        "生成的数值最小值",
+	FlagMockSliceSizeUsage:     "生成数组大小的范围",
+	FlagMockNumSliceUsage:      "生成数值类型的数据时的数值范围",
 	FlagMockNumFloatUsage:      "生成的数值是否允许有浮点数存在",
 	FlagMockPathUsage:          "指定文档的 `URI` 格式路径，根据此文档的内容生成 mock 数据。",
-	FlagMockStringMaxUsage:     "生成的字符串最大长度",
-	FlagMockStringMinUsage:     "生成的字符串最小长度",
+	FlagMockStringSizeUsage:    "生成字符串类型数据时字符串的长度范围",
 	FlagMockStringAlphaUsage:   "生成的字符串中允许出现的字符",
-	FlagDetectRecursive:        "detect 子命令是否检测子目录的值",
+	FlagMockUsernameSizeUsage:  "生成邮箱地址时，用户名的长度范围。",
+	FlagMockEmailDomainsUsage:  "生成邮箱地址时所可用的域名列表，多个用半角逗号分隔。",
+	FlagMockURLDomainsUsage:    "生成 URL 地址时所可用的域名列表，多个用半角逗号分隔。",
+	FlagDetectRecursiveUsage:   "detect 子命令是否检测子目录的值",
 	FlagDetectDirUsage:         "以 `URI` 形式表示检测项目地址",
 	FlagDetectWrite:            "是否将配置内容写入文件，如果为 true，会将配置内容写入检测目录下的 .apidoc.yaml 文件。",
 	FlagStaticPortUsage:        "指定 static 服务的端口号",
@@ -141,7 +141,7 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 
 	UsageParam:            "参数类型，基本上可以作为 request 的子集使用。",
 	UsageParamName:        "值的名称",
-	UsageParamType:        "值的类型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var>",
+	UsageParamType:        "值的类型",
 	UsageParamDeprecated:  "表示在大于等于该版本号时不再启作用",
 	UsageParamDefault:     "默认值",
 	UsageParamOptional:    "是否为可选的参数",
@@ -159,7 +159,7 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 
 	UsageRequest:            "定义了请求和返回的相关内容",
 	UsageRequestName:        "当 mimetype 为 <var>application/xml</var> 时，此值表示 XML 的顶层元素名称，否则无用。",
-	UsageRequestType:        "值的类型，可以是 <var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不输出任何内容。",
+	UsageRequestType:        "值的类型",
 	UsageRequestDeprecated:  "表示在大于等于该版本号时不再启作用",
 	UsageRequestArray:       "是否为数组",
 	UsageRequestItems:       "子类型，比如对象的子元素。",
@@ -205,6 +205,18 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	UsageBool:    "布尔值类型，取值为 <var>true</var> 或是 <var>false</var>。",
 	UsageVersion: `版本号，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 规则。`,
 	UsageDate:    `采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的时间，比如：<samp>2019-12-16T00:35:48+08:00</samp>。`,
+	UsageType: `用于表示数据的类型值，格式为 <code>primitive[.subtype]</code>，其中 <code>primitive</code> 为基本类型，而 <code>subtype</code> 为子类型，用于对 <code>primitive</code> 进行进一步的约束，当客户端无法处理整个类型时，可以按照 <code>primitive</code> 的类型处理。<br />
+	目前支持以下几种类型：<ul>
+	<li>空值</li>
+	<li><var>bool</var> 布尔值；</li>
+	<li><var>object</var> 对象；</li>
+	<li><var>number</var> 数值类型；</li>
+	<li><var>number.int</var> 整数类型的数值；</li>
+	<li><var>number.float</var> 浮点类型的数值；</li>
+	<li><var>string</var> 字符串；</li>
+	<li><var>string.url</var> URL 类型的字符串；</li>
+	<li><var>string.email</var> email 类型的字符串；</li>
+	</ul>`,
 
 	// 以下是有关 build.Config 的字段说明
 	UsageConfigVersion:               "此配置文件的所使用的文档版本",

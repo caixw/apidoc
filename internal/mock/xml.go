@@ -174,7 +174,7 @@ func (v *xmlValidator) validXMLElement(start xml.StartElement, p *ast.Param, chk
 			}
 
 			if chardata != nil {
-				return validXMLParamValue(p, p.Name.V(), string(chardata))
+				return validXMLValue(p, p.Name.V(), string(chardata))
 			}
 			return nil
 		case xml.CharData:
@@ -189,7 +189,7 @@ func (v *xmlValidator) validStartElement(start xml.StartElement, p *ast.Param, c
 			if !v.validXMLName(attr.Name, pp, false) {
 				continue
 			}
-			if err := validXMLParamValue(pp, buildXMLField(field, pp), attr.Value); err != nil {
+			if err := validXMLValue(pp, buildXMLField(field, pp), attr.Value); err != nil {
 				return err
 			}
 			break
@@ -215,7 +215,7 @@ func buildXMLField(field string, p *ast.Param) string {
 
 // 验证 p 描述的类型与 v 是否匹配，如果不匹配返回错误信息。
 // field 表示 p 在整个对象中的位置信息。
-func validXMLParamValue(p *ast.Param, field, v string) error {
+func validXMLValue(p *ast.Param, field, v string) error {
 	switch p.Type.V() {
 	case ast.TypeNone:
 		if v != "" {
@@ -225,8 +225,24 @@ func validXMLParamValue(p *ast.Param, field, v string) error {
 		if !is.Number(v) {
 			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
+	case ast.TypeInt:
+		if _, err := strconv.ParseInt(v, 10, 64); err != nil {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeFloat:
+		if _, err := strconv.ParseFloat(v, 64); err != nil {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
 	case ast.TypeBool:
 		if _, err := strconv.ParseBool(v); err != nil {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeEmail:
+		if !is.Email(v) {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeURL:
+		if !is.URL(v) {
 			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
 	case ast.TypeString, ast.TypeObject:

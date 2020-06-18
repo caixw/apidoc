@@ -10,8 +10,10 @@ import (
 )
 
 var _ flag.Getter = servers{}
+var _ flag.Getter = &slice{}
+var _ flag.Getter = &size{}
 
-func TestMockOptions(t *testing.T) {
+func TestServers_Set(t *testing.T) {
 	a := assert.New(t)
 
 	srv := make(servers, 0)
@@ -37,4 +39,27 @@ func TestMockOptions(t *testing.T) {
 	a.Equal(srv["k1"], " v1")
 	a.Equal(srv["k2"], " v2")
 	a.NotEmpty(srv.String())
+}
+
+func TestSize_Set(t *testing.T) {
+	a := assert.New(t)
+
+	s := &size{}
+	a.Error(s.Set(""))
+
+	a.Error(s.Set(","))
+	a.Error(s.Set("1,"))
+	a.Error(s.Set(",5"))
+
+	a.NotError(s.Set("1,5"))
+	a.Equal(s.Min, 1).Equal(s.Max, 5)
+}
+
+func TestSlice_Set(t *testing.T) {
+	a := assert.New(t)
+
+	s := &slice{}
+	a.NotError(s.Set("")).Equal(1, len(*s))
+	a.NotError(s.Set(",")).Equal(2, len(*s))
+
 }

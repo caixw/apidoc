@@ -59,7 +59,11 @@ type (
 	StatusAttribute NumberAttribute
 
 	// TypeAttribute 表示方法类型属性
-	TypeAttribute Attribute
+	TypeAttribute struct {
+		token.BaseAttribute
+		Value    token.String `apidoc:"-"`
+		RootName struct{}     `apidoc:"type,meta,usage-type"`
+	}
 
 	// APIDocVersionAttribute 版本号属性，同时对版本号进行比较
 	APIDocVersionAttribute Attribute
@@ -223,7 +227,10 @@ func (a *TypeAttribute) EncodeXMLAttr() (string, error) {
 
 // V 返回当前属性实际表示的值
 func (a *TypeAttribute) V() string {
-	return (*Attribute)(a).V()
+	if a == nil {
+		return ""
+	}
+	return a.Value.Value
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr

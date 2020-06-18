@@ -21,6 +21,19 @@ func TestVersion(t *testing.T) {
 	a.Equal(major, v.Major)
 }
 
+func TestParseType(t *testing.T) {
+	a := assert.New(t)
+
+	p, s := ParseType(TypeString)
+	a.Equal(p, TypeString).Empty(s)
+
+	p, s = ParseType(TypeURL)
+	a.Equal(p, TypeString).Equal(s, "url")
+
+	p, s = ParseType(TypeInt)
+	a.Equal(p, TypeNumber).Equal(s, "int")
+}
+
 func TestTrimLeftSpace(t *testing.T) {
 	a := assert.New(t)
 

@@ -88,7 +88,7 @@
 	<li><samp>&gt;name</samp>：表示將當前數組元素的名稱改為 <var>name</var>；</li>
 	</ul></item>
 			<item name="@name" type="string" array="false" required="true">值的名稱</item>
-			<item name="@type" type="string" array="false" required="true">值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var></item>
+			<item name="@type" type="type" array="false" required="true">值的類型</item>
 			<item name="@deprecated" type="version" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
 			<item name="@default" type="string" array="false" required="false">默認值</item>
 			<item name="@optional" type="bool" array="false" required="false">是否為可選的參數</item>
@@ -119,7 +119,7 @@
 	<li><samp>&gt;name</samp>：表示將當前數組元素的名稱改為 <var>name</var>；</li>
 	</ul></item>
 			<item name="@name" type="string" array="false" required="false">當 mimetype 為 <var>application/xml</var> 時，此值表示 XML 的頂層元素名稱，否則無用。</item>
-			<item name="@type" type="string" array="false" required="false">值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不輸出任何內容。</item>
+			<item name="@type" type="type" array="false" required="false">值的類型</item>
 			<item name="@deprecated" type="version" array="false" required="false">表示在大於等於該版本號時不再啟作用</item>
 			<item name="@array" type="bool" array="false" required="false">是否為數組</item>
 			<item name="@summary" type="string" array="false" required="false">簡要介紹</item>
@@ -164,6 +164,20 @@
 		</type>
 		<type name="bool">
 			<usage>布爾值類型，取值為 <var>true</var> 或是 <var>false</var>。</usage>
+		</type>
+		<type name="type">
+			<usage>用於表示數據的類型值，格式為 <code>primitive[.subtype]</code>，其中 <code>primitive</code> 為基本類型，而 <code>subtype</code> 為子類型，用於對 <code>primitive</code> 進行進壹步的約束，當客戶端無法處理整個類型時，可以按照 <code>primitive</code> 的類型處理。<br />
+	目前支持以下幾種類型：<ul>
+	<li>空值</li>
+	<li><var>bool</var> 布爾值；</li>
+	<li><var>object</var> 對象；</li>
+	<li><var>number</var> 數值類型；</li>
+	<li><var>number.int</var> 整數類型的數值；</li>
+	<li><var>number.float</var> 浮點類型的數值；</li>
+	<li><var>string</var> 字符串；</li>
+	<li><var>string.url</var> URL 類型的字符串；</li>
+	<li><var>string.email</var> email 類型的字符串；</li>
+	</ul></usage>
 		</type>
 		<type name="number">
 			<usage>普通的數值類型</usage>
