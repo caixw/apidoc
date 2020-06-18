@@ -200,10 +200,10 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	</ul>`,
 
 	// 基本类型
-	UsageString:  "普通的字符串類型",
-	UsageNumber:  "普通的數值類型",
+	UsageString:  "普通的字符串類型，特殊字符需要使用 XML 實體，比如 <samp>&lt;</samp> 需要使用 <samp>&amp;lt;</samp> 代替。",
+	UsageNumber:  "普通的數值類型，比如：<samp>1</samp>、<samp>-11.1</samp> 等。",
 	UsageBool:    "布爾值類型，取值為 <var>true</var> 或是 <var>false</var>。",
-	UsageVersion: `版本號，格式遵守 <a href="https://semver.org/lang/zh-TW/">semver</a> 規則。`,
+	UsageVersion: `版本號，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 規則。比如：<samp>1.0.1</samp>、<samp>1.0.1+20200618</samp>。`,
 	UsageDate:    `采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp>。`,
 	UsageType: `用於表示數據的類型值，格式為 <code>primitive[.subtype]</code>，其中 <code>primitive</code> 為基本類型，而 <code>subtype</code> 為子類型，用於對 <code>primitive</code> 進行進壹步的約束，當客戶端無法處理整個類型時，可以按照 <code>primitive</code> 的類型處理。<br />
 	目前支持以下幾種類型：<ul>

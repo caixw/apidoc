@@ -154,13 +154,13 @@
 			<item name="@urn" type="string" array="false" required="true">命名空間的唯壹標識，需要全局唯壹，且區分大小寫。</item>
 		</type>
 		<type name="string">
-			<usage>普通的字符串類型</usage>
+			<usage>普通的字符串類型，特殊字符需要使用 XML 實體，比如 <samp>&lt;</samp> 需要使用 <samp>&amp;lt;</samp> 代替。</usage>
 		</type>
 		<type name="date">
 			<usage>采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp>。</usage>
 		</type>
 		<type name="version">
-			<usage>版本號，格式遵守 <a href="https://semver.org/lang/zh-TW/">semver</a> 規則。</usage>
+			<usage>版本號，格式遵守 <a href="https://semver.org/lang/zh-CN/">semver</a> 規則。比如：<samp>1.0.1</samp>、<samp>1.0.1+20200618</samp>。</usage>
 		</type>
 		<type name="bool">
 			<usage>布爾值類型，取值為 <var>true</var> 或是 <var>false</var>。</usage>
@@ -180,7 +180,7 @@
 	</ul></usage>
 		</type>
 		<type name="number">
-			<usage>普通的數值類型</usage>
+			<usage>普通的數值類型，比如：<samp>1</samp>、<samp>-11.1</samp> 等。</usage>
 		</type>
 	</spec>
 	<commands>
