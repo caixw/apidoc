@@ -8,9 +8,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"reflect"
 	"strings"
 
 	"github.com/issue9/errwrap"
+	"github.com/issue9/is"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
@@ -130,8 +132,32 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 		return core.NewSyntaxError(core.Location{}, field, locale.ErrNotFound)
 	}
 
-	if p.Type.V() != t {
+	pt := p.Type.V()
+
+	if primitive, _ := ast.ParseType(pt); primitive != t {
 		return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+	}
+
+	switch pt {
+	case ast.TypeEmail:
+		if !is.Email(pt) {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeURL:
+		if !is.URL(pt) {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeInt:
+		k := reflect.TypeOf(v).Kind()
+		if k != reflect.Int && k != reflect.Int8 && k != reflect.Int16 && k != reflect.Int32 && k != reflect.Int64 &&
+			k != reflect.Uint && k != reflect.Uint8 && k != reflect.Uint16 && k != reflect.Uint32 && k != reflect.Uint64 {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeFloat:
+		k := reflect.TypeOf(v).Kind()
+		if k != reflect.Float32 && k != reflect.Float64 {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
 	}
 
 	if isEnum(p) {

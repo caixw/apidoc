@@ -7,21 +7,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/token"
 )
 
-// 表示支持的各种数据类型
-const (
-	TypeNone   = "" // 空值表示不输出任何内容，仅用于 Request
-	TypeBool   = "bool"
-	TypeObject = "object"
-	TypeNumber = "number"
-	TypeString = "string"
-)
-
-// 富文本可用的类型
-const (
-	RichtextTypeHTML     = "html"
-	RichtextTypeMarkdown = "markdown"
-)
-
 type (
 	// APIDoc 对应 apidoc 元素
 	APIDoc struct {

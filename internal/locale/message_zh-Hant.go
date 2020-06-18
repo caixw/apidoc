@@ -29,21 +29,21 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	CmdNotFound:    "子命令 %s 未找到\n",
 
 	FlagSyntaxDirUsage:         "以 `URI` 形式表示的測試項目地址",
-	FlagDetectDirUsage:         "以 `URI` 形式表示的檢測項目地址",
 	FlagBuildDirUsage:          "以 `URI` 形式表示的項目地址",
 	FlagMockPortUsage:          "指定 mock 服務的端口號",
 	FlagMockServersUsage:       "指定 mock 服務時，文檔中 server 名對應的路由前綴。",
 	FlagMockIndentUsage:        "指定縮進內容",
-	FlagMockSliceMaxUsage:      "生成的最大數組大小",
-	FlagMockSliceMinUsage:      "生成的最小數組大小",
-	FlagMockNumMaxUsage:        "生成的數值最大值",
-	FlagMockNumMinUsage:        "生成的數值最小值",
+	FlagMockSliceSizeUsage:     "生成數組大小的範圍",
+	FlagMockNumSliceUsage:      "生成數值類型的數據時的數值範圍",
 	FlagMockNumFloatUsage:      "生成的數值是否允許有浮點數存在",
 	FlagMockPathUsage:          "指定文檔的 `URI` 格式路徑，根據此文檔的內容生成 mock 數據。",
-	FlagMockStringMaxUsage:     "生成的字符串最大長度",
-	FlagMockStringMinUsage:     "生成的字符串最小長度",
+	FlagMockStringSizeUsage:    "生成字符串類型數據時字符串的長度範圍",
 	FlagMockStringAlphaUsage:   "生成的字符串中允許出現的字符",
-	FlagDetectRecursive:        "detect 子命令是否檢測子目錄的值",
+	FlagMockUsernameSizeUsage:  "生成郵箱地址時，用戶名的長度範圍。",
+	FlagMockEmailDomainsUsage:  "生成郵箱地址時所可用的域名列表，多個用半角逗號分隔。",
+	FlagMockURLDomainsUsage:    "生成 URL 地址時所可用的域名列表，多個用半角逗號分隔。",
+	FlagDetectRecursiveUsage:   "detect 子命令是否檢測子目錄的值",
+	FlagDetectDirUsage:         "以 `URI` 形式表示的檢測項目地址",
 	FlagDetectWrite:            "是否將配置內容寫入文件，如果為 true，會將配置內容寫入檢測目錄下的 .apidoc.yaml 文件。",
 	FlagStaticPortUsage:        "指定 static 服務的端口號",
 	FlagStaticDocsUsage:        "指定 static 服務靜態文件所在的 `URI`",
@@ -141,7 +141,7 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 
 	UsageParam:            "參數類型，基本上可以作為 request 的子集使用。",
 	UsageParamName:        "值的名稱",
-	UsageParamType:        "值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var> 和 <var>object</var>",
+	UsageParamType:        "值的類型",
 	UsageParamDeprecated:  "表示在大於等於該版本號時不再啟作用",
 	UsageParamDefault:     "默認值",
 	UsageParamOptional:    "是否為可選的參數",
@@ -159,7 +159,7 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 
 	UsageRequest:            "定義了請求和返回的相關內容",
 	UsageRequestName:        "當 mimetype 為 <var>application/xml</var> 時，此值表示 XML 的頂層元素名稱，否則無用。",
-	UsageRequestType:        "值的類型，可以是 <var>string</var>、<var>number</var>、<var>bool</var>、<var>object</var> 和空值；空值表示不輸出任何內容。",
+	UsageRequestType:        "值的類型",
 	UsageRequestDeprecated:  "表示在大於等於該版本號時不再啟作用",
 	UsageRequestArray:       "是否為數組",
 	UsageRequestItems:       "子類型，比如對象的子元素。",
@@ -205,6 +205,18 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	UsageBool:    "布爾值類型，取值為 <var>true</var> 或是 <var>false</var>。",
 	UsageVersion: `版本號，格式遵守 <a href="https://semver.org/lang/zh-TW/">semver</a> 規則。`,
 	UsageDate:    `采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp>。`,
+	UsageType: `用於表示數據的類型值，格式為 <code>primitive[.subtype]</code>，其中 <code>primitive</code> 為基本類型，而 <code>subtype</code> 為子類型，用於對 <code>primitive</code> 進行進壹步的約束，當客戶端無法處理整個類型時，可以按照 <code>primitive</code> 的類型處理。<br />
+	目前支持以下幾種類型：<ul>
+	<li>空值；</li>
+	<li><var>bool</var> 布爾值；</li>
+	<li><var>object</var> 對象；</li>
+	<li><var>number</var> 數值類型；</li>
+	<li><var>number.int</var> 整數類型的數值；</li>
+	<li><var>number.float</var> 浮點類型的數值；</li>
+	<li><var>string</var> 字符串；</li>
+	<li><var>string.url</var> URL 類型的字符串；</li>
+	<li><var>string.email</var> email 類型的字符串；</li>
+	</ul>`,
 
 	// 以下是有关 build.Config 的字段说明
 	UsageConfigVersion:               "此配置文件的所使用的文档版本",

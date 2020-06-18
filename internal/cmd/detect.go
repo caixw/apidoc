@@ -22,7 +22,7 @@ var (
 
 func initDetect(command *cmdopt.CmdOpt) {
 	fs := command.New("detect", locale.Sprintf(locale.CmdDetectUsage), detect)
-	fs.BoolVar(&detectRecursive, "r", true, locale.Sprintf(locale.FlagDetectRecursive))
+	fs.BoolVar(&detectRecursive, "r", true, locale.Sprintf(locale.FlagDetectRecursiveUsage))
 	fs.BoolVar(&detectWrite, "w", false, locale.Sprintf(locale.FlagDetectWrite))
 	fs.Var(&buildDir, "d", locale.Sprintf(locale.FlagDetectDirUsage))
 }

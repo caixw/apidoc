@@ -28,6 +28,25 @@ const (
 	minSize = len("<api/>")
 )
 
+// 表示支持的各种数据类型
+const (
+	TypeNone   = "" // 空值表示不输出任何内容，仅用于 Request
+	TypeBool   = "bool"
+	TypeObject = "object"
+	TypeNumber = "number"
+	TypeString = "string"
+	TypeInt    = "number.int"
+	TypeFloat  = "number.float"
+	TypeEmail  = "string.email"
+	TypeURL    = "string.url"
+)
+
+// 富文本可用的类型
+const (
+	RichtextTypeHTML     = "html"
+	RichtextTypeMarkdown = "markdown"
+)
+
 type (
 	// Number 表示 XML 的数值类型
 	Number struct {
@@ -49,6 +68,15 @@ type (
 		Value time.Time
 	}
 )
+
+// ParseType 获取类型字符串中的原始类型和子类型
+func ParseType(t string) (primitive, sub string) {
+	index := strings.IndexByte(t, '.')
+	if index == -1 {
+		return t, ""
+	}
+	return t[:index], t[index+1:]
+}
 
 func trimLeftSpace(v string) string {
 	var min []byte // 找出的最小行首相同空格内容

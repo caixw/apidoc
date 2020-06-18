@@ -13,10 +13,10 @@ type GenOptions struct {
 	// 返回一个随机的数值
 	//
 	// 可以是浮点和整数类型。
-	Number func() interface{}
+	Number func(p *ast.Param) interface{}
 
 	// 返回一个随机长度的字符串
-	String func() string
+	String func(p *ast.Param) string
 
 	// 返回一个随机的布尔值
 	Bool func() bool
@@ -49,14 +49,14 @@ func (g *GenOptions) generateNumber(p *ast.Param) interface{} {
 		}
 		return v
 	}
-	return g.Number()
+	return g.Number(p)
 }
 
 func (g *GenOptions) generateString(p *ast.Param) string {
 	if isEnum(p) {
 		return p.Enums[g.Index(len(p.Enums))].Value.V()
 	}
-	return g.String()
+	return g.String(p)
 }
 
 func (g *GenOptions) generateSliceSize() int {

@@ -71,7 +71,7 @@ func TestNewSchema(t *testing.T) {
 	a.Equal(output.Type, "").
 		Equal(len(input.Items), len(output.Properties)).
 		Equal(output.Properties["p1"].Type, TypeString).
-		Equal(output.Properties["p2"].Type, TypeInt)
+		Equal(output.Properties["p2"].Type, TypeDouble)
 
 	a.NotError(output.sanitize())
 }

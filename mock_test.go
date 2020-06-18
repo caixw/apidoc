@@ -4,14 +4,50 @@ package apidoc
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
 	"github.com/issue9/assert/rest"
+	"github.com/issue9/is"
 
 	"github.com/caixw/apidoc/v7/core/messagetest"
+	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
+	"github.com/caixw/apidoc/v7/internal/token"
 )
+
+func TestMockOptions_url(t *testing.T) {
+	a := assert.New(t)
+
+	o := &MockOptions{
+		URLDomains: []string{"https://apidoc.tools/"},
+	}
+	url := o.url()
+	a.True(strings.HasPrefix(url, o.URLDomains[0])).
+		True(is.URL(url))
+
+	o.URLDomains[0] = "https://apidoc.tools"
+	url = o.url()
+	a.True(strings.HasPrefix(url, o.URLDomains[0])).
+		True(is.URL(url))
+}
+
+func TestMockOptions_email(t *testing.T) {
+	a := assert.New(t)
+
+	o := &MockOptions{
+		EmailDomains:      []string{"apidoc.tools"},
+		EmailUsernameSize: Range{Min: 5, Max: 11},
+	}
+	email := o.email()
+	a.True(strings.HasSuffix(email, o.EmailDomains[0])).
+		True(is.Email(email))
+	index := strings.IndexByte(email, '@')
+	username := email[:index]
+	a.True(len(username) >= o.EmailUsernameSize.Min).
+		True(len(username) <= o.EmailUsernameSize.Max)
+}
 
 func TestMockOptions_gen(t *testing.T) {
 	a := assert.New(t)
@@ -22,8 +58,8 @@ func TestMockOptions_gen(t *testing.T) {
 
 	for i := 0; i < count; i++ {
 		size := g.SliceSize()
-		a.True(size >= defaultMockOptions.MinSliceSize).
-			True(size <= defaultMockOptions.MaxSliceSize)
+		a.True(size >= defaultMockOptions.SliceSize.Min).
+			True(size <= defaultMockOptions.SliceSize.Max)
 	}
 
 	for i := 0; i < count; i++ {
@@ -32,36 +68,73 @@ func TestMockOptions_gen(t *testing.T) {
 			True(size >= 0)
 	}
 
+	// String
 	for i := 0; i < count; i++ {
-		str := g.String()
-		a.True(len(str) >= defaultMockOptions.MinString).
-			True(len(str) <= defaultMockOptions.MaxString)
+		str := g.String(&ast.Param{})
+		a.True(len(str) >= defaultMockOptions.StringSize.Min).
+			True(len(str) <= defaultMockOptions.StringSize.Max)
 	}
 
+	// String.Email
+	for i := 0; i < count; i++ {
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.email"}}})
+		a.True(is.Email(str))
+	}
+
+	// String.URL
+	for i := 0; i < count; i++ {
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.url"}}})
+		a.True(is.URL(str))
+	}
+
+	// Number
 	defaultMockOptions.EnableFloat = false
 	g = defaultMockOptions.gen()
 	for i := 0; i < count; i++ {
-		numInterface := g.Number()
+		numInterface := g.Number(&ast.Param{})
 		num, ok := numInterface.(int)
 		a.True(ok).
-			True(num >= defaultMockOptions.MinNumber).
-			True(num <= defaultMockOptions.MaxNumber)
+			True(num >= defaultMockOptions.NumberSize.Min).
+			True(num <= defaultMockOptions.NumberSize.Max)
 	}
 
+	// Number enableFloat
 	defaultMockOptions.EnableFloat = true
 	g = defaultMockOptions.gen()
 	for i := 0; i < count; i++ {
-		numInterface := g.Number()
+		numInterface := g.Number(&ast.Param{})
 		num, ok := numInterface.(int)
 		if ok {
-			a.True(num >= defaultMockOptions.MinNumber).
-				True(num <= defaultMockOptions.MaxNumber)
+			a.True(num >= defaultMockOptions.NumberSize.Min).
+				True(num <= defaultMockOptions.NumberSize.Max)
 		} else {
 			f, ok := numInterface.(float32)
 			a.True(ok).
-				True(f >= float32(defaultMockOptions.MinNumber)).
-				True(f <= float32(defaultMockOptions.MaxNumber), "%f,%d", f, defaultMockOptions.MaxNumber)
+				True(f >= float32(defaultMockOptions.NumberSize.Min)).
+				True(f <= float32(defaultMockOptions.NumberSize.Max), "%f,%d", f, defaultMockOptions.NumberSize.Max)
 		}
+	}
+
+	// Number.int
+	defaultMockOptions.EnableFloat = false
+	g = defaultMockOptions.gen()
+	for i := 0; i < count; i++ {
+		numInterface := g.Number(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "number.int"}}})
+		num, ok := numInterface.(int)
+		a.True(ok).
+			True(num >= defaultMockOptions.NumberSize.Min).
+			True(num <= defaultMockOptions.NumberSize.Max)
+	}
+
+	// Number.float
+	defaultMockOptions.EnableFloat = false
+	g = defaultMockOptions.gen()
+	for i := 0; i < count; i++ {
+		numInterface := g.Number(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "number.float"}}})
+		num, ok := numInterface.(float32)
+		a.True(ok).
+			True(num >= float32(defaultMockOptions.NumberSize.Min)).
+			True(num <= float32(defaultMockOptions.NumberSize.Max))
 	}
 }
 
@@ -146,4 +219,16 @@ func TestMockFile(t *testing.T) {
 
 	rslt.Handler.Stop()
 	srv.Close()
+}
+
+func TestMergeMockOptions(t *testing.T) {
+	a := assert.New(t)
+
+	o, err := mergeMockOptions(nil)
+	a.NotError(err).Equal(o.EmailDomains, []string{"example.com"})
+
+	o, err = mergeMockOptions(&MockOptions{SliceSize: Range{Min: 0, Max: 5}})
+	a.NotError(err).
+		Equal(o.EmailDomains, []string{"example.com"}).
+		Equal(o.SliceSize, Range{Min: 0, Max: 5})
 }

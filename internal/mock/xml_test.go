@@ -292,39 +292,39 @@ func TestValidXMLParamValue(t *testing.T) {
 	a := assert.New(t)
 
 	// None
-	a.NotError(validXMLParamValue(&ast.Param{}, "", ""))
-	a.Error(validXMLParamValue(&ast.Param{}, "", "xx"))
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}}, "", ""))
-	a.Error(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}}, "", "xx"))
+	a.NotError(validXMLValue(&ast.Param{}, "", ""))
+	a.Error(validXMLValue(&ast.Param{}, "", "xx"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}}, "", ""))
+	a.Error(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}}, "", "xx"))
 
 	// Number
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "1111"))
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "0"))
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "-11"))
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "-1024.11"))
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "-1024.1111234"))
-	a.Error(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "fxy0"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "1111"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "0"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "-11"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "-1024.11"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "-1024.1111234"))
+	a.Error(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}, "", "fxy0"))
 
 	// String
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}}, "", "fxy0"))
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}}, "", ""))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}}, "", "fxy0"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}}, "", ""))
 
 	// Bool
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "true"))
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "false"))
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "1"))
-	a.Error(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "false/true"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "true"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "false"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "1"))
+	a.Error(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}}, "", "false/true"))
 
 	// Object
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}}, "", ""))
-	a.NotError(validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}}, "", "{}"))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}}, "", ""))
+	a.NotError(validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}}}, "", "{}"))
 
 	// panic
 	a.Panic(func() {
-		validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "xxx"}}}, "", "{}")
+		validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "xxx"}}}, "", "{}")
 	})
 	a.Panic(func() {
-		validXMLParamValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "xxx"}}}, "", "")
+		validXMLValue(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "xxx"}}}, "", "")
 	})
 
 	// bool enum
@@ -335,7 +335,7 @@ func TestValidXMLParamValue(t *testing.T) {
 			{Value: &ast.Attribute{Value: token.String{Value: "false"}}},
 		},
 	}
-	a.NotError(validXMLParamValue(p, "", "true"))
+	a.NotError(validXMLValue(p, "", "true"))
 
 	// 不存在于枚举
 	p = &ast.Param{
@@ -344,7 +344,7 @@ func TestValidXMLParamValue(t *testing.T) {
 			{Value: &ast.Attribute{Value: token.String{Value: "true"}}},
 		},
 	}
-	a.Error(validXMLParamValue(p, "", "false"))
+	a.Error(validXMLValue(p, "", "false"))
 
 	// number enum
 	p = &ast.Param{
@@ -354,8 +354,8 @@ func TestValidXMLParamValue(t *testing.T) {
 			{Value: &ast.Attribute{Value: token.String{Value: "-1.2"}}},
 		},
 	}
-	a.NotError(validXMLParamValue(p, "", "1"))
-	a.NotError(validXMLParamValue(p, "", "-1.2"))
+	a.NotError(validXMLValue(p, "", "1"))
+	a.NotError(validXMLValue(p, "", "-1.2"))
 
 	// 不存在于枚举
 	p = &ast.Param{
@@ -365,7 +365,7 @@ func TestValidXMLParamValue(t *testing.T) {
 			{Value: &ast.Attribute{Value: token.String{Value: "-1.2"}}},
 		},
 	}
-	a.Error(validXMLParamValue(p, "", "false"))
+	a.Error(validXMLValue(p, "", "false"))
 }
 
 func TestGenXMLValue(t *testing.T) {
