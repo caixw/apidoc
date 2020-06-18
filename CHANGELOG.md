@@ -16,6 +16,7 @@
 - build.Output 添加了两个配置项：Namespace 和 NamespacePrefix；
 - @xml-wrapped 添加两种语法表示；
 - 重新添加 Pack 和 Unpack，用于打包和解包文档内容；
+- 数据类型现在可以指定子类型，比如 `string.email` 表示邮箱地址，也必定是字符串；
 
 ### Changed
 
