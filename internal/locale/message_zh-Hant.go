@@ -207,7 +207,7 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	UsageDate:    `采用 <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a> 格式表示的時間，比如：<samp>2019-12-16T00:35:48+08:00</samp>。`,
 	UsageType: `用於表示數據的類型值，格式為 <code>primitive[.subtype]</code>，其中 <code>primitive</code> 為基本類型，而 <code>subtype</code> 為子類型，用於對 <code>primitive</code> 進行進壹步的約束，當客戶端無法處理整個類型時，可以按照 <code>primitive</code> 的類型處理。<br />
 	目前支持以下幾種類型：<ul>
-	<li>空值</li>
+	<li>空值；</li>
 	<li><var>bool</var> 布爾值；</li>
 	<li><var>object</var> 對象；</li>
 	<li><var>number</var> 數值類型；</li>
