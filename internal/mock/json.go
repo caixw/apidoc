@@ -123,6 +123,8 @@ func (validator *jsonValidator) valid(d *json.Decoder) error {
 	}
 }
 
+var jsonNumberType = reflect.TypeOf(json.Number("1"))
+
 // 如果 t == "" 表示不需要验证类型，比如 null 可以赋值给任何类型
 func (validator *jsonValidator) validValue(t string, v interface{}) error {
 	field := strings.Join(validator.names, ".")
@@ -140,24 +142,14 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 
 	switch pt {
 	case ast.TypeEmail:
-		if !is.Email(pt) {
+		if !is.Email(v) {
 			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
 	case ast.TypeURL:
-		if !is.URL(pt) {
+		if !is.URL(v) {
 			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
-	case ast.TypeInt:
-		k := reflect.TypeOf(v).Kind()
-		if k != reflect.Int && k != reflect.Int8 && k != reflect.Int16 && k != reflect.Int32 && k != reflect.Int64 &&
-			k != reflect.Uint && k != reflect.Uint8 && k != reflect.Uint16 && k != reflect.Uint32 && k != reflect.Uint64 {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
-		}
-	case ast.TypeFloat:
-		k := reflect.TypeOf(v).Kind()
-		if k != reflect.Float32 && k != reflect.Float64 {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
-		}
+	case ast.TypeInt, ast.TypeFloat: // 数值类型都被 json 解释为 float64，无法判断值是浮点还是整数。
 	}
 
 	if isEnum(p) {
@@ -268,7 +260,7 @@ func (builder *jsonBuilder) encode(p *ast.Param, chkArray bool, g *GenOptions) e
 		return builder.writeIndent().w.WString("]").Err
 	}
 
-	switch p.Type.V() {
+	switch primitive, _ := ast.ParseType(p.Type.V()); primitive {
 	case ast.TypeNone:
 		builder.writeValue(nil)
 	case ast.TypeBool:

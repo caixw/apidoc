@@ -417,7 +417,7 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 }
 
 func genXMLValue(g *GenOptions, p *ast.Param) interface{} {
-	switch p.Type.V() {
+	switch primitive, _ := ast.ParseType(p.Type.V()); primitive {
 	case ast.TypeNone:
 		return ""
 	case ast.TypeBool:

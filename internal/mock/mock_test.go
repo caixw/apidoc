@@ -159,7 +159,7 @@ var data = []*tester{
 			Items: []*ast.Param{
 				{
 					Name: &ast.Attribute{Value: token.String{Value: "id"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeInt}},
 					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 				{
@@ -400,52 +400,52 @@ var data = []*tester{
 				},
 				{
 					Name: &ast.Attribute{Value: token.String{Value: "name"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeEmail}},
 				},
 			},
 		},
 		JSON: `[
     {
         "id": 1024,
-        "name": "1024"
+        "name": "user@example.com"
     },
     {
         "id": 1024,
-        "name": "1024"
+        "name": "user@example.com"
     },
     {
         "id": 1024,
-        "name": "1024"
+        "name": "user@example.com"
     },
     {
         "id": 1024,
-        "name": "1024"
+        "name": "user@example.com"
     },
     {
         "id": 1024,
-        "name": "1024"
+        "name": "user@example.com"
     }
 ]`,
 		XML: `<root>
     <user>
         <id>1024</id>
-        <name>1024</name>
+        <name>user@example.com</name>
     </user>
     <user>
         <id>1024</id>
-        <name>1024</name>
+        <name>user@example.com</name>
     </user>
     <user>
         <id>1024</id>
-        <name>1024</name>
+        <name>user@example.com</name>
     </user>
     <user>
         <id>1024</id>
-        <name>1024</name>
+        <name>user@example.com</name>
     </user>
     <user>
         <id>1024</id>
-        <name>1024</name>
+        <name>user@example.com</name>
     </user>
 </root>`,
 	},
