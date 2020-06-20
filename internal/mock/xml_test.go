@@ -211,7 +211,7 @@ func TestValidXMLName(t *testing.T) {
 	}
 }
 
-func TestParseXMLName(t *testing.T) {
+func TestParseXMLWrappedName(t *testing.T) {
 	a := assert.New(t)
 
 	n := parseXMLWrappedName(&ast.Param{

@@ -144,6 +144,9 @@ func (v *xmlValidator) validXMLElement(start xml.StartElement, p *ast.Param, chk
 		return err
 	}
 
+	var chardata []byte
+	var started bool
+LOOP:
 	for {
 		token, err := v.decoder.Token()
 		if errors.Is(err, io.EOF) && token == nil { // 正常结束
@@ -153,19 +156,28 @@ func (v *xmlValidator) validXMLElement(start xml.StartElement, p *ast.Param, chk
 			return err
 		}
 
-		var chardata []byte
 		switch elem := token.(type) {
 		case xml.StartElement:
 			if chkArray && p.Array.V() && v.validXMLName(elem.Name, p, false) {
-				return v.validXMLElement(elem, p, false, buildXMLField(field, p))
+				if err := v.validXMLElement(elem, p, false, buildXMLField(field, p)); err != nil {
+					return err
+				}
+				chardata = nil
+				started = true
+				continue LOOP
 			}
 
 			for _, pp := range p.Items {
-				if v.validXMLName(elem.Name, pp, false) {
+				if v.validXMLName(elem.Name, pp, true) {
 					if pp.XMLExtract.V() {
-						return v.validXMLElement(elem, p, true, buildXMLField(field, pp))
+						pp = p
 					}
-					return v.validXMLElement(elem, pp, true, buildXMLField(field, p))
+					if err = v.validXMLElement(elem, pp, true, buildXMLField(field, pp)); err != nil {
+						return err
+					}
+					chardata = nil
+					started = true
+					continue LOOP
 				}
 			}
 		case xml.EndElement:
@@ -173,12 +185,14 @@ func (v *xmlValidator) validXMLElement(start xml.StartElement, p *ast.Param, chk
 				return core.NewSyntaxError(core.Location{}, elem.Name.Local, locale.ErrNotFoundEndTag)
 			}
 
-			if chardata != nil {
+			if chardata != nil && !started {
 				return validXMLValue(p, p.Name.V(), string(chardata))
 			}
 			return nil
 		case xml.CharData:
-			chardata = elem
+			if !started {
+				chardata = elem.Copy()
+			}
 		}
 	}
 }
@@ -196,11 +210,7 @@ func (v *xmlValidator) validStartElement(start xml.StartElement, p *ast.Param, c
 		}
 	}
 
-	if p.Array.V() {
-		if !v.validXMLName(start.Name, p, chkArray) {
-			return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
-		}
-	} else if !v.validXMLName(start.Name, p, false) {
+	if !v.validXMLName(start.Name, p, chkArray) {
 		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
 	}
 	return nil

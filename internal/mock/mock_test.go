@@ -652,10 +652,8 @@ func TestNew(t *testing.T) {
 		Header("accept", "application/json").
 		Header("content-type", "application/xml").
 		Body([]byte(`<root>
-    <user>
-        <id>1</id>
-        <name>n</name>
-    </user>
+    <id>1</id>
+    <name>n</name>
 </root>`)).
 		Do().
 		Status(http.StatusCreated).
