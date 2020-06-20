@@ -98,7 +98,7 @@ func (m *mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 		}
 	}
 
-	data, err := buildResponse(m.doc.XMLNamespaces, resp, r, m.indent, m.gen)
+	data, err := m.buildResponse(resp, r)
 	if err != nil {
 		m.handleError(w, r, "response.body.", err)
 		return
@@ -107,7 +107,7 @@ func (m *mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 	w.Header().Set("Content-Type", accept)
 	w.Header().Set("Server", core.Name)
 	for _, item := range resp.Headers {
-		switch item.Type.V() {
+		switch primitive, _ := ast.ParseType(item.Type.V()); primitive {
 		case ast.TypeBool:
 			w.Header().Set(item.Name.V(), strconv.FormatBool(m.gen.generateBool()))
 		case ast.TypeNumber:
@@ -293,13 +293,7 @@ func validSimpleParam(p *ast.Param, val string) error {
 	return nil
 }
 
-func buildResponse(
-	ns []*ast.XMLNamespace,
-	p *ast.Request,
-	r *http.Request,
-	indent string,
-	g *GenOptions,
-) ([]byte, error) {
+func (m *mock) buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 	if p == nil {
 		return nil, nil
 	}
@@ -313,9 +307,9 @@ func buildResponse(
 	contentType := r.Header.Get("Accept")
 	switch contentType {
 	case "application/json":
-		return buildJSON(p, indent, g)
+		return buildJSON(p, m.indent, m.gen)
 	case "application/xml", "text/xml":
-		return buildXML(ns, p, indent, g)
+		return buildXML(m.doc.XMLNamespaces, p, m.indent, m.gen)
 	default:
 		return nil, core.NewSyntaxError(core.Location{}, "headers[accept]", locale.ErrInvalidValue)
 	}

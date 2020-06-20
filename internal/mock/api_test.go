@@ -244,28 +244,34 @@ func TestValidRequest(t *testing.T) {
 func TestBuildResponse(t *testing.T) {
 	a := assert.New(t)
 
-	resp, err := buildResponse(nil, nil, nil, indent, testOptions)
+	m := &mock{
+		indent: indent,
+		gen:    testOptions,
+		doc:    &ast.APIDoc{},
+	}
+
+	resp, err := m.buildResponse(nil, nil)
 	a.NotError(err).Nil(resp)
 
 	// 匹配 json
 	r := httptest.NewRequest(http.MethodGet, "/path", nil)
 	r.Header.Set("accept", "application/json")
 	r.Header.Set("encoding", "xxx")
-	resp, err = buildResponse(nil, dataWithHeader.Type, r, indent, testOptions)
+	resp, err = m.buildResponse(dataWithHeader.Type, r)
 	a.NotError(err).Equal(string(resp), dataWithHeader.JSON)
 
 	// 匹配 xml
 	r = httptest.NewRequest(http.MethodGet, "/path", nil)
 	r.Header.Set("accept", "application/xml")
 	r.Header.Set("encoding", "yyy")
-	resp, err = buildResponse(nil, dataWithHeader.Type, r, indent, testOptions)
+	resp, err = m.buildResponse(dataWithHeader.Type, r)
 	a.NotError(err).Equal(string(resp), dataWithHeader.XML)
 
 	// 无法匹配 content-type
 	r = httptest.NewRequest(http.MethodGet, "/path", nil)
 	r.Header.Set("content-type", "not-exists")
 	r.Header.Set("encoding", "xxx")
-	resp, err = buildResponse(nil, dataWithHeader.Type, r, indent, testOptions)
+	resp, err = m.buildResponse(dataWithHeader.Type, r)
 	a.Error(err).Nil(resp)
 }
 
