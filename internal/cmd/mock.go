@@ -142,6 +142,7 @@ func initMock(command *cmdopt.CmdOpt) {
 	fs.Var(mockEmailDomains, "email.domains", locale.Sprintf(locale.FlagMockEmailDomainsUsage))
 	fs.Var(mockURLDomains, "url.domains", locale.Sprintf(locale.FlagMockURLDomainsUsage))
 
+	fs.StringVar(&mockOptions.ImageBasePrefix, "image.prefix", "/__image__", locale.Sprintf(locale.FlagMockImagePrefixUsage))
 }
 
 func doMock(io.Writer) error {

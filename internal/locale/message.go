@@ -11,7 +11,7 @@ func init() {
 //
 // 有关命令行的相关翻译项，其第一行数据会被提取出来同时作为官网的翻译数据，
 // 需要注释其第一行必须得是一个完整的句子。
-// 所有以 CmdxxUsage 的都是子命令的说明语句。
+// 所有以 CmdXxUsage 的都是子命令的说明语句。
 //
 const (
 	// 与 flag 包相关的处理
@@ -53,6 +53,7 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	FlagMockUsernameSizeUsage  = "生成邮箱地址时，用户名的长度范围。"
 	FlagMockEmailDomainsUsage  = "生成邮箱地址时所可用的域名列表，多个用半角逗号分隔。"
 	FlagMockURLDomainsUsage    = "生成 URL 地址时所可用的域名列表，多个用半角逗号分隔。"
+	FlagMockImagePrefixUsage   = "生成图片类型数据的基地址"
 	FlagDetectRecursiveUsage   = "detect 子命令是否检测子目录的值"
 	FlagDetectDirUsage         = "以 `URI` 形式表示检测项目地址"
 	FlagDetectWrite            = "是否将配置内容写入文件，如果为 true，会将配置内容写入检测目录下的 .apidoc.yaml 文件。"

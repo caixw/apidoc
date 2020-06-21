@@ -42,6 +42,7 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	FlagMockUsernameSizeUsage:  "生成郵箱地址時，用戶名的長度範圍。",
 	FlagMockEmailDomainsUsage:  "生成郵箱地址時所可用的域名列表，多個用半角逗號分隔。",
 	FlagMockURLDomainsUsage:    "生成 URL 地址時所可用的域名列表，多個用半角逗號分隔。",
+	FlagMockImagePrefixUsage:   "生成圖片類型數據的基地址",
 	FlagDetectRecursiveUsage:   "detect 子命令是否檢測子目錄的值",
 	FlagDetectDirUsage:         "以 `URI` 形式表示的檢測項目地址",
 	FlagDetectWrite:            "是否將配置內容寫入文件，如果為 true，會將配置內容寫入檢測目錄下的 .apidoc.yaml 文件。",
