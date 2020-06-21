@@ -4,10 +4,16 @@
 package mock
 
 import (
+	"image"
+	"image/gif"
+	"image/jpeg"
+	"image/png"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/issue9/mux/v2"
+	"github.com/issue9/qheader"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -32,7 +38,7 @@ type mock struct {
 // indent 缩进字符串；
 // servers 用于指定 d.Servers 中每一个服务对应的路由前缀；
 // gen 生成随机数据的函数；
-func New(h *core.MessageHandler, d *ast.APIDoc, indent string, servers map[string]string, gen *GenOptions) (http.Handler, error) {
+func New(h *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, servers map[string]string, gen *GenOptions) (http.Handler, error) {
 	c, err := version.SemVerCompatible(d.APIDoc.V(), ast.Version)
 	if err != nil {
 		return nil, err
@@ -50,6 +56,13 @@ func New(h *core.MessageHandler, d *ast.APIDoc, indent string, servers map[strin
 		gen:     gen,
 	}
 
+	if imageURL != "" {
+		if imageURL[0] != '/' || imageURL[len(imageURL)-1] == '/' {
+			panic("参数 imageURL 必须以 / 开头且不能以 / 结尾")
+		}
+		m.mux.GetFunc(imageURL+"/{path}", m.getImage)
+	}
+
 	if err := m.parse(); err != nil {
 		return nil, err
 	}
@@ -58,7 +71,7 @@ func New(h *core.MessageHandler, d *ast.APIDoc, indent string, servers map[strin
 }
 
 // Load 从本地或是远程加载文档内容
-func Load(h *core.MessageHandler, path core.URI, indent string, servers map[string]string, gen *GenOptions) (http.Handler, error) {
+func Load(h *core.MessageHandler, path core.URI, indent, imageURL string, servers map[string]string, gen *GenOptions) (http.Handler, error) {
 	data, err := path.ReadAll(nil)
 	if err != nil {
 		return nil, err
@@ -74,7 +87,7 @@ func Load(h *core.MessageHandler, path core.URI, indent string, servers map[stri
 	// 加载并验证
 	d := &ast.APIDoc{}
 	d.Parse(h, b)
-	return New(h, d, indent, servers, gen)
+	return New(h, d, indent, imageURL, servers, gen)
 }
 
 func (m *mock) parse() error {
@@ -121,4 +134,55 @@ func hasServer(tags []*ast.Element, key string) bool {
 	}
 
 	return false
+}
+
+func (m *mock) getImage(w http.ResponseWriter, r *http.Request) {
+	width, height := 500, 500
+	var err error
+
+	if ww := r.FormValue("width"); ww != "" {
+		if width, err = strconv.Atoi(ww); err != nil {
+			http.Error(w, locale.Sprintf(locale.ErrInvalidValue), http.StatusBadRequest)
+			return
+		}
+	}
+
+	if hh := r.FormValue("height"); hh != "" {
+		if height, err = strconv.Atoi(hh); err != nil {
+			http.Error(w, locale.Sprintf(locale.ErrInvalidValue), http.StatusBadRequest)
+			return
+		}
+	}
+
+	img := image.NewNRGBA(image.Rect(0, 0, width, height))
+	headers, err := qheader.Accept(r)
+	if err != nil {
+		http.Error(w, locale.Sprintf(locale.ErrInvalidValue), http.StatusBadRequest) // accept invalid
+		return
+	}
+
+	for _, h := range headers {
+		switch strings.ToLower(h.Value) {
+		case "image/jpeg":
+			w.Header().Add("Content-Type", "image/jpeg")
+			if err = jpeg.Encode(w, img, nil); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			return
+		case "image/png":
+			w.Header().Add("Content-Type", "image/png")
+			if err = png.Encode(w, img); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			return
+		case "image/gif":
+			w.Header().Add("Content-Type", "image/gif")
+			if err = gif.Encode(w, img, nil); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			return
+		}
+	}
+
+	http.Error(w, http.StatusText(http.StatusNotAcceptable), http.StatusNotAcceptable)
 }

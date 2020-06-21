@@ -27,6 +27,7 @@ var typeMaps = map[string]string{
 	ast.TypeFloat:  TypeFloat,
 	ast.TypeURL:    TypeString,
 	ast.TypeEmail:  TypeString,
+	ast.TypeImage:  TypeString,
 }
 
 func fromDocType(t string) string {
