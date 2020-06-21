@@ -5,6 +5,7 @@ package mock
 import (
 	"bytes"
 	"image"
+	"image/jpeg"
 	"image/png"
 	"net/http"
 	"net/http/httptest"
@@ -672,6 +673,17 @@ func TestNew(t *testing.T) {
 	img, err := png.Decode(imgBuffer)
 	a.NotError(err).NotNil(img)
 	a.Equal(img.Bounds(), image.Rect(0, 0, 500, 500))
+
+	// image with size
+	imgBuffer = &bytes.Buffer{}
+	srv.Get("/images/test.jpg?width=200&height=50").
+		Header("accept", "image/png;q=0.1,image/jpeg;q=0.9").
+		Do().
+		Status(http.StatusOK).
+		ReadBody(imgBuffer)
+	img, err = jpeg.Decode(imgBuffer)
+	a.NotError(err).NotNil(img)
+	a.Equal(img.Bounds(), image.Rect(0, 0, 200, 50))
 
 	// image 不支持的 accept
 	srv.Get("/images/test.jpg").

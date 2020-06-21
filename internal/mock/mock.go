@@ -169,7 +169,7 @@ func (m *mock) getImage(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 			return
-		case "image/png":
+		case "image/png", "*/*":
 			w.Header().Add("Content-Type", "image/png")
 			if err = png.Encode(w, img); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
