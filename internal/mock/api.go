@@ -304,13 +304,18 @@ func (m *mock) buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 		}
 	}
 
-	contentType := r.Header.Get("Accept")
-	switch contentType {
-	case "application/json":
-		return buildJSON(p, m.indent, m.gen)
-	case "application/xml", "text/xml":
-		return buildXML(m.doc.XMLNamespaces, p, m.indent, m.gen)
-	default:
-		return nil, core.NewSyntaxError(core.Location{}, "headers[accept]", locale.ErrInvalidValue)
+	headers, err := qheader.Accept(r)
+	if err != nil {
+		return nil, err
 	}
+
+	for _, h := range headers {
+		switch strings.ToLower(h.Value) {
+		case "application/json", "*/*":
+			return buildJSON(p, m.indent, m.gen)
+		case "application/xml", "text/xml":
+			return buildXML(m.doc.XMLNamespaces, p, m.indent, m.gen)
+		}
+	}
+	return nil, core.NewSyntaxError(core.Location{}, "headers[accept]", locale.ErrInvalidValue)
 }

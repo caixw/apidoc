@@ -262,7 +262,7 @@ func TestBuildResponse(t *testing.T) {
 
 	// 匹配 xml
 	r = httptest.NewRequest(http.MethodGet, "/path", nil)
-	r.Header.Set("accept", "application/xml")
+	r.Header.Set("accept", "application/json;q=0.1,application/xml")
 	r.Header.Set("encoding", "yyy")
 	resp, err = m.buildResponse(dataWithHeader.Type, r)
 	a.NotError(err).Equal(string(resp), dataWithHeader.XML)
