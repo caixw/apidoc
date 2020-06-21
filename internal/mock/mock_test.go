@@ -3,6 +3,10 @@
 package mock
 
 import (
+	"bytes"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -628,7 +632,7 @@ func TestNew(t *testing.T) {
 	a.Empty(rslt.Errors)
 
 	rslt = messagetest.NewMessageHandler()
-	mock, err := New(rslt.Handler, d, indent, map[string]string{"client": "/test"}, testOptions)
+	mock, err := New(rslt.Handler, d, indent, "/images", map[string]string{"client": "/test"}, testOptions)
 	a.NotError(err).NotNil(mock)
 	srv := rest.NewServer(t, mock, nil)
 
@@ -643,11 +647,10 @@ func TestNew(t *testing.T) {
 	srv.Close()
 
 	rslt = messagetest.NewMessageHandler()
-	mock, err = New(rslt.Handler, d, indent, map[string]string{"test": "/test"}, testOptions)
+	mock, err = New(rslt.Handler, d, indent, "/images", map[string]string{"test": "/test"}, testOptions)
 	a.NotError(err).NotNil(mock)
 	srv = rest.NewServer(t, mock, nil)
 
-	//
 	srv.Post("/test/users", nil).
 		Header("accept", "application/json").
 		Header("content-type", "application/xml").
@@ -660,12 +663,46 @@ func TestNew(t *testing.T) {
 		Header("content-type", "application/json").
 		BodyEmpty()
 
+	// image
+	imgBuffer := &bytes.Buffer{}
+	srv.Get("/images/test.jpg").
+		Header("accept", "image/Png").
+		Do().
+		Status(http.StatusOK).
+		ReadBody(imgBuffer)
+	img, err := png.Decode(imgBuffer)
+	a.NotError(err).NotNil(img)
+	a.Equal(img.Bounds(), image.Rect(0, 0, 500, 500))
+
+	// image with size
+	imgBuffer = &bytes.Buffer{}
+	srv.Get("/images/test.jpg?width=200&height=50").
+		Header("accept", "image/png;q=0.1,image/jpeg;q=0.9").
+		Do().
+		Status(http.StatusOK).
+		ReadBody(imgBuffer)
+	img, err = jpeg.Decode(imgBuffer)
+	a.NotError(err).NotNil(img)
+	a.Equal(img.Bounds(), image.Rect(0, 0, 200, 50))
+
+	// image 不支持的 accept
+	srv.Get("/images/test.jpg").
+		Header("accept", "image/x-png").
+		Do().
+		Status(http.StatusNotAcceptable) // 无效的 accept
+
+	// image 不在指定目录下，则 404
+	srv.Get("/test.jpg").
+		Header("accept", "image/png").
+		Do().
+		Status(http.StatusNotFound)
+
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	// 版本号兼容性
 	rslt = messagetest.NewMessageHandler()
-	mock, err = New(rslt.Handler, &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: "1.0.1"}}}, indent, nil, testOptions)
+	mock, err = New(rslt.Handler, &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: "1.0.1"}}}, indent, "/images", nil, testOptions)
 	a.Error(err).Nil(mock)
 	rslt.Handler.Stop()
 }
@@ -673,13 +710,13 @@ func TestNew(t *testing.T) {
 func TestLoad(t *testing.T) {
 	a := assert.New(t)
 	rslt := messagetest.NewMessageHandler()
-	mock, err := Load(rslt.Handler, "./not-exists", indent, nil, testOptions)
+	mock, err := Load(rslt.Handler, "./not-exists", indent, "/images", nil, testOptions)
 	rslt.Handler.Stop()
 	a.Error(err).Nil(mock)
 
 	// LoadFromPath
 	rslt = messagetest.NewMessageHandler()
-	mock, err = Load(rslt.Handler, asttest.URI(a), indent, map[string]string{"admin": "/admin"}, testOptions)
+	mock, err = Load(rslt.Handler, asttest.URI(a), indent, "/images", map[string]string{"admin": "/admin"}, testOptions)
 	rslt.Handler.Stop()
 	a.NotError(err).NotNil(mock)
 
@@ -689,7 +726,7 @@ func TestLoad(t *testing.T) {
 	defer srv.Close()
 
 	rslt = messagetest.NewMessageHandler()
-	mock, err = Load(rslt.Handler, core.URI(srv.URL+"/index.xml"), indent, map[string]string{"admin": "/admin"}, testOptions)
+	mock, err = Load(rslt.Handler, core.URI(srv.URL+"/index.xml"), indent, "/images", map[string]string{"admin": "/admin"}, testOptions)
 	rslt.Handler.Stop()
 	a.NotError(err).NotNil(mock)
 }

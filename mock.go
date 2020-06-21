@@ -34,6 +34,8 @@ type MockOptions struct {
 	URLDomains        []string // 指定生成 url 类型数据时可用的域名，默认为 example.com
 	EmailDomains      []string // 指定生成 email 类型数据时可用的域名，默认为 example.com
 	EmailUsernameSize Range    // 指定生成 email 类型数据的用户名长度范围，默认 [3,8]
+
+	ImageBasePrefix string // 图片的基地址
 }
 
 var defaultMockOptions = &MockOptions{
@@ -49,6 +51,8 @@ var defaultMockOptions = &MockOptions{
 	URLDomains:        []string{"https://example.com/"},
 	EmailDomains:      []string{"example.com"},
 	EmailUsernameSize: Range{Min: 3, Max: 8},
+
+	ImageBasePrefix: "/__images__",
 }
 
 func (o *MockOptions) gen() *mock.GenOptions {
@@ -77,6 +81,8 @@ func (o *MockOptions) gen() *mock.GenOptions {
 				return o.email()
 			case ast.TypeURL:
 				return o.url()
+			case ast.TypeImage:
+				return o.image()
 			}
 			return rands.String(o.StringSize.Min, o.StringSize.Max, o.StringAlpha)
 		},
@@ -122,32 +128,40 @@ func (o *MockOptions) email() string {
 	return username + "@" + domain
 }
 
+func (o *MockOptions) image() string {
+	path := o.ImageBasePrefix
+	if path[len(path)-1] != '/' {
+		path += "/"
+	}
+	return path + rands.String(1, 5, rands.AlphaNumber)
+}
+
 // Mock 生成 Mock 中间件
 //
 // data 为文档内容；
 // options 用于生成 Mock 数据的随机项，如果为 nil，则会使用一些默认值；
-func Mock(h *core.MessageHandler, data []byte, options *MockOptions) (http.Handler, error) {
-	options, err := mergeMockOptions(options)
+func Mock(h *core.MessageHandler, data []byte, o *MockOptions) (http.Handler, error) {
+	o, err := mergeMockOptions(o)
 	if err != nil {
 		return nil, err
 	}
 
 	d := &ast.APIDoc{}
 	d.Parse(h, core.Block{Data: data})
-	return mock.New(h, d, options.Indent, options.Servers, options.gen())
+	return mock.New(h, d, o.Indent, o.ImageBasePrefix, o.Servers, o.gen())
 }
 
 // MockFile 生成 Mock 中间件
 //
 // path 为文档路径，可以是本地路径也可以是 URL，根据是否为 http 或是 https 开头做判断；
 // options 用于生成 Mock 数据的随机项，如果为 nil，则会使用一些默认值；
-func MockFile(h *core.MessageHandler, path core.URI, options *MockOptions) (http.Handler, error) {
-	options, err := mergeMockOptions(options)
+func MockFile(h *core.MessageHandler, path core.URI, o *MockOptions) (http.Handler, error) {
+	o, err := mergeMockOptions(o)
 	if err != nil {
 		return nil, err
 	}
 
-	return mock.Load(h, path, options.Indent, options.Servers, options.gen())
+	return mock.Load(h, path, o.Indent, o.ImageBasePrefix, o.Servers, o.gen())
 }
 
 func mergeMockOptions(options *MockOptions) (*MockOptions, error) {

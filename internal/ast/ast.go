@@ -39,6 +39,7 @@ const (
 	TypeFloat  = "number.float"
 	TypeEmail  = "string.email"
 	TypeURL    = "string.url"
+	TypeImage  = "string.image" // 表示图片的 URL
 )
 
 // 富文本可用的类型

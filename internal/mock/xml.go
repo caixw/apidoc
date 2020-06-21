@@ -255,7 +255,7 @@ func validXMLValue(p *ast.Param, field, v string) error {
 		if !is.URL(v) {
 			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
-	case ast.TypeString, ast.TypeObject:
+	case ast.TypeString, ast.TypeObject, ast.TypeImage:
 		return nil
 	default:
 		panic(fmt.Sprintf("文档中类型定义错误 %s", p.Type.V()))

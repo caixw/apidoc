@@ -87,6 +87,12 @@ func TestMockOptions_gen(t *testing.T) {
 		a.True(is.URL(str))
 	}
 
+	// String.Image
+	for i := 0; i < count; i++ {
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.image"}}})
+		a.True(strings.HasPrefix(str, defaultMockOptions.ImageBasePrefix))
+	}
+
 	// Number
 	defaultMockOptions.EnableFloat = false
 	g = defaultMockOptions.gen()
