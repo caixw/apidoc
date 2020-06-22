@@ -169,16 +169,24 @@
 </xsl:attribute>
 
     <summary>
-        <a class="link" href="#{$id}">&#128279;</a> <!-- 链接符号 -->
+        <div class="action">
+            <a class="link" href="#{$id}">&#128279;</a> <!-- 链接符号 -->
 
-        <span class="action"><xsl:value-of select="@method" /></span>
-        <span>
-            <xsl:call-template name="deprecated">
-                <xsl:with-param name="deprecated" select="@deprecated" />
-            </xsl:call-template>
+            <span class="method"><xsl:value-of select="@method" /></span>
+            <span>
+                <xsl:call-template name="deprecated">
+                    <xsl:with-param name="deprecated" select="@deprecated" />
+                </xsl:call-template>
 
-            <xsl:value-of select="path/@path" />
-        </span>
+                <xsl:value-of select="path/@path" />
+            </span>
+        </div>
+
+        <div class="srv">
+            <xsl:for-each select="server">
+                <xsl:value-of select="." /><xsl:if test="position() != last()">,</xsl:if>
+            </xsl:for-each>
+        </div>
 
         <span class="summary"><xsl:value-of select="@summary" /></span>
     </summary>

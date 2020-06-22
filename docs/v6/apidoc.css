@@ -238,6 +238,8 @@ main .api>summary {
     border-bottom: 1px solid var(--border-color);
     cursor: pointer;
     line-height: 1;
+    display: flex;
+    justify-content: space-between;
 }
 
 
@@ -245,11 +247,22 @@ main details.api:not([open])>summary {
     border: none;
 }
 
-main .api>summary .action {
-    min-width: 4rem;
-    font-weight: bold;
+main .api>summary .action,
+main .api>summary .srv,
+main .api>summary .summary {
+    width: 33%;
     display: inline-block;
-    margin-right: 1rem;
+}
+
+/* 200px 为 --min-width 的值 */
+@media (max-width: calc(200px * 2)) {
+    main .api>summary .action,
+    main .api>summary .summary {
+        width: 50%;
+    }
+    main .api>summary .srv {
+        display: none;
+    }
 }
 
 main .api>summary .link {
@@ -257,11 +270,18 @@ main .api>summary .link {
     text-decoration: none;
 }
 
+main .api>summary .method {
+    min-width: 4rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 1rem;
+}
+
 main .api .callback .summary,
 main .api>summary .summary {
-    float: right;
     font-weight: 400;
     opacity: .8;
+    text-align: right;
 }
 
 main .api .description {
