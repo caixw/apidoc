@@ -106,6 +106,11 @@ func (f *folder) searchHover(uri core.URI, pos core.Position, hover *protocol.Ho
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_publishDiagnostics
 func (s *server) textDocumentPublishDiagnostics(uri core.URI, errs []*core.SyntaxError, warns []*core.SyntaxError) error {
+
+	if s.clientCapabilities.TextDocument.PublishDiagnostics.RelatedInformation == false {
+		return nil
+	}
+
 	p := &protocol.PublishDiagnosticsParams{
 		URI:         uri,
 		Diagnostics: make([]protocol.Diagnostic, 0, len(errs)+len(warns)),
