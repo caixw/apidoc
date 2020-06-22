@@ -125,7 +125,7 @@ var (
 func initMock(command *cmdopt.CmdOpt) {
 	fs := command.New("mock", locale.Sprintf(locale.CmdMockUsage), doMock)
 	fs.StringVar(&mockPort, "p", ":8080", locale.Sprintf(locale.FlagMockPortUsage))
-	fs.Var(mockServers, "s", locale.Sprintf(locale.FlagMockServersUsage))
+	fs.Var(mockServers, "servers", locale.Sprintf(locale.FlagMockServersUsage))
 	fs.Var(&mockPath, "path", locale.Sprintf(locale.FlagMockPathUsage))
 
 	fs.StringVar(&mockOptions.Indent, "indent", "\t", locale.Sprintf(locale.FlagMockIndentUsage))
