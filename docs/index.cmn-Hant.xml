@@ -50,7 +50,7 @@
  *             <param name="name" type="string" summary="姓名" />
  *         </param>
  *     </response>
- *     <response status="500" mimetype="application/json" type="obj">
+ *     <response status="500" mimetype="application/json" type="object">
  *         <param name="code" type="int" summary="錯誤代碼" />
  *         <param name="msg" type="string" summary="錯誤內容" />
  *     </response>
