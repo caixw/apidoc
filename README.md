@@ -54,7 +54,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 ## 使用
 
-在 <https://github.com/caixw/apidoc/releases> 提供了主流系统下可用软件，可直接下载使用。
+在 <https://github.com/caixw/apidoc/releases> 提供了部分主流系统下的可用二进制，可直接下载使用。
 如果你使用的系统不在此列，则需要手动下载编译。
 
 支持多种本地化语言，默认情况下会根据当前系统所使用的语言进行调整。
@@ -72,7 +72,7 @@ LANG=lang apidoc
 
 ```go
 // 初始本地化内容
-apidoc.Init(language.MustParse("zh-Hans"))
+apidoc.SetLocale(language.MustParse("zh-Hans"))
 
 // 可以自定义实现具体的错误处理方式
 h := message.NewHandler(...)
