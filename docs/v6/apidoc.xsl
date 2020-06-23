@@ -168,6 +168,10 @@
     </xsl:for-each>
 </xsl:attribute>
 
+    <!-- 
+    bug: 将 summary 作为 flex 容器在 safari 会出错。
+    https://bugs.webkit.org/show_bug.cgi?id=190065
+    -->
     <summary>
         <div class="action">
             <a class="link" href="#{$id}">&#128279;</a> <!-- 链接符号 -->
@@ -182,13 +186,15 @@
             </span>
         </div>
 
-        <div class="srv">
-            <xsl:for-each select="server">
-                <xsl:value-of select="." /><xsl:if test="position() != last()">,</xsl:if>
-            </xsl:for-each>
-        </div>
+        <div class="right">
+            <span class="srv">
+                <xsl:for-each select="server">
+                    <xsl:value-of select="." /><xsl:if test="position() != last()">, </xsl:if>
+                </xsl:for-each>
+            </span>
 
-        <span class="summary"><xsl:value-of select="@summary" /></span>
+            <span class="summary"><xsl:value-of select="@summary" /></span>
+        </div>
     </summary>
 
     <xsl:if test="description">
@@ -221,7 +227,7 @@
 
 <!-- 回调内容 -->
 <xsl:template match="/apidoc/api/callback">
-<div class="callback" data-method="{./@method},">
+<div class="callback" data-method="{./@method}">
     <h3>
         <xsl:copy-of select="$locale-callback" />
         <span class="summary"><xsl:value-of select="@summary" /></span>
