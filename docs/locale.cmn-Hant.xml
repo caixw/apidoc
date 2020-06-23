@@ -177,6 +177,7 @@
 	<li><var>string</var> 字符串；</li>
 	<li><var>string.url</var> URL 類型的字符串；</li>
 	<li><var>string.email</var> email 類型的字符串；</li>
+	<li><var>string.image</var> 表示圖片地址的 URL，在 mock 中該類型會生成壹張指定大小的圖片，圖片大小由查詢參數 <code>width</code> 和 <code>height</code> 指定，圖片類型由報頭 <code>Accept</code> 指定，目前允許 <var>image/png</var>、<var>image/jpeg</var> 和 <var>image/gif</var> 三種類型；</li>
 	</ul></usage>
 		</type>
 		<type name="number">

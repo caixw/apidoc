@@ -217,6 +217,7 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	<li><var>string</var> 字符串；</li>
 	<li><var>string.url</var> URL 类型的字符串；</li>
 	<li><var>string.email</var> email 类型的字符串；</li>
+	<li><var>string.image</var> 表示图片地址的 URL，在 mock 中该类型会生成一张指定大小的图片，图片大小由查询参数 <code>width</code> 和 <code>height</code> 指定，图片类型由报头 <code>Accept</code> 指定，目前允许 <var>image/png</var>、<var>image/jpeg</var> 和 <var>image/gif</var> 三种类型；</li>
 	</ul>`,
 
 	// 以下是有关 build.Config 的字段说明
