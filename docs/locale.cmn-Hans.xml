@@ -178,6 +178,9 @@
 	<li><var>string.url</var> URL 类型的字符串；</li>
 	<li><var>string.email</var> email 类型的字符串；</li>
 	<li><var>string.image</var> 表示图片地址的 URL，在 mock 中该类型会生成一张指定大小的图片，图片大小由查询参数 <code>width</code> 和 <code>height</code> 指定，图片类型由报头 <code>Accept</code> 指定，目前允许 <var>image/png</var>、<var>image/jpeg</var> 和 <var>image/gif</var> 三种类型；</li>
+	<li><var>string.date</var> 表示 <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC3339</a> 中的 <code>full-date</code> 日期格式，比如 <samp>2020-01-02</samp>；</li>
+	<li><var>string.time</var> 表示 <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC3339</a> 中的 <code>full-time</code> 时间格式，比如 <samp>15:16:17Z</samp>、<samp>15:16:17+08:00</samp>；</li>
+	<li><var>string.date-time</var> 表示 <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC3339</a> 中的 <code>date-time</code> 格式，比如 <samp>2020-01-02T15:16:17-08:00</samp>；</li>
 	</ul></usage>
 		</type>
 		<type name="number">

@@ -33,16 +33,17 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	FlagMockPortUsage:          "指定 mock 服務的端口號",
 	FlagMockServersUsage:       "指定 mock 服務時，文檔中 server 名對應的路由前綴。",
 	FlagMockIndentUsage:        "指定縮進內容",
-	FlagMockSliceSizeUsage:     "生成數組大小的範圍",
-	FlagMockNumSliceUsage:      "生成數值類型的數據時的數值範圍",
+	FlagMockSliceSizeUsage:     "生成數組大小的範圍，格式為 [min,max]。",
+	FlagMockNumSliceUsage:      "生成數值類型的數據時的數值範圍，格式為 [min,max]。",
 	FlagMockNumFloatUsage:      "生成的數值是否允許有浮點數存在",
 	FlagMockPathUsage:          "指定文檔的 `URI` 格式路徑，根據此文檔的內容生成 mock 數據。",
-	FlagMockStringSizeUsage:    "生成字符串類型數據時字符串的長度範圍",
+	FlagMockStringSizeUsage:    "生成字符串類型數據時字符串的長度範圍，格式為 [min,max]。",
 	FlagMockStringAlphaUsage:   "生成的字符串中允許出現的字符",
-	FlagMockUsernameSizeUsage:  "生成郵箱地址時，用戶名的長度範圍。",
+	FlagMockUsernameSizeUsage:  "生成郵箱地址時，用戶名的長度範圍，格式為 [min,max]。",
 	FlagMockEmailDomainsUsage:  "生成郵箱地址時所可用的域名列表，多個用半角逗號分隔。",
 	FlagMockURLDomainsUsage:    "生成 URL 地址時所可用的域名列表，多個用半角逗號分隔。",
 	FlagMockImagePrefixUsage:   "生成圖片類型數據的基地址",
+	FlagMockDateRangeUsage:     "生成可用的日期範圍，格式為 [start,end]，start 和 end 均為 RFC3339 格式。",
 	FlagDetectRecursiveUsage:   "detect 子命令是否檢測子目錄的值",
 	FlagDetectDirUsage:         "以 `URI` 形式表示的檢測項目地址",
 	FlagDetectWrite:            "是否將配置內容寫入文件，如果為 true，會將配置內容寫入檢測目錄下的 .apidoc.yaml 文件。",
@@ -218,6 +219,9 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	<li><var>string.url</var> URL 類型的字符串；</li>
 	<li><var>string.email</var> email 類型的字符串；</li>
 	<li><var>string.image</var> 表示圖片地址的 URL，在 mock 中該類型會生成壹張指定大小的圖片，圖片大小由查詢參數 <code>width</code> 和 <code>height</code> 指定，圖片類型由報頭 <code>Accept</code> 指定，目前允許 <var>image/png</var>、<var>image/jpeg</var> 和 <var>image/gif</var> 三種類型；</li>
+	<li><var>string.date</var> 表示 <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC3339</a> 中的 <code>full-date</code> 日期格式，比如 <samp>2020-01-02</samp>；</li>
+	<li><var>string.time</var> 表示 <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC3339</a> 中的 <code>full-time</code> 時間格式，比如 <samp>15:16:17Z</samp>、<samp>15:16:17+08:00</samp>；</li>
+	<li><var>string.date-time</var> 表示 <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC3339</a> 中的 <code>date-time</code> 格式，比如 <samp>2020-01-02T15:16:17-08:00</samp>；</li>
 	</ul>`,
 
 	// 以下是有关 build.Config 的字段说明

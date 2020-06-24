@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/issue9/mux/v2"
 	"github.com/issue9/qheader"
@@ -185,4 +186,21 @@ func (m *mock) getImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Error(w, http.StatusText(http.StatusNotAcceptable), http.StatusNotAcceptable)
+}
+
+func isValidRFC3339Date(val string) bool {
+	_, err := time.Parse(time.RFC3339, val+"T01:01:01Z")
+	return err == nil
+}
+
+func isValidRFC3339Time(val string) bool {
+	return isValidRFC3339DateTime("2020-01-02T" + val)
+}
+
+func isValidRFC3339DateTime(val string) bool {
+	if _, err := time.Parse(time.RFC3339, val); err != nil {
+		_, err := time.Parse(time.RFC3339Nano, val)
+		return err == nil
+	}
+	return true
 }

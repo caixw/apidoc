@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/issue9/assert"
 	"github.com/issue9/assert/rest"
@@ -91,6 +92,31 @@ func TestMockOptions_gen(t *testing.T) {
 	for i := 0; i < count; i++ {
 		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.image"}}})
 		a.True(strings.HasPrefix(str, defaultMockOptions.ImageBasePrefix))
+	}
+
+	// String.Date
+	for i := 0; i < count; i++ {
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.date"}}})
+		t, err := time.Parse(rfc3339Date, str)
+		a.NotError(err).
+			True(t.After(defaultMockOptions.DateStart)).
+			True(t.Before(defaultMockOptions.DateEnd))
+	}
+
+	// String.DateTime
+	for i := 0; i < count; i++ {
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.date-time"}}})
+		t, err := time.Parse(time.RFC3339, str)
+		a.NotError(err).
+			True(t.After(defaultMockOptions.DateStart)).
+			True(t.Before(defaultMockOptions.DateEnd))
+	}
+
+	// String.Time
+	for i := 0; i < count; i++ {
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.time"}}})
+		_, err := time.Parse(rfc3339Time, str)
+		a.NotError(err)
 	}
 
 	// Number

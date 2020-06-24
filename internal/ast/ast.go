@@ -30,16 +30,19 @@ const (
 
 // 表示支持的各种数据类型
 const (
-	TypeNone   = "" // 空值表示不输出任何内容，仅用于 Request
-	TypeBool   = "bool"
-	TypeObject = "object"
-	TypeNumber = "number"
-	TypeString = "string"
-	TypeInt    = "number.int"
-	TypeFloat  = "number.float"
-	TypeEmail  = "string.email"
-	TypeURL    = "string.url"
-	TypeImage  = "string.image" // 表示图片的 URL
+	TypeNone     = "" // 空值表示不输出任何内容，仅用于 Request
+	TypeBool     = "bool"
+	TypeObject   = "object"
+	TypeNumber   = "number"
+	TypeString   = "string"
+	TypeInt      = "number.int"
+	TypeFloat    = "number.float"
+	TypeEmail    = "string.email"
+	TypeURL      = "string.url"
+	TypeImage    = "string.image"     // 表示图片的 URL
+	TypeDate     = "string.date"      // RFC3339 full-date
+	TypeTime     = "string.time"      // RFC3339 full-time
+	TypeDateTime = "string.date-time" // RFC3339 full-date + full-time
 )
 
 // 富文本可用的类型

@@ -5,13 +5,17 @@ package cmd
 import (
 	"flag"
 	"testing"
+	"time"
 
 	"github.com/issue9/assert"
 )
 
-var _ flag.Getter = servers{}
-var _ flag.Getter = &slice{}
-var _ flag.Getter = &size{}
+var (
+	_ flag.Getter = servers{}
+	_ flag.Getter = &slice{}
+	_ flag.Getter = &size{}
+	_ flag.Getter = &dateRange{}
+)
 
 func TestServers_Set(t *testing.T) {
 	a := assert.New(t)
@@ -53,6 +57,24 @@ func TestSize_Set(t *testing.T) {
 
 	a.NotError(s.Set("1,5"))
 	a.Equal(s.Min, 1).Equal(s.Max, 5)
+}
+
+func TestDateRange_Set(t *testing.T) {
+	a := assert.New(t)
+
+	d := &dateRange{}
+	a.Error(d.Set(""))
+
+	a.Error(d.Set(","))
+	a.Error(d.Set("2020-01-02T17:04:15+01:00,"))
+	a.Error(d.Set(",2020-01-07T17:04:15+01:00"))
+
+	a.NotError(d.Set("2020-01-02T17:04:15+01:00,2020-01-05T17:04:15+01:00"))
+	start, err := time.Parse(time.RFC3339, "2020-01-02T17:04:15+01:00")
+	a.NotError(err)
+	end, err := time.Parse(time.RFC3339, "2020-01-05T17:04:15+01:00")
+	a.NotError(err)
+	a.Equal(d.start, start).Equal(d.end, end)
 }
 
 func TestSlice_Set(t *testing.T) {

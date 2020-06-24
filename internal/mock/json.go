@@ -149,6 +149,30 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 		if !is.URL(v) {
 			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
+	case ast.TypeDate:
+		vv, ok := v.(string)
+		if !ok {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+		if !isValidRFC3339Date(vv) {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeTime:
+		vv, ok := v.(string)
+		if !ok {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+		if !isValidRFC3339Time(vv) {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeDateTime:
+		vv, ok := v.(string)
+		if !ok {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+		if !isValidRFC3339DateTime(vv) {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
 	case ast.TypeImage: // 可能是相对站点的根路径，不作类型检测
 	case ast.TypeInt, ast.TypeFloat: // 数值类型都被 json 解释为 float64，无法判断值是浮点还是整数。
 	}

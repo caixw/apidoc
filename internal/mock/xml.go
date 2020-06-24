@@ -255,6 +255,18 @@ func validXMLValue(p *ast.Param, field, v string) error {
 		if !is.URL(v) {
 			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
 		}
+	case ast.TypeDate:
+		if !isValidRFC3339Date(v) {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeTime:
+		if !isValidRFC3339Time(v) {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
+	case ast.TypeDateTime:
+		if !isValidRFC3339DateTime(v) {
+			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		}
 	case ast.TypeString, ast.TypeObject, ast.TypeImage:
 		return nil
 	default:

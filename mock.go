@@ -5,6 +5,7 @@ package apidoc
 import (
 	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/issue9/rands"
 	"github.com/issue9/utils"
@@ -36,6 +37,10 @@ type MockOptions struct {
 	EmailUsernameSize Range    // 指定生成 email 类型数据的用户名长度范围，默认 [3,8]
 
 	ImageBasePrefix string // 图片的基地址
+
+	DateStart time.Time
+	DateEnd   time.Time
+	dateSize  int64 // 由 gen 方法中根据 DateStart 和 DateEnd 生成
 }
 
 var defaultMockOptions = &MockOptions{
@@ -53,9 +58,15 @@ var defaultMockOptions = &MockOptions{
 	EmailUsernameSize: Range{Min: 3, Max: 8},
 
 	ImageBasePrefix: "/__images__",
+
+	DateStart: time.Now().Add(-time.Hour * 24 * 365),
+	DateEnd:   time.Now().Add(time.Hour * 24 * 3650),
 }
 
 func (o *MockOptions) gen() *mock.GenOptions {
+	// TODO 返回错误信息？把 gen 当作  sanitize 使用
+	o.dateSize = o.DateEnd.Unix() - o.DateStart.Unix() - 86400
+
 	return &mock.GenOptions{
 		Number: func(p *ast.Param) interface{} {
 			switch p.Type.V() {
@@ -83,6 +94,12 @@ func (o *MockOptions) gen() *mock.GenOptions {
 				return o.url()
 			case ast.TypeImage:
 				return o.image()
+			case ast.TypeDate:
+				return o.date()
+			case ast.TypeTime:
+				return o.time()
+			case ast.TypeDateTime:
+				return o.dateTime()
 			}
 			return rands.String(o.StringSize.Min, o.StringSize.Max, o.StringAlpha)
 		},
@@ -134,6 +151,25 @@ func (o *MockOptions) image() string {
 		path += "/"
 	}
 	return path + rands.String(1, 5, rands.AlphaNumber)
+}
+
+const (
+	rfc3339Date = "2006-01-02"
+	rfc3339Time = "15:04:05Z07:00"
+)
+
+func (o *MockOptions) date() string {
+	s := rand.Int63n(o.dateSize)
+	return o.DateStart.Add(time.Duration(s) * time.Second).Format(rfc3339Date)
+}
+
+func (o *MockOptions) time() string {
+	d := rand.Int63n(86400)
+	return o.DateStart.Add(time.Duration(d) * time.Second).Format(rfc3339Time)
+}
+
+func (o *MockOptions) dateTime() string {
+	return o.date() + "T" + o.time()
 }
 
 // Mock 生成 Mock 中间件

@@ -123,6 +123,36 @@ var data = []*tester{
 		JSON: "1024",
 		XML:  "<root><![CDATA[1024]]></root>",
 	},
+	{
+		Title: "date-cdata",
+		Type: &ast.Request{
+			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeDate}},
+			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			XML:  ast.XML{XMLCData: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
+		},
+		JSON: `"2020-01-02"`,
+		XML:  "<root><![CDATA[2020-01-02]]></root>",
+	},
+	{
+		Title: "time-cdata",
+		Type: &ast.Request{
+			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeTime}},
+			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			XML:  ast.XML{XMLCData: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
+		},
+		JSON: `"15:16:17Z"`,
+		XML:  "<root><![CDATA[15:16:17Z]]></root>",
+	},
+	{
+		Title: "date-time-cdata",
+		Type: &ast.Request{
+			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeDateTime}},
+			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			XML:  ast.XML{XMLCData: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
+		},
+		JSON: `"2020-01-02T15:16:17Z"`,
+		XML:  "<root><![CDATA[2020-01-02T15:16:17Z]]></root>",
+	},
 	{ // namespace
 		Title: "number-cdata-namespace",
 		Type: &ast.Request{
@@ -729,4 +759,34 @@ func TestLoad(t *testing.T) {
 	mock, err = Load(rslt.Handler, core.URI(srv.URL+"/index.xml"), indent, "/images", map[string]string{"admin": "/admin"}, testOptions)
 	rslt.Handler.Stop()
 	a.NotError(err).NotNil(mock)
+}
+
+func TestIsValidRFC3339Date(t *testing.T) {
+	a := assert.New(t)
+	a.True(isValidRFC3339Date("2010-01-02"))
+	a.False(isValidRFC3339Date("2010-01-32")) // 错误的日期
+}
+
+func TestIsValidRFC3339Time(t *testing.T) {
+	a := assert.New(t)
+
+	a.True(isValidRFC3339Time("17:18:19Z"))
+	a.True(isValidRFC3339Time("17:18:19-08:30"))
+	a.True(isValidRFC3339Time("17:18:19+08:30"))
+	a.True(isValidRFC3339Time("17:18:19.22+08:30"))
+
+	a.False(isValidRFC3339Time("17:18:19"))
+	a.False(isValidRFC3339Time("17:18:69Z")) // 错误的日期
+}
+
+func TestIsValidRFC3339DateTime(t *testing.T) {
+	a := assert.New(t)
+
+	a.True(isValidRFC3339DateTime("2020-01-02T17:18:19Z"))
+	a.True(isValidRFC3339DateTime("2020-01-02T17:18:19+08:00"))
+	a.True(isValidRFC3339DateTime("2020-01-02T17:18:19-08:00"))
+
+	a.False(isValidRFC3339DateTime("2020-01-02T17:18:19"))  // 错误的格式
+	a.False(isValidRFC3339DateTime("2020-01-02T17:18:79Z")) // 错误的日期
+	a.False(isValidRFC3339DateTime("2020-01-32T17:18:19Z")) // 错误的日期
 }

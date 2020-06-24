@@ -14,6 +14,12 @@ var testOptions = &GenOptions{
 			return "user@example.com"
 		case ast.TypeURL:
 			return "https://example.com"
+		case ast.TypeDate:
+			return "2020-01-02"
+		case ast.TypeTime:
+			return "15:16:17Z"
+		case ast.TypeDateTime:
+			return "2020-01-02T15:16:17Z"
 		}
 		return "1024"
 	},

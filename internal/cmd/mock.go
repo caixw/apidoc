@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/issue9/cmdopt"
 	"github.com/issue9/errwrap"
@@ -19,9 +20,12 @@ import (
 
 // servers 参数
 type (
-	servers map[string]string
-	size    apidoc.Range
-	slice   []string
+	servers   map[string]string
+	size      apidoc.Range
+	slice     []string
+	dateRange struct {
+		start, end time.Time
+	}
 )
 
 func (s servers) Get() interface{} {
@@ -108,6 +112,39 @@ func (s *slice) String() string {
 	return strings.Join(*s, ",")
 }
 
+func (d dateRange) Get() interface{} {
+	return d
+}
+
+func (d *dateRange) Set(v string) (err error) {
+	pairs := strings.Split(v, ",")
+	if len(pairs) != 2 {
+		return locale.NewError(locale.ErrInvalidFormat)
+	}
+
+	left := strings.TrimSpace(pairs[0])
+	if len(left) == 0 {
+		return locale.NewError(locale.ErrInvalidFormat)
+	}
+	if d.start, err = time.Parse(time.RFC3339, left); err != nil {
+		return err
+	}
+
+	right := strings.TrimSpace(pairs[1])
+	if len(right) == 0 {
+		return locale.NewError(locale.ErrInvalidFormat)
+	}
+	if d.end, err = time.Parse(time.RFC3339, right); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *dateRange) String() string {
+	return d.start.Format(time.RFC3339) + "," + d.end.Format(time.RFC3339)
+}
+
 var (
 	mockPort         string
 	mockServers      = make(servers, 0)
@@ -120,6 +157,7 @@ var (
 	mockUsernameSize = &size{Min: 5, Max: 8}
 	mockEmailDomains = &slice{"example.com"}
 	mockURLDomains   = &slice{"https://example.com"}
+	mockDateRange    = &dateRange{}
 )
 
 func initMock(command *cmdopt.CmdOpt) {
@@ -143,6 +181,8 @@ func initMock(command *cmdopt.CmdOpt) {
 	fs.Var(mockURLDomains, "url.domains", locale.Sprintf(locale.FlagMockURLDomainsUsage))
 
 	fs.StringVar(&mockOptions.ImageBasePrefix, "image.prefix", "/__image__", locale.Sprintf(locale.FlagMockImagePrefixUsage))
+
+	fs.Var(mockDateRange, "date.range", locale.Sprintf(locale.FlagMockDateRangeUsage))
 }
 
 func doMock(io.Writer) error {
