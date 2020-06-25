@@ -43,13 +43,16 @@ func validJSON(p *ast.Request, content []byte) error {
 		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
 	}
 
-	validator := &jsonValidator{
-		param:  p.Param(),
+	validator := newJSONValidator(p)
+	return validator.valid(json.NewDecoder(bytes.NewReader(content)))
+}
+
+func newJSONValidator(r *ast.Request) *jsonValidator {
+	return &jsonValidator{
+		param:  r.Param(),
 		states: []byte{0}, // 状态有默认值
 		names:  []string{},
 	}
-
-	return validator.valid(json.NewDecoder(bytes.NewReader(content)))
 }
 
 func (validator *jsonValidator) valid(d *json.Decoder) error {
@@ -74,9 +77,10 @@ func (validator *jsonValidator) valid(d *json.Decoder) error {
 				validator.popName()
 			case '[':
 				err = validator.validValue(ast.TypeString, v)
-			case 0:
+			case 0: // 表示数据为单个值，比如 "str"
 				err = validator.validValue(ast.TypeString, v)
-			default: // 属性名
+			// case ']', '}': // 格式错误，由 json.Valid 保证
+			default: // case '{' 属性名
 				validator.pushState(':')
 				validator.pushName(v)
 			}

@@ -3,6 +3,8 @@
 package mock
 
 import (
+	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -10,6 +12,27 @@ import (
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/token"
 )
+
+func TestJSONValidator_valid(t *testing.T) {
+	a := assert.New(t)
+
+	r := &ast.Request{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}}
+	v := newJSONValidator(r)
+	d := json.NewDecoder(strings.NewReader(`"str"`))
+	a.NotError(v.valid(d))
+	a.Empty(v.names)
+
+	r = &ast.Request{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}
+	v = newJSONValidator(r)
+	d = json.NewDecoder(strings.NewReader(`5.0`))
+	a.NotError(v.valid(d))
+	a.Empty(v.names)
+
+	r = &ast.Request{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}}
+	v = newJSONValidator(r)
+	d = json.NewDecoder(strings.NewReader(`5.0`))
+	a.Error(v.valid(d))
+}
 
 func TestJSONValidator_find(t *testing.T) {
 	a := assert.New(t)
