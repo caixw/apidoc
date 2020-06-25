@@ -24,7 +24,7 @@ func (m *mock) buildAPI(api *ast.API) http.Handler {
 			m.h.Locale(core.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated.V())
 		}
 
-		if err := validQueryArrayParam(api.Path.Queries, r); err != nil {
+		if err := validQueries(api.Path.Queries, r); err != nil {
 			m.handleError(w, r, "", err)
 			return
 		}
@@ -207,7 +207,7 @@ func (m *mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 	w.WriteHeader(http.StatusBadRequest)
 }
 
-func validQueryArrayParam(queries []*ast.Param, r *http.Request) error {
+func validQueries(queries []*ast.Param, r *http.Request) error {
 	for _, query := range queries {
 		field := "queries[" + query.Name.V() + "]."
 

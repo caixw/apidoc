@@ -373,7 +373,7 @@ func TestValidSimpleParam(t *testing.T) {
 	}
 }
 
-func TestValidQueryArrayParam(t *testing.T) {
+func TestValidQueries(t *testing.T) {
 	a := assert.New(t)
 	data := []*struct {
 		title string
@@ -480,7 +480,7 @@ func TestValidQueryArrayParam(t *testing.T) {
 	}
 
 	for _, item := range data {
-		err := validQueryArrayParam(item.p, item.r)
+		err := validQueries(item.p, item.r)
 		if item.err {
 			a.Error(err, "not error at %s", item.title)
 		} else {
