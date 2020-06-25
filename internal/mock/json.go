@@ -74,6 +74,8 @@ func (validator *jsonValidator) valid(d *json.Decoder) error {
 				validator.popName()
 			case '[':
 				err = validator.validValue(ast.TypeString, v)
+			case 0:
+				err = validator.validValue(ast.TypeString, v)
 			default: // 属性名
 				validator.pushState(':')
 				validator.pushName(v)
