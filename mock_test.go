@@ -53,7 +53,8 @@ func TestMockOptions_email(t *testing.T) {
 func TestMockOptions_gen(t *testing.T) {
 	a := assert.New(t)
 
-	g := defaultMockOptions.gen()
+	g, err := defaultMockOptions.gen()
+	a.NotError(err)
 	a.NotNil(g)
 	count := 500
 
@@ -121,7 +122,8 @@ func TestMockOptions_gen(t *testing.T) {
 
 	// Number
 	defaultMockOptions.EnableFloat = false
-	g = defaultMockOptions.gen()
+	g, err = defaultMockOptions.gen()
+	a.NotError(err)
 	for i := 0; i < count; i++ {
 		numInterface := g.Number(&ast.Param{})
 		num, ok := numInterface.(int)
@@ -132,7 +134,8 @@ func TestMockOptions_gen(t *testing.T) {
 
 	// Number enableFloat
 	defaultMockOptions.EnableFloat = true
-	g = defaultMockOptions.gen()
+	g, err = defaultMockOptions.gen()
+	a.NotError(err)
 	for i := 0; i < count; i++ {
 		numInterface := g.Number(&ast.Param{})
 		num, ok := numInterface.(int)
@@ -149,7 +152,8 @@ func TestMockOptions_gen(t *testing.T) {
 
 	// Number.int
 	defaultMockOptions.EnableFloat = false
-	g = defaultMockOptions.gen()
+	g, err = defaultMockOptions.gen()
+	a.NotError(err)
 	for i := 0; i < count; i++ {
 		numInterface := g.Number(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "number.int"}}})
 		num, ok := numInterface.(int)
@@ -160,7 +164,8 @@ func TestMockOptions_gen(t *testing.T) {
 
 	// Number.float
 	defaultMockOptions.EnableFloat = false
-	g = defaultMockOptions.gen()
+	g, err = defaultMockOptions.gen()
+	a.NotError(err)
 	for i := 0; i < count; i++ {
 		numInterface := g.Number(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "number.float"}}})
 		num, ok := numInterface.(float32)

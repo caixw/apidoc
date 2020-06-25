@@ -12,12 +12,20 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/mock"
 )
 
 // Range 表示数值的范围
 type Range struct {
 	Min, Max int
+}
+
+func (r *Range) sanitize() *core.SyntaxError {
+	if r.Max <= r.Min {
+		return core.NewSyntaxError(core.Location{}, "Min", locale.ErrInvalidValue)
+	}
+	return nil
 }
 
 // MockOptions mock 的一些随机设置项
@@ -63,9 +71,52 @@ var defaultMockOptions = &MockOptions{
 	DateEnd:   time.Now().Add(time.Hour * 24 * 3650),
 }
 
-func (o *MockOptions) gen() *mock.GenOptions {
-	// TODO 返回错误信息？把 gen 当作  sanitize 使用
+func (o *MockOptions) sanitize() *core.SyntaxError {
+	if err := o.SliceSize.sanitize(); err != nil {
+		err.Field = "SliceSize." + err.Field
+		return err
+	}
+
+	if err := o.NumberSize.sanitize(); err != nil {
+		err.Field = "NumberSize." + err.Field
+		return err
+	}
+
+	if err := o.StringSize.sanitize(); err != nil {
+		err.Field = "StringSize." + err.Field
+		return err
+	}
+
+	if err := o.EmailUsernameSize.sanitize(); err != nil {
+		err.Field = "EmailUsernameSize." + err.Field
+		return err
+	}
+
+	if len(o.StringAlpha) == 0 {
+		return core.NewSyntaxError(core.Location{}, "StringAlpha", locale.ErrRequired)
+	}
+
+	if len(o.URLDomains) == 0 {
+		return core.NewSyntaxError(core.Location{}, "URLDomains", locale.ErrRequired)
+	}
+
+	if len(o.EmailDomains) == 0 {
+		return core.NewSyntaxError(core.Location{}, "EmailDomains", locale.ErrRequired)
+	}
+
 	o.dateSize = o.DateEnd.Unix() - o.DateStart.Unix() - 86400
+	if o.dateSize <= 0 {
+		return core.NewSyntaxError(core.Location{}, "DateStart", locale.ErrInvalidValue)
+	}
+
+	return nil
+}
+
+func (o *MockOptions) gen() (*mock.GenOptions, error) {
+	if err := o.sanitize(); err != nil {
+		err.Field = "MockOptions." + err.Field
+		return nil, err
+	}
 
 	return &mock.GenOptions{
 		Number: func(p *ast.Param) interface{} {
@@ -115,7 +166,7 @@ func (o *MockOptions) gen() *mock.GenOptions {
 		Index: func(max int) int {
 			return rand.Intn(max)
 		},
-	}
+	}, nil
 }
 
 func (o *MockOptions) integer() int {
@@ -182,9 +233,14 @@ func Mock(h *core.MessageHandler, data []byte, o *MockOptions) (http.Handler, er
 		return nil, err
 	}
 
+	g, err := o.gen()
+	if err != nil {
+		return nil, err
+	}
+
 	d := &ast.APIDoc{}
 	d.Parse(h, core.Block{Data: data})
-	return mock.New(h, d, o.Indent, o.ImageBasePrefix, o.Servers, o.gen())
+	return mock.New(h, d, o.Indent, o.ImageBasePrefix, o.Servers, g)
 }
 
 // MockFile 生成 Mock 中间件
@@ -197,7 +253,12 @@ func MockFile(h *core.MessageHandler, path core.URI, o *MockOptions) (http.Handl
 		return nil, err
 	}
 
-	return mock.Load(h, path, o.Indent, o.ImageBasePrefix, o.Servers, o.gen())
+	g, err := o.gen()
+	if err != nil {
+		return nil, err
+	}
+
+	return mock.Load(h, path, o.Indent, o.ImageBasePrefix, o.Servers, g)
 }
 
 func mergeMockOptions(options *MockOptions) (*MockOptions, error) {
