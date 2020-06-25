@@ -261,10 +261,8 @@ func TestMockFile(t *testing.T) {
 func TestMergeMockOptions(t *testing.T) {
 	a := assert.New(t)
 
-	o, err := mergeMockOptions(nil)
-	a.NotError(err).Equal(o.EmailDomains, []string{"example.com"})
-
-	o, err = mergeMockOptions(&MockOptions{SliceSize: Range{Min: 0, Max: 5}})
+	o := &MockOptions{SliceSize: Range{Min: 0, Max: 5}}
+	err := o.mergeMockOptions()
 	a.NotError(err).
 		Equal(o.EmailDomains, []string{"example.com"}).
 		Equal(o.SliceSize, Range{Min: 0, Max: 5})

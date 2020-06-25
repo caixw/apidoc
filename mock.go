@@ -72,6 +72,10 @@ var defaultMockOptions = &MockOptions{
 }
 
 func (o *MockOptions) sanitize() *core.SyntaxError {
+	if err := o.mergeMockOptions(); err != nil {
+		return core.NewSyntaxErrorWithError(core.Location{}, "", err)
+	}
+
 	if err := o.SliceSize.sanitize(); err != nil {
 		err.Field = "SliceSize." + err.Field
 		return err
@@ -113,7 +117,9 @@ func (o *MockOptions) sanitize() *core.SyntaxError {
 }
 
 func (o *MockOptions) gen() (*mock.GenOptions, error) {
-	if err := o.sanitize(); err != nil {
+	if o == nil {
+		o = defaultMockOptions
+	} else if err := o.sanitize(); err != nil {
 		err.Field = "MockOptions." + err.Field
 		return nil, err
 	}
@@ -228,11 +234,6 @@ func (o *MockOptions) dateTime() string {
 // data 为文档内容；
 // options 用于生成 Mock 数据的随机项，如果为 nil，则会使用一些默认值；
 func Mock(h *core.MessageHandler, data []byte, o *MockOptions) (http.Handler, error) {
-	o, err := mergeMockOptions(o)
-	if err != nil {
-		return nil, err
-	}
-
 	g, err := o.gen()
 	if err != nil {
 		return nil, err
@@ -248,11 +249,6 @@ func Mock(h *core.MessageHandler, data []byte, o *MockOptions) (http.Handler, er
 // path 为文档路径，可以是本地路径也可以是 URL，根据是否为 http 或是 https 开头做判断；
 // options 用于生成 Mock 数据的随机项，如果为 nil，则会使用一些默认值；
 func MockFile(h *core.MessageHandler, path core.URI, o *MockOptions) (http.Handler, error) {
-	o, err := mergeMockOptions(o)
-	if err != nil {
-		return nil, err
-	}
-
 	g, err := o.gen()
 	if err != nil {
 		return nil, err
@@ -261,13 +257,12 @@ func MockFile(h *core.MessageHandler, path core.URI, o *MockOptions) (http.Handl
 	return mock.Load(h, path, o.Indent, o.ImageBasePrefix, o.Servers, g)
 }
 
-func mergeMockOptions(options *MockOptions) (*MockOptions, error) {
-	if options == nil {
-		return defaultMockOptions, nil
+func (o *MockOptions) mergeMockOptions() error {
+	cp := &MockOptions{}
+	*cp = *defaultMockOptions
+	if err := utils.Merge(false, cp, o); err != nil {
+		return err
 	}
-
-	ret := &MockOptions{}
-	*ret = *defaultMockOptions
-	err := utils.Merge(false, ret, options)
-	return ret, err
+	*o = *cp
+	return nil
 }
