@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/issue9/sliceutil"
+
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
@@ -38,7 +40,7 @@ func (f *folder) openFile(uri core.URI) error {
 	var input *build.Input
 	ext := filepath.Ext(file)
 	for _, i := range f.cfg.Inputs {
-		if inStringSlice(i.Exts, ext) {
+		if sliceutil.Count(i.Exts, func(index int) bool { return i.Exts[index] == ext }) > 0 {
 			input = i
 			break
 		}
@@ -107,13 +109,4 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) 
 	}
 
 	return nil
-}
-
-func inStringSlice(slice []string, key string) bool {
-	for _, v := range slice {
-		if v == key {
-			return true
-		}
-	}
-	return false
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/node"
+	"github.com/issue9/sliceutil"
 )
 
 var tiperType = reflect.TypeOf((*tiper)(nil)).Elem()
@@ -45,7 +46,7 @@ func SearchUsage(v reflect.Value, pos core.Position, exclude ...string) (tip *Ti
 	for i := 0; i < t.NumField(); i++ {
 		tf := t.Field(i)
 		if tf.Anonymous || // 不考虑匿名字段，因为如果有实现接口也已经被当前对象使用。
-			inStringSlice(exclude, tf.Name) { // 需要过滤的字段
+			sliceutil.Count(exclude, func(i int) bool { return exclude[i] == tf.Name }) > 0 { // 需要过滤的字段
 			continue
 		}
 
@@ -81,13 +82,4 @@ func getUsage(v reflect.Value, pos core.Position) *Tip {
 		}
 	}
 	return nil
-}
-
-func inStringSlice(slice []string, key string) bool {
-	for _, v := range slice {
-		if v == key {
-			return true
-		}
-	}
-	return false
 }
