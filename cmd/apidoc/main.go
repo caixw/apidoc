@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/issue9/utils"
+	"github.com/issue9/localeutil"
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v7"
@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	tag, err := utils.GetSystemLanguageTag()
+	tag, err := localeutil.SystemLanguageTag()
 	if err != nil { // 无法获取系统语言，则采用默认值
 		fmt.Fprintln(os.Stderr, err, tag)
 		tag = language.MustParse(locale.DefaultLocaleID)

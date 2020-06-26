@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/issue9/utils"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
 
@@ -51,13 +50,16 @@ func (o *Input) sanitize() error {
 		return core.NewSyntaxError(core.Location{}, "dir", locale.ErrRequired)
 	}
 
-	local, err := o.Dir.File()
+	exists, err := o.Dir.Exists()
 	if err != nil {
 		return core.NewSyntaxErrorWithError(core.Location{}, "dir", err)
 	}
-
-	if !utils.FileExists(local) {
+	if !exists {
 		return core.NewSyntaxError(core.Location{}, "dir", locale.ErrDirNotExists)
+	}
+
+	if scheme, _ := o.Dir.Parse(); scheme != "" && scheme != core.SchemeFile {
+		return core.NewSyntaxError(core.Location{}, "dir", locale.ErrInvalidURIScheme)
 	}
 
 	if len(o.Lang) == 0 {

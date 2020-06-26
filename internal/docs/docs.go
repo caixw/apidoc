@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/issue9/pack"
-	"github.com/issue9/utils"
+	"github.com/issue9/source"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
@@ -33,7 +33,7 @@ var styles = []string{
 	ast.MajorVersion + "/",
 }
 
-var docsDir = core.FileURI(utils.CurrentPath("../../docs"))
+var docsDir = core.FileURI(source.CurrentPath("../../docs"))
 
 // FileInfo 被打包文件的信息
 type FileInfo struct {
