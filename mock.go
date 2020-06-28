@@ -210,19 +210,14 @@ func (o *MockOptions) image() string {
 	return path + rands.String(1, 5, rands.AlphaNumber)
 }
 
-const (
-	rfc3339Date = "2006-01-02"
-	rfc3339Time = "15:04:05Z07:00"
-)
-
 func (o *MockOptions) date() string {
 	s := rand.Int63n(o.dateSize)
-	return o.DateStart.Add(time.Duration(s) * time.Second).Format(rfc3339Date)
+	return o.DateStart.Add(time.Duration(s) * time.Second).Format(ast.DateFormat)
 }
 
 func (o *MockOptions) time() string {
 	d := rand.Int63n(86400)
-	return o.DateStart.Add(time.Duration(d) * time.Second).Format(rfc3339Time)
+	return o.DateStart.Add(time.Duration(d) * time.Second).Format(ast.TimeFormat)
 }
 
 func (o *MockOptions) dateTime() string {

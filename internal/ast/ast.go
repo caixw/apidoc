@@ -51,6 +51,13 @@ const (
 	RichtextTypeMarkdown = "markdown"
 )
 
+// 几种与时间类型相关的格式
+const (
+	DateFormat     = "2006-01-02"     // 对应 TypeDate
+	TimeFormat     = "15:04:05Z07:00" // 对应 TypeTime
+	DateTimeFormat = time.RFC3339     // 对应 DateTime
+)
+
 type (
 	// Number 表示 XML 的数值类型
 	Number struct {

@@ -189,18 +189,16 @@ func (m *mock) getImage(w http.ResponseWriter, r *http.Request) {
 }
 
 func isValidRFC3339Date(val string) bool {
-	_, err := time.Parse(time.RFC3339, val+"T01:01:01Z")
+	_, err := time.Parse(ast.DateFormat, val)
 	return err == nil
 }
 
 func isValidRFC3339Time(val string) bool {
-	return isValidRFC3339DateTime("2020-01-02T" + val)
+	_, err := time.Parse(ast.TimeFormat, val)
+	return err == nil
 }
 
 func isValidRFC3339DateTime(val string) bool {
-	if _, err := time.Parse(time.RFC3339, val); err != nil {
-		_, err := time.Parse(time.RFC3339Nano, val)
-		return err == nil
-	}
-	return true
+	_, err := time.Parse(time.RFC3339, val)
+	return err == nil
 }

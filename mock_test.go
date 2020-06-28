@@ -98,7 +98,7 @@ func TestMockOptions_gen(t *testing.T) {
 	// String.Date
 	for i := 0; i < count; i++ {
 		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.date"}}})
-		t, err := time.Parse(rfc3339Date, str)
+		t, err := time.Parse(ast.DateFormat, str)
 		a.NotError(err).
 			True(t.After(defaultMockOptions.DateStart)).
 			True(t.Before(defaultMockOptions.DateEnd))
@@ -116,7 +116,7 @@ func TestMockOptions_gen(t *testing.T) {
 	// String.Time
 	for i := 0; i < count; i++ {
 		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.time"}}})
-		_, err := time.Parse(rfc3339Time, str)
+		_, err := time.Parse(ast.TimeFormat, str)
 		a.NotError(err)
 	}
 
