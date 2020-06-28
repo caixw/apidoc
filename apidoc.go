@@ -2,7 +2,7 @@
 
 // Package apidoc RESTful API 文档生成工具
 //
-// 可以从代码文件的注释中提取文档内容，生成 API 文档，
+// 从代码文件的注释中提取特定格式的内容，生成 API 文档，
 // 支持大部分的主流的编程语言。
 package apidoc
 

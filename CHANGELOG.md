@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v7.0.0]
+
 ### Added
 
 - 为 param 数据添加 array-style 字段，用以描述数组在查询参数的表现形式；
