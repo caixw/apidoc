@@ -83,6 +83,8 @@ func (f *folder) messageHandler(msg *core.Message) {
 	default:
 		panic("unreached")
 	}
+
+	f.srv.textDocumentPublishDiagnostics(f.URI, f.errors, f.warns)
 }
 
 func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) {
