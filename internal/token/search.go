@@ -5,10 +5,11 @@ package token
 import (
 	"reflect"
 
+	"github.com/issue9/sliceutil"
+
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/node"
-	"github.com/issue9/sliceutil"
 )
 
 var tiperType = reflect.TypeOf((*tiper)(nil)).Elem()

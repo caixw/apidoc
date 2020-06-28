@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/issue9/is"
-	"github.com/issue9/utils"
+	"github.com/issue9/sliceutil"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -22,11 +22,11 @@ func (api *API) Sanitize(p *token.Parser) error {
 	}
 
 	// 对 Servers 和 Tags 查重
-	i := utils.HasDuplication(api.Servers, func(i, j int) bool { return api.Servers[i].V() == api.Servers[j].V() })
+	i := sliceutil.Dup(api.Servers, func(i, j int) bool { return api.Servers[i].V() == api.Servers[j].V() })
 	if i > -1 {
 		return p.NewError(api.Servers[i].Start, api.Servers[i].End, "server", locale.ErrDuplicateValue)
 	}
-	i = utils.HasDuplication(api.Tags, func(i, j int) bool { return api.Tags[i].V() == api.Tags[j].V() })
+	i = sliceutil.Dup(api.Tags, func(i, j int) bool { return api.Tags[i].V() == api.Tags[j].V() })
 	if i > -1 {
 		return p.NewError(api.Tags[i].Start, api.Tags[i].End, "server", locale.ErrDuplicateValue)
 	}
@@ -218,7 +218,7 @@ func chkEnumsType(t *TypeAttribute, enums []*Enum, p *token.Parser) error {
 
 // 返回重复枚举的值
 func getDuplicateEnum(enums []*Enum) (core.Range, bool) {
-	i := utils.HasDuplication(enums, func(i, j int) bool { return enums[i].Value.V() == enums[j].Value.V() })
+	i := sliceutil.Dup(enums, func(i, j int) bool { return enums[i].Value.V() == enums[j].Value.V() })
 	if i > -1 {
 		return enums[i].Range, true
 	}
@@ -226,7 +226,7 @@ func getDuplicateEnum(enums []*Enum) (core.Range, bool) {
 }
 
 func getDuplicateItems(items []*Param) (core.Range, bool) {
-	i := utils.HasDuplication(items, func(i, j int) bool { return items[i].Name.V() == items[j].Name.V() })
+	i := sliceutil.Dup(items, func(i, j int) bool { return items[i].Name.V() == items[j].Name.V() })
 	if i > -1 {
 		return items[i].Range, true
 	}
@@ -298,7 +298,7 @@ func (doc *APIDoc) checkXMLNamespaces(p *token.Parser) error {
 	}
 
 	// 按 URN 查重
-	i := utils.HasDuplication(doc.XMLNamespaces, func(i, j int) bool {
+	i := sliceutil.Dup(doc.XMLNamespaces, func(i, j int) bool {
 		return doc.XMLNamespaces[i].URN.V() == doc.XMLNamespaces[j].URN.V()
 	})
 	if i > -1 {
@@ -307,7 +307,7 @@ func (doc *APIDoc) checkXMLNamespaces(p *token.Parser) error {
 	}
 
 	// 按 prefix 查重
-	i = utils.HasDuplication(doc.XMLNamespaces, func(i, j int) bool {
+	i = sliceutil.Dup(doc.XMLNamespaces, func(i, j int) bool {
 		return doc.XMLNamespaces[i].Prefix.V() == doc.XMLNamespaces[j].Prefix.V()
 	})
 	if i > -1 {
