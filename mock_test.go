@@ -257,13 +257,3 @@ func TestMockFile(t *testing.T) {
 	rslt.Handler.Stop()
 	srv.Close()
 }
-
-func TestMergeMockOptions(t *testing.T) {
-	a := assert.New(t)
-
-	o := &MockOptions{SliceSize: Range{Min: 0, Max: 5}}
-	err := o.mergeMockOptions()
-	a.NotError(err).
-		Equal(o.EmailDomains, []string{"example.com"}).
-		Equal(o.SliceSize, Range{Min: 0, Max: 5})
-}

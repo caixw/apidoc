@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/issue9/rands"
-	"github.com/issue9/utils"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
@@ -72,10 +71,6 @@ var defaultMockOptions = &MockOptions{
 }
 
 func (o *MockOptions) sanitize() *core.SyntaxError {
-	if err := o.mergeMockOptions(); err != nil {
-		return core.NewSyntaxErrorWithError(core.Location{}, "", err)
-	}
-
 	if err := o.SliceSize.sanitize(); err != nil {
 		err.Field = "SliceSize." + err.Field
 		return err
@@ -250,14 +245,4 @@ func MockFile(h *core.MessageHandler, path core.URI, o *MockOptions) (http.Handl
 	}
 
 	return mock.Load(h, path, o.Indent, o.ImageBasePrefix, o.Servers, g)
-}
-
-func (o *MockOptions) mergeMockOptions() error {
-	cp := &MockOptions{}
-	*cp = *defaultMockOptions
-	if err := utils.Merge(false, cp, o); err != nil {
-		return err
-	}
-	*o = *cp
-	return nil
 }
