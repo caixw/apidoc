@@ -222,7 +222,7 @@ func (o *MockOptions) dateTime() string {
 // Mock 生成 Mock 中间件
 //
 // data 为文档内容；
-// options 用于生成 Mock 数据的随机项，如果为 nil，则会使用一些默认值；
+// o 用于生成 Mock 数据的随机项，如果为 nil，则会采用默认配置项；
 func Mock(h *core.MessageHandler, data []byte, o *MockOptions) (http.Handler, error) {
 	g, err := o.gen()
 	if err != nil {
@@ -236,8 +236,8 @@ func Mock(h *core.MessageHandler, data []byte, o *MockOptions) (http.Handler, er
 
 // MockFile 生成 Mock 中间件
 //
-// path 为文档路径，可以是本地路径也可以是 URL，根据是否为 http 或是 https 开头做判断；
-// options 用于生成 Mock 数据的随机项，如果为 nil，则会使用一些默认值；
+// path 为文档路径；
+// o 用于生成 Mock 数据的随机项，如果为 nil，则会采用默认配置项；
 func MockFile(h *core.MessageHandler, path core.URI, o *MockOptions) (http.Handler, error) {
 	g, err := o.gen()
 	if err != nil {
