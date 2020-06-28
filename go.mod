@@ -14,7 +14,6 @@ require (
 	github.com/issue9/sliceutil v0.1.0
 	github.com/issue9/source v0.1.0
 	github.com/issue9/term/v2 v2.1.1
-	github.com/issue9/utils v1.4.1
 	github.com/issue9/version v1.0.4
 	golang.org/x/text v0.3.3
 	gopkg.in/yaml.v2 v2.3.0

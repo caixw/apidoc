@@ -8,7 +8,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/issue9/utils"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 
@@ -98,7 +97,8 @@ func (uri URI) Exists() (bool, error) {
 	scheme, path := uri.Parse()
 	switch scheme {
 	case SchemeFile, "":
-		return utils.FileExists(path), nil
+		_, err := os.Stat(path)
+		return (err == nil || os.IsExist(err)), nil
 	case SchemeHTTP, SchemeHTTPS:
 		return remoteFileIsExists(string(uri))
 	default:
