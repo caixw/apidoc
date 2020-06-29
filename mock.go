@@ -45,9 +45,9 @@ type MockOptions struct {
 
 	ImageBasePrefix string // 图片的基地址
 
-	DateStart time.Time
-	DateEnd   time.Time
-	dateSize  int64 // 由 gen 方法中根据 DateStart 和 DateEnd 生成
+	DateStart time.Time // 指定生成与时间相关的数值时的最小值
+	DateEnd   time.Time // 指定生成与时间相关的数值时的最大值
+	dateSize  int64     // 根据 DateStart 和 DateEnd 生成
 }
 
 var defaultMockOptions = &MockOptions{
@@ -219,7 +219,7 @@ func (o *MockOptions) dateTime() string {
 	return o.date() + "T" + o.time()
 }
 
-// Mock 生成 Mock 中间件
+// Mock 根据文档数据生成 Mock 中间件
 //
 // data 为文档内容；
 // o 用于生成 Mock 数据的随机项，如果为 nil，则会采用默认配置项；
@@ -234,7 +234,7 @@ func Mock(h *core.MessageHandler, data []byte, o *MockOptions) (http.Handler, er
 	return mock.New(h, d, o.Indent, o.ImageBasePrefix, o.Servers, g)
 }
 
-// MockFile 生成 Mock 中间件
+// MockFile 根据文档生成 Mock 中间件
 //
 // path 为文档路径；
 // o 用于生成 Mock 数据的随机项，如果为 nil，则会采用默认配置项；

@@ -2,7 +2,6 @@
 
 [![Test Status](https://github.com/caixw/apidoc/workflows/Test/badge.svg?branch=master)](https://github.com/caixw/apidoc/actions?query=workflow%3ATest)
 [![Latest Release](https://img.shields.io/github/release/caixw/apidoc.svg?style=flat-square)](https://github.com/caixw/apidoc/releases/latest)
-[![Go version](https://img.shields.io/badge/Go-1.13-brightgreen.svg?style=flat)](https://golang.org)
 [![Go Report Card](https://goreportcard.com/badge/github.com/caixw/apidoc)](https://goreportcard.com/report/github.com/caixw/apidoc)
 [![codecov](https://codecov.io/gh/caixw/apidoc/branch/master/graph/badge.svg)](https://codecov.io/gh/caixw/apidoc)
 [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/caixw/apidoc/v7)
@@ -71,6 +70,14 @@ LANG=lang apidoc
 若需要将 apidoc 当作包集成到其它 Go 程序中，可参考以下代码：
 
 ```go
+import (
+    "golang.org/x/text/language"
+
+    "github.com/caixw/apidoc/v7"
+    "github.com/caixw/apidoc/v7/core"
+    "github.com/caixw/apidoc/v7/build"
+)
+
 // 初始本地化内容
 apidoc.SetLocale(language.MustParse("zh-Hans"))
 

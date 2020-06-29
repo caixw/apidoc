@@ -25,15 +25,15 @@ import (
 )
 
 const (
-	// LSPVersion 获取当前支持的 LSP 版本
+	// LSPVersion 当前支持的 language server protocol 版本
 	LSPVersion = lsp.Version
 
-	// DocVersion 获取文档的版本信息
+	// DocVersion 文档的版本
 	DocVersion = ast.Version
 )
 
 type (
-	// Config 配置文件映射的结构
+	// Config 生成文档时所需要的配置项
 	Config = build.Config
 
 	// PackOptions 指定了打包文档内容的参数
@@ -57,9 +57,7 @@ func Locales() []language.Tag {
 
 // Version 当前程序的版本号
 //
-// 包含了版本号，编译日期以及编译是的 Git 记录 ID。
-//
-// 为一个正常的 semver(https://semver.org/lang/zh-CN/) 格式字符串。
+// full 表示是否需要在版本号中包含编译日期和编译时的 Git 记录 ID。
 func Version(full bool) string {
 	if full {
 		return core.FullVersion()
@@ -118,9 +116,8 @@ func ServeLSP(header bool, t, addr string, infolog, errlog *log.Logger) error {
 //
 // 相当于本地版本的 https://apidoc.tools，默认页为 index.xml。
 //
-// 用户可以通过诸如：
+// 用户可以通过以下代码搭建一个简易的 https://apidoc.tools 网站：
 //  http.Handle("/apidoc", apidoc.Static(...))
-// 的代码搭建一个简易的 https://apidoc.tools 网站。
 //
 // /docs 存放了整个项目的文档内容。其中根目录中包含网站的相关内容，
 // 而 /v7 这些以版本号开头的则是查看 xml 文档的工具代码。
