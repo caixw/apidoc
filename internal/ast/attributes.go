@@ -331,7 +331,15 @@ func isValidType(t string) bool {
 	return t == TypeBool ||
 		t == TypeObject ||
 		t == TypeNumber ||
+		t == TypeInt ||
+		t == TypeFloat ||
 		t == TypeString ||
+		t == TypeURL ||
+		t == TypeEmail ||
+		t == TypeImage ||
+		t == TypeDate ||
+		t == TypeTime ||
+		t == TypeDateTime ||
 		t == TypeNone
 }
 

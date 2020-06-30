@@ -4,6 +4,10 @@
 
 ## [v7.0.0]
 
+### Fixed
+
+- 无法识别 string.email 的错误；
+
 ### Added
 
 - 为 param 数据添加 array-style 字段，用以描述数组在查询参数的表现形式；

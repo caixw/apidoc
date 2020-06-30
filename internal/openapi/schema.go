@@ -20,14 +20,17 @@ const (
 )
 
 var typeMaps = map[string]string{
-	ast.TypeBool:   TypeBool,
-	ast.TypeString: TypeString,
-	ast.TypeNumber: TypeDouble,
-	ast.TypeInt:    TypeLong,
-	ast.TypeFloat:  TypeFloat,
-	ast.TypeURL:    TypeString,
-	ast.TypeEmail:  TypeString,
-	ast.TypeImage:  TypeString,
+	ast.TypeBool:     TypeBool,
+	ast.TypeString:   TypeString,
+	ast.TypeNumber:   TypeDouble,
+	ast.TypeInt:      TypeLong,
+	ast.TypeFloat:    TypeFloat,
+	ast.TypeURL:      TypeString,
+	ast.TypeEmail:    TypeString,
+	ast.TypeImage:    TypeString,
+	ast.TypeDate:     TypeString,
+	ast.TypeTime:     TypeString,
+	ast.TypeDateTime: TypeString,
 }
 
 func fromDocType(t string) string {
