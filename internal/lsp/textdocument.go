@@ -21,14 +21,18 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
 
-	for _, content := range in.ContentChanges {
-		ok, err := f.matchPosition(in.TextDocument.URI, content.Range.Start)
-		if err != nil {
-			return err
-		}
-		if !ok {
-			return nil
-		}
+	matched := f.doc.URI == in.TextDocument.URI
+	if !matched {
+		for _, api := range f.doc.APIs {
+			if api.URI == in.TextDocument.URI {
+				matched = true
+				break
+			}
+		} // end for
+	}
+
+	if !matched {
+		return nil
 	}
 
 	f.doc.DeleteURI(in.TextDocument.URI)
@@ -47,25 +51,6 @@ func (s *server) getMatchFolder(uri core.URI) *folder {
 // uri 是否与属于项目匹配
 func (f *folder) matchURI(uri core.URI) bool {
 	return strings.HasPrefix(string(uri), string(f.URI))
-}
-
-func (f *folder) matchPosition(uri core.URI, pos core.Position) (bool, error) {
-	var r core.Range
-	if f.URI == uri {
-		r = f.doc.Range
-	} else {
-		for _, api := range f.doc.APIs {
-			if api.URI == uri {
-				r = api.Range
-				break
-			}
-		}
-	}
-	if r.IsEmpty() {
-		return false, nil
-	}
-
-	return r.Contains(pos), nil
 }
 
 // textDocument/hover
