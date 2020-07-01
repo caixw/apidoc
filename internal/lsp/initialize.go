@@ -110,3 +110,15 @@ func (s *server) exit(bool, *interface{}, *interface{}) error {
 func (s *server) cancel(notify bool, in *protocol.CancelParams, out *interface{}) error {
 	return nil
 }
+
+// 所有以 $/ 开头且未处理的服务由此函数处理
+//
+// $ Notifications and Requests
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#dollarRequests
+func (s *server) dollarHandler(notify bool, in, out *interface{}) error {
+	if !notify {
+		return newError(ErrMethodNotFound, locale.UnimplementedRPC, "$/***")
+	}
+	return nil
+}

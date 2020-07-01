@@ -73,17 +73,12 @@ func serveTCP(header bool, t string, addr string, infolog, errlog *log.Logger) e
 
 func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 	jsonrpcServer := jsonrpc.NewServer()
+	ctx, cancel := context.WithCancel(context.Background())
 
 	jsonrpcServer.RegisterBefore(func(method string) error {
-		if strings.HasPrefix(method, "$/") && !jsonrpcServer.Exists(method) {
-			return newError(ErrMethodNotFound, locale.UnimplementedRPC, method)
-		}
-
 		infolog.Println(locale.Sprintf(locale.RequestRPC, method))
 		return nil
 	})
-
-	ctx, cancel := context.WithCancel(context.Background())
 
 	srv := &server{
 		Conn:       jsonrpcServer.NewConn(t, errlog),
@@ -107,6 +102,10 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 		"textDocument/didChange": srv.textDocumentDidChange,
 		"textDocument/hover":     srv.textDocumentHover,
 	})
+
+	jsonrpcServer.RegisterMatcher(func(method string) bool {
+		return strings.HasPrefix(method, "$/")
+	}, srv.dollarHandler)
 
 	return srv.Serve(ctx)
 }
