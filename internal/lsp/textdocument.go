@@ -68,14 +68,16 @@ func (f *folder) searchHover(uri core.URI, pos core.Position, hover *protocol.Ho
 	var tip *token.Tip
 	if f.doc.URI == uri {
 		tip = token.SearchUsage(reflect.ValueOf(f.doc), pos, "APIs")
-	}
+	} else {
+		for _, api := range f.doc.APIs {
+			if api.URI != uri {
+				continue
+			}
 
-	for _, api := range f.doc.APIs {
-		if api.URI == uri {
 			if tip = token.SearchUsage(reflect.ValueOf(api), pos); tip != nil {
 				break
 			}
-		}
+		} // end for
 	}
 
 	if tip != nil {

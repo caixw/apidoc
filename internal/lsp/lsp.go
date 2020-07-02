@@ -75,11 +75,6 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 	jsonrpcServer := jsonrpc.NewServer()
 	ctx, cancel := context.WithCancel(context.Background())
 
-	jsonrpcServer.RegisterBefore(func(method string) error {
-		infolog.Println(locale.Sprintf(locale.RequestRPC, method))
-		return nil
-	})
-
 	srv := &server{
 		Conn:       jsonrpcServer.NewConn(t, errlog),
 		state:      serverCreated,
@@ -87,6 +82,12 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 		info:       infolog,
 		erro:       errlog,
 	}
+
+	jsonrpcServer.RegisterBefore(func(method string) error {
+		infolog.Println(locale.Sprintf(locale.RequestRPC, method))
+		srv.windowLogInfoMessage(locale.RequestRPC, method)
+		return nil
+	})
 
 	jsonrpcServer.Registers(map[string]interface{}{
 		"initialize":      srv.initialize,
