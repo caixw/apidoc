@@ -49,7 +49,7 @@ type (
 		Mimetypes []*Element `apidoc:"mimetype,elem,usage-apidoc-mimetypes"`
 
 		// 指定命名空间的相关属性
-		XMLNamespaces []*XMLNamespace `apidoc:"xml-namespace,elem,usage-apidoc-namespaces,omitempty"`
+		XMLNamespaces []*XMLNamespace `apidoc:"xml-namespace,elem,usage-apidoc-xml-namespaces,omitempty"`
 	}
 
 	// XMLNamespace 定义命名空间的相关属性

@@ -21,7 +21,7 @@
 			<item name="header" type="param" array="true" required="false">文檔中所有 API 都包含的公共報頭</item>
 			<item name="response" type="request" array="true" required="false">文檔中所有 API 文檔都需要支持的返回內容</item>
 			<item name="mimetype" type="string" array="true" required="true">文檔所支持的 mimetype</item>
-			<item name="xml-namespace" type="xml-namespace" array="true" required="false">usage-apidoc-namespaces</item>
+			<item name="xml-namespace" type="xml-namespace" array="true" required="false">針對 <var>application/xml</var> 類型的內容的命名空間設置</item>
 		</type>
 		<type name="richtext">
 			<usage>富文本內容</usage>
