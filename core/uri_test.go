@@ -29,6 +29,19 @@ func TestFileURI(t *testing.T) {
 	a.NotError(err).Equal("/path", file)
 }
 
+func TestURI_Parse(t *testing.T) {
+	a := assert.New(t)
+
+	scheme, p := URI("/path/file").Parse()
+	a.Empty(scheme).Equal(p, "/path/file")
+
+	scheme, p = URI("c:/path/file").Parse()
+	a.Empty(scheme).Equal(p, "c:/path/file")
+
+	scheme, p = URI("file://c:/path/file").Parse()
+	a.Equal(scheme, SchemeFile).Equal(p, "c:/path/file")
+}
+
 func TestURI_File(t *testing.T) {
 	a := assert.New(t)
 

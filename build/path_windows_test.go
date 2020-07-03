@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: MIT
 
-// +build !windows
-
 package build
 
 import (
@@ -32,6 +30,12 @@ func TestAbs(t *testing.T) {
 			wd:     "file:///wd/",
 			result: hdURI.Append("/path").String(),
 		},
+
+		{
+			path:   "~\\path",
+			wd:     "file:///wd/",
+			result: hdURI.Append("\\path").String(),
+		},
 		{
 			path:   "/path",
 			wd:     "file:///wd/",
@@ -45,22 +49,29 @@ func TestAbs(t *testing.T) {
 		{
 			path:   "path",
 			wd:     "file:///wd/",
-			result: "file:///wd/path",
-		},
-		{
-			path:   "../path",
-			wd:     "file:///wd/",
-			result: "file:///path",
+			result: "file://\\wd\\path",
 		},
 		{
 			path:   "../../path",
 			wd:     "file:///wd/dir",
-			result: "file:///path",
+			result: "file://\\path",
 		},
 		{
 			path:   "./path",
 			wd:     "file:///wd/",
-			result: "file:///wd/path",
+			result: "file://\\wd\\path",
+		},
+
+		{
+			path:   ".\\path",
+			wd:     "file:///wd/",
+			result: "file://\\wd\\path",
+		},
+
+		{
+			path:   "c:\\path",
+			wd:     "file:///wd/",
+			result: "file://c:\\path",
 		},
 	}
 
