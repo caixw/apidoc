@@ -73,7 +73,7 @@ func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
 		}
 	}
 
-	msg := core.NewSyntaxError(core.Location{}, wd.Append(allowConfigFilenames[0]).String(), locale.ErrRequired)
+	msg := core.NewSyntaxError(core.Location{URI: wd.Append(allowConfigFilenames[0])}, "", locale.ErrRequired)
 	h.Error(msg)
 	return nil
 }

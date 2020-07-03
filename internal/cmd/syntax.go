@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-var syntaxDir uri = "./"
+var syntaxDir uri = uri(core.FileURI("./"))
 
 func initSyntax(command *cmdopt.CmdOpt) {
 	fs := command.New("syntax", locale.Sprintf(locale.CmdSyntaxUsage), syntax)
@@ -23,7 +23,7 @@ func syntax(w io.Writer) error {
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	if cfg := build.LoadConfig(h, core.URI(syntaxDir)); cfg != nil {
+	if cfg := build.LoadConfig(h, syntaxDir.URI()); cfg != nil {
 		cfg.CheckSyntax()
 	}
 	return nil

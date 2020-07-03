@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 
 	"github.com/issue9/cmdopt"
 	"github.com/issue9/term/v2/colors"
@@ -57,12 +56,7 @@ func (u uri) Get() interface{} {
 }
 
 func (u *uri) Set(v string) error {
-	p, err := filepath.Abs(filepath.Clean(v))
-	if err != nil {
-		return err
-	}
-
-	*u = uri(core.FileURI(p))
+	*u = uri(core.FileURI(v))
 	return nil
 }
 
