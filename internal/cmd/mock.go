@@ -195,7 +195,7 @@ func doMock(io.Writer) error {
 	mockOptions.NumberSize = apidoc.Range(*mockNumberSize)
 	mockOptions.StringSize = apidoc.Range(*mockStringSize)
 	mockOptions.EmailUsernameSize = apidoc.Range(*mockUsernameSize)
-	handler, err := apidoc.MockFile(h, core.URI(mockPath), mockOptions)
+	handler, err := apidoc.MockFile(h, mockPath.URI(), mockOptions)
 	if err != nil {
 		return err
 	}

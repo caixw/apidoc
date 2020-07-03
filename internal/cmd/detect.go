@@ -31,7 +31,7 @@ func detect(w io.Writer) error {
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	dir := core.URI(detectDir)
+	dir := detectDir.URI()
 	cfg, err := build.DetectConfig(dir, detectRecursive)
 	if err != nil {
 		return err

@@ -40,9 +40,9 @@ func static(io.Writer) (err error) {
 	var handler http.Handler
 
 	if path == "" {
-		handler = apidoc.Static(core.URI(staticDocs), staticStylesheet)
+		handler = apidoc.Static(staticDocs.URI(), staticStylesheet)
 	} else {
-		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, path, staticContentType, core.URI(staticDocs), staticStylesheet)
+		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, path, staticContentType, staticDocs.URI(), staticStylesheet)
 		if err != nil {
 			return err
 		}

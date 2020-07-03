@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/issue9/cmdopt"
 	"github.com/issue9/term/v2/colors"
@@ -56,12 +57,21 @@ func (u uri) Get() interface{} {
 }
 
 func (u *uri) Set(v string) error {
-	*u = uri(core.FileURI(v))
+	p, err := filepath.Abs(filepath.Clean(v))
+	if err != nil {
+		return err
+	}
+
+	*u = uri(core.FileURI(p))
 	return nil
 }
 
 func (u *uri) String() string {
 	return core.URI(*u).String()
+}
+
+func (u uri) URI() core.URI {
+	return core.URI(u)
 }
 
 // Init 初始化 cmdopt.CmdOpt 实例
