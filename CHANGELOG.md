@@ -7,6 +7,7 @@
 ### Fixed
 
 - 无法识别 string.email 的错误；
+- 修正文档中关于 apidoc.xml-namespaces 字段的描述错误；
 
 ### Added
 
