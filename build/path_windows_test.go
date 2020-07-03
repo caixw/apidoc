@@ -4,6 +4,7 @@ package build
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -18,11 +19,14 @@ func TestAbs_windows(t *testing.T) {
 	hdURI := core.FileURI(hd)
 	a.NotEmpty(hdURI)
 
+	root, err := filepath.Abs("/wd/")
+	a.NotError(err)
+
 	data := []*pathTester{
 		{
 			path:   "",
-			wd:     "file:///wd/",
-			result: "file://C:\\wd",
+			wd:     core.FileURI(root).String(),
+			result: core.FileURI(root).String(),
 		},
 		{
 			path:   "~/path",
@@ -47,24 +51,19 @@ func TestAbs_windows(t *testing.T) {
 		},
 		{
 			path:   "path",
-			wd:     "file:///wd/",
-			result: "file://C:\\wd\\path",
-		},
-		{
-			path:   "../../path",
-			wd:     "file:///wd/dir", // 相当于 c:\wd\dir
-			result: "file://C:\\path",
+			wd:     core.FileURI(root).String(),
+			result: core.FileURI(root).Append("path").String(),
 		},
 		{
 			path:   "./path",
-			wd:     "file:///wd/",
-			result: "file://C:\\wd\\path",
+			wd:     core.FileURI(root).String(),
+			result: core.FileURI(root).Append("path").String(),
 		},
 
 		{
 			path:   ".\\path",
-			wd:     "file:///wd/",
-			result: "file://C:\\wd\\path",
+			wd:     core.FileURI(root).String(),
+			result: core.FileURI(root).Append("path").String(),
 		},
 
 		{
@@ -89,6 +88,9 @@ func TestRel_windows(t *testing.T) {
 	hdURI := core.FileURI(hd)
 	a.NotEmpty(hdURI)
 
+	root, err := filepath.Abs("/wd/")
+	a.NotError(err)
+
 	data := []*pathTester{
 		{
 			path:   "",
@@ -101,8 +103,8 @@ func TestRel_windows(t *testing.T) {
 			result: "path",
 		},
 		{
-			path:   "C:/wd/path",
-			wd:     "file:///wd/",
+			path:   root + "/path",
+			wd:     core.FileURI(root).String(),
 			result: "path",
 		},
 		{

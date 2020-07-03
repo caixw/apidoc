@@ -5,6 +5,7 @@ package core
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"runtime"
 	"testing"
 	"unicode/utf8"
@@ -64,7 +65,7 @@ func TestURI_Append(t *testing.T) {
 
 	uri := URI("file://root")
 	a.Equal(uri.Append(""), uri)
-	a.Equal(uri.Append("path"), "file://root/path")
+	a.Equal(uri.Append("path"), "file://root"+string(os.PathSeparator)+"path")
 	a.Equal(uri.Append("/path"), "file://root/path")
 	a.Equal(uri.Append("//path"), "file://root//path")
 

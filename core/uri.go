@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"golang.org/x/text/encoding"
@@ -79,7 +80,7 @@ func (uri URI) Append(path string) URI {
 		}
 	} else {
 		if !isPathSeparator(path[0]) {
-			path = "/" + path
+			path = string(os.PathSeparator) + path
 		}
 	}
 
@@ -165,7 +166,7 @@ func readLocalFile(path string, enc encoding.Encoding) ([]byte, error) {
 
 // 以指定的编码方式读取远程文件内容
 func readRemoteFile(url string, enc encoding.Encoding) ([]byte, error) {
-	resp, err := http.Get(url)
+	resp, err := http.Get(filepath.ToSlash(url))
 	if err != nil {
 		return nil, err
 	}
