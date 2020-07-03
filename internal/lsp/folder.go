@@ -60,11 +60,6 @@ func (f *folder) parseFile(uri core.URI, i *build.Input) {
 	})
 }
 
-func (f *folder) closeFile(uri core.URI) error {
-	f.doc.DeleteURI(uri)
-	return nil
-}
-
 func (f *folder) messageHandler(msg *core.Message) {
 	switch msg.Type {
 	case core.Erro:
