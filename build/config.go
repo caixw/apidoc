@@ -41,11 +41,6 @@ type Config struct {
 	// 输出配置项
 	Output *Output `yaml:"output"`
 
-	// 配置文件所在的目录
-	//
-	// 如果 input 和 output 中涉及到地址为非绝对目录，则使用此值作为基地址。
-	wd core.URI
-
 	h *core.MessageHandler
 }
 
@@ -93,9 +88,8 @@ func loadFile(wd, path core.URI) (*Config, error) {
 	if err = yaml.Unmarshal(data, cfg); err != nil {
 		return nil, core.NewSyntaxErrorWithError(core.Location{URI: path}, "", err)
 	}
-	cfg.wd = wd
 
-	if err := cfg.sanitize(path); err != nil {
+	if err := cfg.sanitize(wd); err != nil {
 		return nil, err
 	}
 
@@ -103,7 +97,9 @@ func loadFile(wd, path core.URI) (*Config, error) {
 }
 
 // file 表示出错时的文件定位
-func (cfg *Config) sanitize(file core.URI) error {
+func (cfg *Config) sanitize(wd core.URI) error {
+	file := wd.Append(allowConfigFilenames[0])
+
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(ast.Version, cfg.Version)
 	if err != nil {
@@ -124,7 +120,7 @@ func (cfg *Config) sanitize(file core.URI) error {
 	for index, i := range cfg.Inputs {
 		field := "inputs[" + strconv.Itoa(index) + "]"
 
-		if i.Dir, err = abs(i.Dir, cfg.wd); err != nil {
+		if i.Dir, err = abs(i.Dir, wd); err != nil {
 			return core.NewSyntaxErrorWithError(core.Location{URI: file}, field+".path", err)
 		}
 
@@ -137,7 +133,7 @@ func (cfg *Config) sanitize(file core.URI) error {
 		}
 	}
 
-	if cfg.Output.Path, err = abs(cfg.Output.Path, cfg.wd); err != nil {
+	if cfg.Output.Path, err = abs(cfg.Output.Path, wd); err != nil {
 		return core.NewSyntaxErrorWithError(core.Location{URI: file}, "output.path", err)
 	}
 	return cfg.Output.sanitize()

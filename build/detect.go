@@ -38,10 +38,9 @@ func DetectConfig(wd core.URI, recursive bool) (*Config, error) {
 		Output: &Output{
 			Path: "./apidoc.xml",
 		},
-		wd: wd,
 	}
 
-	if err = cfg.sanitize(core.URI(allowConfigFilenames[0])); err != nil {
+	if err = cfg.sanitize(wd); err != nil {
 		return nil, err
 	}
 	return cfg, nil

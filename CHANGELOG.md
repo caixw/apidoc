@@ -9,6 +9,10 @@
 - 无法识别 string.email 的错误；
 - 修正文档中关于 apidoc.xml-namespaces 字段的描述错误；
 
+### Changed
+
+- 调整 build.Config 对路径项的处理方式，读取时转换为经对路径，保存时尽量转换为相对路径；
+
 ### Added
 
 - 为 param 数据添加 array-style 字段，用以描述数组在查询参数的表现形式；

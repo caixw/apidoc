@@ -69,7 +69,7 @@ func TestConfig_sanitize(t *testing.T) {
 
 	// 错误的版本号格式
 	conf := &Config{}
-	err := conf.sanitize("./apidoc.yaml")
+	err := conf.sanitize(".")
 	err2, ok := err.(*core.SyntaxError)
 	a.Error(err).
 		True(ok).
@@ -77,7 +77,7 @@ func TestConfig_sanitize(t *testing.T) {
 
 	// 与当前程序的版本号不兼容
 	conf.Version = "1.0"
-	err = conf.sanitize("./apidoc.yaml")
+	err = conf.sanitize(".")
 	err2, ok = err.(*core.SyntaxError)
 	a.Error(err).
 		True(ok).
@@ -85,7 +85,7 @@ func TestConfig_sanitize(t *testing.T) {
 
 	// 未声明 inputs
 	conf.Version = "6.0.1"
-	err = conf.sanitize("./apidoc.yaml")
+	err = conf.sanitize(".")
 	err2, ok = err.(*core.SyntaxError)
 	a.Error(err).
 		True(ok).
@@ -93,7 +93,7 @@ func TestConfig_sanitize(t *testing.T) {
 
 	// 未声明 output
 	conf.Inputs = []*Input{{}}
-	err = conf.sanitize("./apidoc.yaml")
+	err = conf.sanitize(".")
 	err2, ok = err.(*core.SyntaxError)
 	a.Error(err).
 		True(ok).
