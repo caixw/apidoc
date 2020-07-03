@@ -3,10 +3,12 @@
 package build
 
 import (
+	"io/ioutil"
 	"testing"
 	"time"
 
 	"github.com/issue9/assert"
+	"gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -31,6 +33,12 @@ func TestLoadConfig(t *testing.T) {
 	a.NotNil(cfg).
 		Empty(rslt.Errors).
 		Empty(rslt.Successes)
+
+	// 读取的路径不应该是相对路径
+	a.Equal(2, len(cfg.Inputs)).
+		NotEqual(cfg.Inputs[0].Dir, ".").
+		NotEqual(cfg.Inputs[1].Dir, ".").
+		NotEqual(cfg.Output.Path, "./index.xml")
 
 	rslt = messagetest.NewMessageHandler()
 	cfg = LoadConfig(rslt.Handler, docs.Dir()) // 不存在 apidoc 的配置文件
@@ -100,6 +108,14 @@ func TestConfig_Save(t *testing.T) {
 	cfg, err := DetectConfig(wd, true)
 	a.NotError(err).NotNil(cfg)
 	a.NotError(cfg.Save(wd))
+
+	// 通过 save 保存的路径应该是相对路径
+	cfg = &Config{}
+	data, err := ioutil.ReadFile("./" + allowConfigFilenames[0])
+	a.NotError(err).NotNil(data)
+	a.NotError(yaml.Unmarshal(data, cfg))
+	a.Equal(".", cfg.Inputs[0].Dir)
+	a.Equal("apidoc.xml", cfg.Output.Path)
 }
 
 func TestConfig_Test(t *testing.T) {

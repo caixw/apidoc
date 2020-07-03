@@ -32,14 +32,19 @@ func DetectConfig(wd core.URI, recursive bool) (*Config, error) {
 		return nil, core.NewSyntaxError(core.Location{}, "", locale.ErrNotFoundSupportedLang)
 	}
 
-	return &Config{
+	cfg := &Config{
 		Version: ast.Version,
 		Inputs:  inputs,
 		Output: &Output{
 			Path: "./apidoc.xml",
 		},
 		wd: wd,
-	}, nil
+	}
+
+	if err = cfg.sanitize(core.URI(allowConfigFilenames[0])); err != nil {
+		return nil, err
+	}
+	return cfg, nil
 }
 
 // 检测指定目录下的内容，并为其生成一个合适的 Input 实例。

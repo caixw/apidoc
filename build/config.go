@@ -102,6 +102,7 @@ func loadFile(wd, path core.URI) (*Config, error) {
 	return cfg, nil
 }
 
+// file 表示出错时的文件定位
 func (cfg *Config) sanitize(file core.URI) error {
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(ast.Version, cfg.Version)
@@ -143,7 +144,21 @@ func (cfg *Config) sanitize(file core.URI) error {
 }
 
 // Save 将内容保存至 wd 目录下的 .apidoc.yaml 文件
-func (cfg *Config) Save(wd core.URI) error {
+//
+// 保存时会将各个与路径相关的字段尽量改成与 wd 相关的相对路径。
+func (cfg *Config) Save(wd core.URI) (err error) {
+	for _, input := range cfg.Inputs { // 调整成相对路径
+		if input.Dir, err = rel(input.Dir, wd); err != nil {
+			return err
+		}
+	}
+
+	if cfg.Output.Path != "" { // 调整成相对路径
+		if cfg.Output.Path, err = rel(cfg.Output.Path, wd); err != nil {
+			return err
+		}
+	}
+
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
 		return err
