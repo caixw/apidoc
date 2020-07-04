@@ -112,6 +112,20 @@ var langs = []*Language{
 	},
 
 	{
+		DisplayName: "Lua",
+		ID:          "lua",
+		Exts:        []string{".lua"},
+		Blocks: []Blocker{
+			newString("'", "'", `\`),
+			newString("\"", "\"", `\`),
+			newString("[[", "]]", ``),
+			newSingleComment("--"),
+			newMultipleComment("--[[", "]]", "-="),
+			newMultipleComment("--[====[", "]====]", "-="),
+		},
+	},
+
+	{
 		DisplayName: "Pascal/Delphi",
 		ID:          "pascal",
 		Exts:        []string{".pas", ".pp"},
