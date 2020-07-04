@@ -11,6 +11,7 @@
 		<language id="c#">C#</language>
 		<language id="c++">C/C++</language>
 		<language id="d">D</language>
+		<language id="dart">Dart</language>
 		<language id="erlang">Erlang</language>
 		<language id="go">Go</language>
 		<language id="groovy">Groovy</language>

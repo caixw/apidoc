@@ -29,6 +29,24 @@ var langs = []*Language{
 	},
 
 	{
+		DisplayName: "Dart",
+		ID:          "dart",
+		Exts:        []string{".dart"},
+		Blocks: []Blocker{
+			newCStyleString(),
+			newString("'", "'", `\`),
+			newString("r'", "'", ``),
+			newString("r\"", "\"", ``),
+			newString("'''", "'''", ``),
+			newString(`"""`, `"""`, ``),
+			newSingleComment(`///`),
+			newSwiftNestMCommentBlock("/**", "*/", "*"),
+			newCStyleSingleComment(),
+			newCStyleMultipleComment(),
+		},
+	},
+
+	{
 		DisplayName: "Erlang",
 		ID:          "erlang",
 		Exts:        []string{".erl", ".hrl"},
