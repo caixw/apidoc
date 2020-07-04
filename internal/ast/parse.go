@@ -56,7 +56,10 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 			doc.APIs = make([]*API, 0, 100)
 		}
 
-		api := &API{doc: doc}
+		api := &API{
+			doc: doc,
+			URI: b.Location.URI,
+		}
 		token.Decode(h, p, api, core.XMLNamespace)
 		doc.APIs = append(doc.APIs, api)
 
@@ -71,6 +74,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 			return
 		}
 		token.Decode(h, p, doc, core.XMLNamespace)
+		doc.URI = b.Location.URI
 	default:
 		return
 	}

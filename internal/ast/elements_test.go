@@ -4,6 +4,7 @@ package ast
 
 import (
 	"io/ioutil"
+	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -30,6 +31,10 @@ func loadAPIDoc(a *assert.Assertion) *APIDoc {
 	})
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
+
+	// 保证 doc.URI 指向文件地址
+	a.NotEmpty(doc.URI.String()).
+		True(strings.HasSuffix(doc.URI.String(), "doc.xml"))
 
 	return doc
 }
@@ -283,10 +288,20 @@ func loadAPI(a *assert.Assertion) *API {
 	a.NotError(err).NotNil(data)
 
 	rslt := messagetest.NewMessageHandler()
-	doc.Parse(rslt.Handler, core.Block{Data: data})
+	doc.Parse(rslt.Handler, core.Block{
+		Data:     data,
+		Location: core.Location{URI: core.FileURI("./testdata/api.xml")},
+	})
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
-	return doc.APIs[0]
+
+	api := doc.APIs[0]
+
+	// 保证 doc.APIs[0].URI 指向文件地址
+	a.NotEmpty(api.URI.String()).
+		True(strings.HasSuffix(api.URI.String(), "./testdata/api.xml"))
+
+	return api
 }
 
 func TestAPI(t *testing.T) {
