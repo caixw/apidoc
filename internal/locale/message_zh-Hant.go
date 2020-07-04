@@ -56,6 +56,7 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	FlagLSPPortUsage:           "指定 LSP 服務的端口號",
 	FlagLSPModeUsage:           "指定 LSP 的運行方式，可以是 websocket、tcp 和 udp",
 	FlagLSPHeaderUsage:         "指定 LSP 傳遞內容是否帶報頭信息",
+	FlagVersionKindUsage:       "只顯示該類型的版本號，可以是 apidoc、doc、lsp、openapi 和 all",
 
 	VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
 	Complete:            "完成！文檔保存在：%s，總用時：%v",
