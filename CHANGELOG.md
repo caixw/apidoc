@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- 添加对 lua 和 dart 的支持；
+
 ### Fixed
 
 - 无法识别 string.email 的错误；
@@ -42,7 +45,6 @@
 
 ### Changed
 
-- 重命名 doc 为 spec，仅用于处理与文档规范相关的内容；
 - 新增 build 包，统一处理文档的提取与输出，去除了 input、output 和 config.go 的相关内容；
 
 ### Removed
