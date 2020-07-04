@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [v7.0.0]
-
 ### Fixed
 
 - 无法识别 string.email 的错误；
@@ -12,6 +10,8 @@
 ### Changed
 
 - 调整 build.Config 对路径项的处理方式，读取时转换为经对路径，保存时尽量转换为相对路径；
+
+## [v7.0.0]
 
 ### Added
 
