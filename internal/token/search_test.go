@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
-var _ tiper = &Base{}
+var _ tipper = &Base{}
 
 func TestSearchUsage(t *testing.T) {
 	a := assert.New(t)
@@ -20,6 +20,7 @@ func TestSearchUsage(t *testing.T) {
 	b := `<apidoc id="55">
 	<name>n</name>
 	<name>n</name>
+	<content>cc</content>
 </apidoc>`
 	p, err := NewParser(core.Block{Data: []byte(b)})
 	a.NotError(err).NotNil(p)
@@ -29,6 +30,15 @@ func TestSearchUsage(t *testing.T) {
 		RootName struct{}    `apidoc:"apidoc,meta,usage-root"`
 		ID       intAttr     `apidoc:"id,attr,usage-id"`
 		Name     []stringTag `apidoc:"name,elem,usage-name"`
+		Content  struct {
+			BaseTag
+			Content struct {
+				Base
+				Value    string   `apidoc:"-"`
+				RootName struct{} `apidoc:"string,meta,usage-string"`
+			} `apidoc:",content"`
+			RootName struct{} `apidoc:"string,meta,usage-string"`
+		} `apidoc:"content,elem,usage-content"`
 	}{}
 	Decode(rslt.Handler, p, obj, "")
 	a.Empty(rslt.Errors)
@@ -67,8 +77,18 @@ func TestSearchUsage(t *testing.T) {
 	tip = SearchUsage(v, pos)
 	a.NotNil(tip).Equal(tip.Usage, "usage-name")
 
+	// content
+	pos = core.Position{Line: 3, Character: 2}
+	tip = SearchUsage(v, pos)
+	a.NotNil(tip).Equal(tip.Usage, "usage-content")
+
+	// content.cc
+	pos = core.Position{Line: 3, Character: 11}
+	tip = SearchUsage(v, pos)
+	a.NotNil(tip).Equal(tip.Usage, "usage-content")
+
 	// apidoc
-	pos = core.Position{Line: 3, Character: 1}
+	pos = core.Position{Line: 4, Character: 1}
 	tip = SearchUsage(v, pos)
 	a.NotNil(tip).Equal(tip.Usage, "usage-root")
 }

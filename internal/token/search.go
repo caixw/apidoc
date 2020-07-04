@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
-var tiperType = reflect.TypeOf((*tiper)(nil)).Elem()
+var tiperType = reflect.TypeOf((*tipper)(nil)).Elem()
 
 // Tip 定义了 LSP 查找功能返回的提示内容
 type Tip struct {
@@ -20,7 +20,7 @@ type Tip struct {
 	Usage string
 }
 
-type tiper interface {
+type tipper interface {
 	contains(core.Position) bool
 	tip() *Tip
 }
@@ -30,6 +30,10 @@ func (b *Base) contains(pos core.Position) bool {
 }
 
 func (b *Base) tip() *Tip {
+	if b.UsageKey == nil {
+		return nil
+	}
+
 	return &Tip{
 		Range: b.Range,
 		Usage: locale.Sprintf(b.UsageKey),
@@ -70,13 +74,13 @@ func SearchUsage(v reflect.Value, pos core.Position, exclude ...string) (tip *Ti
 
 func getUsage(v reflect.Value, pos core.Position) *Tip {
 	if v.Type().Implements(tiperType) && v.CanInterface() {
-		if tip := v.Interface().(tiper); tip.contains(pos) {
+		if tip := v.Interface().(tipper); tip.contains(pos) {
 			return tip.tip()
 		}
 		return nil
 	} else if v.CanAddr() {
 		if pv := v.Addr(); pv.Type().Implements(tiperType) && pv.CanInterface() {
-			if tip := pv.Interface().(tiper); tip.contains(pos) {
+			if tip := pv.Interface().(tipper); tip.contains(pos) {
 				return tip.tip()
 			}
 			return nil

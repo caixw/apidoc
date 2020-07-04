@@ -11,6 +11,7 @@
 - 无法识别 string.email 的错误；
 - 修正文档中关于 apidoc.xml-namespaces 字段的描述错误；
 - 修正 ast.APIDoc.Parse 未记录 URI 的错误；
+- 修正 textDocument/hover 可能导致整个程序 panic 的错误；
 
 ### Changed
 
