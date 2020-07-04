@@ -5,6 +5,7 @@
 ### Added
 
 - 添加对 lua 和 dart 的支持；
+- 为 version 子命令添加 `kind` 选项；
 
 ### Fixed
 
