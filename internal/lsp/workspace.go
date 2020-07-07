@@ -12,8 +12,9 @@ import (
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_workspaceFolders
 func (s *server) workspaceWorkspaceFolders() error {
 	err := s.Send("workspace/workspaceFolders", nil, func(folders *[]protocol.WorkspaceFolder) error {
-		for _, f := range s.folders {
+		for index, f := range s.folders {
 			f.close()
+			s.folders = append(s.folders[:index], s.folders[index+1:]...)
 		}
 
 		if len(*folders) != 0 {
