@@ -209,7 +209,10 @@ func decodeElements(n *node.Node, p *Parser, prefix string) (*EndElement, error)
 		case *StartElement:
 			item, found := n.Element(elem.Name.Local.Value)
 			if !found || prefix != elem.Name.Prefix.Value {
-				panic(fmt.Sprintf("不存在的子元素 %s", elem.Name))
+				if err := findEndElement(p, elem); err != nil {
+					return nil, err
+				}
+				break // 忽略不存在的子元素
 			}
 			if err = decodeElement(p, elem, item, prefix); err != nil {
 				return nil, err

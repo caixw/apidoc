@@ -782,12 +782,10 @@ func TestDecode(t *testing.T) {
 	v10 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
-		ID       intTag   `apidoc:"id,elem,usage"`
+		ID       intTag   `apidoc:"id,elem,usage,omitempty"`
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
-	a.Panic(func() {
-		decodeObject(a, b, v10, "", false)
-	})
+	decodeObject(a, b, v10, "", false)
 
 	// 数组元素未实现 Decoder 接口
 	v11 := &struct {
