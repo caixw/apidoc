@@ -11,6 +11,7 @@ import (
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
 
@@ -26,9 +27,9 @@ type folder struct {
 	errors, warns []*core.SyntaxError
 }
 
-func (f *folder) close() error {
+func (f *folder) close() {
+	f.srv.windowLogLogMessage(locale.CloseLSPFolder, f.Name)
 	f.h.Stop()
-	return nil
 }
 
 func (f *folder) openFile(uri core.URI) error {

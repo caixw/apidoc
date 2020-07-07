@@ -13,9 +13,7 @@ import (
 func (s *server) workspaceWorkspaceFolders() error {
 	err := s.Send("workspace/workspaceFolders", nil, func(folders *[]protocol.WorkspaceFolder) error {
 		for _, f := range s.folders {
-			if err := f.close(); err != nil {
-				return err
-			}
+			f.close()
 		}
 
 		if len(*folders) != 0 {
@@ -40,9 +38,7 @@ func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.Di
 	for _, removed := range in.Event.Removed {
 		for index, f := range s.folders {
 			if f.Name == removed.Name && f.URI == removed.URI {
-				if err := f.close(); err != nil {
-					return err
-				}
+				f.close()
 				s.folders = append(s.folders[:index], s.folders[index+1:]...)
 			}
 		}

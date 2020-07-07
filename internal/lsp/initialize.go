@@ -79,9 +79,7 @@ func (s *server) shutdown(bool, *interface{}, *interface{}) error {
 	}
 
 	for _, f := range s.folders {
-		if err := f.close(); err != nil {
-			return err
-		}
+		f.close()
 	}
 
 	if s.cancelFunc != nil {
