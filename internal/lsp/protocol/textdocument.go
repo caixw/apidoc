@@ -343,7 +343,7 @@ type DocumentOnTypeFormattingOptions struct {
 	MoreTriggerCharacter []string `json:"moreTriggerCharacter,omitempty"`
 }
 
-// Rename options
+// RenameOptions Rename options
 type RenameOptions struct {
 	WorkDoneProgressOptions
 
@@ -351,7 +351,7 @@ type RenameOptions struct {
 	PrepareProvider bool `json:"prepareProvider,omitempty"`
 }
 
-// Document link options.
+// DocumentLinkOptions Document link options.
 type DocumentLinkOptions struct {
 	WorkDoneProgressOptions
 
@@ -473,9 +473,16 @@ type SelectionRangeRegistrationOptions struct {
 	StaticRegistrationOptions
 }
 
+// DidOpenTextDocumentParams textDocument/didOpen 通知发送的参数
 type DidOpenTextDocumentParams struct {
 	// The document that was opened.
 	TextDocument TextDocumentItem `json:"textDocument"`
+}
+
+// DidCloseTextDocumentParams textDocument/didClose 通知发送的参数
+type DidCloseTextDocumentParams struct {
+	// The document that was closed.
+	TextDocument TextDocumentIdentifier `json:"textDocument"`
 }
 
 type DidChangeTextDocumentParams struct {
@@ -516,12 +523,13 @@ type TextDocumentContentChangeEvent struct {
 	RangeLength int `json:"rangeLength,omitempty"`
 }
 
+// HoverParams textDocument/hover 发送的参数
 type HoverParams struct {
 	WorkDoneProgressParams
 	TextDocumentPositionParams
 }
 
-// Hover the result of a hover request.
+// Hover textDocument/hover 的返回结果
 type Hover struct {
 	// The hover's content
 	// contents MarkedString | MarkedString[] | MarkupContent;

@@ -24,7 +24,6 @@ func (s *server) workspaceWorkspaceFolders() error {
 		return nil
 	})
 	return err
-
 }
 
 // workspace/didChangeWorkspaceFolders

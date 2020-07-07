@@ -12,6 +12,22 @@ import (
 	"github.com/caixw/apidoc/v7/internal/token"
 )
 
+// textDocument/didOpen
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_didOpen
+func (s *server) textDocumentDidOpen(notify bool, in *protocol.DidOpenTextDocumentParams, out *interface{}) error {
+	// NOTICE: 不需要实现
+	return nil
+}
+
+// textDocument/didClose
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_didClose
+func (s *server) textDocumentDidClose(notify bool, in *protocol.DidCloseTextDocumentParams, out *interface{}) error {
+	// NOTICE: 不需要实现
+	return nil
+}
+
 // textDocument/didChange
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_didChange
