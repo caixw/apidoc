@@ -51,8 +51,6 @@ var (
 )
 
 // Decode 将 p 中的 XML 内容解码至 v 对象中
-//
-// Decode 中所有返回的错误对象，都可以转换成 *core.SyntaxError
 func Decode(h *core.MessageHandler, p *Parser, v interface{}, namespace string) {
 	var hasRoot bool
 	for {

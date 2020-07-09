@@ -100,8 +100,6 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 		"workspace/didChangeWorkspaceFolders": srv.workspaceDidChangeWorkspaceFolders,
 
 		// textDocument
-		"textDocument/didOpen":   srv.textDocumentDidOpen,
-		"textDocument/didClose":  srv.textDocumentDidClose,
 		"textDocument/didChange": srv.textDocumentDidChange,
 		"textDocument/hover":     srv.textDocumentHover,
 	})
