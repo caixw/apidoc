@@ -21,7 +21,7 @@ var (
 func initLSP(command *cmdopt.CmdOpt) {
 	ls := command.New("lsp", locale.Sprintf(locale.CmdLSPUsage), doLSP)
 	ls.StringVar(&lspPort, "p", ":8080", locale.Sprintf(locale.FlagLSPPortUsage))
-	ls.StringVar(&lspMode, "m", "http", locale.Sprintf(locale.FlagLSPModeUsage))
+	ls.StringVar(&lspMode, "m", "stdio", locale.Sprintf(locale.FlagLSPModeUsage))
 	ls.BoolVar(&lspHeader, "h", false, locale.Sprintf(locale.FlagLSPHeaderUsage))
 }
 

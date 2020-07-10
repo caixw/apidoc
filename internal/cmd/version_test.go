@@ -6,9 +6,10 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/issue9/assert"
+
 	"github.com/caixw/apidoc/v7"
 	"github.com/caixw/apidoc/v7/internal/openapi"
-	"github.com/issue9/assert"
 )
 
 func TestCmdVersion(t *testing.T) {
