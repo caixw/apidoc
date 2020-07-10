@@ -112,6 +112,21 @@ var langs = []*Language{
 	},
 
 	{
+		DisplayName: "Lisp/Clojure",
+		ID:          "lisp",
+		// .ss,.scm ==> scheme
+		// .clj     ==> Coljure
+		Exts: []string{".lisp", ".lsp", ".l", ".ss", ".scm", ".clj"},
+		Blocks: []Blocker{
+			newString(`"`, `"`, `\`), // #"" 为正则表达式
+			newSingleComment(";;;;"),
+			newSingleComment(";;;"),
+			newSingleComment(";;"),
+			newSingleComment(";"),
+		},
+	},
+
+	{
 		DisplayName: "Lua",
 		ID:          "lua",
 		Exts:        []string{".lua"},

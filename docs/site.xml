@@ -18,6 +18,7 @@
 		<language id="java">Java</language>
 		<language id="javascript">JavaScript</language>
 		<language id="kotlin">Kotlin</language>
+		<language id="lisp">Lisp/Clojure</language>
 		<language id="lua">Lua</language>
 		<language id="pascal">Pascal/Delphi</language>
 		<language id="perl">Perl</language>

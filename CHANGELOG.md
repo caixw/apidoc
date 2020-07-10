@@ -4,7 +4,7 @@
 
 ### Added
 
-- 添加对 lua 和 dart 的支持；
+- 添加对 lua、dart 和 lisp 及其方言的支持；
 - 为 version 子命令添加 `kind` 选项；
 
 ### Fixed
