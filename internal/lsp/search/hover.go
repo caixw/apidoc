@@ -21,13 +21,17 @@ var baseType = reflect.TypeOf(token.Base{})
 //
 // 返回值表示是否找到了相应在的元素。
 func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hover) (ok bool) {
+	setHover := func(b *token.Base) {
+		hover.Range = b.Range
+		hover.Contents = protocol.MarkupContent{
+			Kind:  protocol.MarkupKinMarkdown,
+			Value: b.Usage(),
+		}
+	}
+
 	if doc.URI == uri {
 		if b := usage(reflect.ValueOf(doc), pos, "APIs"); b != nil {
-			hover.Range = b.Range
-			hover.Contents = protocol.MarkupContent{
-				Kind:  protocol.MarkupKinMarkdown,
-				Value: b.Usage(),
-			}
+			setHover(b)
 			ok = true
 		}
 	}
@@ -39,11 +43,7 @@ func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hov
 		}
 
 		if b := usage(reflect.ValueOf(api), pos); b != nil {
-			hover.Range = b.Range
-			hover.Contents = protocol.MarkupContent{
-				Kind:  protocol.MarkupKinMarkdown,
-				Value: b.Usage(),
-			}
+			setHover(b)
 			return true
 		}
 	} // end for

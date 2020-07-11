@@ -60,7 +60,6 @@ func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *p
 		if search.Hover(f.doc, in.TextDocument.URI, in.TextDocumentPositionParams.Position, out) {
 			return nil
 		}
-
 	}
 	return nil
 }
