@@ -3,13 +3,12 @@
 package lsp
 
 import (
-	"reflect"
 	"strings"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/lsp/search"
 )
 
 // textDocument/didChange
@@ -58,35 +57,12 @@ func (f *folder) matchURI(uri core.URI) bool {
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover
 func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *protocol.Hover) error {
 	for _, f := range s.folders {
-		f.searchHover(in.TextDocument.URI, in.TextDocumentPositionParams.Position, out)
+		if search.Hover(f.doc, in.TextDocument.URI, in.TextDocumentPositionParams.Position, out) {
+			return nil
+		}
 
 	}
 	return nil
-}
-
-func (f *folder) searchHover(uri core.URI, pos core.Position, hover *protocol.Hover) {
-	var tip *token.Tip
-	if f.doc.URI == uri {
-		tip = token.SearchUsage(reflect.ValueOf(f.doc), pos, "APIs")
-	} else {
-		for _, api := range f.doc.APIs {
-			if api.URI != uri {
-				continue
-			}
-
-			if tip = token.SearchUsage(reflect.ValueOf(api), pos); tip != nil {
-				break
-			}
-		} // end for
-	}
-
-	if tip != nil {
-		hover.Range = tip.Range
-		hover.Contents = protocol.MarkupContent{
-			Kind:  protocol.MarkupKinMarkdown,
-			Value: tip.Usage,
-		}
-	}
 }
 
 // textDocument/publishDiagnostics

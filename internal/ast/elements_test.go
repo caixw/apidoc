@@ -248,7 +248,7 @@ func TestAPIDoc_all(t *testing.T) {
 	a.NotError(err).NotNil(data)
 	rslt := messagetest.NewMessageHandler()
 	doc := &APIDoc{}
-	doc.Parse(rslt.Handler, core.Block{Data: data})
+	doc.Parse(rslt.Handler, core.Block{Data: data, Location: core.Location{URI: "all.xml"}})
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
@@ -279,6 +279,9 @@ func TestAPIDoc_all(t *testing.T) {
 
 	// api
 	a.Equal(1, len(doc.APIs))
+
+	a.NotEmpty(doc.URI).
+		Empty(doc.APIs[0].URI.String())
 }
 
 func loadAPI(a *assert.Assertion) *API {

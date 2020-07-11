@@ -7,6 +7,7 @@ import (
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 // 这些常量对应 Base* 中相关字段的名称
@@ -109,4 +110,9 @@ func (n Name) String() string {
 		return n.Local.Value
 	}
 	return n.Prefix.Value + ":" + n.Local.Value
+}
+
+// Usage 本地化的当前字段介绍内容
+func (b *Base) Usage() string {
+	return locale.Sprintf(b.UsageKey)
 }

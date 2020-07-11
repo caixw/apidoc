@@ -80,6 +80,7 @@ type (
 		Tags    []*Element `apidoc:"tag,elem,usage-api-tags,omitempty"`
 		Servers []*Element `apidoc:"server,elem,usage-api-servers,omitempty"`
 
+		// 该 API 所在的文件，如果为空，表示与其父元素的 apidoc.URI 相同
 		URI core.URI `apidoc:"-"`
 		doc *APIDoc
 	}
