@@ -46,7 +46,7 @@ func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hov
 			setHover(b)
 			return true
 		}
-	} // end for
+	}
 
 	return ok
 }

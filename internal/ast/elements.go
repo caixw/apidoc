@@ -319,21 +319,6 @@ func (r *Request) Param() *Param {
 	}
 }
 
-// DeleteURI 删除与 uri 相关的文档内容
-func (doc *APIDoc) DeleteURI(uri core.URI) {
-	for index, api := range doc.APIs {
-		if api.URI == uri {
-			doc.APIs = append(doc.APIs[:index], doc.APIs[index+1:]...)
-		}
-	}
-
-	if doc.URI == uri {
-		*doc = APIDoc{
-			APIs: doc.APIs,
-		}
-	}
-}
-
 // XMLNamespace 获取指定前缀名称的命名空间
 func (doc *APIDoc) XMLNamespace(prefix string) *XMLNamespace {
 	for _, ns := range doc.XMLNamespaces {

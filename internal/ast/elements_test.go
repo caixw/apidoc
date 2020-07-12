@@ -341,34 +341,6 @@ func TestAPI(t *testing.T) {
 		Equal(cb.Responses[0].Status.V(), 200)
 }
 
-func TestAPIDoc_DeleteURI(t *testing.T) {
-	a := assert.New(t)
-
-	d := &APIDoc{}
-	d.APIDoc = &APIDocVersionAttribute{Value: token.String{Value: "1.0.0"}}
-	d.URI = core.URI("uri1")
-	d.APIs = []*API{
-		{
-			URI: core.URI("uri1"),
-		},
-		{
-			URI: core.URI("uri2"),
-		},
-		{
-			URI: core.URI("uri3"),
-		},
-	}
-
-	d.DeleteURI(core.URI("uri3"))
-	a.Equal(2, len(d.APIs)).NotNil(d.APIDoc)
-
-	d.DeleteURI(core.URI("uri1"))
-	a.Equal(1, len(d.APIs)).Nil(d.APIDoc)
-
-	d.DeleteURI(core.URI("uri2"))
-	a.Equal(0, len(d.APIs)).Nil(d.APIDoc)
-}
-
 func TestRequest_Param(t *testing.T) {
 	a := assert.New(t)
 

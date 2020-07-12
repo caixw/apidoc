@@ -34,7 +34,7 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 		return nil
 	}
 
-	f.doc.DeleteURI(in.TextDocument.URI)
+	search.DeleteURI(f.doc, in.TextDocument.URI)
 	return f.openFile(in.TextDocument.URI)
 }
 
