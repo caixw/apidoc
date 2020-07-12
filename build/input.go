@@ -147,7 +147,7 @@ func recursivePath(o *Input) ([]core.URI, error) {
 	return uris, nil
 }
 
-// ParseInputs 分析 opt 中所指定的内容
+// ParseInputs 分析 opt 中所指定的内容并输出到 blocks
 //
 // 分析后的内容推送至 blocks 中。
 func ParseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) {
@@ -164,7 +164,7 @@ func ParseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) 
 	wg.Wait()
 }
 
-// ParseFile 分析 uri 指向的文件
+// ParseFile 分析 uri 指向的文件并输出到 blocks
 func (o *Input) ParseFile(blocks chan core.Block, h *core.MessageHandler, uri core.URI) {
 	data, err := uri.ReadAll(o.encoding)
 	if err != nil {
@@ -172,11 +172,21 @@ func (o *Input) ParseFile(blocks chan core.Block, h *core.MessageHandler, uri co
 		return
 	}
 
-	l, err := lang.NewLexer(data, o.blocks)
+	o.Parse(blocks, h, core.Block{
+		Data: data,
+		Location: core.Location{
+			URI: uri,
+		},
+	})
+}
+
+// Parse 分析 block 的内容并输出到到 blocks
+func (o *Input) Parse(blocks chan core.Block, h *core.MessageHandler, block core.Block) {
+	l, err := lang.NewLexer(block.Data, o.blocks)
 	if err != nil {
-		h.Error(core.NewSyntaxErrorWithError(core.Location{URI: uri}, "", err))
+		h.Error(core.NewSyntaxErrorWithError(core.Location{URI: block.Location.URI}, "", err))
 		return
 	}
 
-	l.Parse(blocks, h, uri)
+	l.Parse(blocks, h, block.Location.URI)
 }

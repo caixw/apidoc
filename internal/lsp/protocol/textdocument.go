@@ -485,6 +485,7 @@ type DidCloseTextDocumentParams struct {
 	TextDocument TextDocumentIdentifier `json:"textDocument"`
 }
 
+// DidChangeTextDocumentParams textDocument/didChange 的参数
 type DidChangeTextDocumentParams struct {
 	// The document that did change. The version number points
 	// to the version after all provided content changes have been applied.
@@ -502,6 +503,21 @@ type DidChangeTextDocumentParams struct {
 	// - apply the `TextDocumentContentChangeEvent`s in a single notification in the order
 	//   you receive them.
 	ContentChanges []TextDocumentContentChangeEvent `json:"contentChanges"`
+}
+
+// Blocks 返回 core.Block 的列表
+func (p *DidChangeTextDocumentParams) Blocks() []core.Block {
+	blocks := make([]core.Block, 0, len(p.ContentChanges))
+	for _, c := range p.ContentChanges {
+		blocks = append(blocks, core.Block{
+			Data: []byte(c.Text),
+			Location: core.Location{
+				URI:   p.TextDocument.URI,
+				Range: *c.Range,
+			},
+		})
+	}
+	return blocks
 }
 
 // TextDocumentContentChangeEvent an event describing a change to a text document.

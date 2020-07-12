@@ -35,7 +35,10 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 	}
 
 	search.DeleteURI(f.doc, in.TextDocument.URI)
-	return f.openFile(in.TextDocument.URI)
+	for _, blk := range in.Blocks() {
+		f.parseBlock(blk)
+	}
+	return nil
 }
 
 func (s *server) getMatchFolder(uri core.URI) *folder {

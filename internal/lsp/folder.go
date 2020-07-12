@@ -32,14 +32,9 @@ func (f *folder) close() {
 	f.h.Stop()
 }
 
-func (f *folder) openFile(uri core.URI) error {
-	file, err := uri.File()
-	if err != nil {
-		return err
-	}
-
+func (f *folder) parseBlock(block core.Block) {
 	var input *build.Input
-	ext := filepath.Ext(file)
+	ext := filepath.Ext(block.Location.URI.String())
 	for _, i := range f.cfg.Inputs {
 		if sliceutil.Count(i.Exts, func(index int) bool { return i.Exts[index] == ext }) > 0 {
 			input = i
@@ -47,17 +42,11 @@ func (f *folder) openFile(uri core.URI) error {
 		}
 	}
 	if input == nil { // 无需解析
-		return nil
+		return
 	}
 
-	f.parseFile(uri, input)
-	return nil
-}
-
-// 分析 path 的内容，并将其中的文档解析至 doc
-func (f *folder) parseFile(uri core.URI, i *build.Input) {
 	f.doc.ParseBlocks(f.h, func(blocks chan core.Block) {
-		i.ParseFile(blocks, f.h, uri)
+		input.Parse(blocks, f.h, block)
 	})
 }
 
