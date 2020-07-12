@@ -509,13 +509,16 @@ type DidChangeTextDocumentParams struct {
 func (p *DidChangeTextDocumentParams) Blocks() []core.Block {
 	blocks := make([]core.Block, 0, len(p.ContentChanges))
 	for _, c := range p.ContentChanges {
-		blocks = append(blocks, core.Block{
+		blk := core.Block{
 			Data: []byte(c.Text),
 			Location: core.Location{
-				URI:   p.TextDocument.URI,
-				Range: *c.Range,
+				URI: p.TextDocument.URI,
 			},
-		})
+		}
+		if c.Range != nil {
+			blk.Location.Range = *c.Range
+		}
+		blocks = append(blocks, blk)
 	}
 	return blocks
 }

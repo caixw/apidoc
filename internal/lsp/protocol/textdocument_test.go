@@ -36,6 +36,26 @@ func TestDidChangeTextDocumentParams_Blocks(t *testing.T) {
 		},
 	})
 
+	// 未指定 Range
+	p = &DidChangeTextDocumentParams{
+		TextDocument: VersionedTextDocumentIdentifier{
+			TextDocumentIdentifier: TextDocumentIdentifier{URI: core.FileURI("test.go")},
+		},
+		ContentChanges: []TextDocumentContentChangeEvent{
+			{
+				Text: "text",
+			},
+		},
+	}
+	a.Equal(p.Blocks(), []core.Block{
+		{
+			Data: []byte("text"),
+			Location: core.Location{
+				URI: core.FileURI("test.go"),
+			},
+		},
+	})
+
 	// 多个元素
 	p = &DidChangeTextDocumentParams{
 		TextDocument: VersionedTextDocumentIdentifier{
