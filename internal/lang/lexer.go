@@ -15,8 +15,8 @@ type Lexer struct {
 }
 
 // NewLexer 声明 Lexer 实例
-func NewLexer(data []byte, blocks []Blocker) (*Lexer, error) {
-	l, err := lexer.New(core.Block{Data: data})
+func NewLexer(block core.Block, blocks []Blocker) (*Lexer, error) {
+	l, err := lexer.New(block)
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +45,8 @@ func (l *Lexer) block() (Blocker, core.Position) {
 	}
 }
 
-// Parse 分析 l.data 的内容
-//
-// uri 表示在出错时，其返回的错误信息包含的定位信息。
-func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler, uri core.URI) {
+// Parse 分析 l.data 的内容并输出到 blocks
+func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler) {
 	var block Blocker
 	var pos core.Position
 	for {
@@ -65,7 +63,7 @@ func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler, uri core.U
 		data, ok := block.EndFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 			loc := core.Location{
-				URI: uri,
+				URI: l.Location.URI,
 				Range: core.Range{
 					Start: pos,
 					End:   l.Position().Position,
@@ -83,7 +81,7 @@ func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler, uri core.U
 
 		blocks <- core.Block{
 			Location: core.Location{
-				URI: uri,
+				URI: l.Location.URI,
 				Range: core.Range{
 					Start: pos,
 					End:   l.Position().Position,

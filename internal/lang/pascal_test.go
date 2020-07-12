@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/v7/core"
 )
 
 var _ Blocker = &pascalStringBlock{}
@@ -16,7 +18,7 @@ func TestPascalStringBlock(t *testing.T) {
 	b := newPascalStringBlock('"')
 	a.NotNil(b)
 
-	l, err := NewLexer([]byte(`"123""123"`), nil)
+	l, err := NewLexer(core.Block{Data: []byte(`"123""123"`)}, nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok := b.EndFunc(l)
@@ -25,7 +27,7 @@ func TestPascalStringBlock(t *testing.T) {
 	bs := l.Next(1)             // 继续向后推进，才会
 	a.Empty(bs).True(l.AtEOF()) // 到达末尾
 
-	l, err = NewLexer([]byte(`"123"""123"`), nil)
+	l, err = NewLexer(core.Block{Data: []byte(`"123"""123"`)}, nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok = b.EndFunc(l)

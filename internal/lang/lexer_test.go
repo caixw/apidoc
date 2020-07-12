@@ -38,7 +38,7 @@ mcomment2
  mcomment4
 =cut
 `)
-	l, err := NewLexer(data, blocks)
+	l, err := NewLexer(core.Block{Data: data}, blocks)
 	a.NotError(err).NotNil(l)
 
 	b, pos := l.block() // scomment1
@@ -106,11 +106,15 @@ func TestLexer_Parse(t *testing.T) {
 // </api>
 `
 
+	b := core.Block{
+		Data:     []byte(raw),
+		Location: core.Location{URI: core.URI("./testdata/gbk.php")},
+	}
 	blocks := make(chan core.Block, 100)
 	rslt := messagetest.NewMessageHandler()
-	l, err := NewLexer([]byte(raw), cStyle)
+	l, err := NewLexer(b, cStyle)
 	a.NotError(err).NotNil(l)
-	l.Parse(blocks, rslt.Handler, core.URI("./testdata/gbk.php"))
+	l.Parse(blocks, rslt.Handler)
 	rslt.Handler.Stop()
 	close(blocks)
 	a.Equal(1, len(blocks))
@@ -134,11 +138,15 @@ func TestLexer_Parse(t *testing.T) {
 // <server>test</server>
 // </api>
 `
+	b = core.Block{
+		Data:     []byte(raw),
+		Location: core.Location{URI: core.URI("./testdata/gbk.php")},
+	}
 	blocks = make(chan core.Block, 100)
 	rslt = messagetest.NewMessageHandler()
-	l, err = NewLexer([]byte(raw), cStyle)
+	l, err = NewLexer(b, cStyle)
 	a.NotError(err).NotNil(l)
-	l.Parse(blocks, rslt.Handler, core.URI("./testdata/gbk.php"))
+	l.Parse(blocks, rslt.Handler)
 	rslt.Handler.Stop()
 	close(blocks)
 	a.NotEmpty(rslt.Errors)

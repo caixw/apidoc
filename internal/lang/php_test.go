@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/apidoc/v7/core"
 )
 
 func TestPHPDocBlock(t *testing.T) {
@@ -19,7 +21,7 @@ func TestPHPDocBlock(t *testing.T) {
 	xx
 EOF
 `)
-	l, err := NewLexer(data, nil)
+	l, err := NewLexer(core.Block{Data: data}, nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok := b.(*phpDocBlock)
@@ -37,7 +39,7 @@ EOF
 	xx
 EOF
 `)
-	l, err = NewLexer(data, nil)
+	l, err = NewLexer(core.Block{Data: data}, nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok = b.(*phpDocBlock)
@@ -55,7 +57,7 @@ EOF
 	xx
 EOF;
 `)
-	l, err = NewLexer(data, nil)
+	l, err = NewLexer(core.Block{Data: data}, nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok = b.(*phpDocBlock)
@@ -73,7 +75,7 @@ EOF;
 	xx
 EOF;
 `)
-	l, err = NewLexer(data, nil)
+	l, err = NewLexer(core.Block{Data: data}, nil)
 	a.NotError(err).NotNil(l)
 	a.False(b.BeginFunc(l))
 
@@ -83,7 +85,7 @@ EOF;
 	xx
 EO
 `)
-	l, err = NewLexer(data, nil)
+	l, err = NewLexer(core.Block{Data: data}, nil)
 	a.NotError(err).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok = b.(*phpDocBlock)
