@@ -232,7 +232,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 					return nil, d.error(err)
 				}
 
-				d.message(core.Warn, elem.Name.Start, elem.Name.End, elem.Name.String(), locale.ErrInvalidValue)
+				d.message(core.Warn, elem.Name.Start, elem.Name.End, elem.Name.String(), locale.ErrInvalidTag)
 				break // 忽略不存在的子元素
 			}
 			if !d.decodeElement(elem, item) {

@@ -15,44 +15,24 @@ import (
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_didChange
 func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDocumentParams, out *interface{}) error {
-	f := s.getMatchFolder(in.TextDocument.URI)
+	var f *folder
+	for _, f = range s.folders {
+		if strings.HasPrefix(string(in.TextDocument.URI), string(f.URI)) {
+			break
+		}
+	}
 	if f == nil {
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
 
-	matched := f.doc.URI == in.TextDocument.URI
-	if !matched {
-		for _, api := range f.doc.APIs {
-			if api.URI == in.TextDocument.URI {
-				matched = true
-				break
-			}
-		} // end for
-	}
-
-	if !matched {
+	if !search.DeleteURI(f.doc, in.TextDocument.URI) {
 		return nil
 	}
 
-	search.DeleteURI(f.doc, in.TextDocument.URI)
 	for _, blk := range in.Blocks() {
 		f.parseBlock(blk)
 	}
 	return nil
-}
-
-func (s *server) getMatchFolder(uri core.URI) *folder {
-	for _, f := range s.folders {
-		if f.matchURI(uri) {
-			return f
-		}
-	}
-	return nil
-}
-
-// uri 是否与属于项目匹配
-func (f *folder) matchURI(uri core.URI) bool {
-	return strings.HasPrefix(string(uri), string(f.URI))
 }
 
 // textDocument/hover

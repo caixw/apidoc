@@ -50,6 +50,7 @@ type Diagnostic struct {
 	RelatedInformation []DiagnosticRelatedInformation `json:"relatedInformation,omitempty"`
 }
 
+// DiagnosticSeverity 错误级别
 type DiagnosticSeverity int
 
 // DiagnosticSeverity 可用的常量

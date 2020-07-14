@@ -32,13 +32,15 @@ func TestAPIDoc_DeleteURI(t *testing.T) {
 		},
 	}
 
-	DeleteURI(d, core.URI("uri3"))
+	a.True(DeleteURI(d, core.URI("uri3")))
 	a.Equal(3, len(d.APIs)).NotNil(d.APIDoc)
 
 	// 同时会删除 1,4
-	DeleteURI(d, core.URI("uri1"))
+	a.True(DeleteURI(d, core.URI("uri1")))
 	a.Equal(1, len(d.APIs)).Nil(d.APIDoc)
 
-	DeleteURI(d, core.URI("uri2"))
+	a.True(DeleteURI(d, core.URI("uri2")))
 	a.Equal(0, len(d.APIs)).Nil(d.APIDoc)
+
+	a.False(DeleteURI(d, core.URI("uri2")))
 }

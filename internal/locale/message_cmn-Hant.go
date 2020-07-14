@@ -258,6 +258,7 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	ErrNotFoundSupportedLang:     "該目錄下沒有支持的語言文件",
 	ErrDirIsEmpty:                "目錄下沒有需要解析的文件",
 	ErrInvalidValue:              "無效的值",
+	ErrInvalidTag:                "無效的標簽",
 	ErrPathNotMatchParams:        "地址參數不匹配",
 	ErrDuplicateValue:            "重復的值",
 	ErrMessage:                   "%s 位於 %s",

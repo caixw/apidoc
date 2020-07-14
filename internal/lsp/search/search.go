@@ -11,16 +11,23 @@ import (
 )
 
 // DeleteURI 删除与 uri 相关的文档内容
-func DeleteURI(doc *ast.APIDoc, uri core.URI) {
+//
+// deleted 表示是否有内容被删除
+func DeleteURI(doc *ast.APIDoc, uri core.URI) (deleted bool) {
 	size := sliceutil.Delete(doc.APIs, func(i int) bool {
 		api := doc.APIs[i]
 		return api.URI == uri || (api.URI == "" && doc.URI == uri)
 	})
+
+	deleted = len(doc.APIs) > size
 	doc.APIs = doc.APIs[:size]
 
 	if doc.URI == uri {
 		*doc = ast.APIDoc{
 			APIs: doc.APIs,
 		}
+		deleted = true
 	}
+
+	return deleted
 }
