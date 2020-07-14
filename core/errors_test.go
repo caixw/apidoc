@@ -4,6 +4,7 @@ package core
 
 import (
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -28,4 +29,13 @@ func TestNewSyntaxErrorWithError(t *testing.T) {
 
 	serr2 := NewSyntaxErrorWithError(Location{}, "", serr)
 	a.Equal(serr2.Err, err)
+}
+
+func TestSyntaxErrorr_Is_Unwrap(t *testing.T) {
+	a := assert.New(t)
+
+	err := NewSyntaxErrorWithError(Location{}, "field", os.ErrExist)
+	a.True(errors.Is(err, os.ErrExist))
+
+	a.Equal(errors.Unwrap(err), os.ErrExist)
 }

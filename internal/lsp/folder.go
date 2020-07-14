@@ -3,6 +3,7 @@
 package lsp
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -83,7 +84,7 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) 
 
 		ff.h = core.NewMessageHandler(ff.messageHandler)
 		ff.cfg, err = build.LoadConfig(f.URI)
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			if ff.cfg, err = build.DetectConfig(f.URI, true); err != nil {
 				return err
 			}

@@ -4,6 +4,7 @@ package build
 
 import (
 	"bytes"
+	"os"
 	"strconv"
 
 	"github.com/issue9/version"
@@ -64,7 +65,8 @@ func LoadConfig(wd core.URI) (*Config, error) {
 		}
 	}
 
-	return nil, locale.NewError(locale.ErrFileNotFound, wd.Append(allowConfigFilenames[0]))
+	field := wd.Append(allowConfigFilenames[0]).String()
+	return nil, core.NewSyntaxErrorWithError(core.Location{}, field, os.ErrNotExist)
 }
 
 func loadFile(wd, path core.URI) (*Config, error) {

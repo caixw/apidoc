@@ -43,6 +43,16 @@ func (err *SyntaxError) Error() string {
 	return locale.Sprintf(locale.ErrMessage, err.Err.Error(), detail)
 }
 
+// Unwrap 实现 errors.Unwrap 接口
+func (err *SyntaxError) Unwrap() error {
+	return err.Err
+}
+
+// Is 实现 errors.Is 接口
+func (err *SyntaxError) Is(target error) bool {
+	return err.Err == target
+}
+
 // NewSyntaxError 本地化的错误信息
 //
 // 其中的 msg 和 val 会被转换成本地化的内容保存。
