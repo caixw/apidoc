@@ -21,11 +21,17 @@ func initBuild(command *cmdopt.CmdOpt) {
 }
 
 func doBuild(io.Writer) error {
+	start := time.Now()
+
+	cfg, err := build.LoadConfig(core.URI(buildDir))
+	if err != nil {
+		return err
+	}
+
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	if cfg := build.LoadConfig(h, core.URI(buildDir)); cfg != nil {
-		cfg.Build(time.Now())
-	}
+	cfg.Build(h)
+	h.Locale(core.Info, locale.Complete, cfg.Output.Path, time.Now().Sub(start))
 	return nil
 }

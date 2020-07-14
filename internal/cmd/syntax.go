@@ -20,11 +20,15 @@ func initSyntax(command *cmdopt.CmdOpt) {
 }
 
 func syntax(w io.Writer) error {
+	cfg, err := build.LoadConfig(syntaxDir.URI())
+	if err != nil {
+		return err
+	}
+
 	h := core.NewMessageHandler(messageHandle)
 	defer h.Stop()
 
-	if cfg := build.LoadConfig(h, syntaxDir.URI()); cfg != nil {
-		cfg.CheckSyntax()
-	}
+	cfg.CheckSyntax(h)
+	h.Locale(core.Succ, locale.TestSuccess)
 	return nil
 }

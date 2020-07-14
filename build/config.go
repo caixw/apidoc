@@ -5,7 +5,6 @@ package build
 import (
 	"bytes"
 	"strconv"
-	"time"
 
 	"github.com/issue9/version"
 	"gopkg.in/yaml.v2"
@@ -40,42 +39,32 @@ type Config struct {
 
 	// 输出配置项
 	Output *Output `yaml:"output"`
-
-	h *core.MessageHandler
 }
 
 // LoadConfig 加载指定目录下的配置文件
-//
-// 所有的错误信息会输出到 h，在出错时，会返回 nil
-func LoadConfig(h *core.MessageHandler, wd core.URI) *Config {
+func LoadConfig(wd core.URI) (*Config, error) {
 	// 禁用加载远程配置文件
 	//
 	// 如果远程配置文件中的目录指向本地，则用户执行相关操作时，
 	// 会映射他本地的系统上，这未必是用户想要的结果，且对用户数据不安全。
 	if scheme, _ := wd.Parse(); scheme != "" && scheme != core.SchemeFile {
-		h.Error(locale.Sprintf(locale.ErrInvalidURIScheme))
-		return nil
+		return nil, locale.NewError(locale.ErrInvalidURIScheme)
 	}
 
 	for _, filename := range allowConfigFilenames {
 		path := wd.Append(filename)
 		if exists, err := path.Exists(); err != nil {
-			h.Error(err)
 			continue
 		} else if exists {
 			cfg, err := loadFile(wd, path)
 			if err != nil {
-				h.Error(err)
-				return nil
+				return nil, err
 			}
-			cfg.h = h
-			return cfg
+			return cfg, nil
 		}
 	}
 
-	msg := core.NewSyntaxError(core.Location{URI: wd.Append(allowConfigFilenames[0])}, "", locale.ErrRequired)
-	h.Error(msg)
-	return nil
+	return nil, locale.NewError(locale.ErrFileNotFound, wd.Append(allowConfigFilenames[0]))
 }
 
 func loadFile(wd, path core.URI) (*Config, error) {
@@ -165,30 +154,27 @@ func (cfg *Config) Save(wd core.URI) (err error) {
 // Build 解析文档并输出文档内容
 //
 // 具体信息可参考 Build 函数的相关文档。
-func (cfg *Config) Build(start time.Time) {
-	if err := Build(cfg.h, cfg.Output, cfg.Inputs...); err != nil {
-		cfg.h.Error(err)
-		return
+func (cfg *Config) Build(h *core.MessageHandler) {
+	if err := Build(h, cfg.Output, cfg.Inputs...); err != nil {
+		panic(err) // 由 loadConfig 保证配置项的正确，如果还出错则直接 panic
 	}
-
-	// 即使部分解析出错，只要有部分内容保存，就会输出此信息。
-	cfg.h.Locale(core.Info, locale.Complete, cfg.Output.Path, time.Now().Sub(start))
 }
 
 // Buffer 根据 wd 目录下的配置文件生成文档内容并保存至内存
 //
 // 具体信息可参考 Buffer 函数的相关文档。
-func (cfg *Config) Buffer() *bytes.Buffer {
-	buf, err := Buffer(cfg.h, cfg.Output, cfg.Inputs...)
+func (cfg *Config) Buffer(h *core.MessageHandler) *bytes.Buffer {
+	buf, err := Buffer(h, cfg.Output, cfg.Inputs...)
 	if err != nil {
-		cfg.h.Error(err)
-		return nil
+		panic(err) // 由 loadConfig 保证配置项的正确，如果还出错则直接 panic
 	}
 
 	return buf
 }
 
 // CheckSyntax 执行对语法内容的测试
-func (cfg *Config) CheckSyntax() {
-	CheckSyntax(cfg.h, cfg.Inputs...)
+func (cfg *Config) CheckSyntax(h *core.MessageHandler) {
+	if err := CheckSyntax(h, cfg.Inputs...); err != nil {
+		panic(err) // 由 loadConfig 保证配置项的正确，如果还出错则直接 panic
+	}
 }

@@ -47,6 +47,6 @@ func Unpack(buffer string) (doc string, err error) {
 }
 
 // Pack 将配置文件中指定的文档内容打包成 Go 文件
-func (cfg *Config) Pack(opt *PackOptions) error {
-	return Pack(cfg.h, opt, cfg.Output, cfg.Inputs...)
+func (cfg *Config) Pack(h *core.MessageHandler, opt *PackOptions) error {
+	return Pack(h, opt, cfg.Output, cfg.Inputs...)
 }

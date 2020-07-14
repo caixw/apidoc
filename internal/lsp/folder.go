@@ -4,6 +4,7 @@ package lsp
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/issue9/sliceutil"
@@ -81,11 +82,13 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) 
 		}
 
 		ff.h = core.NewMessageHandler(ff.messageHandler)
-		ff.cfg = build.LoadConfig(ff.h, f.URI)
-		if ff.cfg == nil {
+		ff.cfg, err = build.LoadConfig(f.URI)
+		if os.IsNotExist(err) {
 			if ff.cfg, err = build.DetectConfig(f.URI, true); err != nil {
 				return err
 			}
+		} else if err != nil {
+			return err
 		}
 
 		ff.doc.ParseBlocks(ff.h, func(blocks chan core.Block) {

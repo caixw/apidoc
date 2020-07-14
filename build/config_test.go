@@ -5,7 +5,6 @@ package build
 import (
 	"io/ioutil"
 	"testing"
-	"time"
 
 	"github.com/issue9/assert"
 	"gopkg.in/yaml.v2"
@@ -27,12 +26,8 @@ func TestAllowConfigFilenames(t *testing.T) {
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	rslt := messagetest.NewMessageHandler()
-	cfg := LoadConfig(rslt.Handler, docs.Dir().Append("example"))
-	rslt.Handler.Stop()
-	a.NotNil(cfg).
-		Empty(rslt.Errors).
-		Empty(rslt.Successes)
+	cfg, err := LoadConfig(docs.Dir().Append("example"))
+	a.NotError(err).NotNil(cfg)
 
 	// 读取的路径不应该是相对路径
 	a.Equal(2, len(cfg.Inputs)).
@@ -40,18 +35,12 @@ func TestLoadConfig(t *testing.T) {
 		NotEqual(cfg.Inputs[1].Dir, ".").
 		NotEqual(cfg.Output.Path, "./index.xml")
 
-	rslt = messagetest.NewMessageHandler()
-	cfg = LoadConfig(rslt.Handler, docs.Dir()) // 不存在 apidoc 的配置文件
-	rslt.Handler.Stop()
-	a.Nil(cfg).
-		NotEmpty(rslt.Errors).
-		Empty(rslt.Successes)
+	cfg, err = LoadConfig(docs.Dir()) // 不存在 apidoc 的配置文件
+	a.Error(err).Nil(cfg)
 
 	// 不能加载远程配置项
-	rslt = messagetest.NewMessageHandler()
-	cfg = LoadConfig(rslt.Handler, "https://apidoc.tools/example/.apidoc.yaml")
-	rslt.Handler.Stop()
-	a.Nil(cfg).NotEmpty(rslt.Errors)
+	cfg, err = LoadConfig("https://apidoc.tools/example/.apidoc.yaml")
+	a.Error(err).Nil(cfg)
 }
 
 func TestLoadFile(t *testing.T) {
@@ -118,40 +107,38 @@ func TestConfig_Save(t *testing.T) {
 	a.Equal("apidoc.xml", cfg.Output.Path)
 }
 
-func TestConfig_Test(t *testing.T) {
+func TestConfig_CheckSyntax(t *testing.T) {
 	a := assert.New(t)
 
-	rslt := messagetest.NewMessageHandler()
-	cfg := LoadConfig(rslt.Handler, docs.Dir().Append("example"))
-	a.NotNil(cfg)
-	cfg.CheckSyntax()
+	cfg, err := LoadConfig(docs.Dir().Append("example"))
+	a.NotError(err).NotNil(cfg)
 
+	rslt := messagetest.NewMessageHandler()
+	cfg.CheckSyntax(rslt.Handler)
 	rslt.Handler.Stop()
-	a.Empty(rslt.Errors).
-		NotEmpty(rslt.Successes) // 有成功提示
+	a.Empty(rslt.Errors)
 }
 
 func TestConfig_Build(t *testing.T) {
 	a := assert.New(t)
 
-	rslt := messagetest.NewMessageHandler()
-	cfg := LoadConfig(rslt.Handler, docs.Dir().Append("example"))
-	a.NotNil(cfg)
-	cfg.Build(time.Now())
+	cfg, err := LoadConfig(docs.Dir().Append("example"))
+	a.NotError(err).NotNil(cfg)
 
+	rslt := messagetest.NewMessageHandler()
+	cfg.Build(rslt.Handler)
 	rslt.Handler.Stop()
-	a.NotEmpty(rslt.Infos). // 有成功提示
-				Empty(rslt.Errors)
+	a.Empty(rslt.Errors)
 }
 
 func TestConfig_Buffer(t *testing.T) {
 	a := assert.New(t)
 
-	rslt := messagetest.NewMessageHandler()
-	cfg := LoadConfig(rslt.Handler, docs.Dir().Append("example"))
-	a.NotNil(cfg)
+	cfg, err := LoadConfig(docs.Dir().Append("example"))
+	a.NotError(err).NotNil(cfg)
 
-	buf := cfg.Buffer()
+	rslt := messagetest.NewMessageHandler()
+	buf := cfg.Buffer(rslt.Handler)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).
 		Empty(rslt.Successes).
