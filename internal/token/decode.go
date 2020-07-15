@@ -115,41 +115,39 @@ func findPrefix(start *StartElement, namespace string) string {
 	return ""
 }
 
-func (d *decoder) decode(n *node.Node, start *StartElement) (end *EndElement, ok bool) {
-	if !d.decodeAttributes(n, start) {
-		return nil, false
-	}
+func (d *decoder) decode(n *node.Node, start *StartElement) *EndElement {
+	d.decodeAttributes(n, start)
 
 	if start.Close {
-		return nil, d.checkOmitempty(n, start.Start, start.End)
+		d.checkOmitempty(n, start.Start, start.End)
+		return nil
 	}
 
-	if end, ok = d.decodeElements(n); ok {
-		return end, d.checkOmitempty(n, start.Start, end.End)
+	if end, ok := d.decodeElements(n); ok {
+		d.checkOmitempty(n, start.Start, end.End)
+		return end
 	}
-	return nil, false
+	return nil
 }
 
 // 判断 omitempty 属性
-func (d *decoder) checkOmitempty(n *node.Node, start, end core.Position) bool {
+func (d *decoder) checkOmitempty(n *node.Node, start, end core.Position) {
 	for _, attr := range n.Attributes {
 		if canNotEmpty(attr) {
-			return d.message(core.Erro, start, end, attr.Name, locale.ErrRequired)
+			d.message(core.Erro, start, end, attr.Name, locale.ErrRequired)
 		}
 	}
 	for _, elem := range n.Elements {
 		if canNotEmpty(elem) {
-			return d.message(core.Erro, start, end, elem.Name, locale.ErrRequired)
+			d.message(core.Erro, start, end, elem.Name, locale.ErrRequired)
 		}
 	}
 	if n.CData != nil && canNotEmpty(n.CData) {
-		return d.message(core.Erro, start, end, "cdata", locale.ErrRequired)
+		d.message(core.Erro, start, end, "cdata", locale.ErrRequired)
 	}
 	if n.Content != nil && canNotEmpty(n.Content) {
-		return d.message(core.Erro, start, end, "content", locale.ErrRequired)
+		d.message(core.Erro, start, end, "content", locale.ErrRequired)
 	}
-
-	return true
 }
 
 // 当前表示的值必须是一个非空值
@@ -160,9 +158,9 @@ func canNotEmpty(v *node.Value) bool {
 }
 
 // 将 start 的属性内容解码到 obj.Attributes 之中
-func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) (ok bool) {
+func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) {
 	if start == nil {
-		return true
+		return
 	}
 
 	for _, attr := range start.Attributes {
@@ -177,7 +175,6 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) (ok bool) 
 		if item.CanInterface() && item.Type().Implements(attrDecoderType) {
 			if err := item.Interface().(AttrDecoder).DecodeXMLAttr(d.p, attr); err != nil {
 				d.error(err)
-				return false
 			}
 			impl = true
 		} else if item.CanAddr() {
@@ -185,7 +182,6 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) (ok bool) 
 			if pv.CanInterface() && pv.Type().Implements(attrDecoderType) {
 				if err := pv.Interface().(AttrDecoder).DecodeXMLAttr(d.p, attr); err != nil {
 					d.error(err)
-					return false
 				}
 				impl = true
 			}
@@ -197,11 +193,8 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) (ok bool) 
 
 		if err := setAttributeValue(item.Value, item.Usage, d.p, attr); err != nil {
 			d.error(err)
-			return false
 		}
 	}
-
-	return true
 }
 
 func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
@@ -273,9 +266,7 @@ func (d *decoder) decodeElement(start *StartElement, v *node.Value) (ok bool) {
 
 	end, impl, err := callDecodeXML(v.Value, d.p, start)
 	if !impl {
-		if end, ok = d.decode(node.New(start.Name.Local.Value, v.Value), start); !ok {
-			return false
-		}
+		end = d.decode(node.New(start.Name.Local.Value, v.Value), start)
 	}
 	if err != nil {
 		return d.error(err)
@@ -306,9 +297,7 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 		if node.IsPrimitive(elem) {
 			panic(fmt.Sprintf("%s:%s 必须实现 Decoder 接口", slice.Name, elem.Type()))
 		}
-		if end, ok = d.decode(node.New(start.Name.Local.Value, elem), start); !ok {
-			return false
-		}
+		end = d.decode(node.New(start.Name.Local.Value, elem), start)
 	}
 	if err != nil {
 		return d.error(err)
@@ -373,13 +362,13 @@ func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, 
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}
 
-	v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
-	v.FieldByName(elementTagName).Set(reflect.ValueOf(start.Name))
+	setFieldValue(v, usageKeyName, usage)
+	setFieldValue(v, elementTagName, start.Name)
 	if end == nil {
-		v.FieldByName(rangeName).Set(reflect.ValueOf(start.Range))
+		setFieldValue(v, rangeName, start.Range)
 	} else {
-		v.FieldByName(rangeName).Set(reflect.ValueOf(core.Range{Start: start.Start, End: end.End}))
-		v.FieldByName(elementTagEndName).Set(reflect.ValueOf(end.Name))
+		setFieldValue(v, rangeName, core.Range{Start: start.Start, End: end.End})
+		setFieldValue(v, elementTagEndName, end.Name)
 	}
 
 	// Sanitize 在最后调用，可以保证 Sanitize 调用中可以取 v.Range 的值
@@ -392,9 +381,9 @@ func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}
 
-	v.FieldByName(rangeName).Set(reflect.ValueOf(attr.Range))
-	v.FieldByName(usageKeyName).Set(reflect.ValueOf(usage))
-	v.FieldByName(attributeNameName).Set(reflect.ValueOf(attr.Name))
+	setFieldValue(v, rangeName, attr.Range)
+	setFieldValue(v, usageKeyName, usage)
+	setFieldValue(v, attributeNameName, attr.Name)
 
 	return callSanitizer(v, p)
 }
@@ -409,4 +398,11 @@ func callSanitizer(v reflect.Value, p *Parser) error {
 		}
 	}
 	return nil
+}
+
+func setFieldValue(v reflect.Value, name string, value interface{}) {
+	vv := v.FieldByName(name)
+	if vv.CanSet() {
+		vv.Set(reflect.ValueOf(value))
+	}
 }

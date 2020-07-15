@@ -1241,7 +1241,7 @@ func TestDecode_decodeAttributes(t *testing.T) {
 
 	d, rslt := newDecoder(a, "")
 	o := &node.Node{}
-	a.True(d.decodeAttributes(o, nil))
+	d.decodeAttributes(o, nil)
 	rslt.Handler.Stop()
 
 	val := &struct {
@@ -1251,14 +1251,14 @@ func TestDecode_decodeAttributes(t *testing.T) {
 	o = node.New("root", reflect.ValueOf(val))
 	a.NotNil(o)
 	d, rslt = newDecoder(a, "")
-	ok := d.decodeAttributes(o, &StartElement{
+	d.decodeAttributes(o, &StartElement{
 		Attributes: []*Attribute{
 			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
 			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
 		},
 	})
 	rslt.Handler.Stop()
-	a.True(ok)
+	a.Empty(rslt.Errors)
 	a.Equal(val.ID, intAttr{Value: 10, BaseAttribute: BaseAttribute{
 		Base:          Base{UsageKey: "usage"},
 		AttributeName: Name{Local: String{Value: "id"}},
@@ -1275,14 +1275,14 @@ func TestDecode_decodeAttributes(t *testing.T) {
 	o = node.New("root", reflect.ValueOf(val))
 	a.NotNil(o)
 	d, rslt = newDecoder(a, "")
-	ok = d.decodeAttributes(o, &StartElement{
+	d.decodeAttributes(o, &StartElement{
 		Attributes: []*Attribute{
 			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
 			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "xx10"}},
 		},
 	})
 	rslt.Handler.Stop()
-	a.False(ok).NotEmpty(rslt.Errors)
+	a.NotEmpty(rslt.Errors)
 
 	// 带匿名成员
 	val2 := &struct {
@@ -1293,7 +1293,7 @@ func TestDecode_decodeAttributes(t *testing.T) {
 	o = node.New("root", reflect.ValueOf(val2))
 	a.NotNil(o)
 	d, rslt = newDecoder(a, "")
-	ok = d.decodeAttributes(o, &StartElement{
+	d.decodeAttributes(o, &StartElement{
 		Attributes: []*Attribute{
 			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
 			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
@@ -1301,11 +1301,10 @@ func TestDecode_decodeAttributes(t *testing.T) {
 		},
 	})
 	rslt.Handler.Stop()
-	a.True(ok).
-		Equal(val2.ID, intAttr{Value: 10, BaseAttribute: BaseAttribute{
-			Base:          Base{UsageKey: "usage"},
-			AttributeName: Name{Local: String{Value: "id"}},
-		}})
+	a.Equal(val2.ID, intAttr{Value: 10, BaseAttribute: BaseAttribute{
+		Base:          Base{UsageKey: "usage"},
+		AttributeName: Name{Local: String{Value: "id"}},
+	}})
 	a.Equal(val2.Name, stringAttr{Value: "name", BaseAttribute: BaseAttribute{
 		Base:          Base{UsageKey: "usage"},
 		AttributeName: Name{Local: String{Value: "name"}},
@@ -1323,14 +1322,14 @@ func TestDecode_decodeAttributes(t *testing.T) {
 	o = node.New("root", reflect.ValueOf(val4))
 	a.NotNil(o)
 	d, rslt = newDecoder(a, "")
-	ok = d.decodeAttributes(o, &StartElement{
+	d.decodeAttributes(o, &StartElement{
 		Attributes: []*Attribute{
 			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
 			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
 		},
 	})
 	rslt.Handler.Stop()
-	a.False(ok).NotEmpty(rslt.Errors)
+	a.NotEmpty(rslt.Errors)
 
 	// 未实现 AttrDecoder
 	val5 := &struct {
