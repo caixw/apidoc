@@ -15,6 +15,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
+	"github.com/caixw/apidoc/v7/internal/lsp/search"
 )
 
 // 表示项目文件夹
@@ -59,19 +60,29 @@ func (f *folder) messageHandler(msg *core.Message) {
 		if !ok {
 			f.srv.erro.Println(fmt.Sprintf("获得了非 core.SyntaxError 错误 %#v", msg.Message))
 		}
-		f.errors = append(f.errors, err)
+
+		cnt := sliceutil.Count(f.errors, func(i int) bool {
+			return f.errors[i].Location.Equal(err.Location)
+		})
+		if cnt == 0 {
+			f.errors = append(f.errors, err)
+		}
 	case core.Warn:
 		err, ok := msg.Message.(*core.SyntaxError)
 		if !ok {
 			f.srv.erro.Println(fmt.Sprintf("获得了非 core.SyntaxError 错误 %#v", msg.Message))
 		}
-		f.warns = append(f.warns, err)
+
+		cnt := sliceutil.Count(f.warns, func(i int) bool {
+			return f.warns[i].Location.Equal(err.Location)
+		})
+		if cnt == 0 {
+			f.warns = append(f.warns, err)
+		}
 	case core.Succ, core.Info: // 仅处理错误和警告
 	default:
 		panic("unreached")
 	}
-
-	f.srv.textDocumentPublishDiagnostics(f.URI, f.errors, f.warns)
 }
 
 func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) {
@@ -100,4 +111,19 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) 
 	}
 
 	return nil
+}
+
+// 删除与 uri 相关的数据
+func (f *folder) deleteURI(uri core.URI) (found bool) {
+	// 清除相关的警告和错误信息
+	size := sliceutil.QuickDelete(f.warns, func(i int) bool {
+		return f.warns[i].Location.URI == uri
+	})
+	f.warns = f.warns[:size]
+	size = sliceutil.QuickDelete(f.errors, func(i int) bool {
+		return f.errors[i].Location.URI == uri
+	})
+	f.errors = f.errors[:size]
+
+	return search.DeleteURI(f.doc, uri)
 }

@@ -25,13 +25,14 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
 
-	if !search.DeleteURI(f.doc, in.TextDocument.URI) {
+	if !f.deleteURI(in.TextDocument.URI) {
 		return nil
 	}
 
 	for _, blk := range in.Blocks() {
 		f.parseBlock(blk)
 	}
+	f.srv.textDocumentPublishDiagnostics(f, in.TextDocument.URI)
 	return nil
 }
 
@@ -50,31 +51,34 @@ func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *p
 // textDocument/publishDiagnostics
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_publishDiagnostics
-func (s *server) textDocumentPublishDiagnostics(uri core.URI, errs []*core.SyntaxError, warns []*core.SyntaxError) error {
-
+func (s *server) textDocumentPublishDiagnostics(f *folder, uri core.URI) error {
 	if s.clientCapabilities.TextDocument.PublishDiagnostics.RelatedInformation == false {
 		return nil
 	}
 
 	p := &protocol.PublishDiagnosticsParams{
 		URI:         uri,
-		Diagnostics: make([]protocol.Diagnostic, 0, len(errs)+len(warns)),
+		Diagnostics: make([]protocol.Diagnostic, 0, len(f.errors)+len(f.warns)),
 	}
 
-	for _, err := range errs {
-		p.Diagnostics = append(p.Diagnostics, protocol.Diagnostic{
-			Range:    err.Location.Range,
-			Message:  err.Error(),
-			Severity: protocol.DiagnosticSeverityError,
-		})
+	for _, err := range f.errors {
+		if err.Location.URI == uri {
+			p.Diagnostics = append(p.Diagnostics, protocol.Diagnostic{
+				Range:    err.Location.Range,
+				Message:  err.Error(),
+				Severity: protocol.DiagnosticSeverityError,
+			})
+		}
 	}
 
-	for _, warn := range warns {
-		p.Diagnostics = append(p.Diagnostics, protocol.Diagnostic{
-			Range:    warn.Location.Range,
-			Message:  warn.Error(),
-			Severity: protocol.DiagnosticSeverityWarning,
-		})
+	for _, err := range f.warns {
+		if err.Location.URI == uri {
+			p.Diagnostics = append(p.Diagnostics, protocol.Diagnostic{
+				Range:    err.Location.Range,
+				Message:  err.Error(),
+				Severity: protocol.DiagnosticSeverityWarning,
+			})
+		}
 	}
 
 	return s.Notify("textDocument/publishDiagnostics", p)
