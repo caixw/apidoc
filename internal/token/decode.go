@@ -116,22 +116,22 @@ func findPrefix(start *StartElement, namespace string) string {
 }
 
 func (d *decoder) decode(n *node.Node, start *StartElement) (end *EndElement, ok bool) {
-	if err := decodeAttributes(n, d.p, start, d.prefix); err != nil {
-		return nil, d.error(err)
+	if !d.decodeAttributes(n, start) {
+		return nil, false
 	}
 
 	if start.Close {
-		return nil, d.decodeCheckOmitempty(n, start.Start, start.End)
+		return nil, d.checkOmitempty(n, start.Start, start.End)
 	}
 
 	if end, ok = d.decodeElements(n); ok {
-		return end, d.decodeCheckOmitempty(n, start.Start, end.End)
+		return end, d.checkOmitempty(n, start.Start, end.End)
 	}
 	return nil, false
 }
 
 // 判断 omitempty 属性
-func (d *decoder) decodeCheckOmitempty(n *node.Node, start, end core.Position) bool {
+func (d *decoder) checkOmitempty(n *node.Node, start, end core.Position) bool {
 	for _, attr := range n.Attributes {
 		if canNotEmpty(attr) {
 			return d.message(core.Erro, start, end, attr.Name, locale.ErrRequired)
@@ -160,14 +160,14 @@ func canNotEmpty(v *node.Value) bool {
 }
 
 // 将 start 的属性内容解码到 obj.Attributes 之中
-func decodeAttributes(n *node.Node, p *Parser, start *StartElement, prefix string) error {
+func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) (ok bool) {
 	if start == nil {
-		return nil
+		return true
 	}
 
 	for _, attr := range start.Attributes {
 		item, found := n.Attribute(attr.Name.Local.Value)
-		if !found || prefix != attr.Name.Prefix.Value { // 未找到或是命名空间不匹配
+		if !found || d.prefix != attr.Name.Prefix.Value { // 未找到或是命名空间不匹配
 			continue
 		}
 		v := node.GetRealValue(item.Value)
@@ -175,15 +175,17 @@ func decodeAttributes(n *node.Node, p *Parser, start *StartElement, prefix strin
 
 		var impl bool
 		if item.CanInterface() && item.Type().Implements(attrDecoderType) {
-			if err := item.Interface().(AttrDecoder).DecodeXMLAttr(p, attr); err != nil {
-				return err
+			if err := item.Interface().(AttrDecoder).DecodeXMLAttr(d.p, attr); err != nil {
+				d.error(err)
+				return false
 			}
 			impl = true
 		} else if item.CanAddr() {
 			pv := item.Addr()
 			if pv.CanInterface() && pv.Type().Implements(attrDecoderType) {
-				if err := pv.Interface().(AttrDecoder).DecodeXMLAttr(p, attr); err != nil {
-					return err
+				if err := pv.Interface().(AttrDecoder).DecodeXMLAttr(d.p, attr); err != nil {
+					d.error(err)
+					return false
 				}
 				impl = true
 			}
@@ -193,12 +195,13 @@ func decodeAttributes(n *node.Node, p *Parser, start *StartElement, prefix strin
 			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name))
 		}
 
-		if err := setAttributeValue(item.Value, item.Usage, p, attr); err != nil {
-			return err
+		if err := setAttributeValue(item.Value, item.Usage, d.p, attr); err != nil {
+			d.error(err)
+			return false
 		}
 	}
 
-	return nil
+	return true
 }
 
 func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {

@@ -13,6 +13,18 @@ import (
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
+func newDecoder(a *assert.Assertion, prefix string) (*decoder, *messagetest.Result) {
+	p, err := NewParser(core.Block{})
+	a.NotError(err).NotNil(p)
+	rslt := messagetest.NewMessageHandler()
+
+	return &decoder{
+		prefix: prefix,
+		p:      p,
+		h:      rslt.Handler,
+	}, rslt
+}
+
 func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace string, hasErr bool) {
 	p, err := NewParser(core.Block{Data: []byte(xml)})
 	a.NotError(err).
@@ -1224,13 +1236,13 @@ func TestDecode_omitempty(t *testing.T) {
 	decodeObject(a, b, v5, "", true)
 }
 
-func TestObject_decodeAttributes(t *testing.T) {
+func TestDecode_decodeAttributes(t *testing.T) {
 	a := assert.New(t)
-	p, err := NewParser(core.Block{})
-	a.NotError(err).NotNil(p)
 
+	d, rslt := newDecoder(a, "")
 	o := &node.Node{}
-	a.NotError(decodeAttributes(o, p, nil, ""))
+	a.True(d.decodeAttributes(o, nil))
+	rslt.Handler.Stop()
 
 	val := &struct {
 		ID   intAttr    `apidoc:"id,attr,usage"`
@@ -1238,13 +1250,15 @@ func TestObject_decodeAttributes(t *testing.T) {
 	}{}
 	o = node.New("root", reflect.ValueOf(val))
 	a.NotNil(o)
-	err = decodeAttributes(o, p, &StartElement{
+	d, rslt = newDecoder(a, "")
+	ok := d.decodeAttributes(o, &StartElement{
 		Attributes: []*Attribute{
 			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
 			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
 		},
-	}, "")
-	a.NotError(err)
+	})
+	rslt.Handler.Stop()
+	a.True(ok)
 	a.Equal(val.ID, intAttr{Value: 10, BaseAttribute: BaseAttribute{
 		Base:          Base{UsageKey: "usage"},
 		AttributeName: Name{Local: String{Value: "id"}},
@@ -1260,13 +1274,15 @@ func TestObject_decodeAttributes(t *testing.T) {
 	}{}
 	o = node.New("root", reflect.ValueOf(val))
 	a.NotNil(o)
-	err = decodeAttributes(o, p, &StartElement{
+	d, rslt = newDecoder(a, "")
+	ok = d.decodeAttributes(o, &StartElement{
 		Attributes: []*Attribute{
 			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
 			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "xx10"}},
 		},
-	}, "")
-	a.Error(err)
+	})
+	rslt.Handler.Stop()
+	a.False(ok).NotEmpty(rslt.Errors)
 
 	// 带匿名成员
 	val2 := &struct {
@@ -1276,14 +1292,16 @@ func TestObject_decodeAttributes(t *testing.T) {
 	}{}
 	o = node.New("root", reflect.ValueOf(val2))
 	a.NotNil(o)
-	err = decodeAttributes(o, p, &StartElement{
+	d, rslt = newDecoder(a, "")
+	ok = d.decodeAttributes(o, &StartElement{
 		Attributes: []*Attribute{
 			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
 			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
 			{Name: Name{Local: String{Value: "attr1"}}, Value: String{Value: "11"}},
 		},
-	}, "")
-	a.NotError(err).
+	})
+	rslt.Handler.Stop()
+	a.True(ok).
 		Equal(val2.ID, intAttr{Value: 10, BaseAttribute: BaseAttribute{
 			Base:          Base{UsageKey: "usage"},
 			AttributeName: Name{Local: String{Value: "id"}},
@@ -1304,13 +1322,15 @@ func TestObject_decodeAttributes(t *testing.T) {
 	}{}
 	o = node.New("root", reflect.ValueOf(val4))
 	a.NotNil(o)
-	err = decodeAttributes(o, p, &StartElement{
+	d, rslt = newDecoder(a, "")
+	ok = d.decodeAttributes(o, &StartElement{
 		Attributes: []*Attribute{
 			{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
 			{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
 		},
-	}, "")
-	a.Error(err)
+	})
+	rslt.Handler.Stop()
+	a.False(ok).NotEmpty(rslt.Errors)
 
 	// 未实现 AttrDecoder
 	val5 := &struct {
@@ -1320,12 +1340,12 @@ func TestObject_decodeAttributes(t *testing.T) {
 	o = node.New("root", reflect.ValueOf(val5))
 	a.NotNil(o)
 	a.Panic(func() {
-		decodeAttributes(o, p, &StartElement{
+		d.decodeAttributes(o, &StartElement{
 			Attributes: []*Attribute{
 				{Name: Name{Local: String{Value: "name"}}, Value: String{Value: "name"}},
 				{Name: Name{Local: String{Value: "id"}}, Value: String{Value: "10"}},
 			},
-		}, "")
+		})
 	})
 }
 
