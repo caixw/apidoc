@@ -28,6 +28,7 @@
 		<language id="rust">Rust</language>
 		<language id="scala">Scala</language>
 		<language id="swift">Swift</language>
+		<language id="zig">Zig</language>
 	</languages>
 	<locales>
 		<locale id="cmn-Hans" href="index.xml" title="简体中文" doc="locale.cmn-Hans.xml"></locale>

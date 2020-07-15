@@ -229,6 +229,19 @@ var langs = []*Language{
 			newSwiftNestMCommentBlock("/*", "*/", "*"),
 		},
 	},
+
+	{
+		DisplayName: "Zig",
+		ID:          "zig",
+		Exts:        []string{".zig"},
+		Blocks: []Blocker{
+			newCStyleString(),
+			newCStyleChar(),
+			newSingleComment("///"), // 需要在 // 之前定义
+			newSingleComment("//!"), // 需要在 // 之前定义
+			newCStyleSingleComment(),
+		},
+	},
 }
 
 var cStyle = []Blocker{
