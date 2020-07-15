@@ -26,6 +26,17 @@ func TestPosition_Equal(t *testing.T) {
 	a.False(p1.Equal(Position{Line: -1}))
 }
 
+func TestRange_Equal(t *testing.T) {
+	a := assert.New(t)
+
+	r1 := Range{}
+	a.True(r1.Equal(Range{}))
+	a.False(r1.Equal(Range{End: Position{Line: 1}}))
+
+	r1 = Range{End: Position{Line: 1}}
+	a.True(r1.Equal(Range{End: Position{Line: 1}}))
+}
+
 func TestRange_IsEmpty(t *testing.T) {
 	a := assert.New(t)
 
@@ -58,4 +69,16 @@ func TestRange_Contains(t *testing.T) {
 	a.True(r.Contains(Position{Line: 5, Character: 15}))
 	a.False(r.Contains(Position{Line: 5, Character: 17}))
 	a.False(r.Contains(Position{Line: 0, Character: 17}))
+}
+
+func TestLocation_Equal(t *testing.T) {
+	a := assert.New(t)
+
+	l := Location{}
+	a.True(l.Equal(Location{}))
+	a.False(l.Equal(Location{URI: URI(".")}))
+
+	l = Location{URI: URI("."), Range: Range{Start: Position{Line: 1}}}
+	a.True(l.Equal(Location{URI: URI("."), Range: Range{Start: Position{Line: 1}}}))
+	a.False(l.Equal(Location{}))
 }

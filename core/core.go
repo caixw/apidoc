@@ -52,9 +52,14 @@ type Location struct {
 	Range Range `json:"range" apidoc:"-"`
 }
 
-// Equal 判断两个 Position 是否相等
+// Equal 判断与 v 是否相同
 func (p Position) Equal(v Position) bool {
 	return p.Line == v.Line && p.Character == v.Character
+}
+
+// Equal 判断与 v 是否相同
+func (r Range) Equal(v Range) bool {
+	return r.Start.Equal(v.Start) && r.End.Equal(v.End)
 }
 
 // IsEmpty 表示 Range 表示的范围长度为空
@@ -74,4 +79,11 @@ func (l Location) String() string {
 	s := l.Range.Start
 	e := l.Range.End
 	return fmt.Sprintf("%s[%d:%d,%d:%d]", l.URI, s.Line, s.Character, e.Line, e.Character)
+}
+
+// Equal 判断与 v 是否相等
+//
+// 所有字段都相同即返回 true。
+func (l Location) Equal(v Location) bool {
+	return l.Range.Equal(v.Range) && l.URI == v.URI
 }
