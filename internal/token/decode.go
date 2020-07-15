@@ -333,6 +333,10 @@ func callDecodeXML(v reflect.Value, p *Parser, start *StartElement) (end *EndEle
 
 // 找到与 start 相对应的结束符号位置
 func findEndElement(p *Parser, start *StartElement) error {
+	if start.Close {
+		return nil
+	}
+
 	level := 0
 	for {
 		t, _, err := p.Token()

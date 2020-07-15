@@ -1355,6 +1355,11 @@ func TestFindEndElement(t *testing.T) {
 	a.NotError(err).NotNil(p)
 	a.Error(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
 
+	// StartElement.Close = true
+	p, err = NewParser(core.Block{Data: []byte("<c/>")})
+	a.NotError(err).NotNil(p)
+	a.NotError(findEndElement(p, &StartElement{Close: true, Name: Name{Local: String{Value: "c"}}}))
+
 	p, err = NewParser(core.Block{Data: []byte("1</c>")})
 	a.NotError(err).NotNil(p)
 	a.NotError(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
