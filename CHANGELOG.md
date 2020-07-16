@@ -4,9 +4,10 @@
 
 ### Added
 
-- 添加对 lua、dart 和 lisp 及其方言的支持；
+- 添加对 lua、dart、zig 和 lisp 及其方言的支持；
 - 为 version 子命令添加 `kind` 选项；
 - 为 core.Range 和 core.Location 添加了 Equal 方法用于判断值是否相等；
+- 添加对 textDocument/foldingRange 的支持；
 
 ### Fixed
 
