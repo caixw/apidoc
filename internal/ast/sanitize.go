@@ -319,21 +319,15 @@ func (doc *APIDoc) checkXMLNamespaces(p *token.Parser) error {
 }
 
 func (doc *APIDoc) tagExists(tag string) bool {
-	for _, s := range doc.Tags {
-		if s.Name.Value.Value == tag {
-			return true
-		}
-	}
-	return false
+	return sliceutil.Count(doc.Tags, func(i int) bool {
+		return doc.Tags[i].Name.V() == tag
+	}) > 0
 }
 
 func (doc *APIDoc) serverExists(srv string) bool {
-	for _, s := range doc.Servers {
-		if s.Name.Value.Value == srv {
-			return true
-		}
-	}
-	return false
+	return sliceutil.Count(doc.Servers, func(i int) bool {
+		return doc.Servers[i].Name.V() == srv
+	}) > 0
 }
 
 func (api *API) sanitizeTags() error {

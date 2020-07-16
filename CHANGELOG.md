@@ -15,6 +15,7 @@
 - 修正 ast.APIDoc.Parse 未记录 URI 的错误；
 - 修正 textDocument/hover 可能导致整个程序 panic 的错误；
 - 修正 textDocument/didChange 解析错误；
+- 修正 textDocument/publishDiagnostics 无法正确发送的错误；
 
 ### Changed
 

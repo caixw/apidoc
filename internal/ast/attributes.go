@@ -169,8 +169,8 @@ func (b *BoolAttribute) V() bool {
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *MethodAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
-	a.Value.Value = strings.ToUpper(a.Value.Value)
-	if !isValidMethod(a.Value.Value) {
+	a.Value.Value = strings.ToUpper(a.V())
+	if !isValidMethod(a.V()) {
 		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
 	}
 	return nil
@@ -214,7 +214,7 @@ func (a *StatusAttribute) V() int {
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *TypeAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
-	if !isValidType(a.Value.Value) {
+	if !isValidType(a.V()) {
 		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
 	}
 	return nil
@@ -236,7 +236,7 @@ func (a *TypeAttribute) V() string {
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
 func (a *VersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
 	a.Value = attr.Value
-	if !isValidVersion(a.Value.Value) {
+	if !isValidVersion(a.V()) {
 		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
 	}
 	return nil
