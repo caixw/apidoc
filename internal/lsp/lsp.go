@@ -100,8 +100,9 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 		"workspace/didChangeWorkspaceFolders": srv.workspaceDidChangeWorkspaceFolders,
 
 		// textDocument
-		"textDocument/didChange": srv.textDocumentDidChange,
-		"textDocument/hover":     srv.textDocumentHover,
+		"textDocument/didChange":    srv.textDocumentDidChange,
+		"textDocument/hover":        srv.textDocumentHover,
+		"textDocument/foldingRange": srv.textDocumentFoldingRange,
 	})
 
 	jsonrpcServer.RegisterMatcher(func(method string) bool {

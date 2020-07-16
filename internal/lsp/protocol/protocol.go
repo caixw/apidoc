@@ -11,6 +11,13 @@ type WorkDoneProgressParams struct {
 	WorkDoneToken ProgressToken `json:"workDoneToken,omitempty"`
 }
 
+// PartialResultParams a parameter literal used to pass a partial result token
+type PartialResultParams struct {
+	// An optional token that a server can use to report
+	// partial results (e.g. streaming) to the client
+	PartialResultToken ProgressToken `json:"partialResultToken,omitempty"`
+}
+
 // ProgressToken type ProgressToken = number | string;
 type ProgressToken interface{}
 

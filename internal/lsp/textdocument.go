@@ -3,8 +3,6 @@
 package lsp
 
 import (
-	"strings"
-
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
@@ -15,12 +13,7 @@ import (
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_didChange
 func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDocumentParams, out *interface{}) error {
-	var f *folder
-	for _, f = range s.folders {
-		if strings.HasPrefix(string(in.TextDocument.URI), string(f.URI)) {
-			break
-		}
-	}
+	f := s.findFolder(in.TextDocument.URI)
 	if f == nil {
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
@@ -82,4 +75,35 @@ func (s *server) textDocumentPublishDiagnostics(f *folder, uri core.URI) error {
 	}
 
 	return s.Notify("textDocument/publishDiagnostics", p)
+}
+
+// textDocument/foldingRange
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_foldingRange
+func (s *server) textDocumentFoldingRange(notify bool, in *protocol.FoldingRangeParams, out *[]protocol.FoldingRange) error {
+	uri := in.TextDocument.URI
+	lineFoldingOnly := s.clientCapabilities.TextDocument.FoldingRange.LineFoldingOnly
+
+	f := s.findFolder(uri)
+	if f == nil {
+		return nil
+	}
+
+	fr := make([]protocol.FoldingRange, 0, 10)
+	if f.doc.URI == uri {
+		fr = append(fr, protocol.BuildFoldingRange(f.doc.Base, lineFoldingOnly))
+	}
+
+	for _, api := range f.doc.APIs {
+		matched := api.URI == uri || (api.URI == "" && f.doc.URI == uri)
+		if !matched {
+			continue
+		}
+
+		fr = append(fr, protocol.BuildFoldingRange(api.Base, lineFoldingOnly))
+	}
+
+	*out = fr
+
+	return nil
 }

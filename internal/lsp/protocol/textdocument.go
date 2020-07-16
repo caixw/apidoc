@@ -2,7 +2,10 @@
 
 package protocol
 
-import "github.com/caixw/apidoc/v7/core"
+import (
+	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/internal/token"
+)
 
 // TextDocumentIdentifier text documents are identified using a URI.
 // On the protocol level, URIs are passed as strings.
@@ -313,7 +316,7 @@ type TextDocumentClientCapabilities struct {
 	// Capabilities specific to `textDocument/foldingRange` requests.
 	//
 	// Since 3.10.0
-	FoldingRange struct {
+	FoldingRange *struct {
 		// Whether implementation supports dynamic registration for folding range providers. If this is set to `true`
 		// the client supports the new `(FoldingRangeProviderOptions & TextDocumentRegistrationOptions & StaticRegistrationOptions)`
 		// return value for the corresponding server capability as well.
@@ -453,16 +456,6 @@ type DocumentRangeFormattingOptions struct {
 	WorkDoneProgressOptions
 }
 
-type FoldingRangeOptions struct {
-	WorkDoneProgressOptions
-}
-
-type FoldingRangeRegistrationOptions struct {
-	TextDocumentRegistrationOptions
-	FoldingRangeOptions
-	StaticRegistrationOptions
-}
-
 type SelectionRangeOptions struct {
 	WorkDoneProgressOptions
 }
@@ -557,4 +550,53 @@ type Hover struct {
 	// An optional range is a range inside a text document
 	// that is used to visualize a hover, e.g. by changing the background color.
 	Range core.Range `json:"range,omitempty"`
+}
+
+// FoldingRangeParams 由用户传递的 textDocument/foldingRange 参数
+type FoldingRangeParams struct {
+	WorkDoneProgressParams
+	PartialResultParams
+
+	// The text document.
+	TextDocument TextDocumentIdentifier `json:"textDocument"`
+}
+
+// FoldingRange represents a folding range
+type FoldingRange struct {
+	// The zero-based line number from where the folded range starts.
+	StartLine int `json:"startLine"`
+
+	// The zero-based character offset from where the folded range starts. If not defined, defaults to the length of the start line.
+	//
+	// 0 是一个合法的值，所以只能采用指针类型表示空值。
+	StartCharacter *int `json:"startCharacter,omitempty"`
+
+	// The zero-based line number where the folded range ends.
+	EndLine int `json:"endLine"`
+
+	// The zero-based character offset before the folded range ends. If not defined, defaults to the length of the end line.
+	//
+	// 0 是一个合法的值，所以只能采用指针类型表示空值。
+	EndCharacter *int `json:"endCharacter,omitempty"`
+
+	// Describes the kind of the folding range such as `comment` or `region`. The kind
+	// is used to categorize folding ranges and used by commands like 'Fold all comments'. See
+	// [FoldingRangeKind](#FoldingRangeKind) for an enumeration of standardized kinds.
+	Kind string `json:"kind,omitempty"`
+}
+
+// BuildFoldingRange 根据参数构建 FoldingRange 实例
+func BuildFoldingRange(base token.Base, lineFoldingOnly bool) FoldingRange {
+	item := FoldingRange{
+		StartLine: base.Start.Line,
+		EndLine:   base.End.Line,
+		Kind:      FoldingRangeKindComment,
+	}
+
+	if lineFoldingOnly {
+		item.StartCharacter = &base.Start.Character
+		item.EndCharacter = &base.End.Character
+	}
+
+	return item
 }

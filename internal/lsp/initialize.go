@@ -36,6 +36,10 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		out.Capabilities.HoverProvider = true
 	}
 
+	if in.Capabilities.TextDocument.FoldingRange != nil {
+		out.Capabilities.FoldingRangeProvider = true
+	}
+
 	if in.InitializationOptions != nil && in.InitializationOptions.Locale != "" {
 		tag, err := language.Parse(in.InitializationOptions.Locale)
 		if err != nil {

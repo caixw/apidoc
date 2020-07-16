@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/issue9/sliceutil"
 
@@ -126,4 +127,15 @@ func (f *folder) deleteURI(uri core.URI) (found bool) {
 	f.errors = f.errors[:size]
 
 	return search.DeleteURI(f.doc, uri)
+}
+
+func (s *server) findFolder(uri core.URI) *folder {
+	var f *folder
+	for _, f = range s.folders {
+		if strings.HasPrefix(string(uri), string(f.URI)) {
+			return f
+		}
+	}
+
+	return nil
 }

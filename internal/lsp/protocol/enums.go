@@ -201,3 +201,10 @@ const (
 	// After that only incremental updates to the document are send.
 	TextDocumentSyncKindIncremental
 )
+
+// 有关折叠的相关类型
+const (
+	FoldingRangeKindComment = "comment" // Folding range for a comment
+	FoldingRangeKindImports = "imports" // Folding range for a imports or includes
+	FoldingRangeKindRegion  = "region"  // Folding range for a region (e.g. `#region`)
+)
