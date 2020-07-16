@@ -4,7 +4,6 @@ package protocol
 
 import (
 	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/internal/token"
 )
 
 // TextDocumentIdentifier text documents are identified using a URI.
@@ -74,55 +73,7 @@ type TextDocumentClientCapabilities struct {
 	} `json:"synchronization,omitempty"`
 
 	// Capabilities specific to the `textDocument/completion`
-	Completion struct {
-		// Whether completion supports dynamic registration.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// The client supports the following `CompletionItem` specific
-		// capabilities.
-		CompletionItem struct {
-			// The client supports snippets as insert text.
-			//
-			// A snippet can define tab stops and placeholders with `$1`, `$2`
-			// and `${3:foo}`. `$0` defines the final tab stop, it defaults to
-			// the end of the snippet. Placeholders with equal identifiers are linked,
-			// that is typing in one will update others too.
-			SnippetSupport bool `json:"snippetSupport,omitempty"`
-
-			// The client supports commit characters on a completion item.
-			CommitCharactersSupport bool `json:"commitCharactersSupport,omitempty"`
-
-			// The client supports the following content formats for the documentation
-			// property. The order describes the preferred format of the client.
-			DocumentationFormat []MarkupKind `json:"documentationFormat,omitempty"`
-
-			// The client supports the deprecated property on a completion item.
-			DeprecatedSupport bool `json:"deprecatedSupport,omitempty"`
-
-			// The client supports the preselect property on a completion item.
-			PreselectSupport bool `json:"preselectSupport,omitempty"`
-		} `json:"completionItem,omitempty"`
-
-		CompletionItemKind struct {
-			/**
-			 * The completion item kind values the client supports. When this
-			 * property exists the client also guarantees that it will
-			 * handle values outside its set gracefully and falls back
-			 * to a default value when unknown.
-			 *
-			 * If this property is not present the client only supports
-			 * the completion items kinds from `Text` to `Reference` as defined in
-			 * the initial version of the protocol.
-			 */
-			ValueSet []CompletionItemKind `json:"valueSet,omitempty"`
-		} `json:"completionItemKind,omitempty"`
-
-		/**
-		 * The client supports to send additional context information for a
-		 * `textDocument/completion` request.
-		 */
-		ContextSupport bool `json:"contextSupport,omitempty"`
-	} `json:"completion,omitempty"`
+	Completion *CompletionClientCapabilities `json:"completion,omitempty"`
 
 	// Capabilities specific to the `textDocument/hover`
 	Hover struct {
@@ -293,43 +244,12 @@ type TextDocumentClientCapabilities struct {
 	} `json:"rename,omitempty"`
 
 	// Capabilities specific to `textDocument/publishDiagnostics`.
-	PublishDiagnostics struct {
-		// Whether the clients accepts diagnostics with related information.
-		RelatedInformation bool `json:"relatedInformation,omitempty"`
-
-		// Client supports the tag property to provide meta data about a diagnostic.
-		// Clients supporting tags have to handle unknown tags gracefully.
-		//
-		// @since 3.15.0
-		TagSupport struct {
-			// The tags supported by the client.
-			ValueSet []DiagnosticTag `json:"valueSet,omitempty"`
-		} `json:"tagSupport,omitempty"`
-
-		// Whether the client interprets the version property of the
-		// `textDocument/publishDiagnostics` notification's parameter.
-		//
-		// @since 3.15.0
-		VersionSupport bool `json:"versionSupport,omitempty"`
-	} `json:"publishDiagnostics,omitempty"`
+	PublishDiagnostics *PublishDiagnosticsClientCapabilities `json:"publishDiagnostics,omitempty"`
 
 	// Capabilities specific to `textDocument/foldingRange` requests.
 	//
 	// Since 3.10.0
-	FoldingRange *struct {
-		// Whether implementation supports dynamic registration for folding range providers. If this is set to `true`
-		// the client supports the new `(FoldingRangeProviderOptions & TextDocumentRegistrationOptions & StaticRegistrationOptions)`
-		// return value for the corresponding server capability as well.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// The maximum number of folding ranges that the client prefers to receive per document. The value serves as a
-		// hint, servers are free to follow the limit.
-		RangeLimit int `json:"rangeLimit,omitempty"`
-
-		// If set, the client signals that it only supports folding complete lines. If set, client will
-		// ignore specified `startCharacter` and `endCharacter` properties in a FoldingRange.
-		LineFoldingOnly bool `json:"lineFoldingOnly,omitempty"`
-	} `json:"foldingRange,omitempty"`
+	FoldingRange *FoldingRangeClientCapabilities `json:"foldingRange,omitempty"`
 }
 
 type DidChangeConfigurationClientCapabilities struct {
@@ -550,53 +470,4 @@ type Hover struct {
 	// An optional range is a range inside a text document
 	// that is used to visualize a hover, e.g. by changing the background color.
 	Range core.Range `json:"range,omitempty"`
-}
-
-// FoldingRangeParams 由用户传递的 textDocument/foldingRange 参数
-type FoldingRangeParams struct {
-	WorkDoneProgressParams
-	PartialResultParams
-
-	// The text document.
-	TextDocument TextDocumentIdentifier `json:"textDocument"`
-}
-
-// FoldingRange represents a folding range
-type FoldingRange struct {
-	// The zero-based line number from where the folded range starts.
-	StartLine int `json:"startLine"`
-
-	// The zero-based character offset from where the folded range starts. If not defined, defaults to the length of the start line.
-	//
-	// 0 是一个合法的值，所以只能采用指针类型表示空值。
-	StartCharacter *int `json:"startCharacter,omitempty"`
-
-	// The zero-based line number where the folded range ends.
-	EndLine int `json:"endLine"`
-
-	// The zero-based character offset before the folded range ends. If not defined, defaults to the length of the end line.
-	//
-	// 0 是一个合法的值，所以只能采用指针类型表示空值。
-	EndCharacter *int `json:"endCharacter,omitempty"`
-
-	// Describes the kind of the folding range such as `comment` or `region`. The kind
-	// is used to categorize folding ranges and used by commands like 'Fold all comments'. See
-	// [FoldingRangeKind](#FoldingRangeKind) for an enumeration of standardized kinds.
-	Kind string `json:"kind,omitempty"`
-}
-
-// BuildFoldingRange 根据参数构建 FoldingRange 实例
-func BuildFoldingRange(base token.Base, lineFoldingOnly bool) FoldingRange {
-	item := FoldingRange{
-		StartLine: base.Start.Line,
-		EndLine:   base.End.Line,
-		Kind:      FoldingRangeKindComment,
-	}
-
-	if lineFoldingOnly {
-		item.StartCharacter = &base.Start.Character
-		item.EndCharacter = &base.End.Character
-	}
-
-	return item
 }

@@ -155,38 +155,6 @@ const (
 	MarkupKinMarkdown MarkupKind = "markdown"
 )
 
-// CompletionItemKind the kind of a completion entry.
-type CompletionItemKind int
-
-// CompletionItemKind 的各类枚举值
-const (
-	CompletionItemKindText CompletionItemKind = iota + 1
-	CompletionItemKindMethod
-	CompletionItemKindFunction
-	CompletionItemKindConstructor
-	CompletionItemKindField
-	CompletionItemKindVariable
-	CompletionItemKindClass
-	CompletionItemKindInterface
-	CompletionItemKindModule
-	CompletionItemKindProperty
-	CompletionItemKindUnit
-	CompletionItemKindValue
-	CompletionItemKindEnum
-	CompletionItemKindKeyword
-	CompletionItemKindSnippet
-	CompletionItemKindColor
-	CompletionItemKindFile
-	CompletionItemKindReference
-	CompletionItemKindFolder
-	CompletionItemKindEnumMember
-	CompletionItemKindConstant
-	CompletionItemKindStruct
-	CompletionItemKindEvent
-	CompletionItemKindOperator
-	CompletionItemKindTypeParameter
-)
-
 // TextDocumentSyncKind defines how the host (editor) should sync document changes to the language server.
 type TextDocumentSyncKind int
 
@@ -200,11 +168,4 @@ const (
 	// TextDocumentSyncKindIncremental documents are synced by sending the full content on open.
 	// After that only incremental updates to the document are send.
 	TextDocumentSyncKindIncremental
-)
-
-// 有关折叠的相关类型
-const (
-	FoldingRangeKindComment = "comment" // Folding range for a comment
-	FoldingRangeKindImports = "imports" // Folding range for a imports or includes
-	FoldingRangeKindRegion  = "region"  // Folding range for a region (e.g. `#region`)
 )

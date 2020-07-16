@@ -177,29 +177,7 @@ type ReferenceOptions struct {
 	WorkDoneProgressOptions
 }
 
-// CompletionOptions completion options.
-type CompletionOptions struct {
-	WorkDoneProgressOptions
-
-	// The server provides support to resolve additional
-	// information for a completion item.
-	ResolveProvider bool `json:"resolveProvider,omitempty"`
-
-	// The characters that trigger completion automatically.
-	TriggerCharacters []string `json:"triggerCharacters,omitempty"`
-
-	// The list of all possible characters that commit a completion. This field can be used
-	// if clients don't support individual commit characters per completion item. See
-	// `ClientCapabilities.textDocument.completion.completionItem.commitCharactersSupport`.
-	//
-	// If a server provides both `allCommitCharacters` and commit characters on an individual
-	// completion item the ones on the completion item win.
-	//
-	// @since 3.2.0
-	AllCommitCharacters []string `json:"allCommitCharacters,omitempty"`
-}
-
-// Signature help options.
+// SignatureHelpOptions Signature help options.
 type SignatureHelpOptions struct {
 	WorkDoneProgressOptions
 
@@ -250,9 +228,6 @@ type SaveOptions struct {
 
 // Color provider options.
 type ColorProviderOptions struct{}
-
-// Folding range provider options.
-type FoldingRangeProviderOptions struct{}
 
 // StaticRegistrationOptions static registration options to be returned in the initialize request.
 type StaticRegistrationOptions struct {

@@ -4,6 +4,7 @@ package protocol
 
 import "github.com/caixw/apidoc/v7/core"
 
+// WorkspaceFolder 项目文件夹
 type WorkspaceFolder struct {
 	// The associated URI for this workspace folder.
 	URI core.URI `json:"uri"`
