@@ -116,19 +116,19 @@ type ClientCapabilities struct {
 		ApplyEdit bool `json:"applyEdit,omitempty"`
 
 		// Capabilities specific to `WorkspaceEdit`s
-		WorkspaceEdit WorkspaceEditClientCapabilities `json:"workspaceEdit,omitempty"`
+		WorkspaceEdit *WorkspaceEditClientCapabilities `json:"workspaceEdit,omitempty"`
 
 		// Capabilities specific to the `workspace/didChangeConfiguration` notification.
-		DidChangeConfiguration DidChangeConfigurationClientCapabilities `json:"didChangeConfiguration,omitempty"`
+		DidChangeConfiguration *DidChangeConfigurationClientCapabilities `json:"didChangeConfiguration,omitempty"`
 
 		// Capabilities specific to the `workspace/didChangeWatchedFiles` notification.
-		DidChangeWatchedFiles DidChangeConfigurationClientCapabilities `json:"didChangeWatchedFiles,omitempty"`
+		DidChangeWatchedFiles *DidChangeConfigurationClientCapabilities `json:"didChangeWatchedFiles,omitempty"`
 
 		// Capabilities specific to the `workspace/symbol` request.
-		Symbol WorkspaceSymbolClientCapabilities `json:"symbol,omitempty"`
+		Symbol *WorkspaceSymbolClientCapabilities `json:"symbol,omitempty"`
 
 		// Capabilities specific to the `workspace/executeCommand` request.
-		ExecuteCommand ExecuteCommandClientCapabilities `json:"executeCommand,omitempty"`
+		ExecuteCommand *ExecuteCommandClientCapabilities `json:"executeCommand,omitempty"`
 
 		// The client has support for workspace folders.
 		//

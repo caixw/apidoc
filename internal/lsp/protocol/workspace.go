@@ -4,6 +4,14 @@ package protocol
 
 import "github.com/caixw/apidoc/v7/core"
 
+// WorkspaceProvider 服务端有关 workspace 的支持情况
+type WorkspaceProvider struct {
+	// The server supports workspace folder.
+	//
+	// Since 3.6.0
+	WorkspaceFolders *WorkspaceFoldersServerCapabilities `json:"workspaceFolders,omitempty"`
+}
+
 // WorkspaceFolder 项目文件夹
 type WorkspaceFolder struct {
 	// The associated URI for this workspace folder.
@@ -29,6 +37,7 @@ type WorkspaceFoldersChangeEvent struct {
 	Removed []WorkspaceFolder `json:"removed"`
 }
 
+// WorkspaceFoldersServerCapabilities 服务端有关项目文件夹的支持情况
 type WorkspaceFoldersServerCapabilities struct {
 	// The server has support for workspace folders
 	Supported bool `json:"supported,omitempty"`
@@ -45,6 +54,7 @@ type WorkspaceFoldersServerCapabilities struct {
 	ChangeNotifications interface{} `json:"changeNotifications,omitempty"`
 }
 
+// WorkspaceEditClientCapabilities the capabilities of a workspace edit has evolved over the time. Clients can describe their support using the following client capability
 type WorkspaceEditClientCapabilities struct {
 	// The client supports versioned document changes in `WorkspaceEdit`s
 	DocumentChanges bool `json:"documentChanges,omitempty"`
@@ -61,6 +71,7 @@ type WorkspaceEditClientCapabilities struct {
 	FailureHandling FailureHandlingKind `json:"failureHandling,omitempty"`
 }
 
+// WorkspaceSymbolClientCapabilities 客户端有关 WorkspaceSymbol 的支持情况
 type WorkspaceSymbolClientCapabilities struct {
 	// Symbol request supports dynamic registration.
 	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`

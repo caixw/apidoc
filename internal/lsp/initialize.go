@@ -21,8 +21,12 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 	s.setState(serverInitializing)
 
 	if in.Capabilities.Workspace.WorkspaceFolders {
-		out.Capabilities.Workspace.WorkspaceFolders.Supported = true
-		out.Capabilities.Workspace.WorkspaceFolders.ChangeNotifications = true
+		out.Capabilities.Workspace = &protocol.WorkspaceProvider{
+			WorkspaceFolders: &protocol.WorkspaceFoldersServerCapabilities{
+				Supported:           true,
+				ChangeNotifications: true,
+			},
+		}
 	}
 
 	out.Capabilities.TextDocumentSync = &protocol.ServerCapabilitiesTextDocumentSyncOptions{

@@ -99,12 +99,7 @@ type ServerCapabilities struct {
 	WorkspaceSymbolProvider bool `json:"workspaceSymbolProvider,omitempty"`
 
 	// Workspace specific server capabilities
-	Workspace struct {
-		// The server supports workspace folder.
-		//
-		// Since 3.6.0
-		WorkspaceFolders WorkspaceFoldersServerCapabilities `json:"workspaceFolders,omitempty"`
-	} `json:"workspace,omitempty"`
+	Workspace *WorkspaceProvider `json:"workspace,omitempty"`
 
 	// Experimental server capabilities.
 	Experimental interface{} `json:"experimental,omitempty"`
