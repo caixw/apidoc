@@ -20,9 +20,6 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 
 	s.setState(serverInitializing)
 
-	s.clientInfo = in.ClientInfo
-	s.clientCapabilities = &in.Capabilities
-
 	if in.Capabilities.Workspace.WorkspaceFolders {
 		out.Capabilities.Workspace.WorkspaceFolders.Supported = true
 		out.Capabilities.Workspace.WorkspaceFolders.ChangeNotifications = true
@@ -40,6 +37,10 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		out.Capabilities.FoldingRangeProvider = true
 	}
 
+	if in.Capabilities.TextDocument.Completion != nil {
+		out.Capabilities.CompletionProvider = &protocol.CompletionOptions{}
+	}
+
 	if in.InitializationOptions != nil && in.InitializationOptions.Locale != "" {
 		tag, err := language.Parse(in.InitializationOptions.Locale)
 		if err != nil {
@@ -52,6 +53,9 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		Name:    core.Name,
 		Version: core.Version,
 	}
+
+	s.clientInfo = in.ClientInfo
+	s.clientCapabilities = &in.Capabilities
 
 	return s.appendFolders(in.Folders()...)
 }

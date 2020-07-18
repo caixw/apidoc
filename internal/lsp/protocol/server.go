@@ -12,7 +12,7 @@ type ServerCapabilities struct {
 	TextDocumentSync interface{} `json:"textDocumentSync"`
 
 	// The server provides completion support.
-	CompletionProvider CompletionOptions `json:"completionProvider,omitempty"`
+	CompletionProvider *CompletionOptions `json:"completionProvider,omitempty"`
 
 	// The server provides hover support.
 	//
@@ -20,7 +20,7 @@ type ServerCapabilities struct {
 	HoverProvider interface{} `json:"hoverProvider,omitempty"`
 
 	// The server provides signature help support.
-	SignatureHelpProvider SignatureHelpOptions `json:"signatureHelpProvider,omitempty"`
+	SignatureHelpProvider *SignatureHelpOptions `json:"signatureHelpProvider,omitempty"`
 
 	// The server provides go to declaration support.
 	//
@@ -71,10 +71,10 @@ type ServerCapabilities struct {
 	CodeActionProvider interface{} `json:"codeActionProvider,omitempty"`
 
 	// The server provides code lens.
-	CodeLensProvider CodeLensOptions `json:"codeLensProvider,omitempty"`
+	CodeLensProvider *CodeLensOptions `json:"codeLensProvider,omitempty"`
 
 	// The server provides document link support.
-	DocumentLinkProvider DocumentLinkOptions `json:"documentLinkProvider,omitempty"`
+	DocumentLinkProvider *DocumentLinkOptions `json:"documentLinkProvider,omitempty"`
 
 	// The server provides color provider support.
 	//
@@ -111,7 +111,7 @@ type ServerCapabilities struct {
 	FoldingRangeProvider interface{} `json:"foldingRangeProvider,omitempty"`
 
 	// The server provides execute command support.
-	ExecuteCommandProvider ExecuteCommandOptions `json:"executeCommandProvider,omitempty"`
+	ExecuteCommandProvider *ExecuteCommandOptions `json:"executeCommandProvider,omitempty"`
 
 	// The server provides selection range support.
 	//

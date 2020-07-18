@@ -3,7 +3,11 @@
 // Package protocol 协议内容的定义
 package protocol
 
-import "github.com/issue9/jsonrpc"
+import (
+	"github.com/issue9/jsonrpc"
+
+	"github.com/caixw/apidoc/v7/core"
+)
 
 // WorkDoneProgressParams a parameter literal used to pass a work done progress token.
 type WorkDoneProgressParams struct {
@@ -64,4 +68,33 @@ type MarkupContent struct {
 
 	// The content itself
 	Value string `json:"value"`
+}
+
+// TextEdit a textual edit applicable to a text document.
+type TextEdit struct {
+	// The range of the text document to be manipulated. To insert
+	// text into a document create a range where start === end.
+	Range core.Range `json:"range"`
+
+	// The string to be inserted. For delete operations use an empty string.
+	NewText string `json:"newText"`
+}
+
+// Command represents a reference to a command
+//
+// Provides a title which will be used to represent a command in the UI.
+// Commands are identified by a string identifier.
+// The recommended way to handle commands is to implement their execution
+// on the server side if the client and server provides the corresponding capabilities.
+// Alternatively the tool extension code could handle the command.
+// The protocol currently doesn’t specify a set of well-known commands.
+type Command struct {
+	// Title of the command, like `save`.
+	Title string `json:"title"`
+
+	// The identifier of the actual command handler.
+	Command string `json:"command"`
+
+	// Arguments that the command handler should be invoked with.
+	Arguments []interface{} `json:"arguments,omitempty"`
 }

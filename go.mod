@@ -5,7 +5,7 @@ require (
 	github.com/issue9/cmdopt v0.6.1
 	github.com/issue9/errwrap v0.1.1
 	github.com/issue9/is v1.4.2
-	github.com/issue9/jsonrpc v0.10.0
+	github.com/issue9/jsonrpc v0.10.1
 	github.com/issue9/localeutil v0.1.0
 	github.com/issue9/mux/v2 v2.3.3
 	github.com/issue9/pack v0.2.0

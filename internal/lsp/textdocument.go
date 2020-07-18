@@ -107,3 +107,11 @@ func (s *server) textDocumentFoldingRange(notify bool, in *protocol.FoldingRange
 
 	return nil
 }
+
+// textDocument/completion
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion
+func (s *server) textDocumentCompletion(notify bool, in *protocol.CompletionParams, out *protocol.CompletionList) error {
+	// TODO
+	return nil
+}

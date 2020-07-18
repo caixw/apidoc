@@ -2,9 +2,7 @@
 
 package protocol
 
-import (
-	"github.com/caixw/apidoc/v7/core"
-)
+import "github.com/caixw/apidoc/v7/core"
 
 // TextDocumentIdentifier text documents are identified using a URI.
 // On the protocol level, URIs are passed as strings.
