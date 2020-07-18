@@ -19,9 +19,6 @@ type ServerCapabilities struct {
 	// boolean | HoverOptions
 	HoverProvider interface{} `json:"hoverProvider,omitempty"`
 
-	// The server provides signature help support.
-	SignatureHelpProvider *SignatureHelpOptions `json:"signatureHelpProvider,omitempty"`
-
 	// The server provides go to declaration support.
 	//
 	// Since 3.14.0
@@ -41,13 +38,6 @@ type ServerCapabilities struct {
 	// boolean | TypeDefinitionOptions | TypeDefinitionRegistrationOptions;
 	TypeDefinitionProvider interface{} `json:"typeDefinitionProvider,omitempty"`
 
-	// The server provides Goto Implementation support.
-	//
-	// Since 3.6.0
-	//
-	// boolean | ImplementationOptions | ImplementationRegistrationOptions;
-	ImplementationProvider interface{} `json:"implementationProvider,omitempty"`
-
 	// The server provides find references support.
 	//
 	// boolean | ReferenceOptions
@@ -58,11 +48,6 @@ type ServerCapabilities struct {
 	// boolean | DocumentHighlightOptions
 	DocumentHighlightProvider interface{} `json:"documentHighlightProvider,omitempty"`
 
-	// The server provides document symbol support.
-	//
-	// boolean | DocumentSymbolOptions;
-	DocumentSymbolProvider interface{} `json:"documentSymbolProvider,omitempty"`
-
 	// The server provides code actions. The `CodeActionOptions` return type is only
 	// valid if the client signals code action literal support via the property
 	// `textDocument.codeAction.codeActionLiteralSupport`.
@@ -70,18 +55,8 @@ type ServerCapabilities struct {
 	// boolean | CodeActionOptions;
 	CodeActionProvider interface{} `json:"codeActionProvider,omitempty"`
 
-	// The server provides code lens.
-	CodeLensProvider *CodeLensOptions `json:"codeLensProvider,omitempty"`
-
 	// The server provides document link support.
 	DocumentLinkProvider *DocumentLinkOptions `json:"documentLinkProvider,omitempty"`
-
-	// The server provides color provider support.
-	//
-	// Since 3.6.0
-	//
-	// boolean | DocumentColorOptions | DocumentColorRegistrationOptions;
-	ColorProvider interface{} `json:"colorProvider,omitempty"`
 
 	// The server provides document formatting.
 	//
@@ -193,7 +168,7 @@ type SignatureHelpOptions struct {
 	RetriggerCharacters []string `json:"retriggerCharacters,omitempty"`
 }
 
-// Code Action options.
+// CodeActionOptions Code Action options.
 type CodeActionOptions struct {
 	WorkDoneProgressOptions
 
@@ -204,15 +179,7 @@ type CodeActionOptions struct {
 	CodeActionKinds []CodeActionKind `json:"codeActionKinds,omitempty"`
 }
 
-// Code Lens options.
-type CodeLensOptions struct {
-	WorkDoneProgressOptions
-
-	// Code lens has a resolve provider as well.
-	ResolveProvider bool `json:"resolveProvider,omitempty"`
-}
-
-// Execute command options.
+// ExecuteCommandOptions Execute command options.
 type ExecuteCommandOptions struct {
 	WorkDoneProgressOptions
 
@@ -225,9 +192,6 @@ type SaveOptions struct {
 	// The client is supposed to include the content on save.
 	IncludeText bool `json:"includeText,omitempty"`
 }
-
-// Color provider options.
-type ColorProviderOptions struct{}
 
 // StaticRegistrationOptions static registration options to be returned in the initialize request.
 type StaticRegistrationOptions struct {

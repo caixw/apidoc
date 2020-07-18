@@ -12,22 +12,6 @@ type TextDocumentIdentifier struct {
 	URI core.URI `json:"uri"`
 }
 
-// TextDocumentItem an item to transfer a text document from the client to the server.
-type TextDocumentItem struct {
-	// The text document's URI.
-	URI core.URI `json:"uri"`
-
-	// The text document's language identifier.
-	LanguageID string `json:"languageId"`
-
-	// The version number of this document (it will increase after each
-	// change, including undo/redo).
-	Version int `json:"version"`
-
-	// The content of the opened text document.
-	Text string `json:"text"`
-}
-
 // VersionedTextDocumentIdentifier an identifier to denote a specific version of a text document.
 type VersionedTextDocumentIdentifier struct {
 	TextDocumentIdentifier
@@ -54,7 +38,7 @@ type TextDocumentPositionParams struct {
 
 // TextDocumentClientCapabilities text document specific client capabilities.
 type TextDocumentClientCapabilities struct {
-	Synchronization struct {
+	Synchronization *struct {
 		// Whether text document synchronization supports dynamic registration.
 		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 
@@ -74,7 +58,7 @@ type TextDocumentClientCapabilities struct {
 	Completion *CompletionClientCapabilities `json:"completion,omitempty"`
 
 	// Capabilities specific to the `textDocument/hover`
-	Hover struct {
+	Hover *struct {
 		// Whether hover supports dynamic registration.
 		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 
@@ -83,67 +67,20 @@ type TextDocumentClientCapabilities struct {
 		ContentFormat []MarkupKind `json:"contentFormat,omitempty"`
 	} `json:"hover,omitempty"`
 
-	// Capabilities specific to the `textDocument/signatureHelp`
-	SignatureHelp struct {
-		// Whether signature help supports dynamic registration.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// The client supports the following `SignatureInformation` specific properties.
-		SignatureInformation struct {
-			// The client supports the follow content formats for the documentation
-			// property. The order describes the preferred format of the client.
-			DocumentationFormat []MarkupKind `json:"documentationFormat,omitempty"`
-
-			// Client capabilities specific to parameter information.
-			ParameterInformation struct {
-				// The client supports processing label offsets instead of a
-				// simple label string.
-				//
-				// Since 3.14.0
-				LabelOffsetSupport bool `json:"labelOffsetSupport,omitempty"`
-			} `json:"parameterInformation,omitempty"`
-		} `json:"signatureInformation,omitempty"`
-	} `json:"signatureHelp,omitempty"`
-
 	// Capabilities specific to the `textDocument/references`
-	References DidChangeConfigurationClientCapabilities `json:"references,omitempty"`
+	References *DidChangeConfigurationClientCapabilities `json:"references,omitempty"`
 
 	// Capabilities specific to the `textDocument/documentHighlight`
-	DocumentHighlight DidChangeConfigurationClientCapabilities `json:"documentHighlight,omitempty"`
-
-	// Capabilities specific to the `textDocument/documentSymbol`
-	DocumentSymbol struct {
-		// Whether document symbol supports dynamic registration.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// Specific capabilities for the `SymbolKind`.
-		SymbolKind struct {
-			// The symbol kind values the client supports. When this
-			// property exists the client also guarantees that it will
-			// handle values outside its set gracefully and falls back
-			// to a default value when unknown.
-			//
-			// If this property is not present the client only supports
-			// the symbol kinds from `File` to `Array` as defined in
-			// the initial version of the protocol.
-			ValueSet []SymbolKind `json:"valueSet,omitempty"`
-		} `json:"symbolKind,omitempty"`
-
-		// The client supports hierarchical document symbols.
-		HierarchicalDocumentSymbolSupport bool `json:"hierarchicalDocumentSymbolSupport,omitempty"`
-	} `json:"documentSymbol,omitempty"`
+	DocumentHighlight *DidChangeConfigurationClientCapabilities `json:"documentHighlight,omitempty"`
 
 	// Capabilities specific to the `textDocument/formatting`
-	Formatting DidChangeConfigurationClientCapabilities `json:"formatting,omitempty"`
+	Formatting *DidChangeConfigurationClientCapabilities `json:"formatting,omitempty"`
 
 	// Capabilities specific to the `textDocument/rangeFormatting`
-	RangeFormatting DidChangeConfigurationClientCapabilities `json:"rangeFormatting,omitempty"`
-
-	// Capabilities specific to the `textDocument/onTypeFormatting`
-	OnTypeFormatting DidChangeConfigurationClientCapabilities `json:"onTypeFormatting,omitempty"`
+	RangeFormatting *DidChangeConfigurationClientCapabilities `json:"rangeFormatting,omitempty"`
 
 	// Capabilities specific to the `textDocument/declaration`
-	Declaration struct {
+	Declaration *struct {
 		// Whether declaration supports dynamic registration. If this is set to `true`
 		// the client supports the new `(TextDocumentRegistrationOptions & StaticRegistrationOptions)`
 		// return value for the corresponding server capability as well.
@@ -158,7 +95,7 @@ type TextDocumentClientCapabilities struct {
 	// Capabilities specific to the `textDocument/definition`.
 	//
 	// Since 3.14.0
-	Definition struct {
+	Definition *struct {
 		// Whether definition supports dynamic registration.
 		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 
@@ -169,7 +106,7 @@ type TextDocumentClientCapabilities struct {
 	// Capabilities specific to the `textDocument/typeDefinition`
 	//
 	// Since 3.6.0
-	TypeDefinition struct {
+	TypeDefinition *struct {
 		// Whether typeDefinition supports dynamic registration. If this is set to `true`
 		// the client supports the new `(TextDocumentRegistrationOptions & StaticRegistrationOptions)`
 		// return value for the corresponding server capability as well.
@@ -181,23 +118,8 @@ type TextDocumentClientCapabilities struct {
 		LinkSupport bool `json:"linkSupport,omitempty"`
 	} `json:"typeDefinition,omitempty"`
 
-	// Capabilities specific to the `textDocument/implementation`.
-	//
-	// Since 3.6.0
-	Implementation struct {
-		// Whether implementation supports dynamic registration. If this is set to `true`
-		// the client supports the new `(TextDocumentRegistrationOptions & StaticRegistrationOptions)`
-		// return value for the corresponding server capability as well.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// The client supports additional metadata in the form of definition links.
-		//
-		// Since 3.14.0
-		LinkSupport bool `json:"linkSupport,omitempty"`
-	} `json:"implementation,omitempty"`
-
 	// Capabilities specific to the `textDocument/codeAction`
-	CodeAction struct {
+	CodeAction *struct {
 		// Whether code action supports dynamic registration.
 		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 
@@ -205,7 +127,7 @@ type TextDocumentClientCapabilities struct {
 		// response of the `textDocument/codeAction` request.
 		//
 		// Since 3.8.0
-		CodeActionLiteralSupport struct {
+		CodeActionLiteralSupport *struct {
 			// The code action kind is support with the following value set.
 			CodeActionKind struct {
 				// The code action kind values the client supports. When this
@@ -218,23 +140,13 @@ type TextDocumentClientCapabilities struct {
 	} `json:"codeAction,omitempty"`
 
 	// Capabilities specific to the `textDocument/codeLens`
-	CodeLens DidChangeConfigurationClientCapabilities `json:"codeLens,omitempty"`
+	CodeLens *DidChangeConfigurationClientCapabilities `json:"codeLens,omitempty"`
 
 	// Capabilities specific to the `textDocument/documentLink`
-	DocumentLink DidChangeConfigurationClientCapabilities `json:"documentLink,omitempty"`
-
-	// Capabilities specific to the `textDocument/documentColor` and the
-	// `textDocument/colorPresentation` request.
-	//
-	// Since 3.6.0
-	//
-	// If ColorProvider.DidChangeConfigurationClientCapabilities is set to `true`
-	// the client supports the new `(ColorProviderOptions & TextDocumentRegistrationOptions & StaticRegistrationOptions)`
-	// return value for the corresponding server capability as well.
-	ColorProvider DidChangeConfigurationClientCapabilities `json:"colorProvider,omitempty"`
+	DocumentLink *DidChangeConfigurationClientCapabilities `json:"documentLink,omitempty"`
 
 	// Capabilities specific to the `textDocument/rename`
-	Rename struct {
+	Rename *struct {
 		// Whether rename supports dynamic registration.
 		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 		// The client supports testing for validity of rename operation before execution.
@@ -382,18 +294,6 @@ type SelectionRangeRegistrationOptions struct {
 	SelectionRangeOptions
 	TextDocumentRegistrationOptions
 	StaticRegistrationOptions
-}
-
-// DidOpenTextDocumentParams textDocument/didOpen 通知发送的参数
-type DidOpenTextDocumentParams struct {
-	// The document that was opened.
-	TextDocument TextDocumentItem `json:"textDocument"`
-}
-
-// DidCloseTextDocumentParams textDocument/didClose 通知发送的参数
-type DidCloseTextDocumentParams struct {
-	// The document that was closed.
-	TextDocument TextDocumentIdentifier `json:"textDocument"`
 }
 
 // DidChangeTextDocumentParams textDocument/didChange 的参数
