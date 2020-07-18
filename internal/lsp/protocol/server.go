@@ -110,10 +110,6 @@ type ServerCapabilities struct {
 	Experimental interface{} `json:"experimental,omitempty"`
 }
 
-type HoverOptions struct {
-	WorkDoneProgressOptions
-}
-
 type DeclarationOptions struct {
 	WorkDoneProgressOptions
 }

@@ -58,14 +58,7 @@ type TextDocumentClientCapabilities struct {
 	Completion *CompletionClientCapabilities `json:"completion,omitempty"`
 
 	// Capabilities specific to the `textDocument/hover`
-	Hover *struct {
-		// Whether hover supports dynamic registration.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// The client supports the follow content formats for the content
-		// property. The order describes the preferred format of the client.
-		ContentFormat []MarkupKind `json:"contentFormat,omitempty"`
-	} `json:"hover,omitempty"`
+	Hover *HoverCapabilities `json:"hover,omitempty"`
 
 	// Capabilities specific to the `textDocument/references`
 	References *DidChangeConfigurationClientCapabilities `json:"references,omitempty"`
@@ -351,21 +344,4 @@ type TextDocumentContentChangeEvent struct {
 	//
 	// @deprecated use range instead.
 	RangeLength int `json:"rangeLength,omitempty"`
-}
-
-// HoverParams textDocument/hover 发送的参数
-type HoverParams struct {
-	WorkDoneProgressParams
-	TextDocumentPositionParams
-}
-
-// Hover textDocument/hover 的返回结果
-type Hover struct {
-	// The hover's content
-	// contents MarkedString | MarkedString[] | MarkupContent;
-	Contents interface{} `json:"contents"`
-
-	// An optional range is a range inside a text document
-	// that is used to visualize a hover, e.g. by changing the background color.
-	Range core.Range `json:"range,omitempty"`
 }
