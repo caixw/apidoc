@@ -231,6 +231,21 @@ var langs = []*Language{
 	},
 
 	{
+		DisplayName: "Typescript",
+		ID:          "typescript",
+		Exts:        []string{".ts"},
+		Blocks: []Blocker{
+			newCStyleString(),
+			newString("'", "'", `\`),
+			newString("`", "`", `\`),
+			newCStyleSingleComment(),
+			newCStyleMultipleComment(),
+			// NOTE: js 中若出现 /*abc/.test() 应该是先优先注释的。放最后，优先匹配 // 和 /*
+			newString("/", "/", `\`),
+		},
+	},
+
+	{
 		DisplayName: "Zig",
 		ID:          "zig",
 		Exts:        []string{".zig"},

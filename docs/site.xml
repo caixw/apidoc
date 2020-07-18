@@ -28,6 +28,7 @@
 		<language id="rust">Rust</language>
 		<language id="scala">Scala</language>
 		<language id="swift">Swift</language>
+		<language id="typescript">Typescript</language>
 		<language id="zig">Zig</language>
 	</languages>
 	<locales>
