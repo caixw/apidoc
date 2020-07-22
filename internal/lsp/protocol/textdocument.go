@@ -72,6 +72,9 @@ type TextDocumentClientCapabilities struct {
 	// Capabilities specific to the `textDocument/rangeFormatting`
 	RangeFormatting *DidChangeConfigurationClientCapabilities `json:"rangeFormatting,omitempty"`
 
+	// Capabilities specific to the `textDocument/textDocument/semanticTokens/*`
+	SemanticTokens *SemanticTokensClientCapabilities `json:"semanticTokens,omitempty"`
+
 	// Capabilities specific to the `textDocument/declaration`
 	Declaration *struct {
 		// Whether declaration supports dynamic registration. If this is set to `true`

@@ -85,6 +85,13 @@ type ServerCapabilities struct {
 	// boolean | FoldingRangeOptions | FoldingRangeRegistrationOptions;
 	FoldingRangeProvider interface{} `json:"foldingRangeProvider,omitempty"`
 
+	// The server provides folding provider support.
+	//
+	// Since 3.16.0
+	//
+	// SemanticTokensOptions | SemanticTokensRegistrationOptions
+	SemanticTokensProvider interface{} `json:"semanticTokensProvider,omitempty"`
+
 	// The server provides execute command support.
 	ExecuteCommandProvider *ExecuteCommandOptions `json:"executeCommandProvider,omitempty"`
 

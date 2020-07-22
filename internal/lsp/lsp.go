@@ -17,7 +17,7 @@ import (
 )
 
 // Version lsp 的版本
-const Version = "3.15.0"
+const Version = "3.16.0"
 
 // Serve 执行 LSP 服务
 func Serve(header bool, t string, addr string, infolog, errlog *log.Logger) error {
@@ -100,10 +100,11 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 		"workspace/didChangeWorkspaceFolders": srv.workspaceDidChangeWorkspaceFolders,
 
 		// textDocument
-		"textDocument/didChange":    srv.textDocumentDidChange,
-		"textDocument/hover":        srv.textDocumentHover,
-		"textDocument/foldingRange": srv.textDocumentFoldingRange,
-		"textDocument/completion":   srv.textDocumentCompletion,
+		"textDocument/didChange":      srv.textDocumentDidChange,
+		"textDocument/hover":          srv.textDocumentHover,
+		"textDocument/foldingRange":   srv.textDocumentFoldingRange,
+		"textDocument/completion":     srv.textDocumentCompletion,
+		"textDocument/semanticTokens": srv.textDocumentSemanticTokens,
 	})
 
 	jsonrpcServer.RegisterMatcher(func(method string) bool {

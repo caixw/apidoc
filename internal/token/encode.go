@@ -200,7 +200,7 @@ func getAttributeValue(elem reflect.Value) (string, error) {
 
 // 获取 cdata 和 content 节点的的内容
 func getContentValue(elem reflect.Value) (string, error) {
-	elem = node.GetRealValue(elem)
+	elem = node.RealValue(elem)
 	if elem.CanInterface() && elem.Type().Implements(encoderType) {
 		return elem.Interface().(Encoder).EncodeXML()
 	} else if elem.CanAddr() {

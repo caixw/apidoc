@@ -53,7 +53,7 @@ func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hov
 
 // 从 v 中查找最匹配 pos 位置的元素，如果找到匹配项，还会查找其子项，是不是匹配度更高。
 func usage(v reflect.Value, pos core.Position, exclude ...string) (b *token.Base) {
-	v = node.GetRealValue(v)
+	v = node.RealValue(v)
 	if b = getBase(v, pos); b == nil {
 		return nil
 	}
@@ -68,7 +68,7 @@ func usage(v reflect.Value, pos core.Position, exclude ...string) (b *token.Base
 			continue
 		}
 
-		vf := node.GetRealValue(v.Field(i))
+		vf := node.RealValue(v.Field(i))
 		if vf.Kind() == reflect.Array || vf.Kind() == reflect.Slice {
 			for j := 0; j < vf.Len(); j++ {
 				if b2 := usage(vf.Index(j), pos); b2 != nil {
@@ -98,7 +98,7 @@ func getBase(v reflect.Value, pos core.Position) *token.Base {
 				continue
 			}
 
-			vf := node.GetRealValue(v.Field(i))
+			vf := node.RealValue(v.Field(i))
 			if b := getBase(vf, pos); b != nil {
 				return b
 			}

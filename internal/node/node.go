@@ -58,7 +58,7 @@ type Node struct {
 
 // New 声明 Node 实例
 func New(name string, rv reflect.Value) *Node {
-	rv = GetRealValue(rv)
+	rv = RealValue(rv)
 	rt := rv.Type()
 
 	num := rt.NumField()

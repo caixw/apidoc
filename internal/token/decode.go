@@ -168,7 +168,7 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) {
 		if !found || d.prefix != attr.Name.Prefix.Value { // 未找到或是命名空间不匹配
 			continue
 		}
-		v := node.GetRealValue(item.Value)
+		v := node.RealValue(item.Value)
 		v.Set(reflect.New(v.Type()).Elem())
 
 		var impl bool
@@ -242,8 +242,8 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 }
 
 func setContentValue(target, source reflect.Value) {
-	target = node.GetRealValue(target)
-	source = node.GetRealValue(source)
+	target = node.RealValue(target)
+	source = node.RealValue(source)
 
 	st := source.Type()
 	num := st.NumField()
@@ -255,7 +255,7 @@ func setContentValue(target, source reflect.Value) {
 }
 
 func (d *decoder) decodeElement(start *StartElement, v *node.Value) (ok bool) {
-	v.Value = node.GetRealValue(v.Value)
+	v.Value = node.RealValue(v.Value)
 	k := v.Kind()
 	switch {
 	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, node.IsPrimitive(v.Value):
@@ -361,7 +361,7 @@ func findEndElement(p *Parser, start *StartElement) error {
 }
 
 func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {
-	v = node.GetRealValue(v)
+	v = node.RealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}
@@ -380,7 +380,7 @@ func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, 
 }
 
 func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute) error {
-	v = node.GetRealValue(v)
+	v = node.RealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}

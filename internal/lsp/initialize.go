@@ -45,6 +45,17 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		out.Capabilities.CompletionProvider = &protocol.CompletionOptions{}
 	}
 
+	if in.Capabilities.TextDocument.SemanticTokens != nil {
+		out.Capabilities.SemanticTokensProvider = &protocol.SemanticTokensOptions{
+			Legend: protocol.SemanticTokensLegend{
+				TokenTypes:     []string{"class", "property", "variable"},
+				TokenModifiers: []string{"documentation"},
+			},
+			Range: true,
+			Full:  true,
+		}
+	}
+
 	if in.InitializationOptions != nil && in.InitializationOptions.Locale != "" {
 		tag, err := language.Parse(in.InitializationOptions.Locale)
 		if err != nil {
