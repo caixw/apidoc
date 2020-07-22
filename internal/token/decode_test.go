@@ -13,6 +13,11 @@ import (
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
+var (
+	_ tagSetter       = &BaseTag{}
+	_ attributeSetter = &BaseAttribute{}
+)
+
 func newDecoder(a *assert.Assertion, prefix string) (*decoder, *messagetest.Result) {
 	p, err := NewParser(core.Block{})
 	a.NotError(err).NotNil(p)
@@ -1227,6 +1232,7 @@ func TestDecode_omitempty(t *testing.T) {
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
 		Elem     *struct {
+			BaseTag
 			Attr1 intAttr `apidoc:"attr1,attr,usage"`
 		} `apidoc:"elem,elem,usage"`
 	}{}

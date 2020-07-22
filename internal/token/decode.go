@@ -16,34 +16,50 @@ import (
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
-// Decoder 实现从 p 中解码内容到当前对象的值
-type Decoder interface {
-	// 从 p 中读取内容并实例化到当前对象中
-	//
-	// 必须要同时从 p 中读取相应的 EndElement 才能返回。
-	// end 表示 EndElement.End 的值。
-	//
-	// NOTE: 如果是自闭合标签，则不会调用该接口。
-	//
-	// 接口应该只返回 *core.SyntaxError 作为错误对象。
-	DecodeXML(p *Parser, start *StartElement) (end *EndElement, err error)
-}
+type (
+	// Decoder 实现从 p 中解码内容到当前对象的值
+	Decoder interface {
+		// 从 p 中读取内容并实例化到当前对象中
+		//
+		// 必须要同时从 p 中读取相应的 EndElement 才能返回。
+		// end 表示 EndElement.End 的值。
+		//
+		// NOTE: 如果是自闭合标签，则不会调用该接口。
+		//
+		// 接口应该只返回 *core.SyntaxError 作为错误对象。
+		DecodeXML(p *Parser, start *StartElement) (end *EndElement, err error)
+	}
 
-// AttrDecoder 实现从 attr 中解码内容到当前对象的值
-type AttrDecoder interface {
-	// 解析属性值
-	//
-	// 接口应该只返回 *core.SyntaxError 作为错误对象。
-	DecodeXMLAttr(p *Parser, attr *Attribute) error
-}
+	// AttrDecoder 实现从 attr 中解码内容到当前对象的值
+	AttrDecoder interface {
+		// 解析属性值
+		//
+		// 接口应该只返回 *core.SyntaxError 作为错误对象。
+		DecodeXMLAttr(p *Parser, attr *Attribute) error
+	}
 
-// Sanitizer 用于验证和修改对象中的数据
-type Sanitizer interface {
-	// 验证数据是否正确
-	//
-	// 可以通过 p.NewError 和 p.WithError 返回 *core.SyntaxError 类型的错误
-	Sanitize(p *Parser) error
-}
+	// Sanitizer 用于验证和修改对象中的数据
+	Sanitizer interface {
+		// 验证数据是否正确
+		//
+		// 可以通过 p.NewError 和 p.WithError 返回 *core.SyntaxError 类型的错误
+		Sanitize(p *Parser) error
+	}
+
+	attributeSetter interface {
+		setAttribute(string, *Attribute)
+	}
+
+	tagSetter interface {
+		setTag(string, *StartElement, *EndElement)
+	}
+
+	decoder struct {
+		h      *core.MessageHandler
+		p      *Parser
+		prefix string // 命名空间所表示的前缀
+	}
+)
 
 var (
 	attrDecoderType = reflect.TypeOf((*AttrDecoder)(nil)).Elem()
@@ -51,10 +67,24 @@ var (
 	sanitizerType   = reflect.TypeOf((*Sanitizer)(nil)).Elem()
 )
 
-type decoder struct {
-	h      *core.MessageHandler
-	p      *Parser
-	prefix string // 命名空间所表示的前缀
+func (b *BaseAttribute) setAttribute(usage string, attr *Attribute) {
+	b.UsageKey = usage
+	b.Range = attr.Range
+	b.AttributeName = attr.Name
+}
+
+// setTag
+func (b *BaseTag) setTag(usage string, start *StartElement, end *EndElement) {
+	b.UsageKey = usage
+	b.StartTag = start.Name
+
+	if end == nil {
+		b.Range = start.Range
+	} else {
+		b.Range.Start = start.Start
+		b.Range.End = end.End
+		b.EndTag = end.Name
+	}
 }
 
 func (d *decoder) message(t core.MessageType, start, end core.Position, field string, key message.Reference, v ...interface{}) bool {
@@ -360,14 +390,7 @@ func (d *decoder) setTagValue(v reflect.Value, usage string, start *StartElement
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}
 
-	setFieldValue(v, usageKeyName, usage)
-	setFieldValue(v, elementTagName, start.Name)
-	if end == nil {
-		setFieldValue(v, rangeName, start.Range)
-	} else {
-		setFieldValue(v, rangeName, core.Range{Start: start.Start, End: end.End})
-		setFieldValue(v, elementTagEndName, end.Name)
-	}
+	v.Addr().Interface().(tagSetter).setTag(usage, start, end)
 
 	// Sanitize 在最后调用，可以保证 Sanitize 调用中可以取 v.Range 的值
 	if err := callSanitizer(v, d.p); err != nil {
@@ -381,10 +404,9 @@ func (d *decoder) setAttributeValue(v reflect.Value, usage string, attr *Attribu
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
 	}
 
-	setFieldValue(v, rangeName, attr.Range)
-	setFieldValue(v, usageKeyName, usage)
-	setFieldValue(v, attributeNameName, attr.Name)
+	v.Addr().Interface().(attributeSetter).setAttribute(usage, attr)
 
+	// Sanitize 在最后调用，可以保证 Sanitize 调用中可以取 v.Range 的值
 	if err := callSanitizer(v, d.p); err != nil {
 		d.error(err)
 	}
@@ -400,11 +422,4 @@ func callSanitizer(v reflect.Value, p *Parser) error {
 		}
 	}
 	return nil
-}
-
-func setFieldValue(v reflect.Value, name string, value interface{}) {
-	vv := v.FieldByName(name)
-	if vv.CanSet() {
-		vv.Set(reflect.ValueOf(value))
-	}
 }

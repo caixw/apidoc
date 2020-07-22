@@ -10,15 +10,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-// 这些常量对应 Base* 中相关字段的名称
-const (
-	rangeName         = "Range"
-	usageKeyName      = "UsageKey"
-	elementTagName    = "StartTag"
-	elementTagEndName = "EndTag"
-	attributeNameName = "AttributeName"
-)
-
 type (
 	// Name 表示 XML 中的名称
 	Name struct {
