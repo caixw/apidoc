@@ -191,9 +191,7 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) {
 			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name))
 		}
 
-		if err := setAttributeValue(item.Value, item.Usage, d.p, attr); err != nil {
-			d.error(err)
-		}
+		d.setAttributeValue(item.Value, item.Usage, attr)
 	}
 }
 
@@ -272,9 +270,7 @@ func (d *decoder) decodeElement(start *StartElement, v *node.Value) (ok bool) {
 		return d.error(err)
 	}
 
-	if err := setTagValue(v.Value, v.Usage, d.p, start, end); err != nil {
-		return d.error(err)
-	}
+	d.setTagValue(v.Value, v.Usage, start, end)
 	return true
 }
 
@@ -303,9 +299,7 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 		return d.error(err)
 	}
 
-	if err = setTagValue(elem, slice.Usage, d.p, start, end); err != nil {
-		return d.error(err)
-	}
+	d.setTagValue(elem, slice.Usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return true
 }
@@ -360,7 +354,7 @@ func findEndElement(p *Parser, start *StartElement) error {
 	}
 }
 
-func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {
+func (d *decoder) setTagValue(v reflect.Value, usage string, start *StartElement, end *EndElement) {
 	v = node.GetRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
@@ -376,10 +370,12 @@ func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, 
 	}
 
 	// Sanitize 在最后调用，可以保证 Sanitize 调用中可以取 v.Range 的值
-	return callSanitizer(v, p)
+	if err := callSanitizer(v, d.p); err != nil {
+		d.error(err)
+	}
 }
 
-func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute) error {
+func (d *decoder) setAttributeValue(v reflect.Value, usage string, attr *Attribute) {
 	v = node.GetRealValue(v)
 	if v.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
@@ -389,7 +385,9 @@ func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute
 	setFieldValue(v, usageKeyName, usage)
 	setFieldValue(v, attributeNameName, attr.Name)
 
-	return callSanitizer(v, p)
+	if err := callSanitizer(v, d.p); err != nil {
+		d.error(err)
+	}
 }
 
 func callSanitizer(v reflect.Value, p *Parser) error {
