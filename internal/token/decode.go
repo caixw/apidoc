@@ -73,7 +73,6 @@ func (b *BaseAttribute) setAttribute(usage string, attr *Attribute) {
 	b.AttributeName = attr.Name
 }
 
-// setTag
 func (b *BaseTag) setTag(usage string, start *StartElement, end *EndElement) {
 	b.UsageKey = usage
 	b.StartTag = start.Name
@@ -112,7 +111,7 @@ func Decode(h *core.MessageHandler, p *Parser, v interface{}, namespace string) 
 		if errors.Is(err, io.EOF) {
 			return
 		} else if err != nil {
-			h.Error(err)
+			d.error(err)
 			return
 		}
 
@@ -221,7 +220,10 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) {
 			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name))
 		}
 
-		d.setAttributeValue(item.Value, item.Usage, attr)
+		v.Addr().Interface().(attributeSetter).setAttribute(item.Usage, attr)
+		if err := callSanitizer(v, d.p); err != nil { // Sanitize 在最后调用，可以确保能取到 v.Range
+			d.error(err) // sanitize 错误不中断执行
+		}
 	}
 }
 
@@ -243,11 +245,11 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 			return nil, d.message(core.Erro, elem.Start, elem.End, n.Value.Name, locale.ErrNotFoundEndTag)
 		case *CData:
 			if n.CData != nil {
-				setContentValue(n.CData.Value, reflect.ValueOf(elem))
+				copyContentValue(n.CData.Value, reflect.ValueOf(elem))
 			}
 		case *String:
 			if n.Content != nil {
-				setContentValue(n.Content.Value, reflect.ValueOf(elem))
+				copyContentValue(n.Content.Value, reflect.ValueOf(elem))
 			}
 		case *StartElement:
 			item, found := n.Element(elem.Name.Local.Value)
@@ -269,7 +271,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 	}
 }
 
-func setContentValue(target, source reflect.Value) {
+func copyContentValue(target, source reflect.Value) {
 	target = node.GetRealValue(target)
 	source = node.GetRealValue(source)
 
@@ -329,7 +331,7 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 		return d.error(err)
 	}
 
-	d.setTagValue(elem, slice.Usage, start, end)
+	d.setTagValue(node.GetRealValue(elem), slice.Usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return true
 }
@@ -385,29 +387,9 @@ func findEndElement(p *Parser, start *StartElement) error {
 }
 
 func (d *decoder) setTagValue(v reflect.Value, usage string, start *StartElement, end *EndElement) {
-	v = node.GetRealValue(v)
-	if v.Kind() != reflect.Struct {
-		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
-	}
-
 	v.Addr().Interface().(tagSetter).setTag(usage, start, end)
 
-	// Sanitize 在最后调用，可以保证 Sanitize 调用中可以取 v.Range 的值
-	if err := callSanitizer(v, d.p); err != nil {
-		d.error(err)
-	}
-}
-
-func (d *decoder) setAttributeValue(v reflect.Value, usage string, attr *Attribute) {
-	v = node.GetRealValue(v)
-	if v.Kind() != reflect.Struct {
-		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
-	}
-
-	v.Addr().Interface().(attributeSetter).setAttribute(usage, attr)
-
-	// Sanitize 在最后调用，可以保证 Sanitize 调用中可以取 v.Range 的值
-	if err := callSanitizer(v, d.p); err != nil {
+	if err := callSanitizer(v, d.p); err != nil { // Sanitize 在最后调用，可以确保能取到 v.Range
 		d.error(err)
 	}
 }
