@@ -14,6 +14,13 @@ import (
 	"github.com/caixw/apidoc/v7/internal/token"
 )
 
+func newParser(a *assert.Assertion, data string) (*token.Parser, *messagetest.Result) {
+	rslt := messagetest.NewMessageHandler()
+	p, err := token.NewParser(rslt.Handler, core.Block{Data: []byte(data)})
+	a.NotError(err).NotNil(p)
+	return p, rslt
+}
+
 func TestAPIDoc_ParseBlocks(t *testing.T) {
 	a := assert.New(t)
 
@@ -85,38 +92,44 @@ func TestAPIDoc_Parse(t *testing.T) {
 func TestGetTagName(t *testing.T) {
 	a := assert.New(t)
 
-	p, err := token.NewParser(core.Block{Data: []byte("  <root>xx</root>")})
-	a.NotError(err).NotNil(p)
+	p, rslt := newParser(a, "  <root>xx</root>")
 	root, err := getTagName(p)
 	a.NotError(err).Equal(root, "root")
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
-	p, err = token.NewParser(core.Block{Data: []byte("<!-- xx -->  <root>xx</root>")})
-	a.NotError(err).NotNil(p)
+	p, rslt = newParser(a, "<!-- xx -->  <root>xx</root>")
 	root, err = getTagName(p)
 	a.NotError(err).Equal(root, "root")
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
-	p, err = token.NewParser(core.Block{Data: []byte("<!-- xx -->   <root>xx</root>")})
-	a.NotError(err).NotNil(p)
+	p, rslt = newParser(a, "<!-- xx -->   <root>xx</root>")
 	root, err = getTagName(p)
 	a.NotError(err).Equal(root, "root")
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	// 无效格式
-	p, err = token.NewParser(core.Block{Data: []byte("<!-- xx   <root>xx</root>")})
-	a.NotError(err).NotNil(p)
+	p, rslt = newParser(a, "<!-- xx   <root>xx</root>")
 	root, err = getTagName(p)
 	a.Error(err).Equal(root, "")
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	// 无效格式
-	p, err = token.NewParser(core.Block{Data: []byte("</root>")})
-	a.NotError(err).NotNil(p)
+	p, rslt = newParser(a, "</root>")
 	root, err = getTagName(p)
 	a.Error(err).Equal(root, "")
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	// io.EOF
-	p, err = token.NewParser(core.Block{Data: []byte("<!-- xx -->")})
-	a.NotError(err).NotNil(p)
+	p, rslt = newParser(a, "<!-- xx -->")
 	root, err = getTagName(p)
 	a.Equal(err, io.EOF).Equal(root, "")
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 }
 
 func TestAPIDoc_sortAPIs(t *testing.T) {

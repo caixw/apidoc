@@ -23,7 +23,7 @@ func newPHPDocBlock() Blocker {
 }
 
 func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
-	prev := l.Position()
+	prev := l.Current()
 
 	if !l.Match("<<<") {
 		return false

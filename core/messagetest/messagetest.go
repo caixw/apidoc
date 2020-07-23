@@ -3,9 +3,7 @@
 // Package messagetest 提供测试生成 message 相关的测试工具
 package messagetest
 
-import (
-	"github.com/caixw/apidoc/v7/core"
-)
+import "github.com/caixw/apidoc/v7/core"
 
 // Result NewMessageHandler 返回的对象
 type Result struct {

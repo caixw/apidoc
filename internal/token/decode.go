@@ -16,34 +16,49 @@ import (
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
-// Decoder 实现从 p 中解码内容到当前对象的值
-type Decoder interface {
-	// 从 p 中读取内容并实例化到当前对象中
-	//
-	// 必须要同时从 p 中读取相应的 EndElement 才能返回。
-	// end 表示 EndElement.End 的值。
-	//
-	// NOTE: 如果是自闭合标签，则不会调用该接口。
-	//
-	// 接口应该只返回 *core.SyntaxError 作为错误对象。
-	DecodeXML(p *Parser, start *StartElement) (end *EndElement, err error)
-}
+type (
+	// Decoder 实现从 p 中解码内容到当前对象的值
+	Decoder interface {
+		// 从 p 中读取内容并实例化到当前对象中
+		//
+		// 必须要同时从 p 中读取相应的 EndElement 才能返回。
+		// end 表示 EndElement.End 的值。
+		//
+		// NOTE: 如果是自闭合标签，则不会调用该接口。
+		//
+		// 接口应该只返回 *core.SyntaxError 作为错误对象。
+		DecodeXML(p *Parser, start *StartElement) (end *EndElement, err error)
+	}
 
-// AttrDecoder 实现从 attr 中解码内容到当前对象的值
-type AttrDecoder interface {
-	// 解析属性值
-	//
-	// 接口应该只返回 *core.SyntaxError 作为错误对象。
-	DecodeXMLAttr(p *Parser, attr *Attribute) error
-}
+	// AttrDecoder 实现从 attr 中解码内容到当前对象的值
+	AttrDecoder interface {
+		// 解析属性值
+		//
+		// 接口应该只返回 *core.SyntaxError 作为错误对象。
+		DecodeXMLAttr(p *Parser, attr *Attribute) error
+	}
 
-// Sanitizer 用于验证和修改对象中的数据
-type Sanitizer interface {
-	// 验证数据是否正确
-	//
-	// 可以通过 p.NewError 和 p.WithError 返回 *core.SyntaxError 类型的错误
-	Sanitize(p *Parser) error
-}
+	// Sanitizer 用于验证和修改对象中的数据
+	Sanitizer interface {
+		// 验证数据是否正确
+		//
+		// 可以通过 p.NewError 和 p.WithError 返回 *core.SyntaxError 类型的错误
+		Sanitize(p *Parser) error
+	}
+
+	attributeSetter interface {
+		setAttribute(string, *Attribute)
+	}
+
+	tagSetter interface {
+		setTag(string, *StartElement, *EndElement)
+	}
+
+	decoder struct {
+		p      *Parser
+		prefix string // 命名空间所表示的前缀
+	}
+)
 
 var (
 	attrDecoderType = reflect.TypeOf((*AttrDecoder)(nil)).Elem()
@@ -51,28 +66,40 @@ var (
 	sanitizerType   = reflect.TypeOf((*Sanitizer)(nil)).Elem()
 )
 
-type decoder struct {
-	h      *core.MessageHandler
-	p      *Parser
-	prefix string // 命名空间所表示的前缀
+func (b *BaseAttribute) setAttribute(usage string, attr *Attribute) {
+	b.UsageKey = usage
+	b.Range = attr.Range
+	b.AttributeName = attr.Name
+}
+
+func (b *BaseTag) setTag(usage string, start *StartElement, end *EndElement) {
+	b.UsageKey = usage
+	b.StartTag = start.Name
+
+	if end == nil {
+		b.Range = start.Range
+	} else {
+		b.Range.Start = start.Start
+		b.Range.End = end.End
+		b.EndTag = end.Name
+	}
 }
 
 func (d *decoder) message(t core.MessageType, start, end core.Position, field string, key message.Reference, v ...interface{}) bool {
-	d.h.Message(t, d.p.NewError(start, end, field, key, v...))
+	d.p.h.Message(t, d.p.NewError(start, end, field, key, v...))
 	return false
 }
 
 func (d *decoder) error(err error) bool {
-	d.h.Error(err)
+	d.p.h.Error(err)
 	return false
 }
 
 // Decode 将 p 中的 XML 内容解码至 v 对象中
 //
 // namespace 如果不为空表示当前的 xml 所在的命名空间，只有该命名空间的元素才会被正确识别。
-func Decode(h *core.MessageHandler, p *Parser, v interface{}, namespace string) {
+func Decode(p *Parser, v interface{}, namespace string) {
 	d := &decoder{
-		h: h,
 		p: p,
 	}
 
@@ -82,7 +109,7 @@ func Decode(h *core.MessageHandler, p *Parser, v interface{}, namespace string) 
 		if errors.Is(err, io.EOF) {
 			return
 		} else if err != nil {
-			h.Error(err)
+			d.error(err)
 			return
 		}
 
@@ -191,8 +218,9 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) {
 			panic(fmt.Sprintf("当前属性 %s 未实现 AttrDecoder 接口", attr.Name))
 		}
 
-		if err := setAttributeValue(item.Value, item.Usage, d.p, attr); err != nil {
-			d.error(err)
+		v.Addr().Interface().(attributeSetter).setAttribute(item.Usage, attr)
+		if err := callSanitizer(v, d.p); err != nil { // Sanitize 在最后调用，可以确保能取到 v.Range
+			d.error(err) // sanitize 错误不中断执行
 		}
 	}
 }
@@ -202,7 +230,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 		t, r, err := d.p.Token()
 		if errors.Is(err, io.EOF) {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
-			return nil, d.message(core.Erro, d.p.Position().Position, d.p.Position().Position, "", locale.ErrInvalidXML)
+			return nil, d.message(core.Erro, d.p.Current().Position, d.p.Current().Position, "", locale.ErrInvalidXML)
 		} else if err != nil {
 			return nil, d.error(err)
 		}
@@ -215,16 +243,16 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 			return nil, d.message(core.Erro, elem.Start, elem.End, n.Value.Name, locale.ErrNotFoundEndTag)
 		case *CData:
 			if n.CData != nil {
-				setContentValue(n.CData.Value, reflect.ValueOf(elem))
+				copyContentValue(n.CData.Value, reflect.ValueOf(elem))
 			}
 		case *String:
 			if n.Content != nil {
-				setContentValue(n.Content.Value, reflect.ValueOf(elem))
+				copyContentValue(n.Content.Value, reflect.ValueOf(elem))
 			}
 		case *StartElement:
 			item, found := n.Element(elem.Name.Local.Value)
 			if !found || d.prefix != elem.Name.Prefix.Value {
-				if err := findEndElement(d.p, elem); err != nil {
+				if err := d.p.endElement(elem); err != nil {
 					return nil, d.error(err)
 				}
 
@@ -241,7 +269,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 	}
 }
 
-func setContentValue(target, source reflect.Value) {
+func copyContentValue(target, source reflect.Value) {
 	target = node.RealValue(target)
 	source = node.RealValue(source)
 
@@ -272,9 +300,7 @@ func (d *decoder) decodeElement(start *StartElement, v *node.Value) (ok bool) {
 		return d.error(err)
 	}
 
-	if err := setTagValue(v.Value, v.Usage, d.p, start, end); err != nil {
-		return d.error(err)
-	}
+	d.setTagValue(v.Value, v.Usage, start, end)
 	return true
 }
 
@@ -282,7 +308,7 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 	// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
 	// 所以要过滤与 start 想匹配的结束符号才算结束。
 	if !start.Close && (start.Name.Local.Value != slice.Name) {
-		if err := findEndElement(d.p, start); err != nil {
+		if err := d.p.endElement(start); err != nil {
 			return d.error(err)
 		}
 	}
@@ -303,9 +329,7 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 		return d.error(err)
 	}
 
-	if err = setTagValue(elem, slice.Usage, d.p, start, end); err != nil {
-		return d.error(err)
-	}
+	d.setTagValue(node.RealValue(elem), slice.Usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return true
 }
@@ -331,65 +355,12 @@ func callDecodeXML(v reflect.Value, p *Parser, start *StartElement) (end *EndEle
 	return nil, false, nil
 }
 
-// 找到与 start 相对应的结束符号位置
-func findEndElement(p *Parser, start *StartElement) error {
-	if start.Close {
-		return nil
+func (d *decoder) setTagValue(v reflect.Value, usage string, start *StartElement, end *EndElement) {
+	v.Addr().Interface().(tagSetter).setTag(usage, start, end)
+
+	if err := callSanitizer(v, d.p); err != nil { // Sanitize 在最后调用，可以确保能取到 v.Range
+		d.error(err)
 	}
-
-	level := 0
-	for {
-		t, _, err := p.Token()
-		if errors.Is(err, io.EOF) {
-			return p.NewError(start.Start, start.End, start.Name.String(), locale.ErrNotFoundEndTag) // 找不到相配的结束符号
-		} else if err != nil {
-			return err
-		}
-
-		switch elem := t.(type) {
-		case *StartElement:
-			if elem.Name.Equal(start.Name) {
-				level++
-			}
-		case *EndElement:
-			if level == 0 && start.Match(elem) {
-				return nil
-			}
-			level--
-		}
-	}
-}
-
-func setTagValue(v reflect.Value, usage string, p *Parser, start *StartElement, end *EndElement) error {
-	v = node.RealValue(v)
-	if v.Kind() != reflect.Struct {
-		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
-	}
-
-	setFieldValue(v, usageKeyName, usage)
-	setFieldValue(v, elementTagName, start.Name)
-	if end == nil {
-		setFieldValue(v, rangeName, start.Range)
-	} else {
-		setFieldValue(v, rangeName, core.Range{Start: start.Start, End: end.End})
-		setFieldValue(v, elementTagEndName, end.Name)
-	}
-
-	// Sanitize 在最后调用，可以保证 Sanitize 调用中可以取 v.Range 的值
-	return callSanitizer(v, p)
-}
-
-func setAttributeValue(v reflect.Value, usage string, p *Parser, attr *Attribute) error {
-	v = node.RealValue(v)
-	if v.Kind() != reflect.Struct {
-		panic(fmt.Sprintf("无效的 kind 类型: %s:%s", v.Type(), v.Kind()))
-	}
-
-	setFieldValue(v, rangeName, attr.Range)
-	setFieldValue(v, usageKeyName, usage)
-	setFieldValue(v, attributeNameName, attr.Name)
-
-	return callSanitizer(v, p)
 }
 
 func callSanitizer(v reflect.Value, p *Parser) error {
@@ -402,11 +373,4 @@ func callSanitizer(v reflect.Value, p *Parser) error {
 		}
 	}
 	return nil
-}
-
-func setFieldValue(v reflect.Value, name string, value interface{}) {
-	vv := v.FieldByName(name)
-	if vv.CanSet() {
-		vv.Set(reflect.ValueOf(value))
-	}
 }

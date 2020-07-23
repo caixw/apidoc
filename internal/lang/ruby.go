@@ -22,7 +22,7 @@ func newRubyMultipleComment(begin, end, prefix string) Blocker {
 
 // BeginFunc 实现 Blocker.BeginFunc
 func (b *rubyMultipleComment) BeginFunc(l *Lexer) bool {
-	return l.Position().Character == 0 && l.Match(b.begin)
+	return l.Current().Character == 0 && l.Match(b.begin)
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。

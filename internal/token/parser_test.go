@@ -10,6 +10,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestParser_Token(t *testing.T) {
@@ -609,7 +610,8 @@ func TestParser_Token(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -631,6 +633,9 @@ func TestParser_Token(t *testing.T) {
 				a.False(r.IsEmpty())
 			}
 		}
+
+		rslt.Handler.Stop()
+		a.Empty(rslt.Errors)
 	}
 }
 
@@ -839,7 +844,8 @@ func TestParser_parseStartElement(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -849,7 +855,7 @@ func TestParser_parseStartElement(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		elem, r, err := p.parseStartElement(p.Position())
+		elem, r, err := p.parseStartElement(p.Current())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -860,6 +866,9 @@ func TestParser_parseStartElement(t *testing.T) {
 				Equal(elem, item.elem, "not equal at %s\nv1=%+v\nv2=%+v", item.input, elem, item.elem).
 				Equal(r, elem.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, elem.Range)
 		}
+
+		rslt.Handler.Stop()
+		a.Empty(rslt.Errors)
 	}
 }
 
@@ -953,7 +962,8 @@ func TestParser_parseEndElement(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -963,7 +973,7 @@ func TestParser_parseEndElement(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		elem, r, err := p.parseEndElement(p.Position())
+		elem, r, err := p.parseEndElement(p.Current())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -974,6 +984,9 @@ func TestParser_parseEndElement(t *testing.T) {
 				Equal(elem, item.elem, "not equal at %s\nv1=%+v\nv2=%+v", item.input, elem, item.elem).
 				Equal(r, elem.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, elem.Range)
 		}
+
+		rslt.Handler.Stop()
+		a.Empty(rslt.Errors)
 	}
 }
 
@@ -1155,7 +1168,8 @@ func TestParser_parseCData(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1165,7 +1179,7 @@ func TestParser_parseCData(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		cdata, r, err := p.parseCData(p.Position())
+		cdata, r, err := p.parseCData(p.Current())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -1176,6 +1190,7 @@ func TestParser_parseCData(t *testing.T) {
 				Equal(cdata, item.cdata, "not equal at %s\nv1=%+v\nv2=%+v", item.input, cdata, item.cdata).
 				Equal(r, cdata.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, cdata.Range)
 		}
+		rslt.Handler.Stop()
 	}
 }
 
@@ -1360,7 +1375,8 @@ func TestParser_parseInstruction(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1370,7 +1386,7 @@ func TestParser_parseInstruction(t *testing.T) {
 		a.NotError(err, "error %s at %s", err, item.input).
 			NotNil(p, "nil at %s", item.input)
 
-		pi, r, err := p.parseInstruction(p.Position())
+		pi, r, err := p.parseInstruction(p.Current())
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok, "false at %s", item.input).
@@ -1381,6 +1397,9 @@ func TestParser_parseInstruction(t *testing.T) {
 				Equal(pi, item.pi, "not equal at %s\nv1=%+v\nv2=%+v", item.input, pi, item.pi).
 				Equal(r, pi.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, pi.Range)
 		}
+
+		rslt.Handler.Stop()
+		a.Empty(rslt.Errors)
 	}
 }
 
@@ -1504,7 +1523,8 @@ func TestParser_parseAttributes(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1515,12 +1535,16 @@ func TestParser_parseAttributes(t *testing.T) {
 			NotNil(p, "nil at %s", item.input)
 
 		attrs, err := p.parseAttributes()
+		rslt.Handler.Stop()
+		a.Empty(rslt.Errors)
+
 		if item.err != nil {
 			serr, ok := err.(*core.SyntaxError)
 			a.True(ok).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
 			break
 		}
+
 		a.NotError(err, "error %s at %s", err, item.input).
 			Equal(len(attrs), len(item.attrs), "not equal at %s,v1=%+v,v2=%+v", item.input, len(attrs), len(item.attrs))
 
@@ -1741,7 +1765,8 @@ func TestParser_parseAttribute(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1760,6 +1785,9 @@ func TestParser_parseAttribute(t *testing.T) {
 			a.NotError(err, "error %s at %s", err, item.input).
 				Equal(attr, item.attr, "not equal at %s\nv1=%+v\nv2=%+v", item.input, attr, item.attr)
 		}
+
+		rslt.Handler.Stop()
+		a.Empty(rslt.Errors)
 	}
 }
 
@@ -1767,7 +1795,8 @@ func TestParser_WithError(t *testing.T) {
 	a := assert.New(t)
 
 	err1 := errors.New("err1")
-	p, err := NewParser(core.Block{})
+	rslt := messagetest.NewMessageHandler()
+	p, err := NewParser(rslt.Handler, core.Block{})
 	a.NotError(err).NotNil(p)
 
 	err = p.WithError(core.Position{}, core.Position{}, "field1", err1)
@@ -1788,4 +1817,49 @@ func TestParser_WithError(t *testing.T) {
 	err = p.WithError(core.Position{}, core.Position{}, "field1", err4)
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).Equal(serr.Err, err1)
+
+	rslt.Handler.Stop()
+}
+
+func TestParser_endElement(t *testing.T) {
+	a := assert.New(t)
+
+	// 找不到结束标签，不返回错误，但是向 core.MessageHandler 输出一条错误信息。
+	rslt := messagetest.NewMessageHandler()
+	p, err := NewParser(rslt.Handler, core.Block{Data: []byte("<c>1</c>")})
+	pos := p.Current()
+	a.NotError(err).NotNil(p)
+	a.NotError(p.endElement(&StartElement{Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors)
+	a.True(pos.Equal(p.Current())) // 定位为初始位置
+
+	// StartElement.Close = true
+	rslt = messagetest.NewMessageHandler()
+	p, err = NewParser(rslt.Handler, core.Block{Data: []byte("<c/>")})
+	a.NotError(err).NotNil(p)
+	a.NotError(p.endElement(&StartElement{Close: true, Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
+
+	rslt = messagetest.NewMessageHandler()
+	p, err = NewParser(rslt.Handler, core.Block{Data: []byte("1</c>")})
+	a.NotError(err).NotNil(p)
+	a.NotError(p.endElement(&StartElement{Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
+
+	rslt = messagetest.NewMessageHandler()
+	p, err = NewParser(rslt.Handler, core.Block{Data: []byte("<c>1</c></c>")})
+	a.NotError(err).NotNil(p)
+	a.NotError(p.endElement(&StartElement{Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
+
+	rslt = messagetest.NewMessageHandler()
+	p, err = NewParser(rslt.Handler, core.Block{Data: []byte("<c attr=\">1</c></c>")})
+	a.NotError(err).NotNil(p)
+	a.Error(p.endElement(&StartElement{Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 }

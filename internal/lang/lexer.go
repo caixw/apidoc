@@ -34,7 +34,7 @@ func (l *Lexer) block() (Blocker, core.Position) {
 			return nil, core.Position{}
 		}
 
-		pos := l.Position()
+		pos := l.Current()
 		for _, block := range l.blocks {
 			if block.BeginFunc(l) {
 				return block, pos.Position
@@ -66,7 +66,7 @@ func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler) {
 				URI: l.Location.URI,
 				Range: core.Range{
 					Start: pos,
-					End:   l.Position().Position,
+					End:   l.Current().Position,
 				},
 			}
 			h.Error(core.NewSyntaxError(loc, "", locale.ErrNotFoundEndFlag))
@@ -84,7 +84,7 @@ func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler) {
 				URI: l.Location.URI,
 				Range: core.Range{
 					Start: pos,
-					End:   l.Position().Position,
+					End:   l.Current().Position,
 				},
 			},
 			Data: data,
