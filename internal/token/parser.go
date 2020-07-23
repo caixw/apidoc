@@ -24,10 +24,11 @@ const (
 // Parser 代码块的解析器
 type Parser struct {
 	*lexer.Lexer
+	h *core.MessageHandler
 }
 
 // NewParser 声明新的 Parser 实例
-func NewParser(b core.Block) (*Parser, error) {
+func NewParser(h *core.MessageHandler, b core.Block) (*Parser, error) {
 	l, err := lexer.New(b)
 	if err != nil {
 		return nil, err
@@ -35,6 +36,7 @@ func NewParser(b core.Block) (*Parser, error) {
 
 	return &Parser{
 		Lexer: l,
+		h:     h,
 	}, nil
 }
 
@@ -43,8 +45,9 @@ func NewParser(b core.Block) (*Parser, error) {
 // token 可能的类型为 *StartElement、*EndElement、*Instruction、*Attribute、*CData、*Comment 和 *String。
 // 其中 *String 用于表示 XML 元素的内容。
 //
-// 当返回 nil, io.EOF 时，表示已经结束
-func (p *Parser) Token() (interface{}, core.Range, error) {
+// r 表示返回的 token 所占的范围；
+// 当返回 nil, {}, io.EOF 时，表示已经结束
+func (p *Parser) Token() (token interface{}, r core.Range, err error) {
 	for {
 		if p.AtEOF() {
 			return nil, core.Range{}, io.EOF
@@ -175,8 +178,7 @@ func parseName(name []byte, start, end core.Position) Name {
 
 // pos 表示当前元素的起始位置，包含了 < 元素
 func (p *Parser) parseEndElement(pos lexer.Position) (*EndElement, core.Range, error) {
-	// 名称开始的定位，传递过来的 pos 表示的 < 起始位置
-	start := p.Position()
+	start := p.Position() // 名称开始的定位，传递过来的 pos 表示的 < 起始位置
 
 	name, found := p.Delim('>', false)
 	if !found || len(name) == 0 {

@@ -8,6 +8,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/token"
 )
@@ -21,9 +22,12 @@ var (
 	_ token.Sanitizer = &XMLNamespace{}
 )
 
-func newParser(a *assert.Assertion) *token.Parser {
-	p, err := token.NewParser(core.Block{})
+func newEmptyParser(a *assert.Assertion) *token.Parser {
+	rslt := messagetest.NewMessageHandler()
+	p, err := token.NewParser(rslt.Handler, core.Block{})
 	a.NotError(err).NotNil(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 	return p
 }
 
@@ -31,36 +35,36 @@ func TestCheckXML(t *testing.T) {
 	a := assert.New(t)
 
 	xml := &XML{XMLAttr: &BoolAttribute{Value: Bool{Value: true}}}
-	a.Error(checkXML(true, true, xml, newParser(a)))
+	a.Error(checkXML(true, true, xml, newEmptyParser(a)))
 
 	xml = &XML{
 		XMLAttr:    &BoolAttribute{Value: Bool{Value: true}},
 		XMLWrapped: &Attribute{Value: token.String{Value: "wrapped"}},
 	}
-	a.Error(checkXML(false, false, xml, newParser(a)))
+	a.Error(checkXML(false, false, xml, newEmptyParser(a)))
 
 	xml = &XML{
 		XMLAttr:    &BoolAttribute{Value: Bool{Value: true}},
 		XMLExtract: &BoolAttribute{Value: Bool{Value: true}},
 	}
-	a.Error(checkXML(false, false, xml, newParser(a)))
+	a.Error(checkXML(false, false, xml, newEmptyParser(a)))
 
 	xml = &XML{
 		XMLAttr:  &BoolAttribute{Value: Bool{Value: true}},
 		XMLCData: &BoolAttribute{Value: Bool{Value: true}},
 	}
-	a.Error(checkXML(false, false, xml, newParser(a)))
+	a.Error(checkXML(false, false, xml, newEmptyParser(a)))
 
 	xml = &XML{
 		XMLWrapped: &Attribute{Value: token.String{Value: "wrapped"}},
 	}
-	a.Error(checkXML(false, false, xml, newParser(a)))
+	a.Error(checkXML(false, false, xml, newEmptyParser(a)))
 
 	xml = &XML{
 		XMLExtract:  &BoolAttribute{Value: Bool{Value: true}},
 		XMLNSPrefix: &Attribute{Value: token.String{Value: "p1"}},
 	}
-	a.Error(checkXML(false, false, xml, newParser(a)))
+	a.Error(checkXML(false, false, xml, newEmptyParser(a)))
 }
 
 func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
@@ -76,7 +80,7 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 			},
 		},
 	}
-	a.ErrorString(doc.checkXMLNamespaces(newParser(a)), locale.Sprintf(locale.ErrDuplicateValue))
+	a.ErrorString(doc.checkXMLNamespaces(newEmptyParser(a)), locale.Sprintf(locale.ErrDuplicateValue))
 
 	doc = &APIDoc{
 		XMLNamespaces: []*XMLNamespace{
@@ -90,7 +94,7 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 			},
 		},
 	}
-	a.ErrorString(doc.checkXMLNamespaces(newParser(a)), locale.Sprintf(locale.ErrDuplicateValue))
+	a.ErrorString(doc.checkXMLNamespaces(newEmptyParser(a)), locale.Sprintf(locale.ErrDuplicateValue))
 
 	// 两个 prefix 都为空，也是返回重复的值错误
 	doc = &APIDoc{
@@ -103,7 +107,7 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 			},
 		},
 	}
-	a.ErrorString(doc.checkXMLNamespaces(newParser(a)), locale.Sprintf(locale.ErrDuplicateValue))
+	a.ErrorString(doc.checkXMLNamespaces(newEmptyParser(a)), locale.Sprintf(locale.ErrDuplicateValue))
 
 	// 正常
 	doc = &APIDoc{
@@ -122,60 +126,60 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 			},
 		},
 	}
-	a.NotError(doc.checkXMLNamespaces(newParser(a)))
+	a.NotError(doc.checkXMLNamespaces(newEmptyParser(a)))
 }
 
 func TestAPI_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	api := &API{}
-	a.NotError(api.Sanitize(newParser(a)))
+	a.NotError(api.Sanitize(newEmptyParser(a)))
 
 	// headers
 
 	api.Headers = []*Param{
 		{Type: &TypeAttribute{Value: token.String{Value: TypeString}}},
 	}
-	a.NotError(api.Sanitize(newParser(a)))
+	a.NotError(api.Sanitize(newEmptyParser(a)))
 
 	api.Headers = append(api.Headers, &Param{
 		Type: &TypeAttribute{Value: token.String{Value: TypeObject}},
 	})
-	a.Error(api.Sanitize(newParser(a)))
+	a.Error(api.Sanitize(newEmptyParser(a)))
 
 	// servers
 
 	api = &API{
 		Servers: []*Element{},
 	}
-	a.NotError(api.Sanitize(newParser(a)))
+	a.NotError(api.Sanitize(newEmptyParser(a)))
 
 	api.Servers = append(api.Servers, &Element{Content: Content{Value: "s1"}})
-	a.NotError(api.Sanitize(newParser(a)))
+	a.NotError(api.Sanitize(newEmptyParser(a)))
 	api.Servers = append(api.Servers, &Element{Content: Content{Value: "s1"}})
-	a.Error(api.Sanitize(newParser(a)))
+	a.Error(api.Sanitize(newEmptyParser(a)))
 
 	// tags
 
 	api = &API{
 		Tags: []*Element{},
 	}
-	a.NotError(api.Sanitize(newParser(a)))
+	a.NotError(api.Sanitize(newEmptyParser(a)))
 
 	api.Tags = append(api.Tags, &Element{Content: Content{Value: "s1"}})
-	a.NotError(api.Sanitize(newParser(a)))
+	a.NotError(api.Sanitize(newEmptyParser(a)))
 	api.Tags = append(api.Tags, &Element{Content: Content{Value: "s1"}})
-	a.Error(api.Sanitize(newParser(a)))
+	a.Error(api.Sanitize(newEmptyParser(a)))
 }
 
 func TestXMLnamespace_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	ns := &XMLNamespace{}
-	a.Error(ns.Sanitize(newParser(a)))
+	a.Error(ns.Sanitize(newEmptyParser(a)))
 
 	ns.URN = &Attribute{Value: token.String{Value: "urn"}}
-	a.NotError(ns.Sanitize(newParser(a)))
+	a.NotError(ns.Sanitize(newEmptyParser(a)))
 }
 
 func TestParsePath(t *testing.T) {
@@ -289,7 +293,7 @@ func TestChkEnumsType(t *testing.T) {
 	}
 
 	for i, item := range data {
-		err := chkEnumsType(item.t, item.enums, newParser(a))
+		err := chkEnumsType(item.t, item.enums, newEmptyParser(a))
 		if item.err {
 			a.Error(err, "not error at %d", i)
 		} else {

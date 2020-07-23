@@ -37,7 +37,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		return
 	}
 
-	p, err := token.NewParser(b)
+	p, err := token.NewParser(h, b)
 	if err != nil {
 		h.Error(err)
 		return
@@ -60,7 +60,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 			doc: doc,
 			URI: b.Location.URI,
 		}
-		token.Decode(h, p, api, core.XMLNamespace)
+		token.Decode(p, api, core.XMLNamespace)
 		doc.APIs = append(doc.APIs, api)
 
 		if doc.Title.V() != "" {
@@ -73,7 +73,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 			h.Error(p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue))
 			return
 		}
-		token.Decode(h, p, doc, core.XMLNamespace)
+		token.Decode(p, doc, core.XMLNamespace)
 		doc.URI = b.Location.URI
 	default:
 		return

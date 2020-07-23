@@ -19,24 +19,23 @@ var (
 )
 
 func newDecoder(a *assert.Assertion, prefix string) (*decoder, *messagetest.Result) {
-	p, err := NewParser(core.Block{})
-	a.NotError(err).NotNil(p)
 	rslt := messagetest.NewMessageHandler()
+	p, err := NewParser(rslt.Handler, core.Block{})
+	a.NotError(err).NotNil(p)
 
 	return &decoder{
 		prefix: prefix,
 		p:      p,
-		h:      rslt.Handler,
 	}, rslt
 }
 
 func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace string, hasErr bool) {
-	p, err := NewParser(core.Block{Data: []byte(xml)})
+	rslt := messagetest.NewMessageHandler()
+	p, err := NewParser(rslt.Handler, core.Block{Data: []byte(xml)})
 	a.NotError(err).
 		NotNil(p)
 
-	rslt := messagetest.NewMessageHandler()
-	Decode(rslt.Handler, p, v, namespace)
+	Decode(p, v, namespace)
 	rslt.Handler.Stop()
 
 	if hasErr {
@@ -1357,24 +1356,34 @@ func TestDecode_decodeAttributes(t *testing.T) {
 func TestFindEndElement(t *testing.T) {
 	a := assert.New(t)
 
-	p, err := NewParser(core.Block{Data: []byte("<c>1</c>")})
+	rslt := messagetest.NewMessageHandler()
+	p, err := NewParser(rslt.Handler, core.Block{Data: []byte("<c>1</c>")})
 	a.NotError(err).NotNil(p)
 	a.Error(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
 
 	// StartElement.Close = true
-	p, err = NewParser(core.Block{Data: []byte("<c/>")})
+	rslt = messagetest.NewMessageHandler()
+	p, err = NewParser(rslt.Handler, core.Block{Data: []byte("<c/>")})
 	a.NotError(err).NotNil(p)
 	a.NotError(findEndElement(p, &StartElement{Close: true, Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
 
-	p, err = NewParser(core.Block{Data: []byte("1</c>")})
+	rslt = messagetest.NewMessageHandler()
+	p, err = NewParser(rslt.Handler, core.Block{Data: []byte("1</c>")})
 	a.NotError(err).NotNil(p)
 	a.NotError(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
 
-	p, err = NewParser(core.Block{Data: []byte("<c>1</c></c>")})
+	rslt = messagetest.NewMessageHandler()
+	p, err = NewParser(rslt.Handler, core.Block{Data: []byte("<c>1</c></c>")})
 	a.NotError(err).NotNil(p)
 	a.NotError(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
 
-	p, err = NewParser(core.Block{Data: []byte("<c attr=\">1</c></c>")})
+	rslt = messagetest.NewMessageHandler()
+	p, err = NewParser(rslt.Handler, core.Block{Data: []byte("<c attr=\">1</c></c>")})
 	a.NotError(err).NotNil(p)
 	a.Error(findEndElement(p, &StartElement{Name: Name{Local: String{Value: "c"}}}))
+	rslt.Handler.Stop()
 }

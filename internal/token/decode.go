@@ -55,7 +55,6 @@ type (
 	}
 
 	decoder struct {
-		h      *core.MessageHandler
 		p      *Parser
 		prefix string // 命名空间所表示的前缀
 	}
@@ -87,21 +86,20 @@ func (b *BaseTag) setTag(usage string, start *StartElement, end *EndElement) {
 }
 
 func (d *decoder) message(t core.MessageType, start, end core.Position, field string, key message.Reference, v ...interface{}) bool {
-	d.h.Message(t, d.p.NewError(start, end, field, key, v...))
+	d.p.h.Message(t, d.p.NewError(start, end, field, key, v...))
 	return false
 }
 
 func (d *decoder) error(err error) bool {
-	d.h.Error(err)
+	d.p.h.Error(err)
 	return false
 }
 
 // Decode 将 p 中的 XML 内容解码至 v 对象中
 //
 // namespace 如果不为空表示当前的 xml 所在的命名空间，只有该命名空间的元素才会被正确识别。
-func Decode(h *core.MessageHandler, p *Parser, v interface{}, namespace string) {
+func Decode(p *Parser, v interface{}, namespace string) {
 	d := &decoder{
-		h: h,
 		p: p,
 	}
 
@@ -367,7 +365,7 @@ func findEndElement(p *Parser, start *StartElement) error {
 	for {
 		t, _, err := p.Token()
 		if errors.Is(err, io.EOF) {
-			return p.NewError(start.Start, start.End, start.Name.String(), locale.ErrNotFoundEndTag) // 找不到相配的结束符号
+			return p.NewError(start.Start, start.End, start.Name.String(), locale.ErrNotFoundEndTag)
 		} else if err != nil {
 			return err
 		}

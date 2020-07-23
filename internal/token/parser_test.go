@@ -10,6 +10,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestParser_Token(t *testing.T) {
@@ -609,7 +610,8 @@ func TestParser_Token(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -631,6 +633,7 @@ func TestParser_Token(t *testing.T) {
 				a.False(r.IsEmpty())
 			}
 		}
+		rslt.Handler.Stop()
 	}
 }
 
@@ -839,7 +842,8 @@ func TestParser_parseStartElement(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -860,6 +864,7 @@ func TestParser_parseStartElement(t *testing.T) {
 				Equal(elem, item.elem, "not equal at %s\nv1=%+v\nv2=%+v", item.input, elem, item.elem).
 				Equal(r, elem.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, elem.Range)
 		}
+		rslt.Handler.Stop()
 	}
 }
 
@@ -953,7 +958,8 @@ func TestParser_parseEndElement(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -974,6 +980,7 @@ func TestParser_parseEndElement(t *testing.T) {
 				Equal(elem, item.elem, "not equal at %s\nv1=%+v\nv2=%+v", item.input, elem, item.elem).
 				Equal(r, elem.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, elem.Range)
 		}
+		rslt.Handler.Stop()
 	}
 }
 
@@ -1155,7 +1162,8 @@ func TestParser_parseCData(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1176,6 +1184,7 @@ func TestParser_parseCData(t *testing.T) {
 				Equal(cdata, item.cdata, "not equal at %s\nv1=%+v\nv2=%+v", item.input, cdata, item.cdata).
 				Equal(r, cdata.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, cdata.Range)
 		}
+		rslt.Handler.Stop()
 	}
 }
 
@@ -1360,7 +1369,8 @@ func TestParser_parseInstruction(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1381,6 +1391,7 @@ func TestParser_parseInstruction(t *testing.T) {
 				Equal(pi, item.pi, "not equal at %s\nv1=%+v\nv2=%+v", item.input, pi, item.pi).
 				Equal(r, pi.Range, "not equal at %s\nv1=%+v\nv2=%+v", item.input, r, pi.Range)
 		}
+		rslt.Handler.Stop()
 	}
 }
 
@@ -1504,7 +1515,8 @@ func TestParser_parseAttributes(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1527,6 +1539,8 @@ func TestParser_parseAttributes(t *testing.T) {
 		for i, attr := range attrs {
 			a.Equal(attr, item.attrs[i], "not equal at %s:%d\nv1=%+v\nv2=%+v", item.input, i, attr, item.attrs[i])
 		}
+
+		rslt.Handler.Stop()
 	}
 }
 
@@ -1741,7 +1755,8 @@ func TestParser_parseAttribute(t *testing.T) {
 	}
 
 	for _, item := range data {
-		p, err := NewParser(core.Block{
+		rslt := messagetest.NewMessageHandler()
+		p, err := NewParser(rslt.Handler, core.Block{
 			Location: core.Location{
 				URI:   uri,
 				Range: core.Range{Start: start},
@@ -1760,6 +1775,8 @@ func TestParser_parseAttribute(t *testing.T) {
 			a.NotError(err, "error %s at %s", err, item.input).
 				Equal(attr, item.attr, "not equal at %s\nv1=%+v\nv2=%+v", item.input, attr, item.attr)
 		}
+
+		rslt.Handler.Stop()
 	}
 }
 
@@ -1767,7 +1784,8 @@ func TestParser_WithError(t *testing.T) {
 	a := assert.New(t)
 
 	err1 := errors.New("err1")
-	p, err := NewParser(core.Block{})
+	rslt := messagetest.NewMessageHandler()
+	p, err := NewParser(rslt.Handler, core.Block{})
 	a.NotError(err).NotNil(p)
 
 	err = p.WithError(core.Position{}, core.Position{}, "field1", err1)
@@ -1788,4 +1806,6 @@ func TestParser_WithError(t *testing.T) {
 	err = p.WithError(core.Position{}, core.Position{}, "field1", err4)
 	serr, ok = err.(*core.SyntaxError)
 	a.True(ok).Equal(serr.Err, err1)
+
+	rslt.Handler.Stop()
 }
