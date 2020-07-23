@@ -69,7 +69,7 @@ func BlockEndPosition(b core.Block) (Position, error) {
 
 // AtEOF 是否已经结束
 func (l *Lexer) AtEOF() bool {
-	return l.Position().Offset > l.lastIndex
+	return l.Current().Offset > l.lastIndex
 }
 
 // Match 接下来的 n 个字符是否匹配指定的字符串，
@@ -96,8 +96,8 @@ func (l *Lexer) Match(word string) bool {
 	return true
 }
 
-// Position 返回当前在 data 中的偏移量
-func (l *Lexer) Position() Position {
+// Current 返回当前在 data 中的偏移量
+func (l *Lexer) Current() Position {
 	return l.current
 }
 
@@ -219,7 +219,7 @@ func (l *Lexer) Next(n int) []byte {
 	l.prev = l.current
 
 	for i := 0; i < n; i++ {
-		r, size := utf8.DecodeRune(l.Data[l.Position().Offset:])
+		r, size := utf8.DecodeRune(l.Data[l.Current().Offset:])
 		if size == 0 {
 			break
 		}

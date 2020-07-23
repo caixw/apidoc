@@ -230,7 +230,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 		t, r, err := d.p.Token()
 		if errors.Is(err, io.EOF) {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
-			return nil, d.message(core.Erro, d.p.Position().Position, d.p.Position().Position, "", locale.ErrInvalidXML)
+			return nil, d.message(core.Erro, d.p.Current().Position, d.p.Current().Position, "", locale.ErrInvalidXML)
 		} else if err != nil {
 			return nil, d.error(err)
 		}
@@ -252,7 +252,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 		case *StartElement:
 			item, found := n.Element(elem.Name.Local.Value)
 			if !found || d.prefix != elem.Name.Prefix.Value {
-				if err := findEndElement(d.p, elem); err != nil {
+				if err := d.p.endElement(elem); err != nil {
 					return nil, d.error(err)
 				}
 
@@ -308,7 +308,7 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 	// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
 	// 所以要过滤与 start 想匹配的结束符号才算结束。
 	if !start.Close && (start.Name.Local.Value != slice.Name) {
-		if err := findEndElement(d.p, start); err != nil {
+		if err := d.p.endElement(start); err != nil {
 			return d.error(err)
 		}
 	}
@@ -353,35 +353,6 @@ func callDecodeXML(v reflect.Value, p *Parser, start *StartElement) (end *EndEle
 		}
 	}
 	return nil, false, nil
-}
-
-// 找到与 start 相对应的结束符号位置
-func findEndElement(p *Parser, start *StartElement) error {
-	if start.Close {
-		return nil
-	}
-
-	level := 0
-	for {
-		t, _, err := p.Token()
-		if errors.Is(err, io.EOF) {
-			return p.NewError(start.Start, start.End, start.Name.String(), locale.ErrNotFoundEndTag)
-		} else if err != nil {
-			return err
-		}
-
-		switch elem := t.(type) {
-		case *StartElement:
-			if elem.Name.Equal(start.Name) {
-				level++
-			}
-		case *EndElement:
-			if level == 0 && start.Match(elem) {
-				return nil
-			}
-			level--
-		}
-	}
 }
 
 func (d *decoder) setTagValue(v reflect.Value, usage string, start *StartElement, end *EndElement) {

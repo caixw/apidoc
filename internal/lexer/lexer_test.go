@@ -37,20 +37,20 @@ func TestLexer_Position(t *testing.T) {
 	a.NotError(err).NotNil(l)
 
 	l.Next(3)
-	a.Equal(l.Position(), Position{
+	a.Equal(l.Current(), Position{
 		Position: core.Position{Line: 12, Character: 0},
 		Offset:   3,
 	})
 
 	l.Next(4)
-	a.Equal(l.Position(), Position{
+	a.Equal(l.Current(), Position{
 		Position: core.Position{Line: 13, Character: 1},
 		Offset:   7,
 	})
 
 	l.Next(3)
 	l.Next(3)
-	a.Equal(l.Position(), Position{
+	a.Equal(l.Current(), Position{
 		Position: core.Position{Line: 15, Character: 0},
 		Offset:   12,
 	})
@@ -58,13 +58,13 @@ func TestLexer_Position(t *testing.T) {
 	l, err = New(core.Block{Data: []byte("12中文ab"), Location: loc})
 	a.NotError(err).NotNil(l)
 	l.Next(2)
-	a.Equal(l.Position(), Position{
+	a.Equal(l.Current(), Position{
 		Position: core.Position{Line: 11, Character: 4},
 		Offset:   2,
 	})
 
 	l.Next(2)
-	a.Equal(l.Position(), Position{
+	a.Equal(l.Current(), Position{
 		Position: core.Position{Line: 11, Character: 6},
 		Offset:   8,
 	})
@@ -209,11 +209,11 @@ func TestLexer_DelimFunc(t *testing.T) {
 
 	bs, found = l.DelimFunc(func(r rune) bool { return r == '\n' }, false)
 	a.True(found).Empty(bs)
-	a.Equal(l.Position(), Position{Offset: 19, Position: core.Position{Line: 1, Character: 0}})
+	a.Equal(l.Current(), Position{Offset: 19, Position: core.Position{Line: 1, Character: 0}})
 
 	bs, found = l.DelimFunc(func(r rune) bool { return r == '\n' }, true)
 	a.True(found).Equal(string(bs), "\n")
-	a.Equal(l.Position(), Position{Offset: 20, Position: core.Position{Line: 2, Character: 0}})
+	a.Equal(l.Current(), Position{Offset: 20, Position: core.Position{Line: 2, Character: 0}})
 
 	bs, found = l.DelimFunc(func(r rune) bool { return r == '3' }, false)
 	a.True(found).Equal(string(bs), "12")
@@ -239,7 +239,7 @@ func TestLexer_All(t *testing.T) {
 	a.Equal(l.All(), "23\n456").True(l.AtEOF())
 
 	l.Rollback()
-	a.Equal(l.Position().Offset, 1)
+	a.Equal(l.Current().Offset, 1)
 	a.Equal(l.All(), "23\n456").True(l.AtEOF())
 }
 
@@ -260,16 +260,16 @@ func TestLexer_DelimString(t *testing.T) {
 
 	val, found := l.DelimString("45", true)
 	a.True(found).Equal(val, "12345").
-		Equal(l.Position().Offset, 5)
+		Equal(l.Current().Offset, 5)
 
 	l.Rollback()
 	val, found = l.DelimString("45", false)
 	a.True(found).Equal(val, "123").
-		Equal(l.Position().Offset, 3)
+		Equal(l.Current().Offset, 3)
 
 	val, found = l.DelimString("7", true)
 	a.True(found).Equal(val, "4567").
-		Equal(l.Position().Offset, 7)
+		Equal(l.Current().Offset, 7)
 	a.True(l.AtEOF(), l.current.Offset, l.lastIndex)
 
 	l, err = New(core.Block{Data: []byte("123444567\n8910")})
@@ -277,20 +277,20 @@ func TestLexer_DelimString(t *testing.T) {
 
 	val, found = l.DelimString("45", true)
 	a.True(found).Equal(val, "1234445").
-		Equal(l.Position().Offset, 7)
+		Equal(l.Current().Offset, 7)
 	l.Rollback()
-	a.Equal(0, l.Position().Offset)
+	a.Equal(0, l.Current().Offset)
 	val, found = l.DelimString("45", true)
 	a.True(found).Equal(val, "1234445").
-		Equal(l.Position().Offset, 7)
+		Equal(l.Current().Offset, 7)
 
 	val, found = l.DelimString("891", true)
 	a.True(found).Equal(val, "67\n891").
-		Equal(l.Position().Offset, 13)
+		Equal(l.Current().Offset, 13)
 
 	val, found = l.DelimString("891", true)
-	a.False(found).Nil(val).Equal(l.Position().Offset, 13)
+	a.False(found).Nil(val).Equal(l.Current().Offset, 13)
 
 	val, found = l.DelimString("891", true)
-	a.False(found).Nil(val).Equal(l.Position().Offset, 13)
+	a.False(found).Nil(val).Equal(l.Current().Offset, 13)
 }

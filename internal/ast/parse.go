@@ -85,7 +85,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 
 // 获取根标签的名称
 func getTagName(p *token.Parser) (string, error) {
-	start := p.Position()
+	start := p.Current()
 	for {
 		t, r, err := p.Token()
 		if err != nil {

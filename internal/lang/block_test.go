@@ -34,7 +34,7 @@ func TestStringBlock(t *testing.T) {
 	data, ok = b.EndFunc(l)
 	a.True(ok).
 		Nil(data).
-		Equal(l.Position().Offset, len(`"te\"xt"`))
+		Equal(l.Current().Offset, len(`"te\"xt"`))
 
 	// 找不到匹配字符串
 	l, err = NewLexer(core.Block{Data: []byte("text")}, nil)
