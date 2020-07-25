@@ -17,7 +17,7 @@ type (
 		core.Range
 		Name       Name
 		Attributes []*Attribute
-		Close      bool // 是否自闭合
+		SelfClose  bool // 是否自闭合
 	}
 
 	// EndElement XML 的结束元素

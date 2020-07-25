@@ -397,7 +397,7 @@ func TestParser_Token(t *testing.T) {
   `, // 尾部包含空格
 			elems: []interface{}{
 				&StartElement{
-					Close: true,
+					SelfClose: true,
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 22},
 						End:   core.Position{Line: 11, Character: 46},
@@ -567,7 +567,7 @@ func TestParser_Token(t *testing.T) {
 					},
 				}, // end StartElement
 				&StartElement{
-					Close: true,
+					SelfClose: true,
 					Range: core.Range{
 						Start: core.Position{Line: 11, Character: 30},
 						End:   core.Position{Line: 11, Character: 40},
@@ -729,7 +729,7 @@ func TestParser_parseStartElement(t *testing.T) {
 						Value: "tag",
 					},
 				},
-				Close: true,
+				SelfClose: true,
 			},
 		},
 
@@ -760,7 +760,7 @@ func TestParser_parseStartElement(t *testing.T) {
 						Value: "aa",
 					},
 				},
-				Close: true,
+				SelfClose: true,
 			},
 		},
 
@@ -838,7 +838,7 @@ func TestParser_parseStartElement(t *testing.T) {
 						},
 					},
 				}, // end Attributes
-				Close: true,
+				SelfClose: true,
 			},
 		},
 	}
@@ -1834,11 +1834,11 @@ func TestParser_endElement(t *testing.T) {
 	a.NotEmpty(rslt.Errors)
 	a.True(pos.Equal(p.Current())) // 定位为初始位置
 
-	// StartElement.Close = true
+	// StartElement.SelfClose = true
 	rslt = messagetest.NewMessageHandler()
 	p, err = NewParser(rslt.Handler, core.Block{Data: []byte("<c/>")})
 	a.NotError(err).NotNil(p)
-	a.NotError(p.endElement(&StartElement{Close: true, Name: Name{Local: String{Value: "c"}}}))
+	a.NotError(p.endElement(&StartElement{SelfClose: true, Name: Name{Local: String{Value: "c"}}}))
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 

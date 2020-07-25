@@ -26,10 +26,15 @@ type BaseAttribute struct {
 type BaseTag struct {
 	Base
 	StartTag Name `apidoc:"-"` // 表示起始标签名
-	EndTag   Name `apidoc:"-"` // 表示标签的结束名称，如果是自闭合的标签，此值为空。
+	EndTag   Name `apidoc:"-"` // 表示标签的结束名称，如果是自闭合的标签，此值的 Local.Value 为空。
 }
 
 // Usage 本地化的当前字段介绍内容
 func (b *Base) Usage() string {
 	return locale.Sprintf(b.UsageKey)
+}
+
+// SelfClose 当前是否为自闭合标签
+func (b *BaseTag) SelfClose() bool {
+	return b.EndTag.Local.Value == ""
 }

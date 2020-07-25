@@ -139,7 +139,7 @@ func (p *Parser) parseStartElement(pos lexer.Position) (*StartElement, core.Rang
 
 	if p.Match("/>") {
 		elem.Range = core.Range{Start: pos.Position, End: p.Current().Position}
-		elem.Close = true
+		elem.SelfClose = true
 		return elem, elem.Range, nil
 	}
 	if p.Match(">") {
@@ -368,7 +368,7 @@ func (p *Parser) getName() ([]byte, core.Range) {
 // 如果找不到对应的结束符号，则会向 p.h 输出一条错误信息，然后将定位至原始位置，并不返回错误。
 // 这样可以保证最大限度地解析 xml 内容，不会因为一些非致命的错误而中断整个解析。
 func (p *Parser) endElement(start *StartElement) error {
-	if start.Close {
+	if start.SelfClose {
 		return nil
 	}
 

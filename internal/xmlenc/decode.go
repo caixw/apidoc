@@ -145,7 +145,7 @@ func findPrefix(start *StartElement, namespace string) string {
 func (d *decoder) decode(n *node.Node, start *StartElement) *EndElement {
 	d.decodeAttributes(n, start)
 
-	if start.Close {
+	if start.SelfClose {
 		d.checkOmitempty(n, start.Start, start.End)
 		return nil
 	}
@@ -307,7 +307,7 @@ func (d *decoder) decodeElement(start *StartElement, v *node.Value) (ok bool) {
 func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) {
 	// 不相配，表示当前元素找不到与之相配的元素，需要忽略这个元素，
 	// 所以要过滤与 start 想匹配的结束符号才算结束。
-	if !start.Close && (start.Name.Local.Value != slice.Name) {
+	if !start.SelfClose && (start.Name.Local.Value != slice.Name) {
 		if err := d.p.endElement(start); err != nil {
 			return d.error(err)
 		}
@@ -339,14 +339,14 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 // 当 impl 为 true 时，err 表示的是 DecodeXML 接口返回的错误，否则 err 永远为 nil
 func callDecodeXML(v reflect.Value, p *Parser, start *StartElement) (end *EndElement, impl bool, err error) {
 	if v.CanInterface() && v.Type().Implements(decoderType) {
-		if !start.Close {
+		if !start.SelfClose {
 			end, err = v.Interface().(Decoder).DecodeXML(p, start)
 		}
 		return end, true, err
 	} else if v.CanAddr() {
 		pv := v.Addr()
 		if pv.CanInterface() && pv.Type().Implements(decoderType) {
-			if !start.Close {
+			if !start.SelfClose {
 				end, err = pv.Interface().(Decoder).DecodeXML(p, start)
 			}
 			return end, true, err
