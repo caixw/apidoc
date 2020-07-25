@@ -2,9 +2,7 @@
 
 package xmlenc
 
-import (
-	"github.com/caixw/apidoc/v7/core"
-)
+import "github.com/caixw/apidoc/v7/core"
 
 type (
 	// Name 表示 XML 中的名称

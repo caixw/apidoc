@@ -32,19 +32,19 @@ type Type int8
 
 // 节点类型的值
 const (
-	Attribute Type = iota
-	Element
-	CData
-	Content
-	Meta // 用于描述节点的一些元数据
+	attribute Type = iota
+	element
+	cdata
+	content
+	meta // 用于描述节点的一些元数据
 )
 
 var stringNodeMap = map[string]Type{
-	"attr":    Attribute,
-	"elem":    Element,
-	"cdata":   CData,
-	"content": Content,
-	"meta":    Meta,
+	"attr":    attribute,
+	"elem":    element,
+	"cdata":   cdata,
+	"content": content,
+	"meta":    meta,
 }
 
 // Node 表示一个 XML 标签节点
@@ -90,20 +90,20 @@ func New(name string, rv reflect.Value) *Node {
 
 		v := rv.Field(i)
 		switch node {
-		case Attribute:
+		case attribute:
 			n.appendAttr(NewValue(fieldName, v, omitempty, usage))
-		case Element:
+		case element:
 			n.appendElem(NewValue(fieldName, v, omitempty, usage))
-		case Meta:
+		case meta:
 			n.TypeName = fieldName
 			n.Value.Usage = usage
 			n.Value.Value = rv
 			if n.Value.Name == "" { // 顶层元素可能没有 name，此处就和 fieldName 相同
 				n.Value.Name = fieldName
 			}
-		case CData:
+		case cdata:
 			n.setCData(NewValue(fieldName, v, omitempty, usage))
-		case Content:
+		case content:
 			n.setContent(NewValue(fieldName, v, omitempty, usage))
 		}
 	}

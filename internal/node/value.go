@@ -48,7 +48,7 @@ func ParseValue(v reflect.Value) *Value {
 			continue
 		}
 
-		if name, node, usage, omitempty := parseTag(field); node == Meta {
+		if name, node, usage, omitempty := parseTag(field); node == meta {
 			return NewValue(name, v, omitempty, usage)
 		}
 	}

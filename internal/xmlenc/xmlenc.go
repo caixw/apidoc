@@ -10,7 +10,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-// Base 所有 XML 节点的基本元素
+// Base 所有文档节点的基本元素
 type Base struct {
 	core.Range
 	UsageKey message.Reference `apidoc:"-"` // 表示对当前元素的一个说明内容的翻译 ID
