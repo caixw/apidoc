@@ -11,7 +11,7 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func loadAPIDoc(a *assert.Assertion) *APIDoc {
@@ -43,20 +43,20 @@ func TestAPIDoc(t *testing.T) {
 	a := assert.New(t)
 	doc := loadAPIDoc(a)
 
-	a.Equal(doc.BaseTag, token.BaseTag{
-		Base: token.Base{
+	a.Equal(doc.BaseTag, xmlenc.BaseTag{
+		Base: xmlenc.Base{
 			UsageKey: "usage-apidoc",
 			Range: core.Range{
 				Start: core.Position{Character: 0, Line: 2},
 				End:   core.Position{Character: 9, Line: 35},
 			},
 		},
-		StartTag: token.Name{
+		StartTag: xmlenc.Name{
 			Range: core.Range{
 				Start: core.Position{Character: 1, Line: 2},
 				End:   core.Position{Character: 7, Line: 2},
 			},
-			Local: token.String{
+			Local: xmlenc.String{
 				Range: core.Range{
 					Start: core.Position{Character: 1, Line: 2},
 					End:   core.Position{Character: 7, Line: 2},
@@ -64,12 +64,12 @@ func TestAPIDoc(t *testing.T) {
 				Value: "apidoc",
 			},
 		},
-		EndTag: token.Name{
+		EndTag: xmlenc.Name{
 			Range: core.Range{
 				Start: core.Position{Character: 2, Line: 35},
 				End:   core.Position{Character: 8, Line: 35},
 			},
-			Local: token.String{
+			Local: xmlenc.String{
 				Range: core.Range{
 					Start: core.Position{Character: 2, Line: 35},
 					End:   core.Position{Character: 8, Line: 35},
@@ -80,20 +80,20 @@ func TestAPIDoc(t *testing.T) {
 	})
 
 	a.Equal(doc.Version, &VersionAttribute{
-		BaseAttribute: token.BaseAttribute{
-			Base: token.Base{
+		BaseAttribute: xmlenc.BaseAttribute{
+			Base: xmlenc.Base{
 				UsageKey: "usage-apidoc-version",
 				Range: core.Range{
 					Start: core.Position{Character: 8, Line: 2},
 					End:   core.Position{Character: 23, Line: 2},
 				},
 			},
-			AttributeName: token.Name{
+			AttributeName: xmlenc.Name{
 				Range: core.Range{
 					Start: core.Position{Character: 8, Line: 2},
 					End:   core.Position{Character: 15, Line: 2},
 				},
-				Local: token.String{
+				Local: xmlenc.String{
 					Range: core.Range{
 						Start: core.Position{Character: 8, Line: 2},
 						End:   core.Position{Character: 15, Line: 2},
@@ -103,7 +103,7 @@ func TestAPIDoc(t *testing.T) {
 			},
 		},
 
-		Value: token.String{
+		Value: xmlenc.String{
 			Range: core.Range{
 				Start: core.Position{Character: 17, Line: 2},
 				End:   core.Position{Character: 22, Line: 2},
@@ -114,20 +114,20 @@ func TestAPIDoc(t *testing.T) {
 
 	a.Equal(len(doc.Tags), 2)
 	tag := &Tag{
-		BaseTag: token.BaseTag{
-			Base: token.Base{
+		BaseTag: xmlenc.BaseTag{
+			Base: xmlenc.Base{
 				UsageKey: "usage-apidoc-tags",
 				Range: core.Range{
 					Start: core.Position{Character: 4, Line: 10},
 					End:   core.Position{Character: 47, Line: 10},
 				},
 			},
-			StartTag: token.Name{
+			StartTag: xmlenc.Name{
 				Range: core.Range{
 					Start: core.Position{Character: 5, Line: 10},
 					End:   core.Position{Character: 8, Line: 10},
 				},
-				Local: token.String{
+				Local: xmlenc.String{
 					Range: core.Range{
 						Start: core.Position{Character: 5, Line: 10},
 						End:   core.Position{Character: 8, Line: 10},
@@ -137,20 +137,20 @@ func TestAPIDoc(t *testing.T) {
 			},
 		},
 		Name: &Attribute{
-			BaseAttribute: token.BaseAttribute{
-				Base: token.Base{
+			BaseAttribute: xmlenc.BaseAttribute{
+				Base: xmlenc.Base{
 					UsageKey: "usage-tag-name",
 					Range: core.Range{
 						Start: core.Position{Character: 9, Line: 10},
 						End:   core.Position{Character: 20, Line: 10},
 					},
 				},
-				AttributeName: token.Name{
+				AttributeName: xmlenc.Name{
 					Range: core.Range{
 						Start: core.Position{Character: 9, Line: 10},
 						End:   core.Position{Character: 13, Line: 10},
 					},
-					Local: token.String{
+					Local: xmlenc.String{
 						Range: core.Range{
 							Start: core.Position{Character: 9, Line: 10},
 							End:   core.Position{Character: 13, Line: 10},
@@ -159,7 +159,7 @@ func TestAPIDoc(t *testing.T) {
 					},
 				},
 			},
-			Value: token.String{
+			Value: xmlenc.String{
 				Range: core.Range{
 					Start: core.Position{Character: 15, Line: 10},
 					End:   core.Position{Character: 19, Line: 10},
@@ -168,20 +168,20 @@ func TestAPIDoc(t *testing.T) {
 			},
 		},
 		Title: &Attribute{
-			BaseAttribute: token.BaseAttribute{
-				Base: token.Base{
+			BaseAttribute: xmlenc.BaseAttribute{
+				Base: xmlenc.Base{
 					UsageKey: "usage-tag-title",
 					Range: core.Range{
 						Start: core.Position{Character: 21, Line: 10},
 						End:   core.Position{Character: 44, Line: 10},
 					},
 				},
-				AttributeName: token.Name{
+				AttributeName: xmlenc.Name{
 					Range: core.Range{
 						Start: core.Position{Character: 21, Line: 10},
 						End:   core.Position{Character: 26, Line: 10},
 					},
-					Local: token.String{
+					Local: xmlenc.String{
 						Range: core.Range{
 							Start: core.Position{Character: 21, Line: 10},
 							End:   core.Position{Character: 26, Line: 10},
@@ -190,7 +190,7 @@ func TestAPIDoc(t *testing.T) {
 					},
 				},
 			},
-			Value: token.String{
+			Value: xmlenc.String{
 				Range: core.Range{
 					Start: core.Position{Character: 28, Line: 10},
 					End:   core.Position{Character: 43, Line: 10},
@@ -347,7 +347,7 @@ func TestRequest_Param(t *testing.T) {
 	var req *Request
 	a.Nil(req.Param())
 
-	req = &Request{Type: &TypeAttribute{Value: token.String{Value: TypeObject}}}
+	req = &Request{Type: &TypeAttribute{Value: xmlenc.String{Value: TypeObject}}}
 	param := req.Param()
 	a.Equal(req.Type, param.Type)
 }
@@ -358,15 +358,15 @@ func TestAPIDoc_XMLNamespaces(t *testing.T) {
 	d := &APIDoc{
 		XMLNamespaces: []*XMLNamespace{
 			{
-				URN: &Attribute{Value: token.String{Value: core.XMLNamespace}},
+				URN: &Attribute{Value: xmlenc.String{Value: core.XMLNamespace}},
 			},
 			{
-				URN:    &Attribute{Value: token.String{Value: "urn1"}},
-				Prefix: &Attribute{Value: token.String{Value: "ns1"}},
+				URN:    &Attribute{Value: xmlenc.String{Value: "urn1"}},
+				Prefix: &Attribute{Value: xmlenc.String{Value: "ns1"}},
 			},
 			{
-				URN:    &Attribute{Value: token.String{Value: "urn2"}},
-				Prefix: &Attribute{Value: token.String{Value: "ns2"}},
+				URN:    &Attribute{Value: xmlenc.String{Value: "urn2"}},
+				Prefix: &Attribute{Value: xmlenc.String{Value: "ns2"}},
 			},
 		},
 	}

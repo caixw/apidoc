@@ -10,25 +10,25 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestJSONValidator_valid(t *testing.T) {
 	a := assert.New(t)
 
-	r := &ast.Request{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}}
+	r := &ast.Request{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}}}
 	v := newJSONValidator(r)
 	d := json.NewDecoder(strings.NewReader(`"str"`))
 	a.NotError(v.valid(d))
 	a.Empty(v.names)
 
-	r = &ast.Request{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}}
+	r = &ast.Request{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}}}
 	v = newJSONValidator(r)
 	d = json.NewDecoder(strings.NewReader(`5.0`))
 	a.NotError(v.valid(d))
 	a.Empty(v.names)
 
-	r = &ast.Request{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}}
+	r = &ast.Request{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}}}
 	v = newJSONValidator(r)
 	d = json.NewDecoder(strings.NewReader(`5.0`))
 	a.Error(v.valid(d))
@@ -39,40 +39,40 @@ func TestJSONValidator_find(t *testing.T) {
 
 	v := &jsonValidator{
 		param: (&ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 			Items: []*ast.Param{
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-					Name: &ast.Attribute{Value: token.String{Value: "name"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
 				},
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-					Name: &ast.Attribute{Value: token.String{Value: "id"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
 				},
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
-					Name: &ast.Attribute{Value: token.String{Value: "group"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "group"}},
 					Items: []*ast.Param{
 						{
-							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-							Name: &ast.Attribute{Value: token.String{Value: "name"}},
+							Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+							Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
 						},
 						{
-							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-							Name: &ast.Attribute{Value: token.String{Value: "id"}},
+							Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+							Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
 						},
 						{
-							Name: &ast.Attribute{Value: token.String{Value: "tags"}},
-							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+							Name: &ast.Attribute{Value: xmlenc.String{Value: "tags"}},
+							Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 							Items: []*ast.Param{
 								{
-									Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-									Name: &ast.Attribute{Value: token.String{Value: "name"}},
+									Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+									Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
 								},
 								{
-									Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-									Name: &ast.Attribute{Value: token.String{Value: "id"}},
+									Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+									Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
 								},
 							},
 						}, // end tags

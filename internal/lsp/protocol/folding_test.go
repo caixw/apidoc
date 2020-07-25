@@ -8,16 +8,16 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestBuildFoldingRange(t *testing.T) {
 	a := assert.New(t)
 
-	base := token.Base{}
+	base := xmlenc.Base{}
 	a.Equal(BuildFoldingRange(base, false), FoldingRange{Kind: FoldingRangeKindComment})
 
-	base = token.Base{Range: core.Range{
+	base = xmlenc.Base{Range: core.Range{
 		Start: core.Position{Line: 1, Character: 11},
 		End:   core.Position{Line: 2, Character: 11},
 	}}

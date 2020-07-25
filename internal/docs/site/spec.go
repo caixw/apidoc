@@ -53,11 +53,11 @@ func (d *doc) dumpToTypes(n *node.Node) error {
 	for _, elem := range n.Elements {
 		appendItem(t, elem.Name, elem.Value, elem.Usage, !elem.Omitempty)
 
-		typ := node.GetRealType(elem.Type())
-		v := node.GetRealValue(elem.Value)
+		typ := node.RealType(elem.Type())
+		v := node.RealValue(elem.Value)
 
 		if typ.Kind() == reflect.Slice || typ.Kind() == reflect.Array {
-			typ = node.GetRealType(typ.Elem())
+			typ = node.RealType(typ.Elem())
 			v = reflect.New(typ).Elem()
 		}
 
@@ -81,7 +81,7 @@ func (d *doc) dumpToTypes(n *node.Node) error {
 
 func appendItem(t *spec, name string, v reflect.Value, usageKey string, req bool) {
 	var isSlice bool
-	typ := node.GetRealValue(v).Type()
+	typ := node.RealValue(v).Type()
 	for typ.Kind() == reflect.Slice || typ.Kind() == reflect.Array {
 		isSlice = true
 		typ = typ.Elem()

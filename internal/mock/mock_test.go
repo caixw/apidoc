@@ -18,7 +18,7 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 var _ http.Handler = &mock{}
@@ -34,37 +34,37 @@ type tester struct {
 var dataWithHeader = &tester{
 	Title: "object with item",
 	Type: &ast.Request{
-		Name: &ast.Attribute{Value: token.String{Value: "root"}},
-		Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+		Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
+		Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 		Headers: []*ast.Param{
 			{
-				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-				Name: &ast.Attribute{Value: token.String{Value: "content-type"}},
+				Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+				Name: &ast.Attribute{Value: xmlenc.String{Value: "content-type"}},
 			},
 			{
-				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-				Name: &ast.Attribute{Value: token.String{Value: "encoding"}},
+				Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+				Name: &ast.Attribute{Value: xmlenc.String{Value: "encoding"}},
 			},
 		},
 		Items: []*ast.Param{
 			{
-				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
-				Name: &ast.Attribute{Value: token.String{Value: "name"}},
+				Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
+				Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
 				Items: []*ast.Param{
 					{
-						Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-						Name: &ast.Attribute{Value: token.String{Value: "last"}},
+						Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+						Name: &ast.Attribute{Value: xmlenc.String{Value: "last"}},
 					},
 					{
-						Type:     &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-						Name:     &ast.Attribute{Value: token.String{Value: "first"}},
+						Type:     &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+						Name:     &ast.Attribute{Value: xmlenc.String{Value: "first"}},
 						Optional: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 					},
 				},
 			},
 			{
-				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-				Name: &ast.Attribute{Value: token.String{Value: "age"}},
+				Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+				Name: &ast.Attribute{Value: xmlenc.String{Value: "age"}},
 				XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 			},
 		},
@@ -94,7 +94,7 @@ var data = []*tester{
 	},
 	{
 		Title: "doc.None",
-		Type:  &ast.Request{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}},
+		Type:  &ast.Request{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNone}}},
 		JSON:  "",
 		XML:   "",
 	},
@@ -107,8 +107,8 @@ var data = []*tester{
 	{
 		Title: "number",
 		Type: &ast.Request{
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
 		},
 		JSON: "1024",
 		XML:  "<root>1024</root>",
@@ -116,8 +116,8 @@ var data = []*tester{
 	{
 		Title: "number-cdata",
 		Type: &ast.Request{
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
 			XML:  ast.XML{XMLCData: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 		},
 		JSON: "1024",
@@ -126,8 +126,8 @@ var data = []*tester{
 	{
 		Title: "date-cdata",
 		Type: &ast.Request{
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeDate}},
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeDate}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
 			XML:  ast.XML{XMLCData: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 		},
 		JSON: `"2020-01-02"`,
@@ -136,8 +136,8 @@ var data = []*tester{
 	{
 		Title: "time-cdata",
 		Type: &ast.Request{
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeTime}},
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeTime}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
 			XML:  ast.XML{XMLCData: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 		},
 		JSON: `"15:16:17Z"`,
@@ -146,8 +146,8 @@ var data = []*tester{
 	{
 		Title: "date-time-cdata",
 		Type: &ast.Request{
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeDateTime}},
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeDateTime}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
 			XML:  ast.XML{XMLCData: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 		},
 		JSON: `"2020-01-02T15:16:17Z"`,
@@ -156,30 +156,30 @@ var data = []*tester{
 	{ // namespace
 		Title: "number-cdata-namespace",
 		Type: &ast.Request{
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
 			XML: ast.XML{
 				XMLCData:    &ast.BoolAttribute{Value: ast.Bool{Value: true}},
-				XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "ns"}},
+				XMLNSPrefix: &ast.Attribute{Value: xmlenc.String{Value: "ns"}},
 			},
 		},
 		JSON: "1024",
 		XML:  `<ns:root xmlns:ns="urn"><![CDATA[1024]]></ns:root>`,
 		XMLNS: []*ast.XMLNamespace{
 			{
-				Prefix: &ast.Attribute{Value: token.String{Value: "ns"}},
-				URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
+				Prefix: &ast.Attribute{Value: xmlenc.String{Value: "ns"}},
+				URN:    &ast.Attribute{Value: xmlenc.String{Value: "urn"}},
 			},
 		},
 	},
 	{
 		Title: "enum number",
 		Type: &ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 			Enums: []*ast.Enum{
-				{Value: &ast.Attribute{Value: token.String{Value: "1024"}}},
-				{Value: &ast.Attribute{Value: token.String{Value: "1025"}}},
+				{Value: &ast.Attribute{Value: xmlenc.String{Value: "1024"}}},
+				{Value: &ast.Attribute{Value: xmlenc.String{Value: "1025"}}},
 			},
 		},
 		JSON: "1024",
@@ -188,17 +188,17 @@ var data = []*tester{
 	{
 		Title: "xml-extract",
 		Type: &ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 			Items: []*ast.Param{
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "id"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeInt}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeInt}},
 					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "desc"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "desc"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
 					XML:  ast.XML{XMLExtract: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 			},
@@ -213,17 +213,17 @@ var data = []*tester{
 	{
 		Title: "xml-extract-cdata",
 		Type: &ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 			Items: []*ast.Param{
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "id"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "desc"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "desc"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
 					XML: ast.XML{
 						XMLExtract: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 						XMLCData:   &ast.BoolAttribute{Value: ast.Bool{Value: true}},
@@ -241,11 +241,11 @@ var data = []*tester{
 	{
 		Title: "enum string",
 		Type: &ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
 			Enums: []*ast.Enum{
-				{Value: &ast.Attribute{Value: token.String{Value: "1024"}}},
-				{Value: &ast.Attribute{Value: token.String{Value: "1025"}}},
+				{Value: &ast.Attribute{Value: xmlenc.String{Value: "1024"}}},
+				{Value: &ast.Attribute{Value: xmlenc.String{Value: "1025"}}},
 			},
 		},
 		JSON: `"1024"`,
@@ -254,9 +254,9 @@ var data = []*tester{
 	{ // array
 		Title: "[bool] with wrapped",
 		Type: &ast.Request{
-			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: token.String{Value: "root"}}},
-			Name:  &ast.Attribute{Value: token.String{Value: "arr"}},
-			Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}},
+			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: xmlenc.String{Value: "root"}}},
+			Name:  &ast.Attribute{Value: xmlenc.String{Value: "arr"}},
+			Type:  &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeBool}},
 			Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		},
 		JSON: `[
@@ -278,17 +278,17 @@ var data = []*tester{
 		Title: "[bool] with wrapped>",
 		Type: &ast.Request{
 			XML: ast.XML{
-				XMLWrapped:  &ast.Attribute{Value: token.String{Value: "root>array"}},
-				XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "ns"}},
+				XMLWrapped:  &ast.Attribute{Value: xmlenc.String{Value: "root>array"}},
+				XMLNSPrefix: &ast.Attribute{Value: xmlenc.String{Value: "ns"}},
 			},
-			Name:  &ast.Attribute{Value: token.String{Value: "arr"}},
-			Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}},
+			Name:  &ast.Attribute{Value: xmlenc.String{Value: "arr"}},
+			Type:  &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeBool}},
 			Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 		},
 		XMLNS: []*ast.XMLNamespace{
 			{
-				URN:    &ast.Attribute{Value: token.String{Value: "urn"}},
-				Prefix: &ast.Attribute{Value: token.String{Value: "ns"}},
+				URN:    &ast.Attribute{Value: xmlenc.String{Value: "urn"}},
+				Prefix: &ast.Attribute{Value: xmlenc.String{Value: "ns"}},
 			},
 		},
 		JSON: `[
@@ -309,13 +309,13 @@ var data = []*tester{
 	{
 		Title: "[bool] with >wrapped",
 		Type: &ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "bool"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "bool"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 			Items: []*ast.Param{
 				{
-					XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: token.String{Value: ">array"}}},
-					Name:  &ast.Attribute{Value: token.String{Value: "arr"}},
-					Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}},
+					XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: xmlenc.String{Value: ">array"}}},
+					Name:  &ast.Attribute{Value: xmlenc.String{Value: "arr"}},
+					Type:  &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeBool}},
 					Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 				},
 			},
@@ -340,14 +340,14 @@ var data = []*tester{
 	{
 		Title: "array with enum",
 		Type: &ast.Request{
-			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: token.String{Value: "root"}}},
-			Name:  &ast.Attribute{Value: token.String{Value: "arr"}},
-			Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: xmlenc.String{Value: "root"}}},
+			Name:  &ast.Attribute{Value: xmlenc.String{Value: "arr"}},
+			Type:  &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 			Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 			Enums: []*ast.Enum{
-				{Value: &ast.Attribute{Value: token.String{Value: "1"}}},
-				{Value: &ast.Attribute{Value: token.String{Value: "2"}}},
-				{Value: &ast.Attribute{Value: token.String{Value: "3"}}},
+				{Value: &ast.Attribute{Value: xmlenc.String{Value: "1"}}},
+				{Value: &ast.Attribute{Value: xmlenc.String{Value: "2"}}},
+				{Value: &ast.Attribute{Value: xmlenc.String{Value: "3"}}},
 			},
 		},
 		JSON: `[
@@ -368,8 +368,8 @@ var data = []*tester{
 	{
 		Title: "bool",
 		Type: &ast.Request{
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}},
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeBool}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
 		},
 		JSON: "true",
 		XML:  "<root>true</root>",
@@ -377,22 +377,22 @@ var data = []*tester{
 	{ // Object
 		Title: "Object with wrapped",
 		Type: &ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 			Items: []*ast.Param{
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-					Name: &ast.Attribute{Value: token.String{Value: "name"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
 				},
 				{
-					Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-					Name:  &ast.Attribute{Value: token.String{Value: "num"}},
+					Type:  &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+					Name:  &ast.Attribute{Value: xmlenc.String{Value: "num"}},
 					Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
-					XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: token.String{Value: "nums"}}},
+					XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: xmlenc.String{Value: "nums"}}},
 				},
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-					Name: &ast.Attribute{Value: token.String{Value: "id"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
 					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 			},
@@ -423,18 +423,18 @@ var data = []*tester{
 	{
 		Title: "object array",
 		Type: &ast.Request{
-			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: token.String{Value: "root"}}},
-			Name:  &ast.Attribute{Value: token.String{Value: "user"}},
-			Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			XML:   ast.XML{XMLWrapped: &ast.Attribute{Value: xmlenc.String{Value: "root"}}},
+			Name:  &ast.Attribute{Value: xmlenc.String{Value: "user"}},
+			Type:  &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 			Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 			Items: []*ast.Param{
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "id"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 				},
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "name"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeEmail}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeEmail}},
 				},
 			},
 		},
@@ -487,53 +487,53 @@ var data = []*tester{
 	{
 		Title: "object with item namespace",
 		Type: &ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 			Headers: []*ast.Param{
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-					Name: &ast.Attribute{Value: token.String{Value: "content-type"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "content-type"}},
 				},
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-					Name: &ast.Attribute{Value: token.String{Value: "encoding"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "encoding"}},
 				},
 			},
 			Items: []*ast.Param{
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
-					Name: &ast.Attribute{Value: token.String{Value: "name"}},
-					XML:  ast.XML{XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "aa"}}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
+					XML:  ast.XML{XMLNSPrefix: &ast.Attribute{Value: xmlenc.String{Value: "aa"}}},
 					Items: []*ast.Param{
 						{
-							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-							Name: &ast.Attribute{Value: token.String{Value: "last"}},
-							XML:  ast.XML{XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "aa"}}},
+							Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+							Name: &ast.Attribute{Value: xmlenc.String{Value: "last"}},
+							XML:  ast.XML{XMLNSPrefix: &ast.Attribute{Value: xmlenc.String{Value: "aa"}}},
 						},
 						{
-							Type:     &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-							Name:     &ast.Attribute{Value: token.String{Value: "first"}},
+							Type:     &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+							Name:     &ast.Attribute{Value: xmlenc.String{Value: "first"}},
 							Optional: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 						},
 					},
 				},
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-					Name: &ast.Attribute{Value: token.String{Value: "age"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "age"}},
 					XML: ast.XML{
 						XMLAttr:     &ast.BoolAttribute{Value: ast.Bool{Value: true}},
-						XMLNSPrefix: &ast.Attribute{Value: token.String{Value: "aa"}},
+						XMLNSPrefix: &ast.Attribute{Value: xmlenc.String{Value: "aa"}},
 					},
 				},
 			},
 		},
 		XMLNS: []*ast.XMLNamespace{
 			{
-				URN: &ast.Attribute{Value: token.String{Value: "urn"}},
+				URN: &ast.Attribute{Value: xmlenc.String{Value: "urn"}},
 			},
 			{
-				Prefix: &ast.Attribute{Value: token.String{Value: "aa"}},
-				URN:    &ast.Attribute{Value: token.String{Value: "aa-urn"}},
+				Prefix: &ast.Attribute{Value: xmlenc.String{Value: "aa"}},
+				URN:    &ast.Attribute{Value: xmlenc.String{Value: "aa-urn"}},
 			},
 		},
 		JSON: `{
@@ -554,44 +554,44 @@ var data = []*tester{
 	{ // 各类型混合
 		Title: "Object with array",
 		Type: &ast.Request{
-			Name: &ast.Attribute{Value: token.String{Value: "root"}},
-			Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+			Name: &ast.Attribute{Value: xmlenc.String{Value: "root"}},
+			Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 			Items: []*ast.Param{
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-					Name: &ast.Attribute{Value: token.String{Value: "name"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
 				},
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-					Name: &ast.Attribute{Value: token.String{Value: "id"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
 					XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 				},
 				{
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
-					Name: &ast.Attribute{Value: token.String{Value: "group"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "group"}},
 					Items: []*ast.Param{
 						{
-							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-							Name: &ast.Attribute{Value: token.String{Value: "name"}},
+							Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+							Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
 							XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 						},
 						{
-							Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-							Name: &ast.Attribute{Value: token.String{Value: "id"}},
+							Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+							Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
 							XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 						},
 						{
-							Name:  &ast.Attribute{Value: token.String{Value: "tags"}},
+							Name:  &ast.Attribute{Value: xmlenc.String{Value: "tags"}},
 							Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
-							Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeObject}},
+							Type:  &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeObject}},
 							Items: []*ast.Param{
 								{
-									Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
-									Name: &ast.Attribute{Value: token.String{Value: "name"}},
+									Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
+									Name: &ast.Attribute{Value: xmlenc.String{Value: "name"}},
 								},
 								{
-									Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
-									Name: &ast.Attribute{Value: token.String{Value: "id"}},
+									Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
+									Name: &ast.Attribute{Value: xmlenc.String{Value: "id"}},
 									XML:  ast.XML{XMLAttr: &ast.BoolAttribute{Value: ast.Bool{Value: true}}},
 								},
 							},
@@ -656,7 +656,7 @@ var data = []*tester{
 func TestNew(t *testing.T) {
 	a := assert.New(t)
 	rslt := messagetest.NewMessageHandler()
-	d := &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}}
+	d := &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: xmlenc.String{Value: ast.Version}}}
 	d.Parse(rslt.Handler, core.Block{Data: asttest.XML(a)})
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
@@ -732,7 +732,7 @@ func TestNew(t *testing.T) {
 
 	// 版本号兼容性
 	rslt = messagetest.NewMessageHandler()
-	mock, err = New(rslt.Handler, &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: token.String{Value: "1.0.1"}}}, indent, "/images", nil, testOptions)
+	mock, err = New(rslt.Handler, &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: xmlenc.String{Value: "1.0.1"}}}, indent, "/images", nil, testOptions)
 	a.Error(err).Nil(mock)
 	rslt.Handler.Stop()
 }

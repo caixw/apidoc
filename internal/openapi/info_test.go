@@ -8,7 +8,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestNewContact(t *testing.T) {
@@ -17,7 +17,7 @@ func TestNewContact(t *testing.T) {
 	input := &ast.Contact{
 		Email: &ast.Element{Content: ast.Content{Value: "user@example.com"}},
 		URL:   &ast.Element{Content: ast.Content{Value: "https://example.com"}},
-		Name:  &ast.Attribute{Value: token.String{Value: "name"}},
+		Name:  &ast.Attribute{Value: xmlenc.String{Value: "name"}},
 	}
 
 	output := newContact(input)

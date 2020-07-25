@@ -15,7 +15,7 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestMockOptions_url(t *testing.T) {
@@ -79,25 +79,25 @@ func TestMockOptions_gen(t *testing.T) {
 
 	// String.Email
 	for i := 0; i < count; i++ {
-		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.email"}}})
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: "string.email"}}})
 		a.True(is.Email(str))
 	}
 
 	// String.URL
 	for i := 0; i < count; i++ {
-		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.url"}}})
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: "string.url"}}})
 		a.True(is.URL(str))
 	}
 
 	// String.Image
 	for i := 0; i < count; i++ {
-		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.image"}}})
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: "string.image"}}})
 		a.True(strings.HasPrefix(str, defaultMockOptions.ImageBasePrefix))
 	}
 
 	// String.Date
 	for i := 0; i < count; i++ {
-		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.date"}}})
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: "string.date"}}})
 		t, err := time.Parse(ast.DateFormat, str)
 		a.NotError(err).
 			True(t.After(defaultMockOptions.DateStart)).
@@ -106,7 +106,7 @@ func TestMockOptions_gen(t *testing.T) {
 
 	// String.DateTime
 	for i := 0; i < count; i++ {
-		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.date-time"}}})
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: "string.date-time"}}})
 		t, err := time.Parse(time.RFC3339, str)
 		a.NotError(err).
 			True(t.After(defaultMockOptions.DateStart)).
@@ -115,7 +115,7 @@ func TestMockOptions_gen(t *testing.T) {
 
 	// String.Time
 	for i := 0; i < count; i++ {
-		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "string.time"}}})
+		str := g.String(&ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: "string.time"}}})
 		_, err := time.Parse(ast.TimeFormat, str)
 		a.NotError(err)
 	}
@@ -155,7 +155,7 @@ func TestMockOptions_gen(t *testing.T) {
 	g, err = defaultMockOptions.gen()
 	a.NotError(err)
 	for i := 0; i < count; i++ {
-		numInterface := g.Number(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "number.int"}}})
+		numInterface := g.Number(&ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: "number.int"}}})
 		num, ok := numInterface.(int)
 		a.True(ok).
 			True(num >= defaultMockOptions.NumberSize.Min).
@@ -167,7 +167,7 @@ func TestMockOptions_gen(t *testing.T) {
 	g, err = defaultMockOptions.gen()
 	a.NotError(err)
 	for i := 0; i < count; i++ {
-		numInterface := g.Number(&ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: "number.float"}}})
+		numInterface := g.Number(&ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: "number.float"}}})
 		num, ok := numInterface.(float32)
 		a.True(ok).
 			True(num >= float32(defaultMockOptions.NumberSize.Min)).

@@ -4,13 +4,13 @@ package ast
 
 import (
 	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 type (
 	// APIDoc 对应 apidoc 元素
 	APIDoc struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		URI      core.URI `apidoc:"-"`
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 
@@ -54,7 +54,7 @@ type (
 
 	// XMLNamespace 定义命名空间的相关属性
 	XMLNamespace struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{}   `apidoc:"xml-namespace,meta,usage-xml-namespace"`
 		Prefix   *Attribute `apidoc:"prefix,attr,usage-xml-namespace-prefix,omitempty"`
 		URN      *Attribute `apidoc:"urn,attr,usage-xml-namespace-urn"`
@@ -62,7 +62,7 @@ type (
 
 	// API 表示 <api> 顶层元素
 	API struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"api,meta,usage-api"`
 
 		Version     *VersionAttribute `apidoc:"version,attr,usage-api-version,omitempty"`
@@ -87,7 +87,7 @@ type (
 
 	// Link 表示一个链接
 	Link struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"link,meta,usage-link"`
 
 		Text *Attribute `apidoc:"text,attr,usage-link-text"`
@@ -96,7 +96,7 @@ type (
 
 	// Contact 描述联系方式
 	Contact struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"contact,meta,usage-contact"`
 
 		Name  *Attribute `apidoc:"name,attr,usage-contact-name"`
@@ -106,7 +106,7 @@ type (
 
 	// Callback 描述回调信息
 	Callback struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"callback,meta,usage-callback"`
 
 		Method      *MethodAttribute  `apidoc:"method,attr,usage-callback-method"`
@@ -121,7 +121,7 @@ type (
 
 	// Enum 表示枚举值
 	Enum struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"enum,meta,usage-enum"`
 
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-enum-deprecated,omitempty"`
@@ -132,7 +132,7 @@ type (
 
 	// Example 示例代码
 	Example struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"example,meta,usage-example"`
 
 		Mimetype *Attribute    `apidoc:"mimetype,attr,usage-example-mimetype"`
@@ -142,7 +142,7 @@ type (
 
 	// Param 表示参数类型
 	Param struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"param,meta,usage-param"`
 
 		XML
@@ -169,7 +169,7 @@ type (
 
 	// Path 路径信息
 	Path struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"path,meta,usage-path"`
 
 		Path    *Attribute `apidoc:"path,attr,usage-path-path"`
@@ -179,7 +179,7 @@ type (
 
 	// Request 请求内容
 	Request struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"request,meta,usage-request"`
 
 		XML
@@ -201,7 +201,7 @@ type (
 
 	// Richtext 富文本内容
 	Richtext struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"richtext,meta,usage-richtext"`
 
 		Type *Attribute `apidoc:"type,attr,usage-richtext-type"` // 文档类型，可以是 html 或是 markdown
@@ -210,7 +210,7 @@ type (
 
 	// Tag 标签内容
 	Tag struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"tag,meta,usage-tag"`
 
 		Name       *Attribute        `apidoc:"name,attr,usage-tag-name"`   // 标签的唯一 ID
@@ -220,7 +220,7 @@ type (
 
 	// Server 服务信息
 	Server struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		RootName struct{} `apidoc:"server,meta,usage-server"`
 
 		Name        *Attribute        `apidoc:"name,attr,usage-server-name"` // 字面名称，需要唯一
@@ -241,16 +241,16 @@ type (
 
 	// Element 定义不包含子元素和属性的基本的 XML 元素
 	Element struct {
-		token.BaseTag
+		xmlenc.BaseTag
 		Content  Content  `apidoc:",content"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}
 
 	// CData 表示 XML 的 CDATA 数据
 	CData struct {
-		token.BaseTag
-		Value    token.String `apidoc:"-"`
-		RootName struct{}     `apidoc:"string,meta,usage-string"`
+		xmlenc.BaseTag
+		Value    xmlenc.String `apidoc:"-"`
+		RootName struct{}      `apidoc:"string,meta,usage-string"`
 	}
 
 	// ExampleValue 示例代码的内容
@@ -258,7 +258,7 @@ type (
 
 	// Content 表示一段普通的 XML 元素内容
 	Content struct {
-		token.Base
+		xmlenc.Base
 		Value    string   `apidoc:"-"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
 	}

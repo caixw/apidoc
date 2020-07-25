@@ -34,7 +34,7 @@ func NewValue(name string, v reflect.Value, omitempty bool, usage string) *Value
 // 与 NewValue 的不同在于，ParseValue 会分析对象字段中是否带有 meta 的结构体标签，
 // 如果有才初始化 *Value 对象，否则返回 nil。
 func ParseValue(v reflect.Value) *Value {
-	v = GetRealValue(v)
+	v = RealValue(v)
 	t := v.Type()
 
 	if t.Kind() != reflect.Struct {
@@ -61,18 +61,18 @@ func IsPrimitive(v reflect.Value) bool {
 		(v.Kind() == reflect.String || (v.Kind() >= reflect.Bool && v.Kind() <= reflect.Complex128))
 }
 
-// GetRealType 获取指针指向的类型
-func GetRealType(t reflect.Type) reflect.Type {
+// RealType 获取指针指向的类型
+func RealType(t reflect.Type) reflect.Type {
 	for t.Kind() == reflect.Ptr {
 		t = t.Elem()
 	}
 	return t
 }
 
-// GetRealValue 获取指针指向的值
+// RealValue 获取指针指向的值
 //
 // 如果未初始化，则会对其进行初始化。
-func GetRealValue(v reflect.Value) reflect.Value {
+func RealValue(v reflect.Value) reflect.Value {
 	for v.Kind() == reflect.Ptr {
 		if v.IsNil() {
 			v.Set(reflect.New(v.Type().Elem()))

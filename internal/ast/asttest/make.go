@@ -10,11 +10,11 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func main() {
-	data, err := token.Encode("\t", asttest.Get(), core.XMLNamespace, "aa")
+	data, err := xmlenc.Encode("\t", asttest.Get(), core.XMLNamespace, "aa")
 	if err != nil {
 		panic(err)
 	}

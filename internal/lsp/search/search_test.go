@@ -9,14 +9,14 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestAPIDoc_DeleteURI(t *testing.T) {
 	a := assert.New(t)
 
 	d := &ast.APIDoc{}
-	d.APIDoc = &ast.APIDocVersionAttribute{Value: token.String{Value: "1.0.0"}}
+	d.APIDoc = &ast.APIDocVersionAttribute{Value: xmlenc.String{Value: "1.0.0"}}
 	d.URI = core.URI("uri1")
 	d.APIs = []*ast.API{
 		{ //1

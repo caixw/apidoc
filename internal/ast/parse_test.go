@@ -11,12 +11,12 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
-func newParser(a *assert.Assertion, data string) (*token.Parser, *messagetest.Result) {
+func newParser(a *assert.Assertion, data string) (*xmlenc.Parser, *messagetest.Result) {
 	rslt := messagetest.NewMessageHandler()
-	p, err := token.NewParser(rslt.Handler, core.Block{Data: []byte(data)})
+	p, err := xmlenc.NewParser(rslt.Handler, core.Block{Data: []byte(data)})
 	a.NotError(err).NotNil(p)
 	return p, rslt
 }
@@ -79,7 +79,7 @@ func TestAPIDoc_Parse(t *testing.T) {
 	d = &APIDoc{
 		APIs: []*API{
 			{
-				Method: &MethodAttribute{Value: token.String{Value: http.MethodGet}},
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodGet}},
 			},
 		},
 	}
@@ -138,20 +138,20 @@ func TestAPIDoc_sortAPIs(t *testing.T) {
 	doc := &APIDoc{
 		APIs: []*API{
 			{
-				Path:   &Path{Path: &Attribute{Value: token.String{Value: "/p1/p3"}}},
-				Method: &MethodAttribute{Value: token.String{Value: http.MethodPost}},
+				Path:   &Path{Path: &Attribute{Value: xmlenc.String{Value: "/p1/p3"}}},
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodPost}},
 			},
 			{
-				Path:   &Path{Path: &Attribute{Value: token.String{Value: "/p1/p3"}}},
-				Method: &MethodAttribute{Value: token.String{Value: http.MethodGet}},
+				Path:   &Path{Path: &Attribute{Value: xmlenc.String{Value: "/p1/p3"}}},
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodGet}},
 			},
 			{
-				Path:   &Path{Path: &Attribute{Value: token.String{Value: "/p1/p2"}}},
-				Method: &MethodAttribute{Value: token.String{Value: http.MethodGet}},
+				Path:   &Path{Path: &Attribute{Value: xmlenc.String{Value: "/p1/p2"}}},
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodGet}},
 			},
 			{
-				Path:   &Path{Path: &Attribute{Value: token.String{Value: "/p1/p3"}}},
-				Method: &MethodAttribute{Value: token.String{Value: http.MethodPut}},
+				Path:   &Path{Path: &Attribute{Value: xmlenc.String{Value: "/p1/p3"}}},
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodPut}},
 			},
 		},
 	}

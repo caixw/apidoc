@@ -12,34 +12,34 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 var (
-	_ token.AttrDecoder = &Attribute{}
-	_ token.AttrDecoder = &NumberAttribute{}
-	_ token.AttrDecoder = &BoolAttribute{}
-	_ token.AttrDecoder = &MethodAttribute{}
-	_ token.AttrDecoder = &StatusAttribute{}
-	_ token.AttrDecoder = &TypeAttribute{}
-	_ token.AttrDecoder = &DateAttribute{}
-	_ token.AttrDecoder = &VersionAttribute{}
-	_ token.AttrDecoder = &APIDocVersionAttribute{}
+	_ xmlenc.AttrDecoder = &Attribute{}
+	_ xmlenc.AttrDecoder = &NumberAttribute{}
+	_ xmlenc.AttrDecoder = &BoolAttribute{}
+	_ xmlenc.AttrDecoder = &MethodAttribute{}
+	_ xmlenc.AttrDecoder = &StatusAttribute{}
+	_ xmlenc.AttrDecoder = &TypeAttribute{}
+	_ xmlenc.AttrDecoder = &DateAttribute{}
+	_ xmlenc.AttrDecoder = &VersionAttribute{}
+	_ xmlenc.AttrDecoder = &APIDocVersionAttribute{}
 
-	_ token.AttrEncoder = &Attribute{}
-	_ token.AttrEncoder = &NumberAttribute{}
-	_ token.AttrEncoder = &BoolAttribute{}
-	_ token.AttrEncoder = &MethodAttribute{}
-	_ token.AttrEncoder = &StatusAttribute{}
-	_ token.AttrEncoder = &TypeAttribute{}
-	_ token.AttrEncoder = &DateAttribute{}
-	_ token.AttrEncoder = &VersionAttribute{}
-	_ token.AttrEncoder = &APIDocVersionAttribute{}
+	_ xmlenc.AttrEncoder = &Attribute{}
+	_ xmlenc.AttrEncoder = &NumberAttribute{}
+	_ xmlenc.AttrEncoder = &BoolAttribute{}
+	_ xmlenc.AttrEncoder = &MethodAttribute{}
+	_ xmlenc.AttrEncoder = &StatusAttribute{}
+	_ xmlenc.AttrEncoder = &TypeAttribute{}
+	_ xmlenc.AttrEncoder = &DateAttribute{}
+	_ xmlenc.AttrEncoder = &VersionAttribute{}
+	_ xmlenc.AttrEncoder = &APIDocVersionAttribute{}
 )
 
-func newURIParser(a *assert.Assertion, uri core.URI) (*token.Parser, *messagetest.Result) {
+func newURIParser(a *assert.Assertion, uri core.URI) (*xmlenc.Parser, *messagetest.Result) {
 	rslt := messagetest.NewMessageHandler()
-	p, err := token.NewParser(rslt.Handler, core.Block{Location: core.Location{URI: uri}})
+	p, err := xmlenc.NewParser(rslt.Handler, core.Block{Location: core.Location{URI: uri}})
 	a.NotError(err).NotNil(p)
 	return p, rslt
 }
@@ -49,7 +49,7 @@ func TestNumberAttribute(t *testing.T) {
 
 	p, rslt := newURIParser(a, "uri1")
 	num := &NumberAttribute{}
-	attr := &token.Attribute{Value: token.String{Value: "6"}}
+	attr := &xmlenc.Attribute{Value: xmlenc.String{Value: "6"}}
 	a.NotError(num.DecodeXMLAttr(p, attr))
 	a.Equal(num.IntValue(), 6).Equal(0.0, num.FloatValue())
 	v, err := num.EncodeXMLAttr()
@@ -58,7 +58,7 @@ func TestNumberAttribute(t *testing.T) {
 
 	p, rslt = newURIParser(a, "uri1")
 	num = &NumberAttribute{}
-	attr = &token.Attribute{Value: token.String{Value: "6.1"}}
+	attr = &xmlenc.Attribute{Value: xmlenc.String{Value: "6.1"}}
 	a.NotError(num.DecodeXMLAttr(p, attr))
 	a.Equal(num.IntValue(), 0).Equal(6.1, num.FloatValue())
 	v, err = num.EncodeXMLAttr()
@@ -67,7 +67,7 @@ func TestNumberAttribute(t *testing.T) {
 
 	p, rslt = newURIParser(a, "uri1")
 	num = &NumberAttribute{}
-	attr = &token.Attribute{Value: token.String{Value: "6xxy"}}
+	attr = &xmlenc.Attribute{Value: xmlenc.String{Value: "6xxy"}}
 	a.Error(num.DecodeXMLAttr(p, attr))
 	rslt.Handler.Stop()
 }
@@ -77,7 +77,7 @@ func TestBoolAttribute(t *testing.T) {
 
 	p, rslt := newURIParser(a, "uri1")
 	b := &BoolAttribute{}
-	attr := &token.Attribute{Value: token.String{Value: "T"}}
+	attr := &xmlenc.Attribute{Value: xmlenc.String{Value: "T"}}
 	a.NotError(b.DecodeXMLAttr(p, attr))
 	a.True(b.V())
 	v, err := b.EncodeXMLAttr()
@@ -86,7 +86,7 @@ func TestBoolAttribute(t *testing.T) {
 
 	p, rslt = newURIParser(a, "uri1")
 	b = &BoolAttribute{}
-	attr = &token.Attribute{Value: token.String{Value: "xyz"}}
+	attr = &xmlenc.Attribute{Value: xmlenc.String{Value: "xyz"}}
 	a.Error(b.DecodeXMLAttr(p, attr))
 	rslt.Handler.Stop()
 }
@@ -96,7 +96,7 @@ func TestMethodAttribute(t *testing.T) {
 
 	p, rslt := newURIParser(a, "uri1")
 	method := &MethodAttribute{}
-	attr := &token.Attribute{Value: token.String{Value: http.MethodGet}}
+	attr := &xmlenc.Attribute{Value: xmlenc.String{Value: http.MethodGet}}
 	a.NotError(method.DecodeXMLAttr(p, attr))
 	a.Equal(method.V(), http.MethodGet)
 	v, err := method.EncodeXMLAttr()
@@ -105,7 +105,7 @@ func TestMethodAttribute(t *testing.T) {
 
 	p, rslt = newURIParser(a, "uri1")
 	method = &MethodAttribute{}
-	attr = &token.Attribute{Value: token.String{Value: "not-exists"}}
+	attr = &xmlenc.Attribute{Value: xmlenc.String{Value: "not-exists"}}
 	a.Error(method.DecodeXMLAttr(p, attr))
 	rslt.Handler.Stop()
 }
@@ -115,7 +115,7 @@ func TestStatusAttribute(t *testing.T) {
 
 	p, rslt := newURIParser(a, "uri1")
 	status := &StatusAttribute{}
-	attr := &token.Attribute{Value: token.String{Value: "201"}}
+	attr := &xmlenc.Attribute{Value: xmlenc.String{Value: "201"}}
 	a.NotError(status.DecodeXMLAttr(p, attr))
 	a.Equal(status.V(), 201)
 	v, err := status.EncodeXMLAttr()
@@ -124,7 +124,7 @@ func TestStatusAttribute(t *testing.T) {
 
 	p, rslt = newURIParser(a, "uri1")
 	status = &StatusAttribute{}
-	attr = &token.Attribute{Value: token.String{Value: "10000"}}
+	attr = &xmlenc.Attribute{Value: xmlenc.String{Value: "10000"}}
 	a.Error(status.DecodeXMLAttr(p, attr))
 	rslt.Handler.Stop()
 }
@@ -134,7 +134,7 @@ func TestTypeAttribute(t *testing.T) {
 
 	p, rslt := newURIParser(a, "uri1")
 	tt := &TypeAttribute{}
-	attr := &token.Attribute{Value: token.String{Value: TypeNumber}}
+	attr := &xmlenc.Attribute{Value: xmlenc.String{Value: TypeNumber}}
 	a.NotError(tt.DecodeXMLAttr(p, attr))
 	a.Equal(tt.V(), TypeNumber)
 	v, err := tt.EncodeXMLAttr()
@@ -143,7 +143,7 @@ func TestTypeAttribute(t *testing.T) {
 
 	p, rslt = newURIParser(a, "uri1")
 	tt = &TypeAttribute{}
-	attr = &token.Attribute{Value: token.String{Value: "10000"}}
+	attr = &xmlenc.Attribute{Value: xmlenc.String{Value: "10000"}}
 	a.Error(tt.DecodeXMLAttr(p, attr))
 	rslt.Handler.Stop()
 }
@@ -153,7 +153,7 @@ func TestVersionAttribute(t *testing.T) {
 
 	p, rslt := newURIParser(a, "uri1")
 	ver := &VersionAttribute{}
-	attr := &token.Attribute{Value: token.String{Value: "3.6.1"}}
+	attr := &xmlenc.Attribute{Value: xmlenc.String{Value: "3.6.1"}}
 	a.NotError(ver.DecodeXMLAttr(p, attr))
 	a.Equal(ver.V(), "3.6.1")
 	v, err := ver.EncodeXMLAttr()
@@ -162,7 +162,7 @@ func TestVersionAttribute(t *testing.T) {
 
 	p, rslt = newURIParser(a, "uri1")
 	ver = &VersionAttribute{}
-	attr = &token.Attribute{Value: token.String{Value: "3x"}}
+	attr = &xmlenc.Attribute{Value: xmlenc.String{Value: "3x"}}
 	a.Error(ver.DecodeXMLAttr(p, attr))
 	rslt.Handler.Stop()
 }
@@ -188,9 +188,9 @@ func TestDateAttribute(t *testing.T) {
 	p, rslt := newURIParser(a, "uri1")
 	now := time.Now().Format(dateFormat)
 	date := &DateAttribute{}
-	attr := &token.Attribute{
-		Name: token.Name{Local: token.String{Value: "n"}},
-		Value: token.String{
+	attr := &xmlenc.Attribute{
+		Name: xmlenc.Name{Local: xmlenc.String{Value: "n"}},
+		Value: xmlenc.String{
 			Value: now,
 			Range: core.Range{End: core.Position{Character: 1}},
 		},
@@ -217,9 +217,9 @@ func TestAPIDocVersionAttribute(t *testing.T) {
 
 	p, rslt := newURIParser(a, "uri1")
 	v := &APIDocVersionAttribute{}
-	attr := &token.Attribute{
-		Name: token.Name{Local: token.String{Value: "n"}},
-		Value: token.String{
+	attr := &xmlenc.Attribute{
+		Name: xmlenc.Name{Local: xmlenc.String{Value: "n"}},
+		Value: xmlenc.String{
 			Value: Version,
 			Range: core.Range{End: core.Position{Character: 1}},
 		},

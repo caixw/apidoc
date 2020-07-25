@@ -10,11 +10,11 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 // Sanitize token.Sanitizer
-func (api *API) Sanitize(p *token.Parser) error {
+func (api *API) Sanitize(p *xmlenc.Parser) error {
 	for _, header := range api.Headers { // 报头不能为 object
 		if header.Type.V() == TypeObject {
 			return p.NewError(header.Type.Start, header.Type.End, "header", locale.ErrInvalidValue)
@@ -35,7 +35,7 @@ func (api *API) Sanitize(p *token.Parser) error {
 }
 
 // Sanitize token.Sanitizer
-func (e *Enum) Sanitize(p *token.Parser) error {
+func (e *Enum) Sanitize(p *xmlenc.Parser) error {
 	if e.Description.V() == "" && e.Summary.V() == "" {
 		return p.NewError(e.Start, e.End, "summary", locale.ErrRequired)
 	}
@@ -43,7 +43,7 @@ func (e *Enum) Sanitize(p *token.Parser) error {
 }
 
 // Sanitize token.Sanitizer
-func (p *Path) Sanitize(pp *token.Parser) error {
+func (p *Path) Sanitize(pp *xmlenc.Parser) error {
 	if p.Path == nil || p.Path.V() == "" {
 		return pp.NewError(p.Start, p.End, "path", locale.ErrRequired)
 	}
@@ -108,7 +108,7 @@ func parsePath(path string) (params map[string]struct{}, err error) {
 }
 
 // Sanitize token.Sanitizer
-func (r *Request) Sanitize(p *token.Parser) error {
+func (r *Request) Sanitize(p *xmlenc.Parser) error {
 	if r.Type.V() == TypeObject && len(r.Items) == 0 {
 		return p.NewError(r.Start, r.End, "param", locale.ErrRequired)
 	}
@@ -153,7 +153,7 @@ func (r *Request) Sanitize(p *token.Parser) error {
 }
 
 // Sanitize token.Sanitizer
-func (p *Param) Sanitize(pp *token.Parser) error {
+func (p *Param) Sanitize(pp *xmlenc.Parser) error {
 	if p.Type.V() == TypeNone {
 		return pp.NewError(p.Start, p.End, "type", locale.ErrRequired)
 	}
@@ -191,7 +191,7 @@ func (p *Param) Sanitize(pp *token.Parser) error {
 }
 
 // 检测 enums 中的类型是否符合 t 的标准，比如 Number 要求枚举值也都是数值
-func chkEnumsType(t *TypeAttribute, enums []*Enum, p *token.Parser) error {
+func chkEnumsType(t *TypeAttribute, enums []*Enum, p *xmlenc.Parser) error {
 	if len(enums) == 0 {
 		return nil
 	}
@@ -233,7 +233,7 @@ func getDuplicateItems(items []*Param) (core.Range, bool) {
 	return core.Range{}, false
 }
 
-func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
+func checkXML(isArray, hasItems bool, xml *XML, p *xmlenc.Parser) error {
 	if xml.XMLAttr.V() {
 		if isArray || hasItems {
 			return p.NewError(xml.XMLAttr.Start, xml.XMLAttr.End, xml.XMLAttr.AttributeName.String(), locale.ErrInvalidValue)
@@ -266,7 +266,7 @@ func checkXML(isArray, hasItems bool, xml *XML, p *token.Parser) error {
 }
 
 // Sanitize 检测内容是否合法
-func (doc *APIDoc) Sanitize(p *token.Parser) error {
+func (doc *APIDoc) Sanitize(p *xmlenc.Parser) error {
 	if err := doc.checkXMLNamespaces(p); err != nil {
 		return err
 	}
@@ -285,14 +285,14 @@ func (doc *APIDoc) Sanitize(p *token.Parser) error {
 }
 
 // Sanitize 检测内容是否合法
-func (ns *XMLNamespace) Sanitize(p *token.Parser) error {
+func (ns *XMLNamespace) Sanitize(p *xmlenc.Parser) error {
 	if ns.URN.V() == "" {
 		return p.NewError(ns.Start, ns.End, "@urn", locale.ErrRequired)
 	}
 	return nil
 }
 
-func (doc *APIDoc) checkXMLNamespaces(p *token.Parser) error {
+func (doc *APIDoc) checkXMLNamespaces(p *xmlenc.Parser) error {
 	if len(doc.XMLNamespaces) == 0 {
 		return nil
 	}

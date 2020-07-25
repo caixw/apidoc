@@ -11,7 +11,7 @@ import (
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 const dateFormat = time.RFC3339
@@ -19,35 +19,35 @@ const dateFormat = time.RFC3339
 type (
 	// Attribute 表示 XML 属性
 	Attribute struct {
-		token.BaseAttribute
-		Value    token.String `apidoc:"-"`
-		RootName struct{}     `apidoc:"string,meta,usage-string"`
+		xmlenc.BaseAttribute
+		Value    xmlenc.String `apidoc:"-"`
+		RootName struct{}      `apidoc:"string,meta,usage-string"`
 	}
 
 	// NumberAttribute 表示数值类型的属性
 	NumberAttribute struct {
-		token.BaseAttribute
+		xmlenc.BaseAttribute
 		Value    Number   `apidoc:"-"`
 		RootName struct{} `apidoc:"number,meta,usage-number"`
 	}
 
 	// BoolAttribute 表示布尔值类型的属性
 	BoolAttribute struct {
-		token.BaseAttribute
+		xmlenc.BaseAttribute
 		Value    Bool     `apidoc:"-"`
 		RootName struct{} `apidoc:"bool,meta,usage-bool"`
 	}
 
 	// VersionAttribute 表示版本号属性
 	VersionAttribute struct {
-		token.BaseAttribute
-		Value    token.String `apidoc:"-"`
-		RootName struct{}     `apidoc:"version,meta,usage-version"`
+		xmlenc.BaseAttribute
+		Value    xmlenc.String `apidoc:"-"`
+		RootName struct{}      `apidoc:"version,meta,usage-version"`
 	}
 
 	// DateAttribute 日期属性
 	DateAttribute struct {
-		token.BaseAttribute
+		xmlenc.BaseAttribute
 		Value    Date     `apidoc:"-"`
 		RootName struct{} `apidoc:"date,meta,usage-date"`
 	}
@@ -60,9 +60,9 @@ type (
 
 	// TypeAttribute 表示方法类型属性
 	TypeAttribute struct {
-		token.BaseAttribute
-		Value    token.String `apidoc:"-"`
-		RootName struct{}     `apidoc:"type,meta,usage-type"`
+		xmlenc.BaseAttribute
+		Value    xmlenc.String `apidoc:"-"`
+		RootName struct{}      `apidoc:"type,meta,usage-type"`
 	}
 
 	// APIDocVersionAttribute 版本号属性，同时对版本号进行比较
@@ -70,7 +70,7 @@ type (
 )
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *Attribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+func (a *Attribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	a.Value = attr.Value
 	return nil
 }
@@ -89,7 +89,7 @@ func (a *Attribute) V() string {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (num *NumberAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+func (num *NumberAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	if v, err := strconv.Atoi(attr.Value.Value); err == nil {
 		num.Value = Number{
 			Range: attr.Value.Range,
@@ -140,7 +140,7 @@ func (num *NumberAttribute) IsFloat() bool {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (b *BoolAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+func (b *BoolAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	v, err := strconv.ParseBool(attr.Value.Value)
 	if err != nil {
 		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.String(), err)
@@ -167,7 +167,7 @@ func (b *BoolAttribute) V() bool {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *MethodAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+func (a *MethodAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	a.Value = attr.Value
 	a.Value.Value = strings.ToUpper(a.V())
 	if !isValidMethod(a.V()) {
@@ -187,7 +187,7 @@ func (a *MethodAttribute) V() string {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *StatusAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+func (a *StatusAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	v := NumberAttribute{}
 	if err := v.DecodeXMLAttr(p, attr); err != nil {
 		return err
@@ -212,7 +212,7 @@ func (a *StatusAttribute) V() int {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *TypeAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+func (a *TypeAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	a.Value = attr.Value
 	if !isValidType(a.V()) {
 		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
@@ -234,7 +234,7 @@ func (a *TypeAttribute) V() string {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *VersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+func (a *VersionAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	a.Value = attr.Value
 	if !isValidVersion(a.V()) {
 		return p.NewError(attr.Value.Start, attr.Value.End, attr.Name.String(), locale.ErrInvalidValue)
@@ -253,7 +253,7 @@ func (a *VersionAttribute) V() string {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (d *DateAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+func (d *DateAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	t, err := time.Parse(dateFormat, attr.Value.Value)
 	if err != nil {
 		return p.WithError(attr.Value.Start, attr.Value.End, attr.Name.String(), err)
@@ -277,7 +277,7 @@ func (d *DateAttribute) V() time.Time {
 }
 
 // DecodeXMLAttr AttrDecoder.DecodeXMLAttr
-func (a *APIDocVersionAttribute) DecodeXMLAttr(p *token.Parser, attr *token.Attribute) error {
+func (a *APIDocVersionAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	a.Value = attr.Value
 
 	ok, err := version.SemVerCompatible(Version, attr.Value.Value)

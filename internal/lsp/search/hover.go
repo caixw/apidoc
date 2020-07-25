@@ -12,16 +12,16 @@ import (
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 	"github.com/caixw/apidoc/v7/internal/node"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
-var baseType = reflect.TypeOf(token.Base{})
+var baseType = reflect.TypeOf(xmlenc.Base{})
 
 // Hover 从 doc 查找最符合 uri 和 pos 条件的元素并赋值给 hover
 //
 // 返回值表示是否找到了相应在的元素。
 func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hover) (ok bool) {
-	setHover := func(b *token.Base) {
+	setHover := func(b *xmlenc.Base) {
 		hover.Range = b.Range
 		hover.Contents = protocol.MarkupContent{
 			Kind:  protocol.MarkupKinMarkdown,
@@ -52,8 +52,8 @@ func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hov
 }
 
 // 从 v 中查找最匹配 pos 位置的元素，如果找到匹配项，还会查找其子项，是不是匹配度更高。
-func usage(v reflect.Value, pos core.Position, exclude ...string) (b *token.Base) {
-	v = node.GetRealValue(v)
+func usage(v reflect.Value, pos core.Position, exclude ...string) (b *xmlenc.Base) {
+	v = node.RealValue(v)
 	if b = getBase(v, pos); b == nil {
 		return nil
 	}
@@ -68,7 +68,7 @@ func usage(v reflect.Value, pos core.Position, exclude ...string) (b *token.Base
 			continue
 		}
 
-		vf := node.GetRealValue(v.Field(i))
+		vf := node.RealValue(v.Field(i))
 		if vf.Kind() == reflect.Array || vf.Kind() == reflect.Slice {
 			for j := 0; j < vf.Len(); j++ {
 				if b2 := usage(vf.Index(j), pos); b2 != nil {
@@ -85,10 +85,10 @@ func usage(v reflect.Value, pos core.Position, exclude ...string) (b *token.Base
 	return b // 没有更精确的匹配，则返回 b
 }
 
-func getBase(v reflect.Value, pos core.Position) *token.Base {
+func getBase(v reflect.Value, pos core.Position) *xmlenc.Base {
 	switch {
 	case v.Type() == baseType:
-		if b := v.Interface().(token.Base); b.Contains(pos) && b.UsageKey != nil {
+		if b := v.Interface().(xmlenc.Base); b.Contains(pos) && b.UsageKey != nil {
 			return &b
 		}
 	case v.Type().Kind() == reflect.Struct:
@@ -98,7 +98,7 @@ func getBase(v reflect.Value, pos core.Position) *token.Base {
 				continue
 			}
 
-			vf := node.GetRealValue(v.Field(i))
+			vf := node.RealValue(v.Field(i))
 			if b := getBase(vf, pos); b != nil {
 				return b
 			}

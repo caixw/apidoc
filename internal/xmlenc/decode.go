@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package token
+package xmlenc
 
 import (
 	"errors"
@@ -195,7 +195,7 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) {
 		if !found || d.prefix != attr.Name.Prefix.Value { // 未找到或是命名空间不匹配
 			continue
 		}
-		v := node.GetRealValue(item.Value)
+		v := node.RealValue(item.Value)
 		v.Set(reflect.New(v.Type()).Elem())
 
 		var impl bool
@@ -270,8 +270,8 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 }
 
 func copyContentValue(target, source reflect.Value) {
-	target = node.GetRealValue(target)
-	source = node.GetRealValue(source)
+	target = node.RealValue(target)
+	source = node.RealValue(source)
 
 	st := source.Type()
 	num := st.NumField()
@@ -283,7 +283,7 @@ func copyContentValue(target, source reflect.Value) {
 }
 
 func (d *decoder) decodeElement(start *StartElement, v *node.Value) (ok bool) {
-	v.Value = node.GetRealValue(v.Value)
+	v.Value = node.RealValue(v.Value)
 	k := v.Kind()
 	switch {
 	case k == reflect.Ptr, k == reflect.Func, k == reflect.Chan, k == reflect.Array, node.IsPrimitive(v.Value):
@@ -329,7 +329,7 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 		return d.error(err)
 	}
 
-	d.setTagValue(node.GetRealValue(elem), slice.Usage, start, end)
+	d.setTagValue(node.RealValue(elem), slice.Usage, start, end)
 	slice.Value.Set(reflect.Append(slice.Value, elem))
 	return true
 }

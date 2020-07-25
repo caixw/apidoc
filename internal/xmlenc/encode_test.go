@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package token
+package xmlenc
 
 import (
 	"reflect"

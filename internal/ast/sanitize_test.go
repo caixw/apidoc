@@ -10,21 +10,21 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 var (
-	_ token.Sanitizer = &Param{}
-	_ token.Sanitizer = &Request{}
-	_ token.Sanitizer = &APIDoc{}
-	_ token.Sanitizer = &Path{}
-	_ token.Sanitizer = &Enum{}
-	_ token.Sanitizer = &XMLNamespace{}
+	_ xmlenc.Sanitizer = &Param{}
+	_ xmlenc.Sanitizer = &Request{}
+	_ xmlenc.Sanitizer = &APIDoc{}
+	_ xmlenc.Sanitizer = &Path{}
+	_ xmlenc.Sanitizer = &Enum{}
+	_ xmlenc.Sanitizer = &XMLNamespace{}
 )
 
-func newEmptyParser(a *assert.Assertion) *token.Parser {
+func newEmptyParser(a *assert.Assertion) *xmlenc.Parser {
 	rslt := messagetest.NewMessageHandler()
-	p, err := token.NewParser(rslt.Handler, core.Block{})
+	p, err := xmlenc.NewParser(rslt.Handler, core.Block{})
 	a.NotError(err).NotNil(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
@@ -39,7 +39,7 @@ func TestCheckXML(t *testing.T) {
 
 	xml = &XML{
 		XMLAttr:    &BoolAttribute{Value: Bool{Value: true}},
-		XMLWrapped: &Attribute{Value: token.String{Value: "wrapped"}},
+		XMLWrapped: &Attribute{Value: xmlenc.String{Value: "wrapped"}},
 	}
 	a.Error(checkXML(false, false, xml, newEmptyParser(a)))
 
@@ -56,13 +56,13 @@ func TestCheckXML(t *testing.T) {
 	a.Error(checkXML(false, false, xml, newEmptyParser(a)))
 
 	xml = &XML{
-		XMLWrapped: &Attribute{Value: token.String{Value: "wrapped"}},
+		XMLWrapped: &Attribute{Value: xmlenc.String{Value: "wrapped"}},
 	}
 	a.Error(checkXML(false, false, xml, newEmptyParser(a)))
 
 	xml = &XML{
 		XMLExtract:  &BoolAttribute{Value: Bool{Value: true}},
-		XMLNSPrefix: &Attribute{Value: token.String{Value: "p1"}},
+		XMLNSPrefix: &Attribute{Value: xmlenc.String{Value: "p1"}},
 	}
 	a.Error(checkXML(false, false, xml, newEmptyParser(a)))
 }
@@ -73,10 +73,10 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 	doc := &APIDoc{
 		XMLNamespaces: []*XMLNamespace{
 			{
-				URN: &Attribute{Value: token.String{Value: "urn1"}},
+				URN: &Attribute{Value: xmlenc.String{Value: "urn1"}},
 			},
 			{
-				URN: &Attribute{Value: token.String{Value: "urn1"}},
+				URN: &Attribute{Value: xmlenc.String{Value: "urn1"}},
 			},
 		},
 	}
@@ -85,12 +85,12 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 	doc = &APIDoc{
 		XMLNamespaces: []*XMLNamespace{
 			{
-				URN:    &Attribute{Value: token.String{Value: "urn1"}},
-				Prefix: &Attribute{Value: token.String{Value: "p1"}},
+				URN:    &Attribute{Value: xmlenc.String{Value: "urn1"}},
+				Prefix: &Attribute{Value: xmlenc.String{Value: "p1"}},
 			},
 			{
-				URN:    &Attribute{Value: token.String{Value: "urn2"}},
-				Prefix: &Attribute{Value: token.String{Value: "p1"}},
+				URN:    &Attribute{Value: xmlenc.String{Value: "urn2"}},
+				Prefix: &Attribute{Value: xmlenc.String{Value: "p1"}},
 			},
 		},
 	}
@@ -100,10 +100,10 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 	doc = &APIDoc{
 		XMLNamespaces: []*XMLNamespace{
 			{
-				URN: &Attribute{Value: token.String{Value: "urn1"}},
+				URN: &Attribute{Value: xmlenc.String{Value: "urn1"}},
 			},
 			{
-				URN: &Attribute{Value: token.String{Value: "urn2"}},
+				URN: &Attribute{Value: xmlenc.String{Value: "urn2"}},
 			},
 		},
 	}
@@ -113,16 +113,16 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 	doc = &APIDoc{
 		XMLNamespaces: []*XMLNamespace{
 			{
-				URN:    &Attribute{Value: token.String{Value: "urn1"}},
-				Prefix: &Attribute{Value: token.String{Value: "p1"}},
+				URN:    &Attribute{Value: xmlenc.String{Value: "urn1"}},
+				Prefix: &Attribute{Value: xmlenc.String{Value: "p1"}},
 			},
 			{
-				URN:    &Attribute{Value: token.String{Value: "urn2"}},
-				Prefix: &Attribute{Value: token.String{Value: "p2"}},
+				URN:    &Attribute{Value: xmlenc.String{Value: "urn2"}},
+				Prefix: &Attribute{Value: xmlenc.String{Value: "p2"}},
 			},
 			{
-				URN:    &Attribute{Value: token.String{Value: "urn3"}},
-				Prefix: &Attribute{Value: token.String{Value: "p3"}},
+				URN:    &Attribute{Value: xmlenc.String{Value: "urn3"}},
+				Prefix: &Attribute{Value: xmlenc.String{Value: "p3"}},
 			},
 		},
 	}
@@ -138,12 +138,12 @@ func TestAPI_Sanitize(t *testing.T) {
 	// headers
 
 	api.Headers = []*Param{
-		{Type: &TypeAttribute{Value: token.String{Value: TypeString}}},
+		{Type: &TypeAttribute{Value: xmlenc.String{Value: TypeString}}},
 	}
 	a.NotError(api.Sanitize(newEmptyParser(a)))
 
 	api.Headers = append(api.Headers, &Param{
-		Type: &TypeAttribute{Value: token.String{Value: TypeObject}},
+		Type: &TypeAttribute{Value: xmlenc.String{Value: TypeObject}},
 	})
 	a.Error(api.Sanitize(newEmptyParser(a)))
 
@@ -178,7 +178,7 @@ func TestXMLnamespace_Sanitize(t *testing.T) {
 	ns := &XMLNamespace{}
 	a.Error(ns.Sanitize(newEmptyParser(a)))
 
-	ns.URN = &Attribute{Value: token.String{Value: "urn"}}
+	ns.URN = &Attribute{Value: xmlenc.String{Value: "urn"}}
 	a.NotError(ns.Sanitize(newEmptyParser(a)))
 }
 
@@ -245,48 +245,48 @@ func TestChkEnumsType(t *testing.T) {
 	}{
 		{},
 		{
-			t: &TypeAttribute{Value: token.String{Value: TypeString}},
+			t: &TypeAttribute{Value: xmlenc.String{Value: TypeString}},
 			enums: []*Enum{
-				{Value: &Attribute{Value: token.String{Value: "123"}}},
-				{Value: &Attribute{Value: token.String{Value: "str"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "123"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "str"}}},
 			},
 		},
 		{
-			t: &TypeAttribute{Value: token.String{Value: TypeNumber}},
+			t: &TypeAttribute{Value: xmlenc.String{Value: TypeNumber}},
 			enums: []*Enum{
-				{Value: &Attribute{Value: token.String{Value: "123"}}},
-				{Value: &Attribute{Value: token.String{Value: "-1.9"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "123"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "-1.9"}}},
 			},
 		},
 		{
-			t: &TypeAttribute{Value: token.String{Value: TypeBool}},
+			t: &TypeAttribute{Value: xmlenc.String{Value: TypeBool}},
 			enums: []*Enum{
-				{Value: &Attribute{Value: token.String{Value: "true"}}},
-				{Value: &Attribute{Value: token.String{Value: "0"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "true"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "0"}}},
 			},
 		},
 
 		{
-			t: &TypeAttribute{Value: token.String{Value: TypeBool}},
+			t: &TypeAttribute{Value: xmlenc.String{Value: TypeBool}},
 			enums: []*Enum{
-				{Value: &Attribute{Value: token.String{Value: "string"}}},
-				{Value: &Attribute{Value: token.String{Value: "0"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "string"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "0"}}},
 			},
 			err: true,
 		},
 		{
-			t: &TypeAttribute{Value: token.String{Value: TypeNumber}},
+			t: &TypeAttribute{Value: xmlenc.String{Value: TypeNumber}},
 			enums: []*Enum{
-				{Value: &Attribute{Value: token.String{Value: "string"}}},
-				{Value: &Attribute{Value: token.String{Value: "0"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "string"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "0"}}},
 			},
 			err: true,
 		},
 		{ // object 是不允许的
-			t: &TypeAttribute{Value: token.String{Value: TypeObject}},
+			t: &TypeAttribute{Value: xmlenc.String{Value: TypeObject}},
 			enums: []*Enum{
-				{Value: &Attribute{Value: token.String{Value: "string"}}},
-				{Value: &Attribute{Value: token.String{Value: "0"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "string"}}},
+				{Value: &Attribute{Value: xmlenc.String{Value: "0"}}},
 			},
 			err: true,
 		},
@@ -319,7 +319,7 @@ func TestAPI_sanitizeTags(t *testing.T) {
 	}
 	a.Error(api.sanitizeTags())
 	doc.Servers = []*Server{
-		{Name: &Attribute{Value: token.String{Value: "s1"}}},
+		{Name: &Attribute{Value: xmlenc.String{Value: "s1"}}},
 	}
 	a.NotError(api.sanitizeTags())
 
@@ -328,7 +328,7 @@ func TestAPI_sanitizeTags(t *testing.T) {
 	}
 	a.Error(api.sanitizeTags())
 	doc.Tags = []*Tag{
-		{Name: &Attribute{Value: token.String{Value: "t1"}}},
+		{Name: &Attribute{Value: xmlenc.String{Value: "t1"}}},
 	}
 	a.NotError(api.sanitizeTags())
 }
