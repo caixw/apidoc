@@ -9,7 +9,7 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 // ParseBlocks 从多个 core.Block 实例中解析文档内容
@@ -37,7 +37,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		return
 	}
 
-	p, err := token.NewParser(h, b)
+	p, err := xmlenc.NewParser(h, b)
 	if err != nil {
 		h.Error(err)
 		return
@@ -60,7 +60,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 			doc: doc,
 			URI: b.Location.URI,
 		}
-		token.Decode(p, api, core.XMLNamespace)
+		xmlenc.Decode(p, api, core.XMLNamespace)
 		doc.APIs = append(doc.APIs, api)
 
 		if doc.Title.V() != "" {
@@ -73,7 +73,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 			h.Error(p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue))
 			return
 		}
-		token.Decode(p, doc, core.XMLNamespace)
+		xmlenc.Decode(p, doc, core.XMLNamespace)
 		doc.URI = b.Location.URI
 	default:
 		return
@@ -84,7 +84,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 }
 
 // 获取根标签的名称
-func getTagName(p *token.Parser) (string, error) {
+func getTagName(p *xmlenc.Parser) (string, error) {
 	start := p.Current()
 	for {
 		t, r, err := p.Token()
@@ -93,10 +93,10 @@ func getTagName(p *token.Parser) (string, error) {
 		}
 
 		switch elem := t.(type) {
-		case *token.StartElement:
+		case *xmlenc.StartElement:
 			p.Move(start)
 			return elem.Name.Local.Value, nil
-		case *token.EndElement, *token.CData:
+		case *xmlenc.EndElement, *xmlenc.CData:
 			return "", p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
 		default: // 其它标签忽略
 		}

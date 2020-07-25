@@ -2,7 +2,7 @@
 
 package protocol
 
-import "github.com/caixw/apidoc/v7/internal/token"
+import "github.com/caixw/apidoc/v7/internal/xmlenc"
 
 // 代码关折叠块的种类
 const (
@@ -61,7 +61,7 @@ type FoldingRange struct {
 }
 
 // BuildFoldingRange 根据参数构建 FoldingRange 实例
-func BuildFoldingRange(base token.Base, lineFoldingOnly bool) FoldingRange {
+func BuildFoldingRange(base xmlenc.Base, lineFoldingOnly bool) FoldingRange {
 	item := FoldingRange{
 		StartLine: base.Start.Line,
 		EndLine:   base.End.Line,

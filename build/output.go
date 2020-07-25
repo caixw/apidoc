@@ -16,7 +16,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/docs"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/openapi"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 // 几种输出的类型
@@ -135,9 +135,9 @@ func (o *Output) sanitize() error {
 
 func (o *Output) apidocMarshaler(d *ast.APIDoc) ([]byte, error) {
 	if !o.Namespace {
-		return token.Encode("\t", d, "", "")
+		return xmlenc.Encode("\t", d, "", "")
 	}
-	return token.Encode("\t", d, core.XMLNamespace, o.NamespacePrefix)
+	return xmlenc.Encode("\t", d, core.XMLNamespace, o.NamespacePrefix)
 }
 
 func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
@@ -148,7 +148,7 @@ func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 	}
 
 	d.Created = &ast.DateAttribute{Value: ast.Date{Value: time.Now()}}
-	d.APIDoc = &ast.APIDocVersionAttribute{Value: token.String{Value: ast.Version}}
+	d.APIDoc = &ast.APIDocVersionAttribute{Value: xmlenc.String{Value: ast.Version}}
 
 	data, err := o.marshal(d)
 	if err != nil {

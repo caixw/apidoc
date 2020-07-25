@@ -12,7 +12,7 @@ import (
 	"github.com/issue9/qheader"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
-	"github.com/caixw/apidoc/v7/internal/token"
+	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestFindRequestByContentType(t *testing.T) {
@@ -29,30 +29,30 @@ func TestFindRequestByContentType(t *testing.T) {
 			index: -1,
 		},
 		{
-			requests: []*ast.Request{{Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}}},
+			requests: []*ast.Request{{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}}},
 			ct:       "application/json",
 			index:    0,
 		},
 		{
-			requests: []*ast.Request{{Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}}},
+			requests: []*ast.Request{{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}}},
 			ct:       "not/exists",
 			index:    -1,
 		},
 		{
 			requests: []*ast.Request{
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}},
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "text/xml"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
 			},
 			ct:    "text/xml",
 			index: 1,
 		},
 		{
-			requests: []*ast.Request{{}, {Mimetype: &ast.Attribute{Value: token.String{Value: "text/xml"}}}},
+			requests: []*ast.Request{{}, {Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}}},
 			ct:       "text/xml",
 			index:    1,
 		},
 		{ // 没有明确匹配，则匹配 none
-			requests: []*ast.Request{{}, {Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}}},
+			requests: []*ast.Request{{}, {Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}}},
 			ct:       "text/xml",
 			index:    0,
 		},
@@ -89,15 +89,15 @@ func TestFindResponseByAccept(t *testing.T) {
 			index:    -1,
 		},
 		{
-			requests: []*ast.Request{{Mimetype: &ast.Attribute{Value: token.String{Value: "text/xml"}}}},
+			requests: []*ast.Request{{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}}},
 			accepts:  []*qheader.Header{{Value: "text/xml"}},
 			index:    0,
 			ct:       "text/xml",
 		},
 		{
 			requests: []*ast.Request{
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "text/xml"}}},
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
 			accepts: []*qheader.Header{{Value: "text/xml"}},
 			index:   0,
@@ -105,8 +105,8 @@ func TestFindResponseByAccept(t *testing.T) {
 		},
 		{
 			requests: []*ast.Request{
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "text/xml"}}},
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
 			accepts: []*qheader.Header{{Value: "text/*"}},
 			index:   0,
@@ -114,8 +114,8 @@ func TestFindResponseByAccept(t *testing.T) {
 		},
 		{ // 5
 			requests: []*ast.Request{
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "text/xml"}}},
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
 			accepts: []*qheader.Header{{Value: "application/*"}},
 			index:   1,
@@ -123,8 +123,8 @@ func TestFindResponseByAccept(t *testing.T) {
 		},
 		{
 			requests: []*ast.Request{
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "text/xml"}}},
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
 			accepts: []*qheader.Header{{Value: "*/*"}},
 			index:   0,
@@ -132,8 +132,8 @@ func TestFindResponseByAccept(t *testing.T) {
 		},
 		{
 			requests: []*ast.Request{
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "text/xml"}}},
-				{Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
+				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
 			accepts: []*qheader.Header{{Value: "*/*"}, {Value: "application/*"}},
 			index:   0,
@@ -183,7 +183,7 @@ func TestFindResponseByAccept(t *testing.T) {
 		},
 		{
 			mimetypes: []string{"text/xml", "application/json"},
-			requests:  []*ast.Request{{Mimetype: &ast.Attribute{Value: token.String{Value: "application/json"}}}},
+			requests:  []*ast.Request{{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}}},
 			accepts:   []*qheader.Header{{Value: "application/*"}},
 			index:     0,
 			ct:        "application/json",
@@ -291,23 +291,23 @@ func TestValidSimpleParam(t *testing.T) {
 		},
 		{
 			title: "number",
-			p:     &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}},
+			p:     &ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}}},
 			v:     "-10.2",
 		},
 		{
 			title: "number failed",
-			p:     &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}}},
+			p:     &ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}}},
 			v:     "-xxx10.2",
 			err:   true,
 		},
 		{
 			title: "number with enum",
 			p: &ast.Param{
-				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+				Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 				Enums: []*ast.Enum{
-					{Value: &ast.Attribute{Value: token.String{Value: "1"}}},
-					{Value: &ast.Attribute{Value: token.String{Value: "2"}}},
-					{Value: &ast.Attribute{Value: token.String{Value: "10"}}},
+					{Value: &ast.Attribute{Value: xmlenc.String{Value: "1"}}},
+					{Value: &ast.Attribute{Value: xmlenc.String{Value: "2"}}},
+					{Value: &ast.Attribute{Value: xmlenc.String{Value: "10"}}},
 				},
 			},
 			v: "1",
@@ -315,11 +315,11 @@ func TestValidSimpleParam(t *testing.T) {
 		{
 			title: "number with enum failed",
 			p: &ast.Param{
-				Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+				Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 				Enums: []*ast.Enum{
-					{Value: &ast.Attribute{Value: token.String{Value: "1"}}},
-					{Value: &ast.Attribute{Value: token.String{Value: "2"}}},
-					{Value: &ast.Attribute{Value: token.String{Value: "10"}}},
+					{Value: &ast.Attribute{Value: xmlenc.String{Value: "1"}}},
+					{Value: &ast.Attribute{Value: xmlenc.String{Value: "2"}}},
+					{Value: &ast.Attribute{Value: xmlenc.String{Value: "10"}}},
 				},
 			},
 			v:   "10001",
@@ -327,37 +327,37 @@ func TestValidSimpleParam(t *testing.T) {
 		},
 		{
 			title: "bool",
-			p:     &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}},
+			p:     &ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeBool}}},
 			v:     "false",
 		},
 		{
 			title: "bool failed",
-			p:     &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}},
+			p:     &ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeBool}}},
 			v:     "-xxx-true",
 			err:   true,
 		},
 		{
 			title: "bool with optional",
 			p: &ast.Param{
-				Type:     &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}},
+				Type:     &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeBool}},
 				Optional: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 			},
 			v: "",
 		},
 		{
 			title: "bool with empty",
-			p:     &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeBool}}},
+			p:     &ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeBool}}},
 			v:     "",
 			err:   true,
 		},
 		{
 			title: "string",
-			p:     &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}}},
+			p:     &ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}}},
 			v:     "-xxx10.2",
 		},
 		{
 			title: "doc.None",
-			p:     &ast.Param{Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNone}}},
+			p:     &ast.Param{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNone}}},
 			v:     "-xxx10.2",
 			err:   true,
 		},
@@ -388,12 +388,12 @@ func TestValidQueries(t *testing.T) {
 			title: "非数组",
 			p: []*ast.Param{
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "k1"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "k1"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
 				},
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "k2"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "k2"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 				},
 			},
 			r: httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=2", nil),
@@ -402,12 +402,12 @@ func TestValidQueries(t *testing.T) {
 			title: "非数组，格式不正确",
 			p: []*ast.Param{
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "k1"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "k1"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
 				},
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "k2"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "k2"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 				},
 			},
 			r:   httptest.NewRequest(http.MethodGet, "/users?k1=1&k2=not-number", nil),
@@ -417,12 +417,12 @@ func TestValidQueries(t *testing.T) {
 			title: "数组-form",
 			p: []*ast.Param{
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "k1"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "k1"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
 				},
 				{
-					Name:  &ast.Attribute{Value: token.String{Value: "k2"}},
-					Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name:  &ast.Attribute{Value: xmlenc.String{Value: "k2"}},
+					Type:  &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 					Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 				},
 			},
@@ -432,12 +432,12 @@ func TestValidQueries(t *testing.T) {
 			title: "数组-form，格式不正确",
 			p: []*ast.Param{
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "k1"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "k1"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
 				},
 				{
-					Name:  &ast.Attribute{Value: token.String{Value: "k2"}},
-					Type:  &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name:  &ast.Attribute{Value: xmlenc.String{Value: "k2"}},
+					Type:  &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 					Array: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 				},
 			},
@@ -448,12 +448,12 @@ func TestValidQueries(t *testing.T) {
 			title: "数组-array-style",
 			p: []*ast.Param{
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "k1"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "k1"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
 				},
 				{
-					Name:       &ast.Attribute{Value: token.String{Value: "k2"}},
-					Type:       &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name:       &ast.Attribute{Value: xmlenc.String{Value: "k2"}},
+					Type:       &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 					Array:      &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 					ArrayStyle: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 				},
@@ -464,12 +464,12 @@ func TestValidQueries(t *testing.T) {
 			title: "数组-array-style，格式不正确",
 			p: []*ast.Param{
 				{
-					Name: &ast.Attribute{Value: token.String{Value: "k1"}},
-					Type: &ast.TypeAttribute{Value: token.String{Value: ast.TypeString}},
+					Name: &ast.Attribute{Value: xmlenc.String{Value: "k1"}},
+					Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}},
 				},
 				{
-					Name:       &ast.Attribute{Value: token.String{Value: "k2"}},
-					Type:       &ast.TypeAttribute{Value: token.String{Value: ast.TypeNumber}},
+					Name:       &ast.Attribute{Value: xmlenc.String{Value: "k2"}},
+					Type:       &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeNumber}},
 					Array:      &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 					ArrayStyle: &ast.BoolAttribute{Value: ast.Bool{Value: true}},
 				},

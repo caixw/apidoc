@@ -2,8 +2,7 @@
 
 // Package apidoc RESTful API 文档生成工具
 //
-// 从代码文件的注释中提取特定格式的内容，生成 API 文档，
-// 支持大部分的主流的编程语言。
+// 从代码文件的注释中提取特定格式的内容，生成 RESTful API 文档，支持大部分的主流的编程语言。
 package apidoc
 
 import (
@@ -33,7 +32,7 @@ const (
 )
 
 type (
-	// Config 生成文档时所需要的配置项
+	// Config 配置文件 apidoc.yaml 所表示的内容
 	Config = build.Config
 
 	// PackOptions 指定了打包文档内容的参数
@@ -112,19 +111,16 @@ func ServeLSP(header bool, t, addr string, infolog, errlog *log.Logger) error {
 	return lsp.Serve(header, t, addr, infolog, errlog)
 }
 
-// Static 为 /docs 搭建一个静态文件服务
+// Static 为 dir 指向的路径内容搭建一个静态文件服务
 //
-// 相当于本地版本的 https://apidoc.tools，默认页为 index.xml。
+// dir 为静态文件的根目录，一般指向 /docs
+// 用于搭建一个本地版本的 https://apidoc.tools，默认页为 index.xml。
+// 如果 dir 值为空，则会采用内置的文档内容作为静态文件服务的内容。
+//
+// stylesheet 表示是否只展示 XSL 及相关的内容。
 //
 // 用户可以通过以下代码搭建一个简易的 https://apidoc.tools 网站：
 //  http.Handle("/apidoc", apidoc.Static(...))
-//
-// /docs 存放了整个项目的文档内容。其中根目录中包含网站的相关内容，
-// 而 /v7 这些以版本号开头的则是查看 xml 文档的工具代码。
-// 同时这一份代码也被编译在代码中。如果你不需要修改文档内容，
-// 则可以直接传递空的 dir，表示采用内置的文档，否则指向指定的目录，
-// 如果指向了自定义的目录，需要保证目录结构和文件名与 /docs 相同。
-// stylesheet 则指定了是否需要根目录的内容，如果为 true，只会提供转换工具的代码。
 func Static(dir core.URI, stylesheet bool) http.Handler {
 	return docs.Handler(dir, stylesheet)
 }

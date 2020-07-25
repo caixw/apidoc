@@ -1,14 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-// Package token 解析 xml 内容
-package token
+package xmlenc
 
-import (
-	"golang.org/x/text/message"
-
-	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/internal/locale"
-)
+import "github.com/caixw/apidoc/v7/core"
 
 type (
 	// Name 表示 XML 中的名称
@@ -23,7 +17,7 @@ type (
 		core.Range
 		Name       Name
 		Attributes []*Attribute
-		Close      bool // 是否自闭合
+		SelfClose  bool // 是否自闭合
 	}
 
 	// EndElement XML 的结束元素
@@ -63,25 +57,6 @@ type (
 		core.Range
 		Value String
 	}
-
-	// Base 所有 XML 节点的基本元素
-	Base struct {
-		core.Range
-		UsageKey message.Reference `apidoc:"-"` // 表示对当前元素的一个说明内容的翻译 ID
-	}
-
-	// BaseAttribute 所有 XML 属性节点的基本元素
-	BaseAttribute struct {
-		Base
-		AttributeName Name `apidoc:"-"`
-	}
-
-	// BaseTag 所有 XML 标签的基本元素
-	BaseTag struct {
-		Base
-		StartTag Name `apidoc:"-"` // 表示起始标签名
-		EndTag   Name `apidoc:"-"` // 表示标签的结束名称，如果是自闭合的标签，此值为空。
-	}
 )
 
 // Match 是否与 end 相匹配
@@ -101,9 +76,4 @@ func (n Name) String() string {
 		return n.Local.Value
 	}
 	return n.Prefix.Value + ":" + n.Local.Value
-}
-
-// Usage 本地化的当前字段介绍内容
-func (b *Base) Usage() string {
-	return locale.Sprintf(b.UsageKey)
 }

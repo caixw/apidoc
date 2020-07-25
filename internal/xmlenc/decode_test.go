@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package token
+package xmlenc
 
 import (
 	"reflect"
@@ -785,7 +785,7 @@ func TestDecode(t *testing.T) {
 	b = `<apidoc id="1xx"></apidoc></apidoc>`
 	decodeObject(a, b, v8, "", true)
 
-	// StartElement.Close
+	// StartElement.SelfClose
 	v9 := &struct {
 		BaseTag
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`

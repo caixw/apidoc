@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-// Package ast 为 xml 服务的抽象语法树
+// Package ast 定义文档的抽象语法树
 package ast
 
 import (
