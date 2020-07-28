@@ -20,10 +20,11 @@ func TestTokenBuilder_append(t *testing.T) {
 	}, 1)
 	a.Equal(b.tokens[0], []int{1, 11, 1, 1, 0})
 
-	a.Panic(func() {
-		b.append(core.Range{}, 1)
-	})
+	// 空值，不会添加内容
+	b.append(core.Range{}, 1)
+	a.Equal(1, len(b.tokens))
 
+	// 长度为 0
 	a.Panic(func() {
 		b.append(core.Range{
 			Start: core.Position{Line: 1, Character: 11},
@@ -31,6 +32,7 @@ func TestTokenBuilder_append(t *testing.T) {
 		}, 1)
 	})
 
+	// 长度为负数
 	a.Panic(func() {
 		b.append(core.Range{
 			Start: core.Position{Line: 1, Character: 11},
