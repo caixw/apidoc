@@ -86,13 +86,13 @@ func usage(v reflect.Value, pos core.Position, exclude ...string) (b *xmlenc.Bas
 }
 
 func getBase(v reflect.Value, pos core.Position) *xmlenc.Base {
+	t := v.Type()
 	switch {
-	case v.Type() == baseType:
+	case t == baseType:
 		if b := v.Interface().(xmlenc.Base); b.Contains(pos) && b.UsageKey != nil {
 			return &b
 		}
-	case v.Type().Kind() == reflect.Struct:
-		t := v.Type()
+	case t.Kind() == reflect.Struct:
 		for i := 0; i < t.NumField(); i++ {
 			if !t.Field(i).Anonymous {
 				continue

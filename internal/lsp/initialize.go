@@ -48,7 +48,7 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 	if in.Capabilities.TextDocument.SemanticTokens != nil {
 		out.Capabilities.SemanticTokensProvider = &protocol.SemanticTokensOptions{
 			Legend: protocol.SemanticTokensLegend{
-				TokenTypes:     []string{"class", "property", "variable"},
+				TokenTypes:     []string{"type", "property", "variable"},
 				TokenModifiers: []string{"documentation"},
 			},
 			Range: true,

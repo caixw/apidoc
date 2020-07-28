@@ -115,3 +115,14 @@ func (s *server) textDocumentCompletion(notify bool, in *protocol.CompletionPara
 	// TODO
 	return nil
 }
+
+// textDocument/semanticTokens
+func (s *server) textDocumentSemanticTokens(notify bool, in *protocol.SemanticTokensParams, out *protocol.SemanticTokens) error {
+	f := s.findFolder(in.TextDocument.URI)
+	if f == nil {
+		return nil
+	}
+
+	out.Data = search.Tokens(f.doc, in.TextDocument.URI, 0, 1, 2)
+	return nil
+}
