@@ -124,12 +124,6 @@ type ClientCapabilities struct {
 		// Capabilities specific to the `workspace/didChangeWatchedFiles` notification.
 		DidChangeWatchedFiles *DidChangeConfigurationClientCapabilities `json:"didChangeWatchedFiles,omitempty"`
 
-		// Capabilities specific to the `workspace/symbol` request.
-		Symbol *WorkspaceSymbolClientCapabilities `json:"symbol,omitempty"`
-
-		// Capabilities specific to the `workspace/executeCommand` request.
-		ExecuteCommand *ExecuteCommandClientCapabilities `json:"executeCommand,omitempty"`
-
 		// The client has support for workspace folders.
 		//
 		// Since 3.6.0
@@ -146,9 +140,4 @@ type ClientCapabilities struct {
 
 	// Experimental client capabilities.
 	Experimental interface{} `json:"experimental,omitempty"`
-}
-
-type ExecuteCommandClientCapabilities struct {
-	// Execute command supports dynamic registration.
-	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 }

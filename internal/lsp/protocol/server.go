@@ -19,34 +19,10 @@ type ServerCapabilities struct {
 	// boolean | HoverOptions
 	HoverProvider interface{} `json:"hoverProvider,omitempty"`
 
-	// The server provides go to declaration support.
-	//
-	// Since 3.14.0
-	//
-	// boolean | DeclarationOptions | DeclarationRegistrationOptions
-	DeclarationProvider interface{} `json:"declarationProvider,omitempty"`
-
 	// The server provides goto definition support.
 	//
 	// boolean | DefinitionOptions;
 	DefinitionProvider interface{} `json:"definitionProvider,omitempty"`
-
-	// The server provides Goto Type Definition support.
-	//
-	// Since 3.6.0
-	//
-	// boolean | TypeDefinitionOptions | TypeDefinitionRegistrationOptions;
-	TypeDefinitionProvider interface{} `json:"typeDefinitionProvider,omitempty"`
-
-	// The server provides find references support.
-	//
-	// boolean | ReferenceOptions
-	ReferencesProvider interface{} `json:"referencesProvider,omitempty"`
-
-	// The server provides document highlight support.
-	//
-	// boolean | DocumentHighlightOptions
-	DocumentHighlightProvider interface{} `json:"documentHighlightProvider,omitempty"`
 
 	// The server provides code actions. The `CodeActionOptions` return type is only
 	// valid if the client signals code action literal support via the property
@@ -55,21 +31,10 @@ type ServerCapabilities struct {
 	// boolean | CodeActionOptions;
 	CodeActionProvider interface{} `json:"codeActionProvider,omitempty"`
 
-	// The server provides document link support.
-	DocumentLinkProvider *DocumentLinkOptions `json:"documentLinkProvider,omitempty"`
-
-	// The server provides document formatting.
-	//
-	// boolean | DocumentFormattingOptions;
-	DocumentFormattingProvider interface{} `json:"documentFormattingProvider,omitempty"`
-
 	// The server provides document range formatting.
 	//
 	// boolean | DocumentRangeFormattingOptions;
 	DocumentRangeFormattingProvider interface{} `json:"documentRangeFormattingProvider,omitempty"`
-
-	// The server provides document formatting on typing.
-	DocumentOnTypeFormattingProvider DocumentOnTypeFormattingOptions `json:"documentOnTypeFormattingProvider,omitempty"`
 
 	// The server provides rename support. RenameOptions may only be
 	// specified if the client states that it supports
@@ -92,9 +57,6 @@ type ServerCapabilities struct {
 	// SemanticTokensOptions | SemanticTokensRegistrationOptions
 	SemanticTokensProvider interface{} `json:"semanticTokensProvider,omitempty"`
 
-	// The server provides execute command support.
-	ExecuteCommandProvider *ExecuteCommandOptions `json:"executeCommandProvider,omitempty"`
-
 	// The server provides selection range support.
 	//
 	// @since 3.15.0
@@ -112,58 +74,9 @@ type ServerCapabilities struct {
 	Experimental interface{} `json:"experimental,omitempty"`
 }
 
-type DeclarationOptions struct {
-	WorkDoneProgressOptions
-}
-
-type DeclarationRegistrationOptions struct {
-	DeclarationOptions
-	TextDocumentRegistrationOptions
-	StaticRegistrationOptions
-}
-
+// DefinitionOptions 定义 textDocument/defined 服务端的兼容情况
 type DefinitionOptions struct {
 	WorkDoneProgressOptions
-}
-
-type TypeDefinitionOptions struct {
-	WorkDoneProgressOptions
-}
-
-type TypeDefinitionRegistrationOptions struct {
-	TextDocumentRegistrationOptions
-	TypeDefinitionOptions
-	StaticRegistrationOptions
-}
-
-type ImplementationOptions struct {
-	WorkDoneProgressOptions
-}
-
-type ImplementationRegistrationOptions struct {
-	TextDocumentRegistrationOptions
-	ImplementationOptions
-	StaticRegistrationOptions
-}
-
-type ReferenceOptions struct {
-	WorkDoneProgressOptions
-}
-
-// SignatureHelpOptions Signature help options.
-type SignatureHelpOptions struct {
-	WorkDoneProgressOptions
-
-	// The characters that trigger signature help automatically.
-	TriggerCharacters []string `json:"triggerCharacters,omitempty"`
-
-	// List of characters that re-trigger signature help.
-	//
-	// These trigger characters are only active when signature help is already showing. All trigger characters
-	// are also counted as re-trigger characters.
-	//
-	// @since 3.15.0
-	RetriggerCharacters []string `json:"retriggerCharacters,omitempty"`
 }
 
 // CodeActionOptions Code Action options.
@@ -177,15 +90,7 @@ type CodeActionOptions struct {
 	CodeActionKinds []CodeActionKind `json:"codeActionKinds,omitempty"`
 }
 
-// ExecuteCommandOptions Execute command options.
-type ExecuteCommandOptions struct {
-	WorkDoneProgressOptions
-
-	// The commands to be executed on the server
-	Commands []string `json:"commands"`
-}
-
-// Save options.
+// SaveOptions Save options.
 type SaveOptions struct {
 	// The client is supposed to include the content on save.
 	IncludeText bool `json:"includeText,omitempty"`

@@ -9,39 +9,6 @@ const (
 	InitializeTraceVerbose  = "verbose"
 )
 
-// SymbolKind A symbol kind.
-type SymbolKind int
-
-// SymbolKind 的各类枚举值
-const (
-	SymbolKindFile SymbolKind = iota + 1
-	SymbolKindModule
-	SymbolKindNamespace
-	SymbolKindPackage
-	SymbolKindClass
-	SymbolKindMethod
-	SymbolKindProperty
-	SymbolKindField
-	SymbolKindConstructor
-	SymbolKindEnum
-	SymbolKindInterface
-	SymbolKindFunction
-	SymbolKindVariable
-	SymbolKindConstant
-	SymbolKindString
-	SymbolKindNumber
-	SymbolKindBoolean
-	SymbolKindArray
-	SymbolKindObject
-	SymbolKindKey
-	SymbolKindNull
-	SymbolKindEnumMember
-	SymbolKindStruct
-	SymbolKindEvent
-	SymbolKindOperator
-	SymbolKindTypeParameter
-)
-
 // ResourceOperationKind the kind of resource operations supported by the client.
 type ResourceOperationKind string
 

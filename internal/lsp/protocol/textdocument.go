@@ -60,33 +60,11 @@ type TextDocumentClientCapabilities struct {
 	// Capabilities specific to the `textDocument/hover`
 	Hover *HoverCapabilities `json:"hover,omitempty"`
 
-	// Capabilities specific to the `textDocument/references`
-	References *DidChangeConfigurationClientCapabilities `json:"references,omitempty"`
-
-	// Capabilities specific to the `textDocument/documentHighlight`
-	DocumentHighlight *DidChangeConfigurationClientCapabilities `json:"documentHighlight,omitempty"`
-
-	// Capabilities specific to the `textDocument/formatting`
-	Formatting *DidChangeConfigurationClientCapabilities `json:"formatting,omitempty"`
-
 	// Capabilities specific to the `textDocument/rangeFormatting`
 	RangeFormatting *DidChangeConfigurationClientCapabilities `json:"rangeFormatting,omitempty"`
 
 	// Capabilities specific to the `textDocument/textDocument/semanticTokens/*`
 	SemanticTokens *SemanticTokensClientCapabilities `json:"semanticTokens,omitempty"`
-
-	// Capabilities specific to the `textDocument/declaration`
-	Declaration *struct {
-		// Whether declaration supports dynamic registration. If this is set to `true`
-		// the client supports the new `(TextDocumentRegistrationOptions & StaticRegistrationOptions)`
-		// return value for the corresponding server capability as well.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// The client supports additional metadata in the form of declaration links.
-		//
-		// Since 3.14.0
-		LinkSupport bool `json:"linkSupport,omitempty"`
-	} `json:"declaration,omitempty"`
 
 	// Capabilities specific to the `textDocument/definition`.
 	//
@@ -98,21 +76,6 @@ type TextDocumentClientCapabilities struct {
 		// The client supports additional metadata in the form of definition links.
 		LinkSupport bool `json:"linkSupport,omitempty"`
 	} `json:"definition,omitempty"`
-
-	// Capabilities specific to the `textDocument/typeDefinition`
-	//
-	// Since 3.6.0
-	TypeDefinition *struct {
-		// Whether typeDefinition supports dynamic registration. If this is set to `true`
-		// the client supports the new `(TextDocumentRegistrationOptions & StaticRegistrationOptions)`
-		// return value for the corresponding server capability as well.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// The client supports additional metadata in the form of definition links.
-		//
-		// Since 3.14.0
-		LinkSupport bool `json:"linkSupport,omitempty"`
-	} `json:"typeDefinition,omitempty"`
 
 	// Capabilities specific to the `textDocument/codeAction`
 	CodeAction *struct {
@@ -134,12 +97,6 @@ type TextDocumentClientCapabilities struct {
 			} `json:"codeActionKind"`
 		} `json:"codeActionLiteralSupport,omitempty"`
 	} `json:"codeAction,omitempty"`
-
-	// Capabilities specific to the `textDocument/codeLens`
-	CodeLens *DidChangeConfigurationClientCapabilities `json:"codeLens,omitempty"`
-
-	// Capabilities specific to the `textDocument/documentLink`
-	DocumentLink *DidChangeConfigurationClientCapabilities `json:"documentLink,omitempty"`
 
 	// Capabilities specific to the `textDocument/rename`
 	Rename *struct {
@@ -178,14 +135,6 @@ type RenameOptions struct {
 
 	// Renames should be checked and tested before being executed.
 	PrepareProvider bool `json:"prepareProvider,omitempty"`
-}
-
-// DocumentLinkOptions Document link options.
-type DocumentLinkOptions struct {
-	WorkDoneProgressOptions
-
-	// Document links have a resolve provider as well.
-	ResolveProvider bool `json:"resolveProvider,omitempty"`
 }
 
 type ServerCapabilitiesTextDocumentSyncOptions struct {
@@ -254,28 +203,6 @@ type DidSaveTextDocumentParams struct {
 	// Optional the content when saved. Depends on the includeText value
 	// when the save notification was requested.
 	Text string `json:"text,omitempty"`
-}
-
-type DocumentHighlightOptions struct {
-	WorkDoneProgressOptions
-}
-
-type DocumentSymbolOptions struct {
-	WorkDoneProgressOptions
-}
-
-type DocumentColorOptions struct {
-	WorkDoneProgressOptions
-}
-
-type DocumentColorRegistrationOptions struct {
-	TextDocumentRegistrationOptions
-	StaticRegistrationOptions
-	DocumentColorOptions
-}
-
-type DocumentFormattingOptions struct {
-	WorkDoneProgressOptions
 }
 
 type DocumentRangeFormattingOptions struct {
