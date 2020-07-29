@@ -40,6 +40,10 @@ type (
 )
 
 // SetLocale 设置当前的本地化 ID
+//
+// 如果不调用此函数，则默认会采用 internal/locale.DefaultLocaleID 的值。
+// 如果想采用当前系统的本地化信息，可以使用
+// github.com/issue9/localeutil.SystemLanguageTag 函数。
 func SetLocale(tag language.Tag) {
 	locale.SetTag(tag)
 }

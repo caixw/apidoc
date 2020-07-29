@@ -86,6 +86,18 @@
         <p>apidoc 會讀取 <var>LANG</var> 的環境變量作為其本地化的依據，若想指定其它語種，可以手動指定 <var>LANG</var> 環境變量：<samp>LANG=zh-Hant apidoc</samp>。在 windows 系統中，若不存在 <var>LANG</var> 環境變量，則會調用 <code>GetUserDefaultLocaleName</code> 函數來獲取相應的語言信息。</p>
     </doc>
 
+    <doc id="ide" title="IDE 插件" parent="usage">
+        <p>apidoc 支持以 <a href="https://microsoft.github.io/language-server-protocol/specifications/specification-current/"><abbr title="language server protocol">LSP</abbr></a> 模式運行：<samp>apidoc lsp -p=":8080" -m=stdio -h</samp>。所有支持 LSP 的 IDE 和編輯器很容易實現對應的插件。目前官方已經提供了針對 vscode 的插件：<a href="https://marketplace.visualstudio.com/items?itemName=caixw.apidoc">apidoc.vscode</a>。</p>
+    </doc>
+
+    <doc id="mock" title="Mock" parent="usage">
+        <p>mock 子命令可以讓 apidoc 根據文檔動態生成 mock 數據，mock 子命令提供了大量的配置項，以使生成的數據更有隨機性，具體的命令項可以通過 <samp>apidoc help mock</samp> 查看。</p>
+
+        <p>如果數據類型為 <var>string.image</var>，會自動生成壹張指定大小的圖片並把地址返回給用戶，其大小由查詢參數 <code>width</code> 和 <code>height</code> 指定，未指定則是 <var>500x500</var>。圖片類型則通過用戶提交的 <code>Accept</code> 報頭獲取，目前支持 <var>image/gif</var>、<var>image/png</var> 和 <var>image/jpeg</var> 三種類型。</p>
+
+        <p>使用 mock 也有壹定的局限性：只能判斷提交的數據是否符合要求，但是無法理解數據代碼的函議，比如 URL 中包含 page=2，能判斷 page 的值格式是否正確，但無法給用戶返回第二頁的數據。Mock 在驗證數據正確性和初期用於展示數據內容還是很有用的。</p>
+    </doc>
+
     <doc id="cli" title="命令行" parent="usage">
         <p>可以通過 <samp>apidoc help</samp> 查看命令行支持的子命令。包含了以下幾個：</p>
     </doc>
