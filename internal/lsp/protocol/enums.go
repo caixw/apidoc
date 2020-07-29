@@ -23,6 +23,7 @@ const (
 	ResourceOperationKindDelete ResourceOperationKind = "delete"
 )
 
+// FailureHandlingKind 定义出错后的处理方式
 type FailureHandlingKind string
 
 const (

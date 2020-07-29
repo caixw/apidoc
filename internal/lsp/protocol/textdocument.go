@@ -120,15 +120,6 @@ type DidChangeConfigurationClientCapabilities struct {
 	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 }
 
-// DocumentOnTypeFormattingOptions format document on type options.
-type DocumentOnTypeFormattingOptions struct {
-	// A character on which formatting should be triggered, like `}`.
-	FirstTriggerCharacter string `json:"firstTriggerCharacter"`
-
-	// More trigger characters.
-	MoreTriggerCharacter []string `json:"moreTriggerCharacter,omitempty"`
-}
-
 // RenameOptions Rename options
 type RenameOptions struct {
 	WorkDoneProgressOptions
@@ -195,20 +186,12 @@ type DocumentFilter struct {
 	Pattern string `json:"pattern,omitempty"`
 }
 
-// DidSaveTextDocumentParams textDocument/didSave 的参数
-type DidSaveTextDocumentParams struct {
-	// The document that was saved.
-	TextDocument TextDocumentIdentifier `json:"textDocument"`
-
-	// Optional the content when saved. Depends on the includeText value
-	// when the save notification was requested.
-	Text string `json:"text,omitempty"`
-}
-
+// DocumentRangeFormattingOptions textDocument/rangeFormatting 服务端返回的参数
 type DocumentRangeFormattingOptions struct {
 	WorkDoneProgressOptions
 }
 
+// SelectionRangeOptions textDocument/selectionRange 服务端返回的参数
 type SelectionRangeOptions struct {
 	WorkDoneProgressOptions
 }

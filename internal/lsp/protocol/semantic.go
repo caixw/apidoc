@@ -44,20 +44,13 @@ type SemanticTokensClientCapabilities struct {
 	Formats []TokenFormat `json:"formats"`
 }
 
-// SemanticTokensRequestFull SemanticTokensClientCapabilities.request.request.full 和 SemanticTokensOptions.Range 字段对应的值
-type SemanticTokensRequestFull struct {
-	// The client will send the `textDocument/semanticTokens/full/delta` request if
-	// the server provides a corresponding handler.
-	Delta bool `json:"delta,omitempty"`
-}
-
-// SemanticTokensOptions 服务有关 SemanticTokens 的支持情况
+// SemanticTokensOptions 服务端有关 SemanticTokens 的支持情况
 type SemanticTokensOptions struct {
 	WorkDoneProgressOptions
 	// The legend used by the server
 	Legend SemanticTokensLegend `json:"legend"`
 
-	// Server supports providing semantic tokens for a sepcific range of a document.
+	// Server supports providing semantic tokens for a specific range of a document.
 	//
 	// bool | {}
 	Range interface{} `json:"range,omitempty"`
@@ -76,7 +69,7 @@ type SemanticTokensLegend struct {
 	TokenModifiers []string `json:"tokenModifiers"`
 }
 
-// SemanticTokensParams textDocument/semanticTokens/full 入口参数
+// SemanticTokensParams textDocument/semanticTokens 入口参数
 type SemanticTokensParams struct {
 	WorkDoneProgressParams
 	PartialResultParams
@@ -85,7 +78,7 @@ type SemanticTokensParams struct {
 	TextDocument TextDocumentIdentifier `json:"textDocument"`
 }
 
-// SemanticTokens textDocument/semanticTokens/full 返回参数
+// SemanticTokens textDocument/semanticTokens 返回参数
 type SemanticTokens struct {
 	// An optional result id. If provided and clients support delta updating
 	// the client will include the result id in the next semantic token request.
