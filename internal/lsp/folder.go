@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/issue9/sliceutil"
 
@@ -27,6 +28,8 @@ type folder struct {
 	cfg *build.Config
 	srv *server
 
+	parsedMux sync.Mutex
+
 	// 保存着错误和警告的信息
 	errors, warns []*core.SyntaxError
 }
@@ -37,6 +40,9 @@ func (f *folder) close() {
 }
 
 func (f *folder) parseBlock(block core.Block) {
+	f.parsedMux.Lock()
+	defer f.parsedMux.Unlock()
+
 	var input *build.Input
 	ext := filepath.Ext(block.Location.URI.String())
 	for _, i := range f.cfg.Inputs {
@@ -52,6 +58,7 @@ func (f *folder) parseBlock(block core.Block) {
 	f.doc.ParseBlocks(f.h, func(blocks chan core.Block) {
 		input.Parse(blocks, f.h, block)
 	})
+
 }
 
 func (f *folder) messageHandler(msg *core.Message) {
@@ -116,6 +123,9 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) 
 
 // 删除与 uri 相关的数据
 func (f *folder) deleteURI(uri core.URI) (found bool) {
+	f.parsedMux.Lock()
+	defer f.parsedMux.Unlock()
+
 	// 清除相关的警告和错误信息
 	size := sliceutil.QuickDelete(f.warns, func(i int) bool {
 		return f.warns[i].Location.URI == uri

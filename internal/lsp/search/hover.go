@@ -20,7 +20,7 @@ var baseType = reflect.TypeOf(xmlenc.Base{})
 // Hover 从 doc 查找最符合 uri 和 pos 条件的元素并赋值给 hover
 //
 // 返回值表示是否找到了相应在的元素。
-func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hover) (ok bool) {
+func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hover) {
 	setHover := func(b *xmlenc.Base) {
 		hover.Range = b.Range
 		hover.Contents = protocol.MarkupContent{
@@ -32,7 +32,6 @@ func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hov
 	if doc.URI == uri {
 		if b := usage(reflect.ValueOf(doc), pos, "APIs"); b != nil {
 			setHover(b)
-			ok = true
 		}
 	}
 
@@ -44,11 +43,8 @@ func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, hover *protocol.Hov
 
 		if b := usage(reflect.ValueOf(api), pos); b != nil {
 			setHover(b)
-			return true
 		}
 	}
-
-	return ok
 }
 
 // 从 v 中查找最匹配 pos 位置的元素，如果找到匹配项，还会查找其子项，是不是匹配度更高。

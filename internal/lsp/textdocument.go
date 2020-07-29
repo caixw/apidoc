@@ -33,11 +33,15 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover
 func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *protocol.Hover) error {
-	for _, f := range s.folders {
-		if search.Hover(f.doc, in.TextDocument.URI, in.TextDocumentPositionParams.Position, out) {
-			return nil
-		}
+	f := s.findFolder(in.TextDocument.URI)
+	if f == nil {
+		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
+
+	f.parsedMux.Lock()
+	defer f.parsedMux.Unlock()
+
+	search.Hover(f.doc, in.TextDocument.URI, in.TextDocumentPositionParams.Position, out)
 	return nil
 }
 
@@ -86,13 +90,16 @@ func (s *server) textDocumentFoldingRange(notify bool, in *protocol.FoldingRange
 
 	f := s.findFolder(uri)
 	if f == nil {
-		return nil
+		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
 
 	fr := make([]protocol.FoldingRange, 0, 10)
 	if f.doc.URI == uri {
 		fr = append(fr, protocol.BuildFoldingRange(f.doc.Base, lineFoldingOnly))
 	}
+
+	f.parsedMux.Lock()
+	defer f.parsedMux.Unlock()
 
 	for _, api := range f.doc.APIs {
 		matched := api.URI == uri || (api.URI == "" && f.doc.URI == uri)
@@ -120,8 +127,11 @@ func (s *server) textDocumentCompletion(notify bool, in *protocol.CompletionPara
 func (s *server) textDocumentSemanticTokens(notify bool, in *protocol.SemanticTokensParams, out *protocol.SemanticTokens) error {
 	f := s.findFolder(in.TextDocument.URI)
 	if f == nil {
-		return nil
+		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
+
+	f.parsedMux.Lock()
+	defer f.parsedMux.Unlock()
 
 	out.Data = search.Tokens(f.doc, in.TextDocument.URI, 0, 1, 2)
 	return nil

@@ -41,7 +41,7 @@ func TestHover(t *testing.T) {
 	// title
 	hover := &protocol.Hover{}
 	pos := core.Position{Line: 1, Character: 1}
-	a.True(Hover(doc, core.URI("doc.go"), pos, hover))
+	Hover(doc, core.URI("doc.go"), pos, hover)
 	a.Equal(hover.Range, core.Range{
 		Start: core.Position{Line: 1, Character: 1},
 		End:   core.Position{Line: 1, Character: 18},
@@ -51,7 +51,7 @@ func TestHover(t *testing.T) {
 	// apis[0]
 	hover = &protocol.Hover{}
 	pos = core.Position{Line: 4, Character: 2}
-	a.True(Hover(doc, core.URI("doc.go"), pos, hover))
+	Hover(doc, core.URI("doc.go"), pos, hover)
 	a.Equal(hover.Range, core.Range{
 		Start: core.Position{Line: 4, Character: 1},
 		End:   core.Position{Line: 7, Character: 7},
@@ -64,7 +64,7 @@ func TestHover(t *testing.T) {
 	// 改变了 api[0].URI，不再匹配 apis[0]，取其父元素 apidoc
 	hover = &protocol.Hover{}
 	pos = core.Position{Line: 4, Character: 1}
-	a.True(Hover(doc, core.URI("doc.go"), pos, hover))
+	Hover(doc, core.URI("doc.go"), pos, hover)
 	a.Equal(hover.Range, core.Range{
 		Start: core.Position{Line: 0, Character: 0},
 		End:   core.Position{Line: 12, Character: 9},
@@ -74,7 +74,7 @@ func TestHover(t *testing.T) {
 	// 与 apis[0] 相同的 URI
 	hover = &protocol.Hover{}
 	pos = core.Position{Line: 4, Character: 1}
-	a.True(Hover(doc, core.URI("api0.go"), pos, hover))
+	Hover(doc, core.URI("api0.go"), pos, hover)
 	a.Equal(hover.Range, core.Range{
 		Start: core.Position{Line: 4, Character: 1},
 		End:   core.Position{Line: 7, Character: 7},
