@@ -2,12 +2,15 @@
 
 ## [Unreleased]
 
+## [v7.1.0]
+
 ### Added
 
 - 添加对 lua、dart、typescript、zig 和 lisp 及其方言的支持；
 - 为 version 子命令添加 `kind` 选项；
 - 为 core.Range 和 core.Location 添加了 Equal 方法用于判断值是否相等；
 - 添加对 textDocument/foldingRange 的支持；
+- 添加对 textDocument/semanticTokens 的支持；
 
 ### Fixed
 
@@ -38,7 +41,7 @@
 - 新的文档标签 xml-cdata 用于标记该内容在 xml 格式下是否需要以 CDATA 的形式展示；
 - 添加地命名空间的支持；
 - 添加全局的 XMLNamespaces 字段，用于指定可用的命名空间；
-- build.Output 添加了两个配置项：Namespace 和 NamespacePrefix；
+- build.Output 添加了两个配置项：Namespace 和 NamespacePrefix ；
 - @xml-wrapped 添加两种语法表示；
 - 重新添加 Pack 和 Unpack，用于打包和解包文档内容；
 - 数据类型现在可以指定子类型，比如 `string.email` 表示邮箱地址，也必定是字符串；
