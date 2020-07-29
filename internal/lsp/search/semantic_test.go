@@ -27,12 +27,11 @@ func TestTokenBuilder_append(t *testing.T) {
 	a.Equal(1, len(b.tokens))
 
 	// 长度为 0
-	a.Panic(func() {
-		b.append(core.Range{
-			Start: core.Position{Line: 1, Character: 11},
-			End:   core.Position{Line: 1, Character: 11},
-		}, 1)
-	})
+	b.append(core.Range{
+		Start: core.Position{Line: 1, Character: 11},
+		End:   core.Position{Line: 1, Character: 11},
+	}, 1)
+	a.Equal(2, len(b.tokens))
 
 	// 长度为负数
 	a.Panic(func() {

@@ -31,7 +31,7 @@ func (b *tokenBuilder) append(r core.Range, token int) {
 	}
 
 	l := r.End.Character - r.Start.Character
-	if l <= 0 {
+	if l < 0 { // 可能存在长度为 0 的，比如 default="" 值的长度为 0
 		panic(fmt.Sprintf("无效的参数 range，其长度为 %d", l))
 	}
 
