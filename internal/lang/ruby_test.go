@@ -18,7 +18,7 @@ func TestRubyMultipleComment(t *testing.T) {
 	b := newRubyMultipleComment("=pod", "=cut", "")
 
 	rslt := messagetest.NewMessageHandler()
-	l := NewLexer(rslt.Handler, core.Block{Data: []byte("=pod\ncomment1\n=cut\n")}, nil)
+	l := newParser(rslt.Handler, core.Block{Data: []byte("=pod\ncomment1\n=cut\n")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
@@ -28,7 +28,7 @@ func TestRubyMultipleComment(t *testing.T) {
 
 	// 多个注释结束符
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: []byte("=pod\ncomment1\ncomment2\n=cut\n=cut\n")}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: []byte("=pod\ncomment1\ncomment2\n=cut\n=cut\n")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
@@ -38,7 +38,7 @@ func TestRubyMultipleComment(t *testing.T) {
 
 	// 换行符开头
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: []byte("\ncomment1\ncomment2\n=cut\n=cut\n")}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: []byte("\ncomment1\ncomment2\n=cut\n=cut\n")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.False(b.BeginFunc(l))
@@ -48,7 +48,7 @@ func TestRubyMultipleComment(t *testing.T) {
 
 	// 没有注释结束符
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: []byte("comment1")}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: []byte("comment1")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.False(b.BeginFunc(l))

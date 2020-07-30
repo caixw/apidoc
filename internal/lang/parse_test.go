@@ -11,7 +11,7 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
-func TestLexer_block(t *testing.T) {
+func TestParser_block(t *testing.T) {
 	a := assert.New(t)
 
 	blocks := []Blocker{
@@ -39,7 +39,7 @@ mcomment2
 =cut
 `)
 	rslt := messagetest.NewMessageHandler()
-	l := NewLexer(rslt.Handler, core.Block{Data: data}, blocks)
+	l := newParser(rslt.Handler, core.Block{Data: data}, blocks)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 
@@ -98,7 +98,7 @@ mcomment2
 		Equal(string(data), "      mcomment3\n mcomment4\n     ")
 }
 
-func TestLexer_Parse(t *testing.T) {
+func TestParser_Parse(t *testing.T) {
 	a := assert.New(t)
 
 	raw := `// <api method="GET">
@@ -114,9 +114,9 @@ func TestLexer_Parse(t *testing.T) {
 	}
 	blocks := make(chan core.Block, 100)
 	rslt := messagetest.NewMessageHandler()
-	l := NewLexer(rslt.Handler, b, cStyle)
+	l := newParser(rslt.Handler, b, cStyle)
 	a.NotNil(l)
-	l.Parse(blocks)
+	l.parse(blocks)
 	rslt.Handler.Stop()
 	close(blocks)
 	a.Equal(1, len(blocks))
@@ -146,9 +146,9 @@ func TestLexer_Parse(t *testing.T) {
 	}
 	blocks = make(chan core.Block, 100)
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, b, cStyle)
+	l = newParser(rslt.Handler, b, cStyle)
 	a.NotNil(l)
-	l.Parse(blocks)
+	l.parse(blocks)
 	rslt.Handler.Stop()
 	close(blocks)
 	a.NotEmpty(rslt.Errors)

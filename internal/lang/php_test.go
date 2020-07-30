@@ -24,7 +24,7 @@ EOF
 `)
 
 	rslt := messagetest.NewMessageHandler()
-	l := NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	l := newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
@@ -44,7 +44,7 @@ EOF
 EOF
 `)
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
@@ -64,7 +64,7 @@ EOF
 EOF;
 `)
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
@@ -84,7 +84,7 @@ EOF;
 EOF;
 `)
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.False(b.BeginFunc(l))
@@ -96,7 +96,7 @@ EOF;
 EO
 `)
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))

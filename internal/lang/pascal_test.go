@@ -20,7 +20,7 @@ func TestPascalStringBlock(t *testing.T) {
 	a.NotNil(b)
 
 	rslt := messagetest.NewMessageHandler()
-	l := NewLexer(rslt.Handler, core.Block{Data: []byte(`"123""123"`)}, nil)
+	l := newParser(rslt.Handler, core.Block{Data: []byte(`"123""123"`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
@@ -31,7 +31,7 @@ func TestPascalStringBlock(t *testing.T) {
 	a.Empty(bs).True(l.AtEOF()) // 到达末尾
 
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: []byte(`"123"""123"`)}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: []byte(`"123"""123"`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))

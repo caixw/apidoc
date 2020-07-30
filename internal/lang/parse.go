@@ -3,35 +3,45 @@
 package lang
 
 import (
+	"fmt"
+
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/lexer"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
-// Lexer 是对一个文本内容的包装，方便 blocker 等接口操作。
-type Lexer struct {
+// Parse 分析 data 的内容并输出到到 blocks
+func Parse(h *core.MessageHandler, langID string, data core.Block, blocks chan core.Block) {
+	l := Get(langID)
+	if l == nil {
+		panic(fmt.Sprintf("%s 指定的语言解析器并不存在", langID))
+	}
+
+	newParser(h, data, l.Blocks).parse(blocks)
+}
+
+type parser struct {
 	*lexer.Lexer
 	blocks []Blocker
 	h      *core.MessageHandler
 }
 
-// NewLexer 声明 Lexer 实例
-func NewLexer(h *core.MessageHandler, block core.Block, blocks []Blocker) *Lexer {
+func newParser(h *core.MessageHandler, block core.Block, blocks []Blocker) *parser {
 	l, err := lexer.New(block)
 	if err != nil {
 		h.Error(err)
 		return nil
 	}
 
-	return &Lexer{
+	return &parser{
 		Lexer:  l,
 		blocks: blocks,
 		h:      h,
 	}
 }
 
-// Block 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 Blocker 。
-func (l *Lexer) block() (Blocker, core.Position) {
+// 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 Blocker 。
+func (l *parser) block() (Blocker, core.Position) {
 	for {
 		if l.AtEOF() {
 			return nil, core.Position{}
@@ -48,8 +58,8 @@ func (l *Lexer) block() (Blocker, core.Position) {
 	}
 }
 
-// Parse 分析 l.data 的内容并输出到 blocks
-func (l *Lexer) Parse(blocks chan core.Block) {
+// 分析 l.data 的内容并输出到 blocks
+func (l *parser) parse(blocks chan core.Block) {
 	var block Blocker
 	var pos core.Position
 	for {

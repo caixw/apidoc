@@ -21,13 +21,13 @@ func newRubyMultipleComment(begin, end, prefix string) Blocker {
 }
 
 // BeginFunc 实现 Blocker.BeginFunc
-func (b *rubyMultipleComment) BeginFunc(l *Lexer) bool {
+func (b *rubyMultipleComment) BeginFunc(l *parser) bool {
 	return l.Current().Character == 0 && l.Match(b.begin)
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *rubyMultipleComment) EndFunc(l *Lexer) (data []byte, ok bool) {
+func (b *rubyMultipleComment) EndFunc(l *parser) (data []byte, ok bool) {
 	data, found := l.DelimString(b.end, true)
 	if !found { // 没有找到结束符号，直接到达文件末尾
 		return nil, false

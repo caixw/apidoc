@@ -17,11 +17,11 @@ func newPascalStringBlock(symbol byte) Blocker {
 	}
 }
 
-func (b *pascalStringBlock) BeginFunc(l *Lexer) bool {
+func (b *pascalStringBlock) BeginFunc(l *parser) bool {
 	return l.Match(b.symbol)
 }
 
-func (b *pascalStringBlock) EndFunc(l *Lexer) (data []byte, ok bool) {
+func (b *pascalStringBlock) EndFunc(l *parser) (data []byte, ok bool) {
 LOOP:
 	for {
 		switch {

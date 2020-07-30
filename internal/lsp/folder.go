@@ -15,6 +15,7 @@ import (
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 	"github.com/caixw/apidoc/v7/internal/lsp/search"
@@ -56,7 +57,7 @@ func (f *folder) parseBlock(block core.Block) {
 	}
 
 	f.doc.ParseBlocks(f.h, func(blocks chan core.Block) {
-		input.Parse(blocks, f.h, block)
+		lang.Parse(f.h, input.Lang, block, blocks)
 	})
 
 }

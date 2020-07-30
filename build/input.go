@@ -172,13 +172,8 @@ func (o *Input) ParseFile(blocks chan core.Block, h *core.MessageHandler, uri co
 		return
 	}
 
-	o.Parse(blocks, h, core.Block{
+	lang.Parse(h, o.Lang, core.Block{
 		Data:     data,
 		Location: core.Location{URI: uri},
-	})
-}
-
-// Parse 分析 block 的内容并输出到到 blocks
-func (o *Input) Parse(blocks chan core.Block, h *core.MessageHandler, block core.Block) {
-	lang.NewLexer(h, block, o.blocks).Parse(blocks)
+	}, blocks)
 }

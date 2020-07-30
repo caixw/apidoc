@@ -22,7 +22,7 @@ func newPHPDocBlock() Blocker {
 	}
 }
 
-func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
+func (b *phpDocBlock) BeginFunc(l *parser) bool {
 	prev := l.Current()
 
 	if !l.Match("<<<") {
@@ -47,7 +47,7 @@ func (b *phpDocBlock) BeginFunc(l *Lexer) bool {
 	return true
 }
 
-func (b *phpDocBlock) EndFunc(l *Lexer) (data []byte, ok bool) {
+func (b *phpDocBlock) EndFunc(l *parser) (data []byte, ok bool) {
 	for {
 		switch {
 		case l.AtEOF():

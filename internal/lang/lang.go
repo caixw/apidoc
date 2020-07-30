@@ -298,9 +298,9 @@ type Language struct {
 // Get 获取指定语言的定义信息
 //
 // 若不存在，则返回 nil
-func Get(name string) *Language {
+func Get(id string) *Language {
 	for _, lang := range langs {
-		if lang.ID == name {
+		if lang.ID == id {
 			return lang
 		}
 	}

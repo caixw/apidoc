@@ -20,7 +20,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	a.NotNil(b)
 
 	rslt := messagetest.NewMessageHandler()
-	l := NewLexer(rslt.Handler, core.Block{Data: []byte(`/* *123*123**/`)}, nil)
+	l := newParser(rslt.Handler, core.Block{Data: []byte(`/* *123*123**/`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 
@@ -33,7 +33,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 
 	// 多行，最后一行没有任何内容，则不返回数据
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: []byte(`/**
+	l = newParser(rslt.Handler, core.Block{Data: []byte(`/**
 	* xx
 	* yy
 */`)}, nil)
@@ -45,7 +45,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 		Equal(string(data), "   \n\t  xx\n\t  yy\n  ")
 
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: []byte(`/**
+	l = newParser(rslt.Handler, core.Block{Data: []byte(`/**
 	* xx/yy/zz
 	* yy/zz/
 	*/`)}, nil)
@@ -58,7 +58,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 
 	// 嵌套注释
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/*/`)}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/*/`)}, nil)
 	rslt.Handler.Stop()
 	a.NotError(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
@@ -70,7 +70,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 
 	// 多出 end 匹配项
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/*/*/`)}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/*/*/`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
@@ -81,7 +81,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 
 	// 缺少 end 匹配项
 	rslt = messagetest.NewMessageHandler()
-	l = NewLexer(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/`)}, nil)
+	l = newParser(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
