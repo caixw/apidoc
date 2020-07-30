@@ -30,7 +30,7 @@ func TestLangs(t *testing.T) {
 		a.True(isLower(lang.ID), "名称非小写 %s", lang.ID)
 
 		// 检测 block
-		a.NotEmpty(lang.Blocks, "blocks 不能为空，在 %s", lang.ID)
+		a.NotEmpty(lang.blocks, "blocks 不能为空，在 %s", lang.ID)
 
 		// 检测扩展名
 		for _, ext := range lang.Exts {

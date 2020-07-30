@@ -36,7 +36,6 @@ type Input struct {
 	// 源文件的编码，默认为 UTF-8
 	Encoding string `yaml:"encoding,omitempty"`
 
-	blocks   []lang.Blocker    // 根据 Lang 生成
 	paths    []core.URI        // 根据 Dir、Exts 和 Recursive 生成
 	encoding encoding.Encoding // 根据 Encoding 生成
 }
@@ -70,7 +69,6 @@ func (o *Input) sanitize() error {
 	if language == nil {
 		return core.NewSyntaxError(core.Location{}, "lang", locale.ErrInvalidValue)
 	}
-	o.blocks = language.Blocks
 
 	if len(o.Exts) > 0 {
 		exts := make([]string, 0, len(o.Exts))

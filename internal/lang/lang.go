@@ -11,28 +11,28 @@ var langs = []*Language{
 		DisplayName: "C#",
 		ID:          "c#",
 		Exts:        []string{".cs"},
-		Blocks:      cStyle,
+		blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "C/C++",
 		ID:          "c++",
 		Exts:        []string{".h", ".c", ".cpp", ".cxx", ".hpp"},
-		Blocks:      cStyle,
+		blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "D",
 		ID:          "d",
 		Exts:        []string{".d"},
-		Blocks:      cStyle,
+		blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "Dart",
 		ID:          "dart",
 		Exts:        []string{".dart"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newString("'", "'", `\`),
 			newString("r'", "'", ``),
@@ -50,7 +50,7 @@ var langs = []*Language{
 		DisplayName: "Erlang",
 		ID:          "erlang",
 		Exts:        []string{".erl", ".hrl"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newSingleComment("%"),
 		},
@@ -60,7 +60,7 @@ var langs = []*Language{
 		DisplayName: "Go",
 		ID:          "go",
 		Exts:        []string{".go"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newString("`", "`", ""),
 			newCStyleChar(),
@@ -73,7 +73,7 @@ var langs = []*Language{
 		DisplayName: "Groovy",
 		ID:          "groovy",
 		Exts:        []string{".groovy"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newString("'", "'", `\`),
 			newString("'''", "'''", `\`),
@@ -86,14 +86,14 @@ var langs = []*Language{
 		DisplayName: "Java",
 		ID:          "java",
 		Exts:        []string{".java"},
-		Blocks:      cStyle,
+		blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "JavaScript",
 		ID:          "javascript",
 		Exts:        []string{".js"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newString("'", "'", `\`),
 			newString("`", "`", `\`),
@@ -108,7 +108,7 @@ var langs = []*Language{
 		DisplayName: "Kotlin",
 		ID:          "kotlin",
 		Exts:        []string{".kt"},
-		Blocks:      cStyle,
+		blocks:      cStyle,
 	},
 
 	{
@@ -117,7 +117,7 @@ var langs = []*Language{
 		// .ss,.scm ==> scheme
 		// .clj     ==> Coljure
 		Exts: []string{".lisp", ".lsp", ".l", ".ss", ".scm", ".clj"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newString(`"`, `"`, `\`), // #"" 为正则表达式
 			newSingleComment(";;;;"),
 			newSingleComment(";;;"),
@@ -130,7 +130,7 @@ var langs = []*Language{
 		DisplayName: "Lua",
 		ID:          "lua",
 		Exts:        []string{".lua"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newString("'", "'", `\`),
 			newString("\"", "\"", `\`),
 			newString("[[", "]]", ``),
@@ -144,7 +144,7 @@ var langs = []*Language{
 		DisplayName: "Pascal/Delphi",
 		ID:          "pascal",
 		Exts:        []string{".pas", ".pp"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newPascalStringBlock('\''),
 			newPascalStringBlock('"'),
 			newMultipleComment("{", "}", ""),
@@ -156,7 +156,7 @@ var langs = []*Language{
 		DisplayName: "Perl",
 		ID:          "perl",
 		Exts:        []string{".perl", ".prl", ".pl"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newString("'", "'", `\`),
 			newSingleComment("#"),
@@ -168,7 +168,7 @@ var langs = []*Language{
 		DisplayName: "PHP",
 		ID:          "php",
 		Exts:        []string{".php"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newString("'", "'", `\`),
 			newPHPDocBlock(),
@@ -182,7 +182,7 @@ var langs = []*Language{
 		DisplayName: "Python",
 		ID:          "python",
 		Exts:        []string{".py"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newMultipleComment(`"""`, `"""`, ""),
 			newMultipleComment("'''", "'''", ""),
 			newCStyleString(),
@@ -194,7 +194,7 @@ var langs = []*Language{
 		DisplayName: "Ruby",
 		ID:          "ruby",
 		Exts:        []string{".rb"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newString("'", "'", `\`),
 			newSingleComment(`#`),
@@ -206,21 +206,21 @@ var langs = []*Language{
 		DisplayName: "Rust",
 		ID:          "rust",
 		Exts:        []string{".rs"},
-		Blocks:      cStyle,
+		blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "Scala",
 		ID:          "scala",
 		Exts:        []string{".scala"},
-		Blocks:      cStyle,
+		blocks:      cStyle,
 	},
 
 	{
 		DisplayName: "Swift",
 		ID:          "swift",
 		Exts:        []string{".swift"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newString(`"""`, `"""`, `\`),
 			newString(`#"`, `"#`, ""),
 			newCStyleString(),
@@ -234,7 +234,7 @@ var langs = []*Language{
 		DisplayName: "Typescript",
 		ID:          "typescript",
 		Exts:        []string{".ts"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newString("'", "'", `\`),
 			newString("`", "`", `\`),
@@ -249,7 +249,7 @@ var langs = []*Language{
 		DisplayName: "Zig",
 		ID:          "zig",
 		Exts:        []string{".zig"},
-		Blocks: []Blocker{
+		blocks: []Blocker{
 			newCStyleString(),
 			newCStyleChar(),
 			newSingleComment("///"), // 需要在 // 之前定义
@@ -291,7 +291,7 @@ func newCStyleMultipleComment() Blocker {
 type Language struct {
 	DisplayName string    // 显示友好的名称
 	ID          string    // 语言唯一名称，一律小写
-	Blocks      []Blocker // 注释块的解析规则定义
+	blocks      []Blocker // 注释块的解析规则定义
 	Exts        []string  // 扩展名列表，必须以 . 开头且小写
 }
 
