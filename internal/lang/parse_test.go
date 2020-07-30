@@ -14,7 +14,7 @@ import (
 func TestParser_block(t *testing.T) {
 	a := assert.New(t)
 
-	blocks := []Blocker{
+	blocks := []blocker{
 		newCStyleSingleComment(),
 		newCStyleMultipleComment(),
 		newRubyMultipleComment("=pod", "=cut", ""),
@@ -48,7 +48,7 @@ mcomment2
 	a.Equal(pos, core.Position{Line: 0, Character: 0})
 	_, ok := b.(*singleComment)
 	a.True(ok)
-	data, ok = b.EndFunc(l)
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "   scomment1\n     scomment2\n")
 
@@ -57,7 +57,7 @@ mcomment2
 	a.Equal(pos, core.Position{Line: 3, Character: 0})
 	_, ok = b.(*stringBlock)
 	a.True(ok)
-	_, ok = b.EndFunc(l)
+	_, ok = b.endFunc(l)
 	a.True(ok)
 
 	b, pos = l.block() // 中文2
@@ -65,7 +65,7 @@ mcomment2
 	a.Equal(pos, core.Position{Line: 4, Character: 4})
 	_, ok = b.(*stringBlock)
 	a.True(ok)
-	_, ok = b.EndFunc(l)
+	_, ok = b.endFunc(l)
 	a.True(ok)
 
 	b, pos = l.block()
@@ -73,7 +73,7 @@ mcomment2
 	a.Equal(pos, core.Position{Line: 5, Character: 1})
 	_, ok = b.(*multipleComment)
 	a.True(ok)
-	data, ok = b.EndFunc(l)
+	data, ok = b.endFunc(l)
 	a.NotError(ok).
 		Equal(string(data), "  \nmcomment1\nmcomment2\n  ")
 
@@ -84,7 +84,7 @@ mcomment2
 	a.Equal(pos, core.Position{Line: 10, Character: 2})
 	_, ok = b.(*singleComment)
 	a.True(ok)
-	data, ok = b.EndFunc(l)
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "   scomment3\n   scomment4\n")
 
@@ -93,7 +93,7 @@ mcomment2
 	a.Equal(pos, core.Position{Line: 12, Character: 0})
 	_, ok = b.(*rubyMultipleComment)
 	a.True(ok)
-	data, ok = b.EndFunc(l)
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "      mcomment3\n mcomment4\n     ")
 }

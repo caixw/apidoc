@@ -16,13 +16,13 @@ type phpDocBlock struct {
 // herodoc 和 nowdoc 的实现。
 //
 // http://php.net/manual/zh/language.types.string.php#language.types.string.syntax.heredoc
-func newPHPDocBlock() Blocker {
+func newPHPDocBlock() blocker {
 	return &phpDocBlock{
 		doctype: phpHerodoc,
 	}
 }
 
-func (b *phpDocBlock) BeginFunc(l *parser) bool {
+func (b *phpDocBlock) beginFunc(l *parser) bool {
 	prev := l.Current()
 
 	if !l.Match("<<<") {
@@ -47,7 +47,7 @@ func (b *phpDocBlock) BeginFunc(l *parser) bool {
 	return true
 }
 
-func (b *phpDocBlock) EndFunc(l *parser) (data []byte, ok bool) {
+func (b *phpDocBlock) endFunc(l *parser) (data []byte, ok bool) {
 	for {
 		switch {
 		case l.AtEOF():

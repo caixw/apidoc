@@ -7,10 +7,10 @@ import (
 	"unicode"
 )
 
-// Blocker 接口定义了解析代码块的所有操作
-type Blocker interface {
+// 接口定义了解析代码块的所有操作
+type blocker interface {
 	// 确定 l 的当前位置是否匹配 Blocker 的起始位置。
-	BeginFunc(l *parser) bool
+	beginFunc(l *parser) bool
 
 	// 确定 l 的当前位置是否匹配 Blocker 的结束位置
 	//
@@ -18,7 +18,7 @@ type Blocker interface {
 	// 比如字符串，只需要返回 true，以确保找到了结束位置，但是 data 可以直接返回 nil。
 	//
 	// 如果在到达文件末尾都没有找到结束符，则应该返回 nil, false
-	EndFunc(l *parser) (data []byte, ok bool)
+	endFunc(l *parser) (data []byte, ok bool)
 }
 
 type (
@@ -37,7 +37,7 @@ type (
 	}
 )
 
-func newString(begin, end, escape string) Blocker {
+func newString(begin, end, escape string) blocker {
 	return &stringBlock{
 		begin:  begin,
 		end:    end,
@@ -45,14 +45,14 @@ func newString(begin, end, escape string) Blocker {
 	}
 }
 
-func newSingleComment(begin string) Blocker {
+func newSingleComment(begin string) blocker {
 	return &singleComment{
 		begin:  begin,
 		begins: []byte(begin),
 	}
 }
 
-func newMultipleComment(begin, end, prefix string) Blocker {
+func newMultipleComment(begin, end, prefix string) blocker {
 	return &multipleComment{
 		begin:  begin,
 		end:    end,
@@ -63,8 +63,7 @@ func newMultipleComment(begin, end, prefix string) Blocker {
 	}
 }
 
-// BeginFunc 实现 Blocker.BeginFunc
-func (b *stringBlock) BeginFunc(l *parser) bool {
+func (b *stringBlock) beginFunc(l *parser) bool {
 	return l.Match(b.begin)
 }
 
@@ -73,7 +72,7 @@ func (b *stringBlock) BeginFunc(l *parser) bool {
 // 正常找到结束符的返回 true，否则返回 false。
 //
 // 第一个返回参数无用，仅是为了统一函数签名
-func (b *stringBlock) EndFunc(l *parser) (data []byte, ok bool) {
+func (b *stringBlock) endFunc(l *parser) (data []byte, ok bool) {
 	for {
 		switch {
 		case l.AtEOF():
@@ -88,13 +87,12 @@ func (b *stringBlock) EndFunc(l *parser) (data []byte, ok bool) {
 	} // end for
 }
 
-// BeginFunc 实现 Blocker.BeginFunc
-func (b *singleComment) BeginFunc(l *parser) bool {
+func (b *singleComment) beginFunc(l *parser) bool {
 	return l.Match(b.begin)
 }
 
 // 从 l 的当前位置往后开始查找连续的相同类型单行代码块。
-func (b *singleComment) EndFunc(l *parser) (data []byte, ok bool) {
+func (b *singleComment) endFunc(l *parser) (data []byte, ok bool) {
 	data = make([]byte, 0, 120)
 
 	for {
@@ -115,14 +113,13 @@ func (b *singleComment) EndFunc(l *parser) (data []byte, ok bool) {
 	return convertSingleCommentToXML(data, b.begins), true
 }
 
-// BeginFunc 实现 Blocker.BeginFunc
-func (b *multipleComment) BeginFunc(l *parser) bool {
+func (b *multipleComment) beginFunc(l *parser) bool {
 	return l.Match(b.begin)
 }
 
 // 从 l 的当前位置一直到定义的 b.End 之间的所有字符。
 // 会对每一行应用 filterSymbols 规则。
-func (b *multipleComment) EndFunc(l *parser) (data []byte, ok bool) {
+func (b *multipleComment) endFunc(l *parser) (data []byte, ok bool) {
 	data, found := l.DelimString(b.end, true)
 	if !found { // 没有找到结束符号，直接到达文件末尾
 		return nil, false

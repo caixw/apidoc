@@ -27,13 +27,13 @@ EOF
 	l := newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
+	a.True(b.beginFunc(l))
 	bb, ok := b.(*phpDocBlock)
 	a.True(ok)
 	a.Equal(bb.token1, "\nEOF\n").
 		Equal(bb.token2, "\nEOF;\n").
 		Equal(bb.doctype, phpHerodoc)
-	data, ok = b.EndFunc(l)
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Nil(data)
 
@@ -47,13 +47,13 @@ EOF
 	l = newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
+	a.True(b.beginFunc(l))
 	bb, ok = b.(*phpDocBlock)
 	a.True(ok)
 	a.Equal(bb.token1, "\nEOF\n").
 		Equal(bb.token2, "\nEOF;\n").
 		Equal(bb.doctype, phpNowdoc)
-	data, ok = b.EndFunc(l)
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Nil(data)
 
@@ -67,13 +67,13 @@ EOF;
 	l = newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
+	a.True(b.beginFunc(l))
 	bb, ok = b.(*phpDocBlock)
 	a.True(ok)
 	a.Equal(bb.token1, "\nEOF\n").
 		Equal(bb.token2, "\nEOF;\n").
 		Equal(bb.doctype, phpNowdoc)
-	data, ok = b.EndFunc(l)
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Nil(data)
 
@@ -87,7 +87,7 @@ EOF;
 	l = newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.False(b.BeginFunc(l))
+	a.False(b.beginFunc(l))
 
 	// nowdoc 不存在结束符
 	data = []byte(`<<<'EOF'
@@ -99,12 +99,12 @@ EO
 	l = newParser(rslt.Handler, core.Block{Data: data}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
+	a.True(b.beginFunc(l))
 	bb, ok = b.(*phpDocBlock)
 	a.True(ok)
 	a.Equal(bb.token1, "\nEOF\n").
 		Equal(bb.token2, "\nEOF;\n").
 		Equal(bb.doctype, phpNowdoc)
-	data, ok = b.EndFunc(l)
+	data, ok = b.endFunc(l)
 	a.False(ok)
 }

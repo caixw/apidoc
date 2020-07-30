@@ -11,7 +11,7 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
-var _ Blocker = &swiftNestMCommentBlock{}
+var _ blocker = &swiftNestMCommentBlock{}
 
 func TestSwiftNestCommentBlock(t *testing.T) {
 	a := assert.New(t)
@@ -24,8 +24,8 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
 
-	a.True(b.BeginFunc(l))
-	data, ok := b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok := b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "   *123*123*  ")
 	bs := l.Next(1)
@@ -39,8 +39,8 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 */`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "   \n\t  xx\n\t  yy\n  ")
 
@@ -51,8 +51,8 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	*/`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "   \n\t  xx/yy/zz\n\t  yy/zz/\n\t  ")
 
@@ -61,8 +61,8 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/*/`)}, nil)
 	rslt.Handler.Stop()
 	a.NotError(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "  0/*1/*2*/*/  ")
 	bs = l.Next(1)
@@ -73,8 +73,8 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/*/*/`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "  0/*1/*2*/*/  ").
 		Equal(string(l.All()), "*/")
@@ -84,8 +84,8 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.False(ok).
 		Equal(len(data), 0).
 		True(l.AtEOF()) // 到达末尾

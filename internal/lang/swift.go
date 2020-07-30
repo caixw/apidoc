@@ -17,7 +17,7 @@ type swiftNestMCommentBlock struct {
 //   *
 //   */
 // 中的 * 字符
-func newSwiftNestMCommentBlock(begin, end, prefix string) Blocker {
+func newSwiftNestMCommentBlock(begin, end, prefix string) blocker {
 	return &swiftNestMCommentBlock{
 		begin:  begin,
 		end:    end,
@@ -27,7 +27,7 @@ func newSwiftNestMCommentBlock(begin, end, prefix string) Blocker {
 	}
 }
 
-func (b *swiftNestMCommentBlock) BeginFunc(l *parser) bool {
+func (b *swiftNestMCommentBlock) beginFunc(l *parser) bool {
 	if l.Match(b.begin) {
 		b.level++
 		return true
@@ -36,7 +36,7 @@ func (b *swiftNestMCommentBlock) BeginFunc(l *parser) bool {
 	return false
 }
 
-func (b *swiftNestMCommentBlock) EndFunc(l *parser) (data []byte, ok bool) {
+func (b *swiftNestMCommentBlock) endFunc(l *parser) (data []byte, ok bool) {
 	data = append(make([]byte, 0, 200), b.begins...)
 
 LOOP:

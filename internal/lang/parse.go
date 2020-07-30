@@ -22,11 +22,11 @@ func Parse(h *core.MessageHandler, langID string, data core.Block, blocks chan c
 
 type parser struct {
 	*lexer.Lexer
-	blocks []Blocker
+	blocks []blocker
 	h      *core.MessageHandler
 }
 
-func newParser(h *core.MessageHandler, block core.Block, blocks []Blocker) *parser {
+func newParser(h *core.MessageHandler, block core.Block, blocks []blocker) *parser {
 	l, err := lexer.New(block)
 	if err != nil {
 		h.Error(err)
@@ -41,7 +41,7 @@ func newParser(h *core.MessageHandler, block core.Block, blocks []Blocker) *pars
 }
 
 // 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 Blocker 。
-func (l *parser) block() (Blocker, core.Position) {
+func (l *parser) block() (blocker, core.Position) {
 	for {
 		if l.AtEOF() {
 			return nil, core.Position{}
@@ -49,7 +49,7 @@ func (l *parser) block() (Blocker, core.Position) {
 
 		pos := l.Current()
 		for _, block := range l.blocks {
-			if block.BeginFunc(l) {
+			if block.beginFunc(l) {
 				return block, pos.Position
 			}
 		}
@@ -60,7 +60,7 @@ func (l *parser) block() (Blocker, core.Position) {
 
 // 分析 l.data 的内容并输出到 blocks
 func (l *parser) parse(blocks chan core.Block) {
-	var block Blocker
+	var block blocker
 	var pos core.Position
 	for {
 		if l.AtEOF() {
@@ -73,7 +73,7 @@ func (l *parser) parse(blocks chan core.Block) {
 			}
 		}
 
-		data, ok := block.EndFunc(l)
+		data, ok := block.endFunc(l)
 		if !ok { // 没有找到结束标签，那肯定是到文件尾了，可以直接返回。
 			loc := core.Location{
 				URI: l.Location.URI,

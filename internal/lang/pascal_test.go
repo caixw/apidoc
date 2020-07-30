@@ -11,7 +11,7 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
-var _ Blocker = &pascalStringBlock{}
+var _ blocker = &pascalStringBlock{}
 
 func TestPascalStringBlock(t *testing.T) {
 	a := assert.New(t)
@@ -23,8 +23,8 @@ func TestPascalStringBlock(t *testing.T) {
 	l := newParser(rslt.Handler, core.Block{Data: []byte(`"123""123"`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok := b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok := b.endFunc(l)
 	a.True(ok).
 		Equal(len(data), 0) // 不返回内容
 	bs := l.Next(1)             // 继续向后推进，才会
@@ -34,8 +34,8 @@ func TestPascalStringBlock(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte(`"123"""123"`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(len(data), 0).            // 不返回内容
 		Equal(string(l.All()), "123\"") // 未到达末尾

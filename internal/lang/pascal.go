@@ -9,7 +9,7 @@ type pascalStringBlock struct {
 	escape string
 }
 
-func newPascalStringBlock(symbol byte) Blocker {
+func newPascalStringBlock(symbol byte) blocker {
 	s := string(symbol)
 	return &pascalStringBlock{
 		symbol: s,
@@ -17,11 +17,11 @@ func newPascalStringBlock(symbol byte) Blocker {
 	}
 }
 
-func (b *pascalStringBlock) BeginFunc(l *parser) bool {
+func (b *pascalStringBlock) beginFunc(l *parser) bool {
 	return l.Match(b.symbol)
 }
 
-func (b *pascalStringBlock) EndFunc(l *parser) (data []byte, ok bool) {
+func (b *pascalStringBlock) endFunc(l *parser) (data []byte, ok bool) {
 LOOP:
 	for {
 		switch {

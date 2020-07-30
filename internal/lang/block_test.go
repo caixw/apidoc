@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	_ Blocker = &stringBlock{}
-	_ Blocker = &singleComment{}
-	_ Blocker = &multipleComment{}
+	_ blocker = &stringBlock{}
+	_ blocker = &singleComment{}
+	_ blocker = &multipleComment{}
 )
 
 func TestStringBlock(t *testing.T) {
@@ -26,8 +26,8 @@ func TestStringBlock(t *testing.T) {
 	l := newParser(rslt.Handler, core.Block{Data: []byte(`"text"`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok := b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok := b.endFunc(l)
 	a.True(ok).Nil(data)
 
 	// 带转义字符
@@ -35,8 +35,8 @@ func TestStringBlock(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte(`"te\"xt"`)}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Nil(data).
 		Equal(l.Current().Offset, len(`"te\"xt"`))
@@ -46,8 +46,8 @@ func TestStringBlock(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte("text")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.False(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.False(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.False(ok).Nil(data)
 }
 
@@ -60,8 +60,8 @@ func TestSingleComment(t *testing.T) {
 	l := newParser(rslt.Handler, core.Block{Data: []byte("//comment1\n")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok := b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok := b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "  comment1\n")
 
@@ -70,8 +70,8 @@ func TestSingleComment(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte("// comment1")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "   comment1")
 
@@ -80,8 +80,8 @@ func TestSingleComment(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte("//comment1\n//comment2\n // comment3")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "  comment1\n  comment2\n    comment3")
 
@@ -90,8 +90,8 @@ func TestSingleComment(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte("//comment1\n//\n//comment2\n //comment3")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "  comment1\n  \n  comment2\n   comment3")
 
@@ -100,8 +100,8 @@ func TestSingleComment(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte("//comment1\n // comment2\n\n //comment3\n")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, ok = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, ok = b.endFunc(l)
 	a.True(ok).
 		Equal(string(data), "  comment1\n    comment2\n")
 }
@@ -114,8 +114,8 @@ func TestMultipleComment(t *testing.T) {
 	l := newParser(rslt.Handler, core.Block{Data: []byte("/*comment1\n*/")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, found := b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, found := b.endFunc(l)
 	a.True(found).
 		Equal(string(data), "  comment1\n  ")
 
@@ -124,8 +124,8 @@ func TestMultipleComment(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte("/*comment1\ncomment2*/*/")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, found = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, found = b.endFunc(l)
 	a.True(found).
 		Equal(string(data), "  comment1\ncomment2  ")
 
@@ -134,8 +134,8 @@ func TestMultipleComment(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte("/*\ncomment1\ncomment2*/*/")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.True(b.BeginFunc(l))
-	data, found = b.EndFunc(l)
+	a.True(b.beginFunc(l))
+	data, found = b.endFunc(l)
 	a.True(found).
 		Equal(string(data), "  \ncomment1\ncomment2  ")
 
@@ -144,8 +144,8 @@ func TestMultipleComment(t *testing.T) {
 	l = newParser(rslt.Handler, core.Block{Data: []byte("comment1")}, nil)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).NotNil(l)
-	a.False(b.BeginFunc(l))
-	data, found = b.EndFunc(l)
+	a.False(b.beginFunc(l))
+	data, found = b.endFunc(l)
 	a.False(found).Nil(data)
 }
 
