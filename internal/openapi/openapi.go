@@ -17,7 +17,7 @@ import (
 )
 
 // LatestVersion openapi 最新的版本号
-const LatestVersion = "3.0.1"
+const LatestVersion = "3.0.3"
 
 // OpenAPI openAPI 的根对象
 type OpenAPI struct {

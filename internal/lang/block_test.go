@@ -8,6 +8,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 var (
@@ -21,15 +22,19 @@ func TestStringBlock(t *testing.T) {
 	b := newCStyleString()
 	a.NotNil(b)
 
-	l, err := NewLexer(core.Block{Data: []byte(`"text"`)}, nil)
-	a.NotError(err).NotNil(l)
+	rslt := messagetest.NewMessageHandler()
+	l := NewLexer(rslt.Handler, core.Block{Data: []byte(`"text"`)}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok := b.EndFunc(l)
 	a.True(ok).Nil(data)
 
 	// 带转义字符
-	l, err = NewLexer(core.Block{Data: []byte(`"te\"xt"`)}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte(`"te\"xt"`)}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok = b.EndFunc(l)
 	a.True(ok).
@@ -37,8 +42,10 @@ func TestStringBlock(t *testing.T) {
 		Equal(l.Current().Offset, len(`"te\"xt"`))
 
 	// 找不到匹配字符串
-	l, err = NewLexer(core.Block{Data: []byte("text")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte("text")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.False(b.BeginFunc(l))
 	data, ok = b.EndFunc(l)
 	a.False(ok).Nil(data)
@@ -49,40 +56,50 @@ func TestSingleComment(t *testing.T) {
 	b := newCStyleSingleComment()
 	a.NotNil(b)
 
-	l, err := NewLexer(core.Block{Data: []byte("//comment1\n")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt := messagetest.NewMessageHandler()
+	l := NewLexer(rslt.Handler, core.Block{Data: []byte("//comment1\n")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok := b.EndFunc(l)
 	a.True(ok).
 		Equal(string(data), "  comment1\n")
 
 	// 没有换行符，则自动取到结束符。
-	l, err = NewLexer(core.Block{Data: []byte("// comment1")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte("// comment1")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok = b.EndFunc(l)
 	a.True(ok).
 		Equal(string(data), "   comment1")
 
 	// 多行连续的单行注释，且 // 前带空格。
-	l, err = NewLexer(core.Block{Data: []byte("//comment1\n//comment2\n // comment3")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte("//comment1\n//comment2\n // comment3")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok = b.EndFunc(l)
 	a.True(ok).
 		Equal(string(data), "  comment1\n  comment2\n    comment3")
 
 	// 多行连续的单行注释，中间有空白行。
-	l, err = NewLexer(core.Block{Data: []byte("//comment1\n//\n//comment2\n //comment3")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte("//comment1\n//\n//comment2\n //comment3")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok = b.EndFunc(l)
 	a.True(ok).
 		Equal(string(data), "  comment1\n  \n  comment2\n   comment3")
 
 	// 多行不连续的单行注释。
-	l, err = NewLexer(core.Block{Data: []byte("//comment1\n // comment2\n\n //comment3\n")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte("//comment1\n // comment2\n\n //comment3\n")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok = b.EndFunc(l)
 	a.True(ok).
@@ -93,32 +110,40 @@ func TestMultipleComment(t *testing.T) {
 	a := assert.New(t)
 	b := newCStyleMultipleComment()
 
-	l, err := NewLexer(core.Block{Data: []byte("/*comment1\n*/")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt := messagetest.NewMessageHandler()
+	l := NewLexer(rslt.Handler, core.Block{Data: []byte("/*comment1\n*/")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, found := b.EndFunc(l)
 	a.True(found).
 		Equal(string(data), "  comment1\n  ")
 
 	// 多个注释结束符
-	l, err = NewLexer(core.Block{Data: []byte("/*comment1\ncomment2*/*/")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte("/*comment1\ncomment2*/*/")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, found = b.EndFunc(l)
 	a.True(found).
 		Equal(string(data), "  comment1\ncomment2  ")
 
 	// 空格开头
-	l, err = NewLexer(core.Block{Data: []byte("/*\ncomment1\ncomment2*/*/")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte("/*\ncomment1\ncomment2*/*/")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, found = b.EndFunc(l)
 	a.True(found).
 		Equal(string(data), "  \ncomment1\ncomment2  ")
 
 	// 没有注释结束符
-	l, err = NewLexer(core.Block{Data: []byte("comment1")}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte("comment1")}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.False(b.BeginFunc(l))
 	data, found = b.EndFunc(l)
 	a.False(found).Nil(data)

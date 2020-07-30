@@ -180,11 +180,5 @@ func (o *Input) ParseFile(blocks chan core.Block, h *core.MessageHandler, uri co
 
 // Parse 分析 block 的内容并输出到到 blocks
 func (o *Input) Parse(blocks chan core.Block, h *core.MessageHandler, block core.Block) {
-	l, err := lang.NewLexer(block, o.blocks)
-	if err != nil {
-		h.Error(core.NewSyntaxErrorWithError(core.Location{URI: block.Location.URI}, "", err))
-		return
-	}
-
-	l.Parse(blocks, h)
+	lang.NewLexer(h, block, o.blocks).Parse(blocks)
 }

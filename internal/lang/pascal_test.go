@@ -8,6 +8,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 var _ Blocker = &pascalStringBlock{}
@@ -18,8 +19,10 @@ func TestPascalStringBlock(t *testing.T) {
 	b := newPascalStringBlock('"')
 	a.NotNil(b)
 
-	l, err := NewLexer(core.Block{Data: []byte(`"123""123"`)}, nil)
-	a.NotError(err).NotNil(l)
+	rslt := messagetest.NewMessageHandler()
+	l := NewLexer(rslt.Handler, core.Block{Data: []byte(`"123""123"`)}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok := b.EndFunc(l)
 	a.True(ok).
@@ -27,8 +30,10 @@ func TestPascalStringBlock(t *testing.T) {
 	bs := l.Next(1)             // 继续向后推进，才会
 	a.Empty(bs).True(l.AtEOF()) // 到达末尾
 
-	l, err = NewLexer(core.Block{Data: []byte(`"123"""123"`)}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: []byte(`"123"""123"`)}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	data, ok = b.EndFunc(l)
 	a.True(ok).

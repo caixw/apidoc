@@ -8,6 +8,7 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestPHPDocBlock(t *testing.T) {
@@ -21,8 +22,11 @@ func TestPHPDocBlock(t *testing.T) {
 	xx
 EOF
 `)
-	l, err := NewLexer(core.Block{Data: data}, nil)
-	a.NotError(err).NotNil(l)
+
+	rslt := messagetest.NewMessageHandler()
+	l := NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok := b.(*phpDocBlock)
 	a.True(ok)
@@ -39,8 +43,10 @@ EOF
 	xx
 EOF
 `)
-	l, err = NewLexer(core.Block{Data: data}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok = b.(*phpDocBlock)
 	a.True(ok)
@@ -57,8 +63,10 @@ EOF
 	xx
 EOF;
 `)
-	l, err = NewLexer(core.Block{Data: data}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok = b.(*phpDocBlock)
 	a.True(ok)
@@ -75,8 +83,10 @@ EOF;
 	xx
 EOF;
 `)
-	l, err = NewLexer(core.Block{Data: data}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.False(b.BeginFunc(l))
 
 	// nowdoc 不存在结束符
@@ -85,8 +95,10 @@ EOF;
 	xx
 EO
 `)
-	l, err = NewLexer(core.Block{Data: data}, nil)
-	a.NotError(err).NotNil(l)
+	rslt = messagetest.NewMessageHandler()
+	l = NewLexer(rslt.Handler, core.Block{Data: data}, nil)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.BeginFunc(l))
 	bb, ok = b.(*phpDocBlock)
 	a.True(ok)

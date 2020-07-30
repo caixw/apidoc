@@ -12,19 +12,22 @@ import (
 type Lexer struct {
 	*lexer.Lexer
 	blocks []Blocker
+	h      *core.MessageHandler
 }
 
 // NewLexer 声明 Lexer 实例
-func NewLexer(block core.Block, blocks []Blocker) (*Lexer, error) {
+func NewLexer(h *core.MessageHandler, block core.Block, blocks []Blocker) *Lexer {
 	l, err := lexer.New(block)
 	if err != nil {
-		return nil, err
+		h.Error(err)
+		return nil
 	}
 
 	return &Lexer{
 		Lexer:  l,
 		blocks: blocks,
-	}, nil
+		h:      h,
+	}
 }
 
 // Block 从当前位置往后查找，直到找到第一个与 blocks 中某个相匹配的，并返回该 Blocker 。
@@ -46,7 +49,7 @@ func (l *Lexer) block() (Blocker, core.Position) {
 }
 
 // Parse 分析 l.data 的内容并输出到 blocks
-func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler) {
+func (l *Lexer) Parse(blocks chan core.Block) {
 	var block Blocker
 	var pos core.Position
 	for {
@@ -69,7 +72,7 @@ func (l *Lexer) Parse(blocks chan core.Block, h *core.MessageHandler) {
 					End:   l.Current().Position,
 				},
 			}
-			h.Error(core.NewSyntaxError(loc, "", locale.ErrNotFoundEndFlag))
+			l.h.Error(core.NewSyntaxError(loc, "", locale.ErrNotFoundEndFlag))
 			return
 		}
 

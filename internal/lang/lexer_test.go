@@ -38,8 +38,10 @@ mcomment2
  mcomment4
 =cut
 `)
-	l, err := NewLexer(core.Block{Data: data}, blocks)
-	a.NotError(err).NotNil(l)
+	rslt := messagetest.NewMessageHandler()
+	l := NewLexer(rslt.Handler, core.Block{Data: data}, blocks)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).NotNil(l)
 
 	b, pos := l.block() // scomment1
 	a.NotNil(b)
@@ -112,9 +114,9 @@ func TestLexer_Parse(t *testing.T) {
 	}
 	blocks := make(chan core.Block, 100)
 	rslt := messagetest.NewMessageHandler()
-	l, err := NewLexer(b, cStyle)
-	a.NotError(err).NotNil(l)
-	l.Parse(blocks, rslt.Handler)
+	l := NewLexer(rslt.Handler, b, cStyle)
+	a.NotNil(l)
+	l.Parse(blocks)
 	rslt.Handler.Stop()
 	close(blocks)
 	a.Equal(1, len(blocks))
@@ -144,9 +146,9 @@ func TestLexer_Parse(t *testing.T) {
 	}
 	blocks = make(chan core.Block, 100)
 	rslt = messagetest.NewMessageHandler()
-	l, err = NewLexer(b, cStyle)
-	a.NotError(err).NotNil(l)
-	l.Parse(blocks, rslt.Handler)
+	l = NewLexer(rslt.Handler, b, cStyle)
+	a.NotNil(l)
+	l.Parse(blocks)
 	rslt.Handler.Stop()
 	close(blocks)
 	a.NotEmpty(rslt.Errors)
