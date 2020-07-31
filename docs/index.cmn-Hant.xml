@@ -78,7 +78,7 @@
             <li>下載 <a href="https://golang.org/dl/">Go</a>；</li>
             <li>下載源代碼，<samp>git clone github.com/caixw/apidoc</samp>；</li>
             <li>執行代碼中 <code>build/build.sh</code> 或是 <code>build/build.cmd</code> 進行編譯；</li>
-            <li>編譯好的文件存放在 cmd/apidoc 下，可以將該文件放置在 <var>PATH</var> 目錄；</li>
+            <li>編譯好的文件存放在 <code>cmd/apidoc</code> 下，可以將該文件放置在 <var>PATH</var> 目錄；</li>
         </ul>
     </doc>
 

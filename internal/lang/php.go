@@ -36,7 +36,8 @@ func (b *phpDocBlock) beginFunc(l *parser) bool {
 	}
 	token = token[:len(token)-1] // l.delim 会带上换行符，需要去掉
 
-	if token[0] == '\'' && token[len(token)-1] == '\'' {
+	if token[0] == '\'' && token[len(token)-1] == '\'' ||
+		token[0] == '"' && token[len(token)-1] == '"' {
 		b.doctype = phpNowdoc
 		token = token[1 : len(token)-1]
 	}

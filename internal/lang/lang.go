@@ -134,9 +134,9 @@ var langs = []*Language{
 			newString("'", "'", `\`),
 			newString("\"", "\"", `\`),
 			newString("[[", "]]", ``),
-			newSingleComment("--"),
-			newMultipleComment("--[[", "]]", "-="),
 			newMultipleComment("--[====[", "]====]", "-="),
+			newMultipleComment("--[[", "]]", "-="),
+			newSingleComment("--"), // 放在 --[[ 之后，否则会把 --[[ 当作 -- 解析
 		},
 	},
 

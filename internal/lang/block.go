@@ -130,6 +130,12 @@ func (b *multipleComment) endFunc(l *parser) (data []byte, ok bool) {
 	return convertMultipleCommentToXML(raw, b.begins, b.ends, b.prefix), true
 }
 
+// 转换单行注释为一个合法的 XML
+//
+// 主要是去掉了注释符号，比如
+//  // xx
+// 会被转换成
+//     xx
 func convertSingleCommentToXML(lines, begin []byte) []byte {
 	data := make([]byte, 0, len(lines))
 
@@ -171,6 +177,8 @@ func convertSingleCommentToXML(lines, begin []byte) []byte {
 }
 
 // 转换成合法的 XML 格式
+//
+// 功能与 convertSingleCommentToXML，针对多行注释
 func convertMultipleCommentToXML(data, begin, end, chars []byte) []byte {
 	ret := make([]byte, len(data))
 	copy(ret, data)
