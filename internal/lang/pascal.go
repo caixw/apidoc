@@ -22,13 +22,12 @@ func (b *pascalStringBlock) beginFunc(l *parser) bool {
 }
 
 func (b *pascalStringBlock) endFunc(l *parser) (data []byte, ok bool) {
-LOOP:
 	for {
 		switch {
 		case l.AtEOF():
 			return nil, false
 		case l.Match(b.escape): // 转义
-			continue LOOP
+			break
 		case l.Match(b.symbol): // 结束
 			return nil, true
 		default:

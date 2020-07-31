@@ -116,8 +116,8 @@ var langs = []*Language{
 			newString(`raw"`, `"`, ""),
 			newString(`"""`, `"""`, ``),
 			newString(`"`, `"`, `\`),
+			newMultipleComment("#=", "=#", "#="),
 			newSingleComment("#"),
-			newMultipleComment("#=", "=#", ""),
 		},
 	},
 
@@ -154,6 +154,21 @@ var langs = []*Language{
 			newMultipleComment("--[====[", "]====]", "-="),
 			newMultipleComment("--[[", "]]", "-="),
 			newSingleComment("--"), // 放在 --[[ 之后，否则会把 --[[ 当作 -- 解析
+		},
+	},
+
+	{
+		DisplayName: "Nim",
+		ID:          "nim",
+		Exts:        []string{".nim"},
+		blocks: []blocker{
+			newString("'", "'", "\\"),
+			newString(`"`, `"`, "\\"),
+			newNimRawString(),
+			newNimMultipleString(),
+			newSwiftNestMCommentBlock("##[", "]##", "#"),
+			newSwiftNestMCommentBlock("#[", "]#", "#"),
+			newSingleComment("#"),
 		},
 	},
 

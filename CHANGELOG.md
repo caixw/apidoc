@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- 添加对 Julia 和 Nim 的支持；
+
 ## [v7.1.0]
 
 ### Added

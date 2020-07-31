@@ -11,8 +11,6 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
-var _ blocker = &swiftNestMCommentBlock{}
-
 func TestSwiftNestCommentBlock(t *testing.T) {
 	a := assert.New(t)
 

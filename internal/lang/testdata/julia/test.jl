@@ -9,7 +9,9 @@ const c = 'c'
 
 const v = v"v1.1.1"
 
-const raw = raw"xxx\""
+const b = b"010001"
+
+const raw = raw"xxx"
 
 #=
  # line1

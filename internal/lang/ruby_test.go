@@ -11,8 +11,6 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
-var _ blocker = &rubyMultipleComment{}
-
 func TestRubyMultipleComment(t *testing.T) {
 	a := assert.New(t)
 	b := newRubyMultipleComment("=pod", "=cut", "")
