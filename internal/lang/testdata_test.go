@@ -16,6 +16,12 @@ import (
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
+// 当前文件用于测试各个语言的解析是否都正常
+//
+// 测试数据在 ./testdata 目录，按语言 ID 进行分类，
+// 每个目录下可以包含多个同种语言的多个源文件，
+// 各个源文件中只要包含 blocks 中定义的部分内容作为注释代码即可。
+
 var blocks = []string{
 	"   SPDX-License-Identifier: MIT\n",
 	"    line1\n",

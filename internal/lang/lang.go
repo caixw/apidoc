@@ -105,6 +105,23 @@ var langs = []*Language{
 	},
 
 	{
+		DisplayName: "Julia",
+		ID:          "julia",
+		Exts:        []string{".jl"},
+		blocks: []blocker{
+			newString("'", "'", `\`),
+			newString(`r"`, `"`, ""),
+			newString(`b"`, `"`, ""),
+			newString(`v"`, `"`, ""),
+			newString(`raw"`, `"`, ""),
+			newString(`"""`, `"""`, ``),
+			newString(`"`, `"`, `\`),
+			newSingleComment("#"),
+			newMultipleComment("#=", "=#", ""),
+		},
+	},
+
+	{
 		DisplayName: "Kotlin",
 		ID:          "kotlin",
 		Exts:        []string{".kt"},
