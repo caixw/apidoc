@@ -84,6 +84,7 @@
 
     <doc id="env" title="環境變量" parent="usage">
         <p>apidoc 會讀取 <var>LANG</var> 的環境變量作為其本地化的依據，若想指定其它語種，可以手動指定 <var>LANG</var> 環境變量：<samp>LANG=zh-Hant apidoc</samp>。在 windows 系統中，若不存在 <var>LANG</var> 環境變量，則會調用 <code>GetUserDefaultLocaleName</code> 函數來獲取相應的語言信息。</p>
+        <p>本地化的 ID 值，理论上只要 <a href="https://tools.ietf.org/html/bcp47">BCP47</a> 支持的都能正确识别。也支持 Linux 下带编码的格式，比如：<samp>zh_CN.UTF-8</samp>。</p>
     </doc>
 
     <doc id="ide" title="IDE 插件" parent="usage">
@@ -95,14 +96,14 @@
 
         <p>如果數據類型為 <var>string.image</var>，會自動生成壹張指定大小的圖片並把地址返回給用戶，其大小由查詢參數 <code>width</code> 和 <code>height</code> 指定，未指定則是 <var>500x500</var>。圖片類型則通過用戶提交的 <code>Accept</code> 報頭獲取，目前支持 <var>image/gif</var>、<var>image/png</var> 和 <var>image/jpeg</var> 三種類型。</p>
 
-        <p>使用 mock 也有壹定的局限性：只能判斷提交的數據是否符合要求，但是無法理解數據代碼的函議，比如 URL 中包含 page=2，能判斷 page 的值格式是否正確，但無法給用戶返回第二頁的數據。Mock 在驗證數據正確性和初期用於展示數據內容還是很有用的。</p>
+        <p>使用 mock 也有壹定的局限性：只能判斷提交的數據是否符合要求，但是無法理解數據代碼的含義，比如 URL 中包含 page=2，能判斷 page 的值格式是否正確，但無法給用戶返回第二頁的數據。Mock 在驗證數據正確性和初期用於展示數據內容還是很有用的。</p>
     </doc>
 
     <doc id="cli" title="命令行" parent="usage">
         <p>可以通過 <samp>apidoc help</samp> 查看命令行支持的子命令。包含了以下幾個：</p>
     </doc>
 
-    <doc id="apidoc.yaml" title=".apidoc.yaml" parent="usage">
+    <doc id="config-file" title="配置文件" parent="usage">
         <p>配置文件名固定為 <code>.apidoc.yaml</code>，格式為 YAML，可參考 <a href="example/.apidoc.yaml">.apidoc.yaml</a>。文件可以通過命令 <samp>apidoc detect</samp> 生成。主要包含了以幾個配置項：</p>
     </doc>
 

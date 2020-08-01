@@ -147,7 +147,7 @@
             <xsl:call-template name="commands" />
         </xsl:if>
 
-        <xsl:if test="$id='apidoc.yaml'">
+        <xsl:if test="$id='config-file'">
             <xsl:call-template name="apidocYAML" />
         </xsl:if>
     </article>

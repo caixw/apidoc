@@ -263,7 +263,7 @@ var langs = []*Language{
 	},
 
 	{
-		DisplayName: "Typescript",
+		DisplayName: "TypeScript",
 		ID:          "typescript",
 		Exts:        []string{".ts"},
 		blocks: []blocker{

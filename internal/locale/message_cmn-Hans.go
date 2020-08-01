@@ -229,7 +229,7 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	// 以下是有关 build.Config 的字段说明
 	UsageConfigVersion:               "此配置文件的所使用的文档版本",
 	UsageConfigInputs:                "指定输入的数据，同一项目只能解析一种语言。",
-	UsageConfigInputsLang:            "源文件的解析方式。具体支持的类型可通过命令 <samp>apidoc locale</samp> 进行查看支持语言。",
+	UsageConfigInputsLang:            "源文件的解析方式。具体支持的类型可通过命令 <samp>apidoc lang</samp> 查看支持语言。",
 	UsageConfigInputsDir:             "需要解析的源文件所在目录",
 	UsageConfigInputsExts:            "只从这些扩展名的文件中查找文档",
 	UsageConfigInputsRecursive:       "是否解析子目录下的源文件",

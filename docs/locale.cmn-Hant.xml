@@ -202,7 +202,7 @@
 	<config>
 		<item name="version" type="string" array="false" required="true">此配置文件的所使用的文档版本</item>
 		<item name="inputs" type="object" array="true" required="true">指定輸入的數據，同壹項目只能解析壹種語言。</item>
-		<item name="inputs.lang" type="string" array="false" required="true">源文件的解析方式。具體支持的類型可通過命令 <samp>apidoc locale</samp> 進行查看支持語言。</item>
+		<item name="inputs.lang" type="string" array="false" required="true">源文件的解析方式。具體支持的類型可通過命令 <samp>apidoc lang</samp> 查看支持語言。</item>
 		<item name="inputs.dir" type="string" array="false" required="true">需要解析的源文件所在目錄</item>
 		<item name="inputs.exts" type="string" array="true" required="false">只從這些擴展名的文件中查找文檔</item>
 		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目錄下的源文件</item>
