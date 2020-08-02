@@ -19,9 +19,7 @@ apidoc 是一个基于 [MIT](https://opensource.org/licenses/MIT) 的开源软�
 
 ## 添加新编程语言支持
 
-`internal/lang/lang.go` 文件中有所有语言模型的定义，若需要添加对新语言的支持，
-在该文件中有详细的文档说明如何定义语言模弄。提交并更新
-[#11](https://github.com/caixw/apidoc/issues/11)
+`internal/lang/lang.go` 文件中有所有语言模型的定义，在该文件中有详细的文档说明如何定义语言模型。若需要添加对新语言的支持，提交并更新 [#11](https://github.com/caixw/apidoc/issues/11)
 
 ## Git
 

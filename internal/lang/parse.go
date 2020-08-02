@@ -17,7 +17,9 @@ func Parse(h *core.MessageHandler, langID string, data core.Block, blocks chan c
 		panic(fmt.Sprintf("%s 指定的语言解析器并不存在", langID))
 	}
 
-	newParser(h, data, l.blocks).parse(blocks)
+	if p := newParser(h, data, l.blocks); p != nil {
+		p.parse(blocks)
+	}
 }
 
 type parser struct {

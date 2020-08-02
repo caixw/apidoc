@@ -150,13 +150,13 @@ func recursivePath(o *Input) ([]core.URI, error) {
 // 分析后的内容推送至 blocks 中。
 func ParseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) {
 	wg := &sync.WaitGroup{}
-	for _, o := range opt {
-		for _, path := range o.paths {
+	for _, i := range opt {
+		for _, path := range i.paths {
 			wg.Add(1)
-			go func(path core.URI, o *Input) {
-				o.ParseFile(blocks, h, path)
+			go func(path core.URI, i *Input) {
+				i.ParseFile(blocks, h, path)
 				wg.Done()
-			}(path, o)
+			}(path, i)
 		}
 	}
 	wg.Wait()
