@@ -3,6 +3,8 @@
 package lsp
 
 import (
+	"github.com/issue9/sliceutil"
+
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
@@ -12,10 +14,10 @@ import (
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_workspaceFolders
 func (s *server) workspaceWorkspaceFolders() error {
 	err := s.Send("workspace/workspaceFolders", nil, func(folders *[]protocol.WorkspaceFolder) error {
-		for index, f := range s.folders {
+		for _, f := range s.folders {
 			f.close()
-			s.folders = append(s.folders[:index], s.folders[index+1:]...)
 		}
+		s.folders = s.folders[:0]
 
 		if len(*folders) != 0 {
 			if err := s.appendFolders(*folders...); err != nil {
@@ -36,12 +38,13 @@ func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.Di
 	}
 
 	for _, removed := range in.Event.Removed {
-		for index, f := range s.folders {
-			if f.Name == removed.Name && f.URI == removed.URI {
+		sliceutil.Delete(s.folders, func(i int) bool {
+			if f := s.folders[i]; f.Name == removed.Name && f.URI == removed.URI {
 				f.close()
-				s.folders = append(s.folders[:index], s.folders[index+1:]...)
+				return true
 			}
-		}
+			return false
+		})
 	}
 
 	return s.appendFolders(in.Event.Added...)
