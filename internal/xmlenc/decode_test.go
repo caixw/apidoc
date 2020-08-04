@@ -29,7 +29,7 @@ func newDecoder(a *assert.Assertion, prefix string) (*decoder, *messagetest.Resu
 	}, rslt
 }
 
-func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace string, hasErr, hasWarn bool) {
+func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace string) *messagetest.Result {
 	rslt := messagetest.NewMessageHandler()
 	p, err := NewParser(rslt.Handler, core.Block{Data: []byte(xml)})
 	a.NotError(err).
@@ -38,16 +38,18 @@ func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace stri
 	Decode(p, v, namespace)
 	rslt.Handler.Stop()
 
-	switch {
-	case hasErr:
-		a.NotEmpty(rslt.Errors)
-		a.ErrorType(rslt.Errors[0], &core.Error{})
-	case hasWarn:
-		a.NotEmpty(rslt.Warns)
-		a.ErrorType(rslt.Warns[0], &core.Error{})
-	default:
-		a.Empty(rslt.Errors)
+	if len(rslt.Errors) > 0 {
+		for _, err := range rslt.Errors {
+			a.ErrorType(err, &core.Error{})
+		}
 	}
+	if len(rslt.Warns) > 0 {
+		for _, err := range rslt.Warns {
+			a.ErrorType(err, &core.Error{})
+		}
+	}
+
+	return rslt
 }
 
 func TestDecode(t *testing.T) {
@@ -60,7 +62,9 @@ func TestDecode(t *testing.T) {
 		Elem1    intTag   `apidoc:"elem1,elem,usage"`
 	}{}
 	b := `<aa:apidoc aa:attr1="5" xmlns:aa="urn"><aa:elem1>6</aa:elem1></aa:apidoc>`
-	decodeObject(a, b, v, "urn", false, false)
+	rslt := decodeObject(a, b, v, "urn")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
+
 	base := BaseTag{
 		Base: Base{
 			UsageKey: "usage-apidoc",
@@ -202,7 +206,9 @@ func TestDecode(t *testing.T) {
 		Elem1    intTag   `apidoc:"elem1,elem,usage"`
 	}{}
 	b = `<apidoc attr1="5"><elem1 /></apidoc>`
-	decodeObject(a, b, v, "", false, false)
+	rslt = decodeObject(a, b, v, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
+
 	attr1 = intAttr{Value: 5,
 		BaseAttribute: BaseAttribute{
 			Base: Base{
@@ -317,7 +323,8 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	decodeObject(a, b, v2, "", false, false)
+	rslt = decodeObject(a, b, v2, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v2.Attr1, attr1).
 		Equal(v2.Elem1, []intTag{elem1})
 
@@ -421,7 +428,8 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	decodeObject(a, b, v3, "", false, false)
+	rslt = decodeObject(a, b, v3, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v3.Attr1, attr1).
 		Equal(v3.Elem1, []intTag{elem1, elem2})
 
@@ -512,7 +520,8 @@ func TestDecode(t *testing.T) {
 			},
 		},
 	}}
-	decodeObject(a, b, v3, "", false, false)
+	rslt = decodeObject(a, b, v3, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v3.Attr1, attr1).
 		Equal(v3.Elem1, []intTag{elem1, elem2})
 
@@ -524,7 +533,8 @@ func TestDecode(t *testing.T) {
 		Content  String   `apidoc:",content"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
-	decodeObject(a, b, v4, "", false, false)
+	rslt = decodeObject(a, b, v4, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v4.Content, String{Value: "5555", Range: core.Range{
 		Start: core.Position{Character: 18},
 		End:   core.Position{Character: 22},
@@ -559,7 +569,8 @@ func TestDecode(t *testing.T) {
 		Cdata    *CData   `apidoc:",cdata"`
 	}{}
 	b = `<apidoc attr1="5"><![CDATA[5555]]></apidoc>`
-	decodeObject(a, b, v5, "", false, false)
+	rslt = decodeObject(a, b, v5, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v5.Cdata, &CData{
 		Value: String{Value: "5555", Range: core.Range{
 			Start: core.Position{Character: 27},
@@ -608,7 +619,8 @@ func TestDecode(t *testing.T) {
 		Cdata    CData    `apidoc:",cdata,,omitempty"`
 	}{}
 	b = `<apidoc attr1="5">5555</apidoc>`
-	decodeObject(a, b, v6, "", false, false)
+	rslt = decodeObject(a, b, v6, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Empty(v6.Cdata.Value.Value).True(v6.Cdata.IsEmpty())
 
 	v7 := &struct {
@@ -619,7 +631,8 @@ func TestDecode(t *testing.T) {
 		Object   *objectTag `apidoc:"obj,elem,usage"`
 	}{}
 	b = `<apidoc id="11"><name>name</name><obj id="11"><name>n</name></obj></apidoc>`
-	decodeObject(a, b, v7, "", false, false)
+	rslt = decodeObject(a, b, v7, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v7.ID, &intAttr{Value: 11, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
@@ -774,11 +787,23 @@ func TestDecode(t *testing.T) {
 
 	// 多个根元素
 	b = `<apidoc attr="1"></apidoc><apidoc attr="1"></apidoc>`
-	decodeObject(a, b, v7, "", false, true)
+	rslt = decodeObject(a, b, v7, "")
+	a.Empty(rslt.Errors).NotEmpty(rslt.Warns)
+	serr, ok := rslt.Warns[0].(*core.Error)
+	a.True(ok).Equal(serr.Location.Range, core.Range{
+		Start: core.Position{Character: 26},
+		End:   core.Position{Character: 52},
+	})
 
 	// 多个结束元素
 	b = `<apidoc attr="1"></apidoc></apidoc>`
-	decodeObject(a, b, v7, "", true, false)
+	rslt = decodeObject(a, b, v7, "")
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
+	serr, ok = rslt.Errors[0].(*core.Error)
+	a.True(ok).Equal(serr.Location.Range, core.Range{
+		Start: core.Position{Character: 26},
+		End:   core.Position{Character: 35},
+	})
 
 	// 无效的属性值
 	v8 := &struct {
@@ -787,7 +812,8 @@ func TestDecode(t *testing.T) {
 		ID       intAttr  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1xx"></apidoc></apidoc>`
-	decodeObject(a, b, v8, "", true, false)
+	rslt = decodeObject(a, b, v8, "")
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
 
 	// StartElement.SelfClose
 	v9 := &struct {
@@ -796,7 +822,8 @@ func TestDecode(t *testing.T) {
 		ID       intAttr  `apidoc:"id,attr,usage"`
 	}{}
 	b = `<apidoc id="1" />`
-	decodeObject(a, b, v9, "", false, false)
+	rslt = decodeObject(a, b, v9, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 
 	// 不存在的元素名
 	v10 := &struct {
@@ -805,7 +832,13 @@ func TestDecode(t *testing.T) {
 		ID       intTag   `apidoc:"id,elem,usage,omitempty"`
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
-	decodeObject(a, b, v10, "", false, false)
+	rslt = decodeObject(a, b, v10, "")
+	a.Empty(rslt.Errors).NotEmpty(rslt.Warns)
+	serr, ok = rslt.Warns[0].(*core.Error)
+	a.True(ok).Equal(serr.Location.Range, core.Range{
+		Start: core.Position{Character: 15},
+		End:   core.Position{Character: 30},
+	})
 
 	// 数组元素未实现 Decoder 接口
 	v11 := &struct {
@@ -815,7 +848,7 @@ func TestDecode(t *testing.T) {
 	}{}
 	b = `<apidoc id="1"><elem>11</elem></apidoc>`
 	a.Panic(func() {
-		decodeObject(a, b, v11, "", false, false)
+		decodeObject(a, b, v11, "")
 	})
 
 	// 多个数组，未实现 Decoder 的元素
@@ -1051,7 +1084,8 @@ func TestDecode(t *testing.T) {
 			Value: "7",
 		},
 	}
-	decodeObject(a, b, v12, "", false, false)
+	rslt = decodeObject(a, b, v12, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v12.Attr1, attr1).
 		Equal(2, len(v12.Elem1)).
 		Equal(v12.Elem1[0], e1).
@@ -1141,7 +1175,8 @@ func TestDecode(t *testing.T) {
 		},
 	}
 
-	decodeObject(a, b, v13, "", false, false)
+	rslt = decodeObject(a, b, v13, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v13.Attr1, attr1)
 	a.Equal(1, len(v13.Elem1)).Equal(v13.Elem1[0], obj1, "v1=%#v\nv2=%#v\n", v13.Elem1[0], obj1)
 
@@ -1153,7 +1188,8 @@ func TestDecode(t *testing.T) {
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc attr1="5"><elem2 id="60" /></apidoc>`
-	decodeObject(a, b, v14, "", false, false)
+	rslt = decodeObject(a, b, v14, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.NotNil(v14.Elem1).
 		Equal(v14.Elem1.StartTag.Local.Value, "elem2").
 		Equal(v14.Elem1.ID.Value, 60)
@@ -1161,14 +1197,16 @@ func TestDecode(t *testing.T) {
 	// 是否能正常调用根的 Sanitizer 接口
 	v15 := &objectTag{}
 	b = `<attr id="7"><name>n</name></attr>`
-	decodeObject(a, b, v15, "", false, false)
+	rslt = decodeObject(a, b, v15, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v15.ID.Value, 8).
 		Equal(v15.Name.Value, "n")
 
 	// instruction
 	v15 = &objectTag{}
 	b = `<?xml version="1.0"?><attr id="7"><name>n</name></attr>`
-	decodeObject(a, b, v15, "", false, false)
+	rslt = decodeObject(a, b, v15, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v15.ID.Value, 8).
 		Equal(v15.Name.Value, "n")
 }
@@ -1189,7 +1227,8 @@ func TestDecode_omitempty(t *testing.T) {
 		Elem1    *obj     `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b := `<apidoc><elem2 id="60" /></apidoc>`
-	decodeObject(a, b, v1, "", true, false)
+	rslt := decodeObject(a, b, v1, "")
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
 
 	// omitempty, elem2 数组，不能为空
 	v2 := &struct {
@@ -1198,7 +1237,8 @@ func TestDecode_omitempty(t *testing.T) {
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decodeObject(a, b, v2, "", true, false)
+	rslt = decodeObject(a, b, v2, "")
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
 
 	v2 = &struct {
 		BaseTag
@@ -1206,7 +1246,8 @@ func TestDecode_omitempty(t *testing.T) {
 		Elem1    []*obj   `apidoc:"elem2,elem,usage-elem2"`
 	}{}
 	b = `<apidoc><elem2 id="60" /></apidoc>`
-	decodeObject(a, b, v2, "", false, false)
+	rslt = decodeObject(a, b, v2, "")
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(1, len(v2.Elem1))
 
 	// omitempty, cdata 不能为空
@@ -1216,7 +1257,8 @@ func TestDecode_omitempty(t *testing.T) {
 		CData    *CData   `apidoc:",cdata,"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decodeObject(a, b, v3, "", true, false)
+	rslt = decodeObject(a, b, v3, "")
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
 
 	// omitempty attr1 不能为空，自闭合标签
 	v4 := &struct {
@@ -1225,9 +1267,11 @@ func TestDecode_omitempty(t *testing.T) {
 		Attr1    intAttr  `apidoc:"attr1,attr,usage"`
 	}{}
 	b = `<apidoc></apidoc>`
-	decodeObject(a, b, v4, "", true, false)
+	rslt = decodeObject(a, b, v4, "")
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
 	b = `<apidoc />`
-	decodeObject(a, b, v4, "", true, false)
+	rslt = decodeObject(a, b, v4, "")
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
 
 	// omitempty attr1 不能为空，自闭合标签
 	v5 := &struct {
@@ -1240,9 +1284,11 @@ func TestDecode_omitempty(t *testing.T) {
 		} `apidoc:"elem,elem,usage"`
 	}{}
 	b = `<apidoc attr1="1"><elem></elem></apidoc>`
-	decodeObject(a, b, v5, "", true, false)
+	rslt = decodeObject(a, b, v5, "")
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
 	b = `<apidoc attr1="1"><elem/></apidoc>`
-	decodeObject(a, b, v5, "", true, false)
+	rslt = decodeObject(a, b, v5, "")
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
 }
 
 func TestDecode_decodeAttributes(t *testing.T) {

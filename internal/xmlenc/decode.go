@@ -105,7 +105,8 @@ func Decode(p *Parser, v interface{}, namespace string) {
 		switch elem := t.(type) {
 		case *StartElement:
 			if hasRoot { // 多个根元素
-				msg := p.NewError(elem.Start, elem.End, elem.Name.String(), locale.ErrMultipleRootTag).
+				p.endElement(elem) // 找到对应的结束标签
+				msg := p.NewError(elem.Start, p.Current().Position, elem.Name.String(), locale.ErrMultipleRootTag).
 					AddTypes(core.ErrorTypeUnused)
 				d.p.h.Warning(msg)
 				return
@@ -251,7 +252,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 					return nil, false
 				}
 
-				e := d.p.NewError(elem.Name.Start, elem.Name.End, elem.Name.String(), locale.ErrInvalidTag).
+				e := d.p.NewError(elem.Start, d.p.Current().Position, elem.Name.String(), locale.ErrInvalidTag).
 					AddTypes(core.ErrorTypeUnused)
 				d.p.h.Warning(e)
 				break // 忽略不存在的子元素
