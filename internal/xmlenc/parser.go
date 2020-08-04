@@ -137,6 +137,7 @@ func (p *Parser) parseStartElement(pos lexer.Position) (*StartElement, core.Rang
 	}
 	elem.Attributes = attrs
 
+	p.Spaces(0)
 	if p.Match("/>") {
 		elem.Range = core.Range{Start: pos.Position, End: p.Current().Position}
 		elem.SelfClose = true
@@ -278,6 +279,7 @@ func (p *Parser) parseInstruction(pos lexer.Position) (*Instruction, core.Range,
 	}
 	elem.Attributes = attrs
 
+	p.Spaces(0)
 	if p.Match("?>") {
 		elem.Range = core.Range{Start: pos.Position, End: p.Current().Position}
 		return elem, elem.Range, nil

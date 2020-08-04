@@ -236,6 +236,7 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	// 错误信息，可能在地方用到
 	ErrInvalidUTF8Character      = "无效的 UTF8 字符"
 	ErrInvalidXML                = "无效的 XML 文档"
+	ErrMultipleRootTag           = "存在多个根标签"
 	ErrIsNotAPIDoc               = "并非有效的 apidoc 的文档格式"
 	ErrInvalidContentTypeCharset = "报头 ContentType 中指定的字符集无效 "
 	ErrInvalidContentLength      = "报头 ContentLength 无效"

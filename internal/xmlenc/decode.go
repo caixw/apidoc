@@ -105,7 +105,9 @@ func Decode(p *Parser, v interface{}, namespace string) {
 		switch elem := t.(type) {
 		case *StartElement:
 			if hasRoot { // 多个根元素
-				d.p.h.Error(p.NewError(elem.Start, elem.End, "", locale.ErrInvalidXML))
+				msg := p.NewError(elem.Start, elem.End, elem.Name.String(), locale.ErrMultipleRootTag).
+					AddTypes(core.ErrorTypeUnused)
+				d.p.h.Warning(msg)
 				return
 			}
 			hasRoot = true
@@ -219,7 +221,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 		t, r, err := d.p.Token()
 		if errors.Is(err, io.EOF) {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
-			d.p.h.Error(d.p.NewError(d.p.Current().Position, d.p.Current().Position, "", locale.ErrInvalidXML))
+			d.p.h.Error(d.p.NewError(d.p.Current().Position, d.p.Current().Position, "", locale.ErrNotFoundEndTag))
 			return nil, false
 		} else if err != nil {
 			d.p.h.Error(err)

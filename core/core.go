@@ -5,15 +5,14 @@ package core
 
 import "fmt"
 
-// 一些公用的常量
 const (
-	// 程序的正式名称
+	// Name 程序的正式名称
 	Name = "apidoc"
 
-	// 源码仓库地址
+	// RepoURL 源码仓库地址
 	RepoURL = "https://github.com/caixw/apidoc"
 
-	// 官网
+	// OfficialURL 官网
 	OfficialURL = "https://apidoc.tools"
 
 	// XMLNamespace 定义 xml 命名空间的 URI
