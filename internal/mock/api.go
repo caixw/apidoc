@@ -50,11 +50,11 @@ func (m *mock) buildAPI(api *ast.API) http.Handler {
 func validRequest(ns []*ast.XMLNamespace, requests []*ast.Request, r *http.Request) error {
 	ct := r.Header.Get("Content-Type")
 	if ct == "" || ct == "*/*" || strings.HasSuffix(ct, "/*") { // 用户提交的 content-type 必须是明确的值
-		return core.NewSyntaxError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("headers[content-type]")
 	}
 	req := findRequestByContentType(requests, ct)
 	if req == nil {
-		return core.NewSyntaxError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("headers[content-type]")
 	}
 
 	for _, header := range req.Headers {
@@ -77,7 +77,7 @@ func validRequest(ns []*ast.XMLNamespace, requests []*ast.Request, r *http.Reque
 	case "application/xml", "text/xml":
 		return validXML(ns, req, content)
 	default:
-		return core.NewSyntaxError(core.Location{}, "headers[content-type]", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("headers[content-type]")
 	}
 }
 
@@ -191,7 +191,7 @@ func (m *mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 	// 这并不是一个真实存在的 URI
 	file := core.URI(r.Method + ": " + r.URL.Path)
 
-	if serr, ok := err.(*core.SyntaxError); ok {
+	if serr, ok := err.(*core.Error); ok {
 		if serr.Field == "" {
 			serr.Field = field
 		} else {
@@ -200,7 +200,7 @@ func (m *mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 
 		serr.Location.URI = file
 	} else {
-		err = core.NewSyntaxErrorWithError(core.Location{URI: file}, field, err)
+		err = (core.Location{URI: file}).WithError(err).WithField(field)
 	}
 
 	m.h.Error(err)
@@ -213,7 +213,7 @@ func validQueries(queries []*ast.Param, r *http.Request) error {
 
 		valid := func(p *ast.Param, v string) error {
 			err := validSimpleParam(p, v)
-			if serr, ok := err.(*core.SyntaxError); ok {
+			if serr, ok := err.(*core.Error); ok {
 				serr.Field = field + serr.Field
 			}
 			return err
@@ -256,23 +256,23 @@ func validSimpleParam(p *ast.Param, val string) error {
 			(p.Default != nil && p.Default.V() != "") {
 			return nil
 		}
-		return core.NewSyntaxError(core.Location{}, "", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired)
 	}
 
 	switch p.Type.V() {
 	case ast.TypeBool:
 		if _, err := strconv.ParseBool(val); err != nil {
-			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat)
 		}
 	case ast.TypeNumber:
 		if !is.Number(val) {
-			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat)
 		}
 	case ast.TypeString:
 	case ast.TypeObject:
 	case ast.TypeNone:
 		if val != "" {
-			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidValue)
+			return core.NewError(locale.ErrInvalidValue)
 		}
 	}
 
@@ -286,7 +286,7 @@ func validSimpleParam(p *ast.Param, val string) error {
 		}
 
 		if !found {
-			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidValue)
+			return core.NewError(locale.ErrInvalidValue)
 		}
 	}
 
@@ -317,5 +317,5 @@ func (m *mock) buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 			return buildXML(m.doc.XMLNamespaces, p, m.indent, m.gen)
 		}
 	}
-	return nil, core.NewSyntaxError(core.Location{}, "headers[accept]", locale.ErrInvalidValue)
+	return nil, core.NewError(locale.ErrInvalidValue).WithField("headers[accept]")
 }

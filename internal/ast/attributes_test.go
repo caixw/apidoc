@@ -205,7 +205,7 @@ func TestDateAttribute(t *testing.T) {
 	attr.Value.Value = "invalid format"
 	err = date.DecodeXMLAttr(p, attr)
 	a.Error(err)
-	serr, ok := err.(*core.SyntaxError)
+	serr, ok := err.(*core.Error)
 	a.True(ok).
 		Equal(serr.Location.URI, "uri1").
 		Equal(serr.Location.Range.End.Character, 1)
@@ -234,7 +234,7 @@ func TestAPIDocVersionAttribute(t *testing.T) {
 	attr.Value.Value = "invalid format"
 	err = v.DecodeXMLAttr(p, attr)
 	a.Error(err)
-	serr, ok := err.(*core.SyntaxError)
+	serr, ok := err.(*core.Error)
 	a.True(ok).
 		Equal(serr.Location.URI, "uri1").
 		Equal(serr.Location.Range.End.Character, 1)
@@ -245,7 +245,7 @@ func TestAPIDocVersionAttribute(t *testing.T) {
 	attr.Value.Value = "5.0.0"
 	err = v.DecodeXMLAttr(p, attr)
 	a.Error(err)
-	serr, ok = err.(*core.SyntaxError)
+	serr, ok = err.(*core.Error)
 	a.True(ok).
 		Equal(serr.Location.URI, "uri1").
 		Equal(serr.Location.Range.End.Character, 1).

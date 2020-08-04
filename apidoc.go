@@ -71,7 +71,7 @@ func Version(full bool) string {
 // Build 解析文档并输出文档内容
 //
 // 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
-// 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
+// 如果是配置项（o 和 i）有问题，则以 *core.Error 类型返回错误信息。
 //
 // NOTE: 如果需要从配置文件进行构建文档，可以采用 Config.Build
 func Build(h *core.MessageHandler, o *build.Output, i ...*build.Input) error {
@@ -81,7 +81,7 @@ func Build(h *core.MessageHandler, o *build.Output, i ...*build.Input) error {
 // Buffer 生成文档内容并返回
 //
 // 如果是文档语法错误，则相关的错误信息会反馈给 h，由 h 处理错误信息；
-// 如果是配置项（o 和 i）有问题，则以 *message.SyntaxError 类型返回错误信息。
+// 如果是配置项（o 和 i）有问题，则以 *core.Error 类型返回错误信息。
 //
 // NOTE: 如果需要从配置文件进行构建文档，可以采用 Config.Buffer
 func Buffer(h *core.MessageHandler, o *build.Output, i ...*build.Input) (*bytes.Buffer, error) {

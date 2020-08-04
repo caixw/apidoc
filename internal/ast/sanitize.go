@@ -341,8 +341,9 @@ func (api *API) sanitizeTags() error {
 				Range: core.Range{
 					Start: tag.Content.Start,
 					End:   tag.Content.End,
-				}}
-			return core.NewSyntaxError(loc, "", locale.ErrInvalidValue)
+				},
+			}
+			return loc.NewError(locale.ErrInvalidValue)
 		}
 	}
 
@@ -352,8 +353,9 @@ func (api *API) sanitizeTags() error {
 				Range: core.Range{
 					Start: srv.Content.Start,
 					End:   srv.Content.End,
-				}}
-			return core.NewSyntaxError(loc, "", locale.ErrInvalidValue)
+				},
+			}
+			return loc.NewError(locale.ErrInvalidValue)
 		}
 	}
 

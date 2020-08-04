@@ -23,7 +23,7 @@ func TestParser_Token(t *testing.T) {
 	data := []*struct {
 		input string
 		elems []interface{}
-		err   *core.SyntaxError
+		err   *core.Error
 	}{
 		{},
 		{
@@ -650,10 +650,10 @@ func TestParser_parseStartElement(t *testing.T) {
 	data := []*struct {
 		input string
 		elem  *StartElement
-		err   *core.SyntaxError
+		err   *core.Error
 	}{
 		{
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -665,7 +665,7 @@ func TestParser_parseStartElement(t *testing.T) {
 		},
 		{ // 没有结束标签
 			input: `tag version="1.0"`,
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -677,7 +677,7 @@ func TestParser_parseStartElement(t *testing.T) {
 		},
 		{ // 没有标签名
 			input: ">",
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -857,7 +857,7 @@ func TestParser_parseStartElement(t *testing.T) {
 
 		elem, r, err := p.parseStartElement(p.Current())
 		if item.err != nil {
-			serr, ok := err.(*core.SyntaxError)
+			serr, ok := err.(*core.Error)
 			a.True(ok, "false at %s", item.input).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
 			a.True(r.IsEmpty())
@@ -883,10 +883,10 @@ func TestParser_parseEndElement(t *testing.T) {
 	data := []*struct {
 		input string
 		elem  *EndElement
-		err   *core.SyntaxError
+		err   *core.Error
 	}{
 		{
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -898,7 +898,7 @@ func TestParser_parseEndElement(t *testing.T) {
 		},
 		{
 			input: ">",
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -975,7 +975,7 @@ func TestParser_parseEndElement(t *testing.T) {
 
 		elem, r, err := p.parseEndElement(p.Current())
 		if item.err != nil {
-			serr, ok := err.(*core.SyntaxError)
+			serr, ok := err.(*core.Error)
 			a.True(ok, "false at %s", item.input).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
 			a.True(r.IsEmpty())
@@ -1001,10 +1001,10 @@ func TestParser_parseCData(t *testing.T) {
 	data := []*struct {
 		input string
 		cdata *CData
-		err   *core.SyntaxError
+		err   *core.Error
 	}{
 		{
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1016,7 +1016,7 @@ func TestParser_parseCData(t *testing.T) {
 		},
 		{
 			input: `<h1></h1>`,
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1181,7 +1181,7 @@ func TestParser_parseCData(t *testing.T) {
 
 		cdata, r, err := p.parseCData(p.Current())
 		if item.err != nil {
-			serr, ok := err.(*core.SyntaxError)
+			serr, ok := err.(*core.Error)
 			a.True(ok, "false at %s", item.input).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
 			a.True(r.IsEmpty())
@@ -1205,10 +1205,10 @@ func TestParser_parseInstruction(t *testing.T) {
 	data := []*struct {
 		input string
 		pi    *Instruction
-		err   *core.SyntaxError
+		err   *core.Error
 	}{
 		{
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1220,7 +1220,7 @@ func TestParser_parseInstruction(t *testing.T) {
 		},
 		{ // 缺少结束符号 ?>
 			input: `xml version="1.0"`,
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1232,7 +1232,7 @@ func TestParser_parseInstruction(t *testing.T) {
 		},
 		{ // version 被当作标签名，之后找不到 ?>
 			input: `version="1.0"`,
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1388,7 +1388,7 @@ func TestParser_parseInstruction(t *testing.T) {
 
 		pi, r, err := p.parseInstruction(p.Current())
 		if item.err != nil {
-			serr, ok := err.(*core.SyntaxError)
+			serr, ok := err.(*core.Error)
 			a.True(ok, "false at %s", item.input).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
 			a.True(r.IsEmpty())
@@ -1414,7 +1414,7 @@ func TestParser_parseAttributes(t *testing.T) {
 	data := []*struct {
 		input string
 		attrs []*Attribute
-		err   *core.SyntaxError
+		err   *core.Error
 	}{
 		{},
 		{
@@ -1510,7 +1510,7 @@ func TestParser_parseAttributes(t *testing.T) {
 
 		{
 			input: `name="" xx=`,
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1539,7 +1539,7 @@ func TestParser_parseAttributes(t *testing.T) {
 		a.Empty(rslt.Errors)
 
 		if item.err != nil {
-			serr, ok := err.(*core.SyntaxError)
+			serr, ok := err.(*core.Error)
 			a.True(ok).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
 			break
@@ -1565,7 +1565,7 @@ func TestParser_parseAttribute(t *testing.T) {
 	data := []*struct {
 		input string
 		attr  *Attribute
-		err   *core.SyntaxError
+		err   *core.Error
 	}{
 		{},
 		{
@@ -1716,7 +1716,7 @@ func TestParser_parseAttribute(t *testing.T) {
 
 		{
 			input: `name `,
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1728,7 +1728,7 @@ func TestParser_parseAttribute(t *testing.T) {
 		},
 		{
 			input: `name=`,
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1740,7 +1740,7 @@ func TestParser_parseAttribute(t *testing.T) {
 		},
 		{
 			input: `name="`,
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1752,7 +1752,7 @@ func TestParser_parseAttribute(t *testing.T) {
 		},
 		{
 			input: `name=="val"`,
-			err: &core.SyntaxError{
+			err: &core.Error{
 				Location: core.Location{
 					URI: uri,
 					Range: core.Range{
@@ -1778,7 +1778,7 @@ func TestParser_parseAttribute(t *testing.T) {
 
 		attr, err := p.parseAttribute()
 		if item.err != nil {
-			serr, ok := err.(*core.SyntaxError)
+			serr, ok := err.(*core.Error)
 			a.True(ok, "false at %s", item.input).
 				Equal(serr.Location, item.err.Location, "not equal at %s\nv1=%+v\nv2=%+v", item.input, serr.Location, item.err.Location)
 		} else {
@@ -1800,22 +1800,22 @@ func TestParser_WithError(t *testing.T) {
 	a.NotError(err).NotNil(p)
 
 	err = p.WithError(core.Position{}, core.Position{}, "field1", err1)
-	serr, ok := err.(*core.SyntaxError)
+	serr, ok := err.(*core.Error)
 	a.True(ok).Equal(serr.Err, err1)
 
-	err2 := core.NewSyntaxErrorWithError(core.Location{}, "", err1)
+	err2 := core.WithError(err1)
 	err = p.WithError(core.Position{}, core.Position{}, "field1", err2)
-	serr, ok = err.(*core.SyntaxError)
+	serr, ok = err.(*core.Error)
 	a.True(ok).Equal(serr.Err, err1)
 
-	err3 := core.NewSyntaxErrorWithError(core.Location{}, "", err2)
+	err3 := core.WithError(err2)
 	err = p.WithError(core.Position{}, core.Position{}, "field1", err3)
-	serr, ok = err.(*core.SyntaxError)
+	serr, ok = err.(*core.Error)
 	a.True(ok).Equal(serr.Err, err1)
 
-	err4 := core.NewSyntaxErrorWithError(core.Location{}, "", err3)
+	err4 := core.WithError(err3)
 	err = p.WithError(core.Position{}, core.Position{}, "field1", err4)
-	serr, ok = err.(*core.SyntaxError)
+	serr, ok = err.(*core.Error)
 	a.True(ok).Equal(serr.Err, err1)
 
 	rslt.Handler.Stop()

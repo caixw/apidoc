@@ -32,7 +32,7 @@ type folder struct {
 	parsedMux sync.Mutex
 
 	// 保存着错误和警告的信息
-	errors, warns []*core.SyntaxError
+	errors, warns []*core.Error
 }
 
 func (f *folder) close() {
@@ -65,9 +65,9 @@ func (f *folder) parseBlock(block core.Block) {
 func (f *folder) messageHandler(msg *core.Message) {
 	switch msg.Type {
 	case core.Erro:
-		err, ok := msg.Message.(*core.SyntaxError)
+		err, ok := msg.Message.(*core.Error)
 		if !ok {
-			f.srv.erro.Println(fmt.Sprintf("获得了非 core.SyntaxError 错误 %#v", msg.Message))
+			f.srv.erro.Println(fmt.Sprintf("获得了非 core.Error 错误 %#v", msg.Message))
 		}
 
 		cnt := sliceutil.Count(f.errors, func(i int) bool {
@@ -77,9 +77,9 @@ func (f *folder) messageHandler(msg *core.Message) {
 			f.errors = append(f.errors, err)
 		}
 	case core.Warn:
-		err, ok := msg.Message.(*core.SyntaxError)
+		err, ok := msg.Message.(*core.Error)
 		if !ok {
-			f.srv.erro.Println(fmt.Sprintf("获得了非 core.SyntaxError 错误 %#v", msg.Message))
+			f.srv.erro.Println(fmt.Sprintf("获得了非 core.Error 错误 %#v", msg.Message))
 		}
 
 		cnt := sliceutil.Count(f.warns, func(i int) bool {

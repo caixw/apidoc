@@ -28,7 +28,7 @@ func validXML(ns []*ast.XMLNamespace, p *ast.Request, content []byte) error {
 		if p == nil || p.Type.V() == ast.TypeNone {
 			return nil
 		}
-		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat)
 	}
 
 	validator := &xmlValidator{
@@ -51,7 +51,7 @@ func validXML(ns []*ast.XMLNamespace, p *ast.Request, content []byte) error {
 			}
 			return validator.validXMLElement(elem, p.Param(), true, elem.Name.Local)
 		case xml.EndElement:
-			return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat)
 		}
 	}
 }
@@ -65,14 +65,14 @@ ATTR:
 					continue ATTR
 				}
 			}
-			return core.NewSyntaxError(core.Location{}, "xmlns", locale.ErrNotFound)
+			return core.NewError(locale.ErrNotFound).WithField("xmlns")
 		} else if attr.Name.Space == "xmlns" && attr.Name.Local != "" {
 			for _, item := range v.namespaces {
 				if item.Prefix.V() == attr.Name.Local && item.URN.V() == attr.Value {
 					continue ATTR
 				}
 			}
-			return core.NewSyntaxError(core.Location{}, "xmlns:"+attr.Name.Local, locale.ErrNotFound)
+			return core.NewError(locale.ErrNotFound).WithField("xmlns:" + attr.Name.Local)
 		}
 	}
 	return nil
@@ -182,7 +182,7 @@ LOOP:
 			}
 		case xml.EndElement:
 			if !v.validXMLName(elem.Name, p, chkArray) {
-				return core.NewSyntaxError(core.Location{}, elem.Name.Local, locale.ErrNotFoundEndTag)
+				return core.NewError(locale.ErrNotFoundEndTag).WithField(elem.Name.Local)
 			}
 
 			if chardata != nil && !started {
@@ -211,7 +211,7 @@ func (v *xmlValidator) validStartElement(start xml.StartElement, p *ast.Param, c
 	}
 
 	if !v.validXMLName(start.Name, p, chkArray) {
-		return core.NewSyntaxError(core.Location{}, start.Name.Local, locale.ErrNotFound)
+		return core.NewError(locale.ErrNotFound).WithField(start.Name.Local)
 	}
 	return nil
 }
@@ -229,43 +229,43 @@ func validXMLValue(p *ast.Param, field, v string) error {
 	switch p.Type.V() {
 	case ast.TypeNone:
 		if v != "" {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
+			return core.NewError(locale.ErrInvalidValue).WithField(field)
 		}
 	case ast.TypeNumber:
 		if !is.Number(v) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeInt:
 		if _, err := strconv.ParseInt(v, 10, 64); err != nil {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeFloat:
 		if _, err := strconv.ParseFloat(v, 64); err != nil {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeBool:
 		if _, err := strconv.ParseBool(v); err != nil {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeEmail:
 		if !is.Email(v) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeURL:
 		if !is.URL(v) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeDate:
 		if !isValidRFC3339Date(v) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeTime:
 		if !isValidRFC3339Time(v) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeDateTime:
 		if !isValidRFC3339DateTime(v) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeString, ast.TypeObject, ast.TypeImage:
 		return nil
@@ -279,7 +279,7 @@ func validXMLValue(p *ast.Param, field, v string) error {
 				return nil
 			}
 		}
-		return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField(field)
 	}
 
 	return nil

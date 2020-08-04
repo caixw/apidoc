@@ -89,17 +89,17 @@ func newTag(tag *ast.Tag) *Tag {
 	}
 }
 
-func (oa *OpenAPI) sanitize() *core.SyntaxError {
+func (oa *OpenAPI) sanitize() *core.Error {
 	if oa.OpenAPI == "" {
 		oa.OpenAPI = LatestVersion
 	}
 
 	if !version.SemVerValid(oa.OpenAPI) {
-		return core.NewSyntaxError(core.Location{}, "openapi", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat).WithField("openapi")
 	}
 
 	if oa.Info == nil {
-		return core.NewSyntaxError(core.Location{}, "info", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("info")
 	}
 	if err := oa.Info.sanitize(); err != nil {
 		err.Field = "info." + err.Field
@@ -121,7 +121,7 @@ func (oa *OpenAPI) sanitize() *core.SyntaxError {
 	}
 
 	if len(oa.Paths) == 0 {
-		return core.NewSyntaxError(core.Location{}, "paths", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("paths")
 	}
 	for k, path := range oa.Paths {
 		if err := path.sanitize(); err != nil {
@@ -154,7 +154,7 @@ func (oa *OpenAPI) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func (c *Components) sanitize() *core.SyntaxError {
+func (c *Components) sanitize() *core.Error {
 	for key, item := range c.Schemas {
 		if err := item.sanitize(); err != nil {
 			err.Field = "schemas[" + key + "]." + err.Field
@@ -200,15 +200,15 @@ func (c *Components) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func (ext *ExternalDocumentation) sanitize() *core.SyntaxError {
+func (ext *ExternalDocumentation) sanitize() *core.Error {
 	if !is.URL(ext.URL) {
-		return core.NewSyntaxError(core.Location{}, "url", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat).WithField("url")
 	}
 
 	return nil
 }
 
-func (l *Link) sanitize() *core.SyntaxError {
+func (l *Link) sanitize() *core.Error {
 	if err := l.Server.sanitize(); err != nil {
 		err.Field = "server." + err.Field
 		return err
@@ -217,9 +217,9 @@ func (l *Link) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func (tag *Tag) sanitize() *core.SyntaxError {
+func (tag *Tag) sanitize() *core.Error {
 	if tag.Name == "" {
-		return core.NewSyntaxError(core.Location{}, "name", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat).WithField("name")
 	}
 
 	if tag.ExternalDocs != nil {

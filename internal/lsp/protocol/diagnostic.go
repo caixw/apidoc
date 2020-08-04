@@ -112,3 +112,31 @@ type DiagnosticRelatedInformation struct {
 	// The message of this related diagnostic information.
 	Message string `json:"message"`
 }
+
+var typeTagsMap = map[core.ErrorType]DiagnosticTag{
+	core.ErrorTypeDeprecated: DiagnosticTagDeprecated,
+	core.ErrorTypeUnused:     DiagnosticTagUnnecessary,
+}
+
+// BuildDiagnostic 根据 core.Error 生成 Diagnostic 数据
+func BuildDiagnostic(err *core.Error, severity DiagnosticSeverity) Diagnostic {
+	var tags []DiagnosticTag
+	if len(err.Types) > 0 {
+		for _, typ := range err.Types {
+			if tag, found := typeTagsMap[typ]; found {
+				tags = append(tags, tag)
+			}
+		}
+	}
+
+	d := Diagnostic{
+		Range:    err.Location.Range,
+		Message:  err.Error(),
+		Severity: severity,
+	}
+	if len(tags) > 0 {
+		d.Tags = tags
+	}
+
+	return d
+}

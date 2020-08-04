@@ -39,10 +39,10 @@ func newServer(srv *ast.Server) *Server {
 	}
 }
 
-func (srv *Server) sanitize() *core.SyntaxError {
+func (srv *Server) sanitize() *core.Error {
 	url := urlreplace.Replace(srv.URL)
 	if url == "" { // 可以是 / 未必是一个 URL
-		return core.NewSyntaxError(core.Location{}, "url", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("url")
 	}
 
 	for key, val := range srv.Variables {
@@ -53,16 +53,16 @@ func (srv *Server) sanitize() *core.SyntaxError {
 
 		k := "{" + key + "}"
 		if strings.Index(srv.URL, k) < 0 {
-			return core.NewSyntaxError(core.Location{}, "variables["+key+"]", locale.ErrInvalidValue)
+			return core.NewError(locale.ErrInvalidValue).WithField("variables[" + key + "]")
 		}
 	}
 
 	return nil
 }
 
-func (v *ServerVariable) sanitize() *core.SyntaxError {
+func (v *ServerVariable) sanitize() *core.Error {
 	if v.Default == "" {
-		return core.NewSyntaxError(core.Location{}, "default", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("default")
 	}
 
 	if len(v.Enum) == 0 {
@@ -78,7 +78,7 @@ func (v *ServerVariable) sanitize() *core.SyntaxError {
 	}
 
 	if !found {
-		return core.NewSyntaxError(core.Location{}, "default", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("default")
 	}
 
 	return nil

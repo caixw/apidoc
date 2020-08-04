@@ -34,17 +34,17 @@ type License struct {
 	URL  string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
-func (info *Info) sanitize() *core.SyntaxError {
+func (info *Info) sanitize() *core.Error {
 	if info.Title == "" {
-		return core.NewSyntaxError(core.Location{}, "title", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("title")
 	}
 
 	if !version.SemVerValid(info.Version) {
-		return core.NewSyntaxError(core.Location{}, "version", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat).WithField("version")
 	}
 
 	if info.TermsOfService != "" && !is.URL(info.TermsOfService) {
-		return core.NewSyntaxError(core.Location{}, "termsOfService", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat).WithField("termsOfService")
 	}
 
 	if info.Contact != nil {
@@ -64,9 +64,9 @@ func (info *Info) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func (l *License) sanitize() *core.SyntaxError {
+func (l *License) sanitize() *core.Error {
 	if l.URL != "" && !is.URL(l.URL) {
-		return core.NewSyntaxError(core.Location{}, "url", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat).WithField("url")
 	}
 
 	return nil
@@ -95,13 +95,13 @@ func newContact(c *ast.Contact) *Contact {
 	}
 }
 
-func (c *Contact) sanitize() *core.SyntaxError {
+func (c *Contact) sanitize() *core.Error {
 	if c.URL != "" && !is.URL(c.URL) {
-		return core.NewSyntaxError(core.Location{}, "url", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat).WithField("url")
 	}
 
 	if c.Email != "" && !is.Email(c.Email) {
-		return core.NewSyntaxError(core.Location{}, "email", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat).WithField("email")
 	}
 
 	return nil

@@ -29,7 +29,7 @@ func DetectConfig(wd core.URI, recursive bool) (*Config, error) {
 		return nil, err
 	}
 	if len(inputs) == 0 {
-		return nil, core.NewSyntaxError(core.Location{}, "", locale.ErrNotFoundSupportedLang)
+		return nil, core.NewError(locale.ErrNotFoundSupportedLang)
 	}
 
 	cfg := &Config{

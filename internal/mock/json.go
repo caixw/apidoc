@@ -34,13 +34,13 @@ func validJSON(p *ast.Request, content []byte) error {
 		if bytes.Equal(content, []byte("null")) {
 			return nil
 		}
-		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat)
 	} else if p.Type.V() == ast.TypeNone && len(content) == 0 {
 		return nil
 	}
 
 	if !json.Valid(content) {
-		return core.NewSyntaxError(core.Location{}, "", locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat)
 	}
 
 	validator := newJSONValidator(p)
@@ -137,47 +137,47 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 
 	p := validator.find()
 	if p == nil {
-		return core.NewSyntaxError(core.Location{}, field, locale.ErrNotFound)
+		return core.NewError(locale.ErrNotFound).WithField(field)
 	}
 
 	pt := p.Type.V()
 
 	if primitive, _ := ast.ParseType(pt); primitive != t {
-		return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+		return core.NewError(locale.ErrInvalidFormat).WithField(field)
 	}
 
 	switch pt {
 	case ast.TypeEmail:
 		if !is.Email(v) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeURL:
 		if !is.URL(v) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeDate:
 		vv, ok := v.(string)
 		if !ok {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 		if !isValidRFC3339Date(vv) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeTime:
 		vv, ok := v.(string)
 		if !ok {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 		if !isValidRFC3339Time(vv) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeDateTime:
 		vv, ok := v.(string)
 		if !ok {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 		if !isValidRFC3339DateTime(vv) {
-			return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField(field)
 		}
 	case ast.TypeImage: // 可能是相对站点的根路径，不作类型检测
 	case ast.TypeInt, ast.TypeFloat: // 数值类型都被 json 解释为 float64，无法判断值是浮点还是整数。
@@ -189,7 +189,7 @@ func (validator *jsonValidator) validValue(t string, v interface{}) error {
 				return nil
 			}
 		}
-		return core.NewSyntaxError(core.Location{}, field, locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField(field)
 	}
 
 	return nil

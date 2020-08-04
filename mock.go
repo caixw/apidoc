@@ -20,9 +20,9 @@ type Range struct {
 	Min, Max int
 }
 
-func (r *Range) sanitize() *core.SyntaxError {
+func (r *Range) sanitize() *core.Error {
 	if r.Max <= r.Min {
-		return core.NewSyntaxError(core.Location{}, "Min", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("Min")
 	}
 	return nil
 }
@@ -70,7 +70,7 @@ var defaultMockOptions = &MockOptions{
 	DateEnd:   time.Now().Add(time.Hour * 24 * 3650),
 }
 
-func (o *MockOptions) sanitize() *core.SyntaxError {
+func (o *MockOptions) sanitize() *core.Error {
 	if err := o.SliceSize.sanitize(); err != nil {
 		err.Field = "SliceSize." + err.Field
 		return err
@@ -92,20 +92,20 @@ func (o *MockOptions) sanitize() *core.SyntaxError {
 	}
 
 	if len(o.StringAlpha) == 0 {
-		return core.NewSyntaxError(core.Location{}, "StringAlpha", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("StringAlpha")
 	}
 
 	if len(o.URLDomains) == 0 {
-		return core.NewSyntaxError(core.Location{}, "URLDomains", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("URLDomains")
 	}
 
 	if len(o.EmailDomains) == 0 {
-		return core.NewSyntaxError(core.Location{}, "EmailDomains", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("EmailDomains")
 	}
 
 	o.dateSize = o.DateEnd.Unix() - o.DateStart.Unix() - 86400
 	if o.dateSize <= 0 {
-		return core.NewSyntaxError(core.Location{}, "DateStart", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("DateStart")
 	}
 
 	return nil

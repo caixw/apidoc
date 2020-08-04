@@ -110,7 +110,7 @@ type Discriminator struct {
 	Mapping      map[string]string `json:"mapping,omitempty" yaml:"mapping,omitempty"`
 }
 
-func (s *Schema) sanitize() *core.SyntaxError {
+func (s *Schema) sanitize() *core.Error {
 	if s.ExternalDocs != nil {
 		if err := s.ExternalDocs.sanitize(); err != nil {
 			err.Field = "externalDocs." + err.Field

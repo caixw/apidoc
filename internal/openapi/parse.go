@@ -57,7 +57,7 @@ func convert(doc *ast.APIDoc) (*OpenAPI, error) {
 	return openapi, nil
 }
 
-func parsePaths(openapi *OpenAPI, d *ast.APIDoc) *core.SyntaxError {
+func parsePaths(openapi *OpenAPI, d *ast.APIDoc) *core.Error {
 	for _, api := range d.APIs {
 		p := openapi.Paths[api.Path.Path.V()]
 		if p == nil {
@@ -222,48 +222,48 @@ func getDescription(desc *ast.Richtext, summary *ast.Attribute) string {
 	return ""
 }
 
-func setOperation(path *PathItem, method string) (*Operation, *core.SyntaxError) {
+func setOperation(path *PathItem, method string) (*Operation, *core.Error) {
 	operation := &Operation{}
 
 	switch strings.ToUpper(method) {
 	case "GET":
 		if path.Get != nil {
-			return nil, core.NewSyntaxError(core.Location{}, "get", locale.ErrDuplicateValue)
+			return nil, core.NewError(locale.ErrDuplicateValue).WithField("get")
 		}
 		path.Get = operation
 	case "DELETE":
 		if path.Delete != nil {
-			return nil, core.NewSyntaxError(core.Location{}, "delete", locale.ErrDuplicateValue)
+			return nil, core.NewError(locale.ErrDuplicateValue).WithField("delete")
 		}
 		path.Delete = operation
 	case "POST":
 		if path.Post != nil {
-			return nil, core.NewSyntaxError(core.Location{}, "post", locale.ErrDuplicateValue)
+			return nil, core.NewError(locale.ErrDuplicateValue).WithField("post")
 		}
 		path.Post = operation
 	case "PUT":
 		if path.Put != nil {
-			return nil, core.NewSyntaxError(core.Location{}, "put", locale.ErrDuplicateValue)
+			return nil, core.NewError(locale.ErrDuplicateValue).WithField("put")
 		}
 		path.Put = operation
 	case "PATCH":
 		if path.Patch != nil {
-			return nil, core.NewSyntaxError(core.Location{}, "patch", locale.ErrDuplicateValue)
+			return nil, core.NewError(locale.ErrDuplicateValue).WithField("patch")
 		}
 		path.Patch = operation
 	case "OPTIONS":
 		if path.Options != nil {
-			return nil, core.NewSyntaxError(core.Location{}, "options", locale.ErrDuplicateValue)
+			return nil, core.NewError(locale.ErrDuplicateValue).WithField("options")
 		}
 		path.Options = operation
 	case "HEAD":
 		if path.Head != nil {
-			return nil, core.NewSyntaxError(core.Location{}, "head", locale.ErrDuplicateValue)
+			return nil, core.NewError(locale.ErrDuplicateValue).WithField("head")
 		}
 		path.Head = operation
 	case "TRACE":
 		if path.Trace != nil {
-			return nil, core.NewSyntaxError(core.Location{}, "trace", locale.ErrDuplicateValue)
+			return nil, core.NewError(locale.ErrDuplicateValue).WithField("trace")
 		}
 		path.Trace = operation
 	}

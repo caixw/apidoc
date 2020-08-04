@@ -42,32 +42,32 @@ type Input struct {
 
 func (o *Input) sanitize() error {
 	if o == nil {
-		return core.NewSyntaxError(core.Location{}, "", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired)
 	}
 
 	if len(o.Dir) == 0 {
-		return core.NewSyntaxError(core.Location{}, "dir", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("dir")
 	}
 
 	exists, err := o.Dir.Exists()
 	if err != nil {
-		return core.NewSyntaxErrorWithError(core.Location{}, "dir", err)
+		return core.WithError(err).WithField("dir")
 	}
 	if !exists {
-		return core.NewSyntaxError(core.Location{}, "dir", locale.ErrDirNotExists)
+		return core.NewError(locale.ErrDirNotExists).WithField("dir")
 	}
 
 	if scheme, _ := o.Dir.Parse(); scheme != "" && scheme != core.SchemeFile {
-		return core.NewSyntaxError(core.Location{}, "dir", locale.ErrInvalidURIScheme)
+		return core.NewError(locale.ErrInvalidURIScheme).WithField("dir")
 	}
 
 	if len(o.Lang) == 0 {
-		return core.NewSyntaxError(core.Location{}, "lang", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("lang")
 	}
 
 	language := lang.Get(o.Lang)
 	if language == nil {
-		return core.NewSyntaxError(core.Location{}, "lang", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("lang")
 	}
 
 	if len(o.Exts) > 0 {
@@ -90,10 +90,10 @@ func (o *Input) sanitize() error {
 	// 生成 paths
 	paths, err := recursivePath(o)
 	if err != nil {
-		return core.NewSyntaxErrorWithError(core.Location{}, "dir", err)
+		return core.WithError(err).WithField("dir")
 	}
 	if len(paths) == 0 {
-		return core.NewSyntaxError(core.Location{}, "dir", locale.ErrDirIsEmpty)
+		return core.NewError(locale.ErrDirIsEmpty).WithField("dir")
 	}
 	o.paths = paths
 
@@ -101,7 +101,7 @@ func (o *Input) sanitize() error {
 	if o.Encoding != "" {
 		o.encoding, err = ianaindex.IANA.Encoding(o.Encoding)
 		if err != nil {
-			return core.NewSyntaxErrorWithError(core.Location{}, "encoding", err)
+			return core.WithError(err).WithField("encoding")
 		}
 	}
 
@@ -166,7 +166,7 @@ func ParseInputs(blocks chan core.Block, h *core.MessageHandler, opt ...*Input) 
 func (o *Input) ParseFile(blocks chan core.Block, h *core.MessageHandler, uri core.URI) {
 	data, err := uri.ReadAll(o.encoding)
 	if err != nil {
-		h.Error(core.NewSyntaxErrorWithError(core.Location{URI: uri}, "", err))
+		h.Error((core.Location{URI: uri}).WithError(err))
 		return
 	}
 

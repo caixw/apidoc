@@ -66,18 +66,18 @@ func LoadConfig(wd core.URI) (*Config, error) {
 	}
 
 	field := wd.Append(allowConfigFilenames[0]).String()
-	return nil, core.NewSyntaxErrorWithError(core.Location{}, field, os.ErrNotExist)
+	return nil, core.WithError(os.ErrNotExist).WithField(field)
 }
 
 func loadFile(wd, path core.URI) (*Config, error) {
 	data, err := path.ReadAll(nil)
 	if err != nil {
-		return nil, core.NewSyntaxErrorWithError(core.Location{URI: path}, "", err)
+		return nil, (core.Location{URI: path}).WithError(err)
 	}
 
 	cfg := &Config{}
 	if err = yaml.Unmarshal(data, cfg); err != nil {
-		return nil, core.NewSyntaxErrorWithError(core.Location{URI: path}, "", err)
+		return nil, (core.Location{URI: path}).WithError(err)
 	}
 
 	if err := cfg.sanitize(wd); err != nil {
@@ -94,29 +94,29 @@ func (cfg *Config) sanitize(wd core.URI) error {
 	// 比较版本号兼容问题
 	compatible, err := version.SemVerCompatible(ast.Version, cfg.Version)
 	if err != nil {
-		return core.NewSyntaxErrorWithError(core.Location{URI: file}, "version", err)
+		return (core.Location{URI: file}).WithError(err).WithField("version")
 	}
 	if !compatible {
-		return core.NewSyntaxError(core.Location{URI: file}, "version", locale.VersionInCompatible)
+		return (core.Location{URI: file}).NewError(locale.VersionInCompatible).WithField("version")
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return core.NewSyntaxError(core.Location{URI: file}, "inputs", locale.ErrRequired)
+		return (core.Location{URI: file}).NewError(locale.ErrRequired).WithField("inputs")
 	}
 
 	if cfg.Output == nil {
-		return core.NewSyntaxError(core.Location{URI: file}, "output", locale.ErrRequired)
+		return (core.Location{URI: file}).NewError(locale.ErrRequired).WithField("output")
 	}
 
 	for index, i := range cfg.Inputs {
 		field := "inputs[" + strconv.Itoa(index) + "]"
 
 		if i.Dir, err = abs(i.Dir, wd); err != nil {
-			return core.NewSyntaxErrorWithError(core.Location{URI: file}, field+".path", err)
+			return (core.Location{URI: file}).WithError(err).WithField(field + ".path")
 		}
 
 		if err := i.sanitize(); err != nil {
-			if serr, ok := err.(*core.SyntaxError); ok {
+			if serr, ok := err.(*core.Error); ok {
 				serr.Location.URI = file
 				serr.Field = field + serr.Field
 			}
@@ -125,7 +125,7 @@ func (cfg *Config) sanitize(wd core.URI) error {
 	}
 
 	if cfg.Output.Path, err = abs(cfg.Output.Path, wd); err != nil {
-		return core.NewSyntaxErrorWithError(core.Location{URI: file}, "output.path", err)
+		return (core.Location{URI: file}).WithError(err).WithField("output.path")
 	}
 	return cfg.Output.sanitize()
 }

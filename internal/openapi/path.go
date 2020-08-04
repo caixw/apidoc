@@ -81,7 +81,7 @@ type Response struct {
 	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
-func (path *PathItem) sanitize() *core.SyntaxError {
+func (path *PathItem) sanitize() *core.Error {
 	var o *Operation
 	var method string
 	switch {
@@ -112,7 +112,7 @@ func (path *PathItem) sanitize() *core.SyntaxError {
 	}
 
 	if o == nil {
-		return core.NewSyntaxError(core.Location{}, "operation", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("operation")
 
 	}
 
@@ -123,9 +123,9 @@ func (path *PathItem) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func (o *Operation) sanitize() *core.SyntaxError {
+func (o *Operation) sanitize() *core.Error {
 	if len(o.Responses) == 0 {
-		return core.NewSyntaxError(core.Location{}, "responses", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("responses")
 	}
 	for name, resp := range o.Responses {
 		if err := resp.sanitize(); err != nil {
@@ -152,9 +152,9 @@ func (o *Operation) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func (req *RequestBody) sanitize() *core.SyntaxError {
+func (req *RequestBody) sanitize() *core.Error {
 	if len(req.Content) == 0 {
-		return core.NewSyntaxError(core.Location{}, "content", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("content")
 	}
 
 	for key, mt := range req.Content {
@@ -167,9 +167,9 @@ func (req *RequestBody) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func (resp *Response) sanitize() *core.SyntaxError {
+func (resp *Response) sanitize() *core.Error {
 	if resp.Description == "" {
-		return core.NewSyntaxError(core.Location{}, "description", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired).WithField("description")
 	}
 
 	for key, header := range resp.Headers {
@@ -196,7 +196,7 @@ func (resp *Response) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func (mt *MediaType) sanitize() *core.SyntaxError {
+func (mt *MediaType) sanitize() *core.Error {
 	if mt.Schema != nil {
 		if err := mt.Schema.sanitize(); err != nil {
 			err.Field = "schema." + err.Field
@@ -213,7 +213,7 @@ func (mt *MediaType) sanitize() *core.SyntaxError {
 	return nil
 }
 
-func (en *Encoding) sanitize() *core.SyntaxError {
+func (en *Encoding) sanitize() *core.Error {
 	if err := en.Style.sanitize(); err != nil {
 		return err
 	}

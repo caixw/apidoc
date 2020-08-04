@@ -84,7 +84,7 @@ func (l *parser) parse(blocks chan core.Block) {
 					End:   l.Current().Position,
 				},
 			}
-			l.h.Error(core.NewSyntaxError(loc, "", locale.ErrNotFoundEndFlag))
+			l.h.Error(loc.NewError(locale.ErrNotFoundEndFlag))
 			return
 		}
 

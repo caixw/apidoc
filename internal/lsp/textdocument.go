@@ -60,21 +60,13 @@ func (s *server) textDocumentPublishDiagnostics(f *folder, uri core.URI) error {
 
 	for _, err := range f.errors {
 		if err.Location.URI == uri {
-			p.Diagnostics = append(p.Diagnostics, protocol.Diagnostic{
-				Range:    err.Location.Range,
-				Message:  err.Error(),
-				Severity: protocol.DiagnosticSeverityError,
-			})
+			p.Diagnostics = append(p.Diagnostics, protocol.BuildDiagnostic(err, protocol.DiagnosticSeverityError))
 		}
 	}
 
 	for _, err := range f.warns {
 		if err.Location.URI == uri {
-			p.Diagnostics = append(p.Diagnostics, protocol.Diagnostic{
-				Range:    err.Location.Range,
-				Message:  err.Error(),
-				Severity: protocol.DiagnosticSeverityWarning,
-			})
+			p.Diagnostics = append(p.Diagnostics, protocol.BuildDiagnostic(err, protocol.DiagnosticSeverityWarning))
 		}
 	}
 

@@ -53,7 +53,7 @@ func BlockEndPosition(b core.Block) (Position, error) {
 					End:   core.Position{Line: p.Line, Character: p.Character + size},
 				},
 			}
-			return Position{}, core.NewSyntaxError(loc, "", locale.ErrInvalidUTF8Character)
+			return Position{}, loc.NewError(locale.ErrInvalidUTF8Character)
 		}
 
 		p.Offset += size

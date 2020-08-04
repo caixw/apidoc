@@ -40,7 +40,7 @@ func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace stri
 
 	if hasErr {
 		a.NotEmpty(rslt.Errors)
-		a.ErrorType(rslt.Errors[0], &core.SyntaxError{})
+		a.ErrorType(rslt.Errors[0], &core.Error{})
 		return
 	}
 	a.Empty(rslt.Errors)

@@ -27,11 +27,11 @@ type Style struct {
 	AllowReserved bool   `json:"allowReserved,omitempty" yaml:"allowReserved,omitempty"`
 }
 
-func (style *Style) sanitize() *core.SyntaxError {
+func (style *Style) sanitize() *core.Error {
 	switch style.Style {
 	case StyleMatrix, StyleLabel, StyleForm, StyleSimple, StyleSpaceDelimited, StylePipeDelimited, StyleDeepObject:
 	default:
-		return core.NewSyntaxError(core.Location{}, "style", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("style")
 	}
 
 	return nil

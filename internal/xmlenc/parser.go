@@ -399,25 +399,25 @@ func (p *Parser) endElement(start *StartElement) error {
 	}
 }
 
-// NewError 生成 *core.SyntaxError 对象
-func (p *Parser) NewError(start, end core.Position, field string, key message.Reference, v ...interface{}) error {
-	return core.NewSyntaxError(core.Location{
-		URI:   p.Location.URI,
-		Range: core.Range{Start: start, End: end},
-	}, field, key, v...)
+// NewError 生成 *core.Error 对象
+func (p *Parser) NewError(start, end core.Position, field string, key message.Reference, v ...interface{}) *core.Error {
+	return core.NewError(key, v...).
+		WithField(field).
+		WithLocation(core.Location{
+			URI:   p.Location.URI,
+			Range: core.Range{Start: start, End: end},
+		})
 }
 
-// WithError 将 err 包装成 *core.SyntaxError 类型
+// WithError 将 err 包装成 *core.Error 类型
 //
-// 如果 err 本身就是 *core.SyntaxError 类型，则只取 err.Err
+// 如果 err 本身就是 *core.Error 类型，则只取 err.Err
 // 作为返回对象有的 Err 字段，其它字段弃用。
-func (p *Parser) WithError(start, end core.Position, field string, err error) error {
-	if serr, ok := err.(*core.SyntaxError); ok {
-		err = serr.Err
-	}
-
-	return core.NewSyntaxErrorWithError(core.Location{
-		URI:   p.Location.URI,
-		Range: core.Range{Start: start, End: end},
-	}, field, err)
+func (p *Parser) WithError(start, end core.Position, field string, err error) *core.Error {
+	return core.WithError(err).
+		WithField(field).
+		WithLocation(core.Location{
+			URI:   p.Location.URI,
+			Range: core.Range{Start: start, End: end},
+		})
 }

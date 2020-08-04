@@ -87,7 +87,7 @@ func (o *Output) contains(tags ...string) bool {
 
 func (o *Output) sanitize() error {
 	if o == nil {
-		return core.NewSyntaxError(core.Location{}, "", locale.ErrRequired)
+		return core.NewError(locale.ErrRequired)
 	}
 
 	if o.Type == "" {
@@ -96,7 +96,7 @@ func (o *Output) sanitize() error {
 
 	if o.Version != "" {
 		if !version.SemVerValid(o.Version) {
-			return core.NewSyntaxError(core.Location{}, "version", locale.ErrInvalidFormat)
+			return core.NewError(locale.ErrInvalidFormat).WithField("version")
 		}
 	}
 
@@ -108,7 +108,7 @@ func (o *Output) sanitize() error {
 	case OpenapiYAML:
 		o.marshal = openapi.YAML
 	default:
-		return core.NewSyntaxError(core.Location{}, "type", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("type")
 	}
 
 	o.xml = strings.HasSuffix(o.Type, "+xml")
@@ -126,7 +126,7 @@ func (o *Output) sanitize() error {
 	if len(o.Path) > 0 {
 		scheme, _ := o.Path.Parse()
 		if scheme != core.SchemeFile && scheme != "" {
-			return core.NewSyntaxError(core.Location{}, "path", locale.ErrInvalidURIScheme)
+			return core.NewError(locale.ErrInvalidURIScheme).WithField("path")
 		}
 	}
 

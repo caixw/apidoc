@@ -36,7 +36,7 @@ type Parameter struct {
 	Ref string `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
-func (p *Parameter) sanitize() *core.SyntaxError {
+func (p *Parameter) sanitize() *core.Error {
 	if err := p.Style.sanitize(); err != nil {
 		return err
 	}
@@ -44,23 +44,23 @@ func (p *Parameter) sanitize() *core.SyntaxError {
 	switch p.IN {
 	case ParameterINCookie, ParameterINHeader, ParameterINPath, ParameterINQuery:
 	default:
-		return core.NewSyntaxError(core.Location{}, "in", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("in")
 	}
 
 	return nil
 }
 
-func (h *Header) sanitize() *core.SyntaxError {
+func (h *Header) sanitize() *core.Error {
 	if err := h.Style.sanitize(); err != nil {
 		return err
 	}
 
 	if h.IN != "" {
-		return core.NewSyntaxError(core.Location{}, "in", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("in")
 	}
 
 	if h.Name != "" {
-		return core.NewSyntaxError(core.Location{}, "name", locale.ErrInvalidValue)
+		return core.NewError(locale.ErrInvalidValue).WithField("name")
 	}
 
 	return nil
