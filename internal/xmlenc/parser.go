@@ -25,7 +25,7 @@ const (
 // Parser 代码块的解析器
 type Parser struct {
 	*lexer.Lexer
-	h *core.MessageHandler
+	*core.MessageHandler
 }
 
 // NewParser 声明新的 Parser 实例
@@ -36,8 +36,8 @@ func NewParser(h *core.MessageHandler, b core.Block) (*Parser, error) {
 	}
 
 	return &Parser{
-		Lexer: l,
-		h:     h,
+		Lexer:          l,
+		MessageHandler: h,
 	}, nil
 }
 
@@ -380,7 +380,7 @@ func (p *Parser) endElement(start *StartElement) error {
 	for {
 		t, _, err := p.Token()
 		if errors.Is(err, io.EOF) {
-			p.h.Error(p.NewError(start.Start, start.End, start.Name.String(), locale.ErrNotFoundEndTag))
+			p.Error(p.NewError(start.Start, start.End, start.Name.String(), locale.ErrNotFoundEndTag))
 			p.Move(curr)
 			return nil
 		} else if err != nil {

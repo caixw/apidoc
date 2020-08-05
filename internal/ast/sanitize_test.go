@@ -133,53 +133,88 @@ func TestAPI_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	api := &API{}
-	a.NotError(api.Sanitize(newEmptyParser(a)))
+	p, rslt := newParser(a, "")
+	api.Sanitize(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 
 	// headers
 
 	api.Headers = []*Param{
 		{Type: &TypeAttribute{Value: xmlenc.String{Value: TypeString}}},
 	}
-	a.NotError(api.Sanitize(newEmptyParser(a)))
+	p, rslt = newParser(a, "")
+	api.Sanitize(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 
 	api.Headers = append(api.Headers, &Param{
 		Type: &TypeAttribute{Value: xmlenc.String{Value: TypeObject}},
 	})
-	a.Error(api.Sanitize(newEmptyParser(a)))
+	p, rslt = newParser(a, "")
+	api.Sanitize(p)
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors)
 
 	// servers
 
 	api = &API{
 		Servers: []*Element{},
 	}
-	a.NotError(api.Sanitize(newEmptyParser(a)))
+	p, rslt = newParser(a, "")
+	api.Sanitize(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	api.Servers = append(api.Servers, &Element{Content: Content{Value: "s1"}})
-	a.NotError(api.Sanitize(newEmptyParser(a)))
+	p, rslt = newParser(a, "")
+	api.Sanitize(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
+
 	api.Servers = append(api.Servers, &Element{Content: Content{Value: "s1"}})
-	a.Error(api.Sanitize(newEmptyParser(a)))
+	p, rslt = newParser(a, "")
+	api.Sanitize(p)
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors)
 
 	// tags
 
 	api = &API{
 		Tags: []*Element{},
 	}
-	a.NotError(api.Sanitize(newEmptyParser(a)))
+	p, rslt = newParser(a, "")
+	api.Sanitize(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 
 	api.Tags = append(api.Tags, &Element{Content: Content{Value: "s1"}})
-	a.NotError(api.Sanitize(newEmptyParser(a)))
+	p, rslt = newParser(a, "")
+	api.Sanitize(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
+
 	api.Tags = append(api.Tags, &Element{Content: Content{Value: "s1"}})
-	a.Error(api.Sanitize(newEmptyParser(a)))
+	p, rslt = newParser(a, "")
+	api.Sanitize(p)
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors)
 }
 
 func TestXMLnamespace_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	ns := &XMLNamespace{}
-	a.Error(ns.Sanitize(newEmptyParser(a)))
+	p, rslt := newParser(a, "")
+	ns.Sanitize(p)
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors)
 
 	ns.URN = &Attribute{Value: xmlenc.String{Value: "urn"}}
-	a.NotError(ns.Sanitize(newEmptyParser(a)))
+	p, rslt = newParser(a, "")
+	ns.Sanitize(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
 }
 
 func TestParsePath(t *testing.T) {

@@ -41,8 +41,8 @@ type (
 	Sanitizer interface {
 		// 验证数据是否正确
 		//
-		// 可以通过 p.NewError 和 p.WithError 返回 *core.Error 类型的错误
-		Sanitize(p *Parser) error
+		// 可以通过 p.NewError 和 p.WithError 生成信息向 p.MessageHandler 输出
+		Sanitize(p *Parser)
 	}
 
 	attributeSetter interface {
@@ -98,7 +98,7 @@ func Decode(p *Parser, v interface{}, namespace string) {
 		if errors.Is(err, io.EOF) {
 			return
 		} else if err != nil {
-			d.p.h.Error(err)
+			d.p.Error(err)
 			return
 		}
 
@@ -108,7 +108,7 @@ func Decode(p *Parser, v interface{}, namespace string) {
 				p.endElement(elem) // 找到对应的结束标签
 				msg := p.NewError(elem.Start, p.Current().Position, elem.Name.String(), locale.ErrMultipleRootTag).
 					AddTypes(core.ErrorTypeUnused)
-				d.p.h.Warning(msg)
+				d.p.Warning(msg)
 				return
 			}
 			hasRoot = true
@@ -119,7 +119,7 @@ func Decode(p *Parser, v interface{}, namespace string) {
 			}
 		case *Comment, *String, *Instruction: // 忽略注释和普通的文本内容
 		default:
-			d.p.h.Error(p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
+			d.p.Error(p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
 			return
 		}
 	}
@@ -153,19 +153,19 @@ func (d *decoder) decode(n *node.Node, start *StartElement) *EndElement {
 func (d *decoder) checkOmitempty(n *node.Node, start, end core.Position) {
 	for _, attr := range n.Attributes {
 		if canNotEmpty(attr) {
-			d.p.h.Error(d.p.NewError(start, end, attr.Name, locale.ErrRequired))
+			d.p.Error(d.p.NewError(start, end, attr.Name, locale.ErrRequired))
 		}
 	}
 	for _, elem := range n.Elements {
 		if canNotEmpty(elem) {
-			d.p.h.Error(d.p.NewError(start, end, elem.Name, locale.ErrRequired))
+			d.p.Error(d.p.NewError(start, end, elem.Name, locale.ErrRequired))
 		}
 	}
 	if n.CData != nil && canNotEmpty(n.CData) {
-		d.p.h.Error(d.p.NewError(start, end, "cdata", locale.ErrRequired))
+		d.p.Error(d.p.NewError(start, end, "cdata", locale.ErrRequired))
 	}
 	if n.Content != nil && canNotEmpty(n.Content) {
-		d.p.h.Error(d.p.NewError(start, end, "content", locale.ErrRequired))
+		d.p.Error(d.p.NewError(start, end, "content", locale.ErrRequired))
 	}
 }
 
@@ -193,14 +193,14 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) {
 		var impl bool
 		if item.CanInterface() && item.Type().Implements(attrDecoderType) {
 			if err := item.Interface().(AttrDecoder).DecodeXMLAttr(d.p, attr); err != nil {
-				d.p.h.Error(err)
+				d.p.Error(err)
 			}
 			impl = true
 		} else if item.CanAddr() {
 			pv := item.Addr()
 			if pv.CanInterface() && pv.Type().Implements(attrDecoderType) {
 				if err := pv.Interface().(AttrDecoder).DecodeXMLAttr(d.p, attr); err != nil {
-					d.p.h.Error(err)
+					d.p.Error(err)
 				}
 				impl = true
 			}
@@ -211,9 +211,7 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) {
 		}
 
 		v.Addr().Interface().(attributeSetter).setAttribute(item.Usage, attr)
-		if err := callSanitizer(v, d.p); err != nil { // Sanitize 在最后调用，可以确保能取到 v.Range
-			d.p.h.Error(err) // sanitize 错误不中断执行
-		}
+		callSanitizer(v, d.p) // Sanitize 在最后调用，可以确保能取到 v.Range
 	}
 }
 
@@ -222,10 +220,10 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 		t, r, err := d.p.Token()
 		if errors.Is(err, io.EOF) {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
-			d.p.h.Error(d.p.NewError(d.p.Current().Position, d.p.Current().Position, "", locale.ErrNotFoundEndTag))
+			d.p.Error(d.p.NewError(d.p.Current().Position, d.p.Current().Position, "", locale.ErrNotFoundEndTag))
 			return nil, false
 		} else if err != nil {
-			d.p.h.Error(err)
+			d.p.Error(err)
 			return nil, false
 		}
 
@@ -234,7 +232,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 			if (elem.Name.Local.Value == n.Value.Name) && (elem.Name.Prefix.Value == d.prefix) {
 				return elem, true
 			}
-			d.p.h.Error(d.p.NewError(elem.Start, elem.End, n.Value.Name, locale.ErrNotFoundEndTag))
+			d.p.Error(d.p.NewError(elem.Start, elem.End, n.Value.Name, locale.ErrNotFoundEndTag))
 			return nil, false
 		case *CData:
 			if n.CData != nil {
@@ -248,13 +246,13 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 			item, found := n.Element(elem.Name.Local.Value)
 			if !found || d.prefix != elem.Name.Prefix.Value {
 				if err := d.p.endElement(elem); err != nil {
-					d.p.h.Error(err)
+					d.p.Error(err)
 					return nil, false
 				}
 
 				e := d.p.NewError(elem.Start, d.p.Current().Position, elem.Name.String(), locale.ErrInvalidTag).
 					AddTypes(core.ErrorTypeUnused)
-				d.p.h.Warning(e)
+				d.p.Warning(e)
 				break // 忽略不存在的子元素
 			}
 			if !d.decodeElement(elem, item) {
@@ -262,7 +260,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 			}
 		case *Comment: // 忽略注释内容
 		default:
-			d.p.h.Error(d.p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
+			d.p.Error(d.p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
 			return nil, false
 		}
 	}
@@ -296,7 +294,7 @@ func (d *decoder) decodeElement(start *StartElement, v *node.Value) (ok bool) {
 		end = d.decode(node.New(start.Name.Local.Value, v.Value), start)
 	}
 	if err != nil {
-		d.p.h.Error(err)
+		d.p.Error(err)
 		return false
 	}
 
@@ -309,7 +307,7 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 	// 所以要过滤与 start 想匹配的结束符号才算结束。
 	if !start.SelfClose && (start.Name.Local.Value != slice.Name) {
 		if err := d.p.endElement(start); err != nil {
-			d.p.h.Error(err)
+			d.p.Error(err)
 			return false
 		}
 	}
@@ -327,7 +325,7 @@ func (d *decoder) decodeSlice(start *StartElement, slice *node.Value) (ok bool) 
 		end = d.decode(node.New(start.Name.Local.Value, elem), start)
 	}
 	if err != nil {
-		d.p.h.Error(err)
+		d.p.Error(err)
 		return false
 	}
 
@@ -359,20 +357,16 @@ func callDecodeXML(v reflect.Value, p *Parser, start *StartElement) (end *EndEle
 
 func (d *decoder) setTagValue(v reflect.Value, usage string, start *StartElement, end *EndElement) {
 	v.Addr().Interface().(tagSetter).setTag(usage, start, end)
-
-	if err := callSanitizer(v, d.p); err != nil { // Sanitize 在最后调用，可以确保能取到 v.Range
-		d.p.h.Error(err)
-	}
+	callSanitizer(v, d.p) // Sanitize 在最后调用，可以确保能取到 v.Range
 }
 
-func callSanitizer(v reflect.Value, p *Parser) error {
+func callSanitizer(v reflect.Value, p *Parser) {
 	if v.CanInterface() && v.Type().Implements(sanitizerType) {
-		return v.Interface().(Sanitizer).Sanitize(p)
+		v.Interface().(Sanitizer).Sanitize(p)
 	} else if v.CanAddr() {
 		pv := v.Addr()
 		if pv.CanInterface() && pv.Type().Implements(sanitizerType) {
-			return pv.Interface().(Sanitizer).Sanitize(p)
+			pv.Interface().(Sanitizer).Sanitize(p)
 		}
 	}
-	return nil
 }

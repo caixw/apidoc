@@ -147,9 +147,8 @@ func (i *stringAttr) EncodeXMLAttr() (string, error) {
 	return i.Value, nil
 }
 
-func (o *objectTag) Sanitize(*Parser) error {
+func (o *objectTag) Sanitize(*Parser) {
 	o.ID.Value++
-	return nil
 }
 
 func (t *errAttr) DecodeXMLAttr(*Parser, *Attribute) error {
