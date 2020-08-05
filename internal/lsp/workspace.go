@@ -14,6 +14,9 @@ import (
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_workspaceFolders
 func (s *server) workspaceWorkspaceFolders() error {
 	err := s.Send("workspace/workspaceFolders", nil, func(folders *[]protocol.WorkspaceFolder) error {
+		s.workspaceMux.Lock()
+		defer s.workspaceMux.Unlock()
+
 		for _, f := range s.folders {
 			f.close()
 		}
@@ -36,6 +39,9 @@ func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.Di
 	if s.getState() != serverInitialized {
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}
+
+	s.workspaceMux.Lock()
+	defer s.workspaceMux.Unlock()
 
 	for _, removed := range in.Event.Removed {
 		sliceutil.Delete(s.folders, func(i int) bool {

@@ -24,18 +24,15 @@ const (
 // server LSP 服务实例
 type server struct {
 	*jsonrpc.Conn
-
-	state    serverState
-	stateMux sync.RWMutex
-
-	cancelFunc context.CancelFunc
+	state        serverState
+	stateMux     sync.RWMutex
+	workspaceMux sync.RWMutex
 
 	folders []*folder
 
-	clientInfo         *protocol.ServerInfo
-	clientCapabilities *protocol.ClientCapabilities
-
-	info, erro *log.Logger
+	clientParams *protocol.InitializeParams
+	info, erro   *log.Logger
+	cancelFunc   context.CancelFunc
 }
 
 func (s *server) setState(state serverState) {

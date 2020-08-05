@@ -41,9 +41,6 @@ func (f *folder) close() {
 }
 
 func (f *folder) parseBlock(block core.Block) {
-	f.parsedMux.Lock()
-	defer f.parsedMux.Unlock()
-
 	var input *build.Input
 	ext := filepath.Ext(block.Location.URI.String())
 	for _, i := range f.cfg.Inputs {
@@ -141,6 +138,9 @@ func (f *folder) deleteURI(uri core.URI) (found bool) {
 }
 
 func (s *server) findFolder(uri core.URI) *folder {
+	s.workspaceMux.RLock()
+	defer s.workspaceMux.RUnlock()
+
 	var f *folder
 	for _, f = range s.folders {
 		if strings.HasPrefix(string(uri), string(f.URI)) {

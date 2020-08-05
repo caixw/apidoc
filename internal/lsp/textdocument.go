@@ -22,9 +22,13 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 		return nil
 	}
 
+	f.parsedMux.Lock()
+	defer f.parsedMux.Unlock()
+
 	for _, blk := range in.Blocks() {
 		f.parseBlock(blk)
 	}
+
 	f.srv.textDocumentPublishDiagnostics(f, in.TextDocument.URI)
 	return nil
 }
@@ -49,7 +53,7 @@ func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *p
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_publishDiagnostics
 func (s *server) textDocumentPublishDiagnostics(f *folder, uri core.URI) error {
-	if s.clientCapabilities.TextDocument.PublishDiagnostics.RelatedInformation == false {
+	if s.clientParams.Capabilities.TextDocument.PublishDiagnostics.RelatedInformation == false {
 		return nil
 	}
 
@@ -78,12 +82,13 @@ func (s *server) textDocumentPublishDiagnostics(f *folder, uri core.URI) error {
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_foldingRange
 func (s *server) textDocumentFoldingRange(notify bool, in *protocol.FoldingRangeParams, out *[]protocol.FoldingRange) error {
 	uri := in.TextDocument.URI
-	lineFoldingOnly := s.clientCapabilities.TextDocument.FoldingRange.LineFoldingOnly
 
 	f := s.findFolder(uri)
 	if f == nil {
-		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
+		return newError(ErrInvalidRequest, locale.ErrFileNotFound, uri)
 	}
+
+	lineFoldingOnly := s.clientParams.Capabilities.TextDocument.FoldingRange.LineFoldingOnly
 
 	fr := make([]protocol.FoldingRange, 0, 10)
 	if f.doc.URI == uri {

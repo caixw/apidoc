@@ -20,6 +20,8 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 
 	s.setState(serverInitializing)
 
+	s.clientParams = in
+
 	if in.Capabilities.Workspace.WorkspaceFolders {
 		out.Capabilities.Workspace = &protocol.WorkspaceProvider{
 			WorkspaceFolders: &protocol.WorkspaceFoldersServerCapabilities{
@@ -69,8 +71,8 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		Version: core.Version,
 	}
 
-	s.clientInfo = in.ClientInfo
-	s.clientCapabilities = &in.Capabilities
+	s.workspaceMux.Lock()
+	defer s.workspaceMux.Unlock()
 
 	return s.appendFolders(in.Folders()...)
 }
@@ -84,7 +86,7 @@ func (s *server) initialized(bool, *protocol.InitializedParams, *interface{}) er
 	}
 	s.setState(serverInitialized)
 
-	if s.clientCapabilities.Workspace.WorkspaceFolders {
+	if s.clientParams.Capabilities.Workspace.WorkspaceFolders {
 		if err := s.workspaceWorkspaceFolders(); err != nil {
 			return err
 		}
