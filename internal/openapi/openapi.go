@@ -99,7 +99,7 @@ func (oa *OpenAPI) sanitize() *core.Error {
 	}
 
 	if oa.Info == nil {
-		return core.NewError(locale.ErrRequired).WithField("info")
+		return core.NewError(locale.ErrIsEmpty, "info").WithField("info")
 	}
 	if err := oa.Info.sanitize(); err != nil {
 		err.Field = "info." + err.Field
@@ -121,7 +121,7 @@ func (oa *OpenAPI) sanitize() *core.Error {
 	}
 
 	if len(oa.Paths) == 0 {
-		return core.NewError(locale.ErrRequired).WithField("paths")
+		return core.NewError(locale.ErrIsEmpty, "paths").WithField("paths")
 	}
 	for k, path := range oa.Paths {
 		if err := path.sanitize(); err != nil {

@@ -92,15 +92,15 @@ func (o *MockOptions) sanitize() *core.Error {
 	}
 
 	if len(o.StringAlpha) == 0 {
-		return core.NewError(locale.ErrRequired).WithField("StringAlpha")
+		return core.NewError(locale.ErrIsEmpty, "StringAlpha").WithField("StringAlpha")
 	}
 
 	if len(o.URLDomains) == 0 {
-		return core.NewError(locale.ErrRequired).WithField("URLDomains")
+		return core.NewError(locale.ErrIsEmpty, "URLDomains").WithField("URLDomains")
 	}
 
 	if len(o.EmailDomains) == 0 {
-		return core.NewError(locale.ErrRequired).WithField("EmailDomains")
+		return core.NewError(locale.ErrIsEmpty, "EmailDomains").WithField("EmailDomains")
 	}
 
 	o.dateSize = o.DateEnd.Unix() - o.DateStart.Unix() - 86400

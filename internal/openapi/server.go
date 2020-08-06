@@ -42,7 +42,7 @@ func newServer(srv *ast.Server) *Server {
 func (srv *Server) sanitize() *core.Error {
 	url := urlreplace.Replace(srv.URL)
 	if url == "" { // 可以是 / 未必是一个 URL
-		return core.NewError(locale.ErrRequired).WithField("url")
+		return core.NewError(locale.ErrIsEmpty, "url").WithField("url")
 	}
 
 	for key, val := range srv.Variables {
@@ -62,7 +62,7 @@ func (srv *Server) sanitize() *core.Error {
 
 func (v *ServerVariable) sanitize() *core.Error {
 	if v.Default == "" {
-		return core.NewError(locale.ErrRequired).WithField("default")
+		return core.NewError(locale.ErrIsEmpty, "default").WithField("default")
 	}
 
 	if len(v.Enum) == 0 {

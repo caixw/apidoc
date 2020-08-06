@@ -364,7 +364,7 @@ func TestValidSimpleParam(t *testing.T) {
 	}
 
 	for _, item := range data {
-		err := validSimpleParam(item.p, item.v)
+		err := validSimpleParam(item.p, item.title, item.v)
 		if item.err {
 			a.Error(err, "%s 并未返回错误值", item.title)
 		} else {

@@ -101,15 +101,19 @@ func (cfg *Config) sanitize(wd core.URI) error {
 	}
 
 	if len(cfg.Inputs) == 0 {
-		return (core.Location{URI: file}).NewError(locale.ErrRequired).WithField("inputs")
+		return (core.Location{URI: file}).NewError(locale.ErrIsEmpty, "inputs").WithField("inputs")
 	}
 
 	if cfg.Output == nil {
-		return (core.Location{URI: file}).NewError(locale.ErrRequired).WithField("output")
+		return (core.Location{URI: file}).NewError(locale.ErrIsEmpty, "output").WithField("output")
 	}
 
 	for index, i := range cfg.Inputs {
 		field := "inputs[" + strconv.Itoa(index) + "]"
+
+		if i == nil {
+			return (core.Location{URI: file}).NewError(locale.ErrIsEmpty, field).WithField(field)
+		}
 
 		if i.Dir, err = abs(i.Dir, wd); err != nil {
 			return (core.Location{URI: file}).WithError(err).WithField(field + ".path")

@@ -20,10 +20,10 @@ func TestVarsDefaultLocaleID(t *testing.T) {
 
 func TestTranslate(t *testing.T) {
 	a := assert.New(t)
-	a.Equal(Translate("cmn-hans", ErrRequired), cmnHans[ErrRequired])
-	a.Equal(Translate("zh-hant", ErrRequired), cmnHant[ErrRequired])
-	a.NotEqual(Translate("zh-hant", ErrRequired), cmnHans[ErrRequired])
-	Translate("not-well-format", cmnHans[ErrRequired]) // 无效的 tag 格式
+	a.Equal(Translate("cmn-hans", ErrInvalidUTF8Character), cmnHans[ErrInvalidUTF8Character])
+	a.Equal(Translate("zh-hant", ErrInvalidUTF8Character), cmnHant[ErrInvalidUTF8Character])
+	a.NotEqual(Translate("zh-hant", ErrInvalidUTF8Character), cmnHans[ErrInvalidUTF8Character])
+	Translate("not-well-format", cmnHans[ErrInvalidUTF8Character]) // 无效的 tag 格式
 }
 
 func TestSetTag(t *testing.T) {
@@ -31,19 +31,19 @@ func TestSetTag(t *testing.T) {
 
 	tag := language.MustParse("zh-Hans")
 	SetTag(tag)
-	a.NotEqual(Sprintf(ErrRequired), cmnHant[ErrRequired]).
-		Equal(Sprintf(ErrRequired), cmnHans[ErrRequired]).
-		Equal(NewError(ErrRequired).Error(), cmnHans[ErrRequired])
+	a.NotEqual(Sprintf(ErrInvalidUTF8Character), cmnHant[ErrInvalidUTF8Character]).
+		Equal(Sprintf(ErrInvalidUTF8Character), cmnHans[ErrInvalidUTF8Character]).
+		Equal(NewError(ErrInvalidUTF8Character).Error(), cmnHans[ErrInvalidUTF8Character])
 
 	// zh-cn 应该会转换到 zh-hans
 	tag = language.MustParse("zh-CN")
 	SetTag(tag)
-	a.NotEqual(Sprintf(ErrRequired), cmnHant[ErrRequired]).
-		Equal(Sprintf(ErrRequired), cmnHans[ErrRequired]).
-		Equal(NewError(ErrRequired).Error(), cmnHans[ErrRequired])
+	a.NotEqual(Sprintf(ErrInvalidUTF8Character), cmnHant[ErrInvalidUTF8Character]).
+		Equal(Sprintf(ErrInvalidUTF8Character), cmnHans[ErrInvalidUTF8Character]).
+		Equal(NewError(ErrInvalidUTF8Character).Error(), cmnHans[ErrInvalidUTF8Character])
 
 	tag = language.MustParse("zh-Hant")
 	SetTag(tag)
-	a.Equal(Sprintf(ErrRequired), cmnHant[ErrRequired]).
-		Equal(NewError(ErrRequired).Error(), cmnHant[ErrRequired])
+	a.Equal(Sprintf(ErrInvalidUTF8Character), cmnHant[ErrInvalidUTF8Character]).
+		Equal(NewError(ErrInvalidUTF8Character).Error(), cmnHant[ErrInvalidUTF8Character])
 }

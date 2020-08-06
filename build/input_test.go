@@ -115,10 +115,7 @@ func TestInput_ParseFile(t *testing.T) {
 func TestOptions_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	var o *Input
-	a.Error(o.sanitize())
-
-	o = &Input{}
+	o := &Input{}
 	a.Error(o.sanitize())
 
 	o.Dir = "not exists"

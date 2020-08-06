@@ -112,7 +112,7 @@ func (path *PathItem) sanitize() *core.Error {
 	}
 
 	if o == nil {
-		return core.NewError(locale.ErrRequired).WithField("operation")
+		return core.NewError(locale.ErrIsEmpty, "operation").WithField("operation")
 
 	}
 
@@ -125,7 +125,7 @@ func (path *PathItem) sanitize() *core.Error {
 
 func (o *Operation) sanitize() *core.Error {
 	if len(o.Responses) == 0 {
-		return core.NewError(locale.ErrRequired).WithField("responses")
+		return core.NewError(locale.ErrIsEmpty, "responses").WithField("responses")
 	}
 	for name, resp := range o.Responses {
 		if err := resp.sanitize(); err != nil {
@@ -154,7 +154,7 @@ func (o *Operation) sanitize() *core.Error {
 
 func (req *RequestBody) sanitize() *core.Error {
 	if len(req.Content) == 0 {
-		return core.NewError(locale.ErrRequired).WithField("content")
+		return core.NewError(locale.ErrIsEmpty, "content").WithField("content")
 	}
 
 	for key, mt := range req.Content {
@@ -169,7 +169,7 @@ func (req *RequestBody) sanitize() *core.Error {
 
 func (resp *Response) sanitize() *core.Error {
 	if resp.Description == "" {
-		return core.NewError(locale.ErrRequired).WithField("description")
+		return core.NewError(locale.ErrIsEmpty, "description").WithField("description")
 	}
 
 	for key, header := range resp.Headers {

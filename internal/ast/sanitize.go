@@ -35,14 +35,14 @@ func (api *API) Sanitize(p *xmlenc.Parser) {
 // Sanitize token.Sanitizer
 func (e *Enum) Sanitize(p *xmlenc.Parser) {
 	if e.Description.V() == "" && e.Summary.V() == "" {
-		p.Error(p.NewError(e.Start, e.End, "summary", locale.ErrRequired))
+		p.Error(p.NewError(e.Start, e.End, "summary", locale.ErrIsEmpty, "summary"))
 	}
 }
 
 // Sanitize token.Sanitizer
 func (p *Path) Sanitize(pp *xmlenc.Parser) {
 	if p.Path == nil || p.Path.V() == "" {
-		pp.Error(pp.NewError(p.Start, p.End, "path", locale.ErrRequired))
+		pp.Error(pp.NewError(p.Start, p.End, "path", locale.ErrIsEmpty, "path"))
 	}
 
 	params, err := parsePath(p.Path.V())
@@ -105,7 +105,7 @@ func parsePath(path string) (params map[string]struct{}, err error) {
 // Sanitize token.Sanitizer
 func (r *Request) Sanitize(p *xmlenc.Parser) {
 	if r.Type.V() == TypeObject && len(r.Items) == 0 {
-		p.Error(p.NewError(r.Start, r.End, "param", locale.ErrRequired))
+		p.Error(p.NewError(r.Start, r.End, "param", locale.ErrIsEmpty, "param"))
 	}
 	if r.Type.V() == TypeNone && len(r.Items) > 0 {
 		p.Error(p.NewError(r.Start, r.End, "type", locale.ErrInvalidValue))
@@ -148,10 +148,10 @@ func (r *Request) Sanitize(p *xmlenc.Parser) {
 // Sanitize token.Sanitizer
 func (p *Param) Sanitize(pp *xmlenc.Parser) {
 	if p.Type.V() == TypeNone {
-		pp.Error(pp.NewError(p.Start, p.End, "type", locale.ErrRequired))
+		pp.Error(pp.NewError(p.Start, p.End, "type", locale.ErrIsEmpty, "type"))
 	}
 	if p.Type.V() == TypeObject && len(p.Items) == 0 {
-		pp.Error(pp.NewError(p.Start, p.End, "param", locale.ErrRequired))
+		pp.Error(pp.NewError(p.Start, p.End, "param", locale.ErrIsEmpty, "param"))
 	}
 
 	if p.Type.V() != TypeObject && len(p.Items) > 0 {
@@ -177,7 +177,7 @@ func (p *Param) Sanitize(pp *xmlenc.Parser) {
 	}
 
 	if p.Summary.V() == "" && p.Description.V() == "" {
-		pp.Error(pp.NewError(p.Start, p.End, "summary", locale.ErrRequired))
+		pp.Error(pp.NewError(p.Start, p.End, "summary", locale.ErrIsEmpty, "summary"))
 	}
 }
 
@@ -276,7 +276,7 @@ func (doc *APIDoc) Sanitize(p *xmlenc.Parser) {
 // Sanitize 检测内容是否合法
 func (ns *XMLNamespace) Sanitize(p *xmlenc.Parser) {
 	if ns.URN.V() == "" {
-		p.Error(p.NewError(ns.Start, ns.End, "@urn", locale.ErrRequired))
+		p.Error(p.NewError(ns.Start, ns.End, "@urn", locale.ErrIsEmpty, "@urn"))
 	}
 }
 

@@ -105,7 +105,7 @@ func Decode(p *Parser, v interface{}, namespace string) {
 		switch elem := t.(type) {
 		case *StartElement:
 			if hasRoot { // 多个根元素
-				p.endElement(elem) // 找到对应的结束标签
+				_ = p.endElement(elem) // 找到对应的结束标签，忽略错误
 				msg := p.NewError(elem.Start, p.Current().Position, elem.Name.String(), locale.ErrMultipleRootTag).
 					AddTypes(core.ErrorTypeUnused)
 				d.p.Warning(msg)
@@ -138,34 +138,34 @@ func (d *decoder) decode(n *node.Node, start *StartElement) *EndElement {
 	d.decodeAttributes(n, start)
 
 	if start.SelfClose {
-		d.checkOmitempty(n, start.Start, start.End)
+		d.checkOmitempty(n, start.Start, start.End, start.Name.String())
 		return nil
 	}
 
 	if end, ok := d.decodeElements(n); ok {
-		d.checkOmitempty(n, start.Start, end.End)
+		d.checkOmitempty(n, start.Start, end.End, start.Name.String())
 		return end
 	}
 	return nil
 }
 
 // 判断 omitempty 属性
-func (d *decoder) checkOmitempty(n *node.Node, start, end core.Position) {
+func (d *decoder) checkOmitempty(n *node.Node, start, end core.Position, field string) {
 	for _, attr := range n.Attributes {
 		if canNotEmpty(attr) {
-			d.p.Error(d.p.NewError(start, end, attr.Name, locale.ErrRequired))
+			d.p.Error(d.p.NewError(start, end, attr.Name, locale.ErrIsEmpty, attr.Name))
 		}
 	}
 	for _, elem := range n.Elements {
 		if canNotEmpty(elem) {
-			d.p.Error(d.p.NewError(start, end, elem.Name, locale.ErrRequired))
+			d.p.Error(d.p.NewError(start, end, elem.Name, locale.ErrIsEmpty, elem.Name))
 		}
 	}
 	if n.CData != nil && canNotEmpty(n.CData) {
-		d.p.Error(d.p.NewError(start, end, "cdata", locale.ErrRequired))
+		d.p.Error(d.p.NewError(start, end, "cdata", locale.ErrIsEmpty, field))
 	}
 	if n.Content != nil && canNotEmpty(n.Content) {
-		d.p.Error(d.p.NewError(start, end, "content", locale.ErrRequired))
+		d.p.Error(d.p.NewError(start, end, "content", locale.ErrIsEmpty, field))
 	}
 }
 

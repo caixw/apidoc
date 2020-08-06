@@ -131,7 +131,7 @@ func BuildDiagnostic(err *core.Error, severity DiagnosticSeverity) Diagnostic {
 
 	d := Diagnostic{
 		Range:    err.Location.Range,
-		Message:  err.Error(),
+		Message:  err.Err.Error(),
 		Severity: severity,
 	}
 	if len(tags) > 0 {

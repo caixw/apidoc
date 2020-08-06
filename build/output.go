@@ -86,10 +86,6 @@ func (o *Output) contains(tags ...string) bool {
 }
 
 func (o *Output) sanitize() error {
-	if o == nil {
-		return core.NewError(locale.ErrRequired)
-	}
-
 	if o.Type == "" {
 		o.Type = APIDocXML
 	}
@@ -158,7 +154,7 @@ func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 	var buf errwrap.Buffer
 	if o.xml {
 		for _, v := range o.procInst {
-			buf.WString(v).WriteByte('\n')
+			buf.WString(v).WByte('\n')
 		}
 	}
 	buf.WBytes(data)

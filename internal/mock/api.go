@@ -30,8 +30,9 @@ func (m *mock) buildAPI(api *ast.API) http.Handler {
 		}
 
 		for _, header := range api.Headers {
-			if err := validSimpleParam(header, r.Header.Get(header.Name.V())); err != nil {
-				m.handleError(w, r, "headers["+header.Name.V()+"]", err)
+			field := "headers[" + header.Name.V() + "]"
+			if err := validSimpleParam(header, field, r.Header.Get(header.Name.V())); err != nil {
+				m.handleError(w, r, field, err)
 				return
 			}
 		}
@@ -58,7 +59,7 @@ func validRequest(ns []*ast.XMLNamespace, requests []*ast.Request, r *http.Reque
 	}
 
 	for _, header := range req.Headers {
-		if err := validSimpleParam(header, r.Header.Get(header.Name.V())); err != nil {
+		if err := validSimpleParam(header, "headers["+header.Name.V()+"]", r.Header.Get(header.Name.V())); err != nil {
 			return err
 		}
 	}
@@ -212,7 +213,7 @@ func validQueries(queries []*ast.Param, r *http.Request) error {
 		field := "queries[" + query.Name.V() + "]."
 
 		valid := func(p *ast.Param, v string) error {
-			err := validSimpleParam(p, v)
+			err := validSimpleParam(p, field, v)
 			if serr, ok := err.(*core.Error); ok {
 				serr.Field = field + serr.Field
 			}
@@ -246,7 +247,7 @@ func validQueries(queries []*ast.Param, r *http.Request) error {
 }
 
 // 验证单个参数，仅支持对 query、header 等简单类型的参数验证
-func validSimpleParam(p *ast.Param, val string) error {
+func validSimpleParam(p *ast.Param, name, val string) error {
 	if p == nil {
 		return nil
 	}
@@ -256,7 +257,7 @@ func validSimpleParam(p *ast.Param, val string) error {
 			(p.Default != nil && p.Default.V() != "") {
 			return nil
 		}
-		return core.NewError(locale.ErrRequired)
+		return core.NewError(locale.ErrIsEmpty, name)
 	}
 
 	switch p.Type.V() {
@@ -299,7 +300,7 @@ func (m *mock) buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 	}
 
 	for _, header := range p.Headers {
-		if err := validSimpleParam(header, r.Header.Get(header.Name.V())); err != nil {
+		if err := validSimpleParam(header, "headers["+header.Name.V()+"]", r.Header.Get(header.Name.V())); err != nil {
 			return nil, err
 		}
 	}

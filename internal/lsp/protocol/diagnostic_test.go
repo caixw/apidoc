@@ -14,7 +14,7 @@ import (
 func TestBuildDiagnostic(t *testing.T) {
 	a := assert.New(t)
 
-	err := core.NewError(locale.ErrRequired).WithLocation(core.Location{
+	err := core.NewError(locale.ErrInvalidUTF8Character).WithLocation(core.Location{
 		Range: core.Range{Start: core.Position{Line: 1}},
 	})
 	d := BuildDiagnostic(err, DiagnosticSeverityWarning)
@@ -22,7 +22,7 @@ func TestBuildDiagnostic(t *testing.T) {
 	a.Empty(d.Tags)
 	a.Equal(d.Range.Start.Line, 1)
 
-	err.AddTypes(core.ErrorTypeDeprecated, core.ErrorTypeUnused)
+	err = err.AddTypes(core.ErrorTypeDeprecated, core.ErrorTypeUnused)
 	d = BuildDiagnostic(err, DiagnosticSeverityError)
 	a.Equal(d.Severity, DiagnosticSeverityError)
 	a.Equal(d.Tags, []DiagnosticTag{DiagnosticTagDeprecated, DiagnosticTagUnnecessary})

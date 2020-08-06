@@ -251,7 +251,7 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	ErrInvalidContentLength:      "報頭 ContentLength 無效",
 	ErrBodyIsEmpty:               "請求的報文為空",
 	ErrInvalidHeaderFormat:       "無效的報頭格式",
-	ErrRequired:                  "不能為空",
+	ErrIsEmpty:                   "%s 不能為空",
 	ErrInvalidFormat:             "格式不正確",
 	ErrDirNotExists:              "目錄不存在",
 	ErrNotFoundEndFlag:           "找不到結束符號",

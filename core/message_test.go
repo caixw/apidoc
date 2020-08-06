@@ -41,8 +41,8 @@ func TestHandler(t *testing.T) {
 	})
 	a.NotError(h)
 
-	h.Error((Location{URI: "erro.go"}).NewError(locale.ErrRequired))
-	h.Warning((Location{URI: "warn.go"}).NewError(locale.ErrRequired))
+	h.Error((Location{URI: "erro.go"}).NewError(locale.ErrInvalidUTF8Character))
+	h.Warning((Location{URI: "warn.go"}).NewError(locale.ErrInvalidUTF8Character))
 
 	time.Sleep(1 * time.Second) // 等待 channel 完成
 	a.Equal(erro.String(), "erro")
@@ -50,7 +50,7 @@ func TestHandler(t *testing.T) {
 
 	h.Stop()
 	a.Panic(func() { // 已经关闭 messages
-		h.Error((Location{URI: "erro"}).NewError(locale.ErrRequired))
+		h.Error((Location{URI: "erro"}).NewError(locale.ErrInvalidUTF8Character))
 	})
 }
 
@@ -64,7 +64,7 @@ func TestHandler_Stop(t *testing.T) {
 	})
 	a.NotError(h)
 
-	h.Locale(Erro, locale.ErrRequired)
+	h.Locale(Erro, locale.ErrInvalidUTF8Character)
 	h.Stop() // 此处会阻塞，等待完成
 	a.True(exit)
 }

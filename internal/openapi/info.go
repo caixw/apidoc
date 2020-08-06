@@ -36,7 +36,7 @@ type License struct {
 
 func (info *Info) sanitize() *core.Error {
 	if info.Title == "" {
-		return core.NewError(locale.ErrRequired).WithField("title")
+		return core.NewError(locale.ErrIsEmpty, "title").WithField("title")
 	}
 
 	if !version.SemVerValid(info.Version) {

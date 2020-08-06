@@ -41,12 +41,8 @@ type Input struct {
 }
 
 func (o *Input) sanitize() error {
-	if o == nil {
-		return core.NewError(locale.ErrRequired)
-	}
-
 	if len(o.Dir) == 0 {
-		return core.NewError(locale.ErrRequired).WithField("dir")
+		return core.NewError(locale.ErrIsEmpty, "dir").WithField("dir")
 	}
 
 	exists, err := o.Dir.Exists()
@@ -62,7 +58,7 @@ func (o *Input) sanitize() error {
 	}
 
 	if len(o.Lang) == 0 {
-		return core.NewError(locale.ErrRequired).WithField("lang")
+		return core.NewError(locale.ErrIsEmpty, "lang").WithField("lang")
 	}
 
 	language := lang.Get(o.Lang)

@@ -28,11 +28,8 @@ func TestOptions_contains(t *testing.T) {
 func TestOutput_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	var o *Output
-	a.Error(o.sanitize())
-
 	// 默认的 Type
-	o = &Output{}
+	o := &Output{}
 	a.NotError(o.sanitize())
 	a.Equal(o.Type, APIDocXML).NotNil(o.marshal)
 
