@@ -8,6 +8,7 @@
 - 添加 core.Error.WithField、core.Error.WithLocation 和 core.Error.AddTypes 方法；
 - 添加 ErrorType 用于表示该语法错误的类型；
 - LSP 的 textDocument/publishDiagnostics 添加了 DiagnosticTag 的支持；
+- 添加 core.Ranger 接口的定义；
 
 ## [v7.1.0]
 

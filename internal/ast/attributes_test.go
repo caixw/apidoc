@@ -35,6 +35,8 @@ var (
 	_ xmlenc.AttrEncoder = &DateAttribute{}
 	_ xmlenc.AttrEncoder = &VersionAttribute{}
 	_ xmlenc.AttrEncoder = &APIDocVersionAttribute{}
+
+	_ core.Ranger = Attribute{}
 )
 
 func newURIParser(a *assert.Assertion, uri core.URI) (*xmlenc.Parser, *messagetest.Result) {

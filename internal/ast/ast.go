@@ -55,7 +55,7 @@ const (
 const (
 	DateFormat     = "2006-01-02"     // 对应 TypeDate
 	TimeFormat     = "15:04:05Z07:00" // 对应 TypeTime
-	DateTimeFormat = time.RFC3339     // 对应 DateTime
+	DateTimeFormat = time.RFC3339     // 对应 TypeDateTime
 )
 
 type (

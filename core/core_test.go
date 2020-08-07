@@ -9,6 +9,11 @@ import (
 	"github.com/issue9/is"
 )
 
+var (
+	_ Ranger = Range{}
+	_ Ranger = &Range{}
+)
+
 // 对一些堂量的基本检测。
 func TestConst(t *testing.T) {
 	a := assert.New(t)

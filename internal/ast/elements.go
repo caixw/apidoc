@@ -14,42 +14,22 @@ type (
 		URI      core.URI `apidoc:"-"`
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 
-		// 程序的版本号
-		//
-		// 同时也作为文档格式的版本号。客户端可以依此值确定文档格式。
-		// 仅用于输出，文档中不需要指定此值。
-		APIDoc *APIDocVersionAttribute `apidoc:"apidoc,attr,usage-apidoc-apidoc,omitempty"`
-
-		// 文档内容的区域信息
-		// 如果存在此值，客户端应该尽量根据此值显示相应的界面语言。
-		Lang *Attribute `apidoc:"lang,attr,usage-apidoc-lang,omitempty"`
-
-		// 文档的图标
-		//
-		// 如果采用默认的 xsl 转换，会替换掉页面上的图标和 favicon 图标
-		Logo *Attribute `apidoc:"logo,attr,usage-apidoc-logo,omitempty"`
-
-		Created     *DateAttribute    `apidoc:"created,attr,usage-apidoc-created,omitempty"` // 文档的生成时间
-		Version     *VersionAttribute `apidoc:"version,attr,usage-apidoc-version,omitempty"` // 文档的版本
-		Title       *Element          `apidoc:"title,elem,usage-apidoc-title"`
-		Description *Richtext         `apidoc:"description,elem,usage-apidoc-description,omitempty"`
-		Contact     *Contact          `apidoc:"contact,elem,usage-apidoc-contact,omitempty"`
-		License     *Link             `apidoc:"license,elem,usage-apidoc-license,omitempty"` // 版本信息
-		Tags        []*Tag            `apidoc:"tag,elem,usage-apidoc-tags,omitempty"`        // 所有的标签
-		Servers     []*Server         `apidoc:"server,elem,usage-apidoc-servers,omitempty"`
-		APIs        []*API            `apidoc:"api,elem,usage-apidoc-apis,omitempty"`
-
-		// 公共的报头，所有 API 默认都采用此报头
-		Headers []*Param `apidoc:"header,elem,usage-apidoc-headers,omitempty"`
-
-		// 表示所有 API 都有可能返回的内容
-		Responses []*Request `apidoc:"response,elem,usage-apidoc-responses,omitempty"`
-
-		// 表示所有接口都支持的文档类型
-		Mimetypes []*Element `apidoc:"mimetype,elem,usage-apidoc-mimetypes"`
-
-		// 指定命名空间的相关属性
-		XMLNamespaces []*XMLNamespace `apidoc:"xml-namespace,elem,usage-apidoc-xml-namespaces,omitempty"`
+		APIDoc        *APIDocVersionAttribute `apidoc:"apidoc,attr,usage-apidoc-apidoc,omitempty"` // 文档格式的版本号
+		Lang          *Attribute              `apidoc:"lang,attr,usage-apidoc-lang,omitempty"`     // 区域信息，应该使用 BCP47 指定的格式
+		Logo          *Attribute              `apidoc:"logo,attr,usage-apidoc-logo,omitempty"`
+		XMLNamespaces []*XMLNamespace         `apidoc:"xml-namespace,elem,usage-apidoc-xml-namespaces,omitempty"`
+		Created       *DateAttribute          `apidoc:"created,attr,usage-apidoc-created,omitempty"` // 生成时间
+		Version       *VersionAttribute       `apidoc:"version,attr,usage-apidoc-version,omitempty"`
+		Title         *Element                `apidoc:"title,elem,usage-apidoc-title"`
+		Description   *Richtext               `apidoc:"description,elem,usage-apidoc-description,omitempty"` // 说明内容
+		Contact       *Contact                `apidoc:"contact,elem,usage-apidoc-contact,omitempty"`         // 团队的联系方式
+		License       *Link                   `apidoc:"license,elem,usage-apidoc-license,omitempty"`         // 版权信息
+		Tags          []*Tag                  `apidoc:"tag,elem,usage-apidoc-tags,omitempty"`                // 标签列表
+		Servers       []*Server               `apidoc:"server,elem,usage-apidoc-servers,omitempty"`          // 服务器列表
+		APIs          []*API                  `apidoc:"api,elem,usage-apidoc-apis,omitempty"`                // API 列表
+		Headers       []*Param                `apidoc:"header,elem,usage-apidoc-headers,omitempty"`          // 公共报头
+		Responses     []*Request              `apidoc:"response,elem,usage-apidoc-responses,omitempty"`      // 所有 API 都有可能的返回内容
+		Mimetypes     []*Element              `apidoc:"mimetype,elem,usage-apidoc-mimetypes"`                // 所有接口都支持的 mimetypes
 	}
 
 	// XMLNamespace 定义命名空间的相关属性
@@ -64,6 +44,8 @@ type (
 	API struct {
 		xmlenc.BaseTag
 		RootName struct{} `apidoc:"api,meta,usage-api"`
+		URI      core.URI `apidoc:"-"` // 该 API 所在的文件，如果为空，表示与其父元素的 apidoc.URI 相同
+		doc      *APIDoc
 
 		Version     *VersionAttribute `apidoc:"version,attr,usage-api-version,omitempty"`
 		Method      *MethodAttribute  `apidoc:"method,attr,usage-api-method"`
@@ -76,13 +58,8 @@ type (
 		Callback    *Callback         `apidoc:"callback,elem,usage-api-callback,omitempty"`
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-api-deprecated,omitempty"`
 		Headers     []*Param          `apidoc:"header,elem,usage-api-headers,omitempty"`
-
-		Tags    []*Element `apidoc:"tag,elem,usage-api-tags,omitempty"`
-		Servers []*Element `apidoc:"server,elem,usage-api-servers,omitempty"`
-
-		// 该 API 所在的文件，如果为空，表示与其父元素的 apidoc.URI 相同
-		URI core.URI `apidoc:"-"`
-		doc *APIDoc
+		Tags        []*Element        `apidoc:"tag,elem,usage-api-tags,omitempty"`
+		Servers     []*Element        `apidoc:"server,elem,usage-api-servers,omitempty"`
 	}
 
 	// Link 表示一个链接

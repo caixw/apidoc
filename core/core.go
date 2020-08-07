@@ -19,6 +19,12 @@ const (
 	XMLNamespace = "https://apidoc.tools/v6/XMLSchema"
 )
 
+// Ranger Range 实现的接口
+type Ranger interface {
+	Contains(Position) bool
+	R() Range
+}
+
 // Block 最基本的代码单位
 //
 // 一般从注释提取的一个完整注释作为 Block 实例。
@@ -72,6 +78,11 @@ func (r Range) Contains(p Position) bool {
 	e := r.End
 	return (s.Line < p.Line || (s.Line == p.Line && s.Character <= p.Character)) &&
 		(e.Line > p.Line || (e.Line == p.Line && e.Character >= p.Character))
+}
+
+// R 返回当前的范围
+func (r Range) R() Range {
+	return r
 }
 
 func (l Location) String() string {
