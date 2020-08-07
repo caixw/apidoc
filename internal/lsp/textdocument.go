@@ -133,3 +133,19 @@ func (s *server) textDocumentSemanticTokens(notify bool, in *protocol.SemanticTo
 	out.Data = search.Tokens(f.doc, in.TextDocument.URI, 0, 1, 2)
 	return nil
 }
+
+// textDocument/references
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_references
+func (s *server) textDocumentReferences(notify bool, in *protocol.ReferenceParams, out *[]core.Location) error {
+	f := s.findFolder(in.TextDocument.URI)
+	if f == nil {
+		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
+	}
+
+	f.parsedMux.Lock()
+	defer f.parsedMux.Unlock()
+
+	*out = search.References(f.doc, in.TextDocument.URI, in.Position, in.Context.IncludeDeclaration)
+	return nil
+}

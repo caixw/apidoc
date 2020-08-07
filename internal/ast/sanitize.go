@@ -306,16 +306,22 @@ func (doc *APIDoc) checkXMLNamespaces(p *xmlenc.Parser) error {
 	return nil
 }
 
-func (doc *APIDoc) tagExists(tag string) bool {
-	return sliceutil.Count(doc.Tags, func(i int) bool {
-		return doc.Tags[i].Name.V() == tag
-	}) > 0
+func (doc *APIDoc) findTag(tag string) *Tag {
+	for _, t := range doc.Tags {
+		if t.Name.V() == tag {
+			return t
+		}
+	}
+	return nil
 }
 
-func (doc *APIDoc) serverExists(srv string) bool {
-	return sliceutil.Count(doc.Servers, func(i int) bool {
-		return doc.Servers[i].Name.V() == srv
-	}) > 0
+func (doc *APIDoc) findServer(srv string) *Server {
+	for _, s := range doc.Servers {
+		if s.Name.V() == srv {
+			return s
+		}
+	}
+	return nil
 }
 
 func (api *API) sanitizeTags() error {
@@ -324,7 +330,8 @@ func (api *API) sanitizeTags() error {
 	}
 
 	for _, tag := range api.Tags {
-		if !api.doc.tagExists(tag.Content.Value) {
+		t := api.doc.findTag(tag.Content.Value)
+		if t == nil {
 			loc := core.Location{URI: api.URI,
 				Range: core.Range{
 					Start: tag.Content.Start,
@@ -333,10 +340,26 @@ func (api *API) sanitizeTags() error {
 			}
 			return loc.NewError(locale.ErrInvalidValue)
 		}
+
+		tag.definition = &Definition{
+			Location: core.Location{
+				Range: t.R(),
+				URI:   api.doc.URI,
+			},
+			Target: t,
+		}
+		t.references = append(t.references, &Reference{
+			Location: core.Location{
+				Range: tag.R(),
+				URI:   api.URI,
+			},
+			Target: tag,
+		})
 	}
 
 	for _, srv := range api.Servers {
-		if !api.doc.serverExists(srv.Content.Value) {
+		s := api.doc.findServer(srv.Content.Value)
+		if s == nil {
 			loc := core.Location{URI: api.URI,
 				Range: core.Range{
 					Start: srv.Content.Start,
@@ -345,6 +368,21 @@ func (api *API) sanitizeTags() error {
 			}
 			return loc.NewError(locale.ErrInvalidValue)
 		}
+
+		srv.definition = &Definition{
+			Location: core.Location{
+				Range: s.R(),
+				URI:   api.doc.URI,
+			},
+			Target: s,
+		}
+		s.references = append(s.references, &Reference{
+			Location: core.Location{
+				Range: srv.R(),
+				URI:   api.URI,
+			},
+			Target: srv,
+		})
 	}
 
 	return nil

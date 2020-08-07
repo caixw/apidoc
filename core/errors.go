@@ -111,13 +111,13 @@ func WithError(err error) *Error {
 // NewError 在当前位置生成语法错误信息
 //
 // 其中的 msg 和 val 会被转换成本地化的内容保存。
-func (loc Location) NewError(key message.Reference, v ...interface{}) *Error {
-	return &Error{Err: locale.NewError(key, v...), Location: loc}
+func (l Location) NewError(key message.Reference, v ...interface{}) *Error {
+	return &Error{Err: locale.NewError(key, v...), Location: l}
 }
 
 // WithError 在当前位置生成语法错误信息
 //
 // 若 err 本身就是 *Error 类型，则会更新其 location 和 Field 两个字段的信息。
-func (loc Location) WithError(err error) *Error {
-	return &Error{Err: err, Location: loc}
+func (l Location) WithError(err error) *Error {
+	return &Error{Err: err, Location: l}
 }

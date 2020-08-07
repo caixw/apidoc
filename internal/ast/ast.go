@@ -78,6 +78,30 @@ type (
 		core.Range
 		Value time.Time
 	}
+
+	// Reference 指向引用父对象的数据
+	Reference struct {
+		core.Location
+		Target interface{} // 引用当前父对象的实际数据
+	}
+
+	// Definition 指向父对象的实际定义数据
+	Definition struct {
+		core.Location
+		Target interface{} // 父对象数据定义内容
+	}
+
+	// Referencer 包含了 Reference 数据需要实现的接口
+	Referencer interface {
+		core.Ranger
+		References() []*Reference
+	}
+
+	// Definitioner 包含了 Definition 数据需要实现的接口
+	Definitioner interface {
+		core.Ranger
+		Definition() *Definition
+	}
 )
 
 // ParseType 获取类型字符串中的原始类型和子类型

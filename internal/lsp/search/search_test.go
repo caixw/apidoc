@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
-func TestAPIDoc_DeleteURI(t *testing.T) {
+func TestDeleteURI(t *testing.T) {
 	a := assert.New(t)
 
 	d := &ast.APIDoc{}
@@ -20,27 +20,27 @@ func TestAPIDoc_DeleteURI(t *testing.T) {
 	d.URI = core.URI("uri1")
 	d.APIs = []*ast.API{
 		{ //1
-			URI: core.URI("uri1"),
+			URI: "uri1",
 		},
 		{ //2
-			URI: core.URI("uri2"),
+			URI: "uri2",
 		},
 		{ //3
-			URI: core.URI("uri3"),
+			URI: "uri3",
 		},
 		{ //4
 		},
 	}
 
-	a.True(DeleteURI(d, core.URI("uri3")))
+	a.True(DeleteURI(d, "uri3"))
 	a.Equal(3, len(d.APIs)).NotNil(d.APIDoc)
 
 	// 同时会删除 1,4
-	a.True(DeleteURI(d, core.URI("uri1")))
+	a.True(DeleteURI(d, "uri1"))
 	a.Equal(1, len(d.APIs)).Nil(d.APIDoc)
 
-	a.True(DeleteURI(d, core.URI("uri2")))
+	a.True(DeleteURI(d, "uri2"))
 	a.Equal(0, len(d.APIs)).Nil(d.APIDoc)
 
-	a.False(DeleteURI(d, core.URI("uri2")))
+	a.False(DeleteURI(d, "uri2"))
 }

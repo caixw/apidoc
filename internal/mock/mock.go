@@ -15,6 +15,7 @@ import (
 
 	"github.com/issue9/mux/v2"
 	"github.com/issue9/qheader"
+	"github.com/issue9/sliceutil"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -127,14 +128,8 @@ func (m *mock) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	m.mux.ServeHTTP(w, r)
 }
 
-func hasServer(tags []*ast.Element, key string) bool {
-	for _, tag := range tags {
-		if key == tag.Content.Value {
-			return true
-		}
-	}
-
-	return false
+func hasServer(srvs []*ast.ServerValue, key string) bool {
+	return sliceutil.Count(srvs, func(i int) bool { return srvs[i].V() == key }) > 0
 }
 
 func (m *mock) getImage(w http.ResponseWriter, r *http.Request) {

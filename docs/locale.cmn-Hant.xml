@@ -11,6 +11,7 @@
 			<item name="@logo" type="string" array="false" required="false">文檔的圖標，僅可使用 SVG 格式圖標。</item>
 			<item name="@created" type="date" array="false" required="false">文檔的創建時間</item>
 			<item name="@version" type="version" array="false" required="false">文檔的版本號</item>
+			<item name="xml-namespace" type="xml-namespace" array="true" required="false">針對 <var>application/xml</var> 類型的內容的命名空間設置</item>
 			<item name="title" type="string" array="false" required="true">文檔的標題</item>
 			<item name="description" type="richtext" array="false" required="false">文檔的整體描述內容</item>
 			<item name="contact" type="contact" array="false" required="false">文檔作者的聯系方式</item>
@@ -21,7 +22,11 @@
 			<item name="header" type="param" array="true" required="false">文檔中所有 API 都包含的公共報頭</item>
 			<item name="response" type="request" array="true" required="false">文檔中所有 API 文檔都需要支持的返回內容</item>
 			<item name="mimetype" type="string" array="true" required="true">文檔所支持的 mimetype</item>
-			<item name="xml-namespace" type="xml-namespace" array="true" required="false">針對 <var>application/xml</var> 類型的內容的命名空間設置</item>
+		</type>
+		<type name="xml-namespace">
+			<usage>為 <var>application/xml</var> 定義命名空間的相關屬性</usage>
+			<item name="@prefix" type="string" array="false" required="false">命名空間的前綴，如果為空，則表示作為默認命名空間，命局只能有壹個默認命名空間。</item>
+			<item name="@urn" type="string" array="false" required="true">命名空間的唯壹標識，需要全局唯壹，且區分大小寫。</item>
 		</type>
 		<type name="richtext">
 			<usage>富文本內容</usage>
@@ -147,11 +152,6 @@
 			<item name="response" type="request" array="true" required="false">定義可能的返回信息</item>
 			<item name="request" type="request" array="true" required="true">定義可用的請求信息</item>
 			<item name="header" type="param" array="true" required="false">傳遞的報頭內容</item>
-		</type>
-		<type name="xml-namespace">
-			<usage>為 <var>application/xml</var> 定義命名空間的相關屬性</usage>
-			<item name="@prefix" type="string" array="false" required="false">命名空間的前綴，如果為空，則表示作為默認命名空間，命局只能有壹個默認命名空間。</item>
-			<item name="@urn" type="string" array="false" required="true">命名空間的唯壹標識，需要全局唯壹，且區分大小寫。</item>
 		</type>
 		<type name="string">
 			<usage>普通的字符串類型，特殊字符需要使用 XML 實體，比如 <samp>&lt;</samp> 需要使用 <samp>&amp;lt;</samp> 代替。</usage>

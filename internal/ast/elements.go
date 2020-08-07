@@ -58,8 +58,8 @@ type (
 		Callback    *Callback         `apidoc:"callback,elem,usage-api-callback,omitempty"`
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-api-deprecated,omitempty"`
 		Headers     []*Param          `apidoc:"header,elem,usage-api-headers,omitempty"`
-		Tags        []*Element        `apidoc:"tag,elem,usage-api-tags,omitempty"`
-		Servers     []*Element        `apidoc:"server,elem,usage-api-servers,omitempty"`
+		Tags        []*TagValue       `apidoc:"tag,elem,usage-api-tags,omitempty"`
+		Servers     []*ServerValue    `apidoc:"server,elem,usage-api-servers,omitempty"`
 	}
 
 	// Link 表示一个链接
@@ -193,6 +193,8 @@ type (
 		Name       *Attribute        `apidoc:"name,attr,usage-tag-name"`   // 标签的唯一 ID
 		Title      *Attribute        `apidoc:"title,attr,usage-tag-title"` // 显示的名称
 		Deprecated *VersionAttribute `apidoc:"deprecated,attr,usage-tag-deprecated,omitempty"`
+
+		references []*Reference
 	}
 
 	// Server 服务信息
@@ -205,6 +207,8 @@ type (
 		Deprecated  *VersionAttribute `apidoc:"deprecated,attr,usage-server-deprecated,omitempty"`
 		Summary     *Attribute        `apidoc:"summary,attr,usage-server-summary,omitempty"`
 		Description *Richtext         `apidoc:"description,elem,usage-server-description,omitempty"`
+
+		references []*Reference
 	}
 
 	// XML 仅作用于 XML 的几个属性
@@ -221,6 +225,24 @@ type (
 		xmlenc.BaseTag
 		Content  Content  `apidoc:",content"`
 		RootName struct{} `apidoc:"string,meta,usage-string"`
+	}
+
+	// TagValue api.tag 的类型
+	TagValue struct {
+		xmlenc.BaseTag
+		Content  Content  `apidoc:",content"`
+		RootName struct{} `apidoc:"string,meta,usage-string"`
+
+		definition *Definition
+	}
+
+	// ServerValue api.server 的类型
+	ServerValue struct {
+		xmlenc.BaseTag
+		Content  Content  `apidoc:",content"`
+		RootName struct{} `apidoc:"string,meta,usage-string"`
+
+		definition *Definition
 	}
 
 	// CData 表示 XML 的 CDATA 数据
@@ -255,6 +277,32 @@ func (s *Element) V() string {
 		return ""
 	}
 	return s.Content.Value
+}
+
+// V 返回当前属性实际表示的值
+func (s *TagValue) V() string {
+	if s == nil {
+		return ""
+	}
+	return s.Content.Value
+}
+
+// V 返回当前属性实际表示的值
+func (s *ServerValue) V() string {
+	if s == nil {
+		return ""
+	}
+	return s.Content.Value
+}
+
+// Definition Definitioner.Definition
+func (s *TagValue) Definition() *Definition {
+	return s.definition
+}
+
+// Definition Definitioner.Definition
+func (s *ServerValue) Definition() *Definition {
+	return s.definition
 }
 
 // EncodeXML Encoder.EncodeXML
@@ -304,4 +352,14 @@ func (doc *APIDoc) XMLNamespace(prefix string) *XMLNamespace {
 		}
 	}
 	return nil
+}
+
+// References impl Referencer
+func (tag *Tag) References() []*Reference {
+	return tag.references
+}
+
+// References impl Referencer
+func (srv *Server) References() []*Reference {
+	return srv.references
 }

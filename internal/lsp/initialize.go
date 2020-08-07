@@ -3,6 +3,8 @@
 package lsp
 
 import (
+	"encoding/json"
+
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -47,6 +49,10 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		out.Capabilities.CompletionProvider = &protocol.CompletionOptions{}
 	}
 
+	if in.Capabilities.TextDocument.References != nil {
+		out.Capabilities.ReferencesProvider = true
+	}
+
 	if in.Capabilities.TextDocument.SemanticTokens != nil {
 		out.Capabilities.SemanticTokensProvider = &protocol.SemanticTokensOptions{
 			Legend: protocol.SemanticTokensLegend{
@@ -70,6 +76,7 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		Name:    core.Name,
 		Version: core.Version,
 	}
+	s.serverResult = out
 
 	s.workspaceMux.Lock()
 	defer s.workspaceMux.Unlock()
@@ -86,12 +93,15 @@ func (s *server) initialized(bool, *protocol.InitializedParams, *interface{}) er
 	}
 	s.setState(serverInitialized)
 
-	if s.clientParams.Capabilities.Workspace.WorkspaceFolders {
-		if err := s.workspaceWorkspaceFolders(); err != nil {
-			return err
-		}
-	}
+	data, _ := json.Marshal(s.clientParams)
+	s.windowLogLogMessage(locale.LSPClientParams, string(data))
 
+	data, _ = json.Marshal(s.serverResult)
+	s.windowLogLogMessage(locale.LSPServerResult, string(data))
+
+	if s.clientParams.Capabilities.Workspace.WorkspaceFolders {
+		return s.workspaceWorkspaceFolders()
+	}
 	return nil
 }
 

@@ -159,20 +159,20 @@ func TestAPI_Sanitize(t *testing.T) {
 	// servers
 
 	api = &API{
-		Servers: []*Element{},
+		Servers: []*ServerValue{},
 	}
 	p, rslt = newParser(a, "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
-	api.Servers = append(api.Servers, &Element{Content: Content{Value: "s1"}})
+	api.Servers = append(api.Servers, &ServerValue{Content: Content{Value: "s1"}})
 	p, rslt = newParser(a, "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
-	api.Servers = append(api.Servers, &Element{Content: Content{Value: "s1"}})
+	api.Servers = append(api.Servers, &ServerValue{Content: Content{Value: "s1"}})
 	p, rslt = newParser(a, "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
@@ -181,20 +181,20 @@ func TestAPI_Sanitize(t *testing.T) {
 	// tags
 
 	api = &API{
-		Tags: []*Element{},
+		Tags: []*TagValue{},
 	}
 	p, rslt = newParser(a, "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
-	api.Tags = append(api.Tags, &Element{Content: Content{Value: "s1"}})
+	api.Tags = append(api.Tags, &TagValue{Content: Content{Value: "s1"}})
 	p, rslt = newParser(a, "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
-	api.Tags = append(api.Tags, &Element{Content: Content{Value: "s1"}})
+	api.Tags = append(api.Tags, &TagValue{Content: Content{Value: "s1"}})
 	p, rslt = newParser(a, "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
@@ -349,7 +349,7 @@ func TestAPI_sanitizeTags(t *testing.T) {
 	api.doc = doc
 	a.NotError(api.sanitizeTags())
 
-	api.Servers = []*Element{
+	api.Servers = []*ServerValue{
 		{Content: Content{Value: "s1"}},
 	}
 	a.Error(api.sanitizeTags())
@@ -358,7 +358,7 @@ func TestAPI_sanitizeTags(t *testing.T) {
 	}
 	a.NotError(api.sanitizeTags())
 
-	api.Tags = []*Element{
+	api.Tags = []*TagValue{
 		{Content: Content{Value: "t1"}},
 	}
 	a.Error(api.sanitizeTags())

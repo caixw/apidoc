@@ -74,6 +74,8 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	UnimplementedRPC:    "未實現該 RPC 服務 %s",
 	PackFileHeader:      "文檔由 %s 自動生成，請勿手動修改！",
 	CloseLSPFolder:      "關閉項目 %s",
+	LSPClientParams:     "LSP 客戶端返回的參數：%s",
+	LSPServerResult:     "LSP 服務端輸出的參數：%s",
 
 	// 文檔樹中各個字段的介紹
 	UsageAPIDoc:              "用於描述整個文檔的相關內容，只能出現壹次。",

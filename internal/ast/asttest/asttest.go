@@ -63,12 +63,12 @@ func Get() *ast.APIDoc {
 		APIs: []*ast.API{
 			{
 				Method: &ast.MethodAttribute{Value: xmlenc.String{Value: http.MethodGet}},
-				Tags: []*ast.Element{
+				Tags: []*ast.TagValue{
 					{Content: ast.Content{Value: "t1"}},
 					{Content: ast.Content{Value: "t2"}},
 				},
 				Path: &ast.Path{Path: &ast.Attribute{Value: xmlenc.String{Value: "/users"}}},
-				Servers: []*ast.Element{
+				Servers: []*ast.ServerValue{
 					{Content: ast.Content{Value: "admin"}},
 				},
 				Requests: []*ast.Request{
@@ -127,14 +127,14 @@ func Get() *ast.APIDoc {
 			},
 			{
 				Method: &ast.MethodAttribute{Value: xmlenc.String{Value: http.MethodPost}},
-				Tags: []*ast.Element{
+				Tags: []*ast.TagValue{
 					{Content: ast.Content{Value: "t1"}},
 					{Content: ast.Content{Value: "tag1"}},
 				},
 				Path:       &ast.Path{Path: &ast.Attribute{Value: xmlenc.String{Value: "/users"}}},
 				Deprecated: &ast.VersionAttribute{Value: xmlenc.String{Value: "1.0.1"}},
 				Summary:    &ast.Attribute{Value: xmlenc.String{Value: "summary"}},
-				Servers: []*ast.Element{
+				Servers: []*ast.ServerValue{
 					{Content: ast.Content{Value: "admin"}},
 					{Content: ast.Content{Value: "client"}},
 				},

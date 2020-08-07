@@ -14,6 +14,13 @@ import (
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
+var (
+	_ Referencer = &Tag{}
+	_ Referencer = &Server{}
+
+	_ core.Ranger = &APIDoc{}
+)
+
 func loadAPIDoc(a *assert.Assertion) *APIDoc {
 	data, err := ioutil.ReadFile("./testdata/doc.xml")
 	a.NotError(err).NotNil(data)
@@ -231,11 +238,11 @@ func TestAPIDoc(t *testing.T) {
 	a.Contains(doc.Description.V(), "<h2>h2</h2>").
 		NotContains(doc.Description.V(), "</description>")
 
-	a.True(doc.tagExists("tag1")).
-		False(doc.tagExists("not-exists"))
+	a.NotNil(doc.findTag("tag1")).
+		Nil(doc.findTag("not-exists"))
 
-	a.True(doc.serverExists("admin")).
-		False(doc.serverExists("not-exists"))
+	a.NotNil(doc.findServer("admin")).
+		Nil(doc.findServer("not-exists"))
 
 	a.Equal(2, len(doc.Mimetypes)).
 		Equal("application/xml", doc.Mimetypes[0].Content.Value)
@@ -268,11 +275,11 @@ func TestAPIDoc_all(t *testing.T) {
 		Equal(srv.URL.V(), "https://api.example.com/admin").
 		Nil(srv.Description)
 
-	a.True(doc.tagExists("tag1")).
-		False(doc.tagExists("not-exists"))
+	a.NotNil(doc.findTag("tag1")).
+		Nil(doc.findTag("not-exists"))
 
-	a.True(doc.serverExists("admin")).
-		False(doc.serverExists("not-exists"))
+	a.NotNil(doc.findServer("admin")).
+		Nil(doc.findServer("not-exists"))
 
 	a.Equal(2, len(doc.Mimetypes)).
 		Equal("application/xml", doc.Mimetypes[0].Content.Value)

@@ -66,6 +66,9 @@ type TextDocumentClientCapabilities struct {
 	// Capabilities specific to the `textDocument/textDocument/semanticTokens/*`
 	SemanticTokens *SemanticTokensClientCapabilities `json:"semanticTokens,omitempty"`
 
+	// Capabilities specific to the `textDocument/references` request.
+	References *ReferenceClientCapabilities `json:"references,omitempty"`
+
 	// Capabilities specific to the `textDocument/definition`.
 	//
 	// Since 3.14.0

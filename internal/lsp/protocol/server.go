@@ -22,7 +22,12 @@ type ServerCapabilities struct {
 	// The server provides goto definition support.
 	//
 	// boolean | DefinitionOptions;
-	DefinitionProvider interface{} `json:"definitionProvider,omitempty"`
+	DefinitionProvider bool `json:"definitionProvider,omitempty"`
+
+	// The server provides find references support.
+	//
+	// boolean | ReferenceOptions;
+	ReferencesProvider bool `json:"referencesProvider,omitempty"`
 
 	// The server provides code actions. The `CodeActionOptions` return type is only
 	// valid if the client signals code action literal support via the property

@@ -19,10 +19,13 @@ const (
 	XMLNamespace = "https://apidoc.tools/v6/XMLSchema"
 )
 
-// Ranger Range 实现的接口
+// Ranger Range 实现的方法集
+//
+// 所有内嵌 Range 的对象都可以使用此接口判断是否内嵌 Range。
 type Ranger interface {
 	Contains(Position) bool
 	R() Range
+	Equal(Range) bool
 }
 
 // Block 最基本的代码单位

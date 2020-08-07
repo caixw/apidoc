@@ -31,6 +31,7 @@ type server struct {
 	folders []*folder
 
 	clientParams *protocol.InitializeParams
+	serverResult *protocol.InitializeResult
 	info, erro   *log.Logger
 	cancelFunc   context.CancelFunc
 }
