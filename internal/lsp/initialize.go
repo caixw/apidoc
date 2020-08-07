@@ -22,7 +22,7 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 
 	s.clientParams = in
 
-	if in.Capabilities.Workspace.WorkspaceFolders {
+	if in.Capabilities.Workspace != nil && in.Capabilities.Workspace.WorkspaceFolders {
 		out.Capabilities.Workspace = &protocol.WorkspaceProvider{
 			WorkspaceFolders: &protocol.WorkspaceFoldersServerCapabilities{
 				Supported:           true,

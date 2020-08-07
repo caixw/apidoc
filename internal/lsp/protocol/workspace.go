@@ -4,6 +4,32 @@ package protocol
 
 import "github.com/caixw/apidoc/v7/core"
 
+// WorkspaceClientCapabilities 客户有关 workspace 的支持情况
+type WorkspaceClientCapabilities struct {
+	// The client supports applying batch edits to the workspace by supporting
+	// the request 'workspace/applyEdit'
+	ApplyEdit bool `json:"applyEdit,omitempty"`
+
+	// Capabilities specific to `WorkspaceEdit`s
+	WorkspaceEdit *WorkspaceEditClientCapabilities `json:"workspaceEdit,omitempty"`
+
+	// Capabilities specific to the `workspace/didChangeConfiguration` notification.
+	DidChangeConfiguration *DidChangeConfigurationClientCapabilities `json:"didChangeConfiguration,omitempty"`
+
+	// Capabilities specific to the `workspace/didChangeWatchedFiles` notification.
+	DidChangeWatchedFiles *DidChangeConfigurationClientCapabilities `json:"didChangeWatchedFiles,omitempty"`
+
+	// The client has support for workspace folders.
+	//
+	// Since 3.6.0
+	WorkspaceFolders bool `json:"workspaceFolders,omitempty"`
+
+	// The client supports `workspace/configuration` requests.
+	//
+	// Since 3.6.0
+	Configuration bool `json:"configuration,omitempty"`
+}
+
 // WorkspaceProvider 服务端有关 workspace 的支持情况
 type WorkspaceProvider struct {
 	// The server supports workspace folder.

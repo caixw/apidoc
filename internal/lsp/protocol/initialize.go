@@ -110,30 +110,7 @@ type InitializedParams struct{}
 // ClientCapabilities 客户端的兼容列表
 type ClientCapabilities struct {
 	// Workspace specific client capabilities.
-	Workspace struct {
-		// The client supports applying batch edits to the workspace by supporting
-		// the request 'workspace/applyEdit'
-		ApplyEdit bool `json:"applyEdit,omitempty"`
-
-		// Capabilities specific to `WorkspaceEdit`s
-		WorkspaceEdit *WorkspaceEditClientCapabilities `json:"workspaceEdit,omitempty"`
-
-		// Capabilities specific to the `workspace/didChangeConfiguration` notification.
-		DidChangeConfiguration *DidChangeConfigurationClientCapabilities `json:"didChangeConfiguration,omitempty"`
-
-		// Capabilities specific to the `workspace/didChangeWatchedFiles` notification.
-		DidChangeWatchedFiles *DidChangeConfigurationClientCapabilities `json:"didChangeWatchedFiles,omitempty"`
-
-		// The client has support for workspace folders.
-		//
-		// Since 3.6.0
-		WorkspaceFolders bool `json:"workspaceFolders,omitempty"`
-
-		// The client supports `workspace/configuration` requests.
-		//
-		// Since 3.6.0
-		Configuration bool `json:"configuration,omitempty"`
-	} `json:"workspace,omitempty"`
+	Workspace *WorkspaceClientCapabilities `json:"workspace,omitempty"`
 
 	// Text document specific client capabilities.
 	TextDocument TextDocumentClientCapabilities `json:"textDocument,omitempty"`

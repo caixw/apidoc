@@ -17,7 +17,7 @@ type ServerCapabilities struct {
 	// The server provides hover support.
 	//
 	// boolean | HoverOptions
-	HoverProvider interface{} `json:"hoverProvider,omitempty"`
+	HoverProvider bool `json:"hoverProvider,omitempty"`
 
 	// The server provides goto definition support.
 	//
@@ -48,7 +48,7 @@ type ServerCapabilities struct {
 	// Since 3.10.0
 	//
 	// boolean | FoldingRangeOptions | FoldingRangeRegistrationOptions;
-	FoldingRangeProvider interface{} `json:"foldingRangeProvider,omitempty"`
+	FoldingRangeProvider bool `json:"foldingRangeProvider,omitempty"`
 
 	// The server provides folding provider support.
 	//
@@ -56,13 +56,6 @@ type ServerCapabilities struct {
 	//
 	// SemanticTokensOptions | SemanticTokensRegistrationOptions
 	SemanticTokensProvider interface{} `json:"semanticTokensProvider,omitempty"`
-
-	// The server provides selection range support.
-	//
-	// @since 3.15.0
-	//
-	// boolean | SelectionRangeOptions | SelectionRangeRegistrationOptions
-	SelectionRangeProvider interface{} `json:"selectionRangeProvider,omitempty"`
 
 	// The server provides workspace symbol support.
 	WorkspaceSymbolProvider bool `json:"workspaceSymbolProvider,omitempty"`
@@ -72,11 +65,6 @@ type ServerCapabilities struct {
 
 	// Experimental server capabilities.
 	Experimental interface{} `json:"experimental,omitempty"`
-}
-
-// DefinitionOptions 定义 textDocument/defined 服务端的兼容情况
-type DefinitionOptions struct {
-	WorkDoneProgressOptions
 }
 
 // CodeActionOptions Code Action options.

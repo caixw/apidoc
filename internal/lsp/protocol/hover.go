@@ -14,11 +14,6 @@ type HoverCapabilities struct {
 	ContentFormat []MarkupKind `json:"contentFormat,omitempty"`
 }
 
-// HoverOptions 服务端的与 hover 的相关功能描述
-type HoverOptions struct {
-	WorkDoneProgressOptions
-}
-
 // HoverParams textDocument/hover 发送的参数
 type HoverParams struct {
 	WorkDoneProgressParams
