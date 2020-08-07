@@ -18,6 +18,7 @@ var rangerType = reflect.TypeOf((*core.Ranger)(nil)).Elem()
 //
 // 从 doc 中查找符合符合 pos 定位的最小对象，且该对象必须实现了 t 类型。
 // 如果不存在则返回 nil。
+// t 必须是一个 interface{} 的值类型。
 func (doc *APIDoc) Search(uri core.URI, pos core.Position, t reflect.Type) (r core.Ranger) {
 	if doc.URI == uri {
 		r = search(reflect.ValueOf(doc), pos, t, "APIs")

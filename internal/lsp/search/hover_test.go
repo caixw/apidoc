@@ -3,7 +3,6 @@
 package search
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -80,84 +79,4 @@ func TestHover(t *testing.T) {
 		End:   core.Position{Line: 7, Character: 7},
 	})
 	a.Equal(hover.Contents.(protocol.MarkupContent).Value, locale.Sprintf("usage-apidoc-apis"))
-}
-
-func TestUsage(t *testing.T) {
-	a := assert.New(t)
-
-	b := `<apidoc version="1.1.1">
-	<title>标题</title>
-	<mimetype>xml</mimetype>
-	<mimetype>json</mimetype>
-	<api method="GET">
-		<path path="/users" />
-		<response status="200" />
-	</api>
-</apidoc>`
-	blk := core.Block{Data: []byte(b)}
-	rslt := messagetest.NewMessageHandler()
-	doc := &ast.APIDoc{}
-	doc.Parse(rslt.Handler, blk)
-	rslt.Handler.Stop()
-
-	a.Empty(rslt.Errors)
-	a.Equal(doc.Start.Line, 0).
-		Equal(doc.Start.Character, 0)
-	a.Equal(doc.End.Line, 8).
-		Equal(doc.End.Character, 9)
-	v := reflect.ValueOf(doc)
-
-	pos := core.Position{Line: 0, Character: 1}
-	base := usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc"))
-
-	// version
-	pos = core.Position{Line: 0, Character: 8}
-	base = usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc-version"))
-
-	// 1.1.1
-	pos = core.Position{Line: 0, Character: 18}
-	base = usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc-version"))
-
-	// title
-	pos = core.Position{Line: 1, Character: 1}
-	base = usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc-title"))
-
-	// 标题
-	pos = core.Position{Line: 1, Character: 10}
-	base = usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc-title"))
-
-	// mimetype[0]
-	pos = core.Position{Line: 2, Character: 1}
-	base = usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc-mimetypes"))
-
-	// mimetype[1]
-	pos = core.Position{Line: 3, Character: 2}
-	base = usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc-mimetypes"))
-
-	// mimetype[0].xml
-	pos = core.Position{Line: 2, Character: 11}
-	base = usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc-mimetypes"))
-
-	// apidoc
-	pos = core.Position{Line: 8, Character: 1}
-	base = usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc"))
-
-	// exclude api
-	pos = core.Position{Line: 4, Character: 2}
-	base = usage(v, pos, "APIs")
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc"))
-
-	// api[0]
-	pos = core.Position{Line: 4, Character: 2}
-	base = usage(v, pos)
-	a.NotNil(base).Equal(base.Usage(), locale.Sprintf("usage-apidoc-apis"))
 }
