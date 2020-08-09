@@ -72,13 +72,7 @@ type TextDocumentClientCapabilities struct {
 	// Capabilities specific to the `textDocument/definition`.
 	//
 	// Since 3.14.0
-	Definition *struct {
-		// Whether definition supports dynamic registration.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// The client supports additional metadata in the form of definition links.
-		LinkSupport bool `json:"linkSupport,omitempty"`
-	} `json:"definition,omitempty"`
+	Definition *DefinitionClientCapabilities `json:"definition,omitempty"`
 
 	// Capabilities specific to the `textDocument/codeAction`
 	CodeAction *struct {

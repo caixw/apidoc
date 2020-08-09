@@ -149,3 +149,21 @@ func (s *server) textDocumentReferences(notify bool, in *protocol.ReferenceParam
 	*out = search.References(f.doc, in.TextDocument.URI, in.Position, in.Context.IncludeDeclaration)
 	return nil
 }
+
+// textDocumentDefinition
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
+func (s *server) textDocumentDefinition(notify bool, in *protocol.DefinitionParams, out *core.Location) error {
+	f := s.findFolder(in.TextDocument.URI)
+	if f == nil {
+		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
+	}
+
+	f.parsedMux.Lock()
+	defer f.parsedMux.Unlock()
+
+	if r := search.Definition(f.doc, in.TextDocument.URI, in.Position); !r.Range.IsEmpty() {
+		*out = r
+	}
+	return nil
+}

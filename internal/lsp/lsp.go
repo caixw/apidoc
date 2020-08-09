@@ -106,6 +106,7 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 		"textDocument/completion":     srv.textDocumentCompletion,
 		"textDocument/semanticTokens": srv.textDocumentSemanticTokens,
 		"textDocument/references":     srv.textDocumentReferences,
+		"textDocument/definition":     srv.textDocumentDefinition,
 	})
 
 	jsonrpcServer.RegisterMatcher(func(method string) bool {

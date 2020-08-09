@@ -53,6 +53,10 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		out.Capabilities.ReferencesProvider = true
 	}
 
+	if in.Capabilities.TextDocument.Definition != nil {
+		out.Capabilities.DefinitionProvider = true
+	}
+
 	if in.Capabilities.TextDocument.SemanticTokens != nil {
 		out.Capabilities.SemanticTokensProvider = &protocol.SemanticTokensOptions{
 			Legend: protocol.SemanticTokensLegend{

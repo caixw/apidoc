@@ -10,6 +10,7 @@
 - LSP 的 textDocument/publishDiagnostics 添加了 DiagnosticTag 的支持；
 - 添加 core.Ranger 接口的定义；
 - 添加了对 textDocument/references 的支持；
+- 添加了对 textDocument/definition 的支持；
 
 ## [v7.1.0]
 

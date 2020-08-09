@@ -15,18 +15,12 @@ type ServerCapabilities struct {
 	CompletionProvider *CompletionOptions `json:"completionProvider,omitempty"`
 
 	// The server provides hover support.
-	//
-	// boolean | HoverOptions
 	HoverProvider bool `json:"hoverProvider,omitempty"`
 
 	// The server provides goto definition support.
-	//
-	// boolean | DefinitionOptions;
 	DefinitionProvider bool `json:"definitionProvider,omitempty"`
 
 	// The server provides find references support.
-	//
-	// boolean | ReferenceOptions;
 	ReferencesProvider bool `json:"referencesProvider,omitempty"`
 
 	// The server provides code actions. The `CodeActionOptions` return type is only
@@ -51,8 +45,6 @@ type ServerCapabilities struct {
 	// The server provides folding provider support.
 	//
 	// Since 3.10.0
-	//
-	// boolean | FoldingRangeOptions | FoldingRangeRegistrationOptions;
 	FoldingRangeProvider bool `json:"foldingRangeProvider,omitempty"`
 
 	// The server provides folding provider support.

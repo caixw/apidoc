@@ -329,6 +329,11 @@ func (api *API) sanitizeTags() error {
 		panic("api.doc 未获取正确的值")
 	}
 
+	apiURI := api.URI
+	if apiURI == "" {
+		apiURI = api.doc.URI
+	}
+
 	for _, tag := range api.Tags {
 		t := api.doc.findTag(tag.Content.Value)
 		if t == nil {
@@ -351,7 +356,7 @@ func (api *API) sanitizeTags() error {
 		t.references = append(t.references, &Reference{
 			Location: core.Location{
 				Range: tag.R(),
-				URI:   api.URI,
+				URI:   apiURI,
 			},
 			Target: tag,
 		})
@@ -379,7 +384,7 @@ func (api *API) sanitizeTags() error {
 		s.references = append(s.references, &Reference{
 			Location: core.Location{
 				Range: srv.R(),
-				URI:   api.URI,
+				URI:   apiURI,
 			},
 			Target: srv,
 		})

@@ -27,7 +27,6 @@ type HoverParams struct {
 // Hover textDocument/hover 的返回结果
 type Hover struct {
 	// The hover's content
-	// contents MarkedString | MarkedString[] | MarkupContent;
 	Contents MarkupContent `json:"contents"`
 
 	// An optional range is a range inside a text document
