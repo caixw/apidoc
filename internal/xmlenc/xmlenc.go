@@ -31,6 +31,10 @@ type BaseTag struct {
 
 // Usage 本地化的当前字段介绍内容
 func (b Base) Usage() string {
+	if b.UsageKey == nil {
+		return ""
+	}
+
 	return locale.Sprintf(b.UsageKey)
 }
 

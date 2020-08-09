@@ -22,12 +22,16 @@ var usagerType = reflect.TypeOf((*usager)(nil)).Elem()
 // 返回值表示是否找到了相应在的元素。
 func Hover(doc *ast.APIDoc, uri core.URI, pos core.Position, h *protocol.Hover) {
 	u := doc.Search(uri, pos, usagerType)
-	if u != nil {
-		usage := u.(usager)
+	if u == nil {
+		return
+	}
+
+	usage := u.(usager)
+	if v := usage.Usage(); v != "" {
 		h.Range = usage.R()
 		h.Contents = protocol.MarkupContent{
-			Kind:  protocol.MarkupKinMarkdown,
-			Value: usage.Usage(),
+			Kind:  protocol.MarkupKindMarkdown,
+			Value: v,
 		}
 	}
 }

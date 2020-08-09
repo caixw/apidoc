@@ -119,8 +119,8 @@ const (
 	// MarkupKindPlainText plain text is supported as a content format
 	MarkupKindPlainText MarkupKind = "plaintext"
 
-	// MarkupKinMarkdown markdown is supported as a content format
-	MarkupKinMarkdown MarkupKind = "markdown"
+	// MarkupKindMarkdown markdown is supported as a content format
+	MarkupKindMarkdown MarkupKind = "markdown"
 )
 
 // TextDocumentSyncKind defines how the host (editor) should sync document changes to the language server.

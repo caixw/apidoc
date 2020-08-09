@@ -2,7 +2,11 @@
 
 package protocol
 
-import "github.com/caixw/apidoc/v7/core"
+import (
+	"encoding/json"
+
+	"github.com/caixw/apidoc/v7/core"
+)
 
 // HoverCapabilities 客户端有关 hover 功能的描述
 type HoverCapabilities struct {
@@ -24,9 +28,21 @@ type HoverParams struct {
 type Hover struct {
 	// The hover's content
 	// contents MarkedString | MarkedString[] | MarkupContent;
-	Contents interface{} `json:"contents"`
+	Contents MarkupContent `json:"contents"`
 
 	// An optional range is a range inside a text document
 	// that is used to visualize a hover, e.g. by changing the background color.
 	Range core.Range `json:"range,omitempty"`
+}
+
+type hoverShadow Hover
+
+// MarshalJSON 允许在 hover 为空值是返回 null
+func (h *Hover) MarshalJSON() ([]byte, error) {
+	if h.Contents.Kind == "" {
+		return json.Marshal(nil)
+	}
+
+	shadow := (*hoverShadow)(h)
+	return json.Marshal(shadow)
 }

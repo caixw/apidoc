@@ -45,7 +45,7 @@ func TestHover(t *testing.T) {
 		Start: core.Position{Line: 1, Character: 1},
 		End:   core.Position{Line: 1, Character: 18},
 	})
-	a.Equal(hover.Contents.(protocol.MarkupContent).Value, locale.Sprintf("usage-apidoc-title"))
+	a.Equal(hover.Contents.Value, locale.Sprintf("usage-apidoc-title"))
 
 	// apis[0]
 	hover = &protocol.Hover{}
@@ -55,7 +55,7 @@ func TestHover(t *testing.T) {
 		Start: core.Position{Line: 4, Character: 1},
 		End:   core.Position{Line: 7, Character: 7},
 	})
-	a.Equal(hover.Contents.(protocol.MarkupContent).Value, locale.Sprintf("usage-apidoc-apis"))
+	a.Equal(hover.Contents.Value, locale.Sprintf("usage-apidoc-apis"))
 
 	// 改变了 api[0].URI
 	doc.APIs[0].URI = core.URI("api0.go")
@@ -68,7 +68,7 @@ func TestHover(t *testing.T) {
 		Start: core.Position{Line: 0, Character: 0},
 		End:   core.Position{Line: 12, Character: 9},
 	})
-	a.Equal(hover.Contents.(protocol.MarkupContent).Value, locale.Sprintf("usage-apidoc"))
+	a.Equal(hover.Contents.Value, locale.Sprintf("usage-apidoc"))
 
 	// 与 apis[0] 相同的 URI
 	hover = &protocol.Hover{}
@@ -78,5 +78,5 @@ func TestHover(t *testing.T) {
 		Start: core.Position{Line: 4, Character: 1},
 		End:   core.Position{Line: 7, Character: 7},
 	})
-	a.Equal(hover.Contents.(protocol.MarkupContent).Value, locale.Sprintf("usage-apidoc-apis"))
+	a.Equal(hover.Contents.Value, locale.Sprintf("usage-apidoc-apis"))
 }
