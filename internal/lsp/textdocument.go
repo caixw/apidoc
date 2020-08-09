@@ -42,8 +42,8 @@ func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *p
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
 
-	f.parsedMux.Lock()
-	defer f.parsedMux.Unlock()
+	f.parsedMux.RLock()
+	defer f.parsedMux.RUnlock()
 
 	search.Hover(f.doc, in.TextDocument.URI, in.TextDocumentPositionParams.Position, out)
 	return nil
@@ -95,8 +95,8 @@ func (s *server) textDocumentFoldingRange(notify bool, in *protocol.FoldingRange
 		fr = append(fr, protocol.BuildFoldingRange(f.doc.Base, lineFoldingOnly))
 	}
 
-	f.parsedMux.Lock()
-	defer f.parsedMux.Unlock()
+	f.parsedMux.RLock()
+	defer f.parsedMux.RUnlock()
 
 	for _, api := range f.doc.APIs {
 		matched := api.URI == uri || (api.URI == "" && f.doc.URI == uri)
@@ -127,8 +127,8 @@ func (s *server) textDocumentSemanticTokens(notify bool, in *protocol.SemanticTo
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
 
-	f.parsedMux.Lock()
-	defer f.parsedMux.Unlock()
+	f.parsedMux.RLock()
+	defer f.parsedMux.RUnlock()
 
 	out.Data = search.Tokens(f.doc, in.TextDocument.URI, 0, 1, 2)
 	return nil
@@ -143,8 +143,8 @@ func (s *server) textDocumentReferences(notify bool, in *protocol.ReferenceParam
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
 
-	f.parsedMux.Lock()
-	defer f.parsedMux.Unlock()
+	f.parsedMux.RLock()
+	defer f.parsedMux.RUnlock()
 
 	*out = search.References(f.doc, in.TextDocument.URI, in.Position, in.Context.IncludeDeclaration)
 	return nil
@@ -159,8 +159,8 @@ func (s *server) textDocumentDefinition(notify bool, in *protocol.DefinitionPara
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
 
-	f.parsedMux.Lock()
-	defer f.parsedMux.Unlock()
+	f.parsedMux.RLock()
+	defer f.parsedMux.RUnlock()
 
 	if r := search.Definition(f.doc, in.TextDocument.URI, in.Position); !r.Range.IsEmpty() {
 		*out = r

@@ -29,7 +29,7 @@ type folder struct {
 	cfg *build.Config
 	srv *server
 
-	parsedMux sync.Mutex
+	parsedMux sync.RWMutex
 
 	// 保存着错误和警告的信息
 	errors, warns []*core.Error
