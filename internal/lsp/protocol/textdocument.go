@@ -60,9 +60,6 @@ type TextDocumentClientCapabilities struct {
 	// Capabilities specific to the `textDocument/hover`
 	Hover *HoverCapabilities `json:"hover,omitempty"`
 
-	// Capabilities specific to the `textDocument/rangeFormatting`
-	RangeFormatting *DidChangeConfigurationClientCapabilities `json:"rangeFormatting,omitempty"`
-
 	// Capabilities specific to the `textDocument/textDocument/semanticTokens/*`
 	SemanticTokens *SemanticTokensClientCapabilities `json:"semanticTokens,omitempty"`
 
@@ -95,14 +92,6 @@ type TextDocumentClientCapabilities struct {
 		} `json:"codeActionLiteralSupport,omitempty"`
 	} `json:"codeAction,omitempty"`
 
-	// Capabilities specific to the `textDocument/rename`
-	Rename *struct {
-		// Whether rename supports dynamic registration.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-		// The client supports testing for validity of rename operation before execution.
-		PrepareSupport bool `json:"prepareSupport,omitempty"`
-	} `json:"rename,omitempty"`
-
 	// Capabilities specific to `textDocument/publishDiagnostics`.
 	PublishDiagnostics *PublishDiagnosticsClientCapabilities `json:"publishDiagnostics,omitempty"`
 
@@ -115,14 +104,6 @@ type TextDocumentClientCapabilities struct {
 type DidChangeConfigurationClientCapabilities struct {
 	// Whether formatting supports dynamic registration.
 	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-}
-
-// RenameOptions Rename options
-type RenameOptions struct {
-	WorkDoneProgressOptions
-
-	// Renames should be checked and tested before being executed.
-	PrepareProvider bool `json:"prepareProvider,omitempty"`
 }
 
 type ServerCapabilitiesTextDocumentSyncOptions struct {
@@ -181,11 +162,6 @@ type DocumentFilter struct {
 	// - `[]` to declare a range of characters to match in a path segment (e.g., `example.[0-9]` to match on `example.0`, `example.1`, …)
 	// - `[!...]` to negate a range of characters to match in a path segment (e.g., `example.[!0-9]` to match on `example.a`, `example.b`, but not `example.0`)
 	Pattern string `json:"pattern,omitempty"`
-}
-
-// DocumentRangeFormattingOptions textDocument/rangeFormatting 服务端返回的参数
-type DocumentRangeFormattingOptions struct {
-	WorkDoneProgressOptions
 }
 
 // SelectionRangeOptions textDocument/selectionRange 服务端返回的参数

@@ -4,6 +4,44 @@ package protocol
 
 import "github.com/caixw/apidoc/v7/core"
 
+// ResourceOperationKind the kind of resource operations supported by the client.
+type ResourceOperationKind string
+
+const (
+	// ResourceOperationKindCreate supports creating new files and folders.
+	ResourceOperationKindCreate ResourceOperationKind = "create"
+
+	// ResourceOperationKindRename supports renaming existing files and folders.
+	ResourceOperationKindRename ResourceOperationKind = "rename"
+
+	// ResourceOperationKindDelete supports deleting existing files and folders.
+	ResourceOperationKindDelete ResourceOperationKind = "delete"
+)
+
+// FailureHandlingKind 定义出错后的处理方式
+type FailureHandlingKind string
+
+const (
+
+	// FailureHandlingKindAbort applying the workspace change is simply aborted
+	// if one of the changes provided fails.
+	// All operations executed before the failing operation stay executed.
+	FailureHandlingKindAbort FailureHandlingKind = "abort"
+
+	// FailureHandlingKindTransactional all operations are executed transactionally.
+	// That means they either all succeed or no changes at all are applied to the workspace.
+	FailureHandlingKindTransactional FailureHandlingKind = "transactional"
+
+	// FailureHandlingKindTextOnlyTransactional if the workspace edit contains only textual file changes they are executed transactionally.
+	// If resource changes (create, rename or delete file) are part of the change the failure
+	// handling strategy is abort.
+	FailureHandlingKindTextOnlyTransactional FailureHandlingKind = "textOnlyTransactional"
+
+	// FailureHandlingKindUndo The client tries to undo the operations already executed.
+	// But there is no guarantee that this succeeds.
+	FailureHandlingKindUndo FailureHandlingKind = "undo"
+)
+
 // WorkspaceClientCapabilities 客户有关 workspace 的支持情况
 type WorkspaceClientCapabilities struct {
 	// The client supports applying batch edits to the workspace by supporting

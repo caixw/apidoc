@@ -9,6 +9,82 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 )
 
+// CodeActionKind the kind of a code action.
+//
+// Kinds are a hierarchical list of identifiers separated by `.`, e.g. `"refactor.extract.function"`.
+//
+// The set of kinds is open and client needs to announce the kinds it supports to the server during
+// initialization.
+type CodeActionKind string
+
+// A set of predefined code action kinds
+const (
+	// Empty kind.
+	CodeActionKindEmpty CodeActionKind = ""
+
+	// Base kind for quickfix actions: "quickfix"
+	CodeActionKinQuickFix CodeActionKind = "quickfix"
+
+	// Base kind for refactoring actions: "refactor"
+	CodeActionKinRefactor CodeActionKind = "refactor"
+
+	// Base kind for refactoring extraction actions: "refactor.extract"
+	//
+	// Example extract actions:
+	//
+	// - Extract method
+	// - Extract function
+	// - Extract variable
+	// - Extract interface from class
+	// - ...
+	CodeActionKinRefactorExtract CodeActionKind = "refactor.extract"
+
+	// Base kind for refactoring inline actions: "refactor.inline"
+	//
+	// Example inline actions:
+	//
+	// - Inline function
+	// - Inline variable
+	// - Inline constant
+	// - ...
+	CodeActionKinRefactorInline CodeActionKind = "refactor.inline"
+
+	// Base kind for refactoring rewrite actions: "refactor.rewrite"
+	//
+	// Example rewrite actions:
+	//
+	// - Convert JavaScript function to class
+	// - Add or remove parameter
+	// - Encapsulate field
+	// - Make method static
+	// - Move method to base class
+	// - ...
+	CodeActionKinRefactorRewrite CodeActionKind = "refactor.rewrite"
+
+	// Base kind for source actions: `source`
+	//
+	// Source code actions apply to the entire file.
+	CodeActionKinSource CodeActionKind = "source"
+
+	// Base kind for an organize imports source action: `source.organizeImports`
+	CodeActionKinSourceOrganizeImports CodeActionKind = "source.organizeImports"
+)
+
+// TextDocumentSyncKind defines how the host (editor) should sync document changes to the language server.
+type TextDocumentSyncKind int
+
+const (
+	// TextDocumentSyncKindNone documents should not be synced at all.
+	TextDocumentSyncKindNone TextDocumentSyncKind = iota
+
+	// TextDocumentSyncKindFull documents are synced by always sending the full content of the document.
+	TextDocumentSyncKindFull
+
+	// TextDocumentSyncKindIncremental documents are synced by sending the full content on open.
+	// After that only incremental updates to the document are send.
+	TextDocumentSyncKindIncremental
+)
+
 // WorkDoneProgressParams a parameter literal used to pass a work done progress token.
 type WorkDoneProgressParams struct {
 	// An optional token that a server can use to report work done progress.
@@ -69,6 +145,21 @@ type MarkupContent struct {
 	// The content itself
 	Value string `json:"value"`
 }
+
+// MarkupKind describes the content type that a client supports in various
+// result literals like `Hover`, `ParameterInfo` or `CompletionItem`.
+//
+// Please note that `MarkupKinds` must not start with a `$`. This kinds
+// are reserved for internal usage.
+type MarkupKind string
+
+const (
+	// MarkupKindPlainText plain text is supported as a content format
+	MarkupKindPlainText MarkupKind = "plaintext"
+
+	// MarkupKindMarkdown markdown is supported as a content format
+	MarkupKindMarkdown MarkupKind = "markdown"
+)
 
 // TextEdit a textual edit applicable to a text document.
 type TextEdit struct {

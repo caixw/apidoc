@@ -8,6 +8,13 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 )
 
+// 表示 InitializeParams.Trace 的枚举值
+const (
+	InitializeTraceOff      = "off"
+	InitializeTraceMessages = "messages"
+	InitializeTraceVerbose  = "verbose"
+)
+
 // InitializationOptions 用户需要提交的自定义初始化参数
 type InitializationOptions struct {
 	// 客户端的本地化 ID

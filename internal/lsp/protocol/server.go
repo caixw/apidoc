@@ -4,7 +4,9 @@ package protocol
 
 // ServerCapabilities 服务端的兼容列表
 type ServerCapabilities struct {
-	// Defines how text documents are synced. Is either a detailed structure defining each notification or
+	// Defines how text documents are synced.
+	//
+	// Is either a detailed structure defining each notification or
 	// for backwards compatibility the TextDocumentSyncKind number.
 	// If omitted it defaults to `TextDocumentSyncKind.None`.
 	//
@@ -29,18 +31,6 @@ type ServerCapabilities struct {
 	//
 	// boolean | CodeActionOptions;
 	CodeActionProvider interface{} `json:"codeActionProvider,omitempty"`
-
-	// The server provides document range formatting.
-	//
-	// boolean | DocumentRangeFormattingOptions;
-	DocumentRangeFormattingProvider interface{} `json:"documentRangeFormattingProvider,omitempty"`
-
-	// The server provides rename support. RenameOptions may only be
-	// specified if the client states that it supports
-	// `prepareSupport` in its initial `initialize` request.
-	//
-	// boolean | RenameOptions;
-	RenameProvider interface{} `json:"renameProvider,omitempty"`
 
 	// The server provides folding provider support.
 	//
