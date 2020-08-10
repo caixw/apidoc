@@ -9,139 +9,97 @@ import (
 	"github.com/issue9/assert"
 
 	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/internal/xmlenc"
+	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestSearch(t *testing.T) {
 	a := assert.New(t)
+	data := `<apidoc version="1.0.0">
+		<title>title</title>
+		<tag name="t1" title="tag1" />
+		<tag name="t2" title="tag2" />
+		<api method="GET">
+			<tag>t1</tag>
+			<path path="/users" />
+			<response status="200" />
+		</api>
+		<api method="POST">
+			<tag>t1</tag>
+			<tag>t2</tag>
+			<path path="/users" />
+			<response status="200" />
+		</api>
+	</apidoc>`
 
-	b := xmlenc.Base{
-		Range: core.Range{
-			Start: core.Position{Character: 1},
-			End:   core.Position{Character: 10},
-		},
-	}
-	r := search(reflect.ValueOf(b), core.Position{Character: 5}, nil)
-	a.NotNil(r)
+	rslt := messagetest.NewMessageHandler()
+	doc := &APIDoc{}
+	doc.Parse(rslt.Handler, core.Block{Data: []byte(data), Location: core.Location{URI: "doc.go"}})
+	rslt.Handler.Stop()
 
-	r = search(reflect.ValueOf(&b), core.Position{Character: 5}, nil)
-	a.NotNil(r)
+	r := doc.Search("doc.go", core.Position{}, nil)
+	a.NotNil(r).Equal(r.R(), core.Range{End: core.Position{Line: 15, Character: 10}})
 
-	pb := &b
-	r = search(reflect.ValueOf(&pb), core.Position{Character: 5}, nil)
-	a.NotNil(r)
-
-	// 超出范围
-	r = search(reflect.ValueOf(&b), core.Position{Character: 55}, nil)
-	a.Nil(r)
-
-	doc := &APIDoc{ // 0,0 - 10,10
-		BaseTag: xmlenc.BaseTag{
-			Base: xmlenc.Base{
-				Range: core.Range{
-					End: core.Position{Character: 10, Line: 10},
-				},
-			},
-		},
-		Version: &VersionAttribute{ // 1,20 - 2,15
-			BaseAttribute: xmlenc.BaseAttribute{
-				Base: xmlenc.Base{
-					Range: core.Range{
-						Start: core.Position{Character: 20, Line: 1},
-						End:   core.Position{Character: 15, Line: 2},
-					},
-				},
-			},
-			Value: xmlenc.String{ // 1,22 - 2,10
-				Range: core.Range{
-					Start: core.Position{Character: 22, Line: 1},
-					End:   core.Position{Character: 10, Line: 2},
-				},
-			},
-		},
-		Tags: []*Tag{
-			{ // 3,0 - 3,10
-				BaseTag: xmlenc.BaseTag{
-					Base: xmlenc.Base{
-						Range: core.Range{
-							Start: core.Position{Character: 0, Line: 3},
-							End:   core.Position{Character: 10, Line: 3},
-						},
-					},
-				},
-				Title: &Attribute{ // 3,1 - 3,8
-					BaseAttribute: xmlenc.BaseAttribute{
-						Base: xmlenc.Base{
-							Range: core.Range{
-								Start: core.Position{Character: 1, Line: 3},
-								End:   core.Position{Character: 8, Line: 3},
-							},
-						},
-					},
-				},
-			},
-			{ // 4,0 - 4,10
-				BaseTag: xmlenc.BaseTag{
-					Base: xmlenc.Base{
-						Range: core.Range{
-							Start: core.Position{Character: 0, Line: 4},
-							End:   core.Position{Character: 10, Line: 4},
-						},
-					},
-				},
-			},
-		},
-	}
-
-	r = search(reflect.ValueOf(doc), core.Position{}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{End: core.Position{Character: 10, Line: 10}})
-
-	r = search(reflect.ValueOf(doc), core.Position{Character: 100}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{End: core.Position{Character: 10, Line: 10}})
+	r = doc.Search("doc.go", core.Position{Character: 100}, nil)
+	a.NotNil(r).Equal(r.R(), core.Range{End: core.Position{Line: 15, Character: 10}})
 
 	// 超出范围
-	r = search(reflect.ValueOf(doc), core.Position{Line: 100, Character: 100}, nil)
+	r = doc.Search("doc.go", core.Position{Line: 100, Character: 100}, nil)
 	a.Nil(r)
 
-	// Version.Value
-	r = search(reflect.ValueOf(doc), core.Position{Line: 1, Character: 100}, nil)
+	// title.title
+	r = doc.Search("doc.go", core.Position{Line: 1, Character: 10}, nil)
 	a.NotNil(r).Equal(r.R(), core.Range{
-		Start: core.Position{Character: 22, Line: 1},
-		End:   core.Position{Character: 10, Line: 2},
+		Start: core.Position{Line: 1, Character: 9},
+		End:   core.Position{Line: 1, Character: 14},
 	})
 
-	// Version
-	r = search(reflect.ValueOf(doc), core.Position{Line: 2, Character: 14}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{
-		Start: core.Position{Character: 20, Line: 1},
-		End:   core.Position{Character: 15, Line: 2},
-	})
+	// title.title，URI 不匹配
+	r = doc.Search("not.exists", core.Position{Line: 1, Character: 10}, nil)
+	a.Nil(r)
 
-	// tags[1]
-	r = search(reflect.ValueOf(doc), core.Position{Line: 4, Character: 9}, nil)
+	// tags[0].name
+	r = doc.Search("doc.go", core.Position{Line: 2, Character: 9}, nil)
 	a.NotNil(r).Equal(r.R(), core.Range{
-		Start: core.Position{Character: 0, Line: 4},
-		End:   core.Position{Character: 10, Line: 4},
+		Start: core.Position{Line: 2, Character: 7},
+		End:   core.Position{Line: 2, Character: 16},
 	})
 
 	// 两个数组元素的中间
-	r = search(reflect.ValueOf(doc), core.Position{Line: 4, Character: 11}, nil)
+	r = doc.Search("doc.go", core.Position{Line: 2, Character: 40}, nil)
 	a.NotNil(r).Equal(r.R(), core.Range{
-		End: core.Position{Character: 10, Line: 10},
+		End: core.Position{Line: 15, Character: 10},
 	})
 
-	// tags[0].title
-	r = search(reflect.ValueOf(doc), core.Position{Line: 3, Character: 2}, nil)
+	// tags[1].title
+	r = doc.Search("doc.go", core.Position{Line: 3, Character: 17}, nil)
 	a.NotNil(r).Equal(r.R(), core.Range{
-		Start: core.Position{Character: 1, Line: 3},
-		End:   core.Position{Character: 8, Line: 3},
+		Start: core.Position{Line: 3, Character: 17},
+		End:   core.Position{Line: 3, Character: 29},
 	})
 
 	// tags[0]，因为 referenceType 限定，只能搜索到 ast.Tag 实例
 	referencerType := reflect.TypeOf((*Referencer)(nil)).Elem()
-	r = search(reflect.ValueOf(doc), core.Position{Line: 3, Character: 2}, referencerType)
+	r = search(reflect.ValueOf(doc), core.Position{Line: 3, Character: 17}, referencerType)
 	a.NotNil(r).Equal(r.R(), core.Range{
-		Start: core.Position{Character: 0, Line: 3},
-		End:   core.Position{Character: 10, Line: 3},
+		Start: core.Position{Line: 3, Character: 2},
+		End:   core.Position{Line: 3, Character: 32},
+	})
+
+	// api[0]
+	r = doc.Search("doc.go", core.Position{Line: 5, Character: 3}, nil)
+	a.NotNil(r).Equal(r.R(), core.Range{
+		Start: core.Position{Line: 5, Character: 3},
+		End:   core.Position{Line: 5, Character: 16},
+	})
+
+	// api[0]，URI 不匹配
+	r = doc.Search("not-exists", core.Position{Line: 5, Character: 3}, nil)
+	a.Nil(r)
+
+	// api[0]，不匹配 api，匹配至整个 apidoc
+	doc.APIs[0].URI = "api.go"
+	r = doc.Search("doc.go", core.Position{Line: 5, Character: 3}, nil)
+	a.NotNil(r).Equal(r.R(), core.Range{
+		End: core.Position{Line: 15, Character: 10},
 	})
 }

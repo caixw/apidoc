@@ -133,7 +133,7 @@ func TestAPI_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	api := &API{}
-	p, rslt := newParser(a, "")
+	p, rslt := newParser(a, "", "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).Empty(rslt.Warns)
@@ -143,7 +143,7 @@ func TestAPI_Sanitize(t *testing.T) {
 	api.Headers = []*Param{
 		{Type: &TypeAttribute{Value: xmlenc.String{Value: TypeString}}},
 	}
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).Empty(rslt.Warns)
@@ -151,7 +151,7 @@ func TestAPI_Sanitize(t *testing.T) {
 	api.Headers = append(api.Headers, &Param{
 		Type: &TypeAttribute{Value: xmlenc.String{Value: TypeObject}},
 	})
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.NotEmpty(rslt.Errors)
@@ -161,19 +161,19 @@ func TestAPI_Sanitize(t *testing.T) {
 	api = &API{
 		Servers: []*ServerValue{},
 	}
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	api.Servers = append(api.Servers, &ServerValue{Content: Content{Value: "s1"}})
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	api.Servers = append(api.Servers, &ServerValue{Content: Content{Value: "s1"}})
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.NotEmpty(rslt.Errors)
@@ -183,19 +183,19 @@ func TestAPI_Sanitize(t *testing.T) {
 	api = &API{
 		Tags: []*TagValue{},
 	}
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	api.Tags = append(api.Tags, &TagValue{Content: Content{Value: "s1"}})
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	api.Tags = append(api.Tags, &TagValue{Content: Content{Value: "s1"}})
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.Sanitize(p)
 	rslt.Handler.Stop()
 	a.NotEmpty(rslt.Errors)
@@ -205,13 +205,13 @@ func TestXMLnamespace_Sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	ns := &XMLNamespace{}
-	p, rslt := newParser(a, "")
+	p, rslt := newParser(a, "", "")
 	ns.Sanitize(p)
 	rslt.Handler.Stop()
 	a.NotEmpty(rslt.Errors)
 
 	ns.URN = &Attribute{Value: xmlenc.String{Value: "urn"}}
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	ns.Sanitize(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
@@ -342,14 +342,14 @@ func TestAPI_sanitizeTags(t *testing.T) {
 
 	api := &API{}
 	a.Panic(func() {
-		p, rslt := newParser(a, "")
+		p, rslt := newParser(a, "", "")
 		defer rslt.Handler.Stop()
 		api.sanitizeTags(p)
 	})
 
 	doc := &APIDoc{}
 	api.doc = doc
-	p, rslt := newParser(a, "")
+	p, rslt := newParser(a, "", "")
 	api.sanitizeTags(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).Empty(rslt.Warns)
@@ -357,7 +357,7 @@ func TestAPI_sanitizeTags(t *testing.T) {
 	api.Servers = []*ServerValue{
 		{Content: Content{Value: "s1"}},
 	}
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.sanitizeTags(p)
 	rslt.Handler.Stop()
 	a.NotEmpty(rslt.Warns)
@@ -365,7 +365,7 @@ func TestAPI_sanitizeTags(t *testing.T) {
 	doc.Servers = []*Server{
 		{Name: &Attribute{Value: xmlenc.String{Value: "s1"}}},
 	}
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.sanitizeTags(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors).Empty(rslt.Warns)
@@ -373,7 +373,7 @@ func TestAPI_sanitizeTags(t *testing.T) {
 	api.Tags = []*TagValue{
 		{Content: Content{Value: "t1"}},
 	}
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.sanitizeTags(p)
 	rslt.Handler.Stop()
 	a.NotEmpty(rslt.Warns)
@@ -381,7 +381,7 @@ func TestAPI_sanitizeTags(t *testing.T) {
 	doc.Tags = []*Tag{
 		{Name: &Attribute{Value: xmlenc.String{Value: "t1"}}},
 	}
-	p, rslt = newParser(a, "")
+	p, rslt = newParser(a, "", "")
 	api.sanitizeTags(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Warns)

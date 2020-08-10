@@ -14,9 +14,9 @@ import (
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
-func newParser(a *assert.Assertion, data string) (*xmlenc.Parser, *messagetest.Result) {
+func newParser(a *assert.Assertion, data string, uri core.URI) (*xmlenc.Parser, *messagetest.Result) {
 	rslt := messagetest.NewMessageHandler()
-	p, err := xmlenc.NewParser(rslt.Handler, core.Block{Data: []byte(data)})
+	p, err := xmlenc.NewParser(rslt.Handler, core.Block{Data: []byte(data), Location: core.Location{URI: uri}})
 	a.NotError(err).NotNil(p)
 	return p, rslt
 }
@@ -92,40 +92,40 @@ func TestAPIDoc_Parse(t *testing.T) {
 func TestGetTagName(t *testing.T) {
 	a := assert.New(t)
 
-	p, rslt := newParser(a, "  <root>xx</root>")
+	p, rslt := newParser(a, "  <root>xx</root>", "")
 	root, err := getTagName(p)
 	a.NotError(err).Equal(root, "root")
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
-	p, rslt = newParser(a, "<!-- xx -->  <root>xx</root>")
+	p, rslt = newParser(a, "<!-- xx -->  <root>xx</root>", "")
 	root, err = getTagName(p)
 	a.NotError(err).Equal(root, "root")
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
-	p, rslt = newParser(a, "<!-- xx -->   <root>xx</root>")
+	p, rslt = newParser(a, "<!-- xx -->   <root>xx</root>", "")
 	root, err = getTagName(p)
 	a.NotError(err).Equal(root, "root")
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	// 无效格式
-	p, rslt = newParser(a, "<!-- xx   <root>xx</root>")
+	p, rslt = newParser(a, "<!-- xx   <root>xx</root>", "")
 	root, err = getTagName(p)
 	a.Error(err).Equal(root, "")
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	// 无效格式
-	p, rslt = newParser(a, "</root>")
+	p, rslt = newParser(a, "</root>", "")
 	root, err = getTagName(p)
 	a.Error(err).Equal(root, "")
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	// io.EOF
-	p, rslt = newParser(a, "<!-- xx -->")
+	p, rslt = newParser(a, "<!-- xx -->", "")
 	root, err = getTagName(p)
 	a.Equal(err, io.EOF).Equal(root, "")
 	rslt.Handler.Stop()
