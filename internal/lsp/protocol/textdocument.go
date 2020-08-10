@@ -101,11 +101,6 @@ type TextDocumentClientCapabilities struct {
 	FoldingRange *FoldingRangeClientCapabilities `json:"foldingRange,omitempty"`
 }
 
-type DidChangeConfigurationClientCapabilities struct {
-	// Whether formatting supports dynamic registration.
-	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-}
-
 type ServerCapabilitiesTextDocumentSyncOptions struct {
 	// Open and close notifications are sent to the server.
 	// If omitted open close notification should not be sent.
@@ -162,17 +157,6 @@ type DocumentFilter struct {
 	// - `[]` to declare a range of characters to match in a path segment (e.g., `example.[0-9]` to match on `example.0`, `example.1`, …)
 	// - `[!...]` to negate a range of characters to match in a path segment (e.g., `example.[!0-9]` to match on `example.a`, `example.b`, but not `example.0`)
 	Pattern string `json:"pattern,omitempty"`
-}
-
-// SelectionRangeOptions textDocument/selectionRange 服务端返回的参数
-type SelectionRangeOptions struct {
-	WorkDoneProgressOptions
-}
-
-type SelectionRangeRegistrationOptions struct {
-	SelectionRangeOptions
-	TextDocumentRegistrationOptions
-	StaticRegistrationOptions
 }
 
 // DidChangeTextDocumentParams textDocument/didChange 的参数

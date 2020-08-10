@@ -52,10 +52,16 @@ type WorkspaceClientCapabilities struct {
 	WorkspaceEdit *WorkspaceEditClientCapabilities `json:"workspaceEdit,omitempty"`
 
 	// Capabilities specific to the `workspace/didChangeConfiguration` notification.
-	DidChangeConfiguration *DidChangeConfigurationClientCapabilities `json:"didChangeConfiguration,omitempty"`
+	DidChangeConfiguration *struct {
+		// Whether formatting supports dynamic registration.
+		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
+	} `json:"didChangeConfiguration,omitempty"`
 
 	// Capabilities specific to the `workspace/didChangeWatchedFiles` notification.
-	DidChangeWatchedFiles *DidChangeConfigurationClientCapabilities `json:"didChangeWatchedFiles,omitempty"`
+	DidChangeWatchedFiles *struct {
+		// Whether formatting supports dynamic registration.
+		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
+	} `json:"didChangeWatchedFiles,omitempty"`
 
 	// The client has support for workspace folders.
 	//
