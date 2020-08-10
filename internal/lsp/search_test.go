@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package search
+package lsp
 
 import (
 	"testing"
@@ -32,15 +32,15 @@ func TestDeleteURI(t *testing.T) {
 		},
 	}
 
-	a.True(DeleteURI(d, "uri3"))
+	a.True(deleteURI(d, "uri3"))
 	a.Equal(3, len(d.APIs)).NotNil(d.APIDoc)
 
 	// 同时会删除 1,4
-	a.True(DeleteURI(d, "uri1"))
+	a.True(deleteURI(d, "uri1"))
 	a.Equal(1, len(d.APIs)).Nil(d.APIDoc)
 
-	a.True(DeleteURI(d, "uri2"))
+	a.True(deleteURI(d, "uri2"))
 	a.Equal(0, len(d.APIs)).Nil(d.APIDoc)
 
-	a.False(DeleteURI(d, "uri2"))
+	a.False(deleteURI(d, "uri2"))
 }

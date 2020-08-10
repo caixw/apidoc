@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package search
+package lsp
 
 import (
 	"testing"
@@ -38,45 +38,45 @@ func TestHover(t *testing.T) {
 	a.Empty(rslt.Errors)
 
 	// title
-	hover := &protocol.Hover{}
+	h := &protocol.Hover{}
 	pos := core.Position{Line: 1, Character: 1}
-	Hover(doc, core.URI("doc.go"), pos, hover)
-	a.Equal(hover.Range, core.Range{
+	hover(doc, core.URI("doc.go"), pos, h)
+	a.Equal(h.Range, core.Range{
 		Start: core.Position{Line: 1, Character: 1},
 		End:   core.Position{Line: 1, Character: 18},
 	})
-	a.Equal(hover.Contents.Value, locale.Sprintf("usage-apidoc-title"))
+	a.Equal(h.Contents.Value, locale.Sprintf("usage-apidoc-title"))
 
 	// apis[0]
-	hover = &protocol.Hover{}
+	h = &protocol.Hover{}
 	pos = core.Position{Line: 4, Character: 2}
-	Hover(doc, core.URI("doc.go"), pos, hover)
-	a.Equal(hover.Range, core.Range{
+	hover(doc, core.URI("doc.go"), pos, h)
+	a.Equal(h.Range, core.Range{
 		Start: core.Position{Line: 4, Character: 1},
 		End:   core.Position{Line: 7, Character: 7},
 	})
-	a.Equal(hover.Contents.Value, locale.Sprintf("usage-apidoc-apis"))
+	a.Equal(h.Contents.Value, locale.Sprintf("usage-apidoc-apis"))
 
 	// 改变了 api[0].URI
 	doc.APIs[0].URI = core.URI("api0.go")
 
 	// 改变了 api[0].URI，不再匹配 apis[0]，取其父元素 apidoc
-	hover = &protocol.Hover{}
+	h = &protocol.Hover{}
 	pos = core.Position{Line: 4, Character: 1}
-	Hover(doc, core.URI("doc.go"), pos, hover)
-	a.Equal(hover.Range, core.Range{
+	hover(doc, core.URI("doc.go"), pos, h)
+	a.Equal(h.Range, core.Range{
 		Start: core.Position{Line: 0, Character: 0},
 		End:   core.Position{Line: 12, Character: 9},
 	})
-	a.Equal(hover.Contents.Value, locale.Sprintf("usage-apidoc"))
+	a.Equal(h.Contents.Value, locale.Sprintf("usage-apidoc"))
 
 	// 与 apis[0] 相同的 URI
-	hover = &protocol.Hover{}
+	h = &protocol.Hover{}
 	pos = core.Position{Line: 4, Character: 1}
-	Hover(doc, core.URI("api0.go"), pos, hover)
-	a.Equal(hover.Range, core.Range{
+	hover(doc, core.URI("api0.go"), pos, h)
+	a.Equal(h.Range, core.Range{
 		Start: core.Position{Line: 4, Character: 1},
 		End:   core.Position{Line: 7, Character: 7},
 	})
-	a.Equal(hover.Contents.Value, locale.Sprintf("usage-apidoc-apis"))
+	a.Equal(h.Contents.Value, locale.Sprintf("usage-apidoc-apis"))
 }

@@ -6,9 +6,8 @@ import (
 	"github.com/issue9/sliceutil"
 
 	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/internal/locale"
+	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
-	"github.com/caixw/apidoc/v7/internal/lsp/search"
 )
 
 // textDocument/didChange
@@ -17,7 +16,7 @@ import (
 func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDocumentParams, out *interface{}) error {
 	f := s.findFolder(in.TextDocument.URI)
 	if f == nil {
-		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
+		return nil
 	}
 
 	f.parsedMux.Lock()
@@ -33,7 +32,7 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 	})
 	f.errors = f.errors[:size]
 
-	if !search.DeleteURI(f.doc, in.TextDocument.URI) {
+	if !deleteURI(f.doc, in.TextDocument.URI) {
 		return nil
 	}
 
@@ -45,20 +44,23 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 	return nil
 }
 
-// textDocument/hover
-//
-// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover
-func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *protocol.Hover) error {
-	f := s.findFolder(in.TextDocument.URI)
-	if f == nil {
-		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
+func deleteURI(doc *ast.APIDoc, uri core.URI) (deleted bool) {
+	size := sliceutil.Delete(doc.APIs, func(i int) bool {
+		api := doc.APIs[i]
+		return api.URI == uri || (api.URI == "" && doc.URI == uri)
+	})
+
+	deleted = len(doc.APIs) > size
+	doc.APIs = doc.APIs[:size]
+
+	if doc.URI == uri {
+		*doc = ast.APIDoc{
+			APIs: doc.APIs,
+		}
+		deleted = true
 	}
 
-	f.parsedMux.RLock()
-	defer f.parsedMux.RUnlock()
-
-	search.Hover(f.doc, in.TextDocument.URI, in.TextDocumentPositionParams.Position, out)
-	return nil
+	return deleted
 }
 
 // textDocument/publishDiagnostics
@@ -93,17 +95,15 @@ func (s *server) textDocumentPublishDiagnostics(f *folder, uri core.URI) error {
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_foldingRange
 func (s *server) textDocumentFoldingRange(notify bool, in *protocol.FoldingRangeParams, out *[]protocol.FoldingRange) error {
-	uri := in.TextDocument.URI
-
-	f := s.findFolder(uri)
+	f := s.findFolder(in.TextDocument.URI)
 	if f == nil {
-		return newError(ErrInvalidRequest, locale.ErrFileNotFound, uri)
+		return nil
 	}
 
 	lineFoldingOnly := s.clientParams.Capabilities.TextDocument.FoldingRange.LineFoldingOnly
 
 	fr := make([]protocol.FoldingRange, 0, 10)
-	if f.doc.URI == uri {
+	if f.doc.URI == in.TextDocument.URI {
 		fr = append(fr, protocol.BuildFoldingRange(f.doc.Base, lineFoldingOnly))
 	}
 
@@ -111,7 +111,7 @@ func (s *server) textDocumentFoldingRange(notify bool, in *protocol.FoldingRange
 	defer f.parsedMux.RUnlock()
 
 	for _, api := range f.doc.APIs {
-		matched := api.URI == uri || (api.URI == "" && f.doc.URI == uri)
+		matched := api.URI == in.TextDocument.URI || (api.URI == "" && f.doc.URI == in.TextDocument.URI)
 		if !matched {
 			continue
 		}
@@ -129,54 +129,5 @@ func (s *server) textDocumentFoldingRange(notify bool, in *protocol.FoldingRange
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion
 func (s *server) textDocumentCompletion(notify bool, in *protocol.CompletionParams, out *protocol.CompletionList) error {
 	// TODO
-	return nil
-}
-
-// textDocument/semanticTokens
-func (s *server) textDocumentSemanticTokens(notify bool, in *protocol.SemanticTokensParams, out *protocol.SemanticTokens) error {
-	f := s.findFolder(in.TextDocument.URI)
-	if f == nil {
-		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
-	}
-
-	f.parsedMux.RLock()
-	defer f.parsedMux.RUnlock()
-
-	out.Data = search.Tokens(f.doc, in.TextDocument.URI, 0, 1, 2)
-	return nil
-}
-
-// textDocument/references
-//
-// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_references
-func (s *server) textDocumentReferences(notify bool, in *protocol.ReferenceParams, out *[]core.Location) error {
-	f := s.findFolder(in.TextDocument.URI)
-	if f == nil {
-		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
-	}
-
-	f.parsedMux.RLock()
-	defer f.parsedMux.RUnlock()
-
-	*out = search.References(f.doc, in.TextDocument.URI, in.Position, in.Context.IncludeDeclaration)
-	return nil
-}
-
-// textDocument/definition
-//
-// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
-func (s *server) textDocumentDefinition(notify bool, in *protocol.DefinitionParams, out *[]core.Location) error {
-	// NOTE: LSP 允许 out 的值是 null，而 jsonrpc 模块默认情况下是空值，而不是 nil，
-	// 所以在可能的情况下，都尽量将其返回类型改为数组，
-	// 或是像 protocol.Hover 一样为返回类型实现 json.Marshaler 接口。
-	f := s.findFolder(in.TextDocument.URI)
-	if f == nil {
-		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
-	}
-
-	f.parsedMux.RLock()
-	defer f.parsedMux.RUnlock()
-
-	*out = search.Definition(f.doc, in.TextDocument.URI, in.Position)
 	return nil
 }

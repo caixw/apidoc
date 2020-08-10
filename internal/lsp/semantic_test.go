@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package search
+package lsp
 
 import (
 	"testing"
@@ -113,7 +113,7 @@ func TestTokens(t *testing.T) {
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
-	a.Equal(Tokens(doc, "doc.go", 1, 2, 3), []int{
+	a.Equal(semanticTokens(doc, "doc.go", 1, 2, 3), []int{
 		0, 1, 6, 1, 0, // <apidoc>
 		0, 7, 7, 2, 0,
 		0, 9, 5, 3, 0,

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package search
+package lsp
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/ast"
 )
 
-const testDoc = `<apidoc version="1.1.1">
+const referenceDefinitionDoc = `<apidoc version="1.1.1">
 	<title>标题</title>
 	<mimetype>xml</mimetype>
 	<tag name="t1" title="tag1" />
@@ -31,7 +31,7 @@ const testDoc = `<apidoc version="1.1.1">
 </apidoc>`
 
 func loadDoc(a *assert.Assertion) *ast.APIDoc {
-	blk := core.Block{Data: []byte(testDoc), Location: core.Location{URI: "doc.go"}}
+	blk := core.Block{Data: []byte(referenceDefinitionDoc), Location: core.Location{URI: "doc.go"}}
 	rslt := messagetest.NewMessageHandler()
 	doc := &ast.APIDoc{}
 	doc.Parse(rslt.Handler, blk)
@@ -46,11 +46,11 @@ func TestReferences(t *testing.T) {
 	doc := loadDoc(a)
 
 	pos := core.Position{}
-	locs := References(doc, "doc.go", pos, false)
+	locs := references(doc, "doc.go", pos, false)
 	a.Nil(locs)
 
 	pos = core.Position{Line: 3, Character: 16}
-	locs = References(doc, "doc.go", pos, false)
+	locs = references(doc, "doc.go", pos, false)
 	a.Equal(len(locs), 2).
 		Equal(locs[0], core.Location{
 			URI: "doc.go",
@@ -61,7 +61,7 @@ func TestReferences(t *testing.T) {
 		})
 
 	pos = core.Position{Line: 3, Character: 16}
-	locs = References(doc, "doc.go", pos, true)
+	locs = references(doc, "doc.go", pos, true)
 	a.Equal(len(locs), 3)
 }
 
@@ -70,30 +70,34 @@ func TestDefinition(t *testing.T) {
 	doc := loadDoc(a)
 
 	pos := core.Position{}
-	loc := Definition(doc, "doc.go", pos)
-	a.Equal(loc, core.Location{})
+	locs := definition(doc, "doc.go", pos)
+	a.Empty(locs)
 
 	pos = core.Position{Line: 3, Character: 16}
-	loc = Definition(doc, "doc.go", pos)
-	a.Equal(loc, core.Location{})
+	locs = definition(doc, "doc.go", pos)
+	a.Empty(locs)
 
 	pos = core.Position{Line: 6, Character: 2}
-	loc = Definition(doc, "doc.go", pos)
-	a.Equal(loc, core.Location{
-		URI: "doc.go",
-		Range: core.Range{
-			Start: core.Position{Line: 3, Character: 1},
-			End:   core.Position{Line: 3, Character: 31},
+	locs = definition(doc, "doc.go", pos)
+	a.Equal(locs, []core.Location{
+		{
+			URI: "doc.go",
+			Range: core.Range{
+				Start: core.Position{Line: 3, Character: 1},
+				End:   core.Position{Line: 3, Character: 31},
+			},
 		},
 	})
 
 	pos = core.Position{Line: 12, Character: 2}
-	loc = Definition(doc, "doc.go", pos)
-	a.Equal(loc, core.Location{
-		URI: "doc.go",
-		Range: core.Range{
-			Start: core.Position{Line: 4, Character: 1},
-			End:   core.Position{Line: 4, Character: 31},
+	locs = definition(doc, "doc.go", pos)
+	a.Equal(locs, []core.Location{
+		{
+			URI: "doc.go",
+			Range: core.Range{
+				Start: core.Position{Line: 4, Character: 1},
+				End:   core.Position{Line: 4, Character: 31},
+			},
 		},
 	})
 }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-package search
+package lsp
 
 import (
 	"fmt"
@@ -12,6 +12,7 @@ import (
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 	"github.com/caixw/apidoc/v7/internal/node"
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
@@ -22,6 +23,48 @@ type tokenBuilder struct {
 	// 每个二级数组长度为 5，表示一组 semanticToken 数据。
 	// 数据分别为 绝对行号，当前行的绝对起始位置，长度，以及 token 和 modifier。
 	tokens [][]int
+}
+
+// textDocument/semanticTokens
+func (s *server) textDocumentSemanticTokens(notify bool, in *protocol.SemanticTokensParams, out *protocol.SemanticTokens) error {
+	f := s.findFolder(in.TextDocument.URI)
+	if f == nil {
+		return nil
+	}
+
+	f.parsedMux.RLock()
+	defer f.parsedMux.RUnlock()
+
+	out.Data = semanticTokens(f.doc, in.TextDocument.URI, 0, 1, 2)
+	return nil
+}
+
+// tag 表示标签名的颜色值；
+// attr 表示属性；
+// value 表示属性的颜色值；
+func semanticTokens(doc *ast.APIDoc, uri core.URI, tag, attr, value int) []int {
+	b := &tokenBuilder{
+		tag:    tag,
+		attr:   attr,
+		value:  value,
+		tokens: make([][]int, 0, 100),
+	}
+
+	if doc.URI == uri {
+		b.parse(reflect.ValueOf(doc), "APIs")
+	}
+
+	for _, api := range doc.APIs {
+		matched := api.URI == uri || (api.URI == "" && doc.URI == uri)
+		if !matched {
+			continue
+		}
+
+		b.parse(reflect.ValueOf(api))
+	}
+
+	b.sort()
+	return b.build()
 }
 
 // line 和 start 都为未计算的原始值
@@ -63,36 +106,6 @@ func (b *tokenBuilder) sort() {
 		jj := b.tokens[j]
 		return ii[0] < jj[0] || (ii[0] == jj[0] && ii[1] < jj[1])
 	})
-}
-
-// Tokens 从 doc 中查找所有节点的类型并反回符合 semanticTokens 的数据
-//
-// tag 表示标签名的颜色值；
-// attr 表示属性；
-// value 表示属性的颜色值；
-func Tokens(doc *ast.APIDoc, uri core.URI, tag, attr, value int) []int {
-	b := &tokenBuilder{
-		tag:    tag,
-		attr:   attr,
-		value:  value,
-		tokens: make([][]int, 0, 100),
-	}
-
-	if doc.URI == uri {
-		b.parse(reflect.ValueOf(doc), "APIs")
-	}
-
-	for _, api := range doc.APIs {
-		matched := api.URI == uri || (api.URI == "" && doc.URI == uri)
-		if !matched {
-			continue
-		}
-
-		b.parse(reflect.ValueOf(api))
-	}
-
-	b.sort()
-	return b.build()
 }
 
 func (b *tokenBuilder) parse(v reflect.Value, exclude ...string) {
