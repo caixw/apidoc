@@ -267,9 +267,7 @@ func (doc *APIDoc) Sanitize(p *xmlenc.Parser) {
 			api.doc = doc // 保证单文件的文档能正常解析
 			api.URI = doc.URI
 		}
-		if err := api.sanitizeTags(); err != nil {
-			p.Error(err)
-		}
+		api.sanitizeTags(p)
 	}
 }
 
@@ -324,7 +322,7 @@ func (doc *APIDoc) findServer(srv string) *Server {
 	return nil
 }
 
-func (api *API) sanitizeTags() error {
+func (api *API) sanitizeTags(p *xmlenc.Parser) {
 	if api.doc == nil {
 		panic("api.doc 未获取正确的值")
 	}
@@ -343,7 +341,8 @@ func (api *API) sanitizeTags() error {
 					End:   tag.Content.End,
 				},
 			}
-			return loc.NewError(locale.ErrInvalidValue)
+			p.Warning(loc.NewError(locale.ErrInvalidValue).AddTypes(core.ErrorTypeUnused))
+			continue
 		}
 
 		tag.definition = &Definition{
@@ -371,7 +370,8 @@ func (api *API) sanitizeTags() error {
 					End:   srv.Content.End,
 				},
 			}
-			return loc.NewError(locale.ErrInvalidValue)
+			p.Warning(loc.NewError(locale.ErrInvalidValue).AddTypes(core.ErrorTypeUnused))
+			continue
 		}
 
 		srv.definition = &Definition{
@@ -389,6 +389,4 @@ func (api *API) sanitizeTags() error {
 			Target: srv,
 		})
 	}
-
-	return nil
 }

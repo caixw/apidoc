@@ -342,28 +342,47 @@ func TestAPI_sanitizeTags(t *testing.T) {
 
 	api := &API{}
 	a.Panic(func() {
-		api.sanitizeTags()
+		p, rslt := newParser(a, "")
+		defer rslt.Handler.Stop()
+		api.sanitizeTags(p)
 	})
 
 	doc := &APIDoc{}
 	api.doc = doc
-	a.NotError(api.sanitizeTags())
+	p, rslt := newParser(a, "")
+	api.sanitizeTags(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 
 	api.Servers = []*ServerValue{
 		{Content: Content{Value: "s1"}},
 	}
-	a.Error(api.sanitizeTags())
+	p, rslt = newParser(a, "")
+	api.sanitizeTags(p)
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Warns)
+
 	doc.Servers = []*Server{
 		{Name: &Attribute{Value: xmlenc.String{Value: "s1"}}},
 	}
-	a.NotError(api.sanitizeTags())
+	p, rslt = newParser(a, "")
+	api.sanitizeTags(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 
 	api.Tags = []*TagValue{
 		{Content: Content{Value: "t1"}},
 	}
-	a.Error(api.sanitizeTags())
+	p, rslt = newParser(a, "")
+	api.sanitizeTags(p)
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Warns)
+
 	doc.Tags = []*Tag{
 		{Name: &Attribute{Value: xmlenc.String{Value: "t1"}}},
 	}
-	a.NotError(api.sanitizeTags())
+	p, rslt = newParser(a, "")
+	api.sanitizeTags(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Warns)
 }

@@ -264,7 +264,8 @@ func TestAPIDoc_all(t *testing.T) {
 	a.Equal(len(doc.Tags), 2)
 	tag := doc.Tags[0]
 	a.Equal(tag.Name.V(), "tag1").
-		NotEmpty(tag.Title.V())
+		NotEmpty(tag.Title.V()).
+		Equal(1, len(tag.references))
 	tag = doc.Tags[1]
 	a.Equal(tag.Deprecated.V(), "1.0.1").
 		Equal(tag.Name.V(), "tag2")
@@ -309,7 +310,8 @@ func loadAPI(a *assert.Assertion) *API {
 
 	// 保证 doc.APIs[0].URI 指向文件地址
 	a.NotEmpty(api.URI.String()).
-		True(strings.HasSuffix(api.URI.String(), "./testdata/api.xml"))
+		True(strings.HasSuffix(api.URI.String(), "./testdata/api.xml")).
+		NotNil(api.Servers[0].definition.Target)
 
 	return api
 }

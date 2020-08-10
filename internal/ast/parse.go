@@ -64,9 +64,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		doc.APIs = append(doc.APIs, api)
 
 		if doc.Title.V() != "" { // apidoc 已经初始化，检测依赖于 apidoc 的字段
-			if err := api.sanitizeTags(); err != nil {
-				h.Error(err)
-			}
+			api.sanitizeTags(p)
 		}
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
