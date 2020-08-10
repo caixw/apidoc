@@ -72,7 +72,6 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 			return
 		}
 		xmlenc.Decode(p, doc, core.XMLNamespace)
-		doc.URI = b.Location.URI
 	default:
 		return
 	}

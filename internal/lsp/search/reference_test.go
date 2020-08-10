@@ -51,7 +51,14 @@ func TestReferences(t *testing.T) {
 
 	pos = core.Position{Line: 3, Character: 16}
 	locs = References(doc, "doc.go", pos, false)
-	a.Equal(len(locs), 2)
+	a.Equal(len(locs), 2).
+		Equal(locs[0], core.Location{
+			URI: "doc.go",
+			Range: core.Range{
+				Start: core.Position{Line: 6, Character: 2},
+				End:   core.Position{Line: 6, Character: 15},
+			},
+		})
 
 	pos = core.Position{Line: 3, Character: 16}
 	locs = References(doc, "doc.go", pos, true)

@@ -288,8 +288,7 @@ func TestAPIDoc_all(t *testing.T) {
 	// api
 	a.Equal(1, len(doc.APIs))
 
-	a.NotEmpty(doc.URI).
-		Empty(doc.APIs[0].URI.String())
+	a.Equal(doc.URI, doc.APIs[0].URI.String())
 }
 
 func loadAPI(a *assert.Assertion) *API {

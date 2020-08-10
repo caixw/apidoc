@@ -84,6 +84,16 @@ func TestSearch(t *testing.T) {
 		Start: core.Position{Line: 3, Character: 2},
 		End:   core.Position{Line: 3, Character: 32},
 	})
+	refs := r.(Referencer).References()
+	a.Equal(1, len(refs))
+	a.NotNil(refs[0].Target).
+		Equal(refs[0].Location, core.Location{
+			URI: "doc.go",
+			Range: core.Range{
+				Start: core.Position{Line: 11, Character: 3},
+				End:   core.Position{Line: 11, Character: 16},
+			},
+		})
 
 	// api[0]
 	r = doc.Search("doc.go", core.Position{Line: 5, Character: 3}, nil)

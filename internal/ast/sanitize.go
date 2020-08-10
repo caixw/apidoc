@@ -261,6 +261,7 @@ func (doc *APIDoc) Sanitize(p *xmlenc.Parser) {
 	if err := doc.checkXMLNamespaces(p); err != nil {
 		p.Error(err)
 	}
+	doc.URI = p.Location.URI
 
 	for _, api := range doc.APIs {
 		if api.doc == nil {
@@ -335,7 +336,8 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 	for _, tag := range api.Tags {
 		t := api.doc.findTag(tag.Content.Value)
 		if t == nil {
-			loc := core.Location{URI: api.URI,
+			loc := core.Location{
+				URI: api.URI,
 				Range: core.Range{
 					Start: tag.Content.Start,
 					End:   tag.Content.End,
@@ -364,7 +366,8 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 	for _, srv := range api.Servers {
 		s := api.doc.findServer(srv.Content.Value)
 		if s == nil {
-			loc := core.Location{URI: api.URI,
+			loc := core.Location{
+				URI: api.URI,
 				Range: core.Range{
 					Start: srv.Content.Start,
 					End:   srv.Content.End,
