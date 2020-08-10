@@ -34,14 +34,13 @@ type Hover struct {
 	Range core.Range `json:"range,omitempty"`
 }
 
-type hoverShadow Hover
-
 // MarshalJSON 允许在 hover 为空值是返回 null
 func (h *Hover) MarshalJSON() ([]byte, error) {
 	if h.Contents.Kind == "" {
 		return json.Marshal(nil)
 	}
 
+	type hoverShadow Hover
 	shadow := (*hoverShadow)(h)
 	return json.Marshal(shadow)
 }

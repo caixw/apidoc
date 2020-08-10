@@ -37,11 +37,11 @@ func References(doc *ast.APIDoc, uri core.URI, pos core.Position, include bool) 
 }
 
 // Definition 返回所在位置的定义内容
-func Definition(doc *ast.APIDoc, uri core.URI, pos core.Position) core.Location {
+func Definition(doc *ast.APIDoc, uri core.URI, pos core.Position) []core.Location {
 	r := doc.Search(uri, pos, definitionerType)
 	if r == nil {
-		return core.Location{}
+		return []core.Location{}
 	}
 
-	return r.(ast.Definitioner).Definition().Location
+	return []core.Location{r.(ast.Definitioner).Definition().Location}
 }

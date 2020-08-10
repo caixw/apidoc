@@ -18,7 +18,6 @@ import (
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
-	"github.com/caixw/apidoc/v7/internal/lsp/search"
 )
 
 // 表示项目文件夹
@@ -117,24 +116,6 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) 
 	}
 
 	return nil
-}
-
-// 删除与 uri 相关的数据
-func (f *folder) deleteURI(uri core.URI) (found bool) {
-	f.parsedMux.Lock()
-	defer f.parsedMux.Unlock()
-
-	// 清除相关的警告和错误信息
-	size := sliceutil.QuickDelete(f.warns, func(i int) bool {
-		return f.warns[i].Location.URI == uri
-	})
-	f.warns = f.warns[:size]
-	size = sliceutil.QuickDelete(f.errors, func(i int) bool {
-		return f.errors[i].Location.URI == uri
-	})
-	f.errors = f.errors[:size]
-
-	return search.DeleteURI(f.doc, uri)
 }
 
 func (s *server) findFolder(uri core.URI) *folder {

@@ -3,6 +3,8 @@
 package lsp
 
 import (
+	"github.com/issue9/sliceutil"
+
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
@@ -18,12 +20,22 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
 	}
 
-	if !f.deleteURI(in.TextDocument.URI) {
-		return nil
-	}
-
 	f.parsedMux.Lock()
 	defer f.parsedMux.Unlock()
+
+	// 清除相关的警告和错误信息
+	size := sliceutil.QuickDelete(f.warns, func(i int) bool {
+		return f.warns[i].Location.URI == in.TextDocument.URI
+	})
+	f.warns = f.warns[:size]
+	size = sliceutil.QuickDelete(f.errors, func(i int) bool {
+		return f.errors[i].Location.URI == in.TextDocument.URI
+	})
+	f.errors = f.errors[:size]
+
+	if !search.DeleteURI(f.doc, in.TextDocument.URI) {
+		return nil
+	}
 
 	for _, blk := range in.Blocks() {
 		f.parseBlock(blk)
@@ -150,10 +162,13 @@ func (s *server) textDocumentReferences(notify bool, in *protocol.ReferenceParam
 	return nil
 }
 
-// textDocumentDefinition
+// textDocument/definition
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
-func (s *server) textDocumentDefinition(notify bool, in *protocol.DefinitionParams, out *core.Location) error {
+func (s *server) textDocumentDefinition(notify bool, in *protocol.DefinitionParams, out *[]core.Location) error {
+	// NOTE: LSP 允许 out 的值是 null，而 jsonrpc 模块默认情况下是空值，而不是 nil，
+	// 所以在可能的情况下，都尽量将其返回类型改为数组，
+	// 或是像 protocol.Hover 一样为返回类型实现 json.Marshaler 接口。
 	f := s.findFolder(in.TextDocument.URI)
 	if f == nil {
 		return newError(ErrInvalidRequest, locale.ErrFileNotFound, in.TextDocument.URI)
@@ -162,8 +177,6 @@ func (s *server) textDocumentDefinition(notify bool, in *protocol.DefinitionPara
 	f.parsedMux.RLock()
 	defer f.parsedMux.RUnlock()
 
-	if r := search.Definition(f.doc, in.TextDocument.URI, in.Position); !r.Range.IsEmpty() {
-		*out = r
-	}
+	*out = search.Definition(f.doc, in.TextDocument.URI, in.Position)
 	return nil
 }

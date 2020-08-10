@@ -2,6 +2,8 @@
 
 package protocol
 
+import "encoding/json"
+
 // CompletionItemKind the kind of a completion entry.
 type CompletionItemKind int
 
@@ -197,6 +199,17 @@ type CompletionList struct {
 
 	// The completion items.
 	Items []CompletionItem `json:"items"`
+}
+
+// MarshalJSON 允许在 hover 为空值是返回 null
+func (l *CompletionList) MarshalJSON() ([]byte, error) {
+	if len(l.Items) == 0 {
+		return json.Marshal(nil)
+	}
+
+	type completionListShadow CompletionList
+	shadow := (*completionListShadow)(l)
+	return json.Marshal(shadow)
 }
 
 // CompletionItem completion items
