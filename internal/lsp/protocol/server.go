@@ -25,13 +25,6 @@ type ServerCapabilities struct {
 	// The server provides find references support.
 	ReferencesProvider bool `json:"referencesProvider,omitempty"`
 
-	// The server provides code actions. The `CodeActionOptions` return type is only
-	// valid if the client signals code action literal support via the property
-	// `textDocument.codeAction.codeActionLiteralSupport`.
-	//
-	// boolean | CodeActionOptions;
-	CodeActionProvider interface{} `json:"codeActionProvider,omitempty"`
-
 	// The server provides folding provider support.
 	//
 	// Since 3.10.0
@@ -52,17 +45,6 @@ type ServerCapabilities struct {
 
 	// Experimental server capabilities.
 	Experimental interface{} `json:"experimental,omitempty"`
-}
-
-// CodeActionOptions Code Action options.
-type CodeActionOptions struct {
-	WorkDoneProgressOptions
-
-	// CodeActionKinds that this server may return.
-	//
-	// The list of kinds may be generic, such as `CodeActionKind.Refactor`, or the server
-	// may list out every specific kind they provide.
-	CodeActionKinds []CodeActionKind `json:"codeActionKinds,omitempty"`
 }
 
 // SaveOptions Save options.

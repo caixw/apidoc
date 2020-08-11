@@ -71,27 +71,6 @@ type TextDocumentClientCapabilities struct {
 	// Since 3.14.0
 	Definition *DefinitionClientCapabilities `json:"definition,omitempty"`
 
-	// Capabilities specific to the `textDocument/codeAction`
-	CodeAction *struct {
-		// Whether code action supports dynamic registration.
-		DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
-
-		// The client support code action literals as a valid
-		// response of the `textDocument/codeAction` request.
-		//
-		// Since 3.8.0
-		CodeActionLiteralSupport *struct {
-			// The code action kind is support with the following value set.
-			CodeActionKind struct {
-				// The code action kind values the client supports. When this
-				// property exists the client also guarantees that it will
-				// handle values outside its set gracefully and falls back
-				// to a default value when unknown.
-				ValueSet []CodeActionKind `json:"valueSet"`
-			} `json:"codeActionKind"`
-		} `json:"codeActionLiteralSupport,omitempty"`
-	} `json:"codeAction,omitempty"`
-
 	// Capabilities specific to `textDocument/publishDiagnostics`.
 	PublishDiagnostics *PublishDiagnosticsClientCapabilities `json:"publishDiagnostics,omitempty"`
 
