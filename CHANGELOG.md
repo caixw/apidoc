@@ -11,6 +11,7 @@
 - 添加 core.Ranger 接口的定义；
 - 添加了对 textDocument/references 的支持；
 - 添加了对 textDocument/definition 的支持；
+- 添加自定义通知 apidoc/outline 用于向客户端展示文档的基本列表；
 
 ## [v7.1.0]
 

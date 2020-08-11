@@ -56,6 +56,14 @@ func (f *folder) parseBlock(block core.Block) {
 		lang.Parse(f.h, input.Lang, block, blocks)
 	})
 
+	if err := f.srv.apidocOutline(f); err != nil {
+		f.srv.erro.Println(err)
+	}
+}
+
+// 自定义的服务端下发通知 apidoc/outline
+func (s *server) apidocOutline(f *folder) error {
+	return s.Notify("apidoc/outline", protocol.BuildAPIDocOutline(f.WorkspaceFolder, f.doc))
 }
 
 func (f *folder) messageHandler(msg *core.Message) {
