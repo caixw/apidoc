@@ -146,10 +146,8 @@ func (b *tokenBuilder) parseAnonymous(v reflect.Value) {
 		}
 	case ast.CData:
 		b.append(elem.StartTag.Range, b.tag)
-		// b.append(elem.Value.Range, b.cdata)
 		b.append(elem.EndTag.Range, b.tag)
 	case ast.Content:
-		// b.append(elem.Range, b.tag)
 	case ast.Attribute:
 		b.append(elem.AttributeName.Range, b.attr)
 		b.append(elem.Value.Range, b.value)

@@ -43,14 +43,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		return
 	}
 
-	name, err := getTagName(p)
-	if errors.Is(err, io.EOF) {
-		return
-	} else if err != nil {
-		h.Error(err)
-		return
-	}
-	switch name {
+	switch getTagName(p) {
 	case "api":
 		if doc.APIs == nil {
 			doc.APIs = make([]*API, 0, 100)
@@ -81,20 +74,24 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 }
 
 // 获取根标签的名称
-func getTagName(p *xmlenc.Parser) (string, error) {
+func getTagName(p *xmlenc.Parser) string {
 	start := p.Current()
 	for {
 		t, r, err := p.Token()
-		if err != nil {
-			return "", err
+		if errors.Is(err, io.EOF) {
+			return ""
+		} else if err != nil {
+			p.Error(err)
+			return ""
 		}
 
 		switch elem := t.(type) {
 		case *xmlenc.StartElement:
 			p.Move(start)
-			return elem.Name.Local.Value, nil
+			return elem.Name.Local.Value
 		case *xmlenc.EndElement, *xmlenc.CData:
-			return "", p.NewError(r.Start, r.End, "", locale.ErrInvalidXML)
+			p.Error(p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
+			return ""
 		default: // 其它标签忽略
 		}
 	}

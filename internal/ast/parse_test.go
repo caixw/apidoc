@@ -3,7 +3,6 @@
 package ast
 
 import (
-	"io"
 	"net/http"
 	"testing"
 
@@ -93,43 +92,43 @@ func TestGetTagName(t *testing.T) {
 	a := assert.New(t)
 
 	p, rslt := newParser(a, "  <root>xx</root>", "")
-	root, err := getTagName(p)
-	a.NotError(err).Equal(root, "root")
+	root := getTagName(p)
+	a.Equal(root, "root")
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	p, rslt = newParser(a, "<!-- xx -->  <root>xx</root>", "")
-	root, err = getTagName(p)
-	a.NotError(err).Equal(root, "root")
+	root = getTagName(p)
+	a.Equal(root, "root")
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	p, rslt = newParser(a, "<!-- xx -->   <root>xx</root>", "")
-	root, err = getTagName(p)
-	a.NotError(err).Equal(root, "root")
+	root = getTagName(p)
+	a.Equal(root, "root")
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
 	// 无效格式
 	p, rslt = newParser(a, "<!-- xx   <root>xx</root>", "")
-	root, err = getTagName(p)
-	a.Error(err).Equal(root, "")
+	root = getTagName(p)
+	a.Equal(root, "")
 	rslt.Handler.Stop()
-	a.Empty(rslt.Errors)
+	a.NotEmpty(rslt.Errors)
 
 	// 无效格式
 	p, rslt = newParser(a, "</root>", "")
-	root, err = getTagName(p)
-	a.Error(err).Equal(root, "")
+	root = getTagName(p)
+	a.Equal(root, "")
 	rslt.Handler.Stop()
-	a.Empty(rslt.Errors)
+	a.NotEmpty(rslt.Errors)
 
 	// io.EOF
 	p, rslt = newParser(a, "<!-- xx -->", "")
-	root, err = getTagName(p)
-	a.Equal(err, io.EOF).Equal(root, "")
+	root = getTagName(p)
+	a.Equal(root, "")
 	rslt.Handler.Stop()
-	a.Empty(rslt.Errors)
+	a.Empty(rslt.Errors) // io.EOF 不输出错误
 }
 
 func TestAPIDoc_sortAPIs(t *testing.T) {
