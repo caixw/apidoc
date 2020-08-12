@@ -43,6 +43,7 @@ type API struct {
 	Tags       []string      `json:"tags,omitempty"`
 	Servers    []string      `json:"servers,omitempty"`
 	Deprecated string        `json:"deprecated,omitempty"`
+	Summary    string        `json:"summary,omitempty"`
 }
 
 // BuildAPIDocOutline 根据 ast.APIDoc 构建 APIDoc
@@ -80,6 +81,11 @@ func BuildAPIDocOutline(f WorkspaceFolder, doc *ast.APIDoc) *APIDocOutline {
 			srvs = append(srvs, srv.V())
 		}
 
+		summary := api.Summary.V()
+		if summary == "" {
+			summary = api.Description.V()
+		}
+
 		apis = append(apis, &API{
 			Location: core.Location{
 				URI:   uri,
@@ -90,6 +96,7 @@ func BuildAPIDocOutline(f WorkspaceFolder, doc *ast.APIDoc) *APIDocOutline {
 			Tags:       ts,
 			Servers:    srvs,
 			Deprecated: api.Description.V(),
+			Summary:    summary,
 		})
 	}
 
