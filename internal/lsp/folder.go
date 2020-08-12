@@ -61,11 +61,6 @@ func (f *folder) parseBlock(block core.Block) {
 	}
 }
 
-// 自定义的服务端下发通知 apidoc/outline
-func (s *server) apidocOutline(f *folder) error {
-	return s.Notify("apidoc/outline", protocol.BuildAPIDocOutline(f.WorkspaceFolder, f.doc))
-}
-
 func (f *folder) messageHandler(msg *core.Message) {
 	switch msg.Type {
 	case core.Erro:

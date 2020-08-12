@@ -12,6 +12,7 @@
 - 添加了对 textDocument/references 的支持；
 - 添加了对 textDocument/definition 的支持；
 - 添加自定义通知 apidoc/outline 用于向客户端展示文档的基本列表；
+- 添加自定义服务 apidoc/refreshOutline 用于客户端主动请求刷新文档列表；
 
 ## [v7.1.0]
 

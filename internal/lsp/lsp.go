@@ -107,6 +107,9 @@ func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
 		"textDocument/semanticTokens": srv.textDocumentSemanticTokens,
 		"textDocument/references":     srv.textDocumentReferences,
 		"textDocument/definition":     srv.textDocumentDefinition,
+
+		// apidoc 自定义的接口
+		"apidoc/refreshOutline": srv.apidocRefreshOutline,
 	})
 
 	jsonrpcServer.RegisterMatcher(func(method string) bool {
