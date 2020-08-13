@@ -14,9 +14,9 @@ import (
 type APIDocOutline struct {
 	WorkspaceFolder
 
-	Location core.Location   `json:"location"`
-	Title    string          `json:"title"`
-	Version  string          `json:"version"`
+	Location core.Location   `json:"location,omitempty"`
+	Title    string          `json:"title,omitempty"`
+	Version  string          `json:"version,omitempty"`
 	Tags     []*APIDocTag    `json:"tags,omitempty"`
 	Servers  []*APIDocServer `json:"servers,omitempty"`
 
@@ -32,7 +32,7 @@ type APIDocTag struct {
 // APIDocServer 文档支持的服务器
 type APIDocServer struct {
 	ID  string `json:"id"`
-	URI string `json:"uri"`
+	URL string `json:"url"`
 }
 
 // API 描述单个 API 的信息
@@ -47,7 +47,13 @@ type API struct {
 }
 
 // BuildAPIDocOutline 根据 ast.APIDoc 构建 APIDoc
+//
+// 如果 doc 不是一个有效的文档内容，比如是零值，则返回 nil。
 func BuildAPIDocOutline(f WorkspaceFolder, doc *ast.APIDoc) *APIDocOutline {
+	if doc == nil || doc.Title.V() == "" {
+		return nil
+	}
+
 	tags := make([]*APIDocTag, 0, len(doc.Tags))
 	for _, t := range doc.Tags {
 		tags = append(tags, &APIDocTag{
@@ -60,7 +66,7 @@ func BuildAPIDocOutline(f WorkspaceFolder, doc *ast.APIDoc) *APIDocOutline {
 	for _, srv := range doc.Servers {
 		servers = append(servers, &APIDocServer{
 			ID:  srv.Name.V(),
-			URI: srv.URL.V(),
+			URL: srv.URL.V(),
 		})
 	}
 

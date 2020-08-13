@@ -6,7 +6,10 @@ import "github.com/caixw/apidoc/v7/internal/lsp/protocol"
 
 // 自定义的服务端下发通知 apidoc/outline
 func (s *server) apidocOutline(f *folder) error {
-	return s.Notify("apidoc/outline", protocol.BuildAPIDocOutline(f.WorkspaceFolder, f.doc))
+	if outline := protocol.BuildAPIDocOutline(f.WorkspaceFolder, f.doc); outline != nil {
+		return s.Notify("apidoc/outline", outline)
+	}
+	return nil
 }
 
 // 由客户端发给服务端的刷新通知 apidoc/refreshOutline
