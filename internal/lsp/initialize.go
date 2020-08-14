@@ -37,7 +37,7 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 		Change: protocol.TextDocumentSyncKindFull,
 	}
 
-	if in.Capabilities.TextDocument.Hover.ContentFormat != nil {
+	if in.Capabilities.TextDocument.Hover != nil && in.Capabilities.TextDocument.Hover.ContentFormat != nil {
 		out.Capabilities.HoverProvider = true
 	}
 
@@ -71,7 +71,7 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 	if in.InitializationOptions != nil && in.InitializationOptions.Locale != "" {
 		tag, err := language.Parse(in.InitializationOptions.Locale)
 		if err != nil {
-			s.erro.Println(err) // 输出错误信息，但是不中断执行
+			s.printErr(err) // 输出错误信息，但是不中断执行
 		}
 		locale.SetTag(tag)
 	}
@@ -85,7 +85,9 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 	s.workspaceMux.Lock()
 	defer s.workspaceMux.Unlock()
 
-	return s.appendFolders(in.Folders()...)
+	s.appendFolders(in.Folders()...)
+
+	return nil
 }
 
 // initialized
@@ -126,6 +128,7 @@ func (s *server) shutdown(bool, *interface{}, *interface{}) error {
 	}
 
 	s.setState(serverShutdown)
+	s.folders = s.folders[:0]
 
 	return nil
 }
@@ -137,6 +140,5 @@ func (s *server) exit(bool, *interface{}, *interface{}) error {
 	if s.getState() != serverShutdown {
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}
-
 	return nil
 }

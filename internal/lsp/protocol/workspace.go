@@ -2,7 +2,11 @@
 
 package protocol
 
-import "github.com/caixw/apidoc/v7/core"
+import (
+	"strings"
+
+	"github.com/caixw/apidoc/v7/core"
+)
 
 // ResourceOperationKind the kind of resource operations supported by the client.
 type ResourceOperationKind string
@@ -121,7 +125,7 @@ type WorkspaceFoldersServerCapabilities struct {
 	// using the `client/unregisterCapability` request.
 	//
 	// string | boolean;
-	ChangeNotifications interface{} `json:"changeNotifications,omitempty"`
+	ChangeNotifications bool `json:"changeNotifications,omitempty"`
 }
 
 // WorkspaceEditClientCapabilities the capabilities of a workspace edit has evolved over the time. Clients can describe their support using the following client capability
@@ -139,4 +143,21 @@ type WorkspaceEditClientCapabilities struct {
 	//
 	// @since 3.13.0
 	FailureHandling FailureHandlingKind `json:"failureHandling,omitempty"`
+}
+
+// Contains 当前 WorkspaceFolder 是否包含了 uri 这个文件或是目录
+func (f WorkspaceFolder) Contains(path core.URI) bool {
+	fs, fp := f.URI.Parse()
+	ps, pp := path.Parse()
+
+	switch {
+	case (fs == core.SchemeFile || fs == "") && (ps == core.SchemeFile || ps == ""):
+		return strings.HasPrefix(pp, fp)
+	case fs == core.SchemeHTTP && ps == core.SchemeHTTP:
+		return strings.HasPrefix(pp, fp)
+	case fs == core.SchemeHTTPS && ps == core.SchemeHTTPS:
+		return strings.HasPrefix(pp, fp)
+	default:
+		return false
+	}
 }

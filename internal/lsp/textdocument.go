@@ -3,10 +3,14 @@
 package lsp
 
 import (
+	"path/filepath"
+
 	"github.com/issue9/sliceutil"
 
+	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
+	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
 
@@ -42,6 +46,28 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 
 	f.srv.textDocumentPublishDiagnostics(f, in.TextDocument.URI)
 	return nil
+}
+
+func (f *folder) parseBlock(block core.Block) {
+	var input *build.Input
+	ext := filepath.Ext(block.Location.URI.String())
+	for _, i := range f.cfg.Inputs {
+		if sliceutil.Count(i.Exts, func(index int) bool { return i.Exts[index] == ext }) > 0 {
+			input = i
+			break
+		}
+	}
+	if input == nil { // 无需解析
+		return
+	}
+
+	f.doc.ParseBlocks(f.h, func(blocks chan core.Block) {
+		lang.Parse(f.h, input.Lang, block, blocks)
+	})
+
+	if err := f.srv.apidocOutline(f); err != nil {
+		f.srv.printErr(err)
+	}
 }
 
 func deleteURI(doc *ast.APIDoc, uri core.URI) (deleted bool) {

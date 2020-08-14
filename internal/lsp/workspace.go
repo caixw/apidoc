@@ -22,11 +22,7 @@ func (s *server) workspaceWorkspaceFolders() error {
 		}
 		s.folders = s.folders[:0]
 
-		if len(*folders) != 0 {
-			if err := s.appendFolders(*folders...); err != nil {
-				return err
-			}
-		}
+		s.appendFolders(*folders...)
 		return nil
 	})
 }
@@ -52,5 +48,7 @@ func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.Di
 		})
 	}
 
-	return s.appendFolders(in.Event.Added...)
+	s.appendFolders(in.Event.Added...)
+
+	return nil
 }

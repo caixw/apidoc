@@ -6,8 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 
 	"github.com/issue9/sliceutil"
@@ -15,7 +13,6 @@ import (
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
-	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
@@ -23,10 +20,11 @@ import (
 // 表示项目文件夹
 type folder struct {
 	protocol.WorkspaceFolder
-	doc *ast.APIDoc
-	h   *core.MessageHandler
-	cfg *build.Config
-	srv *server
+	doc       *ast.APIDoc
+	h         *core.MessageHandler
+	cfg       *build.Config
+	srv       *server
+	loadError error // 加载过程中的出错信息
 
 	parsedMux sync.RWMutex
 
@@ -36,29 +34,9 @@ type folder struct {
 
 func (f *folder) close() {
 	f.srv.windowLogLogMessage(locale.CloseLSPFolder, f.Name)
+	f.errors = f.errors[:0]
+	f.warns = f.warns[:0]
 	f.h.Stop()
-}
-
-func (f *folder) parseBlock(block core.Block) {
-	var input *build.Input
-	ext := filepath.Ext(block.Location.URI.String())
-	for _, i := range f.cfg.Inputs {
-		if sliceutil.Count(i.Exts, func(index int) bool { return i.Exts[index] == ext }) > 0 {
-			input = i
-			break
-		}
-	}
-	if input == nil { // 无需解析
-		return
-	}
-
-	f.doc.ParseBlocks(f.h, func(blocks chan core.Block) {
-		lang.Parse(f.h, input.Lang, block, blocks)
-	})
-
-	if err := f.srv.apidocOutline(f); err != nil {
-		f.srv.erro.Println(err)
-	}
 }
 
 func (f *folder) messageHandler(msg *core.Message) {
@@ -93,44 +71,62 @@ func (f *folder) messageHandler(msg *core.Message) {
 	}
 }
 
-func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) (err error) {
+func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) {
 	for _, f := range folders {
-		ff := &folder{
-			WorkspaceFolder: f,
-			doc:             &ast.APIDoc{},
-			srv:             s,
-		}
-
-		ff.h = core.NewMessageHandler(ff.messageHandler)
-		ff.cfg, err = build.LoadConfig(f.URI)
-		if errors.Is(err, os.ErrNotExist) {
-			if ff.cfg, err = build.DetectConfig(f.URI, true); err != nil {
-				return err
-			}
-		} else if err != nil {
-			return err
-		}
-
-		ff.doc.ParseBlocks(ff.h, func(blocks chan core.Block) {
-			build.ParseInputs(blocks, ff.h, ff.cfg.Inputs...)
-		})
-
+		ff := s.openFolder(f)
 		s.folders = append(s.folders, ff)
 	}
+}
 
-	return nil
+// 解析 f 目录，并生成 folder
+//
+// 在成功加载文档之后，会通过 apidoc/outline 通知客户端新的数据。
+func (s *server) openFolder(f protocol.WorkspaceFolder) (ff *folder) {
+	ff = &folder{
+		WorkspaceFolder: f,
+		doc:             &ast.APIDoc{},
+		srv:             s,
+	}
+	ff.h = core.NewMessageHandler(ff.messageHandler)
+
+	cfg, err := build.LoadConfig(f.URI)
+	if errors.Is(err, os.ErrNotExist) { // 找不到配置文件
+		if cfg, err = build.DetectConfig(f.URI, true); err != nil {
+			ff.loadError = err
+			s.printErr(ff.loadError)
+			return ff
+		}
+	} else if err != nil {
+		ff.loadError = err
+		s.printErr(ff.loadError)
+		return ff
+	}
+	ff.cfg = cfg
+
+	ff.doc.ParseBlocks(ff.h, func(blocks chan core.Block) {
+		build.ParseInputs(blocks, ff.h, ff.cfg.Inputs...)
+	})
+
+	if err := s.apidocOutline(ff); err != nil {
+		s.printErr(err)
+	}
+
+	return ff
+}
+
+func (s *server) printErr(err error) {
+	s.erro.Println(err)
+	s.windowLogMessage(protocol.MessageTypeError, err.Error())
 }
 
 func (s *server) findFolder(uri core.URI) *folder {
 	s.workspaceMux.RLock()
 	defer s.workspaceMux.RUnlock()
 
-	var f *folder
-	for _, f = range s.folders {
-		if strings.HasPrefix(string(uri), string(f.URI)) {
+	for _, f := range s.folders {
+		if f.Contains(uri) {
 			return f
 		}
 	}
-
 	return nil
 }
