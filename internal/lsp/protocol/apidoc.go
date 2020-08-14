@@ -14,6 +14,9 @@ import (
 type APIDocOutline struct {
 	WorkspaceFolder
 
+	// 表示服务端的错误信息，如果此值不为空，则其它字段字段都是无意义的。
+	Err string `json:"err,omitempty"`
+
 	Location core.Location   `json:"location,omitempty"`
 	Title    string          `json:"title,omitempty"`
 	Version  string          `json:"version,omitempty"`
@@ -49,6 +52,7 @@ type API struct {
 // BuildAPIDocOutline 根据 ast.APIDoc 构建 APIDoc
 //
 // 如果 doc 不是一个有效的文档内容，比如是零值，则返回 nil。
+// 如果是 doc.APIs 中的某一个元素的 path 未必须，则会忽略此记录的显示。
 func BuildAPIDocOutline(f WorkspaceFolder, doc *ast.APIDoc) *APIDocOutline {
 	if doc == nil || doc.Title.V() == "" {
 		return nil
@@ -70,43 +74,7 @@ func BuildAPIDocOutline(f WorkspaceFolder, doc *ast.APIDoc) *APIDocOutline {
 		})
 	}
 
-	apis := make([]*API, 0, len(doc.APIs))
-	for _, api := range doc.APIs {
-		uri := api.URI
-		if uri == "" {
-			uri = doc.URI
-		}
-
-		ts := make([]string, 0, len(api.Tags))
-		for _, tag := range api.Tags {
-			ts = append(ts, tag.V())
-		}
-
-		srvs := make([]string, 0, len(api.Servers))
-		for _, srv := range api.Servers {
-			srvs = append(srvs, srv.V())
-		}
-
-		summary := api.Summary.V()
-		if summary == "" {
-			summary = api.Description.V()
-		}
-
-		apis = append(apis, &API{
-			Location: core.Location{
-				URI:   uri,
-				Range: api.Range,
-			},
-			Method:     api.Method.V(),
-			Path:       api.Path.Path.V(),
-			Tags:       ts,
-			Servers:    srvs,
-			Deprecated: api.Description.V(),
-			Summary:    summary,
-		})
-	}
-
-	return &APIDocOutline{
+	outline := &APIDocOutline{
 		WorkspaceFolder: f,
 		Location: core.Location{
 			URI:   doc.URI,
@@ -116,6 +84,53 @@ func BuildAPIDocOutline(f WorkspaceFolder, doc *ast.APIDoc) *APIDocOutline {
 		Version: doc.Version.V(),
 		Tags:    tags,
 		Servers: servers,
-		APIs:    apis,
+		APIs:    make([]*API, 0, len(doc.APIs)),
 	}
+
+	for _, api := range doc.APIs {
+		outline.appendAPI(api)
+	}
+
+	return outline
+}
+
+func (o *APIDocOutline) appendAPI(api *ast.API) {
+	uri := api.URI
+	if uri == "" {
+		uri = o.Location.URI
+	}
+
+	ts := make([]string, 0, len(api.Tags))
+	for _, tag := range api.Tags {
+		ts = append(ts, tag.V())
+	}
+
+	srvs := make([]string, 0, len(api.Servers))
+	for _, srv := range api.Servers {
+		srvs = append(srvs, srv.V())
+	}
+
+	summary := api.Summary.V()
+	if summary == "" {
+		summary = api.Description.V()
+	}
+
+	// 获取 API 的路由地址，如果为空使用 ？ 代替
+	path := "?"
+	if api.Path != nil {
+		path = api.Path.Path.V()
+	}
+
+	o.APIs = append(o.APIs, &API{
+		Location: core.Location{
+			URI:   uri,
+			Range: api.Range,
+		},
+		Method:     api.Method.V(),
+		Path:       path,
+		Tags:       ts,
+		Servers:    srvs,
+		Deprecated: api.Description.V(),
+		Summary:    summary,
+	})
 }
