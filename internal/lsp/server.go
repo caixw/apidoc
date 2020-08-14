@@ -72,27 +72,30 @@ func (s *server) dollarHandler(notify bool, in, out *interface{}) error {
 // window/showMessage
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#window_showMessage
-func (s *server) windowShowMessage(t protocol.MessageType, messag string) error {
-	return s.Notify("window/showMessage", &protocol.ShowMessageParams{
+func (s *server) windowShowMessage(t protocol.MessageType, message string) {
+	err := s.Notify("window/showMessage", &protocol.ShowMessageParams{
 		Type:    t,
-		Message: messag,
+		Message: message,
 	})
+	if err != nil {
+		s.erro.Println(err)
+	}
 }
 
-func (s *server) windowShowInfoMessage(key message.Reference, v ...interface{}) error {
-	return s.windowLogMessage(protocol.MessageTypeInfo, locale.Sprintf(key, v...))
+func (s *server) windowShowInfoMessage(key message.Reference, v ...interface{}) {
+	s.windowShowMessage(protocol.MessageTypeInfo, locale.Sprintf(key, v...))
 }
 
-func (s *server) windowShowLogMessage(key message.Reference, v ...interface{}) error {
-	return s.windowLogMessage(protocol.MessageTypeLog, locale.Sprintf(key, v...))
+func (s *server) windowShowLogMessage(key message.Reference, v ...interface{}) {
+	s.windowShowMessage(protocol.MessageTypeLog, locale.Sprintf(key, v...))
 }
 
-func (s *server) windowShowWarnMessage(key message.Reference, v ...interface{}) error {
-	return s.windowLogMessage(protocol.MessageTypeWarning, locale.Sprintf(key, v...))
+func (s *server) windowShowWarnMessage(key message.Reference, v ...interface{}) {
+	s.windowShowMessage(protocol.MessageTypeWarning, locale.Sprintf(key, v...))
 }
 
-func (s *server) windowShowErrorMessage(key message.Reference, v ...interface{}) error {
-	return s.windowLogMessage(protocol.MessageTypeError, locale.Sprintf(key, v...))
+func (s *server) windowShowErrorMessage(key message.Reference, v ...interface{}) {
+	s.windowShowMessage(protocol.MessageTypeError, locale.Sprintf(key, v...))
 }
 
 // window/showMessageRequest
@@ -133,25 +136,28 @@ func (s *server) windowShowErrorMessageRequest(actions []protocol.MessageActionI
 // window/logMessage
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#window_logMessage
-func (s *server) windowLogMessage(t protocol.MessageType, message string) error {
-	return s.Notify("window/logMessage", &protocol.LogMessageParams{
+func (s *server) windowLogMessage(t protocol.MessageType, message string) {
+	err := s.Notify("window/logMessage", &protocol.LogMessageParams{
 		Type:    t,
 		Message: message,
 	})
+	if err != nil {
+		s.erro.Println(err)
+	}
 }
 
-func (s *server) windowLogInfoMessage(key message.Reference, v ...interface{}) error {
-	return s.windowLogMessage(protocol.MessageTypeInfo, locale.Sprintf(key, v...))
+func (s *server) windowLogInfoMessage(key message.Reference, v ...interface{}) {
+	s.windowLogMessage(protocol.MessageTypeInfo, locale.Sprintf(key, v...))
 }
 
-func (s *server) windowLogLogMessage(key message.Reference, v ...interface{}) error {
-	return s.windowLogMessage(protocol.MessageTypeLog, locale.Sprintf(key, v...))
+func (s *server) windowLogLogMessage(key message.Reference, v ...interface{}) {
+	s.windowLogMessage(protocol.MessageTypeLog, locale.Sprintf(key, v...))
 }
 
-func (s *server) windowLogWarnMessage(key message.Reference, v ...interface{}) error {
-	return s.windowLogMessage(protocol.MessageTypeWarning, locale.Sprintf(key, v...))
+func (s *server) windowLogWarnMessage(key message.Reference, v ...interface{}) {
+	s.windowLogMessage(protocol.MessageTypeWarning, locale.Sprintf(key, v...))
 }
 
-func (s *server) windowLogErrorMessage(key message.Reference, v ...interface{}) error {
-	return s.windowLogMessage(protocol.MessageTypeError, locale.Sprintf(key, v...))
+func (s *server) windowLogErrorMessage(key message.Reference, v ...interface{}) {
+	s.windowLogMessage(protocol.MessageTypeError, locale.Sprintf(key, v...))
 }
