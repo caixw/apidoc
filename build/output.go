@@ -122,7 +122,7 @@ func (o *Output) sanitize() error {
 	if len(o.Path) > 0 {
 		scheme, _ := o.Path.Parse()
 		if scheme != core.SchemeFile && scheme != "" {
-			return core.NewError(locale.ErrInvalidURIScheme).WithField("path")
+			return core.NewError(locale.ErrInvalidURIScheme, scheme).WithField("path")
 		}
 	}
 

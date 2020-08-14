@@ -17,12 +17,12 @@ import (
 func abs(path, wd core.URI) (uri core.URI, err error) {
 	scheme, p := path.Parse()
 	if scheme != "" && scheme != core.SchemeFile {
-		return "", locale.NewError(locale.ErrInvalidURIScheme)
+		return "", locale.NewError(locale.ErrInvalidURIScheme, scheme)
 	}
 
 	scheme, dir := wd.Parse()
 	if scheme != "" && scheme != core.SchemeFile {
-		return "", locale.NewError(locale.ErrInvalidURIScheme)
+		return "", locale.NewError(locale.ErrInvalidURIScheme, scheme)
 	}
 	if !filepath.IsAbs(dir) {
 		if dir, err = filepath.Abs(dir); err != nil {
@@ -55,7 +55,7 @@ func abs(path, wd core.URI) (uri core.URI, err error) {
 func rel(path, wd core.URI) (uri core.URI, err error) {
 	scheme, p := path.Parse()
 	if scheme != "" && scheme != core.SchemeFile {
-		return "", locale.NewError(locale.ErrInvalidURIScheme)
+		return "", locale.NewError(locale.ErrInvalidURIScheme, scheme)
 	}
 	if !filepath.IsAbs(p) {
 		if p, err = filepath.Abs(p); err != nil {
@@ -65,7 +65,7 @@ func rel(path, wd core.URI) (uri core.URI, err error) {
 
 	scheme, dir := wd.Parse()
 	if scheme != "" && scheme != core.SchemeFile {
-		return "", locale.NewError(locale.ErrInvalidURIScheme)
+		return "", locale.NewError(locale.ErrInvalidURIScheme, scheme)
 	}
 	if !filepath.IsAbs(dir) {
 		if dir, err = filepath.Abs(dir); err != nil {

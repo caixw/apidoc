@@ -3,6 +3,7 @@
 package core
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"testing"
 	"unicode/utf8"
 
+	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/issue9/assert"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/simplifiedchinese"
@@ -28,6 +30,32 @@ func TestFileURI(t *testing.T) {
 	a.Equal(uri, "file:///path")
 	file, err = uri.File()
 	a.NotError(err).Equal("/path", file)
+}
+
+func TestURI_json(t *testing.T) {
+	a := assert.New(t)
+
+	obj := &struct {
+		URI URI `json:"uri"`
+	}{}
+
+	data := `{"uri":"file:%2F%2F%2Fpath%2F%E4%B8%AD%E6%96%87.txt"}` // file:///path/中文.txt
+
+	a.NotError(json.Unmarshal([]byte(data), obj))
+	a.Equal(obj.URI, "file:///path/中文.txt")
+
+	output, err := json.Marshal(obj)
+	a.NotError(err).NotNil(output).Equal(string(output), data)
+
+	// URI = ""
+
+	obj.URI = ""
+	data = `{"uri":""}`
+	a.ErrorString(json.Unmarshal([]byte(data), obj), locale.Sprintf(locale.ErrInvalidURI, ""))
+	a.Equal(obj.URI, "")
+
+	output, err = json.Marshal(obj)
+	a.NotError(err).Equal(output, data)
 }
 
 func TestURI_Parse(t *testing.T) {

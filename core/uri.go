@@ -5,6 +5,7 @@ package core
 import (
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -53,12 +54,33 @@ func FileURI(path string) URI {
 	return URI(SchemeFile + separator + path)
 }
 
+// MarshalJSON 实现对非 ascii 字符的编码
+func (uri URI) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + url.PathEscape(uri.String()) + `"`), nil
+}
+
+// UnmarshalJSON 实现对非 ascii 字符的解码
+func (uri *URI) UnmarshalJSON(v []byte) error {
+	if len(v) <= 2 {
+		return locale.NewError(locale.ErrInvalidURI, string(v))
+	}
+
+	str, err := url.PathUnescape(string(v[1 : len(v)-1]))
+	if err != nil {
+		return err
+	}
+
+	*uri = URI(str)
+	return nil
+}
+
 // File 返回 file:// 协议关联的文件路径
 func (uri URI) File() (string, error) {
-	if scheme, path := uri.Parse(); scheme == SchemeFile || scheme == "" {
+	scheme, path := uri.Parse()
+	if scheme == SchemeFile || scheme == "" {
 		return path, nil
 	}
-	return "", locale.NewError(locale.ErrInvalidURIScheme)
+	return "", locale.NewError(locale.ErrInvalidURIScheme, scheme)
 }
 
 func (uri URI) String() string {
@@ -103,7 +125,7 @@ func (uri URI) Exists() (bool, error) {
 	case SchemeHTTP, SchemeHTTPS:
 		return remoteFileIsExists(string(uri))
 	default:
-		return false, locale.NewError(locale.ErrInvalidURIScheme)
+		return false, locale.NewError(locale.ErrInvalidURIScheme, scheme)
 	}
 }
 
@@ -118,16 +140,17 @@ func (uri URI) ReadAll(enc encoding.Encoding) ([]byte, error) {
 	case SchemeHTTP, SchemeHTTPS:
 		return readRemoteFile(string(uri), enc)
 	default:
-		return nil, locale.NewError(locale.ErrInvalidURIScheme)
+		return nil, locale.NewError(locale.ErrInvalidURIScheme, scheme)
 	}
 }
 
 // WriteAll 写入内容至 uri
 func (uri URI) WriteAll(data []byte) error {
-	if scheme, path := uri.Parse(); scheme == SchemeFile || scheme == "" {
+	scheme, path := uri.Parse()
+	if scheme == SchemeFile || scheme == "" {
 		return ioutil.WriteFile(path, data, os.ModePerm)
 	}
-	return locale.NewError(locale.ErrInvalidURIScheme)
+	return locale.NewError(locale.ErrInvalidURIScheme, scheme)
 }
 
 // Parse 分析 uri，获取其各个部分的内容

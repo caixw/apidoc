@@ -49,7 +49,7 @@ func LoadConfig(wd core.URI) (*Config, error) {
 	// 如果远程配置文件中的目录指向本地，则用户执行相关操作时，
 	// 会映射他本地的系统上，这未必是用户想要的结果，且对用户数据不安全。
 	if scheme, _ := wd.Parse(); scheme != "" && scheme != core.SchemeFile {
-		return nil, locale.NewError(locale.ErrInvalidURIScheme)
+		return nil, locale.NewError(locale.ErrInvalidURIScheme, scheme)
 	}
 
 	for _, filename := range allowConfigFilenames {

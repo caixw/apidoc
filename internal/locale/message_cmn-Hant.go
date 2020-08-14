@@ -269,7 +269,8 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	ErrReadRemoteFile:            "讀取遠程文件 %s 時返回狀態碼 %d",
 	ErrServerNotInitialized:      "服務未初始化",
 	ErrInvalidLSPState:           "無效的 LSP 狀態",
-	ErrInvalidURIScheme:          "無效的 URI 協議",
+	ErrInvalidURIScheme:          "無效的 URI 協議：%s",
+	ErrInvalidURI:                "無效的 URI：%s",
 	ErrFileNotFound:              "未找到文件 %s",
 
 	// logs

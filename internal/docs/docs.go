@@ -72,7 +72,7 @@ func Handler(folder core.URI, stylesheet bool) http.Handler {
 	case core.SchemeHTTP, core.SchemeHTTPS:
 		return remoteHandler(folder, stylesheet)
 	default:
-		panic(locale.NewError(locale.ErrInvalidURIScheme))
+		panic(locale.NewError(locale.ErrInvalidURIScheme, scheme))
 	}
 }
 

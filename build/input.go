@@ -54,7 +54,7 @@ func (o *Input) sanitize() error {
 	}
 
 	if scheme, _ := o.Dir.Parse(); scheme != "" && scheme != core.SchemeFile {
-		return core.NewError(locale.ErrInvalidURIScheme).WithField("dir")
+		return core.NewError(locale.ErrInvalidURIScheme, scheme).WithField("dir")
 	}
 
 	if len(o.Lang) == 0 {
