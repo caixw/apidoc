@@ -20,9 +20,12 @@ import (
 const Version = "3.16.0"
 
 // Serve 执行 LSP 服务
+//
+// t 表示服务的类型，可以是 stdio、ipc、udp、tcp 和 unix。
 func Serve(header bool, t string, addr string, infolog, errlog *log.Logger) error {
 	switch strings.ToLower(t) {
 	case "pipe":
+		// TODO
 	case "stdio":
 		return serveStdio(header, infolog, errlog)
 	case "ipc":

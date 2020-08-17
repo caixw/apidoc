@@ -105,7 +105,7 @@ func (s *server) initialized(bool, *protocol.InitializedParams, *interface{}) er
 	data, _ = json.Marshal(s.serverResult)
 	s.windowLogLogMessage(locale.LSPServerResult, string(data))
 
-	if s.clientParams.Capabilities.Workspace.WorkspaceFolders {
+	if s.clientParams.Capabilities.Workspace != nil && s.clientParams.Capabilities.Workspace.WorkspaceFolders {
 		return s.workspaceWorkspaceFolders()
 	}
 	return nil

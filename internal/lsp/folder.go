@@ -40,13 +40,14 @@ func (f *folder) close() {
 }
 
 func (f *folder) messageHandler(msg *core.Message) {
+	err, ok := msg.Message.(*core.Error)
+	if !ok {
+		f.srv.erro.Println(fmt.Sprintf("获得了非 core.Error 错误 %#v", msg.Message))
+		return
+	}
+
 	switch msg.Type {
 	case core.Erro:
-		err, ok := msg.Message.(*core.Error)
-		if !ok {
-			f.srv.erro.Println(fmt.Sprintf("获得了非 core.Error 错误 %#v", msg.Message))
-		}
-
 		cnt := sliceutil.Count(f.errors, func(i int) bool {
 			return f.errors[i].Location.Equal(err.Location)
 		})
@@ -54,11 +55,6 @@ func (f *folder) messageHandler(msg *core.Message) {
 			f.errors = append(f.errors, err)
 		}
 	case core.Warn:
-		err, ok := msg.Message.(*core.Error)
-		if !ok {
-			f.srv.erro.Println(fmt.Sprintf("获得了非 core.Error 错误 %#v", msg.Message))
-		}
-
 		cnt := sliceutil.Count(f.warns, func(i int) bool {
 			return f.warns[i].Location.Equal(err.Location)
 		})
