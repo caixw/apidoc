@@ -13,27 +13,6 @@ const (
 	MessageTypeLog                            // A log message.
 )
 
-// ShowMessageParams window/showMessage 的参数
-type ShowMessageParams struct {
-	// The message type. See {@link MessageType}.
-	Type MessageType `json:"type"`
-
-	// The actual message.
-	Message string `json:"message"`
-}
-
-// ShowMessageRequestParams window/showMessageRequest 传递的参数
-type ShowMessageRequestParams struct {
-	// The message type. See {@link MessageType}
-	Type MessageType `json:"type"`
-
-	// The actual message
-	Message string `json:"message"`
-
-	// The message action items to present.
-	Actions []MessageActionItem `json:"actions,omitempty"`
-}
-
 // LogMessageParams window/logMessage 传递的参数
 type LogMessageParams struct {
 	// The message type. See {@link MessageType}
@@ -41,10 +20,4 @@ type LogMessageParams struct {
 
 	// The actual message
 	Message string `json:"message"`
-}
-
-// MessageActionItem window/showMessageRequest 传递的按钮描述内容
-type MessageActionItem struct {
-	// A short title like 'Retry', 'Open Log' etc.
-	Title string `json:"title"`
 }
