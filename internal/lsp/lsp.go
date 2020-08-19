@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/issue9/jsonrpc"
 
@@ -21,19 +22,15 @@ const Version = "3.16.0"
 
 // Serve 执行 LSP 服务
 //
-// t 表示服务的类型，可以是 stdio、ipc、udp、tcp 和 unix。
-func Serve(header bool, t string, addr string, infolog, errlog *log.Logger) error {
+// t 表示服务的类型，可以是 stdio、udp、tcp 和 unix。
+func Serve(header bool, t string, addr string, timeout time.Duration, infolog, errlog *log.Logger) error {
 	switch strings.ToLower(t) {
-	case "pipe":
-		// TODO
 	case "stdio":
 		return serveStdio(header, infolog, errlog)
-	case "ipc":
-		return serveStdio(header, infolog, errlog)
 	case "udp":
-		return serveUDP(header, addr, infolog, errlog)
+		return serveUDP(header, addr, timeout, infolog, errlog)
 	case "tcp", "unix":
-		return serveTCP(header, t, addr, infolog, errlog)
+		return serveTCP(header, t, addr, timeout, infolog, errlog)
 	}
 
 	return core.NewError(locale.ErrInvalidValue)
@@ -43,22 +40,16 @@ func serveStdio(header bool, infolog, errlog *log.Logger) error {
 	return serve(jsonrpc.NewStreamTransport(header, os.Stdin, os.Stdout, nil), infolog, errlog)
 }
 
-func serveUDP(header bool, addr string, infolog, errlog *log.Logger) error {
-	udpAddr, err := net.ResolveUDPAddr("udp", addr)
+func serveUDP(header bool, addr string, timeout time.Duration, infolog, errlog *log.Logger) error {
+	t, err := jsonrpc.NewUDPServerTransport(header, addr, timeout)
 	if err != nil {
 		return err
 	}
-
-	conn, err := net.ListenUDP("udp", udpAddr)
-	if err != nil {
-		return err
-	}
-
-	return serve(jsonrpc.NewSocketTransport(header, conn), infolog, errlog)
+	return serve(t, infolog, errlog)
 }
 
 // t 可以是 tcp 和 unix
-func serveTCP(header bool, t string, addr string, infolog, errlog *log.Logger) error {
+func serveTCP(header bool, t string, addr string, timeout time.Duration, infolog, errlog *log.Logger) error {
 	l, err := net.Listen(t, addr)
 	if err != nil {
 		return err
@@ -70,7 +61,7 @@ func serveTCP(header bool, t string, addr string, infolog, errlog *log.Logger) e
 			errlog.Println(err)
 			continue
 		}
-		return serve(jsonrpc.NewSocketTransport(header, conn), infolog, errlog)
+		return serve(jsonrpc.NewSocketTransport(header, conn, timeout), infolog, errlog)
 	}
 }
 

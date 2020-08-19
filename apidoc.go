@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"regexp"
+	"time"
 
 	"golang.org/x/text/language"
 
@@ -110,9 +111,11 @@ func Unpack(buffer string) (string, error) {
 // ServeLSP 提供 language server protocol 服务
 //
 // header 表示传递内容是否带报头；
-// t 表示允许连接的类型，目前可以是 tcp、udp、stdio 和 ipc
-func ServeLSP(header bool, t, addr string, infolog, errlog *log.Logger) error {
-	return lsp.Serve(header, t, addr, infolog, errlog)
+// t 表示允许连接的类型，目前可以是 tcp、udp、stdio 和 unix；
+// timeout 表示服务端每次读取客户端时的超时时间，如果为 0 表示不会超时。
+// 超时并不会出错，而是重新开始读取数据，防止被读取一直阻塞，无法结束进程；
+func ServeLSP(header bool, t, addr string, timeout time.Duration, infolog, errlog *log.Logger) error {
+	return lsp.Serve(header, t, addr, timeout, infolog, errlog)
 }
 
 // Static 为 dir 指向的路径内容搭建一个静态文件服务

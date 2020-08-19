@@ -53,9 +53,10 @@ mock 服務會根據接口定義檢測用戶提交的數據是否合法，並生
 	FlagStaticContentTypeUsage: "指定 static 的 content-type 值，不指定，則根據擴展名自動獲取",
 	FlagStaticURLUsage:         "指定 static 服務中文檔的輸出地址",
 	FlagStaticPathUsage:        "指定 static 服務 `URI` 格式的文檔路徑，如果未指定，則不生成相關的文檔內容。",
-	FlagLSPPortUsage:           "指定 LSP 服務的端口號",
-	FlagLSPModeUsage:           "指定 LSP 的運行方式，可以是 stdio、tcp、unix、ipc 和 udp",
-	FlagLSPHeaderUsage:         "指定 LSP 傳遞內容是否帶報頭信息",
+	FlagLSPPortUsage:           "指定 LSP 服務的端口號。",
+	FlagLSPModeUsage:           "指定 LSP 的運行方式，可以是 stdio、tcp、unix 和 udp。",
+	FlagLSPHeaderUsage:         "指定 LSP 傳遞內容是否帶報頭信息。",
+	FlagLSPTimeoutUsage:        "指定 LSP 每次讀取客戶端數據的超時時間，超時不會觸發錯誤，只會再次讀取。",
 	FlagVersionKindUsage:       "只顯示該類型的版本號，可以是 apidoc、doc、lsp、openapi 和 all",
 
 	VersionInCompatible: "當前程序與配置文件中指定的版本號不兼容",
