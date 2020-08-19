@@ -110,11 +110,6 @@ func (s *server) openFolder(f protocol.WorkspaceFolder) (ff *folder) {
 	return ff
 }
 
-func (s *server) printErr(err error) {
-	s.erro.Println(err)
-	s.windowLogMessage(protocol.MessageTypeError, err.Error())
-}
-
 func (s *server) findFolder(uri core.URI) *folder {
 	s.workspaceMux.RLock()
 	defer s.workspaceMux.RUnlock()

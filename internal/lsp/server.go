@@ -82,6 +82,11 @@ func (s *server) windowLogMessage(t protocol.MessageType, message string) {
 	}
 }
 
+func (s *server) printErr(err error) {
+	s.erro.Println(err)
+	s.windowLogMessage(protocol.MessageTypeError, err.Error())
+}
+
 func (s *server) windowLogInfoMessage(key message.Reference, v ...interface{}) {
 	s.windowLogMessage(protocol.MessageTypeInfo, locale.Sprintf(key, v...))
 }

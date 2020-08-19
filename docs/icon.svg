@@ -5,7 +5,7 @@
     <desc>https://apidoc.tools LOGO</desc>
     <desc>这是一只诞生于羊年的小工具</desc>
 
-    <circle cx="256" cy="256" r="248" fill-opacity="0" stroke-width="16" />
-    <circle cx="530" cy="385" r="300" fill-opacity="0" stroke-width="16" />
-    <circle cx="-15" cy="385" r="300" fill-opacity="0" stroke-width="16" />
+    <circle cx="256" cy="256" r="240" fill-opacity="0" stroke-width="32" />
+    <circle cx="530" cy="385" r="300" fill-opacity="0" stroke-width="32" />
+    <circle cx="-15" cy="385" r="300" fill-opacity="0" stroke-width="32" />
 </svg>
