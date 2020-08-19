@@ -8,13 +8,6 @@ import (
 	"github.com/caixw/apidoc/v7/core"
 )
 
-// 表示 InitializeParams.Trace 的枚举值
-const (
-	InitializeTraceOff      = "off"
-	InitializeTraceMessages = "messages"
-	InitializeTraceVerbose  = "verbose"
-)
-
 // InitializationOptions 用户需要提交的自定义初始化参数
 type InitializationOptions struct {
 	// 客户端的本地化 ID
@@ -48,9 +41,6 @@ type InitializeParams struct {
 
 	// The capabilities provided by the client (editor or tool)
 	Capabilities ClientCapabilities `json:"capabilities"`
-
-	// The initial trace setting. If omitted trace is disabled ('off').
-	Trace string `json:"trace,omitempty"`
 
 	// The workspace folders configured in the client when the server starts.
 	// This property is only available if the client supports workspace folders.

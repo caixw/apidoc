@@ -57,8 +57,7 @@ func TestServe_udp(t *testing.T) {
 		return nil
 	})
 
-	a.Empty(erro.Bytes()).
-		Empty(info.String())
+	a.Empty(erro.String())
 	<-initialize
 	initialized := make(chan struct{}, 1)
 	client.Send("initialized", &protocol.InitializedParams{}, func(result *interface{}) error {
@@ -114,12 +113,10 @@ func TestServe_tcp(t *testing.T) {
 		return nil
 	})
 
-	a.Empty(erro.Bytes()).
-		Empty(info.String())
+	a.Empty(erro.String())
 	<-initialize
 	initialized := make(chan struct{}, 1)
 	client.Send("initialized", &protocol.InitializedParams{}, func(result *interface{}) error {
-		a.Empty(erro.Bytes())
 		initialized <- struct{}{}
 		return nil
 	})
