@@ -54,11 +54,6 @@ func FileURI(path string) URI {
 	return URI(SchemeFile + separator + path)
 }
 
-// MarshalJSON 实现对非 ascii 字符的编码
-func (uri URI) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + url.PathEscape(uri.String()) + `"`), nil
-}
-
 // UnmarshalJSON 实现对非 ascii 字符的解码
 func (uri *URI) UnmarshalJSON(v []byte) error {
 	if len(v) <= 2 {

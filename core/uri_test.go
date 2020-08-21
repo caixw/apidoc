@@ -44,18 +44,12 @@ func TestURI_json(t *testing.T) {
 	a.NotError(json.Unmarshal([]byte(data), obj))
 	a.Equal(obj.URI, "file:///path/中文.txt")
 
-	output, err := json.Marshal(obj)
-	a.NotError(err).NotNil(output).Equal(string(output), data)
-
 	// URI = ""
 
 	obj.URI = ""
 	data = `{"uri":""}`
 	a.ErrorString(json.Unmarshal([]byte(data), obj), locale.Sprintf(locale.ErrInvalidURI, ""))
 	a.Equal(obj.URI, "")
-
-	output, err = json.Marshal(obj)
-	a.NotError(err).Equal(output, data)
 }
 
 func TestURI_Parse(t *testing.T) {
