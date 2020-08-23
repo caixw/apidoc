@@ -3,6 +3,7 @@
 package ast
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -385,4 +386,138 @@ func TestAPI_sanitizeTags(t *testing.T) {
 	api.sanitizeTags(p)
 	rslt.Handler.Stop()
 	a.Empty(rslt.Warns)
+}
+
+func TestAPI_checkDup(t *testing.T) {
+	a := assert.New(t)
+
+	doc := &APIDoc{}
+	api := &API{doc: doc}
+	p, rslt := newParser(a, "", "")
+	api.checkDup(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
+
+	doc = &APIDoc{
+		APIs: []*API{
+			{
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+			},
+		},
+	}
+	api = &API{
+		doc:    doc,
+		Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+	}
+	p, rslt = newParser(a, "", "")
+	api.checkDup(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
+
+	doc = &APIDoc{
+		APIs: []*API{
+			{
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+			},
+			{
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+			},
+		},
+	}
+	api = &API{
+		doc:    doc,
+		Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+	}
+	p, rslt = newParser(a, "", "")
+	api.checkDup(p)
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
+
+	doc.APIs[0].Servers = []*ServerValue{
+		{Content: Content{Value: "s1"}},
+		{Content: Content{Value: "s2"}},
+	}
+	doc.APIs[1].Servers = []*ServerValue{
+		{Content: Content{Value: "s1"}},
+	}
+	api.Servers = []*ServerValue{
+		{Content: Content{Value: "s2"}},
+	}
+	p, rslt = newParser(a, "", "")
+	api.checkDup(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
+
+	api.Servers = []*ServerValue{
+		{Content: Content{Value: "s1"}},
+	}
+	p, rslt = newParser(a, "", "")
+	api.checkDup(p)
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
+
+	// 有空的 path
+	doc = &APIDoc{
+		APIs: []*API{
+			{
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+				Path:   &Path{},
+			},
+			{
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+			},
+		},
+	}
+	api = &API{
+		doc:    doc,
+		Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+	}
+	p, rslt = newParser(a, "", "")
+	api.checkDup(p)
+	rslt.Handler.Stop()
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
+
+	// 有非空的 path
+	doc = &APIDoc{
+		APIs: []*API{
+			{
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+				Path:   &Path{Path: &Attribute{Value: xmlenc.String{Value: "/path"}}},
+			},
+			{
+				Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+			},
+		},
+	}
+	api = &API{
+		doc:    doc,
+		Method: &MethodAttribute{Value: xmlenc.String{Value: http.MethodDelete}},
+	}
+	p, rslt = newParser(a, "", "")
+	api.checkDup(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
+
+	doc.APIs[0].Servers = []*ServerValue{
+		{Content: Content{Value: "s1"}},
+		{Content: Content{Value: "s2"}},
+	}
+	doc.APIs[1].Servers = []*ServerValue{
+		{Content: Content{Value: "s1"}},
+	}
+	api.Servers = []*ServerValue{
+		{Content: Content{Value: "s2"}},
+	}
+	p, rslt = newParser(a, "", "")
+	api.checkDup(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
+
+	api.Servers = []*ServerValue{
+		{Content: Content{Value: "s1"}},
+	}
+	p, rslt = newParser(a, "", "")
+	api.checkDup(p)
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors).Empty(rslt.Warns)
 }

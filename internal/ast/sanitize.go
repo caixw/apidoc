@@ -327,6 +327,7 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 	if api.doc == nil {
 		panic("api.doc 未获取正确的值")
 	}
+	api.checkDup(p)
 
 	apiURI := api.URI
 	if apiURI == "" {
@@ -391,5 +392,48 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 			},
 			Target: srv,
 		})
+	}
+}
+
+// 检测当前 api 是否与 apidoc.APIs 中存在相同的值
+func (api *API) checkDup(p *xmlenc.Parser) {
+	size := sliceutil.Count(api.doc.APIs, func(i int) bool {
+		ii := api.doc.APIs[i]
+
+		if api.Method.V() != ii.Method.V() {
+			return false
+		}
+
+		p := ""
+		if api.Path != nil {
+			p = api.Path.Path.V()
+		}
+		iip := ""
+		if ii.Path != nil {
+			iip = ii.Path.Path.V()
+		}
+		if p != iip {
+			return false
+		}
+
+		// 默认服务器
+		if len(api.Servers) == 0 && len(ii.Servers) == 0 {
+			return true
+		}
+
+		// 判断是否拥有相同的 server 字段
+		for _, srv := range api.Servers {
+			s := sliceutil.Count(ii.Servers, func(i int) bool { return srv.V() == ii.Servers[i].V() })
+			if s > 0 {
+				return true
+			}
+		}
+
+		return false
+	})
+
+	if size > 1 {
+		loc := core.Location{URI: api.URI, Range: api.Range}
+		p.Error(loc.NewError(locale.ErrDuplicateValue))
 	}
 }

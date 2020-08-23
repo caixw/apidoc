@@ -14,6 +14,10 @@
 - 添加自定义通知 apidoc/outline 用于向客户端展示文档的基本列表；
 - 添加自定义服务 apidoc/refreshOutline 用于客户端主动请求刷新文档列表；
 
+### Fixed
+
+- 修正同一个服务可以有多个相同接口的 BUG；
+
 ## [v7.1.0]
 
 ### Added
