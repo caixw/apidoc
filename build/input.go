@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/issue9/sliceutil"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
 
@@ -17,24 +18,11 @@ import (
 
 // Input 指定输入内容的相关信息。
 type Input struct {
-	// 输入的目标语言
-	//
-	// 取值为 lang.Language.Name
-	Lang string `yaml:"lang"`
-
-	// 源代码目录
-	Dir core.URI `yaml:"dir"`
-
-	// 需要扫描的文件扩展名
-	//
-	// 若未指定，则根据 Lang 选项获取其默认的扩展名作为过滤条件。
-	Exts []string `yaml:"exts,omitempty"`
-
-	// 是否查找 Dir 的子目录
-	Recursive bool `yaml:"recursive,omitempty"`
-
-	// 源文件的编码，默认为 UTF-8
-	Encoding string `yaml:"encoding,omitempty"`
+	Lang      string   `yaml:"lang"`                // 输入的目标语言，值为 internal/lang 中的 Language.ID
+	Dir       core.URI `yaml:"dir"`                 // 源代码目录
+	Exts      []string `yaml:"exts,omitempty"`      // 需要扫描的文件扩展名，为空则表示采用默认规则。
+	Recursive bool     `yaml:"recursive,omitempty"` // 是否查找 Dir 的子目录
+	Encoding  string   `yaml:"encoding,omitempty"`  // 源文件的编码，默认为 UTF-8
 
 	paths    []core.URI        // 根据 Dir、Exts 和 Recursive 生成
 	encoding encoding.Encoding // 根据 Encoding 生成
@@ -114,12 +102,7 @@ func recursivePath(o *Input) ([]core.URI, error) {
 	}
 
 	extIsEnabled := func(ext string) bool {
-		for _, v := range o.Exts {
-			if ext == v {
-				return true
-			}
-		}
-		return false
+		return sliceutil.Count(o.Exts, func(i int) bool { return o.Exts[i] == ext }) > 0
 	}
 
 	walk := func(path string, fi os.FileInfo, err error) error {
