@@ -58,7 +58,7 @@ func TestAPIDoc_Parse(t *testing.T) {
 	rslt = messagetest.NewMessageHandler()
 	d.Parse(rslt.Handler, core.Block{Data: []byte("</api>")})
 	rslt.Handler.Stop()
-	a.NotEmpty(rslt.Errors)
+	a.Empty(rslt.Errors)
 
 	// 多个 apidoc 标签
 	rslt = messagetest.NewMessageHandler()
@@ -109,6 +109,12 @@ func TestGetTagName(t *testing.T) {
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
+	p, rslt = newParser(a, "<!-- xx -->   <root		attr=\"v\">xx</root>", "")
+	root = getTagName(p)
+	a.Equal(root, "root")
+	rslt.Handler.Stop()
+	a.Empty(rslt.Errors)
+
 	// 无效格式
 	p, rslt = newParser(a, "<!-- xx   <root>xx</root>", "")
 	root = getTagName(p)
@@ -121,7 +127,7 @@ func TestGetTagName(t *testing.T) {
 	root = getTagName(p)
 	a.Equal(root, "")
 	rslt.Handler.Stop()
-	a.NotEmpty(rslt.Errors)
+	a.Empty(rslt.Errors)
 
 	// io.EOF
 	p, rslt = newParser(a, "<!-- xx -->", "")

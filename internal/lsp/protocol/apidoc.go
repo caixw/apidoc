@@ -115,7 +115,7 @@ func (o *APIDocOutline) appendAPI(api *ast.API) {
 		summary = api.Description.V()
 	}
 
-	// 获取 API 的路由地址，如果为空使用 ？ 代替
+	// 获取 API 的路由地址，如果为空使用 ？代替
 	path := "?"
 	if api.Path != nil {
 		path = api.Path.Path.V()

@@ -3,6 +3,7 @@
 package ast
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"sort"
@@ -33,7 +34,7 @@ func (doc *APIDoc) ParseBlocks(h *core.MessageHandler, g func(chan core.Block)) 
 
 // Parse 将注释块的内容添加到当前文档
 func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
-	if len(b.Data) < minSize {
+	if !isValid(b) {
 		return
 	}
 
@@ -73,11 +74,22 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 	doc.sortAPIs()
 }
 
+// 简单预判是否是一个合规的 apidoc 内容
+func isValid(b core.Block) bool {
+	bs := bytes.TrimSpace(b.Data)
+	if len(bs) < minSize {
+		return false
+	}
+
+	// 去除空格之后，必须保证以 < 开头，且不能以 </ 开关。
+	return bs[0] == '<' && bs[1] != '/'
+}
+
 // 获取根标签的名称
 func getTagName(p *xmlenc.Parser) string {
 	start := p.Current()
 	for {
-		t, r, err := p.Token()
+		t, _, err := p.Token()
 		if errors.Is(err, io.EOF) {
 			return ""
 		} else if err != nil {
@@ -89,8 +101,7 @@ func getTagName(p *xmlenc.Parser) string {
 		case *xmlenc.StartElement:
 			p.Move(start)
 			return elem.Name.Local.Value
-		case *xmlenc.EndElement, *xmlenc.CData:
-			p.Error(p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
+		case *xmlenc.EndElement, *xmlenc.CData: // 表示是一个非法的 XML，忽略！
 			return ""
 		default: // 其它标签忽略
 		}
