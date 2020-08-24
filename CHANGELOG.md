@@ -17,6 +17,8 @@
 ### Fixed
 
 - 修正同一个服务可以有多个相同接口的 BUG；
+- 当用户第一次打开项目时，不会发送错误通知给用户的错误；
+- 修正 textDocument/publishDiagnostics 的行为错误；
 
 ## [v7.1.0]
 

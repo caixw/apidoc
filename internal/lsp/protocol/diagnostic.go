@@ -60,11 +60,6 @@ type PublishDiagnosticsParams struct {
 	// The URI for which diagnostic information is reported.
 	URI core.URI `json:"uri"`
 
-	// Optional the version number of the document the diagnostics are published for.
-	//
-	// @since 3.15.0
-	Version int `json:"version,omitempty"`
-
 	// An array of diagnostic information items.
 	Diagnostics []Diagnostic `json:"diagnostics"`
 }
@@ -118,8 +113,31 @@ var typeTagsMap = map[core.ErrorType]DiagnosticTag{
 	core.ErrorTypeUnused:     DiagnosticTagUnnecessary,
 }
 
-// BuildDiagnostic 根据 core.Error 生成 Diagnostic 数据
-func BuildDiagnostic(err *core.Error, severity DiagnosticSeverity) Diagnostic {
+// NewPublishDiagnosticsParams 声明空的 PublishDiagnosticsParams 对象
+func NewPublishDiagnosticsParams(uri core.URI) *PublishDiagnosticsParams {
+	return &PublishDiagnosticsParams{
+		URI:         uri,
+		Diagnostics: []Diagnostic{},
+	}
+}
+
+// AppendDiagnostic 将 core.Message 添加至诊断数据
+func (p *PublishDiagnosticsParams) AppendDiagnostic(err *core.Error, msgType core.MessageType) {
+	switch msgType {
+	case core.Erro:
+		p.Diagnostics = append(p.Diagnostics, buildDiagnostic(err, DiagnosticSeverityError))
+	case core.Warn:
+		p.Diagnostics = append(p.Diagnostics, buildDiagnostic(err, DiagnosticSeverityWarning))
+	case core.Info:
+		p.Diagnostics = append(p.Diagnostics, buildDiagnostic(err, DiagnosticSeverityInformation))
+	case core.Succ:
+		return
+	default:
+		panic("unreached")
+	}
+}
+
+func buildDiagnostic(err *core.Error, severity DiagnosticSeverity) Diagnostic {
 	var tags []DiagnosticTag
 	if len(err.Types) > 0 {
 		for _, typ := range err.Types {
@@ -129,10 +147,16 @@ func BuildDiagnostic(err *core.Error, severity DiagnosticSeverity) Diagnostic {
 		}
 	}
 
+	msg := err.Error()
+	if err.Err != nil {
+		msg = err.Err.Error()
+	}
+
 	d := Diagnostic{
 		Range:    err.Location.Range,
-		Message:  err.Err.Error(),
+		Message:  msg,
 		Severity: severity,
+		Source:   core.Name,
 	}
 	if len(tags) > 0 {
 		d.Tags = tags

@@ -31,7 +31,7 @@ type Hover struct {
 
 	// An optional range is a range inside a text document
 	// that is used to visualize a hover, e.g. by changing the background color.
-	Range core.Range `json:"range,omitempty"`
+	Range core.Range `json:"range"`
 }
 
 // MarshalJSON 允许在 hover 为空值是返回 null

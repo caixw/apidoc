@@ -29,13 +29,20 @@ type folder struct {
 	parsedMux sync.RWMutex
 
 	// 保存着错误和警告的信息
-	errors, warns []*core.Error
+	diagnostics map[core.URI]*protocol.PublishDiagnosticsParams
 }
 
 func (f *folder) close() {
 	f.srv.windowLogLogMessage(locale.CloseLSPFolder, f.Name)
-	f.errors = f.errors[:0]
-	f.warns = f.warns[:0]
+
+	// 清空所有的诊断信息
+	for uri := range f.diagnostics {
+		p := protocol.NewPublishDiagnosticsParams(uri)
+		if err := f.srv.Notify("textDocument/publishDiagnostics", p); err != nil {
+			f.srv.erro.Println(err)
+		}
+	}
+
 	f.h.Stop()
 }
 
@@ -46,25 +53,18 @@ func (f *folder) messageHandler(msg *core.Message) {
 		return
 	}
 
-	switch msg.Type {
-	case core.Erro:
-		cnt := sliceutil.Count(f.errors, func(i int) bool {
-			return f.errors[i].Location.Equal(err.Location)
+	if p, found := f.diagnostics[err.Location.URI]; found && p != nil {
+		cnt := sliceutil.Count(p.Diagnostics, func(i int) bool {
+			return p.Diagnostics[i].Range.Equal(err.Location.Range)
 		})
 		if cnt == 0 {
-			f.errors = append(f.errors, err)
+			p.AppendDiagnostic(err, msg.Type)
 		}
-	case core.Warn:
-		cnt := sliceutil.Count(f.warns, func(i int) bool {
-			return f.warns[i].Location.Equal(err.Location)
-		})
-		if cnt == 0 {
-			f.warns = append(f.warns, err)
-		}
-	case core.Succ, core.Info: // 仅处理错误和警告
-	default:
-		panic("unreached")
+		return
 	}
+	p := protocol.NewPublishDiagnosticsParams(err.Location.URI)
+	p.AppendDiagnostic(err, msg.Type)
+	f.diagnostics[err.Location.URI] = p
 }
 
 func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) {
@@ -82,6 +82,7 @@ func (s *server) openFolder(f protocol.WorkspaceFolder) (ff *folder) {
 		WorkspaceFolder: f,
 		doc:             &ast.APIDoc{},
 		srv:             s,
+		diagnostics:     make(map[core.URI]*protocol.PublishDiagnosticsParams, 5),
 	}
 	ff.h = core.NewMessageHandler(ff.messageHandler)
 
@@ -103,7 +104,11 @@ func (s *server) openFolder(f protocol.WorkspaceFolder) (ff *folder) {
 		build.ParseInputs(blocks, ff.h, ff.cfg.Inputs...)
 	})
 
-	if err := s.apidocOutline(ff); err != nil {
+	if err = s.apidocOutline(ff); err != nil {
+		s.printErr(err)
+	}
+
+	if err = s.textDocumentPublishDiagnostics(ff); err != nil {
 		s.printErr(err)
 	}
 

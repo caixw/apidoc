@@ -233,7 +233,7 @@ type CompletionItem struct {
 	Detail string `json:"detail,omitempty"`
 
 	// A human-readable string that represents a doc-comment.
-	Documentation MarkupContent `json:"documentation,omitempty"`
+	Documentation *MarkupContent `json:"documentation,omitempty"`
 
 	// Select this item when showing.
 	//

@@ -26,26 +26,23 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 	f.parsedMux.Lock()
 	defer f.parsedMux.Unlock()
 
-	// 清除相关的警告和错误信息
-	size := sliceutil.QuickDelete(f.warns, func(i int) bool {
-		return f.warns[i].Location.URI == in.TextDocument.URI
-	})
-	f.warns = f.warns[:size]
-	size = sliceutil.QuickDelete(f.errors, func(i int) bool {
-		return f.errors[i].Location.URI == in.TextDocument.URI
-	})
-	f.errors = f.errors[:size]
-
 	if !deleteURI(f.doc, in.TextDocument.URI) {
 		return nil
+	}
+
+	// 清空所有的诊断信息
+	for uri := range f.diagnostics {
+		p := protocol.NewPublishDiagnosticsParams(uri)
+		if err := s.Notify("textDocument/publishDiagnostics", p); err != nil {
+			s.erro.Println(err)
+		}
 	}
 
 	for _, blk := range in.Blocks() {
 		f.parseBlock(blk)
 	}
 
-	f.srv.textDocumentPublishDiagnostics(f, in.TextDocument.URI)
-	return nil
+	return f.srv.textDocumentPublishDiagnostics(f)
 }
 
 func (f *folder) parseBlock(block core.Block) {
@@ -92,29 +89,14 @@ func deleteURI(doc *ast.APIDoc, uri core.URI) (deleted bool) {
 // textDocument/publishDiagnostics
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_publishDiagnostics
-func (s *server) textDocumentPublishDiagnostics(f *folder, uri core.URI) error {
-	if s.clientParams.Capabilities.TextDocument.PublishDiagnostics.RelatedInformation == false {
-		return nil
-	}
-
-	p := &protocol.PublishDiagnosticsParams{
-		URI:         uri,
-		Diagnostics: make([]protocol.Diagnostic, 0, len(f.errors)+len(f.warns)),
-	}
-
-	for _, err := range f.errors {
-		if err.Location.URI == uri {
-			p.Diagnostics = append(p.Diagnostics, protocol.BuildDiagnostic(err, protocol.DiagnosticSeverityError))
+func (s *server) textDocumentPublishDiagnostics(f *folder) error {
+	for _, p := range f.diagnostics {
+		if err := s.Notify("textDocument/publishDiagnostics", p); err != nil {
+			s.erro.Println(err)
 		}
 	}
 
-	for _, err := range f.warns {
-		if err.Location.URI == uri {
-			p.Diagnostics = append(p.Diagnostics, protocol.BuildDiagnostic(err, protocol.DiagnosticSeverityWarning))
-		}
-	}
-
-	return s.Notify("textDocument/publishDiagnostics", p)
+	return nil
 }
 
 // textDocument/foldingRange
