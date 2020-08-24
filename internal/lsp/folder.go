@@ -34,15 +34,7 @@ type folder struct {
 
 func (f *folder) close() {
 	f.srv.windowLogLogMessage(locale.CloseLSPFolder, f.Name)
-
-	// 清空所有的诊断信息
-	for uri := range f.diagnostics {
-		p := protocol.NewPublishDiagnosticsParams(uri)
-		if err := f.srv.Notify("textDocument/publishDiagnostics", p); err != nil {
-			f.srv.erro.Println(err)
-		}
-	}
-
+	f.clearDiagnostics()
 	f.h.Stop()
 }
 
@@ -108,9 +100,7 @@ func (s *server) openFolder(f protocol.WorkspaceFolder) (ff *folder) {
 		s.printErr(err)
 	}
 
-	if err = s.textDocumentPublishDiagnostics(ff); err != nil {
-		s.printErr(err)
-	}
+	s.textDocumentPublishDiagnostics(ff)
 
 	return ff
 }

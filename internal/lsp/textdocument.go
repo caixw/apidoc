@@ -30,19 +30,13 @@ func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDo
 		return nil
 	}
 
-	// 清空所有的诊断信息
-	for uri := range f.diagnostics {
-		p := protocol.NewPublishDiagnosticsParams(uri)
-		if err := s.Notify("textDocument/publishDiagnostics", p); err != nil {
-			s.erro.Println(err)
-		}
-	}
-
+	f.clearDiagnostics()
 	for _, blk := range in.Blocks() {
 		f.parseBlock(blk)
 	}
+	f.srv.textDocumentPublishDiagnostics(f)
 
-	return f.srv.textDocumentPublishDiagnostics(f)
+	return nil
 }
 
 func (f *folder) parseBlock(block core.Block) {
@@ -89,14 +83,24 @@ func deleteURI(doc *ast.APIDoc, uri core.URI) (deleted bool) {
 // textDocument/publishDiagnostics
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_publishDiagnostics
-func (s *server) textDocumentPublishDiagnostics(f *folder) error {
+func (s *server) textDocumentPublishDiagnostics(f *folder) {
 	for _, p := range f.diagnostics {
 		if err := s.Notify("textDocument/publishDiagnostics", p); err != nil {
 			s.erro.Println(err)
 		}
 	}
+}
 
-	return nil
+// 清空所有的诊断信息
+func (f *folder) clearDiagnostics() {
+	for _, p := range f.diagnostics {
+		p.Diagnostics = p.Diagnostics[:0]
+		if err := f.srv.Notify("textDocument/publishDiagnostics", p); err != nil {
+			f.srv.erro.Println(err)
+		}
+	}
+
+	f.diagnostics = make(map[core.URI]*protocol.PublishDiagnosticsParams, 0)
 }
 
 // textDocument/foldingRange
