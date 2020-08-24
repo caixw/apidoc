@@ -55,10 +55,6 @@ func CheckSyntax(h *core.MessageHandler, i ...*Input) error {
 
 func parse(h *core.MessageHandler, i ...*Input) (*ast.APIDoc, error) {
 	for _, item := range i {
-		if item.sanitized {
-			continue
-		}
-
 		if err := item.sanitize(); err != nil {
 			return nil, err
 		}

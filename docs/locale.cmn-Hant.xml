@@ -207,6 +207,7 @@
 		<item name="inputs.exts" type="string" array="true" required="false">只從這些擴展名的文件中查找文檔</item>
 		<item name="inputs.recursive" type="bool" array="false" required="false">是否解析子目錄下的源文件</item>
 		<item name="inputs.encoding" type="string" array="false" required="false">編碼，默認為 <var>utf-8</var>，值可以是 <a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml">character-sets</a> 中的內容。</item>
+		<item name="inputs.ignores" type="string" array="true" required="false">忽略的文件或目錄，比如 node_modules 等。</item>
 		<item name="output" type="object" array="false" required="true">控制輸出行為</item>
 		<item name="output.type" type="string" array="false" required="false">輸出的類型，目前可以 <var>apidoc+xml</var>、<var>openapi+json</var> 和 <var>openapi+yaml</var>。</item>
 		<item name="output.path" type="string" array="false" required="true">指定輸出的文件名，包含路徑信息。</item>

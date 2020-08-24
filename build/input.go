@@ -5,6 +5,7 @@ package build
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/issue9/sliceutil"
@@ -23,13 +24,18 @@ type Input struct {
 	Exts      []string `yaml:"exts,omitempty"`      // 需要扫描的文件扩展名，为空则表示采用默认规则。
 	Recursive bool     `yaml:"recursive,omitempty"` // 是否查找 Dir 的子目录
 	Encoding  string   `yaml:"encoding,omitempty"`  // 源文件的编码，默认为 UTF-8
+	Ignores   []string `yaml:"ignores,omitempty"`   // 忽略的文件或目录，比如 node_modules 等可在此指定
 
-	paths     []core.URI        // 根据 Dir、Exts 和 Recursive 生成
+	paths     []core.URI        // 根据 Dir、Exts、Ignores 和 Recursive 生成
 	encoding  encoding.Encoding // 根据 Encoding 生成
 	sanitized bool
 }
 
 func (o *Input) sanitize() error {
+	if o.sanitized {
+		return nil
+	}
+
 	if len(o.Dir) == 0 {
 		return core.NewError(locale.ErrIsEmpty, "dir").WithField("dir")
 	}
@@ -93,10 +99,7 @@ func (o *Input) recursivePath() error {
 	if err != nil {
 		return core.WithError(err).WithField("dir")
 	}
-
-	extIsEnabled := func(ext string) bool {
-		return sliceutil.Count(o.Exts, func(i int) bool { return o.Exts[i] == ext }) > 0
-	}
+	local = filepath.Clean(local)
 
 	walk := func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
@@ -104,7 +107,13 @@ func (o *Input) recursivePath() error {
 		}
 		if fi.IsDir() && !o.Recursive && path != local {
 			return filepath.SkipDir
-		} else if extIsEnabled(filepath.Ext(path)) {
+		}
+
+		match, err := o.isIgnore(local, path)
+		if err != nil {
+			return err
+		}
+		if !match {
 			o.paths = append(o.paths, core.FileURI(path))
 		}
 		return nil
@@ -115,9 +124,37 @@ func (o *Input) recursivePath() error {
 	}
 
 	if len(o.paths) == 0 {
-		return core.NewError(locale.ErrDirIsEmpty).WithField("dir")
+		return core.NewError(locale.ErrNoFiles).WithField("dir")
 	}
 	return nil
+}
+
+func (o *Input) isIgnore(root, path string) (bool, error) {
+	ext := filepath.Ext(path)
+	if sliceutil.Count(o.Exts, func(i int) bool { return o.Exts[i] == ext }) == 0 {
+		return true, nil
+	}
+
+	path = strings.TrimPrefix(path, root)
+	if path == "" {
+		return false, nil
+	}
+
+	if path[0] == '/' || path[0] == os.PathSeparator {
+		path = path[1:]
+	}
+
+	for _, ignore := range o.Ignores {
+		match, err := filepath.Match(ignore, path)
+		if err != nil {
+			return false, err
+		}
+		if match {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
 
 // ParseInputs 分析 opt 中所指定的内容并输出到 blocks

@@ -13,6 +13,7 @@
 - 添加了对 textDocument/definition 的支持；
 - 添加自定义通知 apidoc/outline 用于向客户端展示文档的基本列表；
 - 添加自定义服务 apidoc/refreshOutline 用于客户端主动请求刷新文档列表；
+- 配置文件添加 ignores 字段，用于忽略不需要解析目录；
 
 ### Fixed
 

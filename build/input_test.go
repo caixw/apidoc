@@ -112,72 +112,108 @@ func TestInput_ParseFile(t *testing.T) {
 	a.NotEmpty(rslt.Errors)
 }
 
-func TestOptions_Sanitize(t *testing.T) {
+func TestInput_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	o := &Input{}
 	a.Error(o.sanitize())
 
 	o.Dir = "not exists"
+	o.sanitized = false
 	a.Error(o.sanitize())
 
 	o.Dir = "./"
+	o.sanitized = false
 	a.Error(o.sanitize())
 
 	o.Lang = "not exists"
+	o.sanitized = false
 	a.Error(o.sanitize())
 
 	// 未指定扩展名，则使用系统默认的
 	language := lang.Get("go")
 	o.Lang = "go"
+	o.sanitized = false
 	a.NotError(o.sanitize())
 	a.Equal(o.Exts, language.Exts)
 
 	// 指定了 Exts，自动调整扩展名样式。
 	o.Lang = "go"
 	o.Exts = []string{"go", ".g2"}
+	o.sanitized = false
 	a.NotError(o.sanitize())
 	a.Equal(o.Exts, []string{".go", ".g2"})
 
 	// 特定的编码
 	o.Encoding = "GbK"
+	o.sanitized = false
 	a.NotError(o.sanitize())
 	a.Equal(o.encoding, simplifiedchinese.GBK)
 
 	// 不存在的编码
 	o.Encoding = "not-exists---"
+	o.sanitized = false
 	a.Error(o.sanitize())
 }
 
-func TestRecursivePath(t *testing.T) {
+func TestInput_recursivePath(t *testing.T) {
 	a := assert.New(t)
 
 	opt := &Input{
-		Dir:       "./testdata",
-		Recursive: false,
-		Exts:      []string{".c", ".h"},
+		Dir:  "./testdata",
+		Exts: []string{".c", ".h"},
 	}
 	err := opt.recursivePath()
 	a.NotError(err).Equal(2, len(opt.paths))
 
-	opt.Dir = "./testdata"
-	opt.Recursive = true
-	opt.Exts = []string{".1", ".2"}
-	opt.paths = opt.paths[:0]
+	opt = &Input{
+		Dir:       "./testdata",
+		Recursive: true,
+		Exts:      []string{".1", ".2"},
+	}
 	err = opt.recursivePath()
 	a.NotError(err).Equal(4, len(opt.paths))
 
-	opt.Dir = "./testdata/testdir1"
-	opt.Recursive = true
-	opt.Exts = []string{".1", ".2"}
-	opt.paths = opt.paths[:0]
+	opt = &Input{
+		Dir:       "./testdata",
+		Recursive: true,
+		Exts:      []string{".1", ".2"},
+		Ignores:   []string{"testdir1/*"},
+	}
 	err = opt.recursivePath()
 	a.NotError(err).Equal(2, len(opt.paths))
 
-	opt.Dir = "./testdata"
-	opt.Recursive = true
-	opt.Exts = []string{".1"}
-	opt.paths = opt.paths[:0]
+	opt = &Input{
+		Dir:       "./testdata/testdir1",
+		Recursive: true,
+		Exts:      []string{".1", ".2"},
+	}
+	err = opt.recursivePath()
+	a.NotError(err).Equal(2, len(opt.paths))
+
+	opt = &Input{
+		Dir:       "./testdata/testdir1",
+		Recursive: true,
+		Exts:      []string{".1", ".2"},
+		Ignores:   []string{"*.1"},
+	}
+	err = opt.recursivePath()
+	a.NotError(err).Equal(1, len(opt.paths))
+
+	opt = &Input{
+		Dir:       "./testdata",
+		Recursive: true,
+		Exts:      []string{".1"},
+	}
 	err = opt.recursivePath()
 	a.NotError(err).Equal(3, len(opt.paths))
+
+	// 未找到任何内容
+	opt = &Input{
+		Dir:       "./testdata",
+		Recursive: true,
+		Exts:      []string{".not-exists-ext"},
+	}
+	err = opt.recursivePath()
+	a.Error(err).Empty(opt.paths)
 }
