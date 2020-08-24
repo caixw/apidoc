@@ -157,24 +157,27 @@ func TestRecursivePath(t *testing.T) {
 		Recursive: false,
 		Exts:      []string{".c", ".h"},
 	}
-	paths, err := recursivePath(opt)
-	a.NotError(err).Equal(2, len(paths))
+	err := opt.recursivePath()
+	a.NotError(err).Equal(2, len(opt.paths))
 
 	opt.Dir = "./testdata"
 	opt.Recursive = true
 	opt.Exts = []string{".1", ".2"}
-	paths, err = recursivePath(opt)
-	a.NotError(err).Equal(4, len(paths))
+	opt.paths = opt.paths[:0]
+	err = opt.recursivePath()
+	a.NotError(err).Equal(4, len(opt.paths))
 
 	opt.Dir = "./testdata/testdir1"
 	opt.Recursive = true
 	opt.Exts = []string{".1", ".2"}
-	paths, err = recursivePath(opt)
-	a.NotError(err).Equal(2, len(paths))
+	opt.paths = opt.paths[:0]
+	err = opt.recursivePath()
+	a.NotError(err).Equal(2, len(opt.paths))
 
 	opt.Dir = "./testdata"
 	opt.Recursive = true
 	opt.Exts = []string{".1"}
-	paths, err = recursivePath(opt)
-	a.NotError(err).Equal(3, len(paths))
+	opt.paths = opt.paths[:0]
+	err = opt.recursivePath()
+	a.NotError(err).Equal(3, len(opt.paths))
 }

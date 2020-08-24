@@ -24,8 +24,9 @@ type Input struct {
 	Recursive bool     `yaml:"recursive,omitempty"` // 是否查找 Dir 的子目录
 	Encoding  string   `yaml:"encoding,omitempty"`  // 源文件的编码，默认为 UTF-8
 
-	paths    []core.URI        // 根据 Dir、Exts 和 Recursive 生成
-	encoding encoding.Encoding // 根据 Encoding 生成
+	paths     []core.URI        // 根据 Dir、Exts 和 Recursive 生成
+	encoding  encoding.Encoding // 根据 Encoding 生成
+	sanitized bool
 }
 
 func (o *Input) sanitize() error {
@@ -71,17 +72,10 @@ func (o *Input) sanitize() error {
 		o.Exts = language.Exts
 	}
 
-	// 生成 paths
-	paths, err := recursivePath(o)
-	if err != nil {
-		return core.WithError(err).WithField("dir")
+	if err = o.recursivePath(); err != nil {
+		return err
 	}
-	if len(paths) == 0 {
-		return core.NewError(locale.ErrDirIsEmpty).WithField("dir")
-	}
-	o.paths = paths
 
-	// 生成 encoding
 	if o.Encoding != "" {
 		o.encoding, err = ianaindex.IANA.Encoding(o.Encoding)
 		if err != nil {
@@ -89,16 +83,15 @@ func (o *Input) sanitize() error {
 		}
 	}
 
+	o.sanitized = true
 	return nil
 }
 
-// 按 Input 中的规则查找所有符合条件的文件列表。
-func recursivePath(o *Input) ([]core.URI, error) {
-	var uris []core.URI
-
+// 按 Input 中的规则查找所有符合条件的文件列表并保存至 Input.paths
+func (o *Input) recursivePath() error {
 	local, err := o.Dir.File()
 	if err != nil {
-		return nil, err
+		return core.WithError(err).WithField("dir")
 	}
 
 	extIsEnabled := func(ext string) bool {
@@ -112,16 +105,19 @@ func recursivePath(o *Input) ([]core.URI, error) {
 		if fi.IsDir() && !o.Recursive && path != local {
 			return filepath.SkipDir
 		} else if extIsEnabled(filepath.Ext(path)) {
-			uris = append(uris, core.FileURI(path))
+			o.paths = append(o.paths, core.FileURI(path))
 		}
 		return nil
 	}
 
 	if err := filepath.Walk(local, walk); err != nil {
-		return nil, err
+		return core.WithError(err).WithField("dir")
 	}
 
-	return uris, nil
+	if len(o.paths) == 0 {
+		return core.NewError(locale.ErrDirIsEmpty).WithField("dir")
+	}
+	return nil
 }
 
 // ParseInputs 分析 opt 中所指定的内容并输出到 blocks
