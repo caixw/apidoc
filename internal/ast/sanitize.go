@@ -22,13 +22,21 @@ func (api *API) Sanitize(p *xmlenc.Parser) {
 	}
 
 	// 对 Servers 和 Tags 查重
-	i := sliceutil.Dup(api.Servers, func(i, j int) bool { return api.Servers[i].V() == api.Servers[j].V() })
-	if i > -1 {
-		p.Error(p.NewError(api.Servers[i].Start, api.Servers[i].End, "server", locale.ErrDuplicateValue))
+	indexes := sliceutil.Dup(api.Servers, func(i, j int) bool { return api.Servers[i].V() == api.Servers[j].V() })
+	if len(indexes) > 0 {
+		err := p.NewError(api.Servers[indexes[0]].Start, api.Servers[indexes[0]].End, "server", locale.ErrDuplicateValue)
+		for _, srv := range indexes[1:] {
+			err.Relate(core.Location{URI: p.Location.URI, Range: api.Servers[srv].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+		}
+		p.Error(err)
 	}
-	i = sliceutil.Dup(api.Tags, func(i, j int) bool { return api.Tags[i].V() == api.Tags[j].V() })
-	if i > -1 {
-		p.Error(p.NewError(api.Tags[i].Start, api.Tags[i].End, "server", locale.ErrDuplicateValue))
+	indexes = sliceutil.Dup(api.Tags, func(i, j int) bool { return api.Tags[i].V() == api.Tags[j].V() })
+	if len(indexes) > 0 {
+		err := p.NewError(api.Tags[indexes[0]].Start, api.Tags[indexes[0]].End, "server", locale.ErrDuplicateValue)
+		for _, tag := range indexes[1:] {
+			err.Relate(core.Location{URI: p.Location.URI, Range: api.Tags[tag].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+		}
+		p.Error(err)
 	}
 }
 
@@ -111,10 +119,7 @@ func (r *Request) Sanitize(p *xmlenc.Parser) {
 		p.Error(p.NewError(r.Start, r.End, "type", locale.ErrInvalidValue))
 	}
 
-	// 判断 enums 的值是否相同
-	if rng, found := getDuplicateEnum(r.Enums); found {
-		p.Error(p.NewError(rng.Start, rng.End, "enum", locale.ErrDuplicateValue))
-	}
+	checkDuplicateEnum(r.Enums, p)
 
 	if err := chkEnumsType(r.Type, r.Enums, p); err != nil {
 		p.Error(err)
@@ -139,10 +144,7 @@ func (r *Request) Sanitize(p *xmlenc.Parser) {
 		}
 	}
 
-	// 判断 items 的值是否相同
-	if rng, found := getDuplicateItems(r.Items); found {
-		p.Error(p.NewError(rng.Start, rng.End, "param", locale.ErrDuplicateValue))
-	}
+	checkDuplicateItems(r.Items, p)
 }
 
 // Sanitize token.Sanitizer
@@ -158,19 +160,13 @@ func (p *Param) Sanitize(pp *xmlenc.Parser) {
 		pp.Error(pp.NewError(p.Type.Value.Start, p.Type.Value.End, "type", locale.ErrInvalidValue))
 	}
 
-	// 判断 enums 的值是否相同
-	if r, found := getDuplicateEnum(p.Enums); found {
-		pp.Error(pp.NewError(r.Start, r.End, "enum", locale.ErrDuplicateValue))
-	}
+	checkDuplicateEnum(p.Enums, pp)
 
 	if err := chkEnumsType(p.Type, p.Enums, pp); err != nil {
 		pp.Error(err)
 	}
 
-	// 判断 items 的值是否相同
-	if r, found := getDuplicateItems(p.Items); found {
-		pp.Error(pp.NewError(r.Start, r.End, "param", locale.ErrDuplicateValue))
-	}
+	checkDuplicateItems(p.Items, pp)
 
 	if err := checkXML(p.Array.V(), len(p.Items) > 0, &p.XML, pp); err != nil {
 		pp.Error(err)
@@ -207,21 +203,26 @@ func chkEnumsType(t *TypeAttribute, enums []*Enum, p *xmlenc.Parser) error {
 	return nil
 }
 
-// 返回重复枚举的值
-func getDuplicateEnum(enums []*Enum) (core.Range, bool) {
-	i := sliceutil.Dup(enums, func(i, j int) bool { return enums[i].Value.V() == enums[j].Value.V() })
-	if i > -1 {
-		return enums[i].Range, true
+func checkDuplicateEnum(enums []*Enum, p *xmlenc.Parser) {
+	indexes := sliceutil.Dup(enums, func(i, j int) bool { return enums[i].Value.V() == enums[j].Value.V() })
+	if len(indexes) > 0 {
+		err := p.NewError(enums[indexes[0]].Start, enums[indexes[0]].End, "enum", locale.ErrDuplicateValue)
+		for _, i := range indexes[1:] {
+			err.Relate(core.Location{URI: p.Location.URI, Range: enums[i].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+		}
+		p.Error(err)
 	}
-	return core.Range{}, false
 }
 
-func getDuplicateItems(items []*Param) (core.Range, bool) {
-	i := sliceutil.Dup(items, func(i, j int) bool { return items[i].Name.V() == items[j].Name.V() })
-	if i > -1 {
-		return items[i].Range, true
+func checkDuplicateItems(items []*Param, p *xmlenc.Parser) {
+	indexes := sliceutil.Dup(items, func(i, j int) bool { return items[i].Name.V() == items[j].Name.V() })
+	if len(indexes) > 0 {
+		err := p.NewError(items[indexes[0]].Start, items[indexes[0]].End, "param", locale.ErrDuplicateValue)
+		for _, i := range indexes[1:] {
+			err.Relate(core.Location{URI: p.Location.URI, Range: items[i].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+		}
+		p.Error(err)
 	}
-	return core.Range{}, false
 }
 
 func checkXML(isArray, hasItems bool, xml *XML, p *xmlenc.Parser) error {
@@ -285,21 +286,29 @@ func (doc *APIDoc) checkXMLNamespaces(p *xmlenc.Parser) error {
 	}
 
 	// 按 URN 查重
-	i := sliceutil.Dup(doc.XMLNamespaces, func(i, j int) bool {
+	indexes := sliceutil.Dup(doc.XMLNamespaces, func(i, j int) bool {
 		return doc.XMLNamespaces[i].URN.V() == doc.XMLNamespaces[j].URN.V()
 	})
-	if i > -1 {
-		curr := doc.XMLNamespaces[i].URN
-		return p.NewError(curr.Start, curr.End, "@urn", locale.ErrDuplicateValue)
+	if len(indexes) > 0 {
+		curr := doc.XMLNamespaces[indexes[0]].URN
+		err := p.NewError(curr.Start, curr.End, "@urn", locale.ErrDuplicateValue)
+		for _, i := range indexes[1:] {
+			err.Relate(core.Location{URI: p.Location.URI, Range: doc.XMLNamespaces[i].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+		}
+		return err
 	}
 
 	// 按 prefix 查重
-	i = sliceutil.Dup(doc.XMLNamespaces, func(i, j int) bool {
+	indexes = sliceutil.Dup(doc.XMLNamespaces, func(i, j int) bool {
 		return doc.XMLNamespaces[i].Prefix.V() == doc.XMLNamespaces[j].Prefix.V()
 	})
-	if i > -1 {
-		curr := doc.XMLNamespaces[i].URN
-		return p.NewError(curr.Start, curr.End, "@prefix", locale.ErrDuplicateValue)
+	if len(indexes) > 0 {
+		curr := doc.XMLNamespaces[indexes[0]].URN
+		err := p.NewError(curr.Start, curr.End, "@prefix", locale.ErrDuplicateValue)
+		for _, i := range indexes[1:] {
+			err.Relate(core.Location{URI: p.Location.URI, Range: doc.XMLNamespaces[i].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+		}
+		return err
 	}
 
 	return nil
@@ -397,11 +406,15 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 
 // 检测当前 api 是否与 apidoc.APIs 中存在相同的值
 func (api *API) checkDup(p *xmlenc.Parser) {
-	size := sliceutil.Count(api.doc.APIs, func(i int) bool {
-		ii := api.doc.APIs[i]
+	err := (core.Location{URI: api.URI, Range: api.Range}).NewError(locale.ErrDuplicateValue)
 
-		if api.Method.V() != ii.Method.V() {
-			return false
+	for _, item := range api.doc.APIs {
+		if item == api {
+			continue
+		}
+
+		if api.Method.V() != item.Method.V() {
+			continue
 		}
 
 		p := ""
@@ -409,31 +422,30 @@ func (api *API) checkDup(p *xmlenc.Parser) {
 			p = api.Path.Path.V()
 		}
 		iip := ""
-		if ii.Path != nil {
-			iip = ii.Path.Path.V()
+		if item.Path != nil {
+			iip = item.Path.Path.V()
 		}
 		if p != iip {
-			return false
+			continue
 		}
 
 		// 默认服务器
-		if len(api.Servers) == 0 && len(ii.Servers) == 0 {
-			return true
+		if len(api.Servers) == 0 && len(item.Servers) == 0 {
+			err.Relate(core.Location{URI: item.URI, Range: item.Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			continue
 		}
 
 		// 判断是否拥有相同的 server 字段
 		for _, srv := range api.Servers {
-			s := sliceutil.Count(ii.Servers, func(i int) bool { return srv.V() == ii.Servers[i].V() })
+			s := sliceutil.Count(item.Servers, func(i int) bool { return srv.V() == item.Servers[i].V() })
 			if s > 0 {
-				return true
+				err.Relate(core.Location{URI: item.URI, Range: item.Range}, locale.Sprintf(locale.ErrDuplicateValue))
+				continue
 			}
 		}
+	}
 
-		return false
-	})
-
-	if size > 1 {
-		loc := core.Location{URI: api.URI, Range: api.Range}
-		p.Error(loc.NewError(locale.ErrDuplicateValue))
+	if len(err.Related) > 0 {
+		p.Error(err)
 	}
 }

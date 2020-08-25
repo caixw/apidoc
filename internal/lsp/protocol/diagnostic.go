@@ -93,19 +93,7 @@ type Diagnostic struct {
 
 	// An array of related diagnostic information, e.g. when symbol-names within
 	// a scope collide all definitions can be marked via this property.
-	RelatedInformation []DiagnosticRelatedInformation `json:"relatedInformation,omitempty"`
-}
-
-// DiagnosticRelatedInformation represents a related message and source code location for a diagnostic
-//
-// This should be used to point to code locations that cause or are related to a diagnostics,
-// e.g when duplicating a symbol in a scope.
-type DiagnosticRelatedInformation struct {
-	// The location of this related diagnostic information.
-	Location core.Location `json:"location"`
-
-	// The message of this related diagnostic information.
-	Message string `json:"message"`
+	RelatedInformation []core.RelatedInformation `json:"relatedInformation,omitempty"`
 }
 
 var typeTagsMap = map[core.ErrorType]DiagnosticTag{
@@ -160,6 +148,10 @@ func buildDiagnostic(err *core.Error, severity DiagnosticSeverity) Diagnostic {
 	}
 	if len(tags) > 0 {
 		d.Tags = tags
+	}
+
+	if len(err.Related) > 0 {
+		d.RelatedInformation = err.Related
 	}
 
 	return d

@@ -62,7 +62,9 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		}
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
-			h.Error(p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue))
+			err := p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue)
+			err.Relate(core.Location{URI: doc.URI, Range: doc.Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			h.Error(err)
 			return
 		}
 		xmlenc.Decode(p, doc, core.XMLNamespace)

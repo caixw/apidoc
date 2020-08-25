@@ -412,7 +412,9 @@ func TestAPI_checkDup(t *testing.T) {
 	p, rslt = newParser(a, "", "")
 	api.checkDup(p)
 	rslt.Handler.Stop()
-	a.Empty(rslt.Errors).Empty(rslt.Warns)
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
+	err, ok := rslt.Errors[0].(*core.Error)
+	a.True(ok).Equal(1, len(err.Related))
 
 	doc = &APIDoc{
 		APIs: []*API{
@@ -432,6 +434,8 @@ func TestAPI_checkDup(t *testing.T) {
 	api.checkDup(p)
 	rslt.Handler.Stop()
 	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
+	err, ok = rslt.Errors[0].(*core.Error)
+	a.True(ok).Equal(2, len(err.Related))
 
 	doc.APIs[0].Servers = []*ServerValue{
 		{Content: Content{Value: "s1"}},
@@ -446,7 +450,9 @@ func TestAPI_checkDup(t *testing.T) {
 	p, rslt = newParser(a, "", "")
 	api.checkDup(p)
 	rslt.Handler.Stop()
-	a.Empty(rslt.Errors).Empty(rslt.Warns)
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
+	err, ok = rslt.Errors[0].(*core.Error)
+	a.True(ok).Equal(1, len(err.Related))
 
 	api.Servers = []*ServerValue{
 		{Content: Content{Value: "s1"}},
@@ -496,7 +502,9 @@ func TestAPI_checkDup(t *testing.T) {
 	p, rslt = newParser(a, "", "")
 	api.checkDup(p)
 	rslt.Handler.Stop()
-	a.Empty(rslt.Errors).Empty(rslt.Warns)
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
+	err, ok = rslt.Errors[0].(*core.Error)
+	a.True(ok).Equal(1, len(err.Related))
 
 	doc.APIs[0].Servers = []*ServerValue{
 		{Content: Content{Value: "s1"}},
@@ -519,5 +527,7 @@ func TestAPI_checkDup(t *testing.T) {
 	p, rslt = newParser(a, "", "")
 	api.checkDup(p)
 	rslt.Handler.Stop()
-	a.Empty(rslt.Errors).Empty(rslt.Warns)
+	a.NotEmpty(rslt.Errors).Empty(rslt.Warns)
+	err, ok = rslt.Errors[0].(*core.Error)
+	a.True(ok).Equal(1, len(err.Related))
 }

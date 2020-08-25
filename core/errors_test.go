@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/issue9/assert"
 )
 
@@ -45,11 +46,23 @@ func TestError_AddTypes(t *testing.T) {
 	a.Equal(err.Types, []ErrorType{ErrorTypeDeprecated, ErrorTypeUnused})
 }
 
-func TestErrorr_Is_Unwrap(t *testing.T) {
+func TestError_Is_Unwrap(t *testing.T) {
 	a := assert.New(t)
 
 	err := WithError(os.ErrExist).WithField("field")
 	a.True(errors.Is(err, os.ErrExist))
 
 	a.Equal(errors.Unwrap(err), os.ErrExist)
+}
+
+func TestError_Relate(t *testing.T) {
+	a := assert.New(t)
+
+	err := NewError(locale.ErrInvalidUTF8Character)
+	a.Empty(err.Related)
+	err.Relate(Location{}, "msg")
+	a.Equal(1, len(err.Related)).Equal(err.Related[0].Message, "msg")
+
+	err.Relate(Location{}, "msg2")
+	a.Equal(2, len(err.Related)).Equal(err.Related[1].Message, "msg2")
 }

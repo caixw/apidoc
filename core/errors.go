@@ -19,10 +19,21 @@ type HTTPError struct {
 //
 // 无论是配置文件的错误，还是文档的语法错误，都将返回此错误。
 type Error struct {
-	Err      error       // 具体的错误信息
-	Location Location    // 错误的详细定位
-	Field    string      // 出错的字段
-	Types    []ErrorType // 该错误的类型
+	Err      error                // 具体的错误信息
+	Location Location             // 错误的详细定位
+	Field    string               // 出错的字段
+	Types    []ErrorType          // 该错误的类型
+	Related  []RelatedInformation // 与此错误关联的一些信息
+}
+
+// RelatedInformation 错误信息的关联内容
+//
+// 兼容 LSP 中的 DiagnosticRelatedInformation 的相关定义
+//
+// https://microsoft.github.io/language-server-protocol/specifications/specification-3-16/#diagnostic
+type RelatedInformation struct {
+	Location Location `json:"location"`
+	Message  string   `json:"message"`
 }
 
 // ErrorType 语法错误的类型
@@ -61,6 +72,16 @@ func (err *Error) Unwrap() error {
 // Is 实现 errors.Is 接口
 func (err *Error) Is(target error) bool {
 	return err.Err == target
+}
+
+// Relate 添加关联的错误信息
+func (err *Error) Relate(loc Location, msg string) *Error {
+	if err.Related == nil {
+		err.Related = make([]RelatedInformation, 0, 1)
+	}
+
+	err.Related = append(err.Related, RelatedInformation{Location: loc, Message: msg})
+	return err
 }
 
 // WithField 为语法错误修改或添加具体的错误字段

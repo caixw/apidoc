@@ -42,11 +42,19 @@ func TestBuildDiagnostic(t *testing.T) {
 	d := buildDiagnostic(err, DiagnosticSeverityWarning)
 	a.Equal(d.Severity, DiagnosticSeverityWarning)
 	a.Empty(d.Tags)
-	a.Equal(d.Range.Start.Line, 1)
+	a.Equal(d.Range.Start.Line, 1).
+		Empty(d.RelatedInformation).
+		Empty(d.Tags)
 
 	err = err.AddTypes(core.ErrorTypeDeprecated, core.ErrorTypeUnused)
 	d = buildDiagnostic(err, DiagnosticSeverityError)
 	a.Equal(d.Severity, DiagnosticSeverityError)
 	a.Equal(d.Tags, []DiagnosticTag{DiagnosticTagDeprecated, DiagnosticTagUnnecessary})
 	a.Equal(d.Range.Start.Line, 1)
+
+	err = err.Relate(core.Location{URI: "relate.go"}, "relate message")
+	d = buildDiagnostic(err, DiagnosticSeverityError)
+	a.Equal(d.Range.Start.Line, 1).
+		Equal(1, len(d.RelatedInformation)).
+		Equal(d.RelatedInformation[0].Location, core.Location{URI: "relate.go"})
 }
