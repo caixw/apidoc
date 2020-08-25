@@ -30,6 +30,9 @@ func main() {
 	apidoc.SetLocale(tag)
 
 	if err := cmd.Init(os.Stdout).Exec(os.Args[1:]); err != nil {
-		panic(err)
+		if _, err := fmt.Fprintln(os.Stderr, err); err != nil {
+			panic(err)
+		}
+		os.Exit(2)
 	}
 }
