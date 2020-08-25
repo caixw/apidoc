@@ -101,6 +101,10 @@ func (o *Input) recursivePath() error {
 	}
 	local = filepath.Clean(local)
 
+	for i, pattern := range o.Ignores {
+		o.Ignores[i] = filepath.FromSlash(pattern)
+	}
+
 	walk := func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -109,11 +113,11 @@ func (o *Input) recursivePath() error {
 			return filepath.SkipDir
 		}
 
-		match, err := o.isIgnore(local, path)
+		ignore, err := o.isIgnore(local, path)
 		if err != nil {
 			return err
 		}
-		if !match {
+		if !ignore {
 			o.paths = append(o.paths, core.FileURI(path))
 		}
 		return nil
@@ -135,7 +139,7 @@ func (o *Input) isIgnore(root, path string) (bool, error) {
 		return true, nil
 	}
 
-	path = strings.TrimPrefix(path, root)
+	path = strings.TrimPrefix(filepath.FromSlash(path), filepath.FromSlash(root))
 	if path == "" {
 		return false, nil
 	}
