@@ -114,7 +114,7 @@ func TestTokens(t *testing.T) {
 	a.Empty(rslt.Errors)
 
 	a.Equal(semanticTokens(doc, "doc.go", 1, 2, 3), []int{
-		0, 1, 6, 1, 0, // <apidoc>
+		0, 1, 6, 1, 0, // apidoc
 		0, 7, 7, 2, 0,
 		0, 9, 5, 3, 0,
 
@@ -140,7 +140,7 @@ func TestTokens(t *testing.T) {
 
 		1, 3, 3, 1, 0, // </api>
 
-		2, 2, 3, 1, 0, // <api>
+		2, 2, 3, 1, 0, // api
 		0, 4, 6, 2, 0,
 		0, 8, 4, 3, 0,
 

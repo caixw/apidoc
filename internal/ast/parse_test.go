@@ -115,12 +115,12 @@ func TestGetTagName(t *testing.T) {
 	rslt.Handler.Stop()
 	a.Empty(rslt.Errors)
 
-	// 无效格式
+	// 无效格式，不返回错误
 	p, rslt = newParser(a, "<!-- xx   <root>xx</root>", "")
 	root = getTagName(p)
 	a.Equal(root, "")
 	rslt.Handler.Stop()
-	a.NotEmpty(rslt.Errors)
+	a.Empty(rslt.Errors)
 
 	// 无效格式
 	p, rslt = newParser(a, "</root>", "")

@@ -92,8 +92,7 @@ func getTagName(p *xmlenc.Parser) string {
 		t, _, err := p.Token()
 		if errors.Is(err, io.EOF) {
 			return ""
-		} else if err != nil {
-			p.Error(err)
+		} else if err != nil { // 获取第一个元素名称就出错，说明不是一个合则的 XML，直接忽略。
 			return ""
 		}
 
