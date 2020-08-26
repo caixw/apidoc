@@ -306,9 +306,9 @@ func TestNode_isOmitempty(t *testing.T) {
 	v := &node.Value{Omitempty: false}
 	a.False(isOmitempty(v))
 
-	v = node.NewValue("elem", reflect.ValueOf(int(0)), true, "usage")
+	v = node.NewValue("elem", reflect.ValueOf(0), true, "usage")
 	a.True(isOmitempty(v))
-	v.Value = reflect.ValueOf(int(5))
+	v.Value = reflect.ValueOf(5)
 	a.False(isOmitempty(v))
 
 	v.Value = reflect.ValueOf(uint(0))

@@ -23,9 +23,8 @@ const (
 //
 // 所有内嵌 Range 的对象都可以使用此接口判断是否内嵌 Range。
 type Ranger interface {
-	Contains(Position) bool
+	Contains(URI, Position) bool
 	R() Range
-	Equal(Range) bool
 }
 
 // Block 最基本的代码单位
@@ -84,8 +83,13 @@ func (r Range) Contains(p Position) bool {
 }
 
 // R 返回当前的范围
-func (r Range) R() Range {
-	return r
+func (l Location) R() Range {
+	return l.Range
+}
+
+// Contains l 是否包含 pos 这个点
+func (l Location) Contains(uri URI, pos Position) bool {
+	return l.URI == uri && l.Range.Contains(pos)
 }
 
 func (l Location) String() string {
@@ -99,4 +103,9 @@ func (l Location) String() string {
 // 所有字段都相同即返回 true。
 func (l Location) Equal(v Location) bool {
 	return l.Range.Equal(v.Range) && l.URI == v.URI
+}
+
+// IsEmpty 表示 Location 未指向任何位置
+func (l Location) IsEmpty() bool {
+	return l.URI == "" && l.Range.IsEmpty()
 }

@@ -68,48 +68,62 @@ func TestDecode(t *testing.T) {
 	base := BaseTag{
 		Base: Base{
 			UsageKey: "usage-apidoc",
-			Range: core.Range{
-				Start: core.Position{Character: 0},
-				End:   core.Position{Character: 73},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 0},
+					End:   core.Position{Character: 73},
+				},
 			},
 		},
 		StartTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 1},
-				End:   core.Position{Character: 10},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 1},
+					End:   core.Position{Character: 10},
+				},
 			},
 			Local: String{
 				Value: "apidoc",
-				Range: core.Range{
-					Start: core.Position{Character: 4},
-					End:   core.Position{Character: 10},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 4},
+						End:   core.Position{Character: 10},
+					},
 				},
 			},
 			Prefix: String{
 				Value: "aa",
-				Range: core.Range{
-					Start: core.Position{Character: 1},
-					End:   core.Position{Character: 3},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 1},
+						End:   core.Position{Character: 3},
+					},
 				},
 			},
 		},
 		EndTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 63},
-				End:   core.Position{Character: 72},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 63},
+					End:   core.Position{Character: 72},
+				},
 			},
 			Local: String{
 				Value: "apidoc",
-				Range: core.Range{
-					Start: core.Position{Character: 66},
-					End:   core.Position{Character: 72},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 66},
+						End:   core.Position{Character: 72},
+					},
 				},
 			},
 			Prefix: String{
 				Value: "aa",
-				Range: core.Range{
-					Start: core.Position{Character: 63},
-					End:   core.Position{Character: 65},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 63},
+						End:   core.Position{Character: 65},
+					},
 				},
 			},
 		},
@@ -118,28 +132,36 @@ func TestDecode(t *testing.T) {
 		BaseAttribute: BaseAttribute{
 			Base: Base{
 				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 11},
-					End:   core.Position{Character: 23},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 11},
+						End:   core.Position{Character: 23},
+					},
 				},
 			},
 			AttributeName: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 11},
-					End:   core.Position{Character: 19},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 11},
+						End:   core.Position{Character: 19},
+					},
 				},
 				Local: String{
 					Value: "attr1",
-					Range: core.Range{
-						Start: core.Position{Character: 14},
-						End:   core.Position{Character: 19},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 14},
+							End:   core.Position{Character: 19},
+						},
 					},
 				},
 				Prefix: String{
 					Value: "aa",
-					Range: core.Range{
-						Start: core.Position{Character: 11},
-						End:   core.Position{Character: 13},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 11},
+							End:   core.Position{Character: 13},
+						},
 					},
 				},
 			},
@@ -148,48 +170,62 @@ func TestDecode(t *testing.T) {
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 39},
-					End:   core.Position{Character: 61},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 39},
+						End:   core.Position{Character: 61},
+					},
 				},
 			},
 			StartTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 40},
-					End:   core.Position{Character: 48},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 40},
+						End:   core.Position{Character: 48},
+					},
 				},
 				Local: String{
 					Value: "elem1",
-					Range: core.Range{
-						Start: core.Position{Character: 43},
-						End:   core.Position{Character: 48},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 43},
+							End:   core.Position{Character: 48},
+						},
 					},
 				},
 				Prefix: String{
 					Value: "aa",
-					Range: core.Range{
-						Start: core.Position{Character: 40},
-						End:   core.Position{Character: 42},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 40},
+							End:   core.Position{Character: 42},
+						},
 					},
 				},
 			},
 			EndTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 52},
-					End:   core.Position{Character: 60},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 52},
+						End:   core.Position{Character: 60},
+					},
 				},
 				Local: String{
 					Value: "elem1",
-					Range: core.Range{
-						Start: core.Position{Character: 55},
-						End:   core.Position{Character: 60},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 55},
+							End:   core.Position{Character: 60},
+						},
 					},
 				},
 				Prefix: String{
 					Value: "aa",
-					Range: core.Range{
-						Start: core.Position{Character: 52},
-						End:   core.Position{Character: 54},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 52},
+							End:   core.Position{Character: 54},
+						},
 					},
 				},
 			},
@@ -213,21 +249,27 @@ func TestDecode(t *testing.T) {
 		BaseAttribute: BaseAttribute{
 			Base: Base{
 				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 8},
-					End:   core.Position{Character: 17},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 8},
+						End:   core.Position{Character: 17},
+					},
 				},
 			},
 			AttributeName: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 8},
-					End:   core.Position{Character: 13},
-				},
-				Local: String{
-					Value: "attr1",
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 8},
 						End:   core.Position{Character: 13},
+					},
+				},
+				Local: String{
+					Value: "attr1",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 8},
+							End:   core.Position{Character: 13},
+						},
 					},
 				},
 			},
@@ -236,21 +278,27 @@ func TestDecode(t *testing.T) {
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 18},
-					End:   core.Position{Character: 27},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 18},
+						End:   core.Position{Character: 27},
+					},
 				},
 			},
 			StartTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 19},
-					End:   core.Position{Character: 24},
-				},
-				Local: String{
-					Value: "elem1",
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 19},
 						End:   core.Position{Character: 24},
+					},
+				},
+				Local: String{
+					Value: "elem1",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 19},
+							End:   core.Position{Character: 24},
+						},
 					},
 				},
 			},
@@ -269,21 +317,27 @@ func TestDecode(t *testing.T) {
 	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 17},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 17},
+				},
 			},
 		},
 		AttributeName: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 13},
-			},
-			Local: String{
-				Value: "attr1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 8},
 					End:   core.Position{Character: 13},
+				},
+			},
+			Local: String{
+				Value: "attr1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 8},
+						End:   core.Position{Character: 13},
+					},
 				},
 			},
 		},
@@ -291,34 +345,44 @@ func TestDecode(t *testing.T) {
 	elem1 = intTag{Value: 6, BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 18},
-				End:   core.Position{Character: 34},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 18},
+					End:   core.Position{Character: 34},
+				},
 			},
 		},
 		StartTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 19},
-				End:   core.Position{Character: 24},
-			},
-			Local: String{
-				Value: "elem1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 19},
 					End:   core.Position{Character: 24},
 				},
 			},
-		},
-		EndTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 28},
-				End:   core.Position{Character: 33},
-			},
 			Local: String{
 				Value: "elem1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 19},
+						End:   core.Position{Character: 24},
+					},
+				},
+			},
+		},
+		EndTag: Name{
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 28},
 					End:   core.Position{Character: 33},
+				},
+			},
+			Local: String{
+				Value: "elem1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 28},
+						End:   core.Position{Character: 33},
+					},
 				},
 			},
 		},
@@ -339,21 +403,27 @@ func TestDecode(t *testing.T) {
 	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 17},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 17},
+				},
 			},
 		},
 		AttributeName: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 13},
-			},
-			Local: String{
-				Value: "attr1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 8},
 					End:   core.Position{Character: 13},
+				},
+			},
+			Local: String{
+				Value: "attr1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 8},
+						End:   core.Position{Character: 13},
+					},
 				},
 			},
 		},
@@ -361,34 +431,44 @@ func TestDecode(t *testing.T) {
 	elem1 = intTag{Value: 6, BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 18},
-				End:   core.Position{Character: 34},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 18},
+					End:   core.Position{Character: 34},
+				},
 			},
 		},
 		StartTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 19},
-				End:   core.Position{Character: 24},
-			},
-			Local: String{
-				Value: "elem1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 19},
 					End:   core.Position{Character: 24},
 				},
 			},
-		},
-		EndTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 28},
-				End:   core.Position{Character: 33},
-			},
 			Local: String{
 				Value: "elem1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 19},
+						End:   core.Position{Character: 24},
+					},
+				},
+			},
+		},
+		EndTag: Name{
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 28},
 					End:   core.Position{Character: 33},
+				},
+			},
+			Local: String{
+				Value: "elem1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 28},
+						End:   core.Position{Character: 33},
+					},
 				},
 			},
 		},
@@ -396,34 +476,44 @@ func TestDecode(t *testing.T) {
 	elem2 := intTag{Value: 7, BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 34},
-				End:   core.Position{Character: 50},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 34},
+					End:   core.Position{Character: 50},
+				},
 			},
 		},
 		StartTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 35},
-				End:   core.Position{Character: 40},
-			},
-			Local: String{
-				Value: "elem1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 35},
 					End:   core.Position{Character: 40},
 				},
 			},
-		},
-		EndTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 44},
-				End:   core.Position{Character: 49},
-			},
 			Local: String{
 				Value: "elem1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 35},
+						End:   core.Position{Character: 40},
+					},
+				},
+			},
+		},
+		EndTag: Name{
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 44},
 					End:   core.Position{Character: 49},
+				},
+			},
+			Local: String{
+				Value: "elem1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 44},
+						End:   core.Position{Character: 49},
+					},
 				},
 			},
 		},
@@ -444,21 +534,27 @@ func TestDecode(t *testing.T) {
 	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 17},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 17},
+				},
 			},
 		},
 		AttributeName: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 13},
-			},
-			Local: String{
-				Value: "attr1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 8},
 					End:   core.Position{Character: 13},
+				},
+			},
+			Local: String{
+				Value: "attr1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 8},
+						End:   core.Position{Character: 13},
+					},
 				},
 			},
 		},
@@ -466,21 +562,27 @@ func TestDecode(t *testing.T) {
 	elem1 = intTag{BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 18},
-				End:   core.Position{Character: 27},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 18},
+					End:   core.Position{Character: 27},
+				},
 			},
 		},
 		StartTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 19},
-				End:   core.Position{Character: 24},
-			},
-			Local: String{
-				Value: "elem1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 19},
 					End:   core.Position{Character: 24},
+				},
+			},
+			Local: String{
+				Value: "elem1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 19},
+						End:   core.Position{Character: 24},
+					},
 				},
 			},
 		},
@@ -488,34 +590,44 @@ func TestDecode(t *testing.T) {
 	elem2 = intTag{Value: 7, BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 27},
-				End:   core.Position{Character: 43},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 27},
+					End:   core.Position{Character: 43},
+				},
 			},
 		},
 		StartTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 28},
-				End:   core.Position{Character: 33},
-			},
-			Local: String{
-				Value: "elem1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 28},
 					End:   core.Position{Character: 33},
 				},
 			},
-		},
-		EndTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 37},
-				End:   core.Position{Character: 42},
-			},
 			Local: String{
 				Value: "elem1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 28},
+						End:   core.Position{Character: 33},
+					},
+				},
+			},
+		},
+		EndTag: Name{
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 37},
 					End:   core.Position{Character: 42},
+				},
+			},
+			Local: String{
+				Value: "elem1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 37},
+						End:   core.Position{Character: 42},
+					},
 				},
 			},
 		},
@@ -535,28 +647,38 @@ func TestDecode(t *testing.T) {
 	b = `<apidoc attr1="5">5555</apidoc>`
 	rslt = decodeObject(a, b, v4, "")
 	a.Empty(rslt.Errors).Empty(rslt.Warns)
-	a.Equal(v4.Content, String{Value: "5555", Range: core.Range{
-		Start: core.Position{Character: 18},
-		End:   core.Position{Character: 22},
-	}})
+	a.Equal(v4.Content, String{Value: "5555",
+		Location: core.Location{
+			Range: core.Range{
+				Start: core.Position{Character: 18},
+				End:   core.Position{Character: 22},
+			},
+		},
+	})
 	a.Equal(v4.ID, intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 17},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 17},
+				},
 			},
 		},
 		AttributeName: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 13},
-			},
-			Local: String{
-				Value: "attr1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 8},
 					End:   core.Position{Character: 13},
+				},
+			},
+			Local: String{
+				Value: "attr1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 8},
+						End:   core.Position{Character: 13},
+					},
 				},
 			},
 		},
@@ -572,40 +694,54 @@ func TestDecode(t *testing.T) {
 	rslt = decodeObject(a, b, v5, "")
 	a.Empty(rslt.Errors).Empty(rslt.Warns)
 	a.Equal(v5.Cdata, &CData{
-		Value: String{Value: "5555", Range: core.Range{
-			Start: core.Position{Character: 27},
-			End:   core.Position{Character: 31},
-		}},
+		Value: String{Value: "5555",
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 27},
+					End:   core.Position{Character: 31},
+				},
+			},
+		},
 		BaseTag: BaseTag{
 			Base: Base{
-				Range: core.Range{
-					Start: core.Position{Character: 18},
-					End:   core.Position{Character: 34},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 18},
+						End:   core.Position{Character: 34},
+					},
 				},
 			},
 			StartTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 18},
-					End:   core.Position{Character: 27},
-				},
-				Local: String{
-					Value: cdataStart,
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 18},
 						End:   core.Position{Character: 27},
 					},
 				},
+				Local: String{
+					Value: cdataStart,
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 18},
+							End:   core.Position{Character: 27},
+						},
+					},
+				},
 			},
 			EndTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 31},
-					End:   core.Position{Character: 34},
-				},
-				Local: String{
-					Value: cdataEnd,
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 31},
 						End:   core.Position{Character: 34},
+					},
+				},
+				Local: String{
+					Value: cdataEnd,
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 31},
+							End:   core.Position{Character: 34},
+						},
 					},
 				},
 			},
@@ -636,21 +772,27 @@ func TestDecode(t *testing.T) {
 	a.Equal(v7.ID, &intAttr{Value: 11, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 15},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 15},
+				},
 			},
 		},
 		AttributeName: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 10},
-			},
-			Local: String{
-				Value: "id",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 8},
 					End:   core.Position{Character: 10},
+				},
+			},
+			Local: String{
+				Value: "id",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 8},
+						End:   core.Position{Character: 10},
+					},
 				},
 			},
 		},
@@ -658,34 +800,44 @@ func TestDecode(t *testing.T) {
 	a.Equal(v7.Name, stringTag{Value: "name", BaseTag: BaseTag{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 16},
-				End:   core.Position{Character: 33},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 16},
+					End:   core.Position{Character: 33},
+				},
 			},
 		},
 		StartTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 17},
-				End:   core.Position{Character: 21},
-			},
-			Local: String{
-				Value: "name",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 17},
 					End:   core.Position{Character: 21},
 				},
 			},
-		},
-		EndTag: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 28},
-				End:   core.Position{Character: 32},
-			},
 			Local: String{
 				Value: "name",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 17},
+						End:   core.Position{Character: 21},
+					},
+				},
+			},
+		},
+		EndTag: Name{
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 28},
 					End:   core.Position{Character: 32},
+				},
+			},
+			Local: String{
+				Value: "name",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 28},
+						End:   core.Position{Character: 32},
+					},
 				},
 			},
 		},
@@ -694,34 +846,44 @@ func TestDecode(t *testing.T) {
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 33},
-					End:   core.Position{Character: 66},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 33},
+						End:   core.Position{Character: 66},
+					},
 				},
 			},
 			StartTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 34},
-					End:   core.Position{Character: 37},
-				},
-				Local: String{
-					Value: "obj",
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 34},
 						End:   core.Position{Character: 37},
 					},
 				},
-			},
-			EndTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 62},
-					End:   core.Position{Character: 65},
-				},
 				Local: String{
 					Value: "obj",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 34},
+							End:   core.Position{Character: 37},
+						},
+					},
+				},
+			},
+			EndTag: Name{
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 62},
 						End:   core.Position{Character: 65},
+					},
+				},
+				Local: String{
+					Value: "obj",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 62},
+							End:   core.Position{Character: 65},
+						},
 					},
 				},
 			},
@@ -729,21 +891,27 @@ func TestDecode(t *testing.T) {
 		ID: intAttr{Value: 12, BaseAttribute: BaseAttribute{ // objectTag.Sanitize
 			Base: Base{
 				UsageKey: "usage-id",
-				Range: core.Range{
-					Start: core.Position{Character: 38},
-					End:   core.Position{Character: 45},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 38},
+						End:   core.Position{Character: 45},
+					},
 				},
 			},
 			AttributeName: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 38},
-					End:   core.Position{Character: 40},
-				},
-				Local: String{
-					Value: "id",
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 38},
 						End:   core.Position{Character: 40},
+					},
+				},
+				Local: String{
+					Value: "id",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 38},
+							End:   core.Position{Character: 40},
+						},
 					},
 				},
 			},
@@ -751,34 +919,44 @@ func TestDecode(t *testing.T) {
 		Name: stringTag{Value: "n", BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage-name",
-				Range: core.Range{
-					Start: core.Position{Character: 46},
-					End:   core.Position{Character: 60},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 46},
+						End:   core.Position{Character: 60},
+					},
 				},
 			},
 			StartTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 47},
-					End:   core.Position{Character: 51},
-				},
-				Local: String{
-					Value: "name",
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 47},
 						End:   core.Position{Character: 51},
 					},
 				},
-			},
-			EndTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 55},
-					End:   core.Position{Character: 59},
-				},
 				Local: String{
 					Value: "name",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 47},
+							End:   core.Position{Character: 51},
+						},
+					},
+				},
+			},
+			EndTag: Name{
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 55},
 						End:   core.Position{Character: 59},
+					},
+				},
+				Local: String{
+					Value: "name",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 55},
+							End:   core.Position{Character: 59},
+						},
 					},
 				},
 			},
@@ -865,21 +1043,27 @@ func TestDecode(t *testing.T) {
 	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 17},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 17},
+				},
 			},
 		},
 		AttributeName: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 13},
-			},
-			Local: String{
-				Value: "attr1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 8},
 					End:   core.Position{Character: 13},
+				},
+			},
+			Local: String{
+				Value: "attr1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 8},
+						End:   core.Position{Character: 13},
+					},
 				},
 			},
 		},
@@ -888,34 +1072,44 @@ func TestDecode(t *testing.T) {
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 1, Line: 1},
-					End:   core.Position{Character: 29, Line: 1},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 1, Line: 1},
+						End:   core.Position{Character: 29, Line: 1},
+					},
 				},
 			},
 			StartTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 2, Line: 1},
-					End:   core.Position{Character: 3, Line: 1},
-				},
-				Local: String{
-					Value: "e",
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 2, Line: 1},
 						End:   core.Position{Character: 3, Line: 1},
 					},
 				},
-			},
-			EndTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 27, Line: 1},
-					End:   core.Position{Character: 28, Line: 1},
-				},
 				Local: String{
 					Value: "e",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 2, Line: 1},
+							End:   core.Position{Character: 3, Line: 1},
+						},
+					},
+				},
+			},
+			EndTag: Name{
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 27, Line: 1},
 						End:   core.Position{Character: 28, Line: 1},
+					},
+				},
+				Local: String{
+					Value: "e",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 27, Line: 1},
+							End:   core.Position{Character: 28, Line: 1},
+						},
 					},
 				},
 			},
@@ -924,21 +1118,27 @@ func TestDecode(t *testing.T) {
 			BaseAttribute: BaseAttribute{
 				Base: Base{
 					UsageKey: "usage-id",
-					Range: core.Range{
-						Start: core.Position{Character: 4, Line: 1},
-						End:   core.Position{Character: 10, Line: 1},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 4, Line: 1},
+							End:   core.Position{Character: 10, Line: 1},
+						},
 					},
 				},
 				AttributeName: Name{
-					Range: core.Range{
-						Start: core.Position{Character: 4, Line: 1},
-						End:   core.Position{Character: 6, Line: 1},
-					},
-					Local: String{
-						Value: "id",
+					Location: core.Location{
 						Range: core.Range{
 							Start: core.Position{Character: 4, Line: 1},
 							End:   core.Position{Character: 6, Line: 1},
+						},
+					},
+					Local: String{
+						Value: "id",
+						Location: core.Location{
+							Range: core.Range{
+								Start: core.Position{Character: 4, Line: 1},
+								End:   core.Position{Character: 6, Line: 1},
+							},
 						},
 					},
 				},
@@ -949,34 +1149,44 @@ func TestDecode(t *testing.T) {
 			BaseTag: BaseTag{
 				Base: Base{
 					UsageKey: "usage-name",
-					Range: core.Range{
-						Start: core.Position{Character: 11, Line: 1},
-						End:   core.Position{Character: 25, Line: 1},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 11, Line: 1},
+							End:   core.Position{Character: 25, Line: 1},
+						},
 					},
 				},
 				StartTag: Name{
-					Range: core.Range{
-						Start: core.Position{Character: 12, Line: 1},
-						End:   core.Position{Character: 16, Line: 1},
-					},
-					Local: String{
-						Value: "name",
+					Location: core.Location{
 						Range: core.Range{
 							Start: core.Position{Character: 12, Line: 1},
 							End:   core.Position{Character: 16, Line: 1},
 						},
 					},
-				},
-				EndTag: Name{
-					Range: core.Range{
-						Start: core.Position{Character: 20, Line: 1},
-						End:   core.Position{Character: 24, Line: 1},
-					},
 					Local: String{
 						Value: "name",
+						Location: core.Location{
+							Range: core.Range{
+								Start: core.Position{Character: 12, Line: 1},
+								End:   core.Position{Character: 16, Line: 1},
+							},
+						},
+					},
+				},
+				EndTag: Name{
+					Location: core.Location{
 						Range: core.Range{
 							Start: core.Position{Character: 20, Line: 1},
 							End:   core.Position{Character: 24, Line: 1},
+						},
+					},
+					Local: String{
+						Value: "name",
+						Location: core.Location{
+							Range: core.Range{
+								Start: core.Position{Character: 20, Line: 1},
+								End:   core.Position{Character: 24, Line: 1},
+							},
 						},
 					},
 				},
@@ -988,34 +1198,44 @@ func TestDecode(t *testing.T) {
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage",
-				Range: core.Range{
-					Start: core.Position{Character: 1, Line: 2},
-					End:   core.Position{Character: 29, Line: 2},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 1, Line: 2},
+						End:   core.Position{Character: 29, Line: 2},
+					},
 				},
 			},
 			StartTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 2, Line: 2},
-					End:   core.Position{Character: 3, Line: 2},
-				},
-				Local: String{
-					Value: "e",
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 2, Line: 2},
 						End:   core.Position{Character: 3, Line: 2},
 					},
 				},
-			},
-			EndTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 27, Line: 2},
-					End:   core.Position{Character: 28, Line: 2},
-				},
 				Local: String{
 					Value: "e",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 2, Line: 2},
+							End:   core.Position{Character: 3, Line: 2},
+						},
+					},
+				},
+			},
+			EndTag: Name{
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 27, Line: 2},
 						End:   core.Position{Character: 28, Line: 2},
+					},
+				},
+				Local: String{
+					Value: "e",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 27, Line: 2},
+							End:   core.Position{Character: 28, Line: 2},
+						},
 					},
 				},
 			},
@@ -1024,21 +1244,27 @@ func TestDecode(t *testing.T) {
 			BaseAttribute: BaseAttribute{
 				Base: Base{
 					UsageKey: "usage-id",
-					Range: core.Range{
-						Start: core.Position{Character: 4, Line: 2},
-						End:   core.Position{Character: 10, Line: 2},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 4, Line: 2},
+							End:   core.Position{Character: 10, Line: 2},
+						},
 					},
 				},
 				AttributeName: Name{
-					Range: core.Range{
-						Start: core.Position{Character: 4, Line: 2},
-						End:   core.Position{Character: 6, Line: 2},
-					},
-					Local: String{
-						Value: "id",
+					Location: core.Location{
 						Range: core.Range{
 							Start: core.Position{Character: 4, Line: 2},
 							End:   core.Position{Character: 6, Line: 2},
+						},
+					},
+					Local: String{
+						Value: "id",
+						Location: core.Location{
+							Range: core.Range{
+								Start: core.Position{Character: 4, Line: 2},
+								End:   core.Position{Character: 6, Line: 2},
+							},
 						},
 					},
 				},
@@ -1049,34 +1275,44 @@ func TestDecode(t *testing.T) {
 			BaseTag: BaseTag{
 				Base: Base{
 					UsageKey: "usage-name",
-					Range: core.Range{
-						Start: core.Position{Character: 11, Line: 2},
-						End:   core.Position{Character: 25, Line: 2},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 11, Line: 2},
+							End:   core.Position{Character: 25, Line: 2},
+						},
 					},
 				},
 				StartTag: Name{
-					Range: core.Range{
-						Start: core.Position{Character: 12, Line: 2},
-						End:   core.Position{Character: 16, Line: 2},
-					},
-					Local: String{
-						Value: "name",
+					Location: core.Location{
 						Range: core.Range{
 							Start: core.Position{Character: 12, Line: 2},
 							End:   core.Position{Character: 16, Line: 2},
 						},
 					},
-				},
-				EndTag: Name{
-					Range: core.Range{
-						Start: core.Position{Character: 20, Line: 2},
-						End:   core.Position{Character: 24, Line: 2},
-					},
 					Local: String{
 						Value: "name",
+						Location: core.Location{
+							Range: core.Range{
+								Start: core.Position{Character: 12, Line: 2},
+								End:   core.Position{Character: 16, Line: 2},
+							},
+						},
+					},
+				},
+				EndTag: Name{
+					Location: core.Location{
 						Range: core.Range{
 							Start: core.Position{Character: 20, Line: 2},
 							End:   core.Position{Character: 24, Line: 2},
+						},
+					},
+					Local: String{
+						Value: "name",
+						Location: core.Location{
+							Range: core.Range{
+								Start: core.Position{Character: 20, Line: 2},
+								End:   core.Position{Character: 24, Line: 2},
+							},
 						},
 					},
 				},
@@ -1106,21 +1342,27 @@ func TestDecode(t *testing.T) {
 	attr1 = intAttr{Value: 5, BaseAttribute: BaseAttribute{
 		Base: Base{
 			UsageKey: "usage",
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 17},
+			Location: core.Location{
+				Range: core.Range{
+					Start: core.Position{Character: 8},
+					End:   core.Position{Character: 17},
+				},
 			},
 		},
 		AttributeName: Name{
-			Range: core.Range{
-				Start: core.Position{Character: 8},
-				End:   core.Position{Character: 13},
-			},
-			Local: String{
-				Value: "attr1",
+			Location: core.Location{
 				Range: core.Range{
 					Start: core.Position{Character: 8},
 					End:   core.Position{Character: 13},
+				},
+			},
+			Local: String{
+				Value: "attr1",
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 8},
+						End:   core.Position{Character: 13},
+					},
 				},
 			},
 		},
@@ -1129,21 +1371,27 @@ func TestDecode(t *testing.T) {
 		BaseTag: BaseTag{
 			Base: Base{
 				UsageKey: "usage-elem2",
-				Range: core.Range{
-					Start: core.Position{Character: 18},
-					End:   core.Position{Character: 34},
+				Location: core.Location{
+					Range: core.Range{
+						Start: core.Position{Character: 18},
+						End:   core.Position{Character: 34},
+					},
 				},
 			},
 			StartTag: Name{
-				Range: core.Range{
-					Start: core.Position{Character: 19},
-					End:   core.Position{Character: 24},
-				},
-				Local: String{
-					Value: "elem2",
+				Location: core.Location{
 					Range: core.Range{
 						Start: core.Position{Character: 19},
 						End:   core.Position{Character: 24},
+					},
+				},
+				Local: String{
+					Value: "elem2",
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 19},
+							End:   core.Position{Character: 24},
+						},
 					},
 				},
 			},
@@ -1153,21 +1401,27 @@ func TestDecode(t *testing.T) {
 			BaseAttribute: BaseAttribute{
 				Base: Base{
 					UsageKey: "usage",
-					Range: core.Range{
-						Start: core.Position{Character: 25},
-						End:   core.Position{Character: 31},
+					Location: core.Location{
+						Range: core.Range{
+							Start: core.Position{Character: 25},
+							End:   core.Position{Character: 31},
+						},
 					},
 				},
 				AttributeName: Name{
-					Range: core.Range{
-						Start: core.Position{Character: 25},
-						End:   core.Position{Character: 27},
-					},
-					Local: String{
-						Value: "id",
+					Location: core.Location{
 						Range: core.Range{
 							Start: core.Position{Character: 25},
 							End:   core.Position{Character: 27},
+						},
+					},
+					Local: String{
+						Value: "id",
+						Location: core.Location{
+							Range: core.Range{
+								Start: core.Position{Character: 25},
+								End:   core.Position{Character: 27},
+							},
 						},
 					},
 				},

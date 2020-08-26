@@ -20,13 +20,13 @@ func TestDeleteURI(t *testing.T) {
 	d.URI = core.URI("uri1")
 	d.APIs = []*ast.API{
 		{ //1
-			URI: "uri1",
+			BaseTag: xmlenc.BaseTag{Base: xmlenc.Base{Location: core.Location{URI: "uri1"}}},
 		},
 		{ //2
-			URI: "uri2",
+			BaseTag: xmlenc.BaseTag{Base: xmlenc.Base{Location: core.Location{URI: "uri2"}}},
 		},
 		{ //3
-			URI: "uri3",
+			BaseTag: xmlenc.BaseTag{Base: xmlenc.Base{Location: core.Location{URI: "uri3"}}},
 		},
 		{ //4
 		},

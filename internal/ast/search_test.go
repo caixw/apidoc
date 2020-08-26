@@ -79,7 +79,7 @@ func TestSearch(t *testing.T) {
 
 	// tags[0]，因为 referenceType 限定，只能搜索到 ast.Tag 实例
 	referencerType := reflect.TypeOf((*Referencer)(nil)).Elem()
-	r = search(reflect.ValueOf(doc), core.Position{Line: 3, Character: 17}, referencerType)
+	r = search(reflect.ValueOf(doc), "doc.go", core.Position{Line: 3, Character: 17}, referencerType)
 	a.NotNil(r).Equal(r.R(), core.Range{
 		Start: core.Position{Line: 3, Character: 2},
 		End:   core.Position{Line: 3, Character: 32},
@@ -107,7 +107,7 @@ func TestSearch(t *testing.T) {
 	a.Nil(r)
 
 	// api[0]，不匹配 api，匹配至整个 apidoc
-	doc.APIs[0].URI = "api.go"
+	doc.APIs[0].Location.URI = "api.go"
 	r = doc.Search("doc.go", core.Position{Line: 5, Character: 3}, nil)
 	a.NotNil(r).Equal(r.R(), core.Range{
 		End: core.Position{Line: 15, Character: 10},

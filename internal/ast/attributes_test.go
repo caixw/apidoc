@@ -186,7 +186,10 @@ func TestDateAttribute(t *testing.T) {
 		Name: xmlenc.Name{Local: xmlenc.String{Value: "n"}},
 		Value: xmlenc.String{
 			Value: now,
-			Range: core.Range{End: core.Position{Character: 1}},
+			Location: core.Location{
+				URI:   "uri1",
+				Range: core.Range{End: core.Position{Character: 1}},
+			},
 		},
 	}
 	a.NotError(date.DecodeXMLAttr(p, attr))
@@ -215,7 +218,10 @@ func TestAPIDocVersionAttribute(t *testing.T) {
 		Name: xmlenc.Name{Local: xmlenc.String{Value: "n"}},
 		Value: xmlenc.String{
 			Value: Version,
-			Range: core.Range{End: core.Position{Character: 1}},
+			Location: core.Location{
+				URI:   "uri1",
+				Range: core.Range{End: core.Position{Character: 1}},
+			},
 		},
 	}
 	a.NotError(v.DecodeXMLAttr(p, attr))

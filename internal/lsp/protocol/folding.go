@@ -63,14 +63,14 @@ type FoldingRange struct {
 // BuildFoldingRange 根据参数构建 FoldingRange 实例
 func BuildFoldingRange(base xmlenc.Base, lineFoldingOnly bool) FoldingRange {
 	item := FoldingRange{
-		StartLine: base.Start.Line,
-		EndLine:   base.End.Line,
+		StartLine: base.Location.Range.Start.Line,
+		EndLine:   base.Location.Range.End.Line,
 		Kind:      FoldingRangeKindComment,
 	}
 
 	if lineFoldingOnly {
-		item.StartCharacter = &base.Start.Character
-		item.EndCharacter = &base.End.Character
+		item.StartCharacter = &base.Location.Range.Start.Character
+		item.EndCharacter = &base.Location.Range.End.Character
 	}
 
 	return item

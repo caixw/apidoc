@@ -7,14 +7,14 @@ import "github.com/caixw/apidoc/v7/core"
 type (
 	// Name 表示 XML 中的名称
 	Name struct {
-		core.Range
+		core.Location
 		Prefix String
 		Local  String
 	}
 
 	// StartElement 表示 XML 的元素
 	StartElement struct {
-		core.Range
+		core.Location
 		Name       Name
 		Attributes []*Attribute
 		SelfClose  bool // 是否自闭合
@@ -22,27 +22,27 @@ type (
 
 	// EndElement XML 的结束元素
 	EndElement struct {
-		core.Range
+		core.Location
 		Name Name
 	}
 
 	// Instruction 表示 XML 的指令
 	Instruction struct {
-		core.Range
+		core.Location
 		Name       String
 		Attributes []*Attribute
 	}
 
 	// Attribute 表示 XML 属性
 	Attribute struct {
-		core.Range
+		core.Location
 		Name  Name
 		Value String
 	}
 
 	// String 表示 XML 的字符串数据
 	String struct {
-		core.Range
+		core.Location
 		Value string
 	}
 
@@ -54,7 +54,7 @@ type (
 
 	// Comment 表示 XML 的注释
 	Comment struct {
-		core.Range
+		core.Location
 		Value String
 	}
 )

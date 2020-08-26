@@ -53,33 +53,48 @@ func TestAPIDoc(t *testing.T) {
 	a.Equal(doc.BaseTag, xmlenc.BaseTag{
 		Base: xmlenc.Base{
 			UsageKey: "usage-apidoc",
-			Range: core.Range{
-				Start: core.Position{Character: 0, Line: 2},
-				End:   core.Position{Character: 9, Line: 35},
+			Location: core.Location{
+				URI: "doc.xml",
+				Range: core.Range{
+					Start: core.Position{Character: 0, Line: 2},
+					End:   core.Position{Character: 9, Line: 35},
+				},
 			},
 		},
 		StartTag: xmlenc.Name{
-			Range: core.Range{
-				Start: core.Position{Character: 1, Line: 2},
-				End:   core.Position{Character: 7, Line: 2},
-			},
-			Local: xmlenc.String{
+			Location: core.Location{
+				URI: "doc.xml",
 				Range: core.Range{
 					Start: core.Position{Character: 1, Line: 2},
 					End:   core.Position{Character: 7, Line: 2},
+				},
+			},
+			Local: xmlenc.String{
+				Location: core.Location{
+					URI: "doc.xml",
+					Range: core.Range{
+						Start: core.Position{Character: 1, Line: 2},
+						End:   core.Position{Character: 7, Line: 2},
+					},
 				},
 				Value: "apidoc",
 			},
 		},
 		EndTag: xmlenc.Name{
-			Range: core.Range{
-				Start: core.Position{Character: 2, Line: 35},
-				End:   core.Position{Character: 8, Line: 35},
-			},
-			Local: xmlenc.String{
+			Location: core.Location{
+				URI: "doc.xml",
 				Range: core.Range{
 					Start: core.Position{Character: 2, Line: 35},
 					End:   core.Position{Character: 8, Line: 35},
+				},
+			},
+			Local: xmlenc.String{
+				Location: core.Location{
+					URI: "doc.xml",
+					Range: core.Range{
+						Start: core.Position{Character: 2, Line: 35},
+						End:   core.Position{Character: 8, Line: 35},
+					},
 				},
 				Value: "apidoc",
 			},
@@ -90,20 +105,29 @@ func TestAPIDoc(t *testing.T) {
 		BaseAttribute: xmlenc.BaseAttribute{
 			Base: xmlenc.Base{
 				UsageKey: "usage-apidoc-version",
-				Range: core.Range{
-					Start: core.Position{Character: 8, Line: 2},
-					End:   core.Position{Character: 23, Line: 2},
+				Location: core.Location{
+					URI: "doc.xml",
+					Range: core.Range{
+						Start: core.Position{Character: 8, Line: 2},
+						End:   core.Position{Character: 23, Line: 2},
+					},
 				},
 			},
 			AttributeName: xmlenc.Name{
-				Range: core.Range{
-					Start: core.Position{Character: 8, Line: 2},
-					End:   core.Position{Character: 15, Line: 2},
-				},
-				Local: xmlenc.String{
+				Location: core.Location{
+					URI: "doc.xml",
 					Range: core.Range{
 						Start: core.Position{Character: 8, Line: 2},
 						End:   core.Position{Character: 15, Line: 2},
+					},
+				},
+				Local: xmlenc.String{
+					Location: core.Location{
+						URI: "doc.xml",
+						Range: core.Range{
+							Start: core.Position{Character: 8, Line: 2},
+							End:   core.Position{Character: 15, Line: 2},
+						},
 					},
 					Value: "version",
 				},
@@ -111,9 +135,12 @@ func TestAPIDoc(t *testing.T) {
 		},
 
 		Value: xmlenc.String{
-			Range: core.Range{
-				Start: core.Position{Character: 17, Line: 2},
-				End:   core.Position{Character: 22, Line: 2},
+			Location: core.Location{
+				URI: "doc.xml",
+				Range: core.Range{
+					Start: core.Position{Character: 17, Line: 2},
+					End:   core.Position{Character: 22, Line: 2},
+				},
 			},
 			Value: "1.1.1",
 		},
@@ -124,20 +151,29 @@ func TestAPIDoc(t *testing.T) {
 		BaseTag: xmlenc.BaseTag{
 			Base: xmlenc.Base{
 				UsageKey: "usage-apidoc-tags",
-				Range: core.Range{
-					Start: core.Position{Character: 4, Line: 10},
-					End:   core.Position{Character: 47, Line: 10},
+				Location: core.Location{
+					URI: "doc.xml",
+					Range: core.Range{
+						Start: core.Position{Character: 4, Line: 10},
+						End:   core.Position{Character: 47, Line: 10},
+					},
 				},
 			},
 			StartTag: xmlenc.Name{
-				Range: core.Range{
-					Start: core.Position{Character: 5, Line: 10},
-					End:   core.Position{Character: 8, Line: 10},
-				},
-				Local: xmlenc.String{
+				Location: core.Location{
+					URI: "doc.xml",
 					Range: core.Range{
 						Start: core.Position{Character: 5, Line: 10},
 						End:   core.Position{Character: 8, Line: 10},
+					},
+				},
+				Local: xmlenc.String{
+					Location: core.Location{
+						URI: "doc.xml",
+						Range: core.Range{
+							Start: core.Position{Character: 5, Line: 10},
+							End:   core.Position{Character: 8, Line: 10},
+						},
 					},
 					Value: "tag",
 				},
@@ -147,29 +183,41 @@ func TestAPIDoc(t *testing.T) {
 			BaseAttribute: xmlenc.BaseAttribute{
 				Base: xmlenc.Base{
 					UsageKey: "usage-tag-name",
-					Range: core.Range{
-						Start: core.Position{Character: 9, Line: 10},
-						End:   core.Position{Character: 20, Line: 10},
+					Location: core.Location{
+						URI: "doc.xml",
+						Range: core.Range{
+							Start: core.Position{Character: 9, Line: 10},
+							End:   core.Position{Character: 20, Line: 10},
+						},
 					},
 				},
 				AttributeName: xmlenc.Name{
-					Range: core.Range{
-						Start: core.Position{Character: 9, Line: 10},
-						End:   core.Position{Character: 13, Line: 10},
-					},
-					Local: xmlenc.String{
+					Location: core.Location{
+						URI: "doc.xml",
 						Range: core.Range{
 							Start: core.Position{Character: 9, Line: 10},
 							End:   core.Position{Character: 13, Line: 10},
+						},
+					},
+					Local: xmlenc.String{
+						Location: core.Location{
+							URI: "doc.xml",
+							Range: core.Range{
+								Start: core.Position{Character: 9, Line: 10},
+								End:   core.Position{Character: 13, Line: 10},
+							},
 						},
 						Value: "name",
 					},
 				},
 			},
 			Value: xmlenc.String{
-				Range: core.Range{
-					Start: core.Position{Character: 15, Line: 10},
-					End:   core.Position{Character: 19, Line: 10},
+				Location: core.Location{
+					URI: "doc.xml",
+					Range: core.Range{
+						Start: core.Position{Character: 15, Line: 10},
+						End:   core.Position{Character: 19, Line: 10},
+					},
 				},
 				Value: "tag1",
 			},
@@ -178,29 +226,41 @@ func TestAPIDoc(t *testing.T) {
 			BaseAttribute: xmlenc.BaseAttribute{
 				Base: xmlenc.Base{
 					UsageKey: "usage-tag-title",
-					Range: core.Range{
-						Start: core.Position{Character: 21, Line: 10},
-						End:   core.Position{Character: 44, Line: 10},
+					Location: core.Location{
+						URI: "doc.xml",
+						Range: core.Range{
+							Start: core.Position{Character: 21, Line: 10},
+							End:   core.Position{Character: 44, Line: 10},
+						},
 					},
 				},
 				AttributeName: xmlenc.Name{
-					Range: core.Range{
-						Start: core.Position{Character: 21, Line: 10},
-						End:   core.Position{Character: 26, Line: 10},
-					},
-					Local: xmlenc.String{
+					Location: core.Location{
+						URI: "doc.xml",
 						Range: core.Range{
 							Start: core.Position{Character: 21, Line: 10},
 							End:   core.Position{Character: 26, Line: 10},
+						},
+					},
+					Local: xmlenc.String{
+						Location: core.Location{
+							URI: "doc.xml",
+							Range: core.Range{
+								Start: core.Position{Character: 21, Line: 10},
+								End:   core.Position{Character: 26, Line: 10},
+							},
 						},
 						Value: "title",
 					},
 				},
 			},
 			Value: xmlenc.String{
-				Range: core.Range{
-					Start: core.Position{Character: 28, Line: 10},
-					End:   core.Position{Character: 43, Line: 10},
+				Location: core.Location{
+					URI: "doc.xml",
+					Range: core.Range{
+						Start: core.Position{Character: 28, Line: 10},
+						End:   core.Position{Character: 43, Line: 10},
+					},
 				},
 				Value: "tag description",
 			},

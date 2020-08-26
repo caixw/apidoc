@@ -67,7 +67,7 @@ var (
 
 func (b *BaseAttribute) setAttribute(usage string, attr *Attribute) {
 	b.UsageKey = usage
-	b.Range = attr.Range
+	b.Location = attr.Location
 	b.AttributeName = attr.Name
 }
 
@@ -76,10 +76,12 @@ func (b *BaseTag) setTag(usage string, start *StartElement, end *EndElement) {
 	b.StartTag = start.Name
 
 	if end == nil {
-		b.Range = start.Range
+		b.Location = start.Location
 	} else {
-		b.Range.Start = start.Start
-		b.Range.End = end.End
+		b.Location = core.Location{
+			URI:   start.Location.URI,
+			Range: core.Range{Start: start.Location.Range.Start, End: end.Location.Range.End},
+		}
 		b.EndTag = end.Name
 	}
 }
@@ -94,7 +96,7 @@ func Decode(p *Parser, v interface{}, namespace string) {
 
 	var hasRoot bool
 	for {
-		t, r, err := p.Token()
+		t, loc, err := p.Token()
 		if errors.Is(err, io.EOF) {
 			return
 		} else if err != nil {
@@ -106,7 +108,7 @@ func Decode(p *Parser, v interface{}, namespace string) {
 		case *StartElement:
 			if hasRoot { // 多个根元素
 				_ = p.endElement(elem) // 找到对应的结束标签，忽略错误
-				msg := p.NewError(elem.Start, p.Current().Position, elem.Name.String(), locale.ErrMultipleRootTag).
+				msg := p.NewError(elem.Location.Range.Start, p.Current().Position, elem.Name.String(), locale.ErrMultipleRootTag).
 					AddTypes(core.ErrorTypeUnused)
 				d.p.Warning(msg)
 				return
@@ -119,7 +121,7 @@ func Decode(p *Parser, v interface{}, namespace string) {
 			}
 		case *Comment, *String, *Instruction: // 忽略注释和普通的文本内容
 		default:
-			d.p.Error(p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
+			d.p.Error(loc.NewError(locale.ErrInvalidXML))
 			return
 		}
 	}
@@ -138,12 +140,12 @@ func (d *decoder) decode(n *node.Node, start *StartElement) *EndElement {
 	d.decodeAttributes(n, start)
 
 	if start.SelfClose {
-		d.checkOmitempty(n, start.Start, start.End, start.Name.String())
+		d.checkOmitempty(n, start.Location.Range.Start, start.Location.Range.End, start.Name.String())
 		return nil
 	}
 
 	if end, ok := d.decodeElements(n); ok {
-		d.checkOmitempty(n, start.Start, end.End, start.Name.String())
+		d.checkOmitempty(n, start.Location.Range.Start, end.Location.Range.End, start.Name.String())
 		return end
 	}
 	return nil
@@ -217,7 +219,7 @@ func (d *decoder) decodeAttributes(n *node.Node, start *StartElement) {
 
 func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 	for {
-		t, r, err := d.p.Token()
+		t, loc, err := d.p.Token()
 		if errors.Is(err, io.EOF) {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
 			d.p.Error(d.p.NewError(d.p.Current().Position, d.p.Current().Position, "", locale.ErrNotFoundEndTag))
@@ -232,7 +234,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 			if (elem.Name.Local.Value == n.Value.Name) && (elem.Name.Prefix.Value == d.prefix) {
 				return elem, true
 			}
-			d.p.Error(d.p.NewError(elem.Start, elem.End, n.Value.Name, locale.ErrNotFoundEndTag))
+			d.p.Error(d.p.NewError(elem.Location.Range.Start, elem.Location.Range.End, n.Value.Name, locale.ErrNotFoundEndTag))
 			return nil, false
 		case *CData:
 			if n.CData != nil {
@@ -250,7 +252,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 					return nil, false
 				}
 
-				e := d.p.NewError(elem.Start, d.p.Current().Position, elem.Name.String(), locale.ErrInvalidTag).
+				e := d.p.NewError(elem.Location.Range.Start, d.p.Current().Position, elem.Name.String(), locale.ErrInvalidTag).
 					AddTypes(core.ErrorTypeUnused)
 				d.p.Warning(e)
 				break // 忽略不存在的子元素
@@ -260,7 +262,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 			}
 		case *Comment: // 忽略注释内容
 		default:
-			d.p.Error(d.p.NewError(r.Start, r.End, "", locale.ErrInvalidXML))
+			d.p.Error(loc.NewError(locale.ErrInvalidXML))
 			return nil, false
 		}
 	}

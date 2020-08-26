@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	_ Ranger = Range{}
-	_ Ranger = &Range{}
+	_ Ranger = Location{}
+	_ Ranger = &Location{}
 )
 
 // 对一些堂量的基本检测。
@@ -74,6 +74,24 @@ func TestRange_Contains(t *testing.T) {
 	a.True(r.Contains(Position{Line: 5, Character: 15}))
 	a.False(r.Contains(Position{Line: 5, Character: 17}))
 	a.False(r.Contains(Position{Line: 0, Character: 17}))
+}
+
+func TestLocation_Contains(t *testing.T) {
+	a := assert.New(t)
+
+	loc := Location{
+		URI: "doc.go",
+		Range: Range{
+			Start: Position{Line: 1, Character: 15},
+			End:   Position{Line: 5, Character: 16},
+		},
+	}
+
+	a.True(loc.Contains("doc.go", Position{Line: 1, Character: 15}))
+	a.True(loc.Contains("doc.go", Position{Line: 2, Character: 15}))
+	a.False(loc.Contains("not-exists", Position{Line: 5, Character: 15}))
+	a.False(loc.Contains("doc.go", Position{Line: 5, Character: 17}))
+	a.False(loc.Contains("not-exists", Position{Line: 0, Character: 17}))
 }
 
 func TestLocation_Equal(t *testing.T) {

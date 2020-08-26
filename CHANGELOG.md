@@ -21,6 +21,10 @@
 - 当用户第一次打开项目时，不会发送错误通知给用户的错误；
 - 修正 textDocument/publishDiagnostics 的行为错误；
 
+### Changed
+
+- internal/ast.Base 现在直接包含 core.Location 对象；
+
 ## [v7.1.0]
 
 ### Added

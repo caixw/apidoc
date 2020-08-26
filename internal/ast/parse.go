@@ -50,10 +50,7 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 			doc.APIs = make([]*API, 0, 100)
 		}
 
-		api := &API{
-			doc: doc,
-			URI: b.Location.URI,
-		}
+		api := &API{doc: doc}
 		xmlenc.Decode(p, api, core.XMLNamespace)
 		doc.APIs = append(doc.APIs, api)
 
@@ -62,8 +59,8 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		}
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
-			err := p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue)
-			err.Relate(core.Location{URI: doc.URI, Range: doc.Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			err := p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue).
+				Relate(core.Location{URI: doc.URI, Range: doc.Range}, locale.Sprintf(locale.ErrDuplicateValue))
 			h.Error(err)
 			return
 		}

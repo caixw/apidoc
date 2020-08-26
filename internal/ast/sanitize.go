@@ -17,24 +17,24 @@ import (
 func (api *API) Sanitize(p *xmlenc.Parser) {
 	for _, header := range api.Headers { // 报头不能为 object
 		if header.Type.V() == TypeObject {
-			p.Error(p.NewError(header.Type.Start, header.Type.End, "header", locale.ErrInvalidValue))
+			p.Error(header.Type.Location.NewError(locale.ErrInvalidValue).WithField("header"))
 		}
 	}
 
 	// 对 Servers 和 Tags 查重
 	indexes := sliceutil.Dup(api.Servers, func(i, j int) bool { return api.Servers[i].V() == api.Servers[j].V() })
 	if len(indexes) > 0 {
-		err := p.NewError(api.Servers[indexes[0]].Start, api.Servers[indexes[0]].End, "server", locale.ErrDuplicateValue)
+		err := api.Servers[indexes[0]].Location.NewError(locale.ErrDuplicateValue).WithField("server")
 		for _, srv := range indexes[1:] {
-			err.Relate(core.Location{URI: p.Location.URI, Range: api.Servers[srv].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			err.Relate(api.Servers[srv].Location, locale.Sprintf(locale.ErrDuplicateValue))
 		}
 		p.Error(err)
 	}
 	indexes = sliceutil.Dup(api.Tags, func(i, j int) bool { return api.Tags[i].V() == api.Tags[j].V() })
 	if len(indexes) > 0 {
-		err := p.NewError(api.Tags[indexes[0]].Start, api.Tags[indexes[0]].End, "server", locale.ErrDuplicateValue)
+		err := api.Tags[indexes[0]].Location.NewError(locale.ErrDuplicateValue).WithField("server")
 		for _, tag := range indexes[1:] {
-			err.Relate(core.Location{URI: p.Location.URI, Range: api.Tags[tag].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			err.Relate(api.Tags[tag].Location, locale.Sprintf(locale.ErrDuplicateValue))
 		}
 		p.Error(err)
 	}
@@ -43,38 +43,38 @@ func (api *API) Sanitize(p *xmlenc.Parser) {
 // Sanitize token.Sanitizer
 func (e *Enum) Sanitize(p *xmlenc.Parser) {
 	if e.Description.V() == "" && e.Summary.V() == "" {
-		p.Error(p.NewError(e.Start, e.End, "summary", locale.ErrIsEmpty, "summary"))
+		p.Error(e.Location.NewError(locale.ErrIsEmpty, "summary").WithField("summary"))
 	}
 }
 
 // Sanitize token.Sanitizer
 func (p *Path) Sanitize(pp *xmlenc.Parser) {
 	if p.Path == nil || p.Path.V() == "" {
-		pp.Error(pp.NewError(p.Start, p.End, "path", locale.ErrIsEmpty, "path"))
+		pp.Error(p.Location.NewError(locale.ErrIsEmpty, "path").WithField("path"))
 	}
 
 	params, err := parsePath(p.Path.V())
 	if err != nil {
-		pp.Error(pp.NewError(p.Path.Start, p.Path.End, "path", locale.ErrInvalidFormat))
+		pp.Error(p.Path.Location.NewError(locale.ErrInvalidFormat).WithField("path"))
 	}
 	if len(params) != len(p.Params) {
-		pp.Error(pp.NewError(p.Start, p.End, "path", locale.ErrPathNotMatchParams))
+		pp.Error(p.Location.NewError(locale.ErrPathNotMatchParams).WithField("path"))
 	}
 	for _, param := range p.Params {
 		if _, found := params[param.Name.V()]; !found {
-			pp.Error(pp.NewError(param.Start, param.End, "path", locale.ErrPathNotMatchParams))
+			pp.Error(param.Location.NewError(locale.ErrPathNotMatchParams).WithField("path"))
 		}
 	}
 
 	// 路径参数和查询参数不能为 object
 	for _, item := range p.Params {
 		if item.Type.V() == TypeObject {
-			pp.Error(pp.NewError(item.Start, item.End, "type", locale.ErrInvalidValue))
+			pp.Error(item.Location.NewError(locale.ErrInvalidValue).WithField("type"))
 		}
 	}
 	for _, q := range p.Queries {
 		if q.Type.V() == TypeObject {
-			pp.Error(pp.NewError(q.Start, q.End, "type", locale.ErrInvalidValue))
+			pp.Error(q.Location.NewError(locale.ErrInvalidValue).WithField("type"))
 		}
 	}
 }
@@ -113,10 +113,10 @@ func parsePath(path string) (params map[string]struct{}, err error) {
 // Sanitize token.Sanitizer
 func (r *Request) Sanitize(p *xmlenc.Parser) {
 	if r.Type.V() == TypeObject && len(r.Items) == 0 {
-		p.Error(p.NewError(r.Start, r.End, "param", locale.ErrIsEmpty, "param"))
+		p.Error(r.Location.NewError(locale.ErrIsEmpty, "param").WithField("param"))
 	}
 	if r.Type.V() == TypeNone && len(r.Items) > 0 {
-		p.Error(p.NewError(r.Start, r.End, "type", locale.ErrInvalidValue))
+		p.Error(r.Location.NewError(locale.ErrInvalidValue).WithField("type"))
 	}
 
 	checkDuplicateEnum(r.Enums, p)
@@ -132,7 +132,7 @@ func (r *Request) Sanitize(p *xmlenc.Parser) {
 	if r.Mimetype.V() != "" {
 		for _, exp := range r.Examples {
 			if exp.Mimetype.V() != r.Mimetype.V() {
-				p.Error(p.NewError(r.Mimetype.Start, r.Mimetype.End, "mimetype", locale.ErrInvalidValue))
+				p.Error(r.Mimetype.Location.NewError(locale.ErrInvalidValue).WithField("mimetype"))
 			}
 		}
 	}
@@ -140,7 +140,7 @@ func (r *Request) Sanitize(p *xmlenc.Parser) {
 	// 报头不能为 object
 	for _, header := range r.Headers {
 		if header.Type.V() == TypeObject {
-			p.Error(p.NewError(header.Type.Start, header.Type.End, "type", locale.ErrInvalidValue))
+			p.Error(header.Type.Location.NewError(locale.ErrInvalidValue).WithField("type"))
 		}
 	}
 
@@ -150,14 +150,14 @@ func (r *Request) Sanitize(p *xmlenc.Parser) {
 // Sanitize token.Sanitizer
 func (p *Param) Sanitize(pp *xmlenc.Parser) {
 	if p.Type.V() == TypeNone {
-		pp.Error(pp.NewError(p.Start, p.End, "type", locale.ErrIsEmpty, "type"))
+		pp.Error(p.Location.NewError(locale.ErrIsEmpty, "type").WithField("type"))
 	}
 	if p.Type.V() == TypeObject && len(p.Items) == 0 {
-		pp.Error(pp.NewError(p.Start, p.End, "param", locale.ErrIsEmpty, "param"))
+		pp.Error(p.Location.NewError(locale.ErrIsEmpty, "param").WithField("param"))
 	}
 
 	if p.Type.V() != TypeObject && len(p.Items) > 0 {
-		pp.Error(pp.NewError(p.Type.Value.Start, p.Type.Value.End, "type", locale.ErrInvalidValue))
+		pp.Error(p.Type.Value.Location.NewError(locale.ErrInvalidValue).WithField("type"))
 	}
 
 	checkDuplicateEnum(p.Enums, pp)
@@ -173,7 +173,7 @@ func (p *Param) Sanitize(pp *xmlenc.Parser) {
 	}
 
 	if p.Summary.V() == "" && p.Description.V() == "" {
-		pp.Error(pp.NewError(p.Start, p.End, "summary", locale.ErrIsEmpty, "summary"))
+		pp.Error(p.Location.NewError(locale.ErrIsEmpty, "summary").WithField("summary"))
 	}
 }
 
@@ -187,17 +187,17 @@ func chkEnumsType(t *TypeAttribute, enums []*Enum, p *xmlenc.Parser) error {
 	case TypeNumber:
 		for _, enum := range enums {
 			if !is.Number(enum.Value.V()) {
-				return p.NewError(enum.Start, enum.End, enum.StartTag.String(), locale.ErrInvalidFormat)
+				return enum.Location.NewError(locale.ErrInvalidFormat).WithField(enum.StartTag.String())
 			}
 		}
 	case TypeBool:
 		for _, enum := range enums {
 			if _, err := strconv.ParseBool(enum.Value.V()); err != nil {
-				return p.NewError(enum.Start, enum.End, enum.StartTag.String(), locale.ErrInvalidFormat)
+				return enum.Location.NewError(locale.ErrInvalidFormat).WithField(enum.StartTag.String())
 			}
 		}
 	case TypeObject, TypeNone:
-		return p.NewError(t.Start, t.End, t.AttributeName.String(), locale.ErrInvalidValue)
+		return t.Location.NewError(locale.ErrInvalidValue).WithField(t.AttributeName.String())
 	}
 
 	return nil
@@ -206,9 +206,9 @@ func chkEnumsType(t *TypeAttribute, enums []*Enum, p *xmlenc.Parser) error {
 func checkDuplicateEnum(enums []*Enum, p *xmlenc.Parser) {
 	indexes := sliceutil.Dup(enums, func(i, j int) bool { return enums[i].Value.V() == enums[j].Value.V() })
 	if len(indexes) > 0 {
-		err := p.NewError(enums[indexes[0]].Start, enums[indexes[0]].End, "enum", locale.ErrDuplicateValue)
+		err := enums[indexes[0]].Location.NewError(locale.ErrDuplicateValue).WithField("enum")
 		for _, i := range indexes[1:] {
-			err.Relate(core.Location{URI: p.Location.URI, Range: enums[i].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			err.Relate(enums[i].Location, locale.Sprintf(locale.ErrDuplicateValue))
 		}
 		p.Error(err)
 	}
@@ -217,9 +217,9 @@ func checkDuplicateEnum(enums []*Enum, p *xmlenc.Parser) {
 func checkDuplicateItems(items []*Param, p *xmlenc.Parser) {
 	indexes := sliceutil.Dup(items, func(i, j int) bool { return items[i].Name.V() == items[j].Name.V() })
 	if len(indexes) > 0 {
-		err := p.NewError(items[indexes[0]].Start, items[indexes[0]].End, "param", locale.ErrDuplicateValue)
+		err := items[indexes[0]].Location.NewError(locale.ErrDuplicateValue).WithField("param")
 		for _, i := range indexes[1:] {
-			err.Relate(core.Location{URI: p.Location.URI, Range: items[i].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			err.Relate(items[i].Location, locale.Sprintf(locale.ErrDuplicateValue))
 		}
 		p.Error(err)
 	}
@@ -228,29 +228,29 @@ func checkDuplicateItems(items []*Param, p *xmlenc.Parser) {
 func checkXML(isArray, hasItems bool, xml *XML, p *xmlenc.Parser) error {
 	if xml.XMLAttr.V() {
 		if isArray || hasItems {
-			return p.NewError(xml.XMLAttr.Start, xml.XMLAttr.End, xml.XMLAttr.AttributeName.String(), locale.ErrInvalidValue)
+			return xml.XMLAttr.Location.NewError(locale.ErrInvalidValue).WithField(xml.XMLAttr.AttributeName.String())
 		}
 
 		if xml.XMLWrapped.V() != "" {
-			return p.NewError(xml.XMLWrapped.Start, xml.XMLWrapped.End, xml.XMLWrapped.AttributeName.String(), locale.ErrInvalidValue)
+			return xml.XMLWrapped.Location.NewError(locale.ErrInvalidValue).WithField(xml.XMLWrapped.AttributeName.String())
 		}
 
 		if xml.XMLExtract.V() {
-			return p.NewError(xml.XMLExtract.Start, xml.XMLExtract.End, xml.XMLExtract.AttributeName.String(), locale.ErrInvalidValue)
+			return xml.XMLExtract.NewError(locale.ErrInvalidValue).WithField(xml.XMLExtract.AttributeName.String())
 		}
 
 		if xml.XMLCData.V() {
-			return p.NewError(xml.XMLCData.Start, xml.XMLCData.End, xml.XMLCData.AttributeName.String(), locale.ErrInvalidValue)
+			return xml.XMLCData.NewError(locale.ErrInvalidValue).WithField(xml.XMLCData.AttributeName.String())
 		}
 	}
 
 	if xml.XMLWrapped.V() != "" && !isArray {
-		return p.NewError(xml.XMLWrapped.Start, xml.XMLWrapped.End, xml.XMLWrapped.AttributeName.String(), locale.ErrInvalidValue)
+		return xml.XMLWrapped.NewError(locale.ErrInvalidValue).WithField(xml.XMLWrapped.AttributeName.String())
 	}
 
 	if xml.XMLExtract.V() {
 		if xml.XMLNSPrefix.V() != "" {
-			return p.NewError(xml.XMLNSPrefix.Start, xml.XMLNSPrefix.End, xml.XMLNSPrefix.AttributeName.String(), locale.ErrInvalidValue)
+			return xml.XMLNSPrefix.NewError(locale.ErrInvalidValue).WithField(xml.XMLNSPrefix.AttributeName.String())
 		}
 	}
 
@@ -276,7 +276,7 @@ func (doc *APIDoc) Sanitize(p *xmlenc.Parser) {
 // Sanitize 检测内容是否合法
 func (ns *XMLNamespace) Sanitize(p *xmlenc.Parser) {
 	if ns.URN.V() == "" {
-		p.Error(p.NewError(ns.Start, ns.End, "@urn", locale.ErrIsEmpty, "@urn"))
+		p.Error(ns.Location.NewError(locale.ErrIsEmpty, "@urn").WithField("@urn"))
 	}
 }
 
@@ -290,10 +290,9 @@ func (doc *APIDoc) checkXMLNamespaces(p *xmlenc.Parser) error {
 		return doc.XMLNamespaces[i].URN.V() == doc.XMLNamespaces[j].URN.V()
 	})
 	if len(indexes) > 0 {
-		curr := doc.XMLNamespaces[indexes[0]].URN
-		err := p.NewError(curr.Start, curr.End, "@urn", locale.ErrDuplicateValue)
+		err := doc.XMLNamespaces[indexes[0]].URN.Location.NewError(locale.ErrDuplicateValue).WithField("@urn")
 		for _, i := range indexes[1:] {
-			err.Relate(core.Location{URI: p.Location.URI, Range: doc.XMLNamespaces[i].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			err.Relate(doc.XMLNamespaces[i].Location, locale.Sprintf(locale.ErrDuplicateValue))
 		}
 		return err
 	}
@@ -303,10 +302,9 @@ func (doc *APIDoc) checkXMLNamespaces(p *xmlenc.Parser) error {
 		return doc.XMLNamespaces[i].Prefix.V() == doc.XMLNamespaces[j].Prefix.V()
 	})
 	if len(indexes) > 0 {
-		curr := doc.XMLNamespaces[indexes[0]].URN
-		err := p.NewError(curr.Start, curr.End, "@prefix", locale.ErrDuplicateValue)
+		err := doc.XMLNamespaces[indexes[0]].URN.Location.NewError(locale.ErrDuplicateValue).WithField("@prefix")
 		for _, i := range indexes[1:] {
-			err.Relate(core.Location{URI: p.Location.URI, Range: doc.XMLNamespaces[i].Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			err.Relate(doc.XMLNamespaces[i].Location, locale.Sprintf(locale.ErrDuplicateValue))
 		}
 		return err
 	}
@@ -346,27 +344,20 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 	for _, tag := range api.Tags {
 		t := api.doc.findTag(tag.Content.Value)
 		if t == nil {
-			loc := core.Location{
-				URI: api.URI,
-				Range: core.Range{
-					Start: tag.Content.Start,
-					End:   tag.Content.End,
-				},
-			}
-			p.Warning(loc.NewError(locale.ErrInvalidValue).AddTypes(core.ErrorTypeUnused))
+			p.Warning(tag.Content.Location.NewError(locale.ErrInvalidValue).AddTypes(core.ErrorTypeUnused))
 			continue
 		}
 
 		tag.definition = &Definition{
 			Location: core.Location{
-				Range: t.R(),
+				Range: t.Location.R(),
 				URI:   api.doc.URI,
 			},
 			Target: t,
 		}
 		t.references = append(t.references, &Reference{
 			Location: core.Location{
-				Range: tag.R(),
+				Range: tag.Location.R(),
 				URI:   apiURI,
 			},
 			Target: tag,
@@ -376,27 +367,20 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 	for _, srv := range api.Servers {
 		s := api.doc.findServer(srv.Content.Value)
 		if s == nil {
-			loc := core.Location{
-				URI: api.URI,
-				Range: core.Range{
-					Start: srv.Content.Start,
-					End:   srv.Content.End,
-				},
-			}
-			p.Warning(loc.NewError(locale.ErrInvalidValue).AddTypes(core.ErrorTypeUnused))
+			p.Warning(srv.Content.Location.NewError(locale.ErrInvalidValue).AddTypes(core.ErrorTypeUnused))
 			continue
 		}
 
 		srv.definition = &Definition{
 			Location: core.Location{
-				Range: s.R(),
+				Range: s.Location.R(),
 				URI:   api.doc.URI,
 			},
 			Target: s,
 		}
 		s.references = append(s.references, &Reference{
 			Location: core.Location{
-				Range: srv.R(),
+				Range: srv.Location.R(),
 				URI:   apiURI,
 			},
 			Target: srv,
@@ -406,7 +390,7 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 
 // 检测当前 api 是否与 apidoc.APIs 中存在相同的值
 func (api *API) checkDup(p *xmlenc.Parser) {
-	err := (core.Location{URI: api.URI, Range: api.Range}).NewError(locale.ErrDuplicateValue)
+	err := api.Location.NewError(locale.ErrDuplicateValue)
 
 	for _, item := range api.doc.APIs {
 		if item == api {
@@ -431,7 +415,7 @@ func (api *API) checkDup(p *xmlenc.Parser) {
 
 		// 默认服务器
 		if len(api.Servers) == 0 && len(item.Servers) == 0 {
-			err.Relate(core.Location{URI: item.URI, Range: item.Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			err.Relate(item.Location, locale.Sprintf(locale.ErrDuplicateValue))
 			continue
 		}
 
@@ -439,7 +423,7 @@ func (api *API) checkDup(p *xmlenc.Parser) {
 		for _, srv := range api.Servers {
 			s := sliceutil.Count(item.Servers, func(i int) bool { return srv.V() == item.Servers[i].V() })
 			if s > 0 {
-				err.Relate(core.Location{URI: item.URI, Range: item.Range}, locale.Sprintf(locale.ErrDuplicateValue))
+				err.Relate(item.Location, locale.Sprintf(locale.ErrDuplicateValue))
 				continue
 			}
 		}

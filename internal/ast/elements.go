@@ -3,7 +3,6 @@
 package ast
 
 import (
-	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
@@ -11,7 +10,6 @@ type (
 	// APIDoc 对应 apidoc 元素
 	APIDoc struct {
 		xmlenc.BaseTag
-		URI      core.URI `apidoc:"-"`
 		RootName struct{} `apidoc:"apidoc,meta,usage-apidoc"`
 
 		APIDoc        *APIDocVersionAttribute `apidoc:"apidoc,attr,usage-apidoc-apidoc,omitempty"` // 文档格式的版本号
@@ -44,7 +42,6 @@ type (
 	API struct {
 		xmlenc.BaseTag
 		RootName struct{} `apidoc:"api,meta,usage-api"`
-		URI      core.URI `apidoc:"-"` // 该 API 所在的文件，如果为空，表示与其父元素的 apidoc.URI 相同
 		doc      *APIDoc
 
 		Version     *VersionAttribute `apidoc:"version,attr,usage-api-version,omitempty"`
