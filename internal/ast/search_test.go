@@ -37,10 +37,10 @@ func TestSearch(t *testing.T) {
 	rslt.Handler.Stop()
 
 	r := doc.Search("doc.go", core.Position{}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{End: core.Position{Line: 15, Character: 10}})
+	a.NotNil(r).Equal(r.Loc(), core.Location{URI: "doc.go", Range: core.Range{End: core.Position{Line: 15, Character: 10}}})
 
 	r = doc.Search("doc.go", core.Position{Character: 100}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{End: core.Position{Line: 15, Character: 10}})
+	a.NotNil(r).Equal(r.Loc(), core.Location{URI: "doc.go", Range: core.Range{End: core.Position{Line: 15, Character: 10}}})
 
 	// 超出范围
 	r = doc.Search("doc.go", core.Position{Line: 100, Character: 100}, nil)
@@ -48,10 +48,10 @@ func TestSearch(t *testing.T) {
 
 	// title.title
 	r = doc.Search("doc.go", core.Position{Line: 1, Character: 10}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{
+	a.NotNil(r).Equal(r.Loc(), core.Location{URI: "doc.go", Range: core.Range{
 		Start: core.Position{Line: 1, Character: 9},
 		End:   core.Position{Line: 1, Character: 14},
-	})
+	}})
 
 	// title.title，URI 不匹配
 	r = doc.Search("not.exists", core.Position{Line: 1, Character: 10}, nil)
@@ -59,31 +59,31 @@ func TestSearch(t *testing.T) {
 
 	// tags[0].name
 	r = doc.Search("doc.go", core.Position{Line: 2, Character: 9}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{
+	a.NotNil(r).Equal(r.Loc(), core.Location{URI: "doc.go", Range: core.Range{
 		Start: core.Position{Line: 2, Character: 7},
 		End:   core.Position{Line: 2, Character: 16},
-	})
+	}})
 
 	// 两个数组元素的中间
 	r = doc.Search("doc.go", core.Position{Line: 2, Character: 40}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{
+	a.NotNil(r).Equal(r.Loc(), core.Location{URI: "doc.go", Range: core.Range{
 		End: core.Position{Line: 15, Character: 10},
-	})
+	}})
 
 	// tags[1].title
 	r = doc.Search("doc.go", core.Position{Line: 3, Character: 17}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{
+	a.NotNil(r).Equal(r.Loc(), core.Location{URI: "doc.go", Range: core.Range{
 		Start: core.Position{Line: 3, Character: 17},
 		End:   core.Position{Line: 3, Character: 29},
-	})
+	}})
 
 	// tags[0]，因为 referenceType 限定，只能搜索到 ast.Tag 实例
 	referencerType := reflect.TypeOf((*Referencer)(nil)).Elem()
 	r = search(reflect.ValueOf(doc), "doc.go", core.Position{Line: 3, Character: 17}, referencerType)
-	a.NotNil(r).Equal(r.R(), core.Range{
+	a.NotNil(r).Equal(r.Loc(), core.Location{URI: "doc.go", Range: core.Range{
 		Start: core.Position{Line: 3, Character: 2},
 		End:   core.Position{Line: 3, Character: 32},
-	})
+	}})
 	refs := r.(Referencer).References()
 	a.Equal(1, len(refs))
 	a.NotNil(refs[0].Target).
@@ -97,10 +97,10 @@ func TestSearch(t *testing.T) {
 
 	// api[0]
 	r = doc.Search("doc.go", core.Position{Line: 5, Character: 3}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{
+	a.NotNil(r).Equal(r.Loc(), core.Location{URI: "doc.go", Range: core.Range{
 		Start: core.Position{Line: 5, Character: 3},
 		End:   core.Position{Line: 5, Character: 16},
-	})
+	}})
 
 	// api[0]，URI 不匹配
 	r = doc.Search("not-exists", core.Position{Line: 5, Character: 3}, nil)
@@ -109,7 +109,7 @@ func TestSearch(t *testing.T) {
 	// api[0]，不匹配 api，匹配至整个 apidoc
 	doc.APIs[0].Location.URI = "api.go"
 	r = doc.Search("doc.go", core.Position{Line: 5, Character: 3}, nil)
-	a.NotNil(r).Equal(r.R(), core.Range{
+	a.NotNil(r).Equal(r.Loc(), core.Location{URI: "doc.go", Range: core.Range{
 		End: core.Position{Line: 15, Character: 10},
-	})
+	}})
 }

@@ -35,7 +35,7 @@ var (
 	_ xmlenc.AttrEncoder = &VersionAttribute{}
 	_ xmlenc.AttrEncoder = &APIDocVersionAttribute{}
 
-	_ core.Ranger = Attribute{}
+	_ core.Searcher = Attribute{}
 )
 
 func TestNumberAttribute(t *testing.T) {

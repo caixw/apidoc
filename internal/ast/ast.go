@@ -93,13 +93,13 @@ type (
 
 	// Referencer 包含了 Reference 数据需要实现的接口
 	Referencer interface {
-		core.Ranger
+		core.Searcher
 		References() []*Reference
 	}
 
 	// Definitioner 包含了 Definition 数据需要实现的接口
 	Definitioner interface {
-		core.Ranger
+		core.Searcher
 		Definition() *Definition
 	}
 )

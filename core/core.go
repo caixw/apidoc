@@ -19,12 +19,12 @@ const (
 	XMLNamespace = "https://apidoc.tools/v6/XMLSchema"
 )
 
-// Ranger Range 实现的方法集
+// Searcher 实现了搜索的基本方法集合
 //
-// 所有内嵌 Range 的对象都可以使用此接口判断是否内嵌 Range。
-type Ranger interface {
+// 所有内嵌 Location 的对象都可以使用此接口判断是否内嵌 Location。
+type Searcher interface {
 	Contains(URI, Position) bool
-	R() Range
+	Loc() Location
 }
 
 // Block 最基本的代码单位
@@ -82,9 +82,9 @@ func (r Range) Contains(p Position) bool {
 		(e.Line > p.Line || (e.Line == p.Line && e.Character >= p.Character))
 }
 
-// R 返回当前的范围
-func (l Location) R() Range {
-	return l.Range
+// Loc 返回当前的范围
+func (l Location) Loc() Location {
+	return l
 }
 
 // Contains l 是否包含 pos 这个点

@@ -29,12 +29,18 @@ func TestHandler(t *testing.T) {
 
 	erro := new(bytes.Buffer)
 	warn := new(bytes.Buffer)
+	info := new(bytes.Buffer)
+	succ := new(bytes.Buffer)
 	h := NewMessageHandler(func(msg *Message) {
 		switch msg.Type {
 		case Erro:
 			erro.WriteString("erro")
 		case Warn:
 			warn.WriteString("warn")
+		case Info:
+			erro.WriteString("info")
+		case Succ:
+			warn.WriteString("succ")
 		default:
 			panic("panic")
 		}
@@ -43,10 +49,14 @@ func TestHandler(t *testing.T) {
 
 	h.Error((Location{URI: "erro.go"}).NewError(locale.ErrInvalidUTF8Character))
 	h.Warning((Location{URI: "warn.go"}).NewError(locale.ErrInvalidUTF8Character))
+	h.Info((Location{URI: "info.go"}).NewError(locale.ErrInvalidUTF8Character))
+	h.Success((Location{URI: "succ.go"}).NewError(locale.ErrInvalidUTF8Character))
 
 	time.Sleep(1 * time.Second) // 等待 channel 完成
 	a.Equal(erro.String(), "erro")
 	a.Equal(warn.String(), "warn")
+	a.Equal(info.String(), "info")
+	a.Equal(succ.String(), "succ")
 
 	h.Stop()
 	a.Panic(func() { // 已经关闭 messages

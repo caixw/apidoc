@@ -18,7 +18,7 @@ var (
 	_ Referencer = &Tag{}
 	_ Referencer = &Server{}
 
-	_ core.Ranger = &APIDoc{}
+	_ core.Searcher = &APIDoc{}
 )
 
 func loadAPIDoc(a *assert.Assertion) *APIDoc {

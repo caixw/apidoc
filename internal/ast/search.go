@@ -10,13 +10,13 @@ import (
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
-var rangerType = reflect.TypeOf((*core.Ranger)(nil)).Elem()
+var searcherType = reflect.TypeOf((*core.Searcher)(nil)).Elem()
 
 // Search 搜索符合条件的对象并返回
 //
 // 从 doc 中查找符合符合 pos 定位的最小对象，且该对象必须实现了 t 类型。
 // 如果不存在则返回 nil。t 必须是一个接口。
-func (doc *APIDoc) Search(uri core.URI, pos core.Position, t reflect.Type) (r core.Ranger) {
+func (doc *APIDoc) Search(uri core.URI, pos core.Position, t reflect.Type) (r core.Searcher) {
 	r = search(reflect.ValueOf(doc), uri, pos, t)
 	if r == nil { // apidoc 的 uri 可以与 api 的 uri 不同
 		for _, api := range doc.APIs {
@@ -29,20 +29,20 @@ func (doc *APIDoc) Search(uri core.URI, pos core.Position, t reflect.Type) (r co
 	return r
 }
 
-func search(v reflect.Value, uri core.URI, pos core.Position, t reflect.Type) (r core.Ranger) {
+func search(v reflect.Value, uri core.URI, pos core.Position, t reflect.Type) (r core.Searcher) {
 	if v.IsZero() {
 		return
 	}
 
 	v = node.RealValue(v)
 
-	if v.CanInterface() && v.Type().Implements(rangerType) && (t == nil || v.Type().Implements(t)) {
-		if rr := v.Interface().(core.Ranger); rr.Contains(uri, pos) {
+	if v.CanInterface() && v.Type().Implements(searcherType) && (t == nil || v.Type().Implements(t)) {
+		if rr := v.Interface().(core.Searcher); rr.Contains(uri, pos) {
 			r = rr
 		}
 	} else if v.CanAddr() {
-		if pv := v.Addr(); pv.CanInterface() && pv.Type().Implements(rangerType) && (t == nil || pv.Type().Implements(t)) {
-			if rr := pv.Interface().(core.Ranger); rr.Contains(uri, pos) {
+		if pv := v.Addr(); pv.CanInterface() && pv.Type().Implements(searcherType) && (t == nil || pv.Type().Implements(t)) {
+			if rr := pv.Interface().(core.Searcher); rr.Contains(uri, pos) {
 				r = rr
 			}
 		}

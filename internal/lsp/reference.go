@@ -58,10 +58,7 @@ func references(doc *ast.APIDoc, uri core.URI, pos core.Position, include bool) 
 
 	referencer := r.(ast.Referencer)
 	if include {
-		locations = append(locations, core.Location{
-			URI:   uri,
-			Range: referencer.R(),
-		})
+		locations = append(locations, referencer.Loc())
 	}
 
 	for _, ref := range referencer.References() {

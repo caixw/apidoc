@@ -349,18 +349,12 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 		}
 
 		tag.definition = &Definition{
-			Location: core.Location{
-				Range: t.Location.R(),
-				URI:   api.doc.URI,
-			},
-			Target: t,
+			Location: t.Location,
+			Target:   t,
 		}
 		t.references = append(t.references, &Reference{
-			Location: core.Location{
-				Range: tag.Location.R(),
-				URI:   apiURI,
-			},
-			Target: tag,
+			Location: tag.Location,
+			Target:   tag,
 		})
 	}
 
@@ -372,18 +366,12 @@ func (api *API) sanitizeTags(p *xmlenc.Parser) {
 		}
 
 		srv.definition = &Definition{
-			Location: core.Location{
-				Range: s.Location.R(),
-				URI:   api.doc.URI,
-			},
-			Target: s,
+			Location: s.Location,
+			Target:   s,
 		}
 		s.references = append(s.references, &Reference{
-			Location: core.Location{
-				Range: srv.Location.R(),
-				URI:   apiURI,
-			},
-			Target: srv,
+			Location: srv.Location,
+			Target:   srv,
 		})
 	}
 }

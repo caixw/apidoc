@@ -11,7 +11,7 @@ import (
 )
 
 type usager interface {
-	core.Ranger
+	core.Searcher
 	Usage() string
 }
 
@@ -25,7 +25,7 @@ func hover(doc *ast.APIDoc, uri core.URI, pos core.Position, h *protocol.Hover) 
 
 	usage := u.(usager)
 	if v := usage.Usage(); v != "" {
-		h.Range = usage.R()
+		h.Range = usage.Loc().Range
 		h.Contents = protocol.MarkupContent{
 			Kind:  protocol.MarkupKindMarkdown,
 			Value: v,

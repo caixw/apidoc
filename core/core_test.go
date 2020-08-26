@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	_ Ranger = Location{}
-	_ Ranger = &Location{}
+	_ Searcher = Location{}
+	_ Searcher = &Location{}
 )
 
 // 对一些堂量的基本检测。
@@ -98,10 +98,21 @@ func TestLocation_Equal(t *testing.T) {
 	a := assert.New(t)
 
 	l := Location{}
-	a.True(l.Equal(Location{}))
+	a.True(l.Equal(Location{})).
+		True(l.Loc().Equal(Location{}))
 	a.False(l.Equal(Location{URI: URI(".")}))
 
 	l = Location{URI: URI("."), Range: Range{Start: Position{Line: 1}}}
 	a.True(l.Equal(Location{URI: URI("."), Range: Range{Start: Position{Line: 1}}}))
 	a.False(l.Equal(Location{}))
+}
+
+func TestLocation_IsEmpty(t *testing.T) {
+	a := assert.New(t)
+
+	l := Location{}
+	a.True(l.IsEmpty())
+
+	l.URI = "doc.go"
+	a.False(l.IsEmpty())
 }
