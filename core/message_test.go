@@ -38,9 +38,9 @@ func TestHandler(t *testing.T) {
 		case Warn:
 			warn.WriteString("warn")
 		case Info:
-			erro.WriteString("info")
+			info.WriteString("info")
 		case Succ:
-			warn.WriteString("succ")
+			succ.WriteString("succ")
 		default:
 			panic("panic")
 		}
