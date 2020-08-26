@@ -98,7 +98,7 @@ func (i *intTag) DecodeXML(p *Parser, start *StartElement) (*EndElement, error) 
 func (i *intAttr) DecodeXMLAttr(p *Parser, attr *Attribute) error {
 	v, err := strconv.Atoi(strings.TrimSpace(attr.Value.Value))
 	if err != nil {
-		return p.WithError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), err)
+		return attr.Value.WithError(err).WithField(attr.Name.String())
 	}
 	i.Value = v
 	return nil

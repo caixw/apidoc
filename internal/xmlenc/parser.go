@@ -449,18 +449,3 @@ func (p *Parser) NewError(start, end core.Position, field string, key message.Re
 			Range: core.Range{Start: start, End: end},
 		})
 }
-
-// WithError 将 err 包装成 *core.Error 类型
-//
-// 如果 err 本身就是 *core.Error 类型，则只取 err.Err
-// 作为返回对象有的 Err 字段，其它字段弃用。
-//
-// 其中的 URI 来自于 p.Location.URI
-func (p *Parser) WithError(start, end core.Position, field string, err error) *core.Error {
-	return core.WithError(err).
-		WithField(field).
-		WithLocation(core.Location{
-			URI:   p.Location.URI,
-			Range: core.Range{Start: start, End: end},
-		})
-}

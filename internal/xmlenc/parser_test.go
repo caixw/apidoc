@@ -3,7 +3,6 @@
 package xmlenc
 
 import (
-	"errors"
 	"io"
 	"testing"
 
@@ -2317,36 +2316,6 @@ func TestParser_parseAttribute(t *testing.T) {
 		rslt.Handler.Stop()
 		a.Empty(rslt.Errors)
 	}
-}
-
-func TestParser_WithError(t *testing.T) {
-	a := assert.New(t)
-
-	err1 := errors.New("err1")
-	rslt := messagetest.NewMessageHandler()
-	p, err := NewParser(rslt.Handler, core.Block{})
-	a.NotError(err).NotNil(p)
-
-	err = p.WithError(core.Position{}, core.Position{}, "field1", err1)
-	serr, ok := err.(*core.Error)
-	a.True(ok).Equal(serr.Err, err1)
-
-	err2 := core.WithError(err1)
-	err = p.WithError(core.Position{}, core.Position{}, "field1", err2)
-	serr, ok = err.(*core.Error)
-	a.True(ok).Equal(serr.Err, err1)
-
-	err3 := core.WithError(err2)
-	err = p.WithError(core.Position{}, core.Position{}, "field1", err3)
-	serr, ok = err.(*core.Error)
-	a.True(ok).Equal(serr.Err, err1)
-
-	err4 := core.WithError(err3)
-	err = p.WithError(core.Position{}, core.Position{}, "field1", err4)
-	serr, ok = err.(*core.Error)
-	a.True(ok).Equal(serr.Err, err1)
-
-	rslt.Handler.Stop()
 }
 
 func TestParser_endElement(t *testing.T) {

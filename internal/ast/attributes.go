@@ -100,7 +100,7 @@ func (num *NumberAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribu
 
 	v, err := strconv.ParseFloat(attr.Value.Value, 64)
 	if err != nil {
-		return p.WithError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), err)
+		return attr.Value.WithError(err).WithField(attr.Name.String())
 	}
 	num.Value = Number{
 		Range:   attr.Value.Range,
@@ -143,7 +143,7 @@ func (num *NumberAttribute) IsFloat() bool {
 func (b *BoolAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	v, err := strconv.ParseBool(attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), err)
+		return attr.Value.WithError(err).WithField(attr.Name.String())
 	}
 
 	b.Value = Bool{
@@ -171,7 +171,7 @@ func (a *MethodAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute
 	a.Value = attr.Value
 	a.Value.Value = strings.ToUpper(a.V())
 	if !isValidMethod(a.V()) {
-		return p.NewError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), locale.ErrInvalidValue)
+		return attr.Value.NewError(locale.ErrInvalidValue).WithField(attr.Name.String())
 	}
 	return nil
 }
@@ -194,7 +194,7 @@ func (a *StatusAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute
 	}
 
 	if !isValidStatus(v.Value.Int) {
-		return p.NewError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), locale.ErrInvalidValue)
+		return attr.Value.NewError(locale.ErrInvalidValue).WithField(attr.Name.String())
 	}
 
 	*a = StatusAttribute(v)
@@ -215,7 +215,7 @@ func (a *StatusAttribute) V() int {
 func (a *TypeAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	a.Value = attr.Value
 	if !isValidType(a.V()) {
-		return p.NewError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), locale.ErrInvalidValue)
+		return attr.Value.NewError(locale.ErrInvalidValue).WithField(attr.Name.String())
 	}
 	return nil
 }
@@ -237,7 +237,7 @@ func (a *TypeAttribute) V() string {
 func (a *VersionAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	a.Value = attr.Value
 	if !isValidVersion(a.V()) {
-		return p.NewError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), locale.ErrInvalidValue)
+		return attr.Value.NewError(locale.ErrInvalidValue).WithField(attr.Name.String())
 	}
 	return nil
 }
@@ -256,7 +256,7 @@ func (a *VersionAttribute) V() string {
 func (d *DateAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.Attribute) error {
 	t, err := time.Parse(dateFormat, attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), err)
+		return attr.Value.WithError(err).WithField(attr.Name.String())
 	}
 
 	d.Value = Date{
@@ -282,11 +282,11 @@ func (a *APIDocVersionAttribute) DecodeXMLAttr(p *xmlenc.Parser, attr *xmlenc.At
 
 	ok, err := version.SemVerCompatible(Version, attr.Value.Value)
 	if err != nil {
-		return p.WithError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), err)
+		return attr.Value.WithError(err).WithField(attr.Name.String())
 	}
 
 	if !ok {
-		return p.NewError(attr.Value.Location.Range.Start, attr.Value.Location.Range.End, attr.Name.String(), locale.ErrInvalidValue)
+		return attr.Value.NewError(locale.ErrInvalidValue).WithField(attr.Name.String())
 	}
 
 	return nil

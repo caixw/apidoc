@@ -41,7 +41,7 @@ type (
 	Sanitizer interface {
 		// 验证数据是否正确
 		//
-		// 可以通过 p.NewError 和 p.WithError 生成信息向 p.MessageHandler 输出
+		// 可以通过 p.Error 等方法输出错误信息
 		Sanitize(p *Parser)
 	}
 

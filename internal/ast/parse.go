@@ -59,8 +59,8 @@ func (doc *APIDoc) Parse(h *core.MessageHandler, b core.Block) {
 		}
 	case "apidoc":
 		if doc.Title != nil { // 多个 apidoc 标签
-			err := p.NewError(b.Location.Range.Start, b.Location.Range.End, "apidoc", locale.ErrDuplicateValue).
-				Relate(core.Location{URI: doc.URI, Range: doc.Range}, locale.Sprintf(locale.ErrDuplicateValue))
+			err := b.Location.NewError(locale.ErrDuplicateValue).WithField("apidoc").
+				Relate(doc.Location, locale.Sprintf(locale.ErrDuplicateValue))
 			h.Error(err)
 			return
 		}
