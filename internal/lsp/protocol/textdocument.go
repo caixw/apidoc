@@ -80,6 +80,7 @@ type TextDocumentClientCapabilities struct {
 	FoldingRange *FoldingRangeClientCapabilities `json:"foldingRange,omitempty"`
 }
 
+// ServerCapabilitiesTextDocumentSyncOptions 服务端对文档同步的支持项
 type ServerCapabilitiesTextDocumentSyncOptions struct {
 	// Open and close notifications are sent to the server.
 	// If omitted open close notification should not be sent.
@@ -88,21 +89,6 @@ type ServerCapabilitiesTextDocumentSyncOptions struct {
 	// Change notifications are sent to the server. See TextDocumentSyncKind.None, TextDocumentSyncKind.Full
 	// and TextDocumentSyncKind.Incremental. If omitted it defaults to TextDocumentSyncKind.None.
 	Change TextDocumentSyncKind `json:"change,omitempty"`
-}
-
-type TextDocumentSyncOptions struct {
-	ServerCapabilitiesTextDocumentSyncOptions
-
-	// If present will save notifications are sent to the server.
-	// If omitted the notification should not be sent.
-	WillSave bool `json:"willSave,omitempty"`
-
-	// If present will save wait until requests are sent to the server.
-	// If omitted the request should not be sent.
-	WillSaveWaitUntil bool `json:"willSaveWaitUntil,omitempty"`
-	// If present save notifications are sent to the server.
-	// If omitted the notification should not be sent.
-	Save SaveOptions `json:"save,omitempty"`
 }
 
 // TextDocumentRegistrationOptions General text document registration options

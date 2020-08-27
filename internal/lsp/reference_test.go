@@ -3,6 +3,8 @@
 package lsp
 
 import (
+	"io/ioutil"
+	"log"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -44,7 +46,7 @@ func loadReferencesDoc(a *assert.Assertion) *ast.APIDoc {
 
 func TestServer_textDocumentReferences(t *testing.T) {
 	a := assert.New(t)
-	s := &server{}
+	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	var locs []core.Location
 	err := s.textDocumentReferences(false, &protocol.ReferenceParams{}, &locs)
 	a.Nil(err).Empty(locs)
@@ -72,7 +74,7 @@ func TestServer_textDocumentReferences(t *testing.T) {
 
 func TestServer_textDocumentDefinition(t *testing.T) {
 	a := assert.New(t)
-	s := &server{}
+	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	var locs []core.Location
 	err := s.textDocumentDefinition(false, &protocol.DefinitionParams{}, &locs)
 	a.Nil(err).Empty(locs)

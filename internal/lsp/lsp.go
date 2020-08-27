@@ -4,7 +4,6 @@
 package lsp
 
 import (
-	"context"
 	"log"
 	"net"
 	"os"
@@ -66,49 +65,5 @@ func serveTCP(header bool, t string, addr string, timeout time.Duration, infolog
 }
 
 func serve(t jsonrpc.Transport, infolog, errlog *log.Logger) error {
-	jsonrpcServer := jsonrpc.NewServer()
-	ctx, cancel := context.WithCancel(context.Background())
-
-	srv := &server{
-		Conn:       jsonrpcServer.NewConn(t, errlog),
-		state:      serverCreated,
-		cancelFunc: cancel,
-		info:       infolog,
-		erro:       errlog,
-	}
-
-	jsonrpcServer.RegisterBefore(func(method string) error {
-		infolog.Println(locale.Sprintf(locale.RequestRPC, method))
-		srv.windowLogInfoMessage(locale.RequestRPC, method)
-		return nil
-	})
-
-	jsonrpcServer.Registers(map[string]interface{}{
-		"initialize":      srv.initialize,
-		"initialized":     srv.initialized,
-		"shutdown":        srv.shutdown,
-		"exit":            srv.exit,
-		"$/cancelRequest": srv.cancel,
-
-		// workspace
-		"workspace/didChangeWorkspaceFolders": srv.workspaceDidChangeWorkspaceFolders,
-
-		// textDocument
-		"textDocument/didChange":      srv.textDocumentDidChange,
-		"textDocument/hover":          srv.textDocumentHover,
-		"textDocument/foldingRange":   srv.textDocumentFoldingRange,
-		"textDocument/completion":     srv.textDocumentCompletion,
-		"textDocument/semanticTokens": srv.textDocumentSemanticTokens,
-		"textDocument/references":     srv.textDocumentReferences,
-		"textDocument/definition":     srv.textDocumentDefinition,
-
-		// apidoc 自定义的接口
-		"apidoc/refreshOutline": srv.apidocRefreshOutline,
-	})
-
-	jsonrpcServer.RegisterMatcher(func(method string) bool {
-		return strings.HasPrefix(method, "$/")
-	}, srv.dollarHandler)
-
-	return srv.Serve(ctx)
+	return newServe(t, infolog, errlog).serve()
 }

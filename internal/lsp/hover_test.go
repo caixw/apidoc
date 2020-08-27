@@ -3,6 +3,8 @@
 package lsp
 
 import (
+	"io/ioutil"
+	"log"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -41,7 +43,7 @@ func loadHoverDoc(a *assert.Assertion) *ast.APIDoc {
 
 func TestServer_textDocumentHover(t *testing.T) {
 	a := assert.New(t)
-	s := &server{}
+	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	h := &protocol.Hover{}
 	err := s.textDocumentHover(false, &protocol.HoverParams{}, h)
 	a.Nil(err)

@@ -17,7 +17,7 @@ import (
 func TestFolder_messageHandler(t *testing.T) {
 	a := assert.New(t)
 
-	s := &server{erro: log.New(ioutil.Discard, "", 0)}
+	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	f := &folder{srv: s, diagnostics: map[core.URI]*protocol.PublishDiagnosticsParams{}}
 	f.messageHandler(&core.Message{Type: core.Erro, Message: "abc"})
 	a.Empty(f.diagnostics)

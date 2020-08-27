@@ -13,7 +13,6 @@ import (
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
-	"github.com/caixw/apidoc/v7/internal/locale"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
 
@@ -33,7 +32,6 @@ type folder struct {
 }
 
 func (f *folder) close() {
-	f.srv.windowLogLogMessage(locale.CloseLSPFolder, f.Name)
 	f.clearDiagnostics()
 	f.h.Stop()
 }

@@ -3,6 +3,8 @@
 package lsp
 
 import (
+	"io/ioutil"
+	"log"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -15,7 +17,7 @@ import (
 
 func TestServer_initialize(t *testing.T) {
 	a := assert.New(t)
-	s := &server{}
+	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	in := &protocol.InitializeParams{}
 	out := &protocol.InitializeResult{}
 	a.NotError(s.initialize(false, in, out))
@@ -23,7 +25,7 @@ func TestServer_initialize(t *testing.T) {
 	a.Equal(s.clientParams, in).Equal(s.serverResult, out)
 	a.Equal(s.state, serverInitializing)
 
-	s = &server{}
+	s = newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	in = &protocol.InitializeParams{
 		Capabilities: protocol.ClientCapabilities{Workspace: &protocol.WorkspaceClientCapabilities{
 			WorkspaceFolders: true,
@@ -36,7 +38,7 @@ func TestServer_initialize(t *testing.T) {
 	a.True(out.Capabilities.Workspace.WorkspaceFolders.Supported).
 		True(out.Capabilities.Workspace.WorkspaceFolders.ChangeNotifications)
 
-	s = &server{}
+	s = newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	in = &protocol.InitializeParams{
 		Capabilities: protocol.ClientCapabilities{TextDocument: protocol.TextDocumentClientCapabilities{
 			Hover:        &protocol.HoverCapabilities{},
@@ -50,7 +52,7 @@ func TestServer_initialize(t *testing.T) {
 		True(out.Capabilities.DefinitionProvider).
 		True(out.Capabilities.FoldingRangeProvider)
 
-	s = &server{}
+	s = newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	in = &protocol.InitializeParams{
 		Capabilities: protocol.ClientCapabilities{TextDocument: protocol.TextDocumentClientCapabilities{
 			Hover:      &protocol.HoverCapabilities{ContentFormat: []protocol.MarkupKind{protocol.MarkupKindMarkdown}},

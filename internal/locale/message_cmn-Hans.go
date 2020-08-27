@@ -71,12 +71,8 @@ mock 服务会根据接口定义检测用户提交的数据是否合法，并生
 	DeprecatedWarn:      "%s %s 将于 %s 被废弃",
 	GeneratorBy:         "当前文档由 %s 生成",
 	ServerStart:         "服务启动，可通过 %s 访问",
-	RequestRPC:          "访问 RPC：%s",
 	UnimplementedRPC:    "未实现该 RPC 服务 %s",
 	PackFileHeader:      "文档由 %s 自动生成，请勿手动修改！",
-	CloseLSPFolder:      "关闭项目 %s",
-	LSPClientParams:     "LSP 客户端返回的参数：%s",
-	LSPServerResult:     "LSP 服务端输出的参数：%s",
 
 	// 文档树中各个字段的介绍
 	UsageAPIDoc:              "用于描述整个文档的相关内容，只能出现一次。",

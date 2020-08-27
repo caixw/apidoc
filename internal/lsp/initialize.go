@@ -3,8 +3,6 @@
 package lsp
 
 import (
-	"encoding/json"
-
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -98,12 +96,6 @@ func (s *server) initialized(bool, *protocol.InitializedParams, *interface{}) er
 		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
 	}
 	s.setState(serverInitialized)
-
-	data, _ := json.Marshal(s.clientParams)
-	s.windowLogLogMessage(locale.LSPClientParams, string(data))
-
-	data, _ = json.Marshal(s.serverResult)
-	s.windowLogLogMessage(locale.LSPServerResult, string(data))
 
 	if s.clientParams.Capabilities.Workspace != nil && s.clientParams.Capabilities.Workspace.WorkspaceFolders {
 		return s.workspaceWorkspaceFolders()

@@ -5,7 +5,6 @@ package lsp
 import (
 	"io/ioutil"
 	"log"
-	"os"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -18,26 +17,21 @@ import (
 func TestServer_workspaceDidChangeWorkspaceFolders(t *testing.T) {
 	a := assert.New(t)
 
-	s := &server{}
+	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	in := &protocol.DidChangeWorkspaceFoldersParams{}
 	err := s.workspaceDidChangeWorkspaceFolders(false, in, nil)
 	a.Error(err)
 	jerr, ok := err.(*jsonrpc.Error)
 	a.True(ok).Equal(jerr.Code, ErrInvalidRequest)
 
-	s = &server{
-		Conn:  jsonrpc.NewServer().NewConn(jsonrpc.NewStreamTransport(true, os.Stdin, os.Stdout, nil), nil),
-		state: serverInitialized,
-	}
+	s = newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
+	s.setState(serverInitialized)
 	in = &protocol.DidChangeWorkspaceFoldersParams{}
 	a.NotError(s.workspaceDidChangeWorkspaceFolders(false, in, nil))
 	a.Equal(0, len(s.folders))
 
-	s = &server{
-		Conn:  jsonrpc.NewServer().NewConn(jsonrpc.NewStreamTransport(true, os.Stdin, os.Stdout, nil), nil),
-		state: serverInitialized,
-		erro:  log.New(ioutil.Discard, "", 0),
-	}
+	s = newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
+	s.setState(serverInitialized)
 	s.folders = []*folder{
 		{
 			srv:             s,
