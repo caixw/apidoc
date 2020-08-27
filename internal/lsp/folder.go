@@ -20,16 +20,24 @@ import (
 type folder struct {
 	protocol.WorkspaceFolder
 	doc       *ast.APIDoc
-	h         *core.MessageHandler
 	cfg       *build.Config
 	srv       *server
 	loadError error // 加载过程中的出错信息
 	noConfig  bool
+	h         *core.MessageHandler
 
 	parsedMux sync.RWMutex
 
 	// 保存着错误和警告的信息
 	diagnostics map[core.URI]*protocol.PublishDiagnosticsParams
+}
+
+func (f *folder) reset() {
+	f.doc = &ast.APIDoc{}
+	f.clearDiagnostics()
+	f.loadError = nil
+	f.noConfig = false
+	f.cfg = nil
 }
 
 func (f *folder) close() {
@@ -77,8 +85,6 @@ func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) {
 //
 // 默认情况下，没有配置文件不会解析项目，但是在 force 为 true 时，会强制解析项目内容。
 func (f *folder) refresh(force bool) {
-	f.loadError = nil
-
 	cfg, err := build.LoadConfig(f.URI)
 	if errors.Is(err, os.ErrNotExist) { // 找不到配置文件
 		f.noConfig = true
@@ -99,6 +105,9 @@ func (f *folder) refresh(force bool) {
 		return
 	}
 	f.cfg = cfg
+	f.loadError = nil
+	f.doc = &ast.APIDoc{}
+	f.clearDiagnostics()
 
 	f.h = core.NewMessageHandler(f.messageHandler)
 	f.doc.ParseBlocks(f.h, func(blocks chan core.Block) {

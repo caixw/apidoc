@@ -12,7 +12,7 @@ import (
 // 这不是一个标准的 LSP 数据结构，由 apidoc 自定义，
 // 用户由服务端向客户端发送当前的文档结构信息。
 type APIDocOutline struct {
-	WorkspaceFolder WorkspaceFolder `json:"workspaceFolder"`
+	WorkspaceFolder
 
 	Err      string `json:"err,omitempty"`      // 表示项目解析出问题，此值不为空，则除去 WorkspaceFolder 和 Err 之外的字段都是无意义的。
 	NoConfig bool   `json:"noConfig,omitempty"` // 没有配置文件的相关信息
