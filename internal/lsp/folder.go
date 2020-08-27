@@ -24,6 +24,7 @@ type folder struct {
 	cfg       *build.Config
 	srv       *server
 	loadError error // 加载过程中的出错信息
+	noConfig  bool
 
 	parsedMux sync.RWMutex
 
@@ -33,7 +34,9 @@ type folder struct {
 
 func (f *folder) close() {
 	f.clearDiagnostics()
-	f.h.Stop()
+	if f.h != nil {
+		f.h.Stop()
+	}
 }
 
 func (f *folder) messageHandler(msg *core.Message) {
@@ -58,49 +61,55 @@ func (f *folder) messageHandler(msg *core.Message) {
 }
 
 func (s *server) appendFolders(folders ...protocol.WorkspaceFolder) {
-	for _, f := range folders {
-		ff := s.openFolder(f)
-		s.folders = append(s.folders, ff)
+	for _, ff := range folders {
+		f := &folder{
+			WorkspaceFolder: ff,
+			doc:             &ast.APIDoc{},
+			srv:             s,
+			diagnostics:     make(map[core.URI]*protocol.PublishDiagnosticsParams, 5),
+		}
+		f.refresh(false)
+		s.folders = append(s.folders, f)
 	}
 }
 
-// 解析 f 目录，并生成 folder
+// 刷新项目
 //
-// 在成功加载文档之后，会通过 apidoc/outline 通知客户端新的数据。
-func (s *server) openFolder(f protocol.WorkspaceFolder) (ff *folder) {
-	ff = &folder{
-		WorkspaceFolder: f,
-		doc:             &ast.APIDoc{},
-		srv:             s,
-		diagnostics:     make(map[core.URI]*protocol.PublishDiagnosticsParams, 5),
-	}
-	ff.h = core.NewMessageHandler(ff.messageHandler)
+// 默认情况下，没有配置文件不会解析项目，但是在 force 为 true 时，会强制解析项目内容。
+func (f *folder) refresh(force bool) {
+	f.loadError = nil
 
 	cfg, err := build.LoadConfig(f.URI)
 	if errors.Is(err, os.ErrNotExist) { // 找不到配置文件
-		if cfg, err = build.DetectConfig(f.URI, true); err != nil {
-			ff.loadError = err
-			s.printErr(ff.loadError)
-			return ff
+		f.noConfig = true
+		if force {
+			if cfg, err = build.DetectConfig(f.URI, true); err != nil {
+				f.loadError = err
+				f.cfg = cfg
+				f.srv.printErr(f.loadError)
+				return
+			}
+		} else {
+			f.loadError = err // 仅在不强制刷新项目的情况下，才会将错误保存至 f.loadError
+			return
 		}
 	} else if err != nil {
-		ff.loadError = err
-		s.printErr(ff.loadError)
-		return ff
+		f.loadError = err
+		f.srv.printErr(f.loadError)
+		return
 	}
-	ff.cfg = cfg
+	f.cfg = cfg
 
-	ff.doc.ParseBlocks(ff.h, func(blocks chan core.Block) {
-		build.ParseInputs(blocks, ff.h, ff.cfg.Inputs...)
+	f.h = core.NewMessageHandler(f.messageHandler)
+	f.doc.ParseBlocks(f.h, func(blocks chan core.Block) {
+		build.ParseInputs(blocks, f.h, f.cfg.Inputs...)
 	})
 
-	if err = s.apidocOutline(ff); err != nil {
-		s.printErr(err)
+	if err = f.srv.apidocOutline(f); err != nil {
+		f.srv.printErr(err)
 	}
 
-	s.textDocumentPublishDiagnostics(ff)
-
-	return ff
+	f.srv.textDocumentPublishDiagnostics(f)
 }
 
 func (s *server) findFolder(uri core.URI) *folder {
