@@ -11,7 +11,7 @@ type ServerCapabilities struct {
 	// If omitted it defaults to `TextDocumentSyncKind.None`.
 	//
 	// ServerCapabilitiesTextDocumentSyncOptions | TextDocumentSyncKind;
-	TextDocumentSync interface{} `json:"textDocumentSync"`
+	TextDocumentSync *ServerCapabilitiesTextDocumentSyncOptions `json:"textDocumentSync"`
 
 	// The server provides completion support.
 	CompletionProvider *CompletionOptions `json:"completionProvider,omitempty"`
