@@ -32,14 +32,6 @@ type folder struct {
 	diagnostics map[core.URI]*protocol.PublishDiagnosticsParams
 }
 
-func (f *folder) reset() {
-	f.doc = &ast.APIDoc{}
-	f.clearDiagnostics()
-	f.loadError = nil
-	f.noConfig = false
-	f.cfg = nil
-}
-
 func (f *folder) close() {
 	f.clearDiagnostics()
 	if f.h != nil {

@@ -2,9 +2,7 @@
 
 package lsp
 
-import (
-	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
-)
+import "github.com/caixw/apidoc/v7/internal/lsp/protocol"
 
 // 自定义的服务端下发通知 apidoc/outline
 func (s *server) apidocOutline(f *folder) error {

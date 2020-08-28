@@ -106,9 +106,11 @@ func (s *server) getState() serverState {
 func (s *server) setTrace(notify bool, in *protocol.SetTraceParams, out *interface{}) error {
 	if protocol.IsValidTraceValue(in.Value) {
 		s.trace = in.Value
+		return nil
 	}
+
 	s.trace = protocol.TraceValueOff
-	return nil
+	return newError(ErrInvalidParams, locale.ErrInvalidValue)
 }
 
 // $/logTrace
