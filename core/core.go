@@ -93,6 +93,14 @@ func (l Location) Contains(uri URI, pos Position) bool {
 }
 
 func (l Location) String() string {
+	if l.IsEmpty() {
+		return ""
+	}
+
+	if l.Range.IsEmpty() {
+		return l.URI.String()
+	}
+
 	s := l.Range.Start
 	e := l.Range.End
 	return fmt.Sprintf("%s[%d:%d,%d:%d]", l.URI, s.Line, s.Character, e.Line, e.Character)

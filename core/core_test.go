@@ -116,3 +116,19 @@ func TestLocation_IsEmpty(t *testing.T) {
 	l.URI = "doc.go"
 	a.False(l.IsEmpty())
 }
+
+func TestLocation_String(t *testing.T) {
+	a := assert.New(t)
+
+	l := Location{}
+	a.Empty(l.String())
+
+	l.URI = "uri.go"
+	a.Equal(l.String(), "uri.go")
+
+	l.Range.Start = Position{Line: 0, Character: 0}
+	a.Equal(l.String(), "uri.go")
+
+	l.Range.Start = Position{Line: 0, Character: 11}
+	a.Equal(l.String(), "uri.go[0:11,0:0]")
+}

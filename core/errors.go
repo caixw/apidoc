@@ -54,7 +54,10 @@ func NewHTTPError(code int, key message.Reference, v ...interface{}) *HTTPError 
 }
 
 func (err *Error) Error() string {
-	detail := err.Location.String()
+	var detail string
+	if !err.Location.IsEmpty() {
+		detail = err.Location.String()
+	}
 
 	if err.Field != "" {
 		detail += ":" + err.Field
