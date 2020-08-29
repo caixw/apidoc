@@ -22,6 +22,8 @@ func (s *server) apidocOutline(f *folder) error {
 // 之后刷新的内容会通过 apidoc/outline 通知客户端。
 func (s *server) apidocRefreshOutline(notify bool, in *protocol.WorkspaceFolder, out *interface{}) error {
 	if f := s.findFolder(in.URI); f != nil {
+		f.parsedMux.RLock()
+		defer f.parsedMux.RUnlock()
 		f.refresh(true)
 	}
 	return nil

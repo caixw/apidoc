@@ -26,7 +26,7 @@ type folder struct {
 	noConfig  bool
 	h         *core.MessageHandler
 
-	parsedMux sync.RWMutex
+	parsedMux sync.RWMutex // 解析 doc 时需要的锁
 
 	// 保存着错误和警告的信息
 	diagnostics map[core.URI]*protocol.PublishDiagnosticsParams
