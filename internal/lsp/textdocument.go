@@ -112,26 +112,26 @@ func (s *server) textDocumentFoldingRange(notify bool, in *protocol.FoldingRange
 		return nil
 	}
 
-	lineFoldingOnly := s.clientParams.Capabilities.TextDocument.FoldingRange.LineFoldingOnly
+	lineFoldingOnly := s.clientParams != nil &&
+		s.clientParams.Capabilities.TextDocument.FoldingRange != nil &&
+		s.clientParams.Capabilities.TextDocument.FoldingRange.LineFoldingOnly
 
-	fr := make([]protocol.FoldingRange, 0, 10)
-	if f.doc.URI == in.TextDocument.URI {
-		fr = append(fr, protocol.BuildFoldingRange(f.doc.Base, lineFoldingOnly))
-	}
+	folds := make([]protocol.FoldingRange, 0, 10)
 
 	f.parsedMux.RLock()
 	defer f.parsedMux.RUnlock()
 
-	for _, api := range f.doc.APIs {
-		matched := api.URI == in.TextDocument.URI || (api.URI == "" && f.doc.URI == in.TextDocument.URI)
-		if !matched {
-			continue
-		}
-
-		fr = append(fr, protocol.BuildFoldingRange(api.Base, lineFoldingOnly))
+	if f.doc.URI == in.TextDocument.URI {
+		folds = append(folds, protocol.BuildFoldingRange(f.doc.Base, lineFoldingOnly))
 	}
 
-	*out = fr
+	for _, api := range f.doc.APIs {
+		if api.URI == in.TextDocument.URI {
+			folds = append(folds, protocol.BuildFoldingRange(api.Base, lineFoldingOnly))
+		}
+	}
+
+	*out = folds
 
 	return nil
 }

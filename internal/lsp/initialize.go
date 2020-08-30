@@ -3,6 +3,8 @@
 package lsp
 
 import (
+	"os"
+
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -130,7 +132,8 @@ func (s *server) shutdown(bool, *interface{}, *interface{}) error {
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#exit
 func (s *server) exit(bool, *interface{}, *interface{}) error {
 	if s.getState() != serverShutdown {
-		return newError(ErrInvalidRequest, locale.ErrInvalidLSPState)
+		os.Exit(1)
 	}
+	os.Exit(0)
 	return nil
 }
