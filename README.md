@@ -58,10 +58,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 支持多种本地化语言，默认情况下会根据当前系统所使用的语言进行调整。也可以通过设置环境变更 `LANG` 指定一个本地化信息。*nix 系统也可以使用以下命令：
 
 ```shell
-LANG=lang apidoc
+LANG=lang apidoc # lang 设置为你需要的语言 ID，比如 zh-hans 等。
 ```
 
-将其中的 lang 设置为你需要的语言。
+具体的安装和使用细节可参考 <https://apidoc.tools/#usage>。
 
 ## 集成
 
