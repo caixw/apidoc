@@ -90,10 +90,11 @@ func TestTokenBuilder_sort(t *testing.T) {
 	})
 }
 
-func TestTokens(t *testing.T) {
+func TestSemanticTokens(t *testing.T) {
 	a := assert.New(t)
 
-	b := `<apidoc version="1.1.1">
+	// NOTE 此处的 apidoc 属性值必须与当前的文档主版本号相同
+	b := `<apidoc version="1.1.1" apidoc="6.0.0" created="2020-01-02T13:12:11+08:00">
 	<title>标题</title>
 	<mimetype>xml</mimetype>
 	<api method="GET">
@@ -103,7 +104,7 @@ func TestTokens(t *testing.T) {
 
 	<api method="POST">
 		<path path="/users" />
-		<response status="200" />
+		<response status="200" type="number" />
 	</api>
 </apidoc>`
 	blk := core.Block{Data: []byte(b), Location: core.Location{URI: "doc.go"}}
@@ -117,6 +118,10 @@ func TestTokens(t *testing.T) {
 		0, 1, 6, 1, 0, // apidoc
 		0, 7, 7, 2, 0,
 		0, 9, 5, 3, 0,
+		0, 7, 6, 2, 0,
+		0, 8, 5, 3, 0,
+		0, 7, 7, 2, 0,
+		0, 9, 25, 3, 0,
 
 		1, 2, 5, 1, 0, // <title>
 		// {1, 8, 2, 0, 0}, // 元素内容不作解析，直接采用默认的注释颜色
@@ -151,6 +156,8 @@ func TestTokens(t *testing.T) {
 		1, 3, 8, 1, 0, // response
 		0, 9, 6, 2, 0,
 		0, 8, 3, 3, 0,
+		0, 5, 4, 2, 0,
+		0, 6, 6, 3, 0,
 
 		1, 3, 3, 1, 0, // </api>
 

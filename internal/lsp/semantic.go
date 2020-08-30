@@ -8,8 +8,6 @@ import (
 	"sort"
 	"unicode"
 
-	"github.com/issue9/sliceutil"
-
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
@@ -18,7 +16,8 @@ import (
 )
 
 type tokenBuilder struct {
-	tag, attr, value int // 可用的 token
+	uri              core.URI // 当前 builder 对应的文件地址
+	tag, attr, value int      // 可用的 token
 
 	// 每个二级数组长度为 5，表示一组 semanticToken 数据。
 	// 数据分别为 绝对行号，当前行的绝对起始位置，长度，以及 token 和 modifier。
@@ -44,25 +43,14 @@ func (s *server) textDocumentSemanticTokens(notify bool, in *protocol.SemanticTo
 // value 表示属性的颜色值；
 func semanticTokens(doc *ast.APIDoc, uri core.URI, tag, attr, value int) []int {
 	b := &tokenBuilder{
+		uri:    uri,
 		tag:    tag,
 		attr:   attr,
 		value:  value,
 		tokens: make([][]int, 0, 100),
 	}
 
-	if doc.URI == uri {
-		b.parse(reflect.ValueOf(doc), "APIs")
-	}
-
-	for _, api := range doc.APIs {
-		matched := api.URI == uri || (api.URI == "" && doc.URI == uri)
-		if !matched {
-			continue
-		}
-
-		b.parse(reflect.ValueOf(api))
-	}
-
+	b.parse(reflect.ValueOf(doc))
 	b.sort()
 	return b.build()
 }
@@ -108,20 +96,18 @@ func (b *tokenBuilder) sort() {
 	})
 }
 
-func (b *tokenBuilder) parse(v reflect.Value, exclude ...string) {
+func (b *tokenBuilder) parse(v reflect.Value) {
 	v = node.RealValue(v)
-	t := v.Type()
-	if t.Kind() != reflect.Struct {
+	if !b.matched(v) {
 		return
 	}
 
 	b.parseAnonymous(v)
 
+	t := v.Type()
 	for i := 0; i < t.NumField(); i++ {
 		tf := t.Field(i)
-		if tf.Anonymous ||
-			unicode.IsLower(rune(tf.Name[0])) ||
-			sliceutil.Count(exclude, func(i int) bool { return exclude[i] == tf.Name }) > 0 { // 需要过滤的字段
+		if tf.Anonymous || unicode.IsLower(rune(tf.Name[0])) {
 			continue
 		}
 
@@ -134,6 +120,23 @@ func (b *tokenBuilder) parse(v reflect.Value, exclude ...string) {
 			b.parse(vf)
 		}
 	}
+}
+
+func (b *tokenBuilder) matched(v reflect.Value) bool {
+	if v.Kind() != reflect.Struct {
+		return false
+	}
+
+	if s, ok := v.Interface().(core.Searcher); ok && s.Loc().URI == b.uri {
+		return true
+	}
+
+	if !v.CanAddr() {
+		return false
+	}
+
+	s, ok := v.Addr().Interface().(core.Searcher)
+	return ok && s.Loc().URI == b.uri
 }
 
 func (b *tokenBuilder) parseAnonymous(v reflect.Value) {
