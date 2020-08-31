@@ -107,9 +107,9 @@ func Decode(p *Parser, v interface{}, namespace string) {
 		switch elem := t.(type) {
 		case *StartElement:
 			if hasRoot { // 多个根元素
-				_ = p.endElement(elem) // 找到对应的结束标签，忽略错误
-				msg := p.NewError(elem.Location.Range.Start, p.Current().Position, elem.Name.String(), locale.ErrMultipleRootTag).
-					AddTypes(core.ErrorTypeUnused)
+				p.endElement(elem) // 找到对应的结束标签，忽略错误
+				msg := core.NewError(locale.ErrMultipleRootTag).AddTypes(core.ErrorTypeUnused).WithField(elem.Name.String()).
+					WithLocation(core.Location{URI: elem.URI, Range: core.Range{Start: elem.Location.Range.Start, End: p.Current().Position}})
 				d.p.Warning(msg)
 				return
 			}
@@ -155,19 +155,19 @@ func (d *decoder) decode(n *node.Node, start *StartElement) *EndElement {
 func (d *decoder) checkOmitempty(n *node.Node, start, end core.Position, field string) {
 	for _, attr := range n.Attributes {
 		if canNotEmpty(attr) {
-			d.p.Error(d.p.NewError(start, end, attr.Name, locale.ErrIsEmpty, attr.Name))
+			d.p.Error(d.p.newError(start, end, attr.Name, locale.ErrIsEmpty, attr.Name))
 		}
 	}
 	for _, elem := range n.Elements {
 		if canNotEmpty(elem) {
-			d.p.Error(d.p.NewError(start, end, elem.Name, locale.ErrIsEmpty, elem.Name))
+			d.p.Error(d.p.newError(start, end, elem.Name, locale.ErrIsEmpty, elem.Name))
 		}
 	}
 	if n.CData != nil && canNotEmpty(n.CData) {
-		d.p.Error(d.p.NewError(start, end, "cdata", locale.ErrIsEmpty, field))
+		d.p.Error(d.p.newError(start, end, "cdata", locale.ErrIsEmpty, field))
 	}
 	if n.Content != nil && canNotEmpty(n.Content) {
-		d.p.Error(d.p.NewError(start, end, "content", locale.ErrIsEmpty, field))
+		d.p.Error(d.p.newError(start, end, "content", locale.ErrIsEmpty, field))
 	}
 }
 
@@ -222,7 +222,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 		t, loc, err := d.p.Token()
 		if errors.Is(err, io.EOF) {
 			// 应该只有 EndElement 才能返回，否则就不完整的 XML
-			d.p.Error(d.p.NewError(d.p.Current().Position, d.p.Current().Position, "", locale.ErrNotFoundEndTag))
+			d.p.Error(d.p.newError(d.p.Current().Position, d.p.Current().Position, "", locale.ErrNotFoundEndTag))
 			return nil, false
 		} else if err != nil {
 			d.p.Error(err)
@@ -234,7 +234,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 			if (elem.Name.Local.Value == n.Value.Name) && (elem.Name.Prefix.Value == d.prefix) {
 				return elem, true
 			}
-			d.p.Error(d.p.NewError(elem.Location.Range.Start, elem.Location.Range.End, n.Value.Name, locale.ErrNotFoundEndTag))
+			d.p.Error(d.p.newError(elem.Location.Range.Start, elem.Location.Range.End, n.Value.Name, locale.ErrNotFoundEndTag))
 			return nil, false
 		case *CData:
 			if n.CData != nil {
@@ -252,7 +252,7 @@ func (d *decoder) decodeElements(n *node.Node) (end *EndElement, ok bool) {
 					return nil, false
 				}
 
-				e := d.p.NewError(elem.Location.Range.Start, d.p.Current().Position, elem.Name.String(), locale.ErrInvalidTag).
+				e := d.p.newError(elem.Location.Range.Start, d.p.Current().Position, elem.Name.String(), locale.ErrInvalidTag).
 					AddTypes(core.ErrorTypeUnused)
 				d.p.Warning(e)
 				break // 忽略不存在的子元素

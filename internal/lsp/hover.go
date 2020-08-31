@@ -6,7 +6,6 @@ import (
 	"reflect"
 
 	"github.com/caixw/apidoc/v7/core"
-	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 )
 
@@ -16,22 +15,6 @@ type usager interface {
 }
 
 var usagerType = reflect.TypeOf((*usager)(nil)).Elem()
-
-func hover(doc *ast.APIDoc, uri core.URI, pos core.Position, h *protocol.Hover) {
-	u := doc.Search(uri, pos, usagerType)
-	if u == nil {
-		return
-	}
-
-	usage := u.(usager)
-	if v := usage.Usage(); v != "" {
-		h.Range = usage.Loc().Range
-		h.Contents = protocol.MarkupContent{
-			Kind:  protocol.MarkupKindMarkdown,
-			Value: v,
-		}
-	}
-}
 
 // textDocument/hover
 //
@@ -46,6 +29,15 @@ func (s *server) textDocumentHover(notify bool, in *protocol.HoverParams, out *p
 	f.parsedMux.RLock()
 	defer f.parsedMux.RUnlock()
 
-	hover(f.doc, in.TextDocument.URI, in.TextDocumentPositionParams.Position, out)
+	if u := f.doc.Search(in.TextDocument.URI, in.TextDocumentPositionParams.Position, usagerType); u != nil {
+		usage := u.(usager)
+		if v := usage.Usage(); v != "" {
+			out.Range = usage.Loc().Range
+			out.Contents = protocol.MarkupContent{
+				Kind:  protocol.MarkupKindMarkdown,
+				Value: v,
+			}
+		}
+	}
 	return nil
 }

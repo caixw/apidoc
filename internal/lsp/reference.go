@@ -46,7 +46,9 @@ func (s *server) textDocumentDefinition(notify bool, in *protocol.DefinitionPara
 	f.parsedMux.RLock()
 	defer f.parsedMux.RUnlock()
 
-	*out = definition(f.doc, in.TextDocument.URI, in.Position)
+	if r := f.doc.Search(in.TextDocument.URI, in.TextDocumentPositionParams.Position, definitionerType); r != nil {
+		*out = []core.Location{r.(ast.Definitioner).Definition().Location}
+	}
 	return nil
 }
 
@@ -66,13 +68,4 @@ func references(doc *ast.APIDoc, uri core.URI, pos core.Position, include bool) 
 	}
 
 	return
-}
-
-func definition(doc *ast.APIDoc, uri core.URI, pos core.Position) []core.Location {
-	r := doc.Search(uri, pos, definitionerType)
-	if r == nil {
-		return []core.Location{}
-	}
-
-	return []core.Location{r.(ast.Definitioner).Definition().Location}
 }
