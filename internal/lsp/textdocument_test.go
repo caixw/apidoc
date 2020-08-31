@@ -38,9 +38,14 @@ func TestServer_textDocumentDidChange(t *testing.T) {
 		},
 	)
 
+	changeFile := core.FileURI(filepath.Join(path, "apis.cpp"))
+	text, err := changeFile.ReadAll(nil)
 	err = s.textDocumentDidChange(true, &protocol.DidChangeTextDocumentParams{
 		TextDocument: protocol.VersionedTextDocumentIdentifier{
-			TextDocumentIdentifier: protocol.TextDocumentIdentifier{URI: core.FileURI(filepath.Join(path, "apis.cpp"))},
+			TextDocumentIdentifier: protocol.TextDocumentIdentifier{URI: changeFile},
+		},
+		ContentChanges: []protocol.TextDocumentContentChangeEvent{
+			{Text: string(text)},
 		},
 	}, nil)
 	a.NotError(err)

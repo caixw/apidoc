@@ -36,9 +36,9 @@ const (
 	// That means they either all succeed or no changes at all are applied to the workspace.
 	FailureHandlingKindTransactional FailureHandlingKind = "transactional"
 
-	// FailureHandlingKindTextOnlyTransactional if the workspace edit contains only textual file changes they are executed transactionally.
-	// If resource changes (create, rename or delete file) are part of the change the failure
-	// handling strategy is abort.
+	// FailureHandlingKindTextOnlyTransactional if the workspace edit contains only textual
+	// file changes they are executed transactionally. If resource changes (create, rename or delete file)
+	// are part of the change the failure handling strategy is abort.
 	FailureHandlingKindTextOnlyTransactional FailureHandlingKind = "textOnlyTransactional"
 
 	// FailureHandlingKindUndo The client tries to undo the operations already executed.
@@ -128,7 +128,8 @@ type WorkspaceFoldersServerCapabilities struct {
 	ChangeNotifications bool `json:"changeNotifications,omitempty"`
 }
 
-// WorkspaceEditClientCapabilities the capabilities of a workspace edit has evolved over the time. Clients can describe their support using the following client capability
+// WorkspaceEditClientCapabilities the capabilities of a workspace edit has evolved over the time.
+// Clients can describe their support using the following client capability
 type WorkspaceEditClientCapabilities struct {
 	// The client supports versioned document changes in `WorkspaceEdit`s
 	DocumentChanges bool `json:"documentChanges,omitempty"`
