@@ -73,6 +73,7 @@ func newServe(t jsonrpc.Transport, infolog, errlog *log.Logger) *server {
 
 		// apidoc 自定义的接口
 		"apidoc/refreshOutline": srv.apidocRefreshOutline,
+		"apidoc/detect":         srv.apidocDetect,
 	})
 
 	jsonrpcServer.RegisterMatcher(func(method string) bool {

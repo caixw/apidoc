@@ -7,6 +7,20 @@ import (
 	"github.com/caixw/apidoc/v7/internal/ast"
 )
 
+// APIDocDetectParams apidoc/detect 的请求参数
+type APIDocDetectParams struct {
+	// The text document.
+	TextDocument TextDocumentIdentifier `json:"textDocument"`
+
+	// Recursive 是否检测子目录的内容
+	Recursive bool `json:"recursive,omitempty"`
+}
+
+// APIDocDetectResult apidoc/detect 的返回参数
+type APIDocDetectResult struct {
+	Error string `json:"error,omitempty"` // 如果生成配置文件有误，返回此字段。
+}
+
 // APIDocOutline 传递给客户端的文档摘要
 //
 // 这不是一个标准的 LSP 数据结构，由 apidoc 自定义，

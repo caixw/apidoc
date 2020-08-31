@@ -5,6 +5,7 @@ package lsp
 import (
 	"io/ioutil"
 	"log"
+	"path/filepath"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -15,6 +16,35 @@ import (
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
+
+func TestServer_textDocumentDidChange(t *testing.T) {
+	a := assert.New(t)
+	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
+	err := s.textDocumentDidChange(true, &protocol.DidChangeTextDocumentParams{
+		TextDocument: protocol.VersionedTextDocumentIdentifier{
+			TextDocumentIdentifier: protocol.TextDocumentIdentifier{URI: "not-exists"},
+		},
+	}, nil)
+	a.NotError(err)
+
+	path, err := filepath.Abs("../../docs/example")
+	a.NotError(err)
+	path = filepath.FromSlash(path)
+
+	s.appendFolders(
+		protocol.WorkspaceFolder{
+			URI:  core.FileURI(path),
+			Name: "example",
+		},
+	)
+
+	err = s.textDocumentDidChange(true, &protocol.DidChangeTextDocumentParams{
+		TextDocument: protocol.VersionedTextDocumentIdentifier{
+			TextDocumentIdentifier: protocol.TextDocumentIdentifier{URI: core.FileURI(filepath.Join(path, "apis.cpp"))},
+		},
+	}, nil)
+	a.NotError(err)
+}
 
 func TestDeleteURI(t *testing.T) {
 	a := assert.New(t)
@@ -32,14 +62,11 @@ func TestDeleteURI(t *testing.T) {
 		{ //3
 			BaseTag: xmlenc.BaseTag{Base: xmlenc.Base{Location: core.Location{URI: "uri3"}}},
 		},
-		{ //4
-		},
 	}
 
 	a.True(deleteURI(d, "uri3"))
-	a.Equal(3, len(d.APIs)).NotNil(d.APIDoc)
+	a.Equal(2, len(d.APIs)).NotNil(d.APIDoc)
 
-	// 同时会删除 1,4
 	a.True(deleteURI(d, "uri1"))
 	a.Equal(1, len(d.APIs)).Nil(d.APIDoc)
 

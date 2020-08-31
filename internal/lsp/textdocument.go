@@ -63,17 +63,14 @@ func (f *folder) parseBlock(block core.Block) {
 
 func deleteURI(doc *ast.APIDoc, uri core.URI) (deleted bool) {
 	size := sliceutil.Delete(doc.APIs, func(i int) bool {
-		api := doc.APIs[i]
-		return api.URI == uri || (api.URI == "" && doc.URI == uri)
+		return doc.APIs[i].URI == uri
 	})
 
 	deleted = len(doc.APIs) > size
 	doc.APIs = doc.APIs[:size]
 
 	if doc.URI == uri {
-		*doc = ast.APIDoc{
-			APIs: doc.APIs,
-		}
+		*doc = ast.APIDoc{APIs: doc.APIs}
 		deleted = true
 	}
 

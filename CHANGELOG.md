@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- 添加 apidoc/detect 服务；
+
 ## [v7.2.0]
 
 ### Added
