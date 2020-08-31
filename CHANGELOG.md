@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v7.2.0]
+
 ### Added
 
 - 添加对 Julia 和 Nim 的支持；
