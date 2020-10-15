@@ -70,16 +70,17 @@ func (u uri) URI() core.URI {
 
 // Init 初始化 cmdopt.CmdOpt 实例
 func Init(out io.Writer) *cmdopt.CmdOpt {
-	command := cmdopt.New(
-		out,
-		flag.ExitOnError,
-		locale.Sprintf(locale.CmdUsage, core.Name),
-		locale.Sprintf(locale.CmdUsageFooter, core.OfficialURL, core.RepoURL),
-		locale.Sprintf(locale.CmdUsageOptions),
-		locale.Sprintf(locale.CmdUsageCommands),
-		func(name string) string {
+	command := &cmdopt.CmdOpt{
+		Output:        out,
+		ErrorHandling: flag.ExitOnError,
+		Header:        locale.Sprintf(locale.CmdUsage, core.Name),
+		Footer:        locale.Sprintf(locale.CmdUsageFooter, core.OfficialURL, core.RepoURL),
+		OptionsTitle:  locale.Sprintf(locale.CmdUsageOptions),
+		CommandsTitle: locale.Sprintf(locale.CmdUsageCommands),
+		NotFound: func(name string) string {
 			return locale.Sprintf(locale.CmdNotFound, name)
-		})
+		},
+	}
 
 	command.Help("help", locale.Sprintf(locale.CmdHelpUsage))
 	initBuild(command)

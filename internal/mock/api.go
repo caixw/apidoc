@@ -83,11 +83,7 @@ func validRequest(ns []*ast.XMLNamespace, requests []*ast.Request, r *http.Reque
 }
 
 func (m *mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Request) {
-	accepts, err := qheader.Accept(r)
-	if err != nil {
-		m.handleError(w, r, "request.headers[Accept]", err)
-		return
-	}
+	accepts := qheader.Accept(r)
 
 	resp, accept := findResponseByAccept(m.doc.Mimetypes, api.Responses, accepts)
 	if resp == nil {
@@ -305,11 +301,7 @@ func (m *mock) buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 		}
 	}
 
-	headers, err := qheader.Accept(r)
-	if err != nil {
-		return nil, err
-	}
-
+	headers := qheader.Accept(r)
 	for _, h := range headers {
 		switch strings.ToLower(h.Value) {
 		case "application/json", "*/*":

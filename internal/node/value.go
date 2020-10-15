@@ -76,9 +76,8 @@ func RealValue(v reflect.Value) reflect.Value {
 	for v.Kind() == reflect.Ptr {
 		if v.IsNil() {
 			v.Set(reflect.New(v.Type().Elem()))
-		} else {
-			v = v.Elem()
 		}
+		v = v.Elem()
 	}
 	return v
 }

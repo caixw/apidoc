@@ -151,11 +151,7 @@ func (m *mock) getImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	img := image.NewNRGBA(image.Rect(0, 0, width, height))
-	headers, err := qheader.Accept(r)
-	if err != nil {
-		http.Error(w, locale.Sprintf(locale.ErrInvalidValue), http.StatusBadRequest) // accept invalid
-		return
-	}
+	headers := qheader.Accept(r)
 
 	for _, h := range headers {
 		switch strings.ToLower(h.Value) {
