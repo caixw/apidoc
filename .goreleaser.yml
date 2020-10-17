@@ -21,6 +21,9 @@ builds:
 
     binary: apidoc
 
+    flags:
+      - -trimpath
+
     ldflags:
       - -s -w -X github.com/caixw/apidoc/v7/core.commitHash={{.Commit}} -X github.com/caixw/apidoc/v7/core.buildDate={{time "20060102"}}
 
