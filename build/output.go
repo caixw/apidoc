@@ -140,7 +140,7 @@ func (o *Output) buffer(d *ast.APIDoc) (*bytes.Buffer, error) {
 	filterDoc(d, o)
 
 	if o.Version != "" {
-		d.Version.Value.Value = o.Version
+		d.Version = &ast.VersionAttribute{Value: xmlenc.String{Value: o.Version}}
 	}
 
 	d.Created = &ast.DateAttribute{Value: ast.Date{Value: time.Now()}}

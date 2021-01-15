@@ -13,7 +13,7 @@ require (
 	github.com/issue9/rands v1.1.4
 	github.com/issue9/sliceutil v0.6.0
 	github.com/issue9/source v0.1.1
-	github.com/issue9/term/v2 v2.1.1
+	github.com/issue9/term/v2 v2.1.4
 	github.com/issue9/version v1.0.4
 	golang.org/x/text v0.3.4
 	gopkg.in/yaml.v2 v2.3.0
