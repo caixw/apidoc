@@ -104,25 +104,28 @@ func Load(h *core.MessageHandler, path core.URI, indent, imageURL string, server
 }
 
 func (m *mock) parse() error {
-LOOP:
 	for _, api := range m.doc.APIs {
 		handler := m.buildAPI(api)
+		method := api.Method.V()
+		path := api.Path.Path.V()
 
-		for name, prefix := range m.servers {
-			if !hasServer(api.Servers, name) {
-				continue
-			}
-
-			err := m.mux.Prefix(prefix).Handle(api.Path.Path.V(), handler, api.Method.V())
+		if len(api.Servers) == 0 {
+			err := m.mux.Handle(path, handler, method)
 			if err != nil {
 				return err
 			}
-			continue LOOP
+			continue
 		}
 
-		err := m.mux.Handle(api.Path.Path.V(), handler, api.Method.V())
-		if err != nil {
-			return err
+		for _, srv := range api.Servers {
+			prefix, found := m.servers[srv.V()]
+			if !found {
+				prefix = "/" + srv.V()
+			}
+			err := m.mux.Prefix(prefix).Handle(path, handler, method)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

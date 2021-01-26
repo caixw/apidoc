@@ -192,8 +192,8 @@ func TestMock(t *testing.T) {
 		Header("Accept", "application/json").
 		Do().Status(http.StatusOK)
 
-	// 不存在 client
-	srv.Get("/client/users").Do().Status(http.StatusNotFound)
+	// 未指定 client，采用默认的 /+client 作为前缀
+	srv.Get("/client/users").Do().Status(http.StatusMethodNotAllowed)
 
 	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
 	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
@@ -219,8 +219,8 @@ func TestMockFile(t *testing.T) {
 		Header("Accept", "application/json").
 		Do().Status(http.StatusOK)
 
-	// 不存在 client
-	srv.Get("/client/users").Do().Status(http.StatusNotFound)
+	// 未指定 client，采用默认的 /+client 作为前缀
+	srv.Get("/client/users").Do().Status(http.StatusMethodNotAllowed)
 
 	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
 	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在

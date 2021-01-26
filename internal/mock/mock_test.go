@@ -677,9 +677,11 @@ func TestNew(t *testing.T) {
 	srv.Close()
 
 	rslt = messagetest.NewMessageHandler()
-	mock, err = New(rslt.Handler, d, indent, "/images", map[string]string{"test": "/test"}, testOptions)
+	mock, err = New(rslt.Handler, d, indent, "/images", map[string]string{"admin": "/test"}, testOptions)
 	a.NotError(err).NotNil(mock)
 	srv = rest.NewServer(t, mock, nil)
+
+	srv.Post("/users", nil).Do().Status(http.StatusNotFound)
 
 	srv.Post("/test/users", nil).
 		Header("accept", "application/json").
