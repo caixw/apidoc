@@ -103,6 +103,13 @@ func (o *MockOptions) sanitize() *core.Error {
 		return core.NewError(locale.ErrIsEmpty, "EmailDomains").WithField("EmailDomains")
 	}
 
+	now := time.Now()
+	if o.DateStart.IsZero() {
+		o.DateStart = now.Add(-time.Hour * 24 * 365)
+	}
+	if o.DateEnd.IsZero() {
+		o.DateEnd = now.Add(time.Hour * 24 * 3650)
+	}
 	o.dateSize = o.DateEnd.Unix() - o.DateStart.Unix() - 86400
 	if o.dateSize <= 0 {
 		return core.NewError(locale.ErrInvalidValue).WithField("DateStart")

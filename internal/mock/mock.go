@@ -25,22 +25,23 @@ import (
 )
 
 type mock struct {
-	h       *core.MessageHandler
-	doc     *ast.APIDoc
-	mux     *mux.Mux
-	servers map[string]string
-	indent  string
-	gen     *GenOptions
+	msgHandler *core.MessageHandler
+	doc        *ast.APIDoc
+	mux        *mux.Mux
+	router     http.Handler
+	servers    map[string]string
+	indent     string
+	gen        *GenOptions
 }
 
 // New 声明 Mock 对象
 //
-// h 用于处理各类输出消息，仅在 ServeHTTP 中的消息才输出到 h；
+// msg 用于处理各类输出消息，仅在 ServeHTTP 中的消息才输出到 msg；
 // d doc.APIDoc 实例，调用方需要保证该数据类型的正确性；
 // indent 缩进字符串；
 // servers 用于指定 d.Servers 中每一个服务对应的路由前缀；
 // gen 生成随机数据的函数；
-func New(h *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, servers map[string]string, gen *GenOptions) (http.Handler, error) {
+func New(msg *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, servers map[string]string, gen *GenOptions) (http.Handler, error) {
 	c, err := version.SemVerCompatible(d.APIDoc.V(), ast.Version)
 	if err != nil {
 		return nil, err
@@ -49,13 +50,23 @@ func New(h *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, servers
 		return nil, locale.NewError(locale.VersionInCompatible)
 	}
 
+	mu := mux.New(false, false, true, nil, nil)
+	router := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h := w.Header()
+		h.Set("Access-Control-Allow-Origin", "*")
+		h.Set("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization")
+		h.Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS")
+		mu.ServeHTTP(w, r)
+	})
+
 	m := &mock{
-		h:       h,
-		doc:     d,
-		mux:     mux.New(false, false, true, nil, nil),
-		indent:  indent,
-		servers: servers,
-		gen:     gen,
+		msgHandler: msg,
+		doc:        d,
+		mux:        mu,
+		router:     router,
+		indent:     indent,
+		servers:    servers,
+		gen:        gen,
 	}
 
 	if imageURL != "" {
@@ -93,39 +104,37 @@ func Load(h *core.MessageHandler, path core.URI, indent, imageURL string, server
 }
 
 func (m *mock) parse() error {
+LOOP:
 	for _, api := range m.doc.APIs {
 		handler := m.buildAPI(api)
 
-		if len(api.Servers) == 0 {
-			err := m.mux.Handle(api.Path.Path.V(), handler, api.Method.V())
-			if err != nil {
-				return err
-			}
-			continue
-		}
-
 		for name, prefix := range m.servers {
 			if !hasServer(api.Servers, name) {
-				prefix = "/" + name
+				continue
 			}
 
-			prefix := m.mux.Prefix(prefix)
-			err := prefix.Handle(api.Path.Path.V(), handler, api.Method.V())
+			err := m.mux.Prefix(prefix).Handle(api.Path.Path.V(), handler, api.Method.V())
 			if err != nil {
 				return err
 			}
+			continue LOOP
+		}
+
+		err := m.mux.Handle(api.Path.Path.V(), handler, api.Method.V())
+		if err != nil {
+			return err
 		}
 	}
 
 	for path, methods := range m.mux.All(true, true) {
-		m.h.Locale(core.Info, locale.LoadAPI, path, strings.Join(methods, ","))
+		m.msgHandler.Locale(core.Info, locale.LoadAPI, path, strings.Join(methods, ","))
 	}
 
 	return nil
 }
 
 func (m *mock) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	m.mux.ServeHTTP(w, r)
+	m.router.ServeHTTP(w, r)
 }
 
 func hasServer(srvs []*ast.ServerValue, key string) bool {

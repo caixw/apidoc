@@ -19,9 +19,9 @@ import (
 
 func (m *mock) buildAPI(api *ast.API) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m.h.Locale(core.Succ, locale.RequestAPI, r.Method, r.URL.Path)
+		m.msgHandler.Locale(core.Succ, locale.RequestAPI, r.Method, r.URL.Path)
 		if api.Deprecated != nil {
-			m.h.Locale(core.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated.V())
+			m.msgHandler.Locale(core.Warn, locale.DeprecatedWarn, r.Method, r.URL.Path, api.Deprecated.V())
 		}
 
 		if err := validQueries(api.Path.Queries, r); err != nil {
@@ -119,7 +119,7 @@ func (m *mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Reque
 
 	w.WriteHeader(resp.Status.V())
 	if _, err := w.Write(data); err != nil {
-		m.h.Error(err) // 此时状态码已经输出
+		m.msgHandler.Error(err) // 此时状态码已经输出
 	}
 }
 
@@ -200,7 +200,7 @@ func (m *mock) handleError(w http.ResponseWriter, r *http.Request, field string,
 		err = (core.Location{URI: file}).WithError(err).WithField(field)
 	}
 
-	m.h.Error(err)
+	m.msgHandler.Error(err)
 	w.WriteHeader(http.StatusBadRequest)
 }
 

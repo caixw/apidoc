@@ -146,10 +146,11 @@ func (d *dateRange) String() string {
 }
 
 var (
+	mockOptions = &apidoc.MockOptions{}
+
 	mockPort         string
 	mockServers      = make(servers, 0)
 	mockStringAlpha  string
-	mockOptions      = &apidoc.MockOptions{}
 	mockPath         = uri("./")
 	mockSliceSize    = &size{Min: 5, Max: 10}
 	mockNumberSize   = &size{Min: 100, Max: 10000}
@@ -194,7 +195,11 @@ func doMock(io.Writer) error {
 	mockOptions.SliceSize = apidoc.Range(*mockSliceSize)
 	mockOptions.NumberSize = apidoc.Range(*mockNumberSize)
 	mockOptions.StringSize = apidoc.Range(*mockStringSize)
+	mockOptions.URLDomains = []string(*mockURLDomains)
+	mockOptions.EmailDomains = []string(*mockEmailDomains)
 	mockOptions.EmailUsernameSize = apidoc.Range(*mockUsernameSize)
+	mockOptions.DateStart = mockDateRange.start
+	mockOptions.DateEnd = mockDateRange.end
 	handler, err := apidoc.MockFile(h, mockPath.URI(), mockOptions)
 	if err != nil {
 		return err
