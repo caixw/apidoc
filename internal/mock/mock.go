@@ -130,7 +130,7 @@ func (m *mock) parse() error {
 	}
 
 	for path, methods := range m.mux.All(true, true) {
-		m.msgHandler.Locale(core.Info, locale.LoadAPI, path, strings.Join(methods, ","))
+		m.msgHandler.Locale(core.Info, locale.LoadAPI, "["+strings.Join(methods, ",")+"]", path)
 	}
 
 	return nil
