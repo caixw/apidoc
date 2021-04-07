@@ -7,43 +7,85 @@ release:
   name_template: '{{.Tag}}'
 
 builds:
-  - id: apidoc
+- id: apidoc
 
-    goos:
-    - darwin
-    - linux
-    - windows
+  goos:
+  - darwin
+  - linux
+  - windows
 
-    goarch:
-    - amd64
+  goarch:
+  - amd64
+  - arm64
 
-    main: ./cmd/apidoc
+  ignore:
+  - goos: windows
+    goarch: arm64
 
-    binary: apidoc
+  main: ./cmd/apidoc
 
-    flags:
-      - -trimpath
+  binary: apidoc
 
-    ldflags:
-      - -s -w -X github.com/caixw/apidoc/v7/core.commitHash={{.Commit}} -X github.com/caixw/apidoc/v7/core.buildDate={{time "20060102"}}
+  flags:
+  - -trimpath
+
+  ldflags:
+    - -s -w -X github.com/caixw/apidoc/v7/core.commitHash={{.Commit}} -X github.com/caixw/apidoc/v7/core.buildDate={{time "20060102"}}
+
+env:
+- CGO_ENABLED=0
+
+brews:
+- tap:
+    owner: caixw
+    name: homebrew-caixw
+  url_template: "https://github.com/caixw/apidoc/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+  commit_author:
+    name: goreleaserbot
+    email: goreleaser@carlosbecker.com
+  folder: Formula
+  homepage: "https://github.com/caixw/apidoc"
+  description: RESTful API 文档生成工具
+  license: MIT
+
+
+dockers:
+  -
+    ids: ['apidoc']
+    goos: linux
+    goarch: amd64
+    dockerfile: Dockerfile
+
+    image_templates:
+    - "docker.io/caixw/apidoc:{{ .Tag }}"
+    - "docker.io/caixw/apidoc:v{{ .Major }}"
+    - "docker.io/caixw/apidoc:v{{ .Major }}.{{ .Minor }}"
+    - "docker.io/caixw/apidoc:latest"
+
+    - "ghcr.io/caixw/apidoc:{{ .Tag }}"
+    - "ghcr.io/caixw/apidoc:v{{ .Major }}"
+    - "ghcr.io/caixw/apidoc:v{{ .Major }}.{{ .Minor }}"
+    - "ghcr.io/caixw/apidoc:latest"
+
 
 archives:
-  - builds:
-    - apidoc
-    replacements:
-      darwin: macOS
-    format_overrides:
-    - goos: windows
-      format: zip
-    files:
-    - licence*
-    - LICENCE*
-    - license*
-    - LICENSE*
-    - readme*
-    - README*
-    - changelog*
-    - CHANGELOG*
+- builds:
+  - apidoc
+  replacements:
+    darwin: macOS
+  format_overrides:
+  - goos: windows
+    format: zip
+  files:
+  - licence*
+  - LICENCE*
+  - license*
+  - LICENSE*
+  - readme*
+  - README*
+  - changelog*
+  - CHANGELOG*
 
 checksum:
   name_template: checksums.txt
