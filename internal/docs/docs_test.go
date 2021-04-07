@@ -59,12 +59,11 @@ func TestEmbeddedHandler(t *testing.T) {
 	srv.Get("/v6/apidoc.xsl").
 		Do().
 		Status(http.StatusOK).
-		Header("Content-Type", "text/xsl; charset=utf-8")
+		Header("Content-Type", "application/xml")
 
-	// 不打包旧的转换文档
 	srv.Get("/v5/apidoc.xsl").
 		Do().
-		Status(http.StatusNotFound)
+		Status(http.StatusOK)
 
 	srv.Get("/example").
 		Do().
@@ -97,6 +96,10 @@ func TestEmbeddedHandler_stylesheet(t *testing.T) {
 	srv.Get("/v6/apidoc.xsl").
 		Do().
 		Status(http.StatusOK)
+
+	srv.Get("/v5/apidoc.xsl").
+		Do().
+		Status(http.StatusNotFound)
 
 	srv.Get("/example").
 		Do().

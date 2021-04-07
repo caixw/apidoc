@@ -4,17 +4,20 @@
 package docs
 
 import (
-	"fmt"
+	"bytes"
+	"errors"
+	"io"
+	"io/fs"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/issue9/pack"
 	"github.com/issue9/source"
 
 	"github.com/caixw/apidoc/v7/core"
+	"github.com/caixw/apidoc/v7/docs"
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
@@ -34,13 +37,6 @@ var styles = []string{
 }
 
 var docsDir = core.FileURI(source.CurrentPath("../../docs"))
-
-// FileInfo 被打包文件的信息
-type FileInfo struct {
-	Name        string // 相对于打包根目录的地址，同时也会被作为路由地址
-	ContentType string
-	Content     []byte
-}
 
 // Dir 指向 /docs 的路径
 func Dir() core.URI {
@@ -77,34 +73,51 @@ func Handler(folder core.URI, stylesheet bool) http.Handler {
 }
 
 func embeddedHandler(stylesheet bool) http.Handler {
-	var fis []*FileInfo
-	if err := pack.Unpack(data, &fis); err != nil {
-		panic(fmt.Sprintf("解包资源文件时出错：%s", err))
-	}
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
-
-		if len(pp) > 0 && pp[0] == '/' {
+		if pp == "" || pp == "/" {
+			pp = indexPage
+		}
+		if pp[0] == '/' {
 			pp = pp[1:]
-			r.URL.Path = pp
 		}
-		indexPath := path.Join(pp, indexPage)
 
-		for _, info := range fis {
-			if info.Name == pp || info.Name == indexPath {
-				if stylesheet && !isStylesheetFile(info.Name) {
-					errStatus(w, http.StatusNotFound)
-					return
-				}
-
-				w.Header().Set("Content-Type", info.ContentType)
-				w.WriteHeader(http.StatusOK)
-				w.Write(info.Content)
-				return
-			}
+	READ:
+		if stylesheet && !isStylesheetFile(pp) {
+			errStatus(w, http.StatusNotFound)
+			return
 		}
-		errStatus(w, http.StatusNotFound)
+
+		f, err := docs.FS.Open(pp)
+		if errors.Is(err, fs.ErrNotExist) {
+			errStatus(w, http.StatusNotFound)
+			return
+		} else if errors.Is(err, fs.ErrPermission) {
+			errStatus(w, http.StatusForbidden)
+			return
+		} else if err != nil {
+			errStatusWithError(w, err)
+			return
+		}
+		defer f.Close()
+
+		stat, err := f.Stat()
+		if err != nil {
+			errStatusWithError(w, err)
+			return
+		}
+		if stat.IsDir() {
+			pp = path.Join(pp, indexPage)
+			goto READ
+		}
+
+		data, err := io.ReadAll(f)
+		if err != nil {
+			errStatusWithError(w, err)
+			return
+		}
+
+		http.ServeContent(w, r, r.URL.Path, stat.ModTime(), bytes.NewReader(data))
 	})
 }
 
@@ -159,15 +172,14 @@ func localHandler(folder core.URI, stylesheet bool) http.Handler {
 
 		info, err := os.Stat(p)
 		if err != nil {
-			if os.IsNotExist(err) {
+			if errors.Is(err, fs.ErrNotExist) {
 				errStatus(w, http.StatusNotFound)
 				return
 			}
-			if os.IsPermission(err) {
+			if errors.Is(err, fs.ErrPermission) {
 				errStatus(w, http.StatusForbidden)
 				return
 			}
-
 			errStatus(w, http.StatusInternalServerError)
 			return
 		}
