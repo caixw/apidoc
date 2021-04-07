@@ -30,7 +30,7 @@ builds:
   - -trimpath
 
   ldflags:
-    - -s -w -X github.com/caixw/apidoc/v7/core.commitHash={{.Commit}} -X github.com/caixw/apidoc/v7/core.buildDate={{time "20060102"}}
+    - -s -w -X github.com/caixw/apidoc/v7/core.metadata={{time "20060102"}}.{{.Commit}}
 
 env:
 - CGO_ENABLED=0

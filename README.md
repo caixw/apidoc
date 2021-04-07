@@ -53,7 +53,22 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 ## 使用
 
-在 <https://github.com/caixw/apidoc/releases> 提供了部分主流系统下的可用二进制。如果你使用的系统不在此列，则需要手动下载编译。
+macOS 和 linux 可以使用 homebrew 安装：
+
+```shell
+brew tap caixw/caixw
+brew install caixw/caixw/apidoc
+```
+
+同时在 <https://github.com/caixw/apidoc/releases> 提供了部分主流系统下的可用二进制。
+
+如果你使用的系统不在此列，则需要手动下载编译：
+
+```shell
+git clone https://github.com/caixw/apidoc.git
+cd apidoc
+./scripts/build.sh
+```
 
 支持多种本地化语言，默认情况下会根据当前系统所使用的语言进行调整。也可以通过设置环境变更 `LANG` 指定一个本地化信息。*nix 系统也可以使用以下命令：
 

@@ -11,4 +11,4 @@ set builddate=%date:~0,4%%date:~5,2%%date:~8,2%
 for /f "delims=" %%t in ('git rev-parse HEAD') do set hash=%%t
 
 echo compile
-go build -o %wd%\apidoc.exe -ldflags "-X %varsPath%.buildDate=%builddate% -X %varsPath%.commitHash=%hash%" -v %wd%
+go build -o %wd%\apidoc.exe -ldflags "-X %varsPath%.metadata=%builddate%.%hash%" -v %wd%

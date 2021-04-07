@@ -13,4 +13,4 @@ hash=`git rev-parse HEAD`
 # 需要修改变量的地址，若为 main，则指接使用 main，而不是全地址
 path=github.com/caixw/apidoc/v7/core
 
-ldflags="-X ${path}.buildDate=${date} -X ${path}.commitHash=${hash}"
+ldflags="-X ${path}.metadata=${date}.${hash}"
