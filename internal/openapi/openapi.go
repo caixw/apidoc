@@ -8,7 +8,7 @@ package openapi
 import (
 	"strconv"
 
-	"github.com/issue9/is"
+	"github.com/issue9/validation/is"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v7/core"

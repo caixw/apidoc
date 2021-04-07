@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
-	"github.com/issue9/is"
+	"github.com/issue9/validation/is"
 )
 
 var (

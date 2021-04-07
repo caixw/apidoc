@@ -4,6 +4,10 @@
 
 ### Added
 
+## [v7.2.1]
+
+### Added
+
 - 添加 apidoc/detect 服务；
 
 ## [v7.2.0]

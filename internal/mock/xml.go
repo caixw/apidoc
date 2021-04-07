@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/issue9/is"
+	"github.com/issue9/validation/is"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
