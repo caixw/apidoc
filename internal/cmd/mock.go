@@ -149,7 +149,7 @@ var (
 	mockOptions = &apidoc.MockOptions{}
 
 	mockPort         string
-	mockServers      = make(servers, 0)
+	mockServers      = servers{}
 	mockStringAlpha  string
 	mockPath         = uri("./")
 	mockSliceSize    = &size{Min: 5, Max: 10}

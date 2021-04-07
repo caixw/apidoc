@@ -20,7 +20,7 @@ var (
 func TestServers_Set(t *testing.T) {
 	a := assert.New(t)
 
-	srv := make(servers, 0)
+	srv := servers{}
 	a.Equal(srv, srv.Get())
 	a.Equal(0, len(srv))
 

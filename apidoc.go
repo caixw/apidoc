@@ -128,8 +128,8 @@ func ServeLSP(header bool, t, addr string, timeout time.Duration, infolog, errlo
 //
 // 用户可以通过以下代码搭建一个简易的 https://apidoc.tools 网站：
 //  http.Handle("/apidoc", apidoc.Static(...))
-func Static(dir core.URI, stylesheet bool) http.Handler {
-	return docs.Handler(dir, stylesheet)
+func Static(dir core.URI, stylesheet bool, erro *log.Logger) http.Handler {
+	return docs.Handler(dir, stylesheet, erro)
 }
 
 // View 返回查看文档的中间件
@@ -141,8 +141,9 @@ func Static(dir core.URI, stylesheet bool) http.Handler {
 // url 表示文档在路由中的地址；
 // data 表示文档的实际内容，会添加 xml-stylesheet 指令，并指向当前的 apidoc.xsl；
 // contentType 表示文档的 Content-Type 报头值；
-// dir 和 stylesheet 则和 Static 相同。
-func View(status int, url string, data []byte, contentType string, dir core.URI, stylesheet bool) http.Handler {
+// dir 和 stylesheet 则和 Static 相同；
+// erro 在 ServeHTTP 中出错时的错误信息输出通道；
+func View(status int, url string, data []byte, contentType string, dir core.URI, stylesheet bool, erro *log.Logger) http.Handler {
 	data = addStylesheet(data)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == url {
@@ -152,7 +153,7 @@ func View(status int, url string, data []byte, contentType string, dir core.URI,
 			return
 		}
 
-		Static(dir, stylesheet).ServeHTTP(w, r)
+		Static(dir, stylesheet, erro).ServeHTTP(w, r)
 	})
 }
 
@@ -160,13 +161,13 @@ func View(status int, url string, data []byte, contentType string, dir core.URI,
 //
 // 功能基本与 View 相同，但是第三个参数 unpackData 为 Pack() 函数打包之内的内容，
 // 不需要调用 Unpack() 解包，直接由 ViewPack 自行解包。
-func ViewPack(status int, url string, unpackData string, contentType string, dir core.URI, stylesheet bool) http.Handler {
+func ViewPack(status int, url string, unpackData string, contentType string, dir core.URI, stylesheet bool, erro *log.Logger) http.Handler {
 	data, err := Unpack(unpackData)
 	if err != nil {
 		panic(err)
 	}
 
-	return View(status, url, []byte(data), contentType, dir, stylesheet)
+	return View(status, url, []byte(data), contentType, dir, stylesheet, erro)
 }
 
 // ViewFile 返回查看文件的中间件
@@ -175,7 +176,7 @@ func ViewPack(status int, url string, unpackData string, contentType string, dir
 // url 可以为空值，表示接受 path 的文件名部分作为其值。
 //
 // path 可以是远程文件，也可以是本地文件。
-func ViewFile(status int, url string, path core.URI, contentType string, dir core.URI, stylesheet bool) (http.Handler, error) {
+func ViewFile(status int, url string, path core.URI, contentType string, dir core.URI, stylesheet bool, erro *log.Logger) (http.Handler, error) {
 	data, err := path.ReadAll(nil)
 	if err != nil {
 		return nil, err
@@ -193,7 +194,7 @@ func ViewFile(status int, url string, path core.URI, contentType string, dir cor
 		contentType = mime.TypeByExtension(filepath.Ext(file))
 	}
 
-	return View(status, url, data, contentType, dir, stylesheet), nil
+	return View(status, url, data, contentType, dir, stylesheet, erro), nil
 }
 
 // 用于查找 <?xml 指令

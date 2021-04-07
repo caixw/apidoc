@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/issue9/cmdopt"
@@ -40,9 +41,9 @@ func static(io.Writer) (err error) {
 	var handler http.Handler
 
 	if path == "" {
-		handler = apidoc.Static(staticDocs.URI(), staticStylesheet)
+		handler = apidoc.Static(staticDocs.URI(), staticStylesheet, log.Default())
 	} else {
-		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, path, staticContentType, staticDocs.URI(), staticStylesheet)
+		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, path, staticContentType, staticDocs.URI(), staticStylesheet, log.Default())
 		if err != nil {
 			return err
 		}

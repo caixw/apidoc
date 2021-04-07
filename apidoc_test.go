@@ -3,6 +3,7 @@
 package apidoc
 
 import (
+	"log"
 	"net/http"
 	"testing"
 
@@ -24,7 +25,7 @@ func TestVersion(t *testing.T) {
 }
 
 func TestStatic(t *testing.T) {
-	srv := rest.NewServer(t, Static(docs.Dir(), false), nil)
+	srv := rest.NewServer(t, Static(docs.Dir(), false, log.Default()), nil)
 	defer srv.Close()
 
 	srv.Get("/icon.svg").Do().Status(http.StatusOK)
@@ -34,7 +35,7 @@ func TestView(t *testing.T) {
 	a := assert.New(t)
 
 	data := asttest.XML(a)
-	h := View(http.StatusCreated, "/test/apidoc.xml", data, "text/xml", "", false)
+	h := View(http.StatusCreated, "/test/apidoc.xml", data, "text/xml", "", false, log.Default())
 	srv := rest.NewServer(t, h, nil)
 	srv.Get("/test/apidoc.xml").Do().
 		Status(http.StatusCreated).
@@ -49,7 +50,7 @@ func TestView(t *testing.T) {
 	srv.Close()
 
 	// 能正确覆盖 Static 中的 index.xml
-	h = View(http.StatusCreated, "/index.xml", data, "text/css", "", false)
+	h = View(http.StatusCreated, "/index.xml", data, "text/css", "", false, log.Default())
 	srv = rest.NewServer(t, h, nil)
 	srv.Get("/index.xml").Do().
 		Status(http.StatusCreated).
@@ -64,7 +65,7 @@ func TestView(t *testing.T) {
 func TestViewFile(t *testing.T) {
 	a := assert.New(t)
 
-	h, err := ViewFile(http.StatusAccepted, "/apidoc.xml", asttest.URI(a), "text/xml", "", false)
+	h, err := ViewFile(http.StatusAccepted, "/apidoc.xml", asttest.URI(a), "text/xml", "", false, log.Default())
 	a.NotError(err).NotNil(h)
 	srv := rest.NewServer(t, h, nil)
 	srv.Get("/apidoc.xml").Do().
@@ -72,7 +73,7 @@ func TestViewFile(t *testing.T) {
 		Header("content-type", "text/xml")
 	srv.Close()
 
-	h, err = ViewFile(http.StatusAccepted, "/apidoc.xml", asttest.URI(a), "", "", false)
+	h, err = ViewFile(http.StatusAccepted, "/apidoc.xml", asttest.URI(a), "", "", false, log.Default())
 	a.NotError(err).NotNil(h)
 	srv = rest.NewServer(t, h, nil)
 	srv.Get("/apidoc.xml").Do().
@@ -80,7 +81,7 @@ func TestViewFile(t *testing.T) {
 	srv.Close()
 
 	// 覆盖现有的 index.xml
-	h, err = ViewFile(http.StatusAccepted, "", asttest.URI(a), "", "", false)
+	h, err = ViewFile(http.StatusAccepted, "", asttest.URI(a), "", "", false, log.Default())
 	a.NotError(err).NotNil(h)
 	srv = rest.NewServer(t, h, nil)
 	srv.Get("/index.xml").Do().

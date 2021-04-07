@@ -3,6 +3,7 @@
 package docs
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -44,7 +45,7 @@ func TestStylesheetURL(t *testing.T) {
 func TestEmbeddedHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, Handler("", false), nil)
+	srv := rest.NewServer(t, Handler("", false, log.Default()), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -81,7 +82,7 @@ func TestEmbeddedHandler(t *testing.T) {
 func TestEmbeddedHandler_stylesheet(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, Handler("", true), nil)
+	srv := rest.NewServer(t, Handler("", true, log.Default()), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -117,7 +118,7 @@ func TestEmbeddedHandler_stylesheet(t *testing.T) {
 func TestEmbeddedHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", Handler("", false))
+	h := http.StripPrefix("/prefix/", Handler("", false, log.Default()))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()
@@ -150,7 +151,7 @@ func TestEmbeddedHandler_prefix(t *testing.T) {
 func TestLocalHandler(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, Handler(Dir(), false), nil)
+	srv := rest.NewServer(t, Handler(Dir(), false, log.Default()), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -178,7 +179,7 @@ func TestLocalHandler(t *testing.T) {
 func TestLocalHandler_stylesheet(t *testing.T) {
 	a := assert.New(t)
 
-	srv := rest.NewServer(t, Handler(Dir(), true), nil)
+	srv := rest.NewServer(t, Handler(Dir(), true, log.Default()), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -214,7 +215,7 @@ func TestLocalHandler_stylesheet(t *testing.T) {
 func TestLocalHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	h := http.StripPrefix("/prefix/", Handler(Dir(), false))
+	h := http.StripPrefix("/prefix/", Handler(Dir(), false, log.Default()))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()
@@ -247,8 +248,8 @@ func TestLocalHandler_prefix(t *testing.T) {
 func TestRemoteHandler(t *testing.T) {
 	a := assert.New(t)
 
-	remote := httptest.NewServer(Handler(Dir(), false))
-	srv := rest.NewServer(t, Handler(core.URI(remote.URL), false), nil)
+	remote := httptest.NewServer(Handler(Dir(), false, log.Default()))
+	srv := rest.NewServer(t, Handler(core.URI(remote.URL), false, log.Default()), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -276,8 +277,8 @@ func TestRemoteHandler(t *testing.T) {
 func TestRemoteHandler_stylesheet(t *testing.T) {
 	a := assert.New(t)
 
-	remote := httptest.NewServer(Handler(Dir(), false))
-	srv := rest.NewServer(t, Handler(core.URI(remote.URL), true), nil)
+	remote := httptest.NewServer(Handler(Dir(), false, log.Default()))
+	srv := rest.NewServer(t, Handler(core.URI(remote.URL), true, log.Default()), nil)
 	a.NotNil(srv)
 	defer srv.Close()
 
@@ -313,8 +314,8 @@ func TestRemoteHandler_stylesheet(t *testing.T) {
 func TestRemoteHandler_prefix(t *testing.T) {
 	a := assert.New(t)
 
-	remote := httptest.NewServer(Handler(Dir(), false))
-	h := http.StripPrefix("/prefix/", Handler(core.URI(remote.URL), false))
+	remote := httptest.NewServer(Handler(Dir(), false, log.Default()))
+	h := http.StripPrefix("/prefix/", Handler(core.URI(remote.URL), false, log.Default()))
 	srv := rest.NewServer(t, h, nil)
 	a.NotNil(srv)
 	defer srv.Close()

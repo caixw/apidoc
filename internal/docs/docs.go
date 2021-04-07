@@ -6,9 +6,9 @@ package docs
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"net/http"
 	"os"
 	"path"
@@ -60,22 +60,22 @@ func StylesheetURL(prefix string) string {
 //
 // 如果 folder 为空，表示采用内嵌的数据作为文件服务；
 // stylesheet 是否只返回最基本的样式表相关文件。
-func Handler(folder core.URI, stylesheet bool) http.Handler {
+func Handler(folder core.URI, stylesheet bool, erro *log.Logger) http.Handler {
 	if folder == "" {
-		return fsHandler(docs.FS, stylesheet)
+		return fsHandler(docs.FS, stylesheet, erro)
 	}
 
 	switch scheme, path := folder.Parse(); scheme {
 	case core.SchemeFile, "":
-		return fsHandler(os.DirFS(path), stylesheet)
+		return fsHandler(os.DirFS(path), stylesheet, erro)
 	case core.SchemeHTTP, core.SchemeHTTPS:
-		return remoteHandler(folder, stylesheet)
+		return remoteHandler(folder, stylesheet, erro)
 	default:
 		panic(locale.NewError(locale.ErrInvalidURIScheme, scheme))
 	}
 }
 
-func fsHandler(fsys fs.FS, stylesheet bool) http.Handler {
+func fsHandler(fsys fs.FS, stylesheet bool, erro *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
 		if pp == "" || pp == "/" {
@@ -102,14 +102,14 @@ func fsHandler(fsys fs.FS, stylesheet bool) http.Handler {
 			errStatus(w, http.StatusForbidden)
 			return
 		} else if err != nil {
-			errStatusWithError(w, err)
+			errStatusWithError(w, err, erro)
 			return
 		}
 		defer f.Close()
 
 		stat, err := f.Stat()
 		if err != nil {
-			errStatusWithError(w, err)
+			errStatusWithError(w, err, erro)
 			return
 		}
 		if stat.IsDir() {
@@ -119,7 +119,7 @@ func fsHandler(fsys fs.FS, stylesheet bool) http.Handler {
 
 		data, err := io.ReadAll(f)
 		if err != nil {
-			errStatusWithError(w, err)
+			errStatusWithError(w, err, erro)
 			return
 		}
 
@@ -127,7 +127,7 @@ func fsHandler(fsys fs.FS, stylesheet bool) http.Handler {
 	})
 }
 
-func remoteHandler(url core.URI, stylesheet bool) http.Handler {
+func remoteHandler(url core.URI, stylesheet bool, erro *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		p := r.URL.Path
 
@@ -146,13 +146,13 @@ func remoteHandler(url core.URI, stylesheet bool) http.Handler {
 			}
 
 			if httpError.Code != http.StatusNotFound {
-				errStatusWithError(w, httpError)
+				errStatusWithError(w, httpError, erro)
 				return
 			}
 
 			data, err = uri.Append(indexPage).ReadAll(nil)
 			if err != nil {
-				errStatusWithError(w, err)
+				errStatusWithError(w, err, erro)
 				return
 			}
 		}
@@ -165,14 +165,14 @@ func errStatus(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
 }
 
-func errStatusWithError(w http.ResponseWriter, err error) {
+func errStatusWithError(w http.ResponseWriter, err error, l *log.Logger) {
 	herr, ok := err.(*core.HTTPError)
 	if ok {
 		http.Error(w, herr.Err.Error(), herr.Code)
 		return
 	}
 
-	fmt.Println("ERR:", err)
+	l.Println(err)
 	errStatus(w, http.StatusInternalServerError)
 }
 

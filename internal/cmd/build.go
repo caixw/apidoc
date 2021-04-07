@@ -32,6 +32,6 @@ func doBuild(io.Writer) error {
 	defer h.Stop()
 
 	cfg.Build(h)
-	h.Locale(core.Info, locale.Complete, cfg.Output.Path, time.Now().Sub(start))
+	h.Locale(core.Info, locale.Complete, cfg.Output.Path, time.Since(start))
 	return nil
 }
