@@ -4,6 +4,14 @@
 
 ### Added
 
+- 添加 Server 以及 Server.Buffer 和 Server.File 用以代替原来的 View 和 ViewFile；
+
+### Removed
+
+- 删除 Pack 和 Unpack 等相关功能，该功能在 go1.16 中可以直接使用 `//go:embed` 生成的数据代替；
+- 删除被标记为过时的文件；
+- 删除 View 和 ViewFile 两个函数，由 Server 以相关方法代替；
+
 ## [v7.2.1]
 
 ### Added

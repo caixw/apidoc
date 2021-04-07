@@ -43,7 +43,15 @@ func static(io.Writer) (err error) {
 	if path == "" {
 		handler = apidoc.Static(staticDocs.URI(), staticStylesheet, log.Default())
 	} else {
-		handler, err = apidoc.ViewFile(http.StatusOK, staticURL, path, staticContentType, staticDocs.URI(), staticStylesheet, log.Default())
+
+		s := &apidoc.Server{
+			Status:      http.StatusOK,
+			URL:         staticURL,
+			ContentType: staticContentType,
+			Dir:         staticDocs.URI(),
+			Stylesheet:  staticStylesheet,
+		}
+		handler, err = s.File(path)
 		if err != nil {
 			return err
 		}

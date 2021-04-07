@@ -7,7 +7,6 @@ require (
 	github.com/issue9/jsonrpc v0.12.0
 	github.com/issue9/localeutil v0.1.1
 	github.com/issue9/mux/v3 v3.1.1
-	github.com/issue9/pack v0.2.0
 	github.com/issue9/qheader v0.5.4
 	github.com/issue9/rands v1.1.5
 	github.com/issue9/sliceutil v0.6.0

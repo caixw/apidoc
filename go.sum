@@ -19,8 +19,6 @@ github.com/issue9/localeutil v0.1.1 h1:BquSFmrehDlxM9hk2qKbwd/niQuv2KTJEuW4O4jAQ
 github.com/issue9/localeutil v0.1.1/go.mod h1:9n6OC5n0cuc+BjSyGC0ki9uCTpVehnvmxvASno0CtMU=
 github.com/issue9/mux/v3 v3.1.1 h1:itj2p66Cgn2PggnO804CB4cKRrk8XHSgIPUTXlDBSHA=
 github.com/issue9/mux/v3 v3.1.1/go.mod h1:yN6Texx/I//wXVNsUWaSuqS+f3vRmf7lR3mysiuIn8Q=
-github.com/issue9/pack v0.2.0 h1:g0Cv2ApAH8VX1ee65EhLCG5HSmtcMFQeF0kSGGDf3v4=
-github.com/issue9/pack v0.2.0/go.mod h1:pwDT+XdITlc0wc+xu/iUm30urXo+mnAARu5EIGKtV3M=
 github.com/issue9/qheader v0.5.4 h1:EJWT4VCtto4+J4A4sYpSwBVBldklQ8iOdOJyXnsIUDo=
 github.com/issue9/qheader v0.5.4/go.mod h1:LJk1/kJ3ydNYA3epOQD+p0adjjouW5fJTVAtpBk3org=
 github.com/issue9/rands v1.1.4/go.mod h1:aCnoDR8ukczytaW+9FXuWS7YhhAK/5f+w8sM7P6UXqs=

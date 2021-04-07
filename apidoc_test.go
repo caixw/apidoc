@@ -31,41 +31,51 @@ func TestStatic(t *testing.T) {
 	srv.Get("/icon.svg").Do().Status(http.StatusOK)
 }
 
-func TestView(t *testing.T) {
+func TestView_Buffer(t *testing.T) {
 	a := assert.New(t)
-
 	data := asttest.XML(a)
-	h := View(http.StatusCreated, "/test/apidoc.xml", data, "text/xml", "", false, log.Default())
-	srv := rest.NewServer(t, h, nil)
+
+	s := &Server{
+		Status:      http.StatusCreated,
+		URL:         "/test/apidoc.xml",
+		ContentType: "text/xml1",
+	}
+	srv := rest.NewServer(t, s.Buffer(data), nil)
 	srv.Get("/test/apidoc.xml").Do().
 		Status(http.StatusCreated).
-		Header("content-type", "text/xml")
+		Header("content-type", "text/xml1")
 
-	srv.Get("/index.xml").Do().
-		Status(http.StatusOK)
+	srv.Get("/index.xml").Do().Status(http.StatusOK)
 
-	srv.Get("/v6/apidoc.xsl").Do().
-		Status(http.StatusOK)
+	srv.Get("/v6/apidoc.xsl").Do().Status(http.StatusOK)
 
 	srv.Close()
 
 	// 能正确覆盖 Static 中的 index.xml
-	h = View(http.StatusCreated, "/index.xml", data, "text/css", "", false, log.Default())
-	srv = rest.NewServer(t, h, nil)
+	s = &Server{
+		Status:      http.StatusCreated,
+		URL:         "/index.xml",
+		ContentType: "text/css",
+	}
+	srv = rest.NewServer(t, s.Buffer(data), nil)
 	srv.Get("/index.xml").Do().
 		Status(http.StatusCreated).
 		Header("content-type", "text/css")
 
-	srv.Get("/v6/apidoc.xsl").Do().
-		Status(http.StatusOK)
+	srv.Get("/v6/apidoc.xsl").Do().Status(http.StatusOK)
 
 	srv.Close()
 }
 
-func TestViewFile(t *testing.T) {
+func TestView_File(t *testing.T) {
 	a := assert.New(t)
 
-	h, err := ViewFile(http.StatusAccepted, "/apidoc.xml", asttest.URI(a), "text/xml", "", false, log.Default())
+	s := &Server{
+		Status:      http.StatusAccepted,
+		URL:         "/apidoc.xml",
+		ContentType: "text/xml",
+	}
+	h, err := s.File(asttest.URI(a))
 	a.NotError(err).NotNil(h)
 	srv := rest.NewServer(t, h, nil)
 	srv.Get("/apidoc.xml").Do().
@@ -73,7 +83,11 @@ func TestViewFile(t *testing.T) {
 		Header("content-type", "text/xml")
 	srv.Close()
 
-	h, err = ViewFile(http.StatusAccepted, "/apidoc.xml", asttest.URI(a), "", "", false, log.Default())
+	s = &Server{
+		Status: http.StatusAccepted,
+		URL:    "/apidoc.xml",
+	}
+	h, err = s.File(asttest.URI(a))
 	a.NotError(err).NotNil(h)
 	srv = rest.NewServer(t, h, nil)
 	srv.Get("/apidoc.xml").Do().
@@ -81,7 +95,10 @@ func TestViewFile(t *testing.T) {
 	srv.Close()
 
 	// 覆盖现有的 index.xml
-	h, err = ViewFile(http.StatusAccepted, "", asttest.URI(a), "", "", false, log.Default())
+	s = &Server{
+		Status: http.StatusAccepted,
+	}
+	h, err = s.File(asttest.URI(a))
 	a.NotError(err).NotNil(h)
 	srv = rest.NewServer(t, h, nil)
 	srv.Get("/index.xml").Do().

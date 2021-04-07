@@ -8,7 +8,6 @@ package apidoc
 import (
 	"bytes"
 	"log"
-	"mime"
 	"net/http"
 	"path/filepath"
 	"regexp"
@@ -32,13 +31,8 @@ const (
 	DocVersion = ast.Version
 )
 
-type (
-	// Config 配置文件 apidoc.yaml 所表示的内容
-	Config = build.Config
-
-	// PackOptions 指定了打包文档内容的参数
-	PackOptions = build.PackOptions
-)
+// Config 配置文件 apidoc.yaml 所表示的内容
+type Config = build.Config
 
 // SetLocale 设置当前的本地化 ID
 //
@@ -94,28 +88,14 @@ func CheckSyntax(h *core.MessageHandler, i ...*build.Input) {
 	build.CheckSyntax(h, i...)
 }
 
-// Pack 将文档内容打包成一个 Go 文件
-//
-// opt 用于指定打包的设置项，如果为空，则会使用一个默认的设置项，
-// 该默认设置项会在当前目录下创建一个包为 apidoc 的包，且公开文档数据为 APIDOC，
-// 用户可以使用 Unpack 解包该常量的内容，即为一个合法的 apidoc 文档。
-func Pack(h *core.MessageHandler, opt *PackOptions, o *build.Output, i ...*build.Input) error {
-	return build.Pack(h, opt, o, i...)
-}
-
-// Unpack 用于解压由 Pack 输出的内容
-func Unpack(buffer string) (string, error) {
-	return build.Unpack(buffer)
-}
-
 // ServeLSP 提供 language server protocol 服务
 //
 // header 表示传递内容是否带报头；
 // t 表示允许连接的类型，目前可以是 tcp、udp、stdio 和 unix；
 // timeout 表示服务端每次读取客户端时的超时时间，如果为 0 表示不会超时。
 // 超时并不会出错，而是重新开始读取数据，防止被读取一直阻塞，无法结束进程；
-func ServeLSP(header bool, t, addr string, timeout time.Duration, infolog, errlog *log.Logger) error {
-	return lsp.Serve(header, t, addr, timeout, infolog, errlog)
+func ServeLSP(header bool, t, addr string, timeout time.Duration, info, erro *log.Logger) error {
+	return lsp.Serve(header, t, addr, timeout, info, erro)
 }
 
 // Static 为 dir 指向的路径内容搭建一个静态文件服务
@@ -132,69 +112,59 @@ func Static(dir core.URI, stylesheet bool, erro *log.Logger) http.Handler {
 	return docs.Handler(dir, stylesheet, erro)
 }
 
-// View 返回查看文档的中间件
-//
-// 提供了与 Static 相同的功能，同时又可以额外添加一个文件。
-// 与 Buffer 结合，可以提供一个完整的文档查看功能。
-//
-// status 是新文档的返回的状态码；
-// url 表示文档在路由中的地址；
-// data 表示文档的实际内容，会添加 xml-stylesheet 指令，并指向当前的 apidoc.xsl；
-// contentType 表示文档的 Content-Type 报头值；
-// dir 和 stylesheet 则和 Static 相同；
-// erro 在 ServeHTTP 中出错时的错误信息输出通道；
-func View(status int, url string, data []byte, contentType string, dir core.URI, stylesheet bool, erro *log.Logger) http.Handler {
-	data = addStylesheet(data)
+// Server 用于生成查看文档中间件的配置项
+type Server struct {
+	Status      int
+	URL         string      // 文档在路由中的地址
+	ContentType string      // 文档的 ContentType，为空表示采用 application/xml
+	Dir         core.URI    // 除文档不之外的附加项，比如 xsl，css 等内容的所在位置，如果为空表示采用内嵌的数据；
+	Stylesheet  bool        // 是否只采用 Dir 中的 xsl 和 css 等样式数据，而忽略其它文件
+	Erro        *log.Logger // 服务出错时的错误信息输出通道，默认采用 log.Default()
+}
+
+func (srv *Server) sanitize() {
+	if srv.ContentType == "" {
+		srv.ContentType = "application/xml"
+	}
+
+	if srv.Erro == nil {
+		srv.Erro = log.Default()
+	}
+}
+
+// Buffer 将 buf 作为文档内容生成中间件
+func (srv *Server) Buffer(buf []byte) http.Handler {
+	srv.sanitize()
+
+	buf = addStylesheet(buf)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == url {
-			w.Header().Set("Content-Type", contentType)
-			w.WriteHeader(status)
-			w.Write(data)
+		if r.URL.Path == srv.URL {
+			w.Header().Set("Content-Type", srv.ContentType)
+			w.WriteHeader(srv.Status)
+			w.Write(buf)
 			return
 		}
 
-		Static(dir, stylesheet, erro).ServeHTTP(w, r)
+		Static(srv.Dir, srv.Stylesheet, srv.Erro).ServeHTTP(w, r)
 	})
 }
 
-// ViewPack 返回查看文档的中间件
-//
-// 功能基本与 View 相同，但是第三个参数 unpackData 为 Pack() 函数打包之内的内容，
-// 不需要调用 Unpack() 解包，直接由 ViewPack 自行解包。
-func ViewPack(status int, url string, unpackData string, contentType string, dir core.URI, stylesheet bool, erro *log.Logger) http.Handler {
-	data, err := Unpack(unpackData)
-	if err != nil {
-		panic(err)
-	}
-
-	return View(status, url, []byte(data), contentType, dir, stylesheet, erro)
-}
-
-// ViewFile 返回查看文件的中间件
-//
-// 功能等同于 View，但是将 data 参数换成了文件地址。
-// url 可以为空值，表示接受 path 的文件名部分作为其值。
-//
-// path 可以是远程文件，也可以是本地文件。
-func ViewFile(status int, url string, path core.URI, contentType string, dir core.URI, stylesheet bool, erro *log.Logger) (http.Handler, error) {
+// File 将 path 指向的内容作为文档内容生成中间件
+func (srv *Server) File(path core.URI) (http.Handler, error) {
 	data, err := path.ReadAll(nil)
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := path.File()
-	if err != nil {
-		return nil, err
-	}
-	if url == "" {
-		url = "/" + filepath.Base(file)
-	}
-
-	if contentType == "" {
-		contentType = mime.TypeByExtension(filepath.Ext(file))
+	if srv.URL == "" {
+		file, err := path.File()
+		if err != nil {
+			return nil, err
+		}
+		srv.URL = "/" + filepath.Base(file)
 	}
 
-	return View(status, url, data, contentType, dir, stylesheet, erro), nil
+	return srv.Buffer(data), nil
 }
 
 // 用于查找 <?xml 指令
