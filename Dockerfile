@@ -1,9 +1,9 @@
-# blogit dockerfile
+# apidoc dockerfile
 
 FROM scratch
 
 MAINTAINER caixw <https://caixw.io>
 
-COPY ./blogit /
+COPY ./apidoc /
 
-ENTRYPOINT ["/blogit"]
+ENTRYPOINT ["/apidoc"]
