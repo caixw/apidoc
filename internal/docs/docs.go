@@ -6,12 +6,12 @@ package docs
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/issue9/source"
@@ -57,14 +57,17 @@ func StylesheetURL(prefix string) string {
 }
 
 // Handler 返回文件服务中间件
+//
+// 如果 folder 为空，表示采用内嵌的数据作为文件服务；
+// stylesheet 是否只返回最基本的样式表相关文件。
 func Handler(folder core.URI, stylesheet bool) http.Handler {
 	if folder == "" {
-		return embeddedHandler(stylesheet)
+		return fsHandler(docs.FS, stylesheet)
 	}
 
-	switch scheme, _ := folder.Parse(); scheme {
+	switch scheme, path := folder.Parse(); scheme {
 	case core.SchemeFile, "":
-		return localHandler(folder, stylesheet)
+		return fsHandler(os.DirFS(path), stylesheet)
 	case core.SchemeHTTP, core.SchemeHTTPS:
 		return remoteHandler(folder, stylesheet)
 	default:
@@ -72,7 +75,7 @@ func Handler(folder core.URI, stylesheet bool) http.Handler {
 	}
 }
 
-func embeddedHandler(stylesheet bool) http.Handler {
+func fsHandler(fsys fs.FS, stylesheet bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pp := r.URL.Path
 		if pp == "" || pp == "/" {
@@ -81,6 +84,9 @@ func embeddedHandler(stylesheet bool) http.Handler {
 		if pp[0] == '/' {
 			pp = pp[1:]
 		}
+		if pp[len(pp)-1] == '/' {
+			pp = path.Join(pp, indexPage)
+		}
 
 	READ:
 		if stylesheet && !isStylesheetFile(pp) {
@@ -88,7 +94,7 @@ func embeddedHandler(stylesheet bool) http.Handler {
 			return
 		}
 
-		f, err := docs.FS.Open(pp)
+		f, err := fsys.Open(pp)
 		if errors.Is(err, fs.ErrNotExist) {
 			errStatus(w, http.StatusNotFound)
 			return
@@ -155,42 +161,6 @@ func remoteHandler(url core.URI, stylesheet bool) http.Handler {
 	})
 }
 
-func localHandler(folder core.URI, stylesheet bool) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		p := r.URL.Path
-
-		if stylesheet && !isStylesheetFile(p) {
-			errStatus(w, http.StatusNotFound)
-			return
-		}
-
-		p, err := folder.Append(p).File()
-		if err != nil {
-			errStatus(w, http.StatusInternalServerError)
-			return
-		}
-
-		info, err := os.Stat(p)
-		if err != nil {
-			if errors.Is(err, fs.ErrNotExist) {
-				errStatus(w, http.StatusNotFound)
-				return
-			}
-			if errors.Is(err, fs.ErrPermission) {
-				errStatus(w, http.StatusForbidden)
-				return
-			}
-			errStatus(w, http.StatusInternalServerError)
-			return
-		}
-		if info.IsDir() {
-			p = filepath.Clean(filepath.Join(p, indexPage))
-		}
-
-		http.ServeFile(w, r, p)
-	})
-}
-
 func errStatus(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
 }
@@ -202,6 +172,7 @@ func errStatusWithError(w http.ResponseWriter, err error) {
 		return
 	}
 
+	fmt.Println("ERR:", err)
 	errStatus(w, http.StatusInternalServerError)
 }
 
