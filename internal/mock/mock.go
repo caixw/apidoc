@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/issue9/mux/v2"
+	"github.com/issue9/mux/v3"
 	"github.com/issue9/qheader"
 	"github.com/issue9/sliceutil"
 	"github.com/issue9/version"
@@ -129,7 +129,8 @@ func (m *mock) parse() error {
 		}
 	}
 
-	for path, methods := range m.mux.All(true, true) {
+	routers := m.mux.All(true, true)
+	for path, methods := range routers[0].Routes {
 		m.msgHandler.Locale(core.Info, locale.LoadAPI, "["+strings.Join(methods, ",")+"]", path)
 	}
 
