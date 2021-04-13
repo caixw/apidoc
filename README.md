@@ -56,8 +56,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 macOS 和 linux 可以使用 homebrew 安装：
 
 ```shell
-brew tap caixw/caixw
-brew install caixw/caixw/apidoc
+brew tap caixw/brew
+brew install caixw/brew/apidoc
 ```
 
 同时在 <https://github.com/caixw/apidoc/releases> 提供了部分主流系统下的可用二进制。

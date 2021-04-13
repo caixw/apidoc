@@ -38,14 +38,14 @@ env:
 brews:
 - tap:
     owner: caixw
-    name: homebrew-caixw
+    name: homebrew-brew
   url_template: "https://github.com/caixw/apidoc/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
 
   commit_author:
     name: goreleaserbot
     email: goreleaser@carlosbecker.com
   folder: Formula
-  homepage: "https://github.com/caixw/apidoc"
+  homepage: "https://apidoc.tools"
   description: RESTful API 文档生成工具
   license: MIT
 
