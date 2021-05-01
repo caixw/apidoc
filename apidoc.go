@@ -60,7 +60,7 @@ func Version(full bool) string {
 	if full {
 		return core.FullVersion()
 	}
-	return core.Version
+	return core.Version()
 }
 
 // Build 解析文档并输出文档内容

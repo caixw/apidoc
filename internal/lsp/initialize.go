@@ -78,7 +78,7 @@ func (s *server) initialize(notify bool, in *protocol.InitializeParams, out *pro
 
 	out.ServerInfo = &protocol.ServerInfo{
 		Name:    core.Name,
-		Version: core.Version,
+		Version: core.Version(),
 	}
 	s.serverResult = out
 

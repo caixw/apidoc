@@ -13,7 +13,6 @@ import (
 func TestVersion(t *testing.T) {
 	a := assert.New(t)
 
-	a.True(version.SemVerValid(Version))
-	a.True(version.SemVerValid(fullVersion))
+	a.True(version.SemVerValid(Version()))
 	a.True(version.SemVerValid(FullVersion()))
 }
