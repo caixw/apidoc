@@ -13,9 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/issue9/mux/v3"
+	"github.com/issue9/mux/v5"
 	"github.com/issue9/qheader"
-	"github.com/issue9/sliceutil"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -27,8 +26,8 @@ import (
 type mock struct {
 	msgHandler *core.MessageHandler
 	doc        *ast.APIDoc
-	mux        *mux.Mux
-	router     http.Handler
+	router     *mux.Router
+	h          http.Handler
 	servers    map[string]string
 	indent     string
 	gen        *GenOptions
@@ -50,7 +49,7 @@ func New(msg *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, serve
 		return nil, locale.NewError(locale.VersionInCompatible)
 	}
 
-	mu := mux.New(false, false, true, nil, nil)
+	mu := mux.NewRouter("apidoc mock server")
 	router := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := w.Header()
 		h.Set("Access-Control-Allow-Origin", "*")
@@ -62,8 +61,8 @@ func New(msg *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, serve
 	m := &mock{
 		msgHandler: msg,
 		doc:        d,
-		mux:        mu,
-		router:     router,
+		router:     mu,
+		h:          router,
 		indent:     indent,
 		servers:    servers,
 		gen:        gen,
@@ -73,12 +72,10 @@ func New(msg *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, serve
 		if imageURL[0] != '/' || imageURL[len(imageURL)-1] == '/' {
 			panic("参数 imageURL 必须以 / 开头且不能以 / 结尾")
 		}
-		m.mux.GetFunc(imageURL+"/{path}", m.getImage)
+		m.router.GetFunc(imageURL+"/{path}", m.getImage)
 	}
 
-	if err := m.parse(); err != nil {
-		return nil, err
-	}
+	m.parse()
 
 	return m, nil
 }
@@ -103,17 +100,14 @@ func Load(h *core.MessageHandler, path core.URI, indent, imageURL string, server
 	return New(h, d, indent, imageURL, servers, gen)
 }
 
-func (m *mock) parse() error {
+func (m *mock) parse() {
 	for _, api := range m.doc.APIs {
 		handler := m.buildAPI(api)
 		method := api.Method.V()
 		path := api.Path.Path.V()
 
 		if len(api.Servers) == 0 {
-			err := m.mux.Handle(path, handler, method)
-			if err != nil {
-				return err
-			}
+			m.router.Handle(path, handler, method)
 			continue
 		}
 
@@ -122,27 +116,18 @@ func (m *mock) parse() error {
 			if !found {
 				prefix = "/" + srv.V()
 			}
-			err := m.mux.Prefix(prefix).Handle(path, handler, method)
-			if err != nil {
-				return err
-			}
+			m.router.Prefix(prefix).Handle(path, handler, method)
 		}
 	}
 
-	routers := m.mux.All(true, true)
-	for path, methods := range routers[0].Routes {
+	routers := m.router.Routes()
+	for path, methods := range routers {
 		m.msgHandler.Locale(core.Info, locale.LoadAPI, "["+strings.Join(methods, ",")+"]", path)
 	}
-
-	return nil
 }
 
 func (m *mock) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	m.router.ServeHTTP(w, r)
-}
-
-func hasServer(srvs []*ast.ServerValue, key string) bool {
-	return sliceutil.Count(srvs, func(i int) bool { return srvs[i].V() == key }) > 0
+	m.h.ServeHTTP(w, r)
 }
 
 func (m *mock) getImage(w http.ResponseWriter, r *http.Request) {

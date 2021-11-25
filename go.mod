@@ -6,7 +6,7 @@ require (
 	github.com/issue9/errwrap v0.2.1
 	github.com/issue9/jsonrpc v0.12.1
 	github.com/issue9/localeutil v0.8.1
-	github.com/issue9/mux/v3 v3.1.1
+	github.com/issue9/mux/v5 v5.1.2
 	github.com/issue9/qheader v0.5.5
 	github.com/issue9/rands v1.2.0
 	github.com/issue9/sliceutil v0.7.1
