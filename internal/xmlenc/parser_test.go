@@ -6,14 +6,14 @@ import (
 	"io"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestParser_Token(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	start := core.Position{
 		Line:      11,
 		Character: 22,
@@ -879,7 +879,7 @@ func TestParser_Token(t *testing.T) {
 }
 
 func TestParser_parseStartElement(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	start := core.Position{
 		Line:      11,
 		Character: 22,
@@ -1175,7 +1175,7 @@ func TestParser_parseStartElement(t *testing.T) {
 }
 
 func TestParser_parseEndElement(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	start := core.Position{
 		Line:      11,
 		Character: 22,
@@ -1314,7 +1314,7 @@ func TestParser_parseEndElement(t *testing.T) {
 }
 
 func TestParser_parseCData(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	start := core.Position{
 		Line:      11,
 		Character: 22,
@@ -1572,7 +1572,7 @@ func TestParser_parseCData(t *testing.T) {
 }
 
 func TestParser_parseInstruction(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	start := core.Position{
 		Line:      11,
 		Character: 22,
@@ -1835,7 +1835,7 @@ func TestParser_parseInstruction(t *testing.T) {
 }
 
 func TestParser_parseAttributes(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	start := core.Position{
 		Line:      11,
 		Character: 22,
@@ -2022,7 +2022,7 @@ func TestParser_parseAttributes(t *testing.T) {
 }
 
 func TestParser_parseAttribute(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	start := core.Position{
 		Line:      11,
 		Character: 22,
@@ -2319,7 +2319,7 @@ func TestParser_parseAttribute(t *testing.T) {
 }
 
 func TestParser_endElement(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	// 找不到结束标签，不返回错误，但是向 core.MessageHandler 输出一条错误信息。
 	rslt := messagetest.NewMessageHandler()

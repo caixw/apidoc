@@ -5,21 +5,21 @@ package locale
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"golang.org/x/text/language"
 )
 
 var _ error = &Err{}
 
 func TestVarsDefaultLocaleID(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	// 必须保证第一个元素是默认值
 	a.Equal(tags[0].String(), DefaultLocaleID)
 }
 
 func TestTranslate(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	a.Equal(Translate("cmn-hans", ErrInvalidUTF8Character), cmnHans[ErrInvalidUTF8Character])
 	a.Equal(Translate("zh-hant", ErrInvalidUTF8Character), cmnHant[ErrInvalidUTF8Character])
 	a.NotEqual(Translate("zh-hant", ErrInvalidUTF8Character), cmnHans[ErrInvalidUTF8Character])
@@ -27,7 +27,7 @@ func TestTranslate(t *testing.T) {
 }
 
 func TestSetTag(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	tag := language.MustParse("zh-Hans")
 	SetTag(tag)

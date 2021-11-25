@@ -6,14 +6,14 @@ import (
 	"encoding/xml"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestValidXML(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	for _, item := range data {
 		err := validXML(item.XMLNS, item.Type, []byte(item.XML))
@@ -41,7 +41,7 @@ func TestValidXML(t *testing.T) {
 }
 
 func TestBuildXML(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	for _, item := range data {
 		data, err := buildXML(item.XMLNS, item.Type, indent, testOptions)
@@ -51,7 +51,7 @@ func TestBuildXML(t *testing.T) {
 }
 
 func TestValidXMLName(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	data := []*struct {
 		name       xml.Name
@@ -212,7 +212,7 @@ func TestValidXMLName(t *testing.T) {
 }
 
 func TestParseXMLWrappedName(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	n := parseXMLWrappedName(&ast.Param{
 		Name:  &ast.Attribute{Value: xmlenc.String{Value: "n1"}},
@@ -289,7 +289,7 @@ func TestParseXMLWrappedName(t *testing.T) {
 }
 
 func TestValidXMLParamValue(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	// None
 	a.NotError(validXMLValue(&ast.Param{}, "", ""))
@@ -369,7 +369,7 @@ func TestValidXMLParamValue(t *testing.T) {
 }
 
 func TestGenXMLValue(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	v := genXMLValue(testOptions, &ast.Param{})
 	a.Equal(v, "")

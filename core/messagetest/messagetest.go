@@ -5,13 +5,12 @@ package messagetest
 
 import "github.com/caixw/apidoc/v7/core"
 
-// Result NewMessageHandler 返回的对象
 type Result struct {
 	Errors, Warns, Infos, Successes []interface{}
 	Handler                         *core.MessageHandler
 }
 
-// NewMessageHandler 返回一个用于测试的 message.MessageHandler 实例
+// NewMessageHandler 返回一个用于测试的 core.MessageHandler 实例
 func NewMessageHandler() *Result {
 	rslt := &Result{
 		Errors:    []interface{}{},

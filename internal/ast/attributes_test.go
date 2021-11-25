@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -39,7 +39,7 @@ var (
 )
 
 func TestNumberAttribute(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, rslt := newParser(a, "", "uri1")
 	num := &NumberAttribute{}
@@ -67,7 +67,7 @@ func TestNumberAttribute(t *testing.T) {
 }
 
 func TestBoolAttribute(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, rslt := newParser(a, "", "uri1")
 	b := &BoolAttribute{}
@@ -86,7 +86,7 @@ func TestBoolAttribute(t *testing.T) {
 }
 
 func TestMethodAttribute(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, rslt := newParser(a, "", "uri1")
 	method := &MethodAttribute{}
@@ -105,7 +105,7 @@ func TestMethodAttribute(t *testing.T) {
 }
 
 func TestStatusAttribute(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, rslt := newParser(a, "", "uri1")
 	status := &StatusAttribute{}
@@ -124,7 +124,7 @@ func TestStatusAttribute(t *testing.T) {
 }
 
 func TestTypeAttribute(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, rslt := newParser(a, "", "uri1")
 	tt := &TypeAttribute{}
@@ -143,7 +143,7 @@ func TestTypeAttribute(t *testing.T) {
 }
 
 func TestVersionAttribute(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, rslt := newParser(a, "", "uri1")
 	ver := &VersionAttribute{}
@@ -162,14 +162,14 @@ func TestVersionAttribute(t *testing.T) {
 }
 
 func TestIsValidMethod(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	a.True(isValidMethod("GET"))
 	a.False(isValidMethod("not-exists"))
 }
 
 func TestIsValidStatus(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	a.True(isValidStatus(100))
 	a.True(isValidStatus(500))
@@ -177,7 +177,7 @@ func TestIsValidStatus(t *testing.T) {
 }
 
 func TestDateAttribute(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, rslt := newParser(a, "", "uri1")
 	now := time.Now().Format(dateFormat)
@@ -210,7 +210,7 @@ func TestDateAttribute(t *testing.T) {
 }
 
 func TestAPIDocVersionAttribute(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, rslt := newParser(a, "", "uri1")
 	v := &APIDocVersionAttribute{}

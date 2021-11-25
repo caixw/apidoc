@@ -7,14 +7,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestJSONValidator_valid(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	r := &ast.Request{Type: &ast.TypeAttribute{Value: xmlenc.String{Value: ast.TypeString}}}
 	v := newJSONValidator(r)
@@ -35,7 +35,7 @@ func TestJSONValidator_valid(t *testing.T) {
 }
 
 func TestJSONValidator_find(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	v := &jsonValidator{
 		param: (&ast.Request{
@@ -112,7 +112,7 @@ func TestJSONValidator_find(t *testing.T) {
 }
 
 func TestValidJSON(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	for _, item := range data {
 		err := validJSON(item.Type, []byte(item.JSON))
@@ -121,7 +121,7 @@ func TestValidJSON(t *testing.T) {
 }
 
 func TestBuildJSON(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	for _, item := range data {
 		data, err := buildJSON(item.Type, indent, testOptions)

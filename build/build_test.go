@@ -5,13 +5,13 @@ package build
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestParse(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	php := &Input{
 		Lang:      "php",

@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 )
 
 func TestAbs_windows(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	hd, err := os.UserHomeDir()
 	a.NotError(err).NotNil(hd)
 	hdURI := core.FileURI(hd)
@@ -82,7 +82,7 @@ func TestAbs_windows(t *testing.T) {
 }
 
 func TestRel_windows(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	hd, err := os.UserHomeDir()
 	a.NotError(err).NotNil(hd)
 	hdURI := core.FileURI(hd)

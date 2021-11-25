@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"github.com/issue9/source"
 
 	"github.com/caixw/apidoc/v7/core"

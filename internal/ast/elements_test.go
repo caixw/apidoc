@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -47,7 +47,7 @@ func loadAPIDoc(a *assert.Assertion) *APIDoc {
 }
 
 func TestAPIDoc(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	doc := loadAPIDoc(a)
 
 	a.Equal(doc.BaseTag, xmlenc.BaseTag{
@@ -309,7 +309,7 @@ func TestAPIDoc(t *testing.T) {
 }
 
 func TestAPIDoc_all(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	data, err := ioutil.ReadFile("./testdata/all.xml")
 	a.NotError(err).NotNil(data)
@@ -376,7 +376,7 @@ func loadAPI(a *assert.Assertion) *API {
 }
 
 func TestAPI(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	api := loadAPI(a)
 
 	a.Equal(api.Version.V(), "1.1.0").
@@ -410,7 +410,7 @@ func TestAPI(t *testing.T) {
 }
 
 func TestRequest_Param(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	var req *Request
 	a.Nil(req.Param())
@@ -421,7 +421,7 @@ func TestRequest_Param(t *testing.T) {
 }
 
 func TestAPIDoc_XMLNamespaces(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	d := &APIDoc{
 		XMLNamespaces: []*XMLNamespace{

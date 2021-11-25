@@ -7,14 +7,15 @@ import (
 	"os"
 	"testing"
 
+	"github.com/issue9/assert/v2"
+
 	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/issue9/assert"
 )
 
 var _ error = &Error{}
 
 func TestError(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	err1 := NewError("msg")
 	err2 := NewError("msg").WithField("field")
@@ -22,7 +23,7 @@ func TestError(t *testing.T) {
 }
 
 func TestWithError(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	err := errors.New("test")
 	serr := WithError(err).WithField("field")
@@ -33,7 +34,7 @@ func TestWithError(t *testing.T) {
 }
 
 func TestError_AddTypes(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	loc := Location{}
 
 	err := loc.WithError(errors.New("err1"))
@@ -47,7 +48,7 @@ func TestError_AddTypes(t *testing.T) {
 }
 
 func TestError_Is_Unwrap(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	err := WithError(os.ErrExist).WithField("field")
 	a.True(errors.Is(err, os.ErrExist))
@@ -56,7 +57,7 @@ func TestError_Is_Unwrap(t *testing.T) {
 }
 
 func TestError_Relate(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	err := NewError(locale.ErrInvalidUTF8Character)
 	a.Empty(err.Related)

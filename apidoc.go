@@ -114,8 +114,8 @@ func Static(dir core.URI, stylesheet bool, erro *log.Logger) http.Handler {
 
 // Server 用于生成查看文档中间件的配置项
 type Server struct {
-	Status      int
-	URL         string      // 文档在路由中的地址
+	Status      int         // 默认值为 200
+	Path        string      // 文档在路由中的地址，默认值为 apidoc.xml
 	ContentType string      // 文档的 ContentType，为空表示采用 application/xml
 	Dir         core.URI    // 除文档不之外的附加项，比如 xsl，css 等内容的所在位置，如果为空表示采用内嵌的数据；
 	Stylesheet  bool        // 是否只采用 Dir 中的 xsl 和 css 等样式数据，而忽略其它文件
@@ -123,6 +123,14 @@ type Server struct {
 }
 
 func (srv *Server) sanitize() {
+	if srv.Status == 0 {
+		srv.Status = http.StatusOK
+	}
+
+	if srv.Path == "" {
+		srv.Path = "/apidoc.xml"
+	}
+
 	if srv.ContentType == "" {
 		srv.ContentType = "application/xml"
 	}
@@ -138,7 +146,7 @@ func (srv *Server) Buffer(buf []byte) http.Handler {
 
 	buf = addStylesheet(buf)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == srv.URL {
+		if r.URL.Path == srv.Path {
 			w.Header().Set("Content-Type", srv.ContentType)
 			w.WriteHeader(srv.Status)
 			w.Write(buf)
@@ -156,12 +164,12 @@ func (srv *Server) File(path core.URI) (http.Handler, error) {
 		return nil, err
 	}
 
-	if srv.URL == "" {
+	if srv.Path == "" {
 		file, err := path.File()
 		if err != nil {
 			return nil, err
 		}
-		srv.URL = "/" + filepath.Base(file)
+		srv.Path = "/" + filepath.Base(file)
 	}
 
 	return srv.Buffer(data), nil

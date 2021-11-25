@@ -11,8 +11,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/issue9/assert"
-	"github.com/issue9/assert/rest"
+	"github.com/issue9/assert/v2"
+	"github.com/issue9/assert/v2/rest"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -654,7 +654,7 @@ var data = []*tester{
 }
 
 func TestNew(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	rslt := messagetest.NewMessageHandler()
 	d := &ast.APIDoc{APIDoc: &ast.APIDocVersionAttribute{Value: xmlenc.String{Value: ast.Version}}}
 	d.Parse(rslt.Handler, core.Block{Data: asttest.XML(a)})
@@ -664,24 +664,23 @@ func TestNew(t *testing.T) {
 	rslt = messagetest.NewMessageHandler()
 	mock, err := New(rslt.Handler, d, indent, "/images", map[string]string{"client": "/test"}, testOptions)
 	a.NotError(err).NotNil(mock)
-	srv := rest.NewServer(t, mock, nil)
+	srv := rest.NewServer(a, mock, nil)
 
 	// 测试路由是否正常
-	srv.Post("/test/users", nil).Do().Status(http.StatusBadRequest)
-	srv.Get("/test/users").Do().Status(http.StatusMethodNotAllowed)
-	srv.Get("/not-found").Do().Status(http.StatusNotFound)
-	srv.Get("/test/not-found").Do().Status(http.StatusNotFound)
+	srv.Post("/test/users", nil).Do(nil).Status(http.StatusBadRequest)
+	srv.Get("/test/users").Do(nil).Status(http.StatusMethodNotAllowed)
+	srv.Get("/not-found").Do(nil).Status(http.StatusNotFound)
+	srv.Get("/test/not-found").Do(nil).Status(http.StatusNotFound)
 
 	rslt.Handler.Stop()
 	a.NotEmpty(rslt.Errors)
-	srv.Close()
 
 	rslt = messagetest.NewMessageHandler()
 	mock, err = New(rslt.Handler, d, indent, "/images", map[string]string{"admin": "/test"}, testOptions)
 	a.NotError(err).NotNil(mock)
-	srv = rest.NewServer(t, mock, nil)
+	srv = rest.NewServer(a, mock, nil)
 
-	srv.Post("/users", nil).Do().Status(http.StatusNotFound)
+	srv.Post("/users", nil).Do(nil).Status(http.StatusNotFound)
 
 	srv.Post("/test/users", nil).
 		Header("accept", "application/json").
@@ -690,43 +689,43 @@ func TestNew(t *testing.T) {
     <id>1</id>
     <name>n</name>
 </root>`)).
-		Do().
+		Do(nil).
 		Status(http.StatusCreated).
 		Header("content-type", "application/json").
 		BodyEmpty()
 
 	// image
-	imgBuffer := &bytes.Buffer{}
 	srv.Get("/images/test.jpg").
 		Header("accept", "image/Png").
-		Do().
+		Do(nil).
 		Status(http.StatusOK).
-		ReadBody(imgBuffer)
-	img, err := png.Decode(imgBuffer)
-	a.NotError(err).NotNil(img)
-	a.Equal(img.Bounds(), image.Rect(0, 0, 500, 500))
+		BodyFunc(func(a *assert.Assertion, body []byte) {
+			img, err := png.Decode(bytes.NewBuffer(body))
+			a.NotError(err).NotNil(img)
+			a.Equal(img.Bounds(), image.Rect(0, 0, 500, 500))
+		})
 
 	// image with size
-	imgBuffer = &bytes.Buffer{}
 	srv.Get("/images/test.jpg?width=200&height=50").
 		Header("accept", "image/png;q=0.1,image/jpeg;q=0.9").
-		Do().
+		Do(nil).
 		Status(http.StatusOK).
-		ReadBody(imgBuffer)
-	img, err = jpeg.Decode(imgBuffer)
-	a.NotError(err).NotNil(img)
-	a.Equal(img.Bounds(), image.Rect(0, 0, 200, 50))
+		BodyFunc(func(a *assert.Assertion, body []byte) {
+			img, err := jpeg.Decode(bytes.NewBuffer(body))
+			a.NotError(err).NotNil(img)
+			a.Equal(img.Bounds(), image.Rect(0, 0, 200, 50))
+		})
 
 	// image 不支持的 accept
 	srv.Get("/images/test.jpg").
 		Header("accept", "image/x-png").
-		Do().
+		Do(nil).
 		Status(http.StatusNotAcceptable) // 无效的 accept
 
 	// image 不在指定目录下，则 404
 	srv.Get("/test.jpg").
 		Header("accept", "image/png").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	rslt.Handler.Stop()
@@ -740,7 +739,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestLoad(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	rslt := messagetest.NewMessageHandler()
 	mock, err := Load(rslt.Handler, "./not-exists", indent, "/images", nil, testOptions)
 	rslt.Handler.Stop()
@@ -764,13 +763,13 @@ func TestLoad(t *testing.T) {
 }
 
 func TestIsValidRFC3339Date(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	a.True(isValidRFC3339Date("2010-01-02"))
 	a.False(isValidRFC3339Date("2010-01-32")) // 错误的日期
 }
 
 func TestIsValidRFC3339Time(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	a.True(isValidRFC3339Time("17:18:19Z"))
 	a.True(isValidRFC3339Time("17:18:19-08:30"))
@@ -782,7 +781,7 @@ func TestIsValidRFC3339Time(t *testing.T) {
 }
 
 func TestIsValidRFC3339DateTime(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	a.True(isValidRFC3339DateTime("2020-01-02T17:18:19Z"))
 	a.True(isValidRFC3339DateTime("2020-01-02T17:18:19+08:00"))

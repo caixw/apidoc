@@ -9,15 +9,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/issue9/assert"
-	"github.com/issue9/assert/rest"
+	"github.com/issue9/assert/v2"
+	"github.com/issue9/assert/v2/rest"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"
 )
 
 func TestDir(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	abs, err := filepath.Abs("../../docs")
 	a.NotError(err).NotEmpty(abs)
@@ -33,7 +33,7 @@ func TestDir(t *testing.T) {
 }
 
 func TestStylesheetURL(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	a.Equal(StylesheetURL(""), ast.MajorVersion+"/apidoc.xsl")
 	a.Equal(StylesheetURL("."), "./"+ast.MajorVersion+"/apidoc.xsl")
@@ -43,304 +43,295 @@ func TestStylesheetURL(t *testing.T) {
 }
 
 func TestEmbeddedHandler(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
-	srv := rest.NewServer(t, Handler("", false, log.Default()), nil)
+	srv := rest.NewServer(a, Handler("", false, log.Default()), nil)
 	a.NotNil(srv)
-	defer srv.Close()
 
 	srv.Get("/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/v6/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/v6/apidoc.xsl").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 		//Header("Content-Type", "application/xml") // NOTE: Content-Type 有系统决定，无法通过所有系统的测试
 
 	srv.Get("/v5/apidoc.xsl").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/example").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/icon.svg").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 }
 
 func TestEmbeddedHandler_stylesheet(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
-	srv := rest.NewServer(t, Handler("", true, log.Default()), nil)
+	srv := rest.NewServer(a, Handler("", true, log.Default()), nil)
 	a.NotNil(srv)
-	defer srv.Close()
 
 	srv.Get("/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/v6/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/v6/apidoc.xsl").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/v5/apidoc.xsl").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/example").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/icon.svg").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 }
 
 func TestEmbeddedHandler_prefix(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	h := http.StripPrefix("/prefix/", Handler("", false, log.Default()))
-	srv := rest.NewServer(t, h, nil)
+	srv := rest.NewServer(a, h, nil)
 	a.NotNil(srv)
-	defer srv.Close()
 
 	srv.Get("/prefix/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/prefix/v6/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/prefix/v6/apidoc.xsl").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/prefix/example").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/prefix/").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/prefix/icon.svg").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 }
 
 func TestLocalHandler(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
-	srv := rest.NewServer(t, Handler(Dir(), false, log.Default()), nil)
+	srv := rest.NewServer(a, Handler(Dir(), false, log.Default()), nil)
 	a.NotNil(srv)
-	defer srv.Close()
 
 	srv.Get("/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/example/").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/example").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/index.xml").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 }
 
 func TestLocalHandler_stylesheet(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
-	srv := rest.NewServer(t, Handler(Dir(), true, log.Default()), nil)
+	srv := rest.NewServer(a, Handler(Dir(), true, log.Default()), nil)
 	a.NotNil(srv)
-	defer srv.Close()
 
 	srv.Get("/icon.svg").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/v6/apidoc.xsl").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/example/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/example").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/index.xml").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 }
 
 func TestLocalHandler_prefix(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	h := http.StripPrefix("/prefix/", Handler(Dir(), false, log.Default()))
-	srv := rest.NewServer(t, h, nil)
+	srv := rest.NewServer(a, h, nil)
 	a.NotNil(srv)
-	defer srv.Close()
 
 	srv.Get("/prefix/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/prefix/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/prefix/").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/prefix/index.xml").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/prefix/v6/apidoc.xsl").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 }
 
 func TestRemoteHandler(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	remote := httptest.NewServer(Handler(Dir(), false, log.Default()))
-	srv := rest.NewServer(t, Handler(core.URI(remote.URL), false, log.Default()), nil)
+	srv := rest.NewServer(a, Handler(core.URI(remote.URL), false, log.Default()), nil)
 	a.NotNil(srv)
-	defer srv.Close()
 
 	srv.Get("/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/example/").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/example").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/index.xml").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 }
 
 func TestRemoteHandler_stylesheet(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	remote := httptest.NewServer(Handler(Dir(), false, log.Default()))
-	srv := rest.NewServer(t, Handler(core.URI(remote.URL), true, log.Default()), nil)
+	srv := rest.NewServer(a, Handler(core.URI(remote.URL), true, log.Default()), nil)
 	a.NotNil(srv)
-	defer srv.Close()
 
 	srv.Get("/icon.svg").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/v6/apidoc.xsl").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/example/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/example").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/index.xml").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 }
 
 func TestRemoteHandler_prefix(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	remote := httptest.NewServer(Handler(Dir(), false, log.Default()))
 	h := http.StripPrefix("/prefix/", Handler(core.URI(remote.URL), false, log.Default()))
-	srv := rest.NewServer(t, h, nil)
+	srv := rest.NewServer(a, h, nil)
 	a.NotNil(srv)
-	defer srv.Close()
 
 	srv.Get("/prefix/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/prefix/not-exists").
-		Do().
+		Do(nil).
 		Status(http.StatusNotFound)
 
 	srv.Get("/prefix/").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/prefix/index.xml").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 
 	srv.Get("/prefix/v6/apidoc.xsl").
-		Do().
+		Do(nil).
 		Status(http.StatusOK)
 }

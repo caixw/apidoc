@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/node"
@@ -26,7 +26,7 @@ func (s *String) EncodeXML() (string, error) {
 }
 
 func TestEncode(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	type nestObject struct {
 		ID   *intTag    `apidoc:"id,elem,usage,omitempty"`
@@ -301,7 +301,7 @@ func TestEncode(t *testing.T) {
 }
 
 func TestNode_isOmitempty(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	v := &node.Value{Omitempty: false}
 	a.False(isOmitempty(v))

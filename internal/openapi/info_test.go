@@ -5,14 +5,14 @@ package openapi
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestNewContact(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	input := &ast.Contact{
 		Email: &ast.Element{Content: ast.Content{Value: "user@example.com"}},
@@ -28,7 +28,7 @@ func TestNewContact(t *testing.T) {
 }
 
 func TestInfo_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	info := &Info{}
 	a.Error(info.sanitize())

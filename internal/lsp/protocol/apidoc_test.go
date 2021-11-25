@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
@@ -14,7 +14,7 @@ import (
 )
 
 func TestBuildAPIDocOutline(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	f := WorkspaceFolder{Name: "test"}
 
 	doc := &ast.APIDoc{}
@@ -30,7 +30,7 @@ func TestBuildAPIDocOutline(t *testing.T) {
 }
 
 func TestAPIDocOutline_appendAPI(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	outline := &APIDocOutline{
 		APIs: []*API{},

@@ -4,6 +4,7 @@
 [![Latest Release](https://img.shields.io/github/release/caixw/apidoc.svg?style=flat-square)](https://github.com/caixw/apidoc/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/caixw/apidoc)](https://goreportcard.com/report/github.com/caixw/apidoc)
 [![codecov](https://codecov.io/gh/caixw/apidoc/branch/master/graph/badge.svg)](https://codecov.io/gh/caixw/apidoc)
+![Go version](https://img.shields.io/github/go-mod/go-version/caixw/apidoc)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/caixw/apidoc/v7)](https://pkg.go.dev/github.com/caixw/apidoc/v7)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://opensource.org/licenses/MIT)
 

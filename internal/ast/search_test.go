@@ -6,14 +6,14 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestSearch(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data := `<apidoc version="1.0.0">
 		<title>title</title>
 		<tag name="t1" title="tag1" />

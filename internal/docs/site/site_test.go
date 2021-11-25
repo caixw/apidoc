@@ -5,14 +5,14 @@ package site
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/internal/lang"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 func TestGen(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	site, docs, err := gen()
 	a.NotError(err).

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/issue9/assert"
-	"github.com/issue9/assert/rest"
+	"github.com/issue9/assert/v2"
+	"github.com/issue9/assert/v2/rest"
 	"github.com/issue9/validation/is"
 
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -19,7 +19,7 @@ import (
 )
 
 func TestMockOptions_url(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	o := &MockOptions{
 		URLDomains: []string{"https://apidoc.tools/"},
@@ -35,7 +35,7 @@ func TestMockOptions_url(t *testing.T) {
 }
 
 func TestMockOptions_email(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	o := &MockOptions{
 		EmailDomains:      []string{"apidoc.tools"},
@@ -51,7 +51,7 @@ func TestMockOptions_email(t *testing.T) {
 }
 
 func TestMockOptions_gen(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	g, err := defaultMockOptions.gen()
 	a.NotError(err)
@@ -176,7 +176,7 @@ func TestMockOptions_gen(t *testing.T) {
 }
 
 func TestMock(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	rslt := messagetest.NewMessageHandler()
 	opt := &MockOptions{}
@@ -184,26 +184,25 @@ func TestMock(t *testing.T) {
 	opt.Servers = map[string]string{"admin": "/admin"}
 	mock, err := Mock(rslt.Handler, asttest.XML(a), opt)
 	a.NotError(err).NotNil(mock)
-	srv := rest.NewServer(t, mock, nil)
+	srv := rest.NewServer(a, mock, nil)
 
 	srv.Get("/admin/users").
 		Header("authorization", "xxx").
 		Header("content-type", "application/json").
 		Header("Accept", "application/json").
-		Do().Status(http.StatusOK)
+		Do(nil).Status(http.StatusOK)
 
 	// 未指定 client，采用默认的 /+client 作为前缀
-	srv.Get("/client/users").Do().Status(http.StatusMethodNotAllowed)
+	srv.Get("/client/users").Do(nil).Status(http.StatusMethodNotAllowed)
 
-	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
-	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
+	srv.Post("/admin/users", nil).Do(nil).Status(http.StatusBadRequest)    // 未指定报头
+	srv.Delete("/admin/users").Do(nil).Status(http.StatusMethodNotAllowed) // 不存在
 
 	rslt.Handler.Stop()
-	srv.Close()
 }
 
 func TestMockFile(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	rslt := messagetest.NewMessageHandler()
 	opt := &MockOptions{}
@@ -211,22 +210,21 @@ func TestMockFile(t *testing.T) {
 	opt.Servers = map[string]string{"admin": "/admin"}
 	mock, err := MockFile(rslt.Handler, asttest.URI(a), opt)
 	a.NotError(err).NotNil(mock)
-	srv := rest.NewServer(t, mock, nil)
+	srv := rest.NewServer(a, mock, nil)
 
 	srv.Get("/admin/users").
 		Header("authorization", "xxx").
 		Header("content-type", "application/json").
 		Header("Accept", "application/json").
-		Do().Status(http.StatusOK)
+		Do(nil).Status(http.StatusOK)
 
 	// 未指定 client，采用默认的 /+client 作为前缀
-	srv.Get("/client/users").Do().Status(http.StatusMethodNotAllowed)
+	srv.Get("/client/users").Do(nil).Status(http.StatusMethodNotAllowed)
 
-	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
-	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
+	srv.Post("/admin/users", nil).Do(nil).Status(http.StatusBadRequest)    // 未指定报头
+	srv.Delete("/admin/users").Do(nil).Status(http.StatusMethodNotAllowed) // 不存在
 
 	rslt.Handler.Stop()
-	srv.Close()
 
 	// 测试多个 servers 值
 	rslt = messagetest.NewMessageHandler()
@@ -234,26 +232,25 @@ func TestMockFile(t *testing.T) {
 	opt.Servers = map[string]string{"admin": "/admin", "client": "/c"}
 	mock, err = MockFile(rslt.Handler, asttest.URI(a), opt)
 	a.NotError(err).NotNil(mock)
-	srv = rest.NewServer(t, mock, nil)
+	srv = rest.NewServer(a, mock, nil)
 
 	srv.Post("/admin/users", []byte(`{"id":1,"name":"name"}`)).
 		Header("authorization", "xxx").
 		Header("content-type", "application/json").
 		Header("Accept", "application/json").
-		Do().Status(http.StatusCreated)
+		Do(nil).Status(http.StatusCreated)
 
 	srv.Post("/c/users", []byte(`{"id":1,"name":"name"}`)).
 		Header("authorization", "xxx").
 		Header("content-type", "application/json").
 		Header("Accept", "application/json").
-		Do().Status(http.StatusCreated)
+		Do(nil).Status(http.StatusCreated)
 
-	srv.Post("/admin/users", nil).Do().Status(http.StatusBadRequest)    // 未指定报头
-	srv.Delete("/admin/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
+	srv.Post("/admin/users", nil).Do(nil).Status(http.StatusBadRequest)    // 未指定报头
+	srv.Delete("/admin/users").Do(nil).Status(http.StatusMethodNotAllowed) // 不存在
 
-	srv.Get("/c/users").Do().Status(http.StatusMethodNotAllowed)    // POST /users 未指定 client
-	srv.Delete("/c/users").Do().Status(http.StatusMethodNotAllowed) // 不存在
+	srv.Get("/c/users").Do(nil).Status(http.StatusMethodNotAllowed)    // POST /users 未指定 client
+	srv.Delete("/c/users").Do(nil).Status(http.StatusMethodNotAllowed) // 不存在
 
 	rslt.Handler.Stop()
-	srv.Close()
 }

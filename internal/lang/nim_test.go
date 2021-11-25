@@ -5,14 +5,14 @@ package lang
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestNimRawString(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	b := newNimRawString()
 	a.NotNil(b)
@@ -43,7 +43,7 @@ func TestNimRawString(t *testing.T) {
 }
 
 func TestNimMultipleString(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	b := newNimMultipleString()
 	a.NotNil(b)

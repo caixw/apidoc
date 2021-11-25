@@ -7,7 +7,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -17,7 +17,7 @@ import (
 )
 
 func TestServer_textDocumentHover(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	h := &protocol.Hover{}
 	err := s.textDocumentHover(false, &protocol.HoverParams{}, h)

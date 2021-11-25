@@ -46,7 +46,7 @@ func static(io.Writer) (err error) {
 
 		s := &apidoc.Server{
 			Status:      http.StatusOK,
-			URL:         staticURL,
+			Path:        staticURL,
 			ContentType: staticContentType,
 			Dir:         staticDocs.URI(),
 			Stylesheet:  staticStylesheet,

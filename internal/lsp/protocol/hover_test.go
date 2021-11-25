@@ -6,13 +6,13 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 )
 
 func TestHover_MarshalJSON(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	h := &Hover{}
 	data, err := json.Marshal(h)

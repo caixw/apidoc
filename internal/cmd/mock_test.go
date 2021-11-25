@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 var (
@@ -18,7 +18,7 @@ var (
 )
 
 func TestServers_Set(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	srv := servers{}
 	a.Equal(srv, srv.Get())
@@ -46,7 +46,7 @@ func TestServers_Set(t *testing.T) {
 }
 
 func TestSize_Set(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	s := &size{}
 	a.Error(s.Set(""))
@@ -60,7 +60,7 @@ func TestSize_Set(t *testing.T) {
 }
 
 func TestDateRange_Set(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	d := &dateRange{}
 	a.Error(d.Set(""))
@@ -78,7 +78,7 @@ func TestDateRange_Set(t *testing.T) {
 }
 
 func TestSlice_Set(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	s := &slice{}
 	a.NotError(s.Set("")).Equal(1, len(*s))

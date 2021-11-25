@@ -5,13 +5,13 @@ package lexer
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 )
 
 func TestNewLexer(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l, err := New(core.Block{Data: []byte("// doc")})
 	a.NotError(err).NotNil(l)
@@ -26,7 +26,7 @@ func TestNewLexer(t *testing.T) {
 }
 
 func TestLexer_Position(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	loc := core.Location{
 		Range: core.Range{
@@ -91,7 +91,7 @@ func TestLexer_Position(t *testing.T) {
 }
 
 func TestLexer_Match(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l, err := New(core.Block{Data: []byte("ab中\ncd")})
 	a.NotError(err).NotNil(l)
@@ -121,7 +121,7 @@ func TestLexer_Match(t *testing.T) {
 }
 
 func TestLexer_Spaces(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	l, err := New(core.Block{Data: []byte("    0 \n  1 ")})
 	a.NotError(err).NotNil(l)
 
@@ -154,7 +154,7 @@ func TestLexer_Spaces(t *testing.T) {
 }
 
 func TestLexer_Delim(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l, err := New(core.Block{Data: []byte("123")})
 	a.NotError(err).NotNil(l)
@@ -181,7 +181,7 @@ func TestLexer_Delim(t *testing.T) {
 }
 
 func TestLexer_DelimFunc(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l, err := New(core.Block{Data: []byte("123456789\n123456789\n123")})
 	a.NotError(err).NotNil(l)
@@ -227,7 +227,7 @@ func TestLexer_DelimFunc(t *testing.T) {
 }
 
 func TestLexer_All(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l, err := New(core.Block{Data: []byte("123")})
 	a.NotError(err).NotNil(l)
@@ -244,7 +244,7 @@ func TestLexer_All(t *testing.T) {
 }
 
 func TestLexer_Bytes(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l, err := New(core.Block{Data: []byte("123")})
 	a.NotError(err).NotNil(l)
@@ -252,7 +252,7 @@ func TestLexer_Bytes(t *testing.T) {
 }
 
 func TestLexer_DelimString(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l, err := New(core.Block{Data: []byte("1234567")})
 	a.NotError(err).NotNil(l)

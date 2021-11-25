@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -40,12 +40,12 @@ func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace stri
 
 	if len(rslt.Errors) > 0 {
 		for _, err := range rslt.Errors {
-			a.ErrorType(err, &core.Error{})
+			a.TypeEqual(true, err, &core.Error{})
 		}
 	}
 	if len(rslt.Warns) > 0 {
 		for _, err := range rslt.Warns {
-			a.ErrorType(err, &core.Error{})
+			a.TypeEqual(true, err, &core.Error{})
 		}
 	}
 
@@ -53,7 +53,7 @@ func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace stri
 }
 
 func TestDecode(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	v := &struct {
 		BaseTag
@@ -1466,7 +1466,7 @@ func TestDecode(t *testing.T) {
 }
 
 func TestDecode_omitempty(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	type obj struct {
 		BaseTag
@@ -1546,7 +1546,7 @@ func TestDecode_omitempty(t *testing.T) {
 }
 
 func TestDecode_decodeAttributes(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	d, rslt := newDecoder(a, "")
 	o := &node.Node{}

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
@@ -16,7 +16,7 @@ import (
 var _ fmt.Stringer = Erro
 
 func TestType_String(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	a.Equal("ERRO", Erro.String())
 	a.Equal("SUCC", Succ.String())
 	a.Equal("INFO", Info.String())
@@ -25,7 +25,7 @@ func TestType_String(t *testing.T) {
 }
 
 func TestHandler(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	erro := new(bytes.Buffer)
 	warn := new(bytes.Buffer)
@@ -45,7 +45,7 @@ func TestHandler(t *testing.T) {
 			panic("panic")
 		}
 	})
-	a.NotError(h)
+	a.NotNil(h)
 
 	h.Error((Location{URI: "erro.go"}).NewError(locale.ErrInvalidUTF8Character))
 	h.Warning((Location{URI: "warn.go"}).NewError(locale.ErrInvalidUTF8Character))
@@ -65,14 +65,14 @@ func TestHandler(t *testing.T) {
 }
 
 func TestHandler_Stop(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	var exit bool
 
 	h := NewMessageHandler(func(msg *Message) {
 		time.Sleep(time.Second)
 		exit = true
 	})
-	a.NotError(h)
+	a.NotNil(h)
 
 	h.Locale(Erro, locale.ErrInvalidUTF8Character)
 	h.Stop() // 此处会阻塞，等待完成

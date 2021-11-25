@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"github.com/issue9/version"
 )
 
 func TestVersion(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	a.True(version.SemVerValid(Version))
 
 	v := &version.SemVersion{}
@@ -22,7 +22,7 @@ func TestVersion(t *testing.T) {
 }
 
 func TestParseType(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, s := ParseType(TypeString)
 	a.Equal(p, TypeString).Empty(s)
@@ -35,7 +35,7 @@ func TestParseType(t *testing.T) {
 }
 
 func TestTrimLeftSpace(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	data := []*struct {
 		input, output string

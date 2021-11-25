@@ -5,7 +5,7 @@ package core
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"github.com/issue9/validation/is"
 )
 
@@ -16,7 +16,7 @@ var (
 
 // 对一些堂量的基本检测。
 func TestConst(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	a.True(len(Name) > 0)
 	a.True(is.URL(RepoURL))
@@ -24,7 +24,7 @@ func TestConst(t *testing.T) {
 }
 
 func TestPosition_Equal(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p1 := Position{}
 	a.True(p1.Equal(Position{}))
@@ -32,7 +32,7 @@ func TestPosition_Equal(t *testing.T) {
 }
 
 func TestRange_Equal(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	r1 := Range{}
 	a.True(r1.Equal(Range{}))
@@ -43,7 +43,7 @@ func TestRange_Equal(t *testing.T) {
 }
 
 func TestRange_IsEmpty(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	r := Range{
 		Start: Position{},
@@ -62,7 +62,7 @@ func TestRange_IsEmpty(t *testing.T) {
 }
 
 func TestRange_Contains(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	r := Range{
 		Start: Position{Line: 1, Character: 15},
@@ -77,7 +77,7 @@ func TestRange_Contains(t *testing.T) {
 }
 
 func TestLocation_Contains(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	loc := Location{
 		URI: "doc.go",
@@ -95,7 +95,7 @@ func TestLocation_Contains(t *testing.T) {
 }
 
 func TestLocation_Equal(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l := Location{}
 	a.True(l.Equal(Location{})).
@@ -108,7 +108,7 @@ func TestLocation_Equal(t *testing.T) {
 }
 
 func TestLocation_IsEmpty(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l := Location{}
 	a.True(l.IsEmpty())
@@ -118,7 +118,7 @@ func TestLocation_IsEmpty(t *testing.T) {
 }
 
 func TestLocation_String(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l := Location{}
 	a.Empty(l.String())

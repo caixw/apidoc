@@ -5,14 +5,14 @@ package openapi
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
 	"github.com/caixw/apidoc/v7/internal/xmlenc"
 )
 
 func TestNewServer(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	input := &ast.Server{
 		URL:     &ast.Attribute{Value: xmlenc.String{Value: "https://example.com"}},
@@ -33,7 +33,7 @@ func TestNewServer(t *testing.T) {
 }
 
 func TestServer_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	srv := &Server{}
 	a.Error(srv.sanitize())
@@ -61,7 +61,7 @@ func TestServer_sanitize(t *testing.T) {
 }
 
 func TestServerVariable_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	sv := &ServerVariable{}
 	a.Error(sv.sanitize())

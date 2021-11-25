@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 type (
@@ -27,7 +27,7 @@ type (
 )
 
 func TestNewNode(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	data := []*struct {
 		inputName string
@@ -324,7 +324,7 @@ func TestNewNode(t *testing.T) {
 }
 
 func TestParseTag(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	data := []*struct {
 		inputName string

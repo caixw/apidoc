@@ -5,7 +5,7 @@ package lang
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -18,7 +18,7 @@ var (
 )
 
 func TestStringBlock(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	b := newCStyleString()
 	a.NotNil(b)
 
@@ -52,7 +52,7 @@ func TestStringBlock(t *testing.T) {
 }
 
 func TestSingleComment(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	b := newCStyleSingleComment()
 	a.NotNil(b)
 
@@ -107,7 +107,7 @@ func TestSingleComment(t *testing.T) {
 }
 
 func TestMultipleComment(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	b := newCStyleMultipleComment()
 
 	rslt := messagetest.NewMessageHandler()
@@ -150,7 +150,7 @@ func TestMultipleComment(t *testing.T) {
 }
 
 func TestConvertSingleCommentToXML(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data := []struct {
 		input, begin, output string
 	}{
@@ -194,7 +194,7 @@ func TestConvertSingleCommentToXML(t *testing.T) {
 }
 
 func TestConvertMultipleCommentToXML(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data := []struct {
 		input, begin, end, chars, output string
 	}{
@@ -236,7 +236,7 @@ func TestConvertMultipleCommentToXML(t *testing.T) {
 }
 
 func TestReplaceSymbol(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data := []struct {
 		input, chars, output string
 	}{

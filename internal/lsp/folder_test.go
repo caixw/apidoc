@@ -7,7 +7,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
@@ -15,7 +15,7 @@ import (
 )
 
 func TestFolder_messageHandler(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	f := &folder{srv: s, diagnostics: map[core.URI]*protocol.PublishDiagnosticsParams{}}

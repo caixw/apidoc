@@ -5,7 +5,7 @@ package lsp
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -13,7 +13,7 @@ import (
 )
 
 func TestTokenBuilder_append(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	b := &tokenBuilder{}
 	b.append(core.Range{
@@ -43,7 +43,7 @@ func TestTokenBuilder_append(t *testing.T) {
 }
 
 func TestTokenBuilder_build(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	b := &tokenBuilder{
 		tokens: [][]int{
@@ -66,7 +66,7 @@ func TestTokenBuilder_build(t *testing.T) {
 }
 
 func TestTokenBuilder_sort(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	b := &tokenBuilder{
 		tokens: [][]int{
@@ -91,7 +91,7 @@ func TestTokenBuilder_sort(t *testing.T) {
 }
 
 func TestSemanticTokens(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	// NOTE 此处的 apidoc 属性值必须与当前的文档主版本号相同
 	b := `<apidoc version="1.1.1" apidoc="6.0.0" created="2020-01-02T13:12:11+08:00">

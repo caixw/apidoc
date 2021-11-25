@@ -5,14 +5,14 @@ package lang
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestSwiftNestCommentBlock(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	b := newSwiftNestMCommentBlock("/*", "*/", "*")
 	a.NotNil(b)
@@ -58,7 +58,7 @@ func TestSwiftNestCommentBlock(t *testing.T) {
 	rslt = messagetest.NewMessageHandler()
 	l = newParser(rslt.Handler, core.Block{Data: []byte(`/*0/*1/*2*/*/*/`)}, nil)
 	rslt.Handler.Stop()
-	a.NotError(rslt.Errors).NotNil(l)
+	a.Empty(rslt.Errors).NotNil(l)
 	a.True(b.beginFunc(l))
 	data, ok = b.endFunc(l)
 	a.True(ok).

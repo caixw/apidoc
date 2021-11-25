@@ -5,11 +5,11 @@ package openapi
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 func TestParameter_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p := &Parameter{}
 	a.Error(p.sanitize())
@@ -22,7 +22,7 @@ func TestParameter_sanitize(t *testing.T) {
 }
 
 func TestHeader_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p := &Header{}
 	a.Error(p.sanitize())

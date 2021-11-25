@@ -5,13 +5,13 @@ package lexer
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 )
 
 func TestPosition_Equal(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	v1 := Position{}
 	a.True(v1.Equal(Position{}))
@@ -22,7 +22,7 @@ func TestPosition_Equal(t *testing.T) {
 }
 
 func TestPosition_AddRune_SubRune(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	v1 := Position{}
 

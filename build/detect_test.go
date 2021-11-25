@@ -5,11 +5,11 @@ package build
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 func TestDetectInput(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	o, err := detectInput("./testdata", true)
 	a.NotError(err).NotEmpty(o)
@@ -19,7 +19,7 @@ func TestDetectInput(t *testing.T) {
 }
 
 func TestDetectLanguage(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	exts := map[string]int{
 		".h":     2,
 		".c":     3,
@@ -38,7 +38,7 @@ func TestDetectLanguage(t *testing.T) {
 }
 
 func TestDetectExts(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	files, err := detectExts("./testdata", false)
 	a.NotError(err)

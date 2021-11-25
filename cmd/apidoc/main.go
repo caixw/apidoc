@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	tag, err := localeutil.SystemLanguageTag()
+	tag, err := localeutil.DetectUserLanguageTag()
 	if err != nil { // 无法获取系统语言，则采用默认值
 		fmt.Fprintln(os.Stderr, err, tag)
 		tag = language.MustParse(locale.DefaultLocaleID)

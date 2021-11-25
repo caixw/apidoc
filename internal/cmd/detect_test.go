@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/v7/build"
@@ -15,7 +15,7 @@ import (
 )
 
 func TestCmdDetect(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	buf := new(bytes.Buffer)
 	path := docs.Dir().Append("example")

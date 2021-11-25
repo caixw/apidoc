@@ -5,11 +5,11 @@ package protocol
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 func TestInitializeParams_Folders(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p := &InitializeParams{}
 	a.Nil(p.Folders())

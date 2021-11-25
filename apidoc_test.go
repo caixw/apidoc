@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/issue9/assert"
-	"github.com/issue9/assert/rest"
+	"github.com/issue9/assert/v2"
+	"github.com/issue9/assert/v2/rest"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
@@ -16,7 +16,7 @@ import (
 )
 
 func TestVersion(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	a.True(version.SemVerValid(Version(true)))
 	a.True(version.SemVerValid(Version(false)))
@@ -25,74 +25,68 @@ func TestVersion(t *testing.T) {
 }
 
 func TestStatic(t *testing.T) {
-	srv := rest.NewServer(t, Static(docs.Dir(), false, log.Default()), nil)
-	defer srv.Close()
+	a := assert.New(t, false)
+	srv := rest.NewServer(a, Static(docs.Dir(), false, log.Default()), nil)
 
-	srv.Get("/icon.svg").Do().Status(http.StatusOK)
+	srv.Get("/icon.svg").Do(nil).Status(http.StatusOK)
 }
 
 func TestView_Buffer(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data := asttest.XML(a)
 
 	s := &Server{
 		Status:      http.StatusCreated,
-		URL:         "/test/apidoc.xml",
+		Path:        "/test/apidoc.xml",
 		ContentType: "text/xml1",
 	}
-	srv := rest.NewServer(t, s.Buffer(data), nil)
-	srv.Get("/test/apidoc.xml").Do().
+	srv := rest.NewServer(a, s.Buffer(data), nil)
+	srv.Get("/test/apidoc.xml").Do(nil).
 		Status(http.StatusCreated).
 		Header("content-type", "text/xml1")
 
-	srv.Get("/index.xml").Do().Status(http.StatusOK)
+	srv.Get("/index.xml").Do(nil).Status(http.StatusOK)
 
-	srv.Get("/v6/apidoc.xsl").Do().Status(http.StatusOK)
-
-	srv.Close()
+	srv.Get("/v6/apidoc.xsl").Do(nil).Status(http.StatusOK)
 
 	// 能正确覆盖 Static 中的 index.xml
 	s = &Server{
 		Status:      http.StatusCreated,
-		URL:         "/index.xml",
+		Path:        "/index.xml",
 		ContentType: "text/css",
 	}
-	srv = rest.NewServer(t, s.Buffer(data), nil)
-	srv.Get("/index.xml").Do().
+	srv = rest.NewServer(a, s.Buffer(data), nil)
+	srv.Get("/index.xml").Do(nil).
 		Status(http.StatusCreated).
 		Header("content-type", "text/css")
 
-	srv.Get("/v6/apidoc.xsl").Do().Status(http.StatusOK)
-
-	srv.Close()
+	srv.Get("/v6/apidoc.xsl").Do(nil).Status(http.StatusOK)
 }
 
 func TestView_File(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	s := &Server{
 		Status:      http.StatusAccepted,
-		URL:         "/apidoc.xml",
+		Path:        "/apidoc.xml",
 		ContentType: "text/xml",
 	}
 	h, err := s.File(asttest.URI(a))
 	a.NotError(err).NotNil(h)
-	srv := rest.NewServer(t, h, nil)
-	srv.Get("/apidoc.xml").Do().
+	srv := rest.NewServer(a, h, nil)
+	srv.Get("/apidoc.xml").Do(nil).
 		Status(http.StatusAccepted).
 		Header("content-type", "text/xml")
-	srv.Close()
 
 	s = &Server{
 		Status: http.StatusAccepted,
-		URL:    "/apidoc.xml",
+		Path:   "/apidoc.xml",
 	}
 	h, err = s.File(asttest.URI(a))
 	a.NotError(err).NotNil(h)
-	srv = rest.NewServer(t, h, nil)
-	srv.Get("/apidoc.xml").Do().
+	srv = rest.NewServer(a, h, nil)
+	srv.Get("/apidoc.xml").Do(nil).
 		Status(http.StatusAccepted)
-	srv.Close()
 
 	// 覆盖现有的 index.xml
 	s = &Server{
@@ -100,14 +94,13 @@ func TestView_File(t *testing.T) {
 	}
 	h, err = s.File(asttest.URI(a))
 	a.NotError(err).NotNil(h)
-	srv = rest.NewServer(t, h, nil)
-	srv.Get("/index.xml").Do().
+	srv = rest.NewServer(a, h, nil)
+	srv.Get("/index.xml").Do(nil).
 		Status(http.StatusAccepted)
-	srv.Close()
 }
 
 func TestAddStylesheet(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	data := []*struct {
 		input  string

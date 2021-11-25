@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"github.com/issue9/qheader"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
@@ -16,7 +16,7 @@ import (
 )
 
 func TestFindRequestByContentType(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data := []*struct {
 		// 输入参数
 		requests []*ast.Request
@@ -70,7 +70,7 @@ func TestFindRequestByContentType(t *testing.T) {
 }
 
 func TestFindResponseByAccept(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data := []*struct {
 		// 输入参数
 		mimetypes []string
@@ -214,7 +214,7 @@ func TestFindResponseByAccept(t *testing.T) {
 }
 
 func TestValidRequest(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	r := httptest.NewRequest(http.MethodGet, "/path", nil)
 	a.Error(validRequest(nil, nil, r))
@@ -242,7 +242,7 @@ func TestValidRequest(t *testing.T) {
 }
 
 func TestBuildResponse(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	m := &mock{
 		indent: indent,
@@ -276,7 +276,7 @@ func TestBuildResponse(t *testing.T) {
 }
 
 func TestValidSimpleParam(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	data := []*struct {
 		title string
@@ -374,7 +374,7 @@ func TestValidSimpleParam(t *testing.T) {
 }
 
 func TestValidQueries(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data := []*struct {
 		title string
 		p     []*ast.Param
@@ -484,7 +484,7 @@ func TestValidQueries(t *testing.T) {
 		if item.err {
 			a.Error(err, "not error at %s", item.title)
 		} else {
-			a.NotError("err %s at %s", err, item.title)
+			a.NotError(err, "err %s at %s", err, item.title)
 		}
 	}
 }

@@ -6,17 +6,17 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 func TestXML(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data := XML(a)
 	a.NotNil(data)
 }
 
 func TestURI(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p1, err := filepath.Abs(Filename)
 	a.NotError(err).NotEmpty(p1)
@@ -28,7 +28,7 @@ func TestURI(t *testing.T) {
 }
 
 func TestPath(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p1, err := filepath.Abs(Filename)
 	a.NotError(err).NotEmpty(p1)
@@ -40,7 +40,7 @@ func TestPath(t *testing.T) {
 }
 
 func TestDir(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p1, err := filepath.Abs("./")
 	a.NotError(err).NotEmpty(p1)

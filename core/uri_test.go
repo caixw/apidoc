@@ -11,14 +11,15 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/caixw/apidoc/v7/internal/locale"
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/simplifiedchinese"
+
+	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 func TestFileURI(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	path := "/path/file"
 	uri := FileURI(path)
@@ -33,7 +34,7 @@ func TestFileURI(t *testing.T) {
 }
 
 func TestURI_json(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	obj := &struct {
 		URI URI `json:"uri"`
@@ -53,7 +54,7 @@ func TestURI_json(t *testing.T) {
 }
 
 func TestURI_Parse(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	scheme, p := URI("/path/file").Parse()
 	a.Empty(scheme).Equal(p, "/path/file")
@@ -66,7 +67,7 @@ func TestURI_Parse(t *testing.T) {
 }
 
 func TestURI_File(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	uri := URI("file:///path.php")
 	file, err := uri.File()
@@ -83,7 +84,7 @@ func TestURI_File(t *testing.T) {
 }
 
 func TestURI_Append(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	uri := URI("file://root")
 	a.Equal(uri.Append(""), uri)
@@ -106,7 +107,7 @@ func TestURI_Append(t *testing.T) {
 }
 
 func TestURI_Exists(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	uri := FileURI("./not-exists")
 	a.NotEmpty(uri)
@@ -148,7 +149,7 @@ func TestURI_Exists(t *testing.T) {
 }
 
 func TestURI_ReadAll(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	uri := FileURI("./not-exists")
 	a.NotEmpty(uri)
@@ -204,11 +205,11 @@ func TestURI_ReadAll(t *testing.T) {
 	// 不存在的远程文件
 	uri = URI(srv.URL + "/not-exists")
 	data, err = uri.ReadAll(nil)
-	a.Nil(data).ErrorType(err, &HTTPError{})
+	a.Nil(data).TypeEqual(true, err, &HTTPError{})
 }
 
 func TestURI_WriteAll(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	uri := URI(" :///path.php")
 	a.Error(uri.WriteAll([]byte("test")))

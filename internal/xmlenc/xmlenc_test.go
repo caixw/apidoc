@@ -5,13 +5,13 @@ package xmlenc
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 func TestBaseTag_SelfClose(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	b := &BaseTag{}
 	a.True(b.SelfClose())
@@ -30,7 +30,7 @@ func TestBaseTag_SelfClose(t *testing.T) {
 }
 
 func TestBase_Usage(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	b := Base{}
 	a.Empty(b.Usage())

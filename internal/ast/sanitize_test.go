@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -33,7 +33,7 @@ func newEmptyParser(a *assert.Assertion) *xmlenc.Parser {
 }
 
 func TestCheckXML(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	xml := &XML{XMLAttr: &BoolAttribute{Value: Bool{Value: true}}}
 	a.Error(checkXML(true, true, xml, newEmptyParser(a)))
@@ -69,7 +69,7 @@ func TestCheckXML(t *testing.T) {
 }
 
 func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	doc := &APIDoc{
 		XMLNamespaces: []*XMLNamespace{
@@ -131,7 +131,7 @@ func TestAPIDoc_checkXMLNamespaces(t *testing.T) {
 }
 
 func TestAPI_Sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	api := &API{}
 	p, rslt := newParser(a, "", "")
@@ -203,7 +203,7 @@ func TestAPI_Sanitize(t *testing.T) {
 }
 
 func TestXMLnamespace_Sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	ns := &XMLNamespace{}
 	p, rslt := newParser(a, "", "")
@@ -219,7 +219,7 @@ func TestXMLnamespace_Sanitize(t *testing.T) {
 }
 
 func TestParsePath(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	data := []*struct {
 		path   string
@@ -272,7 +272,7 @@ func TestParsePath(t *testing.T) {
 }
 
 func TestChkEnumsType(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	data := []*struct {
 		t     *TypeAttribute
@@ -339,7 +339,7 @@ func TestChkEnumsType(t *testing.T) {
 }
 
 func TestAPI_sanitizeTags(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	api := &API{}
 	a.Panic(func() {
@@ -389,7 +389,7 @@ func TestAPI_sanitizeTags(t *testing.T) {
 }
 
 func TestAPI_checkDup(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	doc := &APIDoc{}
 	api := &API{doc: doc}

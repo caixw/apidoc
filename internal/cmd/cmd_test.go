@@ -7,7 +7,7 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"github.com/issue9/term/v2/colors"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -52,7 +52,7 @@ func resetPrinters() (erro, warn, succ, info *bytes.Buffer) {
 }
 
 func TestMessageHandle(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	erro := new(bytes.Buffer)
 	warn := new(bytes.Buffer)

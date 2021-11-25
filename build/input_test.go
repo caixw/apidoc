@@ -5,7 +5,7 @@ package build
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"golang.org/x/text/encoding/simplifiedchinese"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -14,7 +14,7 @@ import (
 )
 
 func TestParseInputs(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	blocks := make(chan core.Block, 100)
 	rslt := messagetest.NewMessageHandler()
@@ -41,7 +41,7 @@ func TestParseInputs(t *testing.T) {
 }
 
 func TestInput_ParseFile(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	blocks := make(chan core.Block, 100)
 	rslt := messagetest.NewMessageHandler()
@@ -113,7 +113,7 @@ func TestInput_ParseFile(t *testing.T) {
 }
 
 func TestInput_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	o := &Input{}
 	a.Error(o.sanitize())
@@ -157,7 +157,7 @@ func TestInput_sanitize(t *testing.T) {
 }
 
 func TestInput_recursivePath(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	opt := &Input{
 		Dir:  "./testdata",

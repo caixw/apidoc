@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 func TestParseTag(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	name, omitempty := parseTag(reflect.StructField{Name: "F1"})
 	a.Equal(name, "F1").False(omitempty)

@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"gopkg.in/yaml.v2"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -15,7 +15,7 @@ import (
 )
 
 func TestAllowConfigFilenames(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	a.True(len(allowConfigFilenames) > 0)
 	for _, name := range allowConfigFilenames {
@@ -24,7 +24,7 @@ func TestAllowConfigFilenames(t *testing.T) {
 }
 
 func TestLoadConfig(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	cfg, err := LoadConfig(docs.Dir().Append("example"))
 	a.NotError(err).NotNil(cfg)
@@ -44,7 +44,7 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestLoadFile(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	cfg, err := loadFile("./", "./not-exists-file")
 	a.Error(err).Nil(cfg)
@@ -54,7 +54,7 @@ func TestLoadFile(t *testing.T) {
 }
 
 func TestConfig_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	// 错误的版本号格式
 	conf := &Config{}
@@ -90,7 +90,7 @@ func TestConfig_sanitize(t *testing.T) {
 }
 
 func TestConfig_Save(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	wd := core.FileURI("./")
 	a.NotEmpty(wd)
@@ -108,7 +108,7 @@ func TestConfig_Save(t *testing.T) {
 }
 
 func TestConfig_CheckSyntax(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	cfg, err := LoadConfig(docs.Dir().Append("example"))
 	a.NotError(err).NotNil(cfg)
@@ -120,7 +120,7 @@ func TestConfig_CheckSyntax(t *testing.T) {
 }
 
 func TestConfig_Build(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	cfg, err := LoadConfig(docs.Dir().Append("example"))
 	a.NotError(err).NotNil(cfg)
@@ -132,7 +132,7 @@ func TestConfig_Build(t *testing.T) {
 }
 
 func TestConfig_Buffer(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	cfg, err := LoadConfig(docs.Dir().Append("example"))
 	a.NotError(err).NotNil(cfg)

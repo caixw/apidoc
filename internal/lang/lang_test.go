@@ -7,11 +7,11 @@ import (
 	"testing"
 	"unicode"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 func TestLangs(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	isLower := func(str string) bool {
 		for _, r := range str {
@@ -43,7 +43,7 @@ func TestLangs(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l := Get("go")
 	a.NotNil(l).
@@ -56,7 +56,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetByExt(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	l := GetByExt(".go")
 	a.NotNil(l).Equal(l.ID, "go")

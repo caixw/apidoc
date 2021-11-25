@@ -5,7 +5,7 @@ package build
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
@@ -13,7 +13,7 @@ import (
 )
 
 func TestOptions_contains(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	o := &Output{}
 	a.True(o.contains("tag"))
@@ -26,7 +26,7 @@ func TestOptions_contains(t *testing.T) {
 }
 
 func TestOutput_Sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	// 默认的 Type
 	o := &Output{}
@@ -50,7 +50,7 @@ func TestOutput_Sanitize(t *testing.T) {
 }
 
 func TestOptions_buffer(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	doc := asttest.Get()
 	o := &Output{
@@ -58,7 +58,8 @@ func TestOptions_buffer(t *testing.T) {
 		Path: "./openapi.json",
 	}
 	a.NotError(o.sanitize())
-	a.NotError(o.buffer(doc))
+	_, err := o.buffer(doc)
+	a.NotError(err)
 
 	doc = asttest.Get()
 	o = &Output{}
@@ -68,7 +69,7 @@ func TestOptions_buffer(t *testing.T) {
 }
 
 func TestFilterDoc(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	d := asttest.Get()
 	o := &Output{}

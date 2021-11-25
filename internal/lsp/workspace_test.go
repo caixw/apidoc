@@ -7,7 +7,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"github.com/issue9/jsonrpc"
 
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -15,7 +15,7 @@ import (
 )
 
 func TestServer_workspaceDidChangeWorkspaceFolders(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	in := &protocol.DidChangeWorkspaceFoldersParams{}

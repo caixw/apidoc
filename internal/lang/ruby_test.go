@@ -5,14 +5,14 @@ package lang
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestRubyMultipleComment(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	b := newRubyMultipleComment("=pod", "=cut", "")
 
 	rslt := messagetest.NewMessageHandler()

@@ -7,7 +7,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"golang.org/x/text/language"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -16,7 +16,7 @@ import (
 )
 
 func TestServer_initialize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	in := &protocol.InitializeParams{}
 	out := &protocol.InitializeResult{}

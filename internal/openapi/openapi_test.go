@@ -5,18 +5,18 @@ package openapi
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"github.com/issue9/version"
 )
 
 func TestLatestVersion(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	a.True(version.SemVerValid(LatestVersion))
 }
 
 func TestOpenAPI_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	oa := &OpenAPI{Info: &Info{
 		Title:   "title",
@@ -39,7 +39,7 @@ func TestOpenAPI_sanitize(t *testing.T) {
 }
 
 func TestExternalDocumentation_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	ed := &ExternalDocumentation{}
 	a.Error(ed.sanitize())
@@ -52,7 +52,7 @@ func TestExternalDocumentation_sanitize(t *testing.T) {
 }
 
 func TestTag_sanitize(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	tag := &Tag{
 		ExternalDocs: &ExternalDocumentation{},

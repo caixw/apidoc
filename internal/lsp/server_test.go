@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"github.com/issue9/jsonrpc"
 
 	"github.com/caixw/apidoc/v7/internal/lsp/protocol"
@@ -19,7 +19,7 @@ func newTestServer(header bool, info, erro *log.Logger) *server {
 }
 
 func TestServer_setTrace(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 
 	err := s.setTrace(false, &protocol.SetTraceParams{}, nil)

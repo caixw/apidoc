@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -18,7 +18,7 @@ import (
 )
 
 func TestServer_textDocumentDidChange(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	s := newTestServer(true, log.New(ioutil.Discard, "", 0), log.New(ioutil.Discard, "", 0))
 	err := s.textDocumentDidChange(true, &protocol.DidChangeTextDocumentParams{
 		TextDocument: protocol.VersionedTextDocumentIdentifier{
@@ -52,7 +52,7 @@ func TestServer_textDocumentDidChange(t *testing.T) {
 }
 
 func TestDeleteURI(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	d := &ast.APIDoc{}
 	d.APIDoc = &ast.APIDocVersionAttribute{Value: xmlenc.String{Value: "1.0.0"}}
@@ -82,7 +82,7 @@ func TestDeleteURI(t *testing.T) {
 }
 
 func TestServer_textDocumentFoldingRange(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	const referenceDefinitionDoc = `<apidoc version="1.1.1">
 	<title>标题</title>

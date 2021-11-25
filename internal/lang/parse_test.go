@@ -5,14 +5,14 @@ package lang
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
 )
 
 func TestParser_block(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	blocks := []blocker{
 		newCStyleSingleComment(),
@@ -74,7 +74,7 @@ mcomment2
 	_, ok = b.(*multipleComment)
 	a.True(ok)
 	data, ok = b.endFunc(l)
-	a.NotError(ok).
+	a.True(ok).
 		Equal(string(data), "  \nmcomment1\nmcomment2\n  ")
 
 	/* 测试一段单行注释后紧跟 \n=pod 形式的多行注释，是否会出错 */
@@ -99,7 +99,7 @@ mcomment2
 }
 
 func TestParser_Parse(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	raw := `// <api method="GET">
 // <path path="/apis/gbk" />

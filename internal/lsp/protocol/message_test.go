@@ -5,17 +5,17 @@ package protocol
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 func TestIsValidTraceValue(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	a.True(IsValidTraceValue(TraceValueMessage))
 	a.False(IsValidTraceValue("invalid-value"))
 }
 
 func TestBuildLogTrace(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p := BuildLogTrace(TraceValueOff, "m1", "v2")
 	a.Nil(p)

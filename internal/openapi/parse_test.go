@@ -8,14 +8,14 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"
 )
 
 func TestJSON(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data, err := JSON(asttest.Get())
 	a.NotError(err).NotNil(data)
 
@@ -27,7 +27,7 @@ func TestJSON(t *testing.T) {
 		NotEmpty(openapi.ExternalDocs.Description)
 
 	path := openapi.Paths["/users"]
-	a.NotError(path)
+	a.NotNil(path)
 	a.NotNil(path.Post).NotNil(path.Get).Nil(path.Patch)
 	a.True(path.Post.Deprecated)
 	a.Equal(path.Post.Summary, "summary")
@@ -39,7 +39,7 @@ func TestJSON(t *testing.T) {
 }
 
 func TestYAML(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	data, err := YAML(asttest.Get())
 	a.NotError(err).NotNil(data)
 }

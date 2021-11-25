@@ -5,11 +5,11 @@ package messagetest
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 func TestNewMessageHandler(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	rslt := NewMessageHandler()
 	a.NotNil(rslt).NotNil(rslt.Handler)

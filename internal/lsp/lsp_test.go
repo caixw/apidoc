@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 	"github.com/issue9/jsonrpc"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -19,12 +19,12 @@ import (
 )
 
 func TestServe(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	a.Error(Serve(true, "not-exists-type", "", time.Second, nil, nil))
 }
 
 func TestServe_udp(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	info := new(bytes.Buffer)
 	erro := new(bytes.Buffer)
 	infoLog := log.New(info, "[INFO]", 0)
@@ -79,7 +79,7 @@ func TestServe_udp(t *testing.T) {
 }
 
 func TestServe_tcp(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	info := new(bytes.Buffer)
 	erro := new(bytes.Buffer)
 	infoLog := log.New(info, "[INFO]", 0)

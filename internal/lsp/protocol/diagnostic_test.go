@@ -5,14 +5,14 @@ package protocol
 import (
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/locale"
 )
 
 func TestPublishDiagnosticParams_AppendDiagnostic(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 	p := NewPublishDiagnosticsParams(core.URI("test.go"))
 	a.NotNil(p).
 		Equal(p.URI, core.URI("test.go")).
@@ -34,7 +34,7 @@ func TestPublishDiagnosticParams_AppendDiagnostic(t *testing.T) {
 }
 
 func TestBuildDiagnostic(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	err := core.NewError(locale.ErrInvalidUTF8Character).WithLocation(core.Location{
 		Range: core.Range{Start: core.Position{Line: 1}},

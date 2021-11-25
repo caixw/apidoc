@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 )
 
 func TestParseValue(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	v := ParseValue(reflect.ValueOf(intTag{}))
 	a.Equal(v.Name, "number").

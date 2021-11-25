@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/issue9/assert"
+	"github.com/issue9/assert/v2"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/core/messagetest"
@@ -21,7 +21,7 @@ func newParser(a *assert.Assertion, data string, uri core.URI) (*xmlenc.Parser, 
 }
 
 func TestAPIDoc_ParseBlocks(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	rslt := messagetest.NewMessageHandler()
 	doc := &APIDoc{}
@@ -46,7 +46,7 @@ func TestAPIDoc_ParseBlocks(t *testing.T) {
 }
 
 func TestAPIDoc_Parse(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	rslt := messagetest.NewMessageHandler()
 	d := &APIDoc{}
@@ -65,7 +65,8 @@ func TestAPIDoc_Parse(t *testing.T) {
 	d.Title = &Element{Content: Content{Value: "title"}}
 	d.Parse(rslt.Handler, core.Block{Data: []byte("<apidoc />")})
 	rslt.Handler.Stop()
-	a.Error(rslt.Errors[0])
+	_, ok := rslt.Errors[0].(error)
+	a.True(ok)
 
 	// 未知标签
 	rslt = messagetest.NewMessageHandler()
@@ -89,7 +90,7 @@ func TestAPIDoc_Parse(t *testing.T) {
 }
 
 func TestGetTagName(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	p, rslt := newParser(a, "  <root>xx</root>", "")
 	root := getTagName(p)
@@ -138,7 +139,7 @@ func TestGetTagName(t *testing.T) {
 }
 
 func TestAPIDoc_sortAPIs(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New(t, false)
 
 	doc := &APIDoc{
 		APIs: []*API{
