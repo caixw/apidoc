@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        go: ['1.17.x', '1.16.x']
-        
+        go: ['1.18.0-beta2']
+
     steps:
 
       - name: Set git to use LF
@@ -25,6 +25,7 @@ jobs:
       - name: Set up Go ${{ matrix.go }}
         uses: actions/setup-go@v2
         with:
+          stable: '!contains(${{ matrix.go }}, "beta") && !contains(${{ matrix.go }}, "rc")'
           go-version: ${{ matrix.go }}
         id: go
 

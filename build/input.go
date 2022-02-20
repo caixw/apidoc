@@ -135,7 +135,7 @@ func (o *Input) recursivePath() error {
 
 func (o *Input) isIgnore(root, path string) (bool, error) {
 	ext := filepath.Ext(path)
-	if sliceutil.Count(o.Exts, func(i int) bool { return o.Exts[i] == ext }) == 0 {
+	if sliceutil.Count(o.Exts, func(i string) bool { return i == ext }) == 0 {
 		return true, nil
 	}
 

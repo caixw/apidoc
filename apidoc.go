@@ -84,8 +84,8 @@ func Buffer(h *core.MessageHandler, o *build.Output, i ...*build.Input) (*bytes.
 }
 
 // CheckSyntax 测试文档语法
-func CheckSyntax(h *core.MessageHandler, i ...*build.Input) {
-	build.CheckSyntax(h, i...)
+func CheckSyntax(h *core.MessageHandler, i ...*build.Input) error {
+	return build.CheckSyntax(h, i...)
 }
 
 // ServeLSP 提供 language server protocol 服务

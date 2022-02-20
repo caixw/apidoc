@@ -68,14 +68,10 @@ func (err *Error) Error() string {
 }
 
 // Unwrap 实现 errors.Unwrap 接口
-func (err *Error) Unwrap() error {
-	return err.Err
-}
+func (err *Error) Unwrap() error { return err.Err }
 
 // Is 实现 errors.Is 接口
-func (err *Error) Is(target error) bool {
-	return err.Err == target
-}
+func (err *Error) Is(target error) bool { return err.Err == target }
 
 // Relate 添加关联的错误信息
 func (err *Error) Relate(loc Location, msg string) *Error {
@@ -107,7 +103,7 @@ func (err *Error) AddTypes(t ...ErrorType) *Error {
 	}
 
 	for _, typ := range t {
-		if sliceutil.Count(err.Types, func(i int) bool { return err.Types[i] == typ }) <= 0 {
+		if sliceutil.Count(err.Types, func(i ErrorType) bool { return i == typ }) <= 0 {
 			err.Types = append(err.Types, typ)
 		}
 	}

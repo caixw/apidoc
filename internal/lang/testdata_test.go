@@ -73,10 +73,10 @@ func parseLang(a *assert.Assertion, id, dir string) {
 		close(blks)
 		go func() {
 			for block := range blks {
-				cnt := sliceutil.Count(blocks, func(i int) bool {
+				cnt := sliceutil.Count(blocks, func(i string) bool {
 					// 忽略首层空格的差别，部分语言没有多行注释，
 					// 单行注释生成的代码块会比多行注释生成的代码多一个换行符。
-					return strings.TrimSpace(blocks[i]) == strings.TrimSpace(string(block.Data))
+					return strings.TrimSpace(i) == strings.TrimSpace(string(block.Data))
 				})
 
 				if cnt <= 0 {

@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/issue9/mux/v5"
+	"github.com/issue9/mux/v6"
 	"github.com/issue9/qheader"
 	"github.com/issue9/version"
 
@@ -49,7 +49,7 @@ func New(msg *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, serve
 		return nil, locale.NewError(locale.VersionInCompatible)
 	}
 
-	mu := mux.NewRouter("apidoc mock server")
+	mu := mux.NewRouter("apidoc mock server", nil)
 	router := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := w.Header()
 		h.Set("Access-Control-Allow-Origin", "*")
@@ -72,7 +72,7 @@ func New(msg *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, serve
 		if imageURL[0] != '/' || imageURL[len(imageURL)-1] == '/' {
 			panic("参数 imageURL 必须以 / 开头且不能以 / 结尾")
 		}
-		m.router.GetFunc(imageURL+"/{path}", m.getImage)
+		m.router.Get(imageURL+"/{path}", http.HandlerFunc(m.getImage))
 	}
 
 	m.parse()

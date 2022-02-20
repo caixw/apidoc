@@ -43,7 +43,7 @@ func (f *folder) parseBlock(block core.Block) {
 	var input *build.Input
 	ext := filepath.Ext(block.Location.URI.String())
 	for _, i := range f.cfg.Inputs {
-		if sliceutil.Count(i.Exts, func(index int) bool { return i.Exts[index] == ext }) > 0 {
+		if sliceutil.Count(i.Exts, func(index string) bool { return index == ext }) > 0 {
 			input = i
 			break
 		}
@@ -62,12 +62,12 @@ func (f *folder) parseBlock(block core.Block) {
 }
 
 func deleteURI(doc *ast.APIDoc, uri core.URI) (deleted bool) {
-	size := sliceutil.Delete(doc.APIs, func(i int) bool {
-		return doc.APIs[i].URI == uri
+	l := len(doc.APIs)
+	doc.APIs = sliceutil.Delete(doc.APIs, func(i *ast.API) bool {
+		return i.URI == uri
 	})
 
-	deleted = len(doc.APIs) > size
-	doc.APIs = doc.APIs[:size]
+	deleted = l > len(doc.APIs)
 
 	if doc.URI == uri {
 		*doc = ast.APIDoc{APIs: doc.APIs}

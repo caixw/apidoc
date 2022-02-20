@@ -47,8 +47,8 @@ func (f *folder) messageHandler(msg *core.Message) {
 	}
 
 	if p, found := f.diagnostics[err.Location.URI]; found && p != nil {
-		cnt := sliceutil.Count(p.Diagnostics, func(i int) bool {
-			return p.Diagnostics[i].Range.Equal(err.Location.Range)
+		cnt := sliceutil.Count(p.Diagnostics, func(i protocol.Diagnostic) bool {
+			return i.Range.Equal(err.Location.Range)
 		})
 		if cnt == 0 {
 			p.AppendDiagnostic(err, msg.Type)

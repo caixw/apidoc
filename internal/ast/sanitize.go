@@ -22,7 +22,7 @@ func (api *API) Sanitize(p *xmlenc.Parser) {
 	}
 
 	// 对 Servers 和 Tags 查重
-	indexes := sliceutil.Dup(api.Servers, func(i, j int) bool { return api.Servers[i].V() == api.Servers[j].V() })
+	indexes := sliceutil.Dup(api.Servers, func(i, j *ServerValue) bool { return i.V() == j.V() })
 	if len(indexes) > 0 {
 		err := api.Servers[indexes[0]].Location.NewError(locale.ErrDuplicateValue).WithField("server")
 		for _, srv := range indexes[1:] {
@@ -30,7 +30,7 @@ func (api *API) Sanitize(p *xmlenc.Parser) {
 		}
 		p.Error(err)
 	}
-	indexes = sliceutil.Dup(api.Tags, func(i, j int) bool { return api.Tags[i].V() == api.Tags[j].V() })
+	indexes = sliceutil.Dup(api.Tags, func(i, j *TagValue) bool { return i.V() == j.V() })
 	if len(indexes) > 0 {
 		err := api.Tags[indexes[0]].Location.NewError(locale.ErrDuplicateValue).WithField("server")
 		for _, tag := range indexes[1:] {
@@ -204,7 +204,7 @@ func chkEnumsType(t *TypeAttribute, enums []*Enum, p *xmlenc.Parser) error {
 }
 
 func checkDuplicateEnum(enums []*Enum, p *xmlenc.Parser) {
-	indexes := sliceutil.Dup(enums, func(i, j int) bool { return enums[i].Value.V() == enums[j].Value.V() })
+	indexes := sliceutil.Dup(enums, func(i, j *Enum) bool { return i.Value.V() == j.Value.V() })
 	if len(indexes) > 0 {
 		err := enums[indexes[0]].Location.NewError(locale.ErrDuplicateValue).WithField("enum")
 		for _, i := range indexes[1:] {
@@ -215,7 +215,7 @@ func checkDuplicateEnum(enums []*Enum, p *xmlenc.Parser) {
 }
 
 func checkDuplicateItems(items []*Param, p *xmlenc.Parser) {
-	indexes := sliceutil.Dup(items, func(i, j int) bool { return items[i].Name.V() == items[j].Name.V() })
+	indexes := sliceutil.Dup(items, func(i, j *Param) bool { return i.Name.V() == j.Name.V() })
 	if len(indexes) > 0 {
 		err := items[indexes[0]].Location.NewError(locale.ErrDuplicateValue).WithField("param")
 		for _, i := range indexes[1:] {
@@ -286,8 +286,8 @@ func (doc *APIDoc) checkXMLNamespaces(p *xmlenc.Parser) error {
 	}
 
 	// 按 URN 查重
-	indexes := sliceutil.Dup(doc.XMLNamespaces, func(i, j int) bool {
-		return doc.XMLNamespaces[i].URN.V() == doc.XMLNamespaces[j].URN.V()
+	indexes := sliceutil.Dup(doc.XMLNamespaces, func(i, j *XMLNamespace) bool {
+		return i.URN.V() == j.URN.V()
 	})
 	if len(indexes) > 0 {
 		err := doc.XMLNamespaces[indexes[0]].URN.Location.NewError(locale.ErrDuplicateValue).WithField("@urn")
@@ -298,8 +298,8 @@ func (doc *APIDoc) checkXMLNamespaces(p *xmlenc.Parser) error {
 	}
 
 	// 按 prefix 查重
-	indexes = sliceutil.Dup(doc.XMLNamespaces, func(i, j int) bool {
-		return doc.XMLNamespaces[i].Prefix.V() == doc.XMLNamespaces[j].Prefix.V()
+	indexes = sliceutil.Dup(doc.XMLNamespaces, func(i, j *XMLNamespace) bool {
+		return i.Prefix.V() == j.Prefix.V()
 	})
 	if len(indexes) > 0 {
 		err := doc.XMLNamespaces[indexes[0]].URN.Location.NewError(locale.ErrDuplicateValue).WithField("@prefix")
@@ -409,7 +409,7 @@ func (api *API) checkDup(p *xmlenc.Parser) {
 
 		// 判断是否拥有相同的 server 字段
 		for _, srv := range api.Servers {
-			s := sliceutil.Count(item.Servers, func(i int) bool { return srv.V() == item.Servers[i].V() })
+			s := sliceutil.Count(item.Servers, func(i *ServerValue) bool { return srv.V() == i.V() })
 			if s > 0 {
 				err.Relate(item.Location, locale.Sprintf(locale.ErrDuplicateValue))
 				continue

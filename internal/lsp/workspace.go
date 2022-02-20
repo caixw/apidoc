@@ -38,14 +38,14 @@ func (s *server) workspaceDidChangeWorkspaceFolders(notify bool, in *protocol.Di
 	s.workspaceMux.Lock()
 	defer s.workspaceMux.Unlock()
 
-	size := sliceutil.Delete(s.folders, func(i int) bool {
-		return sliceutil.Count(in.Event.Removed, func(j int) bool {
-			return in.Event.Removed[j].URI == s.folders[i].URI
+	old := s.folders
+	s.folders = sliceutil.Delete(s.folders, func(i *folder) bool {
+		return sliceutil.Count(in.Event.Removed, func(j protocol.WorkspaceFolder) bool {
+			return j.URI == i.URI
 		}) > 0
 	})
 
-	var deleted []*folder
-	s.folders, deleted = s.folders[:size], s.folders[size:]
+	deleted := old[len(s.folders):]
 	for _, f := range deleted {
 		f.close()
 	}

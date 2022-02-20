@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## [Unreleased]
+## [unreleased]
+
+## [v7.2.3]
 
 ### Added
 
