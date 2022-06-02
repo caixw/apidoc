@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/issue9/assert/v2"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/internal/ast"

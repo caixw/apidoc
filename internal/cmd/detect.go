@@ -7,7 +7,7 @@ import (
 	"io"
 
 	"github.com/issue9/cmdopt"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/caixw/apidoc/v7/build"
 	"github.com/caixw/apidoc/v7/core"
