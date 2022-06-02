@@ -3,6 +3,8 @@
 package core
 
 import (
+	"errors"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -116,7 +118,7 @@ func (uri URI) Exists() (bool, error) {
 	switch scheme {
 	case SchemeFile, "":
 		_, err := os.Stat(path)
-		return (err == nil || os.IsExist(err)), nil
+		return err == nil || errors.Is(err, fs.ErrExist), nil
 	case SchemeHTTP, SchemeHTTPS:
 		return remoteFileIsExists(string(uri))
 	default:

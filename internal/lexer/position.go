@@ -18,19 +18,13 @@ type Position struct {
 }
 
 // Equal 判断与 v 是否相等
-func (p Position) Equal(v Position) bool {
-	return p.Offset == v.Offset
-}
+func (p Position) Equal(v Position) bool { return p.Offset == v.Offset }
 
 // AddRune 向后移动一个字符
-func (p Position) AddRune(r rune) Position {
-	return p.add(r, utf8.RuneLen(r))
-}
+func (p Position) AddRune(r rune) Position { return p.add(r, utf8.RuneLen(r)) }
 
 // SubRune 向前移动一个字符
-func (p Position) SubRune(r rune) Position {
-	return p.sub(r, utf8.RuneLen(r))
-}
+func (p Position) SubRune(r rune) Position { return p.sub(r, utf8.RuneLen(r)) }
 
 // 将 p 的定位回滚一个文字 r
 //

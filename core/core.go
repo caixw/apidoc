@@ -70,9 +70,7 @@ func (r Range) Equal(v Range) bool {
 }
 
 // IsEmpty 表示 Range 表示的范围长度为空
-func (r Range) IsEmpty() bool {
-	return r.End == r.Start
-}
+func (r Range) IsEmpty() bool { return r.End == r.Start }
 
 // Contains 是否包含了 p 这个点
 func (r Range) Contains(p Position) bool {
@@ -83,9 +81,7 @@ func (r Range) Contains(p Position) bool {
 }
 
 // Loc 返回当前的范围
-func (l Location) Loc() Location {
-	return l
-}
+func (l Location) Loc() Location { return l }
 
 // Contains l 是否包含 pos 这个点
 func (l Location) Contains(uri URI, pos Position) bool {

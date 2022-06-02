@@ -18,7 +18,7 @@ import (
 type (
 	// Decoder 实现从 p 中解码内容到当前对象的值
 	Decoder interface {
-		// 从 p 中读取内容并实例化到当前对象中
+		// DecodeXML 从 p 中读取内容并实例化到当前对象中
 		//
 		// 必须要同时从 p 中读取相应的 EndElement 才能返回。
 		// end 表示 EndElement.End 的值。
@@ -31,7 +31,7 @@ type (
 
 	// AttrDecoder 实现从 attr 中解码内容到当前对象的值
 	AttrDecoder interface {
-		// 解析属性值
+		// DecodeXMLAttr 解析属性值
 		//
 		// 接口应该只返回 *core.Error 作为错误对象。
 		DecodeXMLAttr(p *Parser, attr *Attribute) error
@@ -39,7 +39,7 @@ type (
 
 	// Sanitizer 用于验证和修改对象中的数据
 	Sanitizer interface {
-		// 验证数据是否正确
+		// Sanitize 验证数据是否正确
 		//
 		// 可以通过 p.Error 等方法输出错误信息
 		Sanitize(p *Parser)

@@ -93,21 +93,13 @@ func (h *MessageHandler) Locale(t MessageType, key message.Reference, val ...int
 }
 
 // Error 发送错误类型的值
-func (h *MessageHandler) Error(err interface{}) {
-	h.Message(Erro, err)
-}
+func (h *MessageHandler) Error(err interface{}) { h.Message(Erro, err) }
 
 // Warning 发送错误类型的值
-func (h *MessageHandler) Warning(err interface{}) {
-	h.Message(Warn, err)
-}
+func (h *MessageHandler) Warning(err interface{}) { h.Message(Warn, err) }
 
 // Success 发送错误类型的值
-func (h *MessageHandler) Success(err interface{}) {
-	h.Message(Succ, err)
-}
+func (h *MessageHandler) Success(err interface{}) { h.Message(Succ, err) }
 
 // Info 发送错误类型的值
-func (h *MessageHandler) Info(err interface{}) {
-	h.Message(Info, err)
-}
+func (h *MessageHandler) Info(err interface{}) { h.Message(Info, err) }

@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        go: ['1.18.0-beta2']
+        go: ['1.18.x']
 
     steps:
 

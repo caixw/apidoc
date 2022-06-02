@@ -65,9 +65,7 @@ func SetTag(tag language.Tag) {
 }
 
 // Tag 获取当前的本地化 ID
-func Tag() language.Tag {
-	return localeTag
-}
+func Tag() language.Tag { return localeTag }
 
 // Tags 所有支持语言的列表
 func Tags() []language.Tag {

@@ -15,13 +15,13 @@ import (
 
 // Encoder 将元素内容编码成 XML 内容
 type Encoder interface {
-	// 仅需要返回元素内容的 XML 编码，不需要包含本身的标签和属性。
+	// EncodeXML 仅需要返回元素内容的 XML 编码，不需要包含本身的标签和属性。
 	EncodeXML() (string, error)
 }
 
 // AttrEncoder 将属性值编码成符合 XML 规范的值
 type AttrEncoder interface {
-	// 仅需要返回属性的 XML 表示，不需要包含属性值的引号字符。
+	// EncodeXMLAttr 仅需要返回属性的 XML 表示，不需要包含属性值的引号字符。
 	EncodeXMLAttr() (string, error)
 }
 

@@ -2,6 +2,12 @@
 
 ## [unreleased]
 
+## [v7.2.4]
+
+### Changed
+
+- 仅支持 go1.18 版本；
+
 ## [v7.2.3]
 
 ### Added

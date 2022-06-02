@@ -39,19 +39,13 @@ type Config = build.Config
 // 如果不调用此函数，则默认会采用 internal/locale.DefaultLocaleID 的值。
 // 如果想采用当前系统的本地化信息，可以使用
 // github.com/issue9/localeutil.SystemLanguageTag 函数。
-func SetLocale(tag language.Tag) {
-	locale.SetTag(tag)
-}
+func SetLocale(tag language.Tag) { locale.SetTag(tag) }
 
 // Locale 获取当前设置的本地化 ID
-func Locale() language.Tag {
-	return locale.Tag()
-}
+func Locale() language.Tag { return locale.Tag() }
 
 // Locales 返回当前所有支持的本地化信息
-func Locales() []language.Tag {
-	return locale.Tags()
-}
+func Locales() []language.Tag { return locale.Tags() }
 
 // Version 当前程序的版本号
 //

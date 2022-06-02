@@ -67,10 +67,7 @@ func BlockEndPosition(b core.Block) (Position, error) {
 	return p, nil
 }
 
-// AtEOF 是否已经结束
-func (l *Lexer) AtEOF() bool {
-	return l.Current().Offset > l.lastIndex
-}
+func (l *Lexer) AtEOF() bool { return l.Current().Offset > l.lastIndex }
 
 // Match 接下来的 n 个字符是否匹配指定的字符串，
 // 若匹配，则将指定移向该字符串这后，否则不作任何操作。
@@ -97,9 +94,7 @@ func (l *Lexer) Match(word string) bool {
 }
 
 // Current 返回当前在 data 中的偏移量
-func (l *Lexer) Current() Position {
-	return l.current
-}
+func (l *Lexer) Current() Position { return l.current }
 
 // Move 移动当前的分析器的位置
 //
@@ -257,6 +252,4 @@ func (l *Lexer) Rollback() {
 // Bytes 返回指定范围的内容
 //
 // NOTE: 并不会改变定位信息
-func (l *Lexer) Bytes(start, end int) []byte {
-	return l.Data[start:end]
-}
+func (l *Lexer) Bytes(start, end int) []byte { return l.Data[start:end] }

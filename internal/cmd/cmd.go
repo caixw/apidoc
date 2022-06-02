@@ -10,7 +10,7 @@ import (
 	"os"
 
 	"github.com/issue9/cmdopt"
-	"github.com/issue9/term/v2/colors"
+	"github.com/issue9/term/v3/colors"
 	"golang.org/x/text/message"
 
 	"github.com/caixw/apidoc/v7/core"
@@ -51,22 +51,16 @@ type printer struct {
 
 type uri core.URI
 
-func (u uri) Get() interface{} {
-	return string(u)
-}
+func (u uri) Get() interface{} { return string(u) }
 
 func (u *uri) Set(v string) error {
 	*u = uri(core.FileURI(v))
 	return nil
 }
 
-func (u *uri) String() string {
-	return core.URI(*u).String()
-}
+func (u *uri) String() string { return core.URI(*u).String() }
 
-func (u uri) URI() core.URI {
-	return core.URI(u)
-}
+func (u uri) URI() core.URI { return core.URI(u) }
 
 // Init 初始化 cmdopt.CmdOpt 实例
 func Init(out io.Writer) *cmdopt.CmdOpt {
