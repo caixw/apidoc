@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/issue9/assert/v2"
-	"github.com/issue9/assert/v2/rest"
+	"github.com/issue9/assert/v3"
+	"github.com/issue9/assert/v3/rest"
 	"github.com/issue9/version"
 
 	"github.com/caixw/apidoc/v7/internal/ast/asttest"

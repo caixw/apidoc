@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/issue9/assert/v2"
-	"github.com/issue9/assert/v2/rest"
+	"github.com/issue9/assert/v3"
+	"github.com/issue9/assert/v3/rest"
 
 	"github.com/caixw/apidoc/v7/core"
 	"github.com/caixw/apidoc/v7/internal/ast"

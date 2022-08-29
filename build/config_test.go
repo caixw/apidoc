@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/issue9/assert/v2"
+	"github.com/issue9/assert/v3"
 	"gopkg.in/yaml.v3"
 
 	"github.com/caixw/apidoc/v7/core"

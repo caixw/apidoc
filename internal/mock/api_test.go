@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/issue9/assert/v2"
+	"github.com/issue9/assert/v3"
 	"github.com/issue9/qheader"
 
 	"github.com/caixw/apidoc/v7/internal/ast"
@@ -75,7 +75,7 @@ func TestFindResponseByAccept(t *testing.T) {
 		// 输入参数
 		mimetypes []string
 		requests  []*ast.Request
-		accepts   []*qheader.Header
+		accepts   []*qheader.Item
 
 		// 返回参数
 		index int
@@ -90,7 +90,7 @@ func TestFindResponseByAccept(t *testing.T) {
 		},
 		{
 			requests: []*ast.Request{{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}}},
-			accepts:  []*qheader.Header{{Value: "text/xml"}},
+			accepts:  []*qheader.Item{{Value: "text/xml"}},
 			index:    0,
 			ct:       "text/xml",
 		},
@@ -99,7 +99,7 @@ func TestFindResponseByAccept(t *testing.T) {
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
-			accepts: []*qheader.Header{{Value: "text/xml"}},
+			accepts: []*qheader.Item{{Value: "text/xml"}},
 			index:   0,
 			ct:      "text/xml",
 		},
@@ -108,7 +108,7 @@ func TestFindResponseByAccept(t *testing.T) {
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
-			accepts: []*qheader.Header{{Value: "text/*"}},
+			accepts: []*qheader.Item{{Value: "text/*"}},
 			index:   0,
 			ct:      "text/xml",
 		},
@@ -117,7 +117,7 @@ func TestFindResponseByAccept(t *testing.T) {
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
-			accepts: []*qheader.Header{{Value: "application/*"}},
+			accepts: []*qheader.Item{{Value: "application/*"}},
 			index:   1,
 			ct:      "application/json",
 		},
@@ -126,7 +126,7 @@ func TestFindResponseByAccept(t *testing.T) {
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
-			accepts: []*qheader.Header{{Value: "*/*"}},
+			accepts: []*qheader.Item{{Value: "*/*"}},
 			index:   0,
 			ct:      "text/xml",
 		},
@@ -135,63 +135,63 @@ func TestFindResponseByAccept(t *testing.T) {
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "text/xml"}}},
 				{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}},
 			},
-			accepts: []*qheader.Header{{Value: "*/*"}, {Value: "application/*"}},
+			accepts: []*qheader.Item{{Value: "*/*"}, {Value: "application/*"}},
 			index:   0,
 			ct:      "text/xml", // 第一个元素，匹配 */*
 		},
 		{
 			mimetypes: []string{"text/xml"},
 			requests:  []*ast.Request{},
-			accepts:   []*qheader.Header{{Value: "*/*"}},
+			accepts:   []*qheader.Item{{Value: "*/*"}},
 			index:     -1,
 			ct:        "",
 		},
 		{
 			mimetypes: []string{"text/xml"},
 			requests:  []*ast.Request{{}},
-			accepts:   []*qheader.Header{{Value: "*/*"}},
+			accepts:   []*qheader.Item{{Value: "*/*"}},
 			index:     0,
 			ct:        "text/xml",
 		},
 		{
 			mimetypes: []string{"text/xml"},
 			requests:  []*ast.Request{{}, {}},
-			accepts:   []*qheader.Header{{Value: "*/*"}},
+			accepts:   []*qheader.Item{{Value: "*/*"}},
 			index:     0,
 			ct:        "text/xml",
 		},
 		{
 			mimetypes: []string{"text/xml", "application/json"},
 			requests:  []*ast.Request{{}},
-			accepts:   []*qheader.Header{{Value: "application/*"}},
+			accepts:   []*qheader.Item{{Value: "application/*"}},
 			index:     0,
 			ct:        "application/json",
 		},
 		{
 			mimetypes: []string{"text/xml", "application/json"},
 			requests:  []*ast.Request{{}},
-			accepts:   []*qheader.Header{{Value: "application/json"}},
+			accepts:   []*qheader.Item{{Value: "application/json"}},
 			index:     0,
 			ct:        "application/json",
 		},
 		{
 			mimetypes: []string{"text/xml", "application/json"},
 			requests:  []*ast.Request{{}},
-			accepts:   []*qheader.Header{{Value: "application/*"}, {Value: "text/xml"}},
+			accepts:   []*qheader.Item{{Value: "application/*"}, {Value: "text/xml"}},
 			index:     0,
 			ct:        "text/xml",
 		},
 		{
 			mimetypes: []string{"text/xml", "application/json"},
 			requests:  []*ast.Request{{Mimetype: &ast.Attribute{Value: xmlenc.String{Value: "application/json"}}}},
-			accepts:   []*qheader.Header{{Value: "application/*"}},
+			accepts:   []*qheader.Item{{Value: "application/*"}},
 			index:     0,
 			ct:        "application/json",
 		},
 		{ // 任意值，匹配 mimetypes
 			mimetypes: []string{"text/xml", "application/json"},
 			requests:  []*ast.Request{{}},
-			accepts:   []*qheader.Header{{Value: "font/*"}, {Value: "*/*"}},
+			accepts:   []*qheader.Item{{Value: "font/*"}, {Value: "*/*"}},
 			index:     0,
 			ct:        "text/xml",
 		},

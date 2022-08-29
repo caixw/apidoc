@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"reflect"
 	"strings"
 
 	"github.com/issue9/errwrap"
@@ -128,8 +127,6 @@ func (validator *jsonValidator) valid(d *json.Decoder) error {
 		}
 	}
 }
-
-var jsonNumberType = reflect.TypeOf(json.Number("1"))
 
 // 如果 t == "" 表示不需要验证类型，比如 null 可以赋值给任何类型
 func (validator *jsonValidator) validValue(t string, v interface{}) error {

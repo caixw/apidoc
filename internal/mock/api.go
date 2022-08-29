@@ -4,7 +4,7 @@ package mock
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -64,7 +64,7 @@ func validRequest(ns []*ast.XMLNamespace, requests []*ast.Request, r *http.Reque
 		}
 	}
 
-	content, err := ioutil.ReadAll(r.Body)
+	content, err := io.ReadAll(r.Body)
 	if err != nil {
 		return err
 	}
@@ -85,10 +85,10 @@ func validRequest(ns []*ast.XMLNamespace, requests []*ast.Request, r *http.Reque
 func (m *mock) renderResponse(api *ast.API, w http.ResponseWriter, r *http.Request) {
 	accepts := qheader.Accept(r)
 
-	resp, accept := findResponseByAccept(m.doc.Mimetypes, api.Responses, accepts)
+	resp, accept := findResponseByAccept(m.doc.Mimetypes, api.Responses, accepts.Items)
 	if resp == nil {
 		// 仅在 api.Responses 无法匹配任何内容的时候，才从 doc.Responses 中查找内容
-		resp, accept = findResponseByAccept(m.doc.Mimetypes, m.doc.Responses, accepts)
+		resp, accept = findResponseByAccept(m.doc.Mimetypes, m.doc.Responses, accepts.Items)
 		if resp == nil {
 			m.handleError(w, r, "headers[Accept]", locale.NewError(locale.ErrInvalidValue))
 			return
@@ -141,7 +141,7 @@ func findRequestByContentType(requests []*ast.Request, ct string) *ast.Request {
 }
 
 // accepts 必须是已经按权重进行排序的。
-func findResponseByAccept(mimetypes []*ast.Element, requests []*ast.Request, accepts []*qheader.Header) (*ast.Request, string) {
+func findResponseByAccept(mimetypes []*ast.Element, requests []*ast.Request, accepts []*qheader.Item) (*ast.Request, string) {
 	if len(requests) == 0 {
 		return nil, ""
 	}
@@ -172,7 +172,7 @@ func findResponseByAccept(mimetypes []*ast.Element, requests []*ast.Request, acc
 }
 
 // 查看 ct 是否有与 accepts 相匹配的项，必须保证 ct 的值不为空。
-func matchContentType(ct string, accepts []*qheader.Header) bool {
+func matchContentType(ct string, accepts []*qheader.Item) bool {
 	for _, a := range accepts {
 		if (strings.HasSuffix(a.Value, "/*") && strings.HasPrefix(ct, a.Value[:len(a.Value)-1])) ||
 			ct == a.Value ||
@@ -302,12 +302,14 @@ func (m *mock) buildResponse(p *ast.Request, r *http.Request) ([]byte, error) {
 	}
 
 	headers := qheader.Accept(r)
-	for _, h := range headers {
-		switch strings.ToLower(h.Value) {
-		case "application/json", "*/*":
-			return buildJSON(p, m.indent, m.gen)
-		case "application/xml", "text/xml":
-			return buildXML(m.doc.XMLNamespaces, p, m.indent, m.gen)
+	if headers != nil {
+		for _, h := range headers.Items {
+			switch strings.ToLower(h.Value) {
+			case "application/json", "*/*":
+				return buildJSON(p, m.indent, m.gen)
+			case "application/xml", "text/xml":
+				return buildXML(m.doc.XMLNamespaces, p, m.indent, m.gen)
+			}
 		}
 	}
 	return nil, core.NewError(locale.ErrInvalidValue).WithField("headers[accept]")

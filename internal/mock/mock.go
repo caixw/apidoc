@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/issue9/mux/v6"
+	"github.com/issue9/mux/v7/examples/std"
 	"github.com/issue9/qheader"
 	"github.com/issue9/version"
 
@@ -26,7 +26,7 @@ import (
 type mock struct {
 	msgHandler *core.MessageHandler
 	doc        *ast.APIDoc
-	router     *mux.Router
+	router     *std.Router
 	h          http.Handler
 	servers    map[string]string
 	indent     string
@@ -49,7 +49,7 @@ func New(msg *core.MessageHandler, d *ast.APIDoc, indent, imageURL string, serve
 		return nil, locale.NewError(locale.VersionInCompatible)
 	}
 
-	mu := mux.NewRouter("apidoc mock server", nil)
+	mu := std.NewRouter("apidoc mock server")
 	router := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := w.Header()
 		h.Set("Access-Control-Allow-Origin", "*")
@@ -151,7 +151,7 @@ func (m *mock) getImage(w http.ResponseWriter, r *http.Request) {
 	img := image.NewNRGBA(image.Rect(0, 0, width, height))
 	headers := qheader.Accept(r)
 
-	for _, h := range headers {
+	for _, h := range headers.Items {
 		switch strings.ToLower(h.Value) {
 		case "image/jpeg":
 			w.Header().Add("Content-Type", "image/jpeg")
