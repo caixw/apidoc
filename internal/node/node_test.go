@@ -31,7 +31,7 @@ func TestNewNode(t *testing.T) {
 
 	data := []*struct {
 		inputName string
-		inputNode interface{}
+		inputNode any
 		elems     int  // 子元素的数量
 		attrs     int  // 属性的数量
 		cdata     bool // cdata 的标签名称

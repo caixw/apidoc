@@ -60,14 +60,14 @@ func TestServe_udp(t *testing.T) {
 	a.Empty(erro.String())
 	<-initialize
 	initialized := make(chan struct{}, 1)
-	client.Send("initialized", &protocol.InitializedParams{}, func(result *interface{}) error {
+	client.Send("initialized", &protocol.InitializedParams{}, func(result *any) error {
 		initialized <- struct{}{}
 		return nil
 	})
 
 	<-initialized
 	shutdown := make(chan struct{}, 1)
-	client.Send("shutdown", nil, func(result *interface{}) error {
+	client.Send("shutdown", nil, func(result *any) error {
 		shutdown <- struct{}{}
 		return nil
 	})
@@ -116,14 +116,14 @@ func TestServe_tcp(t *testing.T) {
 	a.Empty(erro.String())
 	<-initialize
 	initialized := make(chan struct{}, 1)
-	client.Send("initialized", &protocol.InitializedParams{}, func(result *interface{}) error {
+	client.Send("initialized", &protocol.InitializedParams{}, func(result *any) error {
 		initialized <- struct{}{}
 		return nil
 	})
 
 	<-initialized
 	shutdown := make(chan struct{}, 1)
-	client.Send("shutdown", nil, func(result *interface{}) error {
+	client.Send("shutdown", nil, func(result *any) error {
 		shutdown <- struct{}{}
 		return nil
 	})

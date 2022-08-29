@@ -38,7 +38,7 @@ type PartialResultParams struct {
 }
 
 // ProgressToken type ProgressToken = number | string;
-type ProgressToken interface{}
+type ProgressToken any
 
 // WorkDoneProgressOptions options to signal work done progress support in server capabilities.
 //
@@ -63,16 +63,18 @@ type CancelParams struct {
 //
 // Here is an example how such a string can be constructed using JavaScript / TypeScript:
 // ```typescript
-// let markdown: MarkdownContent = {
-//  kind: MarkupKind.Markdown,
-//	value: [
-//		'# Header',
-//		'Some text',
-//		'```typescript',
-//		'someCode();',
-//		'```'
-//	].join('\n')
-// };
+//
+//	let markdown: MarkdownContent = {
+//	 kind: MarkupKind.Markdown,
+//		value: [
+//			'# Header',
+//			'Some text',
+//			'```typescript',
+//			'someCode();',
+//			'```'
+//		].join('\n')
+//	};
+//
 // ```
 //
 // *Please Note* that clients might sanitize the return markdown. A client could decide to
@@ -126,5 +128,5 @@ type Command struct {
 	Command string `json:"command"`
 
 	// Arguments that the command handler should be invoked with.
-	Arguments []interface{} `json:"arguments,omitempty"`
+	Arguments []any `json:"arguments,omitempty"`
 }

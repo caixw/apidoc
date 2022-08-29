@@ -82,13 +82,13 @@ type (
 	// Reference 指向引用父对象的数据
 	Reference struct {
 		core.Location
-		Target interface{} // 引用当前父对象的实际数据
+		Target any // 引用当前父对象的实际数据
 	}
 
 	// Definition 指向父对象的实际定义数据
 	Definition struct {
 		core.Location
-		Target interface{} // 父对象数据定义内容
+		Target any // 父对象数据定义内容
 	}
 
 	// Referencer 包含了 Reference 数据需要实现的接口

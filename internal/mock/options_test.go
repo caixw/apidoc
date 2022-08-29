@@ -7,7 +7,7 @@ import "github.com/caixw/apidoc/v7/internal/ast"
 const indent = "    "
 
 var testOptions = &GenOptions{
-	Number: func(p *ast.Param) interface{} { return 1024 },
+	Number: func(p *ast.Param) any { return 1024 },
 	String: func(p *ast.Param) string {
 		switch p.Type.V() {
 		case ast.TypeEmail:

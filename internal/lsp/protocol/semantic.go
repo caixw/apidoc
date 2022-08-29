@@ -25,13 +25,13 @@ type SemanticTokensClientCapabilities struct {
 		// the server provides a corresponding handler.
 		//
 		// bool | {}
-		Range interface{} `json:"range,omitempty"`
+		Range any `json:"range,omitempty"`
 
 		// The client will send the `textDocument/semanticTokens/full` request if
 		// the server provides a corresponding handler.
 		//
 		// bool | SemanticTokensOptions
-		Full interface{} `json:"full,omitempty"`
+		Full any `json:"full,omitempty"`
 	} `json:"requests"`
 
 	// The token types that the client supports.
@@ -53,12 +53,12 @@ type SemanticTokensOptions struct {
 	// Server supports providing semantic tokens for a specific range of a document.
 	//
 	// bool | {}
-	Range interface{} `json:"range,omitempty"`
+	Range any `json:"range,omitempty"`
 
 	// Server supports providing semantic tokens for a full document.
 	//
 	// bool | SemanticTokensOptions
-	Full interface{} `json:"full,omitempty"`
+	Full any `json:"full,omitempty"`
 }
 
 type SemanticTokensLegend struct {

@@ -101,7 +101,8 @@ func ServeLSP(header bool, t, addr string, timeout time.Duration, info, erro *lo
 // stylesheet 表示是否只展示 XSL 及相关的内容。
 //
 // 用户可以通过以下代码搭建一个简易的 https://apidoc.tools 网站：
-//  http.Handle("/apidoc", apidoc.Static(...))
+//
+//	http.Handle("/apidoc", apidoc.Static(...))
 func Static(dir core.URI, stylesheet bool, erro *log.Logger) http.Handler {
 	return docs.Handler(dir, stylesheet, erro)
 }

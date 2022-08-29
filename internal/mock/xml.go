@@ -289,7 +289,7 @@ type xmlBuilder struct {
 	start xml.StartElement
 	items []*xmlBuilder
 
-	chardata interface{}
+	chardata any
 	cdata    bool // 表示 chardata 是一个 cdata 数据
 }
 
@@ -438,7 +438,7 @@ func (builder *xmlBuilder) encode(e *xml.Encoder) error {
 	return e.EncodeToken(builder.start.End())
 }
 
-func genXMLValue(g *GenOptions, p *ast.Param) interface{} {
+func genXMLValue(g *GenOptions, p *ast.Param) any {
 	switch primitive, _ := ast.ParseType(p.Type.V()); primitive {
 	case ast.TypeNone:
 		return ""

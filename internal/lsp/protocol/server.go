@@ -35,7 +35,7 @@ type ServerCapabilities struct {
 	// Since 3.16.0
 	//
 	// SemanticTokensOptions | SemanticTokensRegistrationOptions
-	SemanticTokensProvider interface{} `json:"semanticTokensProvider,omitempty"`
+	SemanticTokensProvider any `json:"semanticTokensProvider,omitempty"`
 
 	// The server provides workspace symbol support.
 	WorkspaceSymbolProvider bool `json:"workspaceSymbolProvider,omitempty"`
@@ -44,7 +44,7 @@ type ServerCapabilities struct {
 	Workspace *WorkspaceProvider `json:"workspace,omitempty"`
 
 	// Experimental server capabilities.
-	Experimental interface{} `json:"experimental,omitempty"`
+	Experimental any `json:"experimental,omitempty"`
 }
 
 // SaveOptions Save options.

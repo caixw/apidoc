@@ -28,7 +28,7 @@ type (
 	}
 )
 
-func (s servers) Get() interface{} {
+func (s servers) Get() any {
 	return map[string]string(s)
 }
 
@@ -66,7 +66,7 @@ func (s servers) String() string {
 	return buf.String()
 }
 
-func (r size) Get() interface{} {
+func (r size) Get() any {
 	return r
 }
 
@@ -99,7 +99,7 @@ func (r *size) String() string {
 	return strconv.Itoa(r.Min) + "," + strconv.Itoa(r.Max)
 }
 
-func (s slice) Get() interface{} {
+func (s slice) Get() any {
 	return []string(s)
 }
 
@@ -112,7 +112,7 @@ func (s *slice) String() string {
 	return strings.Join(*s, ",")
 }
 
-func (d dateRange) Get() interface{} {
+func (d dateRange) Get() any {
 	return d
 }
 

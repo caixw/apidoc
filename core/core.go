@@ -21,7 +21,7 @@ const (
 
 // Searcher 实现了搜索的基本方法集合
 //
-// 所有内嵌 Location 的对象都可以使用此接口判断是否内嵌 Location。
+// 所有内嵌 [Location] 的对象都可以使用此接口判断是否内嵌 [Location]。
 type Searcher interface {
 	Contains(URI, Position) bool
 	Loc() Location

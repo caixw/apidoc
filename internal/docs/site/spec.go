@@ -10,7 +10,7 @@ import (
 	"github.com/caixw/apidoc/v7/internal/node"
 )
 
-func (d *doc) newSpec(v interface{}) error {
+func (d *doc) newSpec(v any) error {
 	n := node.New("", reflect.ValueOf(v))
 	if err := d.dumpToTypes(n); err != nil {
 		return err

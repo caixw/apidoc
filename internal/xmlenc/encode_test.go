@@ -34,7 +34,7 @@ func TestEncode(t *testing.T) {
 	}
 
 	data := []*struct {
-		object            interface{}
+		object            any
 		namespace, prefix string
 		xml               string
 		err               bool

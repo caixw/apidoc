@@ -294,5 +294,5 @@ type CompletionItem struct {
 
 	// A data entry field that is preserved on a completion item between
 	// a completion and a completion resolve request.
-	Data interface{} `json:"data,omitempty"`
+	Data any `json:"data,omitempty"`
 }

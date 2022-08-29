@@ -5,14 +5,17 @@
 // struct tag
 //
 // 标签属性分为 4 个字段，其中前三个是必填的：
-//  apidoc:"name,node-type,usage-key,omitempty"
+//
+//	apidoc:"name,node-type,usage-key,omitempty"
+//
 // name 表示当前标签的名称，或是节点表示的类型；
 // node-type 表示当前节点的类型，可以是以下值：
-//  - elem 表示这是一个子元素；
-//  - attr 表示为一个 XML 属性；
-//  - cdata 表示为 CDATA 数据；
-//  - content 表示为普通的字符串值；
-//  - meta 表示这个字段仅用于描述当前元素的元数据，比如元素的名称等；
+//   - elem 表示这是一个子元素；
+//   - attr 表示为一个 XML 属性；
+//   - cdata 表示为 CDATA 数据；
+//   - content 表示为普通的字符串值；
+//   - meta 表示这个字段仅用于描述当前元素的元数据，比如元素的名称等；
+//
 // usage-key 指定了当前元素的翻译项；
 // omitempty 表示当前值为空时，是否可以忽略。
 package node

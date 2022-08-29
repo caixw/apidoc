@@ -48,7 +48,7 @@ func NewParser(h *core.MessageHandler, b core.Block) (*Parser, error) {
 //
 // loc 表示返回的 token 所占的范围；
 // 当返回 nil, {}, io.EOF 时，表示已经结束
-func (p *Parser) Token() (token interface{}, loc core.Location, err error) {
+func (p *Parser) Token() (token any, loc core.Location, err error) {
 	for {
 		if p.AtEOF() {
 			return nil, core.Location{}, io.EOF
@@ -439,7 +439,7 @@ func (p *Parser) endElement(start *StartElement) error {
 }
 
 // newError 生成 *core.Error 对象，其中的 URI 来自于 p.Location.URI。
-func (p *Parser) newError(start, end core.Position, field string, key message.Reference, v ...interface{}) *core.Error {
+func (p *Parser) newError(start, end core.Position, field string, key message.Reference, v ...any) *core.Error {
 	return core.NewError(key, v...).
 		WithField(field).
 		WithLocation(core.Location{

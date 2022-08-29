@@ -34,7 +34,7 @@ var (
 //
 // namespace 指定 XML 的命名空间；
 // prefix 命名空间的前缀，如果为空表示使用默认命名空间；
-func Encode(indent string, v interface{}, namespace, prefix string) ([]byte, error) {
+func Encode(indent string, v any, namespace, prefix string) ([]byte, error) {
 	if prefix != "" && namespace == "" {
 		panic("参数 prefix 不为空的情况下，必须指定 namespace")
 	}

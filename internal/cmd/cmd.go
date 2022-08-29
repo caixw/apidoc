@@ -51,7 +51,7 @@ type printer struct {
 
 type uri core.URI
 
-func (u uri) Get() interface{} { return string(u) }
+func (u uri) Get() any { return string(u) }
 
 func (u *uri) Set(v string) error {
 	*u = uri(core.FileURI(v))
@@ -94,7 +94,7 @@ func messageHandle(msg *core.Message) {
 	printers[msg.Type].print(msg.Message)
 }
 
-func (p *printer) print(msg interface{}) {
+func (p *printer) print(msg any) {
 	if _, err := colors.Fprint(p.out, colors.Normal, p.color, colors.Default, locale.New(p.prefix)); err != nil {
 		panic(err)
 	}

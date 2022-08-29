@@ -104,8 +104,9 @@ type DocumentSelector []DocumentFilter
 // DocumentFilter denotes a document through properties like language,
 // scheme or pattern. An example is a filter that applies to TypeScript files on disk.
 // Another example is a filter the applies to JSON files with name package.json:
-//  { language: 'typescript', scheme: 'file' }
-//  { language: 'json', pattern: '**/package.json' }
+//
+//	{ language: 'typescript', scheme: 'file' }
+//	{ language: 'json', pattern: '**/package.json' }
 type DocumentFilter struct {
 	// A language id, like `typescript`.
 	Language string `json:"language,omitempty"`

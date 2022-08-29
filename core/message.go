@@ -37,7 +37,7 @@ func (t MessageType) String() string {
 // Message 输出消息的具体结构
 type Message struct {
 	Type    MessageType
-	Message interface{}
+	Message any
 }
 
 // HandlerFunc 错误处理函数
@@ -80,7 +80,7 @@ func (h *MessageHandler) Stop() {
 }
 
 // Message 发送消息
-func (h *MessageHandler) Message(t MessageType, msg interface{}) {
+func (h *MessageHandler) Message(t MessageType, msg any) {
 	h.messages <- &Message{
 		Type:    t,
 		Message: msg,
@@ -88,18 +88,18 @@ func (h *MessageHandler) Message(t MessageType, msg interface{}) {
 }
 
 // Locale 发送普通的文本信息
-func (h *MessageHandler) Locale(t MessageType, key message.Reference, val ...interface{}) {
+func (h *MessageHandler) Locale(t MessageType, key message.Reference, val ...any) {
 	h.Message(t, locale.New(key, val...))
 }
 
 // Error 发送错误类型的值
-func (h *MessageHandler) Error(err interface{}) { h.Message(Erro, err) }
+func (h *MessageHandler) Error(err any) { h.Message(Erro, err) }
 
 // Warning 发送错误类型的值
-func (h *MessageHandler) Warning(err interface{}) { h.Message(Warn, err) }
+func (h *MessageHandler) Warning(err any) { h.Message(Warn, err) }
 
 // Success 发送错误类型的值
-func (h *MessageHandler) Success(err interface{}) { h.Message(Succ, err) }
+func (h *MessageHandler) Success(err any) { h.Message(Succ, err) }
 
 // Info 发送错误类型的值
-func (h *MessageHandler) Info(err interface{}) { h.Message(Info, err) }
+func (h *MessageHandler) Info(err any) { h.Message(Info, err) }

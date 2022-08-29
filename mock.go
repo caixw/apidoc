@@ -127,7 +127,7 @@ func (o *MockOptions) gen() (*mock.GenOptions, error) {
 	}
 
 	return &mock.GenOptions{
-		Number: func(p *ast.Param) interface{} {
+		Number: func(p *ast.Param) any {
 			switch p.Type.V() {
 			case ast.TypeFloat:
 				return o.float()

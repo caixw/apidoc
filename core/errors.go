@@ -46,7 +46,7 @@ const (
 )
 
 // NewHTTPError 声明 HTTPError 实例
-func NewHTTPError(code int, key message.Reference, v ...interface{}) *HTTPError {
+func NewHTTPError(code int, key message.Reference, v ...any) *HTTPError {
 	return &HTTPError{
 		Err:  locale.Err{Key: key, Values: v},
 		Code: code,
@@ -112,7 +112,7 @@ func (err *Error) AddTypes(t ...ErrorType) *Error {
 }
 
 // NewError 返回 *Error 实例
-func NewError(key message.Reference, v ...interface{}) *Error {
+func NewError(key message.Reference, v ...any) *Error {
 	return &Error{Err: locale.NewError(key, v...)}
 }
 
@@ -131,7 +131,7 @@ func WithError(err error) *Error {
 // NewError 在当前位置生成语法错误信息
 //
 // 其中的 msg 和 val 会被转换成本地化的内容保存。
-func (l Location) NewError(key message.Reference, v ...interface{}) *Error {
+func (l Location) NewError(key message.Reference, v ...any) *Error {
 	return &Error{Err: locale.NewError(key, v...), Location: l}
 }
 

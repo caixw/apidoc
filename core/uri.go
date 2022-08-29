@@ -4,8 +4,8 @@ package core
 
 import (
 	"errors"
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -27,23 +27,23 @@ const (
 	separator = "://"
 )
 
-// URI 定义 URI
+// URI 定义 [URI]
 //
-// http://tools.ietf.org/html/rfc3986
-//
-//    foo://example.com:8042/over/there?name=ferret#nose
-//    \_/   \______________/\_________/ \_________/ \__/
-//     |           |            |            |        |
-//  scheme     authority       path        query   fragment
-//     |   _____________________|__
-//    / \ /                        \
-//    urn:example:animal:ferret:nose
+//	  foo://example.com:8042/over/there?name=ferret#nose
+//	  \_/   \______________/\_________/ \_________/ \__/
+//	   |           |            |            |        |
+//	scheme     authority       path        query   fragment
+//	   |   _____________________|__
+//	  / \ /                        \
+//	  urn:example:animal:ferret:nose
 //
 // 如果是本地相对路径，也可以直接使用 `./path/file` 的形式表示，
 // 不需要指定协议。
 //
 // NOTE: 并非完整的 URI 实现，仅作为了 file:// 和 http:// 支持，
 // 也提供对 windows 路径的支持。
+//
+// [URI]: http://tools.ietf.org/html/rfc3986
 type URI string
 
 // FileURI 根据本地文件路径构建 URI 实例
@@ -56,7 +56,6 @@ func FileURI(path string) URI {
 	return URI(SchemeFile + separator + path)
 }
 
-// UnmarshalJSON 实现对非 ascii 字符的解码
 func (uri *URI) UnmarshalJSON(v []byte) error {
 	if len(v) <= 2 {
 		return locale.NewError(locale.ErrInvalidURI, string(v))
@@ -80,9 +79,7 @@ func (uri URI) File() (string, error) {
 	return "", locale.NewError(locale.ErrInvalidURIScheme, scheme)
 }
 
-func (uri URI) String() string {
-	return string(uri)
-}
+func (uri URI) String() string { return string(uri) }
 
 // Append 追加 path 至 URI 生成新的 URI
 func (uri URI) Append(path string) URI {
@@ -106,9 +103,7 @@ func (uri URI) Append(path string) URI {
 	return uri + URI(path)
 }
 
-func isPathSeparator(b byte) bool {
-	return b == '/' || b == os.PathSeparator
-}
+func isPathSeparator(b byte) bool { return b == '/' || b == os.PathSeparator }
 
 // Exists 判断 uri 指向的内容是否存在
 //
@@ -145,7 +140,7 @@ func (uri URI) ReadAll(enc encoding.Encoding) ([]byte, error) {
 func (uri URI) WriteAll(data []byte) error {
 	scheme, path := uri.Parse()
 	if scheme == SchemeFile || scheme == "" {
-		return ioutil.WriteFile(path, data, os.ModePerm)
+		return os.WriteFile(path, data, os.ModePerm)
 	}
 	return locale.NewError(locale.ErrInvalidURIScheme, scheme)
 }
@@ -171,7 +166,7 @@ func remoteFileIsExists(url string) (bool, error) {
 // 以指定的编码方式读取本地文件内容
 func readLocalFile(path string, enc encoding.Encoding) ([]byte, error) {
 	if enc == nil || enc == encoding.Nop {
-		return ioutil.ReadFile(path)
+		return os.ReadFile(path)
 	}
 
 	r, err := os.Open(path)
@@ -181,7 +176,7 @@ func readLocalFile(path string, enc encoding.Encoding) ([]byte, error) {
 	defer r.Close()
 
 	reader := transform.NewReader(r, enc.NewDecoder())
-	return ioutil.ReadAll(reader)
+	return io.ReadAll(reader)
 }
 
 // 以指定的编码方式读取远程文件内容
@@ -197,8 +192,8 @@ func readRemoteFile(url string, enc encoding.Encoding) ([]byte, error) {
 	}
 
 	if enc == nil || enc == encoding.Nop {
-		return ioutil.ReadAll(resp.Body)
+		return io.ReadAll(resp.Body)
 	}
 	reader := transform.NewReader(resp.Body, enc.NewDecoder())
-	return ioutil.ReadAll(reader)
+	return io.ReadAll(reader)
 }

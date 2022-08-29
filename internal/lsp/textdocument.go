@@ -17,7 +17,7 @@ import (
 // textDocument/didChange
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_didChange
-func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDocumentParams, out *interface{}) error {
+func (s *server) textDocumentDidChange(notify bool, in *protocol.DidChangeTextDocumentParams, out *any) error {
 	f := s.findFolder(in.TextDocument.URI)
 	if f == nil {
 		return nil

@@ -29,7 +29,7 @@ func newDecoder(a *assert.Assertion, prefix string) (*decoder, *messagetest.Resu
 	}, rslt
 }
 
-func decodeObject(a *assert.Assertion, xml string, v interface{}, namespace string) *messagetest.Result {
+func decodeObject(a *assert.Assertion, xml string, v any, namespace string) *messagetest.Result {
 	rslt := messagetest.NewMessageHandler()
 	p, err := NewParser(rslt.Handler, core.Block{Data: []byte(xml)})
 	a.NotError(err).

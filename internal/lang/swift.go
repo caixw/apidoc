@@ -13,9 +13,11 @@ type swiftNestMCommentBlock struct {
 }
 
 // prefix 表示每一行的前缀符号，比如：
-//  /*
-//   *
-//   */
+//
+//	/*
+//	 *
+//	 */
+//
 // 中的 * 字符
 func newSwiftNestMCommentBlock(begin, end, prefix string) blocker {
 	return &swiftNestMCommentBlock{

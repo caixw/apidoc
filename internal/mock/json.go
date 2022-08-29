@@ -129,7 +129,7 @@ func (validator *jsonValidator) valid(d *json.Decoder) error {
 }
 
 // 如果 t == "" 表示不需要验证类型，比如 null 可以赋值给任何类型
-func (validator *jsonValidator) validValue(t string, v interface{}) error {
+func (validator *jsonValidator) validValue(t string, v any) error {
 	field := strings.Join(validator.names, ".")
 
 	p := validator.find()
@@ -329,7 +329,7 @@ func (builder *jsonBuilder) writeIndent() *jsonBuilder {
 }
 
 // v 只能是基本类型
-func (builder *jsonBuilder) writeValue(v interface{}) *jsonBuilder {
+func (builder *jsonBuilder) writeValue(v any) *jsonBuilder {
 	if builder.w.Err != nil {
 		return builder
 	}

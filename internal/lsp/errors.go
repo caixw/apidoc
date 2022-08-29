@@ -22,6 +22,6 @@ const (
 	ErrContentModified      = -32801
 )
 
-func newError(code int, key message.Reference, v ...interface{}) *jsonrpc.Error {
+func newError(code int, key message.Reference, v ...any) *jsonrpc.Error {
 	return jsonrpc.NewError(code, locale.Sprintf(key, v...))
 }

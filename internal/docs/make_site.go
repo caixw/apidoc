@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+//go:build ignore
 // +build ignore
 
 package main

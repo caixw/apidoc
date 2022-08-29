@@ -51,7 +51,7 @@ func newServe(t jsonrpc.Transport, infolog, errlog *log.Logger) *server {
 		erro:  errlog,
 	}
 
-	jsonrpcServer.Registers(map[string]interface{}{
+	jsonrpcServer.Registers(map[string]any{
 		"initialize":      srv.initialize,
 		"initialized":     srv.initialized,
 		"shutdown":        srv.shutdown,
@@ -104,7 +104,7 @@ func (s *server) getState() serverState {
 // $/setTrace
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#setTrace
-func (s *server) setTrace(notify bool, in *protocol.SetTraceParams, out *interface{}) error {
+func (s *server) setTrace(notify bool, in *protocol.SetTraceParams, out *any) error {
 	if protocol.IsValidTraceValue(in.Value) {
 		s.trace = in.Value
 		return nil
@@ -128,7 +128,7 @@ func (s *server) logTrace(message, verbose string) {
 // $/cancelRequest
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#cancelRequest
-func (s *server) cancel(notify bool, in *protocol.CancelParams, out *interface{}) error {
+func (s *server) cancel(notify bool, in *protocol.CancelParams, out *any) error {
 	return nil
 }
 
@@ -137,7 +137,7 @@ func (s *server) cancel(notify bool, in *protocol.CancelParams, out *interface{}
 // $ Notifications and Requests
 //
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#dollarRequests
-func (s *server) dollarHandler(notify bool, in, out *interface{}) error {
+func (s *server) dollarHandler(notify bool, in, out *any) error {
 	if !notify {
 		return newError(ErrMethodNotFound, locale.UnimplementedRPC, "$/***")
 	}
@@ -162,18 +162,18 @@ func (s *server) printErr(err error) {
 	s.logTrace(err.Error(), "")
 }
 
-func (s *server) windowLogInfoMessage(key message.Reference, v ...interface{}) {
+func (s *server) windowLogInfoMessage(key message.Reference, v ...any) {
 	s.windowLogMessage(protocol.MessageTypeInfo, locale.Sprintf(key, v...))
 }
 
-func (s *server) windowLogLogMessage(key message.Reference, v ...interface{}) {
+func (s *server) windowLogLogMessage(key message.Reference, v ...any) {
 	s.windowLogMessage(protocol.MessageTypeLog, locale.Sprintf(key, v...))
 }
 
-func (s *server) windowLogWarnMessage(key message.Reference, v ...interface{}) {
+func (s *server) windowLogWarnMessage(key message.Reference, v ...any) {
 	s.windowLogMessage(protocol.MessageTypeWarning, locale.Sprintf(key, v...))
 }
 
-func (s *server) windowLogErrorMessage(key message.Reference, v ...interface{}) {
+func (s *server) windowLogErrorMessage(key message.Reference, v ...any) {
 	s.windowLogMessage(protocol.MessageTypeError, locale.Sprintf(key, v...))
 }

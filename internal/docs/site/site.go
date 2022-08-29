@@ -98,7 +98,7 @@ func Write(target core.URI) error {
 	return nil
 }
 
-func writeXML(uri core.URI, v interface{}, indent string) error {
+func writeXML(uri core.URI, v any, indent string) error {
 	data, err := xml.MarshalIndent(v, "", indent)
 	if err != nil {
 		return err

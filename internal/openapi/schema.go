@@ -39,8 +39,8 @@ func fromDocType(t string) string {
 
 // Schema 定义了输出和输出的数据类型
 type Schema struct {
-	Type string        `json:"type,omitempty" yaml:"type,omitempty"`
-	Enum []interface{} `json:"enum,omitempty" yaml:"enum,omitempty"`
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Enum []any  `json:"enum,omitempty" yaml:"enum,omitempty"`
 
 	// 数值验证
 	MultipleOf       int  `json:"multipleOf,omitempty" yaml:"multipleOf,omitempty"`
@@ -83,7 +83,7 @@ type Schema struct {
 
 	Title         string                 `json:"title,omitempty" yaml:"title,omitempty"`
 	Description   string                 `json:"description,omitempty" yaml:"description,omitempty"`
-	Default       interface{}            `json:"default,omitempty" yaml:"default,omitempty"`
+	Default       any                    `json:"default,omitempty" yaml:"default,omitempty"`
 	ReadOnly      bool                   `json:"readOnly,omitempty" yaml:"readOnly,omitempty"`
 	WriteOnly     bool                   `json:"writeOnly,omitempty" yaml:"writeOnly,omitempty"`
 	Discriminator *Discriminator         `json:"discriminator,omitempty" yaml:"discriminator,omitempty"`
@@ -172,7 +172,7 @@ func newSchema(doc *ast.APIDoc, p *ast.Param, chkArray bool) *Schema {
 
 	// enum
 	if len(p.Enums) > 0 {
-		s.Enum = make([]interface{}, 0, len(p.Enums))
+		s.Enum = make([]any, 0, len(p.Enums))
 		for _, e := range p.Enums {
 			s.Enum = append(s.Enum, e.Value.V())
 		}

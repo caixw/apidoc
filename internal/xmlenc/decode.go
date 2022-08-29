@@ -89,7 +89,7 @@ func (b *BaseTag) setTag(usage string, start *StartElement, end *EndElement) {
 // Decode 将 p 中的 XML 内容解码至 v 对象中
 //
 // namespace 如果不为空表示当前的 xml 所在的命名空间，只有该命名空间的元素才会被正确识别。
-func Decode(p *Parser, v interface{}, namespace string) {
+func Decode(p *Parser, v any, namespace string) {
 	d := &decoder{
 		p: p,
 	}

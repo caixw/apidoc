@@ -13,7 +13,7 @@ type GenOptions struct {
 	// 返回一个随机的数值
 	//
 	// 可以是浮点和整数类型。
-	Number func(p *ast.Param) interface{}
+	Number func(p *ast.Param) any
 
 	// 返回一个随机长度的字符串
 	String func(p *ast.Param) string
@@ -40,7 +40,7 @@ func (g *GenOptions) generateBool() bool {
 	return g.Bool()
 }
 
-func (g *GenOptions) generateNumber(p *ast.Param) interface{} {
+func (g *GenOptions) generateNumber(p *ast.Param) any {
 	if isEnum(p) {
 		index := g.Index(len(p.Enums))
 		v, err := strconv.ParseInt(p.Enums[index].Value.V(), 10, 32)

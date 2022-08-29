@@ -21,7 +21,7 @@ func TestParser_Token(t *testing.T) {
 	uri := core.URI("file:///path")
 	data := []*struct {
 		input string
-		elems []interface{}
+		elems []any
 		err   *core.Error
 	}{
 		{},
@@ -32,7 +32,7 @@ func TestParser_Token(t *testing.T) {
 *	<desc type="html"><![CDATA[<h1>h1</h1>]]></desc>
 * </apidoc>
 <!-- comment -->  `, // 尾部包含空格
-			elems: []interface{}{
+			elems: []any{
 				&Instruction{
 					Location: core.Location{
 						URI: uri,
@@ -547,7 +547,7 @@ func TestParser_Token(t *testing.T) {
 		{
 			input: `<apidoc version="2.0" /> 
   `, // 尾部包含空格
-			elems: []interface{}{
+			elems: []any{
 				&StartElement{
 					SelfClose: true,
 					Location: core.Location{
@@ -635,7 +635,7 @@ func TestParser_Token(t *testing.T) {
 			input: `<apidoc version="2.0">123
 	</apidoc>
   `, // 尾部包含空格
-			elems: []interface{}{
+			elems: []any{
 				&StartElement{
 					Location: core.Location{
 						URI: uri,
@@ -758,7 +758,7 @@ func TestParser_Token(t *testing.T) {
 
 		{ // 嵌套自闭合对象
 			input: `<apidoc><apidoc /></apidoc> `,
-			elems: []interface{}{
+			elems: []any{
 				&StartElement{
 					Location: core.Location{
 						URI: uri,

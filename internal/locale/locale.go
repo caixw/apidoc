@@ -25,7 +25,7 @@ var (
 // Locale 提供缓存本地化信息
 type Locale struct {
 	Key    message.Reference
-	Values []interface{}
+	Values []any
 }
 
 // Err 为错误信息提供本地化的缓存机制
@@ -75,22 +75,22 @@ func Tags() []language.Tag {
 }
 
 // Sprintf 类似 fmt.Sprintf，与特定的本地化绑定。
-func Sprintf(key message.Reference, v ...interface{}) string {
+func Sprintf(key message.Reference, v ...any) string {
 	return localePrinter.Sprintf(key, v...)
 }
 
 // New 声明新的 Locale 对象
-func New(key message.Reference, v ...interface{}) *Locale {
+func New(key message.Reference, v ...any) *Locale {
 	return &Locale{Key: key, Values: v}
 }
 
 // NewError 返回本地化的错误对象
-func NewError(key message.Reference, v ...interface{}) error {
+func NewError(key message.Reference, v ...any) error {
 	return (*Err)(New(key, v...))
 }
 
 // Translate 功能与 Sprintf 类似，但是可以指定本地化 ID 值。
-func Translate(localeID string, key message.Reference, v ...interface{}) string {
+func Translate(localeID string, key message.Reference, v ...any) string {
 	tag, _ := language.MatchStrings(language.NewMatcher(tags), localeID)
 	return message.NewPrinter(tag).Sprintf(key, v...)
 }
