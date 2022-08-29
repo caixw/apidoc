@@ -86,7 +86,7 @@ func New(key message.Reference, v ...interface{}) *Locale {
 
 // NewError 返回本地化的错误对象
 func NewError(key message.Reference, v ...interface{}) error {
-	return (*Err)(New(key, v))
+	return (*Err)(New(key, v...))
 }
 
 // Translate 功能与 Sprintf 类似，但是可以指定本地化 ID 值。
