@@ -3,7 +3,7 @@
 package ast
 
 import (
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -22,7 +22,7 @@ var (
 )
 
 func loadAPIDoc(a *assert.Assertion) *APIDoc {
-	data, err := ioutil.ReadFile("./testdata/doc.xml")
+	data, err := os.ReadFile("./testdata/doc.xml")
 	a.NotError(err).NotNil(data)
 
 	doc := &APIDoc{}
@@ -311,7 +311,7 @@ func TestAPIDoc(t *testing.T) {
 func TestAPIDoc_all(t *testing.T) {
 	a := assert.New(t, false)
 
-	data, err := ioutil.ReadFile("./testdata/all.xml")
+	data, err := os.ReadFile("./testdata/all.xml")
 	a.NotError(err).NotNil(data)
 	rslt := messagetest.NewMessageHandler()
 	doc := &APIDoc{}
@@ -354,7 +354,7 @@ func TestAPIDoc_all(t *testing.T) {
 func loadAPI(a *assert.Assertion) *API {
 	doc := loadAPIDoc(a)
 
-	data, err := ioutil.ReadFile("./testdata/api.xml")
+	data, err := os.ReadFile("./testdata/api.xml")
 	a.NotError(err).NotNil(data)
 
 	rslt := messagetest.NewMessageHandler()

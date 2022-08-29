@@ -3,6 +3,7 @@
 package core
 
 import (
+	"github.com/issue9/localeutil"
 	"github.com/issue9/sliceutil"
 	"golang.org/x/text/message"
 
@@ -11,7 +12,7 @@ import (
 
 // HTTPError 表示 HTTP 状态码的错误
 type HTTPError struct {
-	locale.Err
+	error
 	Code int
 }
 
@@ -48,8 +49,8 @@ const (
 // NewHTTPError 声明 HTTPError 实例
 func NewHTTPError(code int, key message.Reference, v ...any) *HTTPError {
 	return &HTTPError{
-		Err:  locale.Err{Key: key, Values: v},
-		Code: code,
+		error: localeutil.Error(key, v...),
+		Code:  code,
 	}
 }
 

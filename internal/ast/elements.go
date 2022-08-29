@@ -2,9 +2,7 @@
 
 package ast
 
-import (
-	"github.com/caixw/apidoc/v7/internal/xmlenc"
-)
+import "github.com/caixw/apidoc/v7/internal/xmlenc"
 
 type (
 	// APIDoc 对应 apidoc 元素

@@ -4,6 +4,7 @@
 package locale
 
 import (
+	"github.com/issue9/localeutil"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -22,21 +23,10 @@ var (
 	tags = []language.Tag{}
 )
 
-// Locale 提供缓存本地化信息
-type Locale struct {
-	Key    message.Reference
-	Values []any
-}
+type LocaleStringer = localeutil.LocaleStringer
 
-// Err 为错误信息提供本地化的缓存机制
-type Err Locale
-
-func (l *Locale) String() string {
-	return Sprintf(l.Key, l.Values...)
-}
-
-func (err *Err) Error() string {
-	return (*Locale)(err).String()
+type Error struct {
+	l LocaleStringer
 }
 
 func setMessages(id string, messages map[string]string) {
@@ -56,6 +46,8 @@ func setMessages(id string, messages map[string]string) {
 		tags = append(tags, tag)
 	}
 }
+
+func (err *Error) Error() string { return err.l.LocaleString(localePrinter) }
 
 // SetTag 切换本地化环境
 func SetTag(tag language.Tag) {
@@ -80,14 +72,10 @@ func Sprintf(key message.Reference, v ...any) string {
 }
 
 // New 声明新的 Locale 对象
-func New(key message.Reference, v ...any) *Locale {
-	return &Locale{Key: key, Values: v}
-}
+func New(key message.Reference, v ...any) LocaleStringer { return localeutil.Phrase(key, v...) }
 
 // NewError 返回本地化的错误对象
-func NewError(key message.Reference, v ...any) error {
-	return (*Err)(New(key, v...))
-}
+func NewError(key message.Reference, v ...any) error { return &Error{l: localeutil.Phrase(key, v...)} }
 
 // Translate 功能与 Sprintf 类似，但是可以指定本地化 ID 值。
 func Translate(localeID string, key message.Reference, v ...any) string {

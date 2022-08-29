@@ -9,8 +9,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-var _ error = &Err{}
-
 func TestVarsDefaultLocaleID(t *testing.T) {
 	a := assert.New(t, false)
 

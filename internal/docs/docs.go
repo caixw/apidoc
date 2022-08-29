@@ -166,9 +166,8 @@ func errStatus(w http.ResponseWriter, status int) {
 }
 
 func errStatusWithError(w http.ResponseWriter, err error, l *log.Logger) {
-	herr, ok := err.(*core.HTTPError)
-	if ok {
-		http.Error(w, herr.Err.Error(), herr.Code)
+	if herr, ok := err.(*core.HTTPError); ok {
+		http.Error(w, herr.Error(), herr.Code)
 		return
 	}
 

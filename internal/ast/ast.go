@@ -151,9 +151,7 @@ func trimLeftSpace(v string) string {
 	ret := make([]byte, 0, buf.Size())
 	for {
 		line, err := buf.ReadBytes('\n')
-		if bytes.HasPrefix(line, min) {
-			line = line[len(min):]
-		}
+		line = bytes.TrimPrefix(line, min)
 		ret = append(ret, line...)
 
 		if errors.Is(err, io.EOF) {
