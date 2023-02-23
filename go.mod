@@ -14,7 +14,7 @@ require (
 	github.com/issue9/term/v3 v3.0.1
 	github.com/issue9/validation v0.8.0
 	github.com/issue9/version v1.0.6
-	golang.org/x/text v0.3.7
+	golang.org/x/text v0.3.8
 	gopkg.in/yaml.v3 v3.0.1
 )
 
