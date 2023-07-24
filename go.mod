@@ -22,7 +22,7 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/issue9/autoinc v1.0.9 // indirect
 	github.com/issue9/unique v1.3.2 // indirect
-	golang.org/x/sys v0.0.0-20220825204002-c680a09ffe64 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 )
 
 go 1.18
