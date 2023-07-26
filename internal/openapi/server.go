@@ -52,7 +52,7 @@ func (srv *Server) sanitize() *core.Error {
 		}
 
 		k := "{" + key + "}"
-		if strings.Index(srv.URL, k) < 0 {
+		if !strings.Contains(srv.URL, k) {
 			return core.NewError(locale.ErrInvalidValue).WithField("variables[" + key + "]")
 		}
 	}
